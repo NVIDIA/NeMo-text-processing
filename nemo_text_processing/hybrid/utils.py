@@ -16,6 +16,7 @@
 import copy
 import difflib
 import json
+import logging
 import re
 import string
 from typing import List, Optional, Tuple, Union
@@ -26,8 +27,6 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from pynini.lib.rewrite import top_rewrite
 from tqdm import tqdm
-
-from nemo.utils import logging
 
 DELIMITER = '~~'
 

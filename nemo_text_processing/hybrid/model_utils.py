@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import math
 import re
 from typing import List, Union
@@ -20,7 +21,6 @@ import torch
 from tqdm import tqdm
 
 from nemo.collections.common.parts import MLMScorer
-from nemo.utils import logging
 
 
 def init_models(model_name_list: str):
