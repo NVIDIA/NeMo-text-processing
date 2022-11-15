@@ -44,8 +44,8 @@ __repository_url__ = package_info.__repository_url__
 __version__ = package_info.__version__
 
 
-if os.path.exists('nemo_text_processing/README.md'):
-    with open("nemo_text_processing/README.md", "r", encoding='utf-8') as fh:
+if os.path.exists('README.md'):
+    with open("README.md", "r", encoding='utf-8') as fh:
         long_description = fh.read()
     long_description_content_type = "text/markdown"
 
