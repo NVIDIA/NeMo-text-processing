@@ -14,6 +14,7 @@
 
 
 import argparse
+import logging
 import os
 import pickle
 import re
@@ -26,8 +27,6 @@ import utils
 from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 from tqdm import tqdm
-
-from nemo.utils import logging
 
 parser = argparse.ArgumentParser(description="Re-scoring")
 parser.add_argument("--lang", default="en", type=str, choices=["en"])
