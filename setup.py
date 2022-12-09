@@ -73,7 +73,7 @@ def req_file(filename, folder="requirements"):
     return [x.strip() for x in content]
 
 
-install_requires = req_file("requirements_nemo_text_processing.txt")
+install_requires = req_file("requirements.txt")
 
 extras_require = {
     # User packages
