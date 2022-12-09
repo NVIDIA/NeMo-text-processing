@@ -13,13 +13,16 @@
 # limitations under the License.
 
 import itertools
+import json
 import os
 import re
+import shutil
 from argparse import ArgumentParser
 from collections import OrderedDict
+from glob import glob
 from math import factorial
 from time import perf_counter
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 import pynini
 import regex
@@ -30,6 +33,7 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
     pre_process,
     write_file,
 )
+from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
 from pynini.lib.rewrite import top_rewrite
 from tqdm import tqdm
@@ -42,6 +46,33 @@ except (ModuleNotFoundError, ImportError) as e:
     NLP_AVAILABLE = False
 
 SPACE_DUP = re.compile(' {2,}')
+
+
+"""
+To normalize a single entry:
+    python normalize.py --text=<INPUT_TEXT>
+        
+To normalize text in .json manifest:
+
+    python normalize.py \
+        --input_file=<PATH TO INPUT .JSON MANIFEST> \
+        --output_file=<PATH TO OUTPUT .JSON MANIFEST> \
+        --n_jobs=-1 \
+        --batch_size=300 \
+        --manifest_text_field="text" \
+        --whitelist=<PATH TO YOUR WHITELIST>
+
+
+To integrate Normalizer in your script:
+    >>> from nemo_text_processing.text_normalization.normalize import Normalizer
+    # see the script for args details
+    >>> normalizer_en = (Normalizer(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True)
+    >>> normalizer_en.normalize("<INPUT_TEXT>")
+    # normalize list of entries
+    >>> normalizer_en.normalize_list(["<INPUT_TEXT1>", <INPUT_TEXT2>"])
+    # normalize .json manifest entries
+    >>> normalizer.normalize_manifest(manifest=<PATH TO INPUT .JSON MANIFEST>, n_jobs=-1, batch_size=300, output_filename=<PATH TO OUTPUT .JSON MANIFEST>, text_field="text"
+"""
 
 
 class Normalizer:
@@ -90,7 +121,6 @@ class Normalizer:
                     from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify_with_audio import (
                         ClassifyFst,
                     )
-
         elif lang == 'ru':
             # Ru TN only support non-deterministic cases and produces multiple normalization options
             # use normalize_with_audio.py
@@ -105,6 +135,9 @@ class Normalizer:
         elif lang == 'zh':
             from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
+        else:
+            raise NotImplementedError(f"Language {lang} has not been supported yet.")
+
         self.tagger = ClassifyFst(
             input_case=input_case,
             deterministic=deterministic,
@@ -134,6 +167,7 @@ class Normalizer:
         punct_post_process: bool = False,
         batch_size: int = 1,
         n_jobs: int = 1,
+        **kwargs,
     ):
         """
         NeMo text normalizer
@@ -141,8 +175,8 @@ class Normalizer:
         Args:
             texts: list of input strings
             verbose: whether to print intermediate meta information
-            punct_pre_process: whether to do punctuation pre processing
-            punct_post_process: whether to do punctuation post processing
+            punct_pre_process: whether to do punctuation pre-processing
+            punct_post_process: whether to do punctuation post-processing
             n_jobs: the maximum number of concurrently running jobs. If -1 all CPUs are used. If 1 is given,
                 no parallel computing code is used at all, which is useful for debugging. For n_jobs below -1,
                 (n_cpus + 1 + n_jobs) are used. Thus for n_jobs = -2, all CPUs but one are used.
@@ -151,12 +185,33 @@ class Normalizer:
         Returns converted list input strings
         """
 
+        def _process_batch(batch, verbose, punct_pre_process, punct_post_process, **kwargs):
+            """
+            Normalizes batch of text sequences
+            Args:
+                batch: list of texts
+                verbose: whether to print intermediate meta information
+                punct_pre_process: whether to do punctuation pre-processing
+                punct_post_process: whether to do punctuation post-processing
+            """
+            normalized_lines = [
+                self.normalize(
+                    text,
+                    verbose=verbose,
+                    punct_pre_process=punct_pre_process,
+                    punct_post_process=punct_post_process,
+                    **kwargs,
+                )
+                for text in tqdm(batch)
+            ]
+            return normalized_lines
+
         # to save intermediate results to a file
         batch = min(len(texts), batch_size)
 
         try:
             normalized_texts = Parallel(n_jobs=n_jobs)(
-                delayed(self.process_batch)(texts[i : i + batch], verbose, punct_pre_process, punct_post_process)
+                delayed(_process_batch)(texts[i : i + batch], verbose, punct_pre_process, punct_post_process, **kwargs)
                 for i in range(0, len(texts), batch)
             )
         except BaseException as e:
@@ -164,23 +219,6 @@ class Normalizer:
 
         normalized_texts = list(itertools.chain(*normalized_texts))
         return normalized_texts
-
-    def process_batch(self, batch, verbose, punct_pre_process, punct_post_process):
-        """
-        Normalizes batch of text sequences
-        Args:
-            batch: list of texts
-            verbose: whether to print intermediate meta information
-            punct_pre_process: whether to do punctuation pre processing
-            punct_post_process: whether to do punctuation post processing
-        """
-        normalized_lines = [
-            self.normalize(
-                text, verbose=verbose, punct_pre_process=punct_pre_process, punct_post_process=punct_post_process
-            )
-            for text in tqdm(batch)
-        ]
-        return normalized_lines
 
     def _estimate_number_of_permutations_in_nested_dict(
         self, token_group: Dict[str, Union[OrderedDict, str, bool]]
@@ -269,7 +307,6 @@ class Normalizer:
                 "WARNING! Your input is too long and could take a long time to normalize."
                 "Use split_text_into_sentences() to make the input shorter and then call normalize_list()."
             )
-
         original_text = text
         if punct_pre_process:
             text = pre_process(text)
@@ -280,7 +317,7 @@ class Normalizer:
             return text
         text = pynini.escape(text)
         tagged_lattice = self.find_tags(text)
-        tagged_text = self.select_tag(tagged_lattice)
+        tagged_text = Normalizer.select_tag(tagged_lattice)
         if verbose:
             print(tagged_text)
         self.parser(tagged_text)
@@ -298,7 +335,7 @@ class Normalizer:
                     break
             if verbalizer_lattice is None:
                 raise ValueError(f"No permutations were generated from tokens {s}")
-            output += ' ' + self.select_verbalizer(verbalizer_lattice)
+            output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice)
         output = SPACE_DUP.sub(' ', output[1:])
 
         if self.lang == "en" and hasattr(self, 'post_processor'):
@@ -314,25 +351,164 @@ class Normalizer:
 
         return output
 
-    def split_text_into_sentences(self, text: str) -> List[str]:
+    def normalize_line(
+        self,
+        line: str,
+        verbose: bool = False,
+        punct_pre_process=False,
+        punct_post_process=True,
+        text_field: str = "text",
+        output_field: str = "normalized",
+        **kwargs,
+    ):
+        line = json.loads(line)
+
+        normalized_text = self.normalize(
+            text=line[text_field],
+            verbose=verbose,
+            punct_pre_process=punct_pre_process,
+            punct_post_process=punct_post_process,
+            **kwargs,
+        )
+        line[output_field] = normalized_text
+        return line
+
+    def normalize_manifest(
+        self,
+        manifest: str,
+        n_jobs: int,
+        punct_pre_process: bool,
+        punct_post_process: bool,
+        batch_size: int,
+        output_filename: Optional[str] = None,
+        text_field: str = "text",
+        **kwargs,
+    ):
+        """
+        Args:
+            args.audio_data: path to .json manifest file.
+        """
+
+        def _process_batch(
+            batch_idx: int,
+            batch: List[str],
+            dir_name: str,
+            punct_pre_process=False,
+            punct_post_process=True,
+            text_field: str = "text",
+            output_field: str = "normalized",
+            **kwargs,
+        ):
+            """
+            Normalizes batch of text sequences
+            Args:
+                batch: list of texts
+                batch_idx: batch index
+                dir_name: path to output directory to save results
+            """
+            normalized_lines = [
+                self.normalize_line(
+                    line=line,
+                    verbose=False,
+                    punct_post_process=punct_post_process,
+                    punct_pre_process=punct_pre_process,
+                    text_field=text_field,
+                    output_field=output_field,
+                    **kwargs,
+                )
+                for line in tqdm(batch)
+            ]
+
+            with open(f"{dir_name}/{batch_idx:06}.json", "w") as f_out:
+                for line in normalized_lines:
+                    f_out.write(json.dumps(line, ensure_ascii=False) + '\n')
+
+            print(f"Batch -- {batch_idx} -- is complete")
+
+        if output_filename is None:
+            output_filename = manifest.replace('.json', '_normalized.json')
+
+        with open(manifest, 'r') as f:
+            lines = f.readlines()
+
+        print(f'Normalizing {len(lines)} lines of {manifest}...')
+
+        # to save intermediate results to a file
+        batch = min(len(lines), batch_size)
+
+        tmp_dir = "/tmp/parts"
+        if os.path.exists(tmp_dir):
+            shutil.rmtree(tmp_dir)
+        os.makedirs(tmp_dir)
+
+        Parallel(n_jobs=n_jobs)(
+            delayed(_process_batch)(
+                idx,
+                lines[i : i + batch],
+                tmp_dir,
+                text_field=text_field,
+                punct_pre_process=punct_pre_process,
+                punct_post_process=punct_post_process,
+                **kwargs,
+            )
+            for idx, i in enumerate(range(0, len(lines), batch))
+        )
+
+        # [
+        #     _process_batch(
+        #         idx,
+        #         lines[i : i + batch],
+        #         tmp_dir,
+        #         text_field=text_field,
+        #         punct_pre_process=punct_pre_process,
+        #         punct_post_process=punct_post_process,
+        #         **kwargs,
+        #     )
+        #     for idx, i in enumerate(range(0, len(lines), batch))
+        # ]
+
+        # aggregate all intermediate files
+        with open(output_filename, "w") as f_out:
+            for batch_f in sorted(glob(f"{tmp_dir}/*.json")):
+                with open(batch_f, "r") as f_in:
+                    lines = f_in.read()
+                    f_out.write(lines)
+
+        print(f'Normalized version saved at {output_filename}')
+
+    def split_text_into_sentences(self, text: str, additional_split_symbols: str = "") -> List[str]:
         """
         Split text into sentences.
 
         Args:
             text: text
+            additional_split_symbols: Symbols to split sentences if eos sentence split resulted in a long sequence.
+                Use '|' as a separator between symbols, for example: ';|:'. Use '\s' to split by space.
 
         Returns list of sentences
         """
-        lower_case_unicode = ''
-        upper_case_unicode = ''
+        lower_case_unicode = ""
+        upper_case_unicode = ""
+
         if self.lang == "ru":
             lower_case_unicode = '\u0430-\u04FF'
             upper_case_unicode = '\u0410-\u042F'
 
+        # end of quoted speech - to be able to split sentences by full stop
+        text = re.sub(r"([\.\?\!])([\"\'])", r"\g<2>\g<1> ", text)
+
+        # remove extra space
+        text = re.sub(r" +", " ", text)
+
+        # remove space in the middle of the lower case abbreviation to avoid splitting into separate sentences
+        matches = re.findall(r"[a-z" + lower_case_unicode + "]\.\s[a-z" + lower_case_unicode + "]\.", text)
+        for match in matches:
+            text = text.replace(match, match.replace(". ", "."))
+
         # Read and split transcript by utterance (roughly, sentences)
         split_pattern = rf"(?<!\w\.\w.)(?<![A-Z{upper_case_unicode}][a-z{lower_case_unicode}]+\.)(?<![A-Z{upper_case_unicode}]\.)(?<=\.|\?|\!|\.”|\?”\!”)\s(?![0-9]+[a-z]*\.)"
-
         sentences = regex.split(split_pattern, text)
+        sentences = additional_split(sentences, additional_split_symbols)
         return sentences
 
     def _permute(self, d: OrderedDict) -> List[str]:
@@ -374,23 +550,23 @@ class Normalizer:
         Returns string serialization of list of dictionaries
         """
 
-        def _helper(prefix: str, tokens: List[dict], idx: int):
+        def _helper(prefix: str, token_list: List[dict], idx: int):
             """
             Generates permutations of string serializations of given dictionary
 
             Args:
-                tokens: list of dictionaries
+                token_list: list of dictionaries
                 prefix: prefix string
                 idx:    index of next dictionary
 
             Returns string serialization of dictionary
             """
-            if idx == len(tokens):
+            if idx == len(token_list):
                 yield prefix
                 return
-            token_options = self._permute(tokens[idx])
+            token_options = self._permute(token_list[idx])
             for token_option in token_options:
-                yield from _helper(prefix + token_option, tokens, idx + 1)
+                yield from _helper(prefix + token_option, token_list, idx + 1)
 
         return _helper("", tokens, 0)
 
@@ -406,12 +582,13 @@ class Normalizer:
         lattice = text @ self.tagger.fst
         return lattice
 
-    def select_tag(self, lattice: 'pynini.FstLike') -> str:
+    @staticmethod
+    def select_tag(lattice: 'pynini.FstLike') -> str:
         """
         Given tagged lattice return shortest path
 
         Args:
-            tagged_text: tagged text
+            lattice: pynini.FstLike tag lattice
 
         Returns: shortest path
         """
@@ -431,7 +608,8 @@ class Normalizer:
         lattice = tagged_text @ self.verbalizer.fst
         return lattice
 
-    def select_verbalizer(self, lattice: 'pynini.FstLike') -> str:
+    @staticmethod
+    def select_verbalizer(lattice: 'pynini.FstLike') -> str:
         """
         Given verbalized lattice return shortest path
 
@@ -447,7 +625,7 @@ class Normalizer:
 
     def post_process(self, normalized_text: 'pynini.FstLike') -> str:
         """
-        Runs post processing graph on normalized text
+        Runs post-processing graph on normalized text
 
         Args:
             normalized_text: normalized text
@@ -468,7 +646,18 @@ def parse_args():
     parser = ArgumentParser()
     input = parser.add_mutually_exclusive_group()
     input.add_argument("--text", dest="input_string", help="input string", type=str)
-    input.add_argument("--input_file", dest="input_file", help="input file path", type=str)
+    input.add_argument(
+        "--input_file",
+        dest="input_file",
+        help="input file path. The input file could be either a .txt file containing once example for normalziation per line or or .json manifest file. Field to normalized in .json manifest is specifie with `--text_field` arg.",
+        type=str,
+    )
+    parser.add_argument(
+        '--manifest_text_field',
+        help="A field in .json manifest to normalize (applicable only when input_file is a .json manifest)",
+        type=str,
+        default="text",
+    )
     parser.add_argument('--output_file', dest="output_file", help="output file path", type=str)
     parser.add_argument("--language", help="language", choices=["en", "de", "es", "zh"], default="en", type=str)
     parser.add_argument(
@@ -491,12 +680,12 @@ def parse_args():
         default=None,
         type=str,
     )
+    parser.add_argument("--n_jobs", default=-2, type=int, help="The maximum number of concurrently running jobs")
+    parser.add_argument("--batch_size", default=200, type=int, help="Number of examples for each process")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
-    start_time = perf_counter()
-
     args = parse_args()
     whitelist = os.path.abspath(args.whitelist) if args.whitelist else None
 
@@ -510,6 +699,7 @@ if __name__ == "__main__":
         whitelist=whitelist,
         lang=args.language,
     )
+    start_time = perf_counter()
     if args.input_string:
         print(
             normalizer.normalize(
@@ -520,20 +710,32 @@ if __name__ == "__main__":
             )
         )
     elif args.input_file:
-        print("Loading data: " + args.input_file)
-        data = load_file(args.input_file)
+        if args.input_file.endswith(".json"):
+            normalizer.normalize_manifest(
+                args.input_file,
+                n_jobs=args.n_jobs,
+                punct_pre_process=args.punct_pre_process,
+                punct_post_process=args.punct_post_process,
+                batch_size=args.batch_size,
+                text_field=args.manifest_text_field,
+                output_filename=args.output_file,
+            )
 
-        print("- Data: " + str(len(data)) + " sentences")
-        normalizer_prediction = normalizer.normalize_list(
-            data,
-            verbose=args.verbose,
-            punct_pre_process=args.punct_pre_process,
-            punct_post_process=args.punct_post_process,
-        )
-        if args.output_file:
-            write_file(args.output_file, normalizer_prediction)
-            print(f"- Normalized. Writing out to {args.output_file}")
         else:
-            print(normalizer_prediction)
+            print("Loading data: " + args.input_file)
+            data = load_file(args.input_file)
+
+            print("- Data: " + str(len(data)) + " sentences")
+            normalizer_prediction = normalizer.normalize_list(
+                data,
+                verbose=args.verbose,
+                punct_pre_process=args.punct_pre_process,
+                punct_post_process=args.punct_post_process,
+            )
+            if args.output_file:
+                write_file(args.output_file, normalizer_prediction)
+                print(f"- Normalized. Writing out to {args.output_file}")
+            else:
+                print(normalizer_prediction)
 
     print(f"Execution time: {perf_counter() - start_time:.02f} sec")

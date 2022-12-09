@@ -35,7 +35,8 @@ from nemo_text_processing.text_normalization.en.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.en.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.en.taggers.range import RangeFst as RangeFst
-from nemo_text_processing.text_normalization.en.taggers.roman import RomanFst
+
+# from nemo_text_processing.text_normalization.en.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.en.taggers.serial import SerialFst
 from nemo_text_processing.text_normalization.en.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.en.taggers.time import TimeFst
@@ -176,8 +177,8 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(serial_graph, 1.1001)  # should be higher than the rest of the classes
             )
 
-            roman_graph = RomanFst(deterministic=deterministic).fst
-            classify |= pynutil.add_weight(roman_graph, 1.1)
+            # roman_graph = RomanFst(deterministic=deterministic).fst
+            # classify |= pynutil.add_weight(roman_graph, 1.1)
 
             if not deterministic:
                 abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst

@@ -78,8 +78,19 @@ class RangeFst(GraphFst):
 
             # MULTIPLY
             for x in [" x ", "x"]:
-                range_graph |= cardinal + pynini.closure(
-                    pynini.cross(x, pynini.union(" by ", " times ")) + cardinal, 1
+                range_graph |= cardinal + pynini.cross(x, pynini.union(" by ", " times ")) + cardinal
+
+            # 40x -> "40 times" ("40 x" cases is covered in serial)
+            for x in [" x", "x"]:
+                range_graph |= cardinal + pynini.cross(x, " times")
+
+                # 5x to 7x-> five to seven x/times
+                range_graph |= (
+                    cardinal
+                    + pynutil.delete(x)
+                    + pynini.union(" to ", "-", " - ")
+                    + cardinal
+                    + pynini.cross(x, pynini.union(" x", " times"))
                 )
 
             for x in ["*", " * "]:
@@ -94,6 +105,15 @@ class RangeFst(GraphFst):
 
             for x in ["/", " / "]:
                 range_graph |= cardinal + pynini.closure(pynini.cross(x, " divided by ") + cardinal, 1)
+
+            # 10% to 20% -> ten to twenty percent
+            range_graph |= (
+                cardinal
+                + pynini.closure(pynini.cross("%", " percent"), 0, 1)
+                + pynini.union(" to ", "-", " - ")
+                + cardinal
+                + pynini.cross("%", " percent")
+            )
 
         self.graph |= range_graph
 

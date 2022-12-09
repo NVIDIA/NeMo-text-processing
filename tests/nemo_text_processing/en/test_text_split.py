@@ -38,13 +38,16 @@ class TestTextSentenceSplit:
         reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
     )
     def test_text_sentence_split(self):
-        text = "This happened in 1918 when Mrs. and Mr. Smith paid $111.12 in U.S.A. at 9 a.m. on Dec. 1. 2020. And Jan. 17th. This is an example. He paid $123 for this desk. 123rd, St. Patrick."
+        text = "This happened in 1918 when Mrs. and Mr. Smith paid $111.12 in U.S.A. at 9 a.m. on Dec. 1. 2020. And Jan. 17th. This is an example. He paid $123 for this desk. 123rd, St. Patrick. This is a. b. and there is c.b."
         gt_sentences = [
             'This happened in 1918 when Mrs. and Mr. Smith paid $111.12 in U.S.A. at 9 a.m. on Dec. 1. 2020.',
             'And Jan. 17th.',
             'This is an example.',
             'He paid $123 for this desk.',
-            '123rd, St. Patrick.',
+            '123rd, St. Patrick. This is a.b. and there is c.b.',
         ]
         sentences = self.normalizer_en.split_text_into_sentences(text)
+
+        for s, gt in zip(sentences, gt_sentences):
+            print(s, gt)
         assert gt_sentences == sentences
