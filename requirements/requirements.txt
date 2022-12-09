@@ -1,3 +1,7 @@
 inflect
 regex
 joblib
+setuptools==59.5.0
+tqdm>=4.41.0
+wget
+wrapt
