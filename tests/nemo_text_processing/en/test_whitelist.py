@@ -14,18 +14,12 @@
 
 
 import pytest
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 from parameterized import parameterized
 
 from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
-
-try:
-    from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
-    from nemo_text_processing.text_normalization.normalize import Normalizer
-    from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
-
-    PYNINI_AVAILABLE = True
-except (ImportError, ModuleNotFoundError):
-    PYNINI_AVAILABLE = False
 
 
 class TestWhitelist:
@@ -34,10 +28,6 @@ class TestWhitelist:
     )
 
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_whitelist.txt'))
-    @pytest.mark.skipif(
-        not PYNINI_AVAILABLE,
-        reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
-    )
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
@@ -49,15 +39,11 @@ class TestWhitelist:
     )
     normalizer_with_audio_en = (
         NormalizerWithAudio(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
-        if RUN_AUDIO_BASED_TESTS and PYNINI_AVAILABLE
+        if RUN_AUDIO_BASED_TESTS
         else None
     )
 
     @parameterized.expand(parse_test_case_file('en/data_text_normalization/test_cases_whitelist.txt'))
-    @pytest.mark.skipif(
-        not PYNINI_AVAILABLE,
-        reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
-    )
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
@@ -74,10 +60,6 @@ class TestWhitelist:
     cases_uppercased = {"Dr. Evil": "doctor Evil", "dr. Evil": "dr. Evil", "no. 4": "no. four"}
 
     @parameterized.expand(cases_uppercased.items())
-    @pytest.mark.skipif(
-        not PYNINI_AVAILABLE,
-        reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
-    )
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm_cased(self, test_input, expected):

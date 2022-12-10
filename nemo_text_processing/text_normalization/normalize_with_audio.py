@@ -23,12 +23,6 @@ from typing import List, Optional, Tuple
 import Levenshtein
 import pynini
 from joblib import Parallel, delayed
-from nemo_text_processing.fst_alignment.alignment import (
-    create_symbol_table,
-    get_string_alignment,
-    get_word_segments,
-    indexed_map_to_output,
-)
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.utils_audio_based import SEMIOTIC_TAG, get_alignment, get_semiotic_spans
@@ -131,7 +125,6 @@ class NormalizerWithAudio(Normalizer):
         fst_ver = Far(fst_ver, mode='r')['verbalize']
         fst_punct_post = Far(fst_punct_post, mode='r')['post_process_graph']
         self.merged_tn_deterministic_graph = (fst_tc @ fst_ver) @ fst_punct_post
-        self.symbol_table = create_symbol_table()
         self.lm = lm
 
     def _process_semiotic_span(
@@ -393,8 +386,8 @@ class NormalizerWithAudio(Normalizer):
 
         if punct_post_process:
             # do post-processing based on Moses detokenizer
-            if self.processor:
-                normalized_texts = [self.processor.detokenize([t]) for t in normalized_texts]
+            if self.moses_detokenizer:
+                normalized_texts = [self.moses_detokenizer.detokenize([t]) for t in normalized_texts]
                 normalized_texts = [post_process_punct(input=text, normalized_text=t) for t in normalized_texts]
 
         if self.lm:

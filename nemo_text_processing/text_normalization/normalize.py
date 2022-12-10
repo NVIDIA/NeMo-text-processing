@@ -36,14 +36,8 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
 from pynini.lib.rewrite import top_rewrite
+from sacremoses import MosesDetokenizer
 from tqdm import tqdm
-
-try:
-    from nemo.collections.common.tokenizers.moses_tokenizers import MosesProcessor
-
-    NLP_AVAILABLE = True
-except (ModuleNotFoundError, ImportError) as e:
-    NLP_AVAILABLE = False
 
 SPACE_DUP = re.compile(' {2,}')
 
@@ -153,11 +147,11 @@ class Normalizer:
         self.parser = TokenParser()
         self.lang = lang
 
-        if NLP_AVAILABLE:
-            self.processor = MosesProcessor(lang_id=lang)
-        else:
-            self.processor = None
-            print("NeMo NLP is not available. Moses de-tokenization will be skipped.")
+        try:
+            self.moses_detokenizer = MosesDetokenizer(lang=lang)
+        except:
+            self.moses_detokenizer = None
+            print("Moses detokenizer is not available.")
 
     def normalize_list(
         self,
@@ -343,8 +337,8 @@ class Normalizer:
 
         if punct_post_process:
             # do post-processing based on Moses detokenizer
-            if self.processor:
-                output = self.processor.moses_detokenizer.detokenize([output], unescape=False)
+            if self.moses_detokenizer:
+                output = self.moses_detokenizer.detokenize([output], unescape=False)
                 output = post_process_punct(input=original_text, normalized_text=output)
             else:
                 print("NEMO_NLP collection is not available: skipping punctuation post_processing")

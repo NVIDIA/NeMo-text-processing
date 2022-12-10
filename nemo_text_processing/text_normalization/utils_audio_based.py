@@ -1,8 +1,6 @@
+import logging
+
 from cdifflib import CSequenceMatcher
-
-from nemo.utils import logging
-
-logging.setLevel("INFO")
 
 MATCH = "match"
 NONMATCH = "non-match"
