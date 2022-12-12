@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 import pytest
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 from parameterized import parameterized
 
 from ..utils import CACHE_DIR, get_test_cases_multiple
-from nemo.utils import logging
 
 
 class TestNormalizeWithAudio:

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 
 import pynini
@@ -56,8 +57,6 @@ from nemo_text_processing.text_normalization.en.verbalizers.telephone import Tel
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTime
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWord
 from pynini.lib import pynutil
-
-from nemo.utils import logging
 
 
 class ClassifyFst(GraphFst):
