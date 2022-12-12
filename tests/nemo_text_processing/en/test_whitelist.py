@@ -23,9 +23,7 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 
 class TestWhitelist:
-    inverse_normalizer_en = (
-        (InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)) if PYNINI_AVAILABLE else None
-    )
+    inverse_normalizer_en = InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_whitelist.txt'))
     @pytest.mark.run_only_on('CPU')
@@ -34,9 +32,7 @@ class TestWhitelist:
         pred = self.inverse_normalizer_en.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
-    normalizer_en = (
-        Normalizer(input_case='cased', cache_dir=CACHE_DIR, overwrite_cache=False) if PYNINI_AVAILABLE else None
-    )
+    normalizer_en = Normalizer(input_case='cased', cache_dir=CACHE_DIR, overwrite_cache=False)
     normalizer_with_audio_en = (
         NormalizerWithAudio(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
         if RUN_AUDIO_BASED_TESTS
@@ -56,7 +52,7 @@ class TestWhitelist:
             )
             assert expected in pred_non_deterministic
 
-    normalizer_uppercased = Normalizer(input_case='cased', lang='en') if PYNINI_AVAILABLE else None
+    normalizer_uppercased = Normalizer(input_case='cased', lang='en')
     cases_uppercased = {"Dr. Evil": "doctor Evil", "dr. Evil": "dr. Evil", "no. 4": "no. four"}
 
     @parameterized.expand(cases_uppercased.items())

@@ -29,7 +29,10 @@ class TestNormalizeWithAudio:
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         if self.normalizer_with_audio_en:
-            pred = self.normalizer_with_audio_en.normalize(test_input, n_tagged=30, punct_post_process=True)
+            try:
+                pred = self.normalizer_with_audio_en.normalize(test_input, n_tagged=30, punct_post_process=True)
+            except:
+                assert test_input == "!!!", f"failing for |{test_input}|"
             assert len(set(pred).intersection(set(expected))) == len(
                 expected
             ), f'missing: {set(expected).difference(set(pred))}'

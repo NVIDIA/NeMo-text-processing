@@ -22,11 +22,11 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 
 class TestFraction:
-    normalizer_en = (
-        Normalizer(input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False) if PYNINI_AVAILABLE else None
-    )
-    normalizer_with_audio_en = NormalizerWithAudio(
-        input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False
+    normalizer_en = Normalizer(input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False)
+    normalizer_with_audio_en = (
+        NormalizerWithAudio(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
+        if RUN_AUDIO_BASED_TESTS
+        else None
     )
 
     @parameterized.expand(parse_test_case_file('en/data_text_normalization/test_cases_fraction.txt'))

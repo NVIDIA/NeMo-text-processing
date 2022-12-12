@@ -151,136 +151,6 @@ class NormalizerWithAudio(Normalizer):
         )
         return best_option
 
-    # def normalize_split_text_approach(
-    #     self,
-    #     text: str,
-    #     n_tagged: int,
-    #     punct_post_process: bool = True,
-    #     verbose: bool = False,
-    #     pred_text: str = None,
-    #     **kwargs,
-    # ) -> str:
-    #     """
-    #     Main function. Normalizes tokens from written to spoken form
-    #         e.g. 12 kg -> twelve kilograms
-    #
-    #     Args:
-    #         text: string that may include semiotic classes
-    #         n_tagged: number of tagged options to consider, -1 - to get all possible tagged options
-    #         punct_post_process: whether to normalize punctuation
-    #         verbose: whether to print intermediate meta information
-    #
-    #     Returns:
-    #         normalized text options (usually there are multiple ways of normalizing a given semiotic class)
-    #     """
-    #
-    #     text_list = [text]
-    #     if len(text.split()) > 500:
-    #         print(
-    #             "Your input is too long. Please split up the input into sentences, "
-    #             "or strings with fewer than 500 words"
-    #         )
-    #         print("split by sentences")
-    #         text_list = self.split_text_into_sentences(text)
-    #
-    #     semiotic_spans = []
-    #     semiotic_spans_det_norm = []
-    #     masked_idx_list = []
-    #
-    #     for i in range(len(text_list)):
-    #         t = text_list[i]
-    #         cur_det_norm = super().normalize(
-    #             text=t, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
-    #         )
-    #         if t != cur_det_norm:
-    #             _, cur_sem_span, text_list[i], cur_masked_idx, cur_det_norm_ = get_semiotic_spans(t, cur_det_norm)
-    #             masked_idx_list.append(cur_masked_idx)
-    #             semiotic_spans_det_norm.append(cur_det_norm_)
-    #             semiotic_spans.append(cur_sem_span)
-    #         else:
-    #             # TODO refactor to avoid this
-    #             text_list[i] = t.split()
-    #             masked_idx_list.append([])
-    #             semiotic_spans.append([])
-    #             semiotic_spans_det_norm.append([])
-    #     try:
-    #         # no semiotic spans
-    #         if sum([len(x) for x in semiotic_spans]) == 0:
-    #             normalized_text = ""
-    #             for sent in text_list:
-    #                 normalized_text += " ".join(sent)
-    #             return normalized_text
-    #     except Exception as e:
-    #         print(sent)
-    #         print(normalized_text)
-    #         print(f"ERROR: {e}")
-    #         import pdb
-    #
-    #         pdb.set_trace()
-    #         print()
-    #     try:
-    #         # replace all but the target with det_norm option
-    #         for sent_idx, cur_masked_idx_list in enumerate(masked_idx_list):
-    #             for i, semiotic_idx in enumerate(cur_masked_idx_list):
-    #                 text_list[sent_idx][semiotic_idx] = semiotic_spans_det_norm[sent_idx][i]
-    #     except:
-    #         import pdb
-    #
-    #         pdb.set_trace()
-    #         print()
-    #
-    #     # create texts to compare against pred_text, all but the current semiotic span use default normalization option # TODO - use the best for processed spans?
-    #     texts_for_cer = []
-    #     audio_based_options = []
-    #     for sent_idx, cur_masked_idx_list in enumerate(masked_idx_list):
-    #         texts_for_cer_sent = []
-    #         audio_based_options_sent = []
-    #         for i in range(len(cur_masked_idx_list)):
-    #             try:
-    #                 options = self.normalize_non_deterministic(
-    #                     text=semiotic_spans[sent_idx][i],
-    #                     n_tagged=n_tagged,
-    #                     punct_post_process=punct_post_process,
-    #                     verbose=verbose,
-    #                 )
-    #             except:
-    #                 options = semiotic_spans_det_norm[sent_idx][i]
-    #
-    #             # replace default normalization options for the current span with each possible audio-based option
-    #             cur_texts_for_cer = []
-    #             cur_audio_based_options = []
-    #             for option in options:
-    #                 cur_audio_based_options.append(option)
-    #                 semiotic_idx = cur_masked_idx_list[i]
-    #                 cur_text = text_list[sent_idx][:semiotic_idx] + [option] + text_list[sent_idx][semiotic_idx + 1 :]
-    #                 cur_texts_for_cer.append(" ".join(cur_text))
-    #             texts_for_cer_sent.append(cur_texts_for_cer)
-    #             audio_based_options_sent.append(cur_audio_based_options)
-    #         texts_for_cer.append(texts_for_cer_sent)
-    #         audio_based_options.append(audio_based_options_sent)
-    #
-    #     selected_options = []
-    #     for sent_idx, cur_sent in enumerate(texts_for_cer):
-    #         cur_sentences_options = []
-    #         for idx, norm_options in enumerate(cur_sent):
-    #             best_option, cer, best_idx = self.select_best_match(
-    #                 normalized_texts=norm_options,
-    #                 input_text=" ".join(text_list[sent_idx]),
-    #                 pred_text=pred_text,
-    #                 verbose=verbose,
-    #                 cer_threshold=-1,
-    #             )
-    #             cur_sentences_options.append(audio_based_options[sent_idx][idx][best_idx])
-    #         selected_options.append(cur_sentences_options)
-    #
-    #     normalized_text = ""
-    #     for sent_idx in range(len(text_list)):
-    #         for i, semiotic_idx in enumerate(masked_idx_list[sent_idx]):
-    #             text_list[sent_idx][semiotic_idx] = selected_options[sent_idx][i]
-    #
-    #         normalized_text += " " + " ".join(text_list[sent_idx])
-    #     return normalized_text.replace("  ", " ")
-
     def normalize(
         self,
         text: str,
@@ -306,6 +176,11 @@ class NormalizerWithAudio(Normalizer):
         #################################
         # LONG AUDIO WITH DIFF APPROACH
         #################################
+
+        if pred_text is None:
+            return self.normalize_non_deterministic(
+                text=text, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
+            )
 
         det_norm = super().normalize(
             text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
@@ -345,13 +220,16 @@ class NormalizerWithAudio(Normalizer):
     def normalize_non_deterministic(
         self, text: str, n_tagged: int, punct_post_process: bool = True, verbose: bool = False
     ):
+        original_text = text
+
+        text = pre_process(text)  # to handle []
         text = text.strip()
         if not text:
             if verbose:
                 print(text)
             return text
+
         text = pynini.escape(text)
-        text = pre_process(text)
         if self.lm:
             if self.lang not in ["en"]:
                 raise ValueError(f"{self.lang} is not supported in LM mode")
@@ -388,7 +266,9 @@ class NormalizerWithAudio(Normalizer):
             # do post-processing based on Moses detokenizer
             if self.moses_detokenizer:
                 normalized_texts = [self.moses_detokenizer.detokenize([t]) for t in normalized_texts]
-                normalized_texts = [post_process_punct(input=text, normalized_text=t) for t in normalized_texts]
+                normalized_texts = [
+                    post_process_punct(input=original_text, normalized_text=t) for t in normalized_texts
+                ]
 
         if self.lm:
             remove_dup = sorted(list(set(zip(normalized_texts, weights))), key=lambda x: x[1])
@@ -640,7 +520,7 @@ if __name__ == "__main__":
             with open(args.text, 'r') as f:
                 args.text = f.read().strip()
 
-        options = normalizer.normalize_non_deterministic(
+        options = normalizer.normalize(
             text=args.text,
             n_tagged=args.n_tagged,
             punct_post_process=not args.no_punct_post_process,
