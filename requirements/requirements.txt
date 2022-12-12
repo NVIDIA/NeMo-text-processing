@@ -1,9 +1,9 @@
+cdifflib
 inflect
 joblib
 regex
+sacremoses>=0.0.43
 setuptools==59.5.0
 tqdm>=4.41.0
 wget
 wrapt
-sacremoses>=0.0.43
-cdifflib
