@@ -82,6 +82,8 @@ class Normalizer:
         whitelist: path to a file with whitelist replacements
         post_process: WFST-based post processing, e.g. to remove extra spaces added during TN.
             Note: punct_post_process flag in normalize() supports all languages.
+        max_number_of_permutations_per_split: a maximum number
+                of permutations which can be generated from input sequence of tokens.
     """
 
     def __init__(
@@ -94,6 +96,7 @@ class Normalizer:
         whitelist: str = None,
         lm: bool = False,
         post_process: bool = True,
+        max_number_of_permutations_per_split: int = 729,
     ):
         assert input_case in ["lower_cased", "cased"]
 
@@ -143,7 +146,7 @@ class Normalizer:
         self.verbalizer = VerbalizeFinalFst(
             deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache
         )
-
+        self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
         self.parser = TokenParser()
         self.lang = lang
 
@@ -224,9 +227,7 @@ class Normalizer:
         num_perms *= factorial(len(token_group))
         return num_perms
 
-    def _split_tokens_to_reduce_number_of_permutations(
-        self, tokens: List[dict], max_number_of_permutations_per_split: int = 729
-    ) -> List[List[dict]]:
+    def _split_tokens_to_reduce_number_of_permutations(self, tokens: List[dict]) -> List[List[dict]]:
         """
         Splits a sequence of tokens in a smaller sequences of tokens in a way that maximum number of composite
         tokens permutations does not exceed ``max_number_of_permutations_per_split``.
@@ -234,47 +235,46 @@ class Normalizer:
         For example,
 
         .. code-block:: python
-            tokens = [
+
+            # setup normalizer with self.max_number_of_permutations_per_split=6
+             tokens = [
                 {"tokens": {"date": {"year": "twenty eighteen", "month": "december", "day": "thirty one"}}},
                 {"tokens": {"date": {"year": "twenty eighteen", "month": "january", "day": "eight"}}},
             ]
-            split = normalizer._split_tokens_to_reduce_number_of_permutations(
-                tokens, max_number_of_permutations_per_split=6
-            )
+            split = normalizer._split_tokens_to_reduce_number_of_permutations(tokens)
             assert split == [
                 [{"tokens": {"date": {"year": "twenty eighteen", "month": "december", "day": "thirty one"}}}],
                 [{"tokens": {"date": {"year": "twenty eighteen", "month": "january", "day": "eight"}}}],
             ]
 
         Date tokens contain 3 items each which gives 6 permutations for every date. Since there are 2 dates, total
-        number of permutations would be ``6 * 6 == 36``. Parameter ``max_number_of_permutations_per_split`` equals 6,
+        number of permutations would be ``6 * 6 == 36``. Parameter ``self.max_number_of_permutations_per_split`` equals 6,
         so input sequence of tokens is split into 2 smaller sequences.
 
         Args:
-            tokens (:obj:`List[dict]`): a list of dictionaries, possibly nested.
-            max_number_of_permutations_per_split (:obj:`int`, `optional`, defaults to :obj:`243`): a maximum number
-                of permutations which can be generated from input sequence of tokens.
+            tokens: a list of dictionaries, possibly nested.
 
         Returns:
-            :obj:`List[List[dict]]`: a list of smaller sequences of tokens resulting from ``tokens`` split.
+            a list of smaller sequences of tokens resulting from ``tokens`` split.
         """
+        print("\n\nself.max_number_of_permutations_per_split >>>> ", self.max_number_of_permutations_per_split)
         splits = []
         prev_end_of_split = 0
         current_number_of_permutations = 1
         for i, token_group in enumerate(tokens):
             n = self._estimate_number_of_permutations_in_nested_dict(token_group)
-            if n * current_number_of_permutations > max_number_of_permutations_per_split:
+            if n * current_number_of_permutations > self.max_number_of_permutations_per_split:
                 splits.append(tokens[prev_end_of_split:i])
                 prev_end_of_split = i
                 current_number_of_permutations = 1
-            if n > max_number_of_permutations_per_split:
+            if n > self.max_number_of_permutations_per_split:
                 raise ValueError(
                     f"Could not split token list with respect to condition that every split can generate number of "
                     f"permutations less or equal to "
-                    f"`max_number_of_permutations_per_split={max_number_of_permutations_per_split}`. "
+                    f"`self.max_number_of_permutations_per_split={self.max_number_of_permutations_per_split}`. "
                     f"There is an unsplittable token group that generates more than "
-                    f"{max_number_of_permutations_per_split} permutations. Try to increase "
-                    f"`max_number_of_permutations_per_split` parameter."
+                    f"{self.max_number_of_permutations_per_split} permutations. Try to increase "
+                    f"`--max_number_of_permutations_per_split` parameter."
                 )
             current_number_of_permutations *= n
         splits.append(tokens[prev_end_of_split:])
@@ -425,7 +425,7 @@ class Normalizer:
         with open(manifest, 'r') as f:
             lines = f.readlines()
 
-        print(f'Normalizing {len(lines)} lines of {manifest}...')
+        print(f'Normalizing {len(lines)} line(s) of {manifest}...')
 
         # to save intermediate results to a file
         batch = min(len(lines), batch_size)
@@ -676,6 +676,12 @@ def parse_args():
     )
     parser.add_argument("--n_jobs", default=-2, type=int, help="The maximum number of concurrently running jobs")
     parser.add_argument("--batch_size", default=200, type=int, help="Number of examples for each process")
+    parser.add_argument(
+        "--max_number_of_permutations_per_split",
+        default=600,
+        type=int,
+        help="a maximum number of permutations which can be generated from input sequence of tokens.",
+    )
     return parser.parse_args()
 
 
@@ -692,6 +698,7 @@ if __name__ == "__main__":
         overwrite_cache=args.overwrite_cache,
         whitelist=whitelist,
         lang=args.language,
+        max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
     )
     start_time = perf_counter()
     if args.input_string:

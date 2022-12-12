@@ -20,6 +20,7 @@ from glob import glob
 from time import perf_counter
 from typing import List, Optional, Tuple
 
+import jiwer
 import Levenshtein
 import pynini
 from joblib import Parallel, delayed
@@ -29,13 +30,6 @@ from nemo_text_processing.text_normalization.utils_audio_based import SEMIOTIC_T
 from pynini import Far
 from pynini.lib import rewrite
 from tqdm import tqdm
-
-try:
-    # from nemo.collections.asr.metrics.wer import word_error_rate
-
-    ASR_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    ASR_AVAILABLE = False
 
 
 """
@@ -79,6 +73,8 @@ class NormalizerWithAudio(Normalizer):
         whitelist: path to a file with whitelist replacements
         post_process: WFST-based post processing, e.g. to remove extra spaces added during TN.
             Note: punct_post_process flag in normalize() supports all languages.
+        max_number_of_permutations_per_split: a maximum number
+                of permutations which can be generated from input sequence of tokens.
     """
 
     def __init__(
@@ -90,6 +86,7 @@ class NormalizerWithAudio(Normalizer):
         whitelist: str = None,
         lm: bool = False,
         post_process: bool = True,
+        max_number_of_permutations_per_split: int = 729,
     ):
 
         # initialize non-deterministic normalizer
@@ -116,6 +113,7 @@ class NormalizerWithAudio(Normalizer):
             whitelist=whitelist,
             lm=lm,
             post_process=post_process,
+            max_number_of_permutations_per_split=max_number_of_permutations_per_split,
         )
 
         fst_tc = f"{cache_dir}/en_tn_True_deterministic_cased__tokenize.far"
@@ -182,9 +180,12 @@ class NormalizerWithAudio(Normalizer):
                 text=text, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
             )
 
-        det_norm = super().normalize(
-            text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
-        )
+        try:
+            det_norm = super().normalize(
+                text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
+            )
+        except RecursionError:
+            raise RecursionError(f"RecursionError. Try decreasing --max_number_of_permutations_per_split")
         semiotic_spans, pred_text_spans, norm_spans, text_with_span_tags_list, masked_idx_list = get_alignment(
             text, det_norm, pred_text, verbose=False
         )
@@ -496,14 +497,17 @@ def parse_args():
         help="if CER for pred_text is above the cer_threshold, no normalization will be performed",
     )
     parser.add_argument("--batch_size", default=200, type=int, help="Number of examples for each process")
+    parser.add_argument(
+        "--max_number_of_permutations_per_split",
+        default=729,
+        type=int,
+        help="a maximum number of permutations which can be generated from input sequence of tokens.",
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-
-    # if not ASR_AVAILABLE and args.manifest:
-    #     raise ValueError("NeMo ASR collection is not installed.")
 
     args.whitelist = os.path.abspath(args.whitelist) if args.whitelist else None
     if args.text is not None:
@@ -514,6 +518,7 @@ if __name__ == "__main__":
             overwrite_cache=args.overwrite_cache,
             whitelist=args.whitelist,
             lm=args.lm,
+            max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
         )
         start = perf_counter()
         if os.path.exists(args.text):
@@ -535,6 +540,7 @@ if __name__ == "__main__":
             cache_dir=args.cache_dir,
             overwrite_cache=args.overwrite_cache,
             whitelist=args.whitelist,
+            max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
         )
         start = perf_counter()
         normalizer.normalize_manifest(
