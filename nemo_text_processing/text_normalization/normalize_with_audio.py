@@ -14,14 +14,11 @@
 
 import json
 import os
-import shutil
 from argparse import ArgumentParser
-from glob import glob
 from time import perf_counter
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import jiwer
-import Levenshtein
 import pynini
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
@@ -396,7 +393,7 @@ class NormalizerWithAudio(Normalizer):
 
         normalized_texts_cer = calculate_cer(normalized_texts, pred_text, remove_punct)
         normalized_texts_cer = sorted(normalized_texts_cer, key=lambda x: x[1])
-        normalized_text, cer, idx = normalized_texts_cer[-1]
+        normalized_text, cer, idx = normalized_texts_cer[0]
 
         if cer_threshold > 0 and cer > cer_threshold:
             return input_text, cer
@@ -426,8 +423,7 @@ def calculate_cer(normalized_texts: List[str], pred_text: str, remove_punct=Fals
             for punct in "!?:;,.-()*+-/<=>@^_":
                 text_clean = text_clean.replace(punct, " ").replace("  ", " ")
 
-        cer = Levenshtein.ratio(text_clean, pred_text)
-        # cer = round(word_error_rate([pred_text], [text_clean], use_cer=True) * 100, 2)
+        cer = jiwer.cer(pred_text, text_clean)
         normalized_options.append((text, cer, i))
     return normalized_options
 

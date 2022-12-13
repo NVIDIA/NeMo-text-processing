@@ -233,9 +233,6 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
             print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
         print("+" * 50)
 
-    import pdb
-
-    pdb.set_trace()
     return semiotic_spans, pred_texts, norm_spans, raw_text_masked_list, raw_text_mask_idx
 
 

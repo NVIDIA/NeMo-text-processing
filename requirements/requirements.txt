@@ -9,4 +9,4 @@ wget
 wrapt
 sacremoses>=0.0.43
 cdifflib
-jiwer
+jiwer>2.3.0

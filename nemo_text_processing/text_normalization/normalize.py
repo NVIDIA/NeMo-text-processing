@@ -438,21 +438,8 @@ class Normalizer:
             shutil.rmtree(tmp_dir)
         os.makedirs(tmp_dir)
 
-        # Parallel(n_jobs=n_jobs)(
-        #     delayed(_process_batch)(
-        #         idx,
-        #         lines[i : i + batch],
-        #         tmp_dir,
-        #         text_field=text_field,
-        #         punct_pre_process=punct_pre_process,
-        #         punct_post_process=punct_post_process,
-        #         **kwargs,
-        #     )
-        #     for idx, i in enumerate(range(0, len(lines), batch))
-        # )
-
-        [
-            _process_batch(
+        Parallel(n_jobs=n_jobs)(
+            delayed(_process_batch)(
                 idx,
                 lines[i : i + batch],
                 tmp_dir,
@@ -462,7 +449,7 @@ class Normalizer:
                 **kwargs,
             )
             for idx, i in enumerate(range(0, len(lines), batch))
-        ]
+        )
 
         # aggregate all intermediate files
         with open(output_filename, "w") as f_out:
