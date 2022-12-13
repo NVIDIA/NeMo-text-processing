@@ -23,13 +23,11 @@ from typing import List, Optional, Tuple
 import jiwer
 import Levenshtein
 import pynini
-from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
-from nemo_text_processing.text_normalization.utils_audio_based import SEMIOTIC_TAG, get_alignment, get_semiotic_spans
+from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
 from pynini import Far
 from pynini.lib import rewrite
-from tqdm import tqdm
 
 
 """

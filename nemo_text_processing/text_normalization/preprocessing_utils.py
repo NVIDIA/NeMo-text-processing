@@ -1,7 +1,4 @@
-import re
 from typing import List
-
-import regex
 
 
 def _split(sentences: List[str], delimiter: str, max_len: int, min_len: int):

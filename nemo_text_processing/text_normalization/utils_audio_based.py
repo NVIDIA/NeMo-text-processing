@@ -1,4 +1,5 @@
 import logging
+from typing import Dict, List
 
 from cdifflib import CSequenceMatcher
 
@@ -7,14 +8,19 @@ NONMATCH = "non-match"
 SEMIOTIC_TAG = "[SEMIOTIC_SPAN]"
 
 
-def _get_alignment(a, b):
+def _get_alignment(a: str, b: str) -> Dict:
     """
 
-	TODO: add
+    Construscts alignment between a and b
 
-	Returns:
-		list of Tuple(pred start and end, gt start and end) subsections
-	"""
+    Returns:
+        a dictionary, where keys are a's word index and values is a Tuple that contains span from b, and whether it
+            matches a or not, e.g.:
+                >>> a = "a b c"
+                >>> b = "a b d f"
+                >>> print(_get_alignment(a, b))
+                {0: (0, 1, 'match'), 1: (1, 2, 'match'), 2: (2, 4, 'non-match')}
+    """
     a = a.lower().split()
     b = b.lower().split()
 
@@ -40,142 +46,38 @@ def _get_alignment(a, b):
     return diffs
 
 
-def get_semiotic_spans(a, b):
-    """returns list of different substrings between and b
+def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, norm: str, pred_text: str, verbose=False):
+    """
+    Adjust alignement boundaries by taking norm--raw texts and norm--pred_text alignements, and creating raw-pred_text
+        alignment.
 
-	Returns:
-		list of Tuple(pred start and end, gt start and end) subsections
-	"""
+    norm_raw_diffs: output of _get_alignment(norm, raw)
+    norm_pred_diffs: output of  _get_alignment(norm, pred_text)
+    raw: input text
+    norm: output of default normalization (deterministic)
+    pred_text: ASR prediction
+    verbose: set to True to output intermediate output of adjustments (for debugging)
 
-    b = b.lower().split()
-    s = CSequenceMatcher(None, a.lower().split(), b, autojunk=False)
+    Return:
+        semiotic_spans: List[str] - List of semiotic spans from raw text
+        pred_texts: List[str] - List of pred_texts correponding to semiotic_spans
+        norm_spans: List[str] - List of normalized texts correponding to semiotic_spans
+        raw_text_masked_list: List[str] - List of words from raw text where every semiotic span is replaces with SEMIOTIC_TAG
+        raw_text_mask_idx: List[int] - List of indexes of SEMIOTIC_TAG in raw_text_masked_list
 
-    # do it here to preserve casing
-    a = a.split()
+        e.g.:
+            >>> raw = 'This is #4 ranking on G.S.K.T.'
+            >>> pred_text = 'this iss for ranking on g k p'
+            >>> norm = 'This is nubmer four ranking on GSKT'
 
-    result = []
-    # s contains a list of triples. Each triple is of the form (i, j, n), and means that a[i:i+n] == b[j:j+n].
-    # The triples are monotonically increasing in i and in j.
-    a_start_non_match, b_start_non_match = 0, 0
-    # get not matching blocks
-    for match in s.get_matching_blocks():
-        a_start_match, b_start_match, match_len = match
-        # we're widening the semiotic span to include 1 context word from each side, so not considering 1-word match here
-        if match_len > 1:
-            if a_start_non_match < a_start_match:
-                result.append([[a_start_non_match, a_start_match], [b_start_non_match, b_start_match]])
-            a_start_non_match = a_start_match + match_len
-            b_start_non_match = b_start_match + match_len
-
-    if a_start_non_match < len(a):
-        result.append([[a_start_non_match, len(a)], [b_start_non_match, len(b)]])
-
-    # add context (1 word from both sides)
-    result_with_context = []
-    for item in result:
-        try:
-            start_a, end_a = item[0]
-            start_b, end_b = item[1]
-        except:
-            import pdb
-
-            pdb.set_trace()
-        if start_a - 1 >= 0 and start_b - 1 >= 0:
-            start_a -= 1
-            start_b -= 1
-        if end_a + 1 <= len(a) and end_b + 1 <= len(b):
-            end_a += 1
-            end_b += 1
-        result_with_context.append([[start_a, end_a], [start_b, end_b]])
-
-    result = result_with_context
-    semiotic_spans = []
-    default_normalization = []
-    a_masked = []
-    start_idx = 0
-    masked_idx = []
-    for item in result:
-        cur_start, cur_end = item[0]
-        if start_idx < cur_start:
-            a_masked.extend(a[start_idx:cur_start])
-        start_idx = cur_end
-        a_masked.append(SEMIOTIC_TAG)
-        masked_idx.append(len(a_masked) - 1)
-
-    if start_idx < len(a):
-        a_masked.extend(a[start_idx:])
-
-    for item in result:
-        a_diff = ' '.join(a[item[0][0] : item[0][1]])
-        b_diff = ' '.join(b[item[1][0] : item[1][1]])
-        semiotic_spans.append(a_diff)
-        default_normalization.append(b_diff)
-        logging.debug(f"a: {a_diff}")
-        logging.debug(f"b: {b_diff}")
-        logging.debug("=" * 20)
-    return result, semiotic_spans, a_masked, masked_idx, default_normalization
-
-
-def _print_alignment(diffs, l, r):
-    l = l.split()
-    r = r.split()
-    for l_idx, item in diffs.items():
-        start, end, match_state = item
-        print(f"{l[l_idx]} -- {r[start: end]} -- {match_state}")
-
-
-def _adjust_span(semiotic_spans, norm_pred_diffs, pred_norm_diffs, norm_raw_diffs, raw: str, pred_text: str):
+            output:
+            semiotic_spans: ['is #4', 'G.S.K.T.']
+            pred_texts: ['iss for', 'g k p']
+            norm_spans: ['is nubmer four', 'GSKT']
+            raw_text_masked_list: ['This', '[SEMIOTIC_SPAN]', 'ranking', 'on', '[SEMIOTIC_SPAN]']
+            raw_text_mask_idx: [1, 4]
     """
 
-	:param semiotic_spans:
-	:param norm_pred_diffs:
-	:param pred_norm_diffs:
-	:param norm_raw_diffs:
-	:param raw:
-	:param pred_text:
-	:return:
-	"""
-    standard_start = 0
-    raw_text_list = raw.split()
-    pred_text_list = pred_text.split()
-
-    text_for_audio_based = {"semiotic": [], "standard": "", "pred_text": []}
-
-    for idx, (raw_span, norm_span) in enumerate(semiotic_spans):
-        raw_start, raw_end = raw_span
-        raw_end -= 1
-
-        # get the start of the span
-        pred_text_start, _, status_norm_pred = norm_pred_diffs[norm_span[0]]
-        new_norm_start = pred_norm_diffs[pred_text_start][0]
-        raw_text_start = norm_raw_diffs[new_norm_start][0]
-
-        # get the end of the span
-        _, pred_text_end, status_norm_pred = norm_pred_diffs[norm_span[1] - 1]
-
-        new_norm_end = pred_norm_diffs[pred_text_end - 1][1]
-        raw_text_end = norm_raw_diffs[new_norm_end - 1][1]
-
-        if standard_start < raw_text_start:
-            text_for_audio_based["standard"] += " " + " ".join(raw_text_list[standard_start:raw_text_start])
-
-        cur_semiotic_span = f"{' '.join(raw_text_list[raw_text_start:raw_text_end])}"
-        cur_pred_text = f"{' '.join(pred_text_list[pred_text_start:pred_text_end])}"
-
-        text_for_audio_based["semiotic"].append(cur_semiotic_span)
-        text_for_audio_based["pred_text"].append(cur_pred_text)
-        text_for_audio_based["standard"] += f" {SEMIOTIC_TAG} "
-
-        standard_start = raw_text_end
-
-    if standard_start < len(raw_text_list):
-        text_for_audio_based["standard"] += ' '.join(raw_text_list[standard_start:])
-
-    text_for_audio_based["standard"] = text_for_audio_based["standard"].replace("  ", " ").strip()
-    return text_for_audio_based
-
-
-def adjust_boundaries(norm_raw_diffs, norm_pred_diffs, raw, norm, pred_text):
     adjusted = []
     word_id = 0
     while word_id < len(norm.split()):
@@ -253,14 +155,19 @@ def adjust_boundaries(norm_raw_diffs, norm_pred_diffs, raw, norm, pred_text):
     pred_text_list = pred_text.split()
     norm_list = norm.split()
 
+    # increase boundaries between raw and pred_text if some spans contain empty pred_text
     extended_spans = []
     adjusted3 = []
     idx = 0
     while idx < len(adjusted2):
         item = adjusted2[idx]
-        # cur_semiotic = " ".join(raw_list[item[1][0] : item[1][1]])
-        # cur_pred_text = " ".join(pred_text_list[item[2][0] : item[2][1]])
-        # cur_norm_span = " ".join(norm_list[item[0][0] : item[0][1]])
+
+        cur_semiotic = " ".join(raw_list[item[1][0] : item[1][1]])
+        cur_pred_text = " ".join(pred_text_list[item[2][0] : item[2][1]])
+        cur_norm_span = " ".join(norm_list[item[0][0] : item[0][1]])
+        logging.debug(f"cur_semiotic: {cur_semiotic}")
+        logging.debug(f"cur_pred_text: {cur_pred_text}")
+        logging.debug(f"cur_norm_span: {cur_norm_span}")
 
         # if cur_pred_text is an empty string
         if item[2][0] == item[2][1]:
@@ -310,20 +217,25 @@ def adjust_boundaries(norm_raw_diffs, norm_pred_diffs, raw, norm, pred_text):
 
     raw_text_mask_idx = [idx for idx, x in enumerate(raw_text_masked_list) if x == SEMIOTIC_TAG]
 
-    # print("+" * 50)
-    # print("adjusted:")
-    # for item in adjusted2:
-    #     print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
-    #
-    # print("+" * 50)
-    # print("adjusted2:")
-    # for item in adjusted2:
-    #     print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
-    # print("+" * 50)
-    # print("adjusted3:")
-    # for item in adjusted3:
-    #     print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
-    # print("+" * 50)
+    if verbose:
+        print("+" * 50)
+        print("adjusted:")
+        for item in adjusted2:
+            print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
+
+        print("+" * 50)
+        print("adjusted2:")
+        for item in adjusted2:
+            print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
+        print("+" * 50)
+        print("adjusted3:")
+        for item in adjusted3:
+            print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
+        print("+" * 50)
+
+    import pdb
+
+    pdb.set_trace()
     return semiotic_spans, pred_texts, norm_spans, raw_text_masked_list, raw_text_mask_idx
 
 
@@ -332,7 +244,7 @@ def get_alignment(raw, norm, pred_text, verbose: bool = False):
     norm_raw_diffs = _get_alignment(norm, raw)
 
     semiotic_spans, pred_texts, norm_spans, raw_text_masked_list, raw_text_mask_idx = adjust_boundaries(
-        norm_raw_diffs, norm_pred_diffs, raw, norm, pred_text
+        norm_raw_diffs, norm_pred_diffs, raw, norm, pred_text, verbose
     )
 
     if verbose:
@@ -348,12 +260,8 @@ def get_alignment(raw, norm, pred_text, verbose: bool = False):
 
 
 if __name__ == "__main__":
-    raw = "This, example: number 1,500 can be a very long one!, and can fail to produce valid normalization for such an easy number like 10,125 or dollar value $5349.01, and can fail to terminate, and can fail to terminate, and can fail to terminate, 452."
-    norm = "This, example: number one thousand five hundred can be a very long one!, and can fail to produce valid normalization for such an easy number like ten thousand one hundred twenty five or dollar value five thousand three hundred and forty nine dollars and one cent, and can fail to terminate, and can fail to terminate, and can fail to terminate, four fifty two."
-    pred_text = "this w example nuber viteen hundred can be a very h lowne one and can fail to produce a valid normalization for such an easy number like ten thousand one hundred twenty five or dollar value five thousand three hundred and fortyn nine dollars and one cent and can fail to terminate and can fail to terminate and can fail to terminate four fifty two"
-
-    raw = 'It immediately took the #4 ranking on Apple and Google app stores prior to any featuring and'
-    pred_text = 'it immediately took the number four ranking on apple and google apt stores prior to any featuring'
-    norm = 'It immediately took the hash four ranking on Apple and Google app stores prior to any featuring and'
+    raw = 'This is #4 ranking on G.S.K.T.'
+    pred_text = 'this iss for ranking on g k p'
+    norm = 'This is nubmer four ranking on GSKT'
 
     get_alignment(raw, norm, pred_text, True)

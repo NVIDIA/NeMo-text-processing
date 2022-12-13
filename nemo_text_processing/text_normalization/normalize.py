@@ -17,6 +17,7 @@ import json
 import os
 import re
 import shutil
+import sys
 from argparse import ArgumentParser
 from collections import OrderedDict
 from glob import glob
@@ -38,6 +39,9 @@ from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_
 from pynini.lib.rewrite import top_rewrite
 from sacremoses import MosesDetokenizer
 from tqdm import tqdm
+
+# this is to handle long input
+sys.setrecursionlimit(3000)
 
 SPACE_DUP = re.compile(' {2,}')
 
@@ -257,7 +261,6 @@ class Normalizer:
         Returns:
             a list of smaller sequences of tokens resulting from ``tokens`` split.
         """
-        print("\n\nself.max_number_of_permutations_per_split >>>> ", self.max_number_of_permutations_per_split)
         splits = []
         prev_end_of_split = 0
         current_number_of_permutations = 1
@@ -435,21 +438,8 @@ class Normalizer:
             shutil.rmtree(tmp_dir)
         os.makedirs(tmp_dir)
 
-        Parallel(n_jobs=n_jobs)(
-            delayed(_process_batch)(
-                idx,
-                lines[i : i + batch],
-                tmp_dir,
-                text_field=text_field,
-                punct_pre_process=punct_pre_process,
-                punct_post_process=punct_post_process,
-                **kwargs,
-            )
-            for idx, i in enumerate(range(0, len(lines), batch))
-        )
-
-        # [
-        #     _process_batch(
+        # Parallel(n_jobs=n_jobs)(
+        #     delayed(_process_batch)(
         #         idx,
         #         lines[i : i + batch],
         #         tmp_dir,
@@ -459,7 +449,20 @@ class Normalizer:
         #         **kwargs,
         #     )
         #     for idx, i in enumerate(range(0, len(lines), batch))
-        # ]
+        # )
+
+        [
+            _process_batch(
+                idx,
+                lines[i : i + batch],
+                tmp_dir,
+                text_field=text_field,
+                punct_pre_process=punct_pre_process,
+                punct_post_process=punct_post_process,
+                **kwargs,
+            )
+            for idx, i in enumerate(range(0, len(lines), batch))
+        ]
 
         # aggregate all intermediate files
         with open(output_filename, "w") as f_out:
