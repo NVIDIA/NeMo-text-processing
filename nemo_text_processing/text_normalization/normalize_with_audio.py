@@ -16,7 +16,7 @@ import json
 import os
 from argparse import ArgumentParser
 from time import perf_counter
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import jiwer
 import pynini
@@ -120,37 +120,14 @@ class NormalizerWithAudio(Normalizer):
         self.merged_tn_deterministic_graph = (fst_tc @ fst_ver) @ fst_punct_post
         self.lm = lm
 
-    def _process_semiotic_span(
-        self, semiotic_span, pred_text, n_tagged, punct_post_process, verbose, cer_threshold=100
-    ):
-        try:
-            options = self.normalize_non_deterministic(
-                text=semiotic_span, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
-            )
-        except:
-            # TODO: fall back to the default normalization -> restore from the alignment
-            options = ["DEFAULT"]
-
-        print("=" * 40)
-        print(semiotic_span)
-        [print(x) for x in options]
-
-        best_option, cer = self.select_best_match(
-            normalized_texts=options,
-            input_text=semiotic_span,
-            pred_text=pred_text,
-            verbose=verbose,
-            cer_threshold=cer_threshold,
-        )
-        return best_option
-
     def normalize(
         self,
         text: str,
         n_tagged: int,
         punct_post_process: bool = True,
         verbose: bool = False,
-        pred_text: str = None,
+        pred_text: Optional[str] = None,
+        cer_threshold: float = -1,
         **kwargs,
     ) -> str:
         """
@@ -162,14 +139,14 @@ class NormalizerWithAudio(Normalizer):
             n_tagged: number of tagged options to consider, -1 - to get all possible tagged options
             punct_post_process: whether to normalize punctuation
             verbose: whether to print intermediate meta information
+            pred_text: ASR model transcript
+            cer_threshold: if CER for pred_text and the normalization option is above the cer_threshold,
+                default deterministic normalization will be used. Set to -1 to disable cer-based filtering.
+                Specify the value in %, e.g. 100 not 1.
 
         Returns:
             normalized text options (usually there are multiple ways of normalizing a given semiotic class)
         """
-        #################################
-        # LONG AUDIO WITH DIFF APPROACH
-        #################################
-
         if pred_text is None:
             return self.normalize_non_deterministic(
                 text=text, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
@@ -181,12 +158,12 @@ class NormalizerWithAudio(Normalizer):
             )
         except RecursionError:
             raise RecursionError(f"RecursionError. Try decreasing --max_number_of_permutations_per_split")
+
         semiotic_spans, pred_text_spans, norm_spans, text_with_span_tags_list, masked_idx_list = get_alignment(
             text, det_norm, pred_text, verbose=False
         )
-
         sem_tag_idx = 0
-        for cur_semiotic_span, cur_pred_text in zip(semiotic_spans, pred_text_spans):
+        for cur_semiotic_span, cur_pred_text, cur_deter_norm in zip(semiotic_spans, pred_text_spans, norm_spans):
             if len(cur_semiotic_span) == 0:
                 text_with_span_tags_list[masked_idx_list[sem_tag_idx]] = ""
             else:
@@ -194,20 +171,20 @@ class NormalizerWithAudio(Normalizer):
                     text=cur_semiotic_span, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose,
                 )
                 try:
-                    best_option, cer, best_idx = self.select_best_match(
-                        normalized_texts=non_deter_options,
-                        input_text=cur_semiotic_span,
-                        pred_text=cur_pred_text,
-                        verbose=verbose,
-                        cer_threshold=-1,
+                    best_option, cer, _ = self.select_best_match(
+                        normalized_texts=non_deter_options, pred_text=cur_pred_text, verbose=verbose,
                     )
+                    if cer_threshold > 0 and cer > cer_threshold:
+                        best_option = cur_deter_norm
+                        if verbose and True:
+                            print(
+                                f"CER of the best normalization option is above cer_theshold, using determinictis option. CER: {cer}"
+                            )
                 except:
-                    import pdb
+                    # fall back to the default normalization option
+                    best_option = cur_deter_norm
 
-                    pdb.set_trace()
-                    print()
                 text_with_span_tags_list[masked_idx_list[sem_tag_idx]] = best_option
-
             sem_tag_idx += 1
 
         normalized_text = " ".join(text_with_span_tags_list)
@@ -276,19 +253,33 @@ class NormalizerWithAudio(Normalizer):
 
     def normalize_line(
         self,
-        n_tagged,
+        n_tagged: int,
         line: str,
         verbose: bool = False,
         punct_pre_process=False,
         punct_post_process=True,
         text_field: str = "text",
+        asr_pred_field: str = "pred_text",
         output_field: str = "normalized",
-        **kwargs,
+        cer_threshold: float = -1,
     ):
-        line = json.loads(line)
+        """
+        Normalizes "text_field" in line from a .json manifest
 
-        # TODO add these fields to the args
-        asr_pred_field = kwargs.get("asr_pred_field", "pred_text")
+        Args:
+            n_tagged: number of normalization options to return
+            line: line of a .json manifest
+            verbose: set to True to see intermediate output of normalization
+            punct_pre_process: set to True to do punctuation pre-processing
+            punct_post_process: set to True to do punctuation post-processing
+            text_field: name of the field in the manifest to normalize
+            asr_pred_field: name of the field in the manifest with ASR predictions
+            output_field: name of the field in the manifest to save normalized text
+            cer_threshold: if CER for pred_text and the normalization option is above the cer_threshold,
+                default deterministic normalization will be used. Set to -1 to disable cer-based filtering.
+                Specify the value in %, e.g. 100 not 1.
+        """
+        line = json.loads(line)
 
         normalized_text = self.normalize(
             text=line["text"],
@@ -296,6 +287,7 @@ class NormalizerWithAudio(Normalizer):
             n_tagged=n_tagged,
             punct_post_process=punct_post_process,
             pred_text=line[asr_pred_field],
+            cer_threshold=cer_threshold,
         )
         line[output_field] = normalized_text
         return line
@@ -365,38 +357,23 @@ class NormalizerWithAudio(Normalizer):
                 continue
 
     def select_best_match(
-        self,
-        normalized_texts: List[str],
-        input_text: str,
-        pred_text: str,
-        verbose: bool = False,
-        remove_punct: bool = False,
-        cer_threshold: int = 100,
+        self, normalized_texts: List[str], pred_text: str, verbose: bool = False, remove_punct: bool = False,
     ):
         """
         Selects the best normalization option based on the lowest CER
 
         Args:
             normalized_texts: normalized text options
-            input_text: input text
             pred_text: ASR model transcript of the audio file corresponding to the normalized text
             verbose: whether to print intermediate meta information
             remove_punct: whether to remove punctuation before calculating CER
-            cer_threshold: if CER for pred_text is above the cer_threshold, no normalization will be performed.
-                Set to -1 to disable cer-based filtering
 
         Returns:
             normalized text with the lowest CER and CER value
         """
-        if pred_text == "":
-            return input_text, cer_threshold
-
         normalized_texts_cer = calculate_cer(normalized_texts, pred_text, remove_punct)
         normalized_texts_cer = sorted(normalized_texts_cer, key=lambda x: x[1])
         normalized_text, cer, idx = normalized_texts_cer[0]
-
-        if cer_threshold > 0 and cer > cer_threshold:
-            return input_text, cer
 
         if verbose:
             print('-' * 30)
@@ -423,7 +400,7 @@ def calculate_cer(normalized_texts: List[str], pred_text: str, remove_punct=Fals
             for punct in "!?:;,.-()*+-/<=>@^_":
                 text_clean = text_clean.replace(punct, " ").replace("  ", " ")
 
-        cer = jiwer.cer(pred_text, text_clean)
+        cer = jiwer.cer(pred_text, text_clean) * 100
         normalized_options.append((text, cer, i))
     return normalized_options
 
@@ -486,9 +463,9 @@ def parse_args():
     )
     parser.add_argument(
         "--cer_threshold",
-        default=100,
-        type=int,
-        help="if CER for pred_text is above the cer_threshold, no normalization will be performed",
+        default=-1,
+        type=float,
+        help="if CER for pred_text and the normalization option is above the cer_threshold, default deterministic normalization will be used. Set to -1 to disable cer-based filtering. Specify the value in %, e.g. 100 not 1.",
     )
     parser.add_argument("--batch_size", default=200, type=int, help="Number of examples for each process")
     parser.add_argument(
@@ -546,7 +523,8 @@ if __name__ == "__main__":
             output_filename=args.output_filename,
             n_tagged=args.n_tagged,
             text_field=args.manifest_text_field,
-            pred_text=args.manifest_asr_pred_field,
+            asr_pred_field=args.manifest_asr_pred_field,
+            cer_threshold=args.cer_threshold,
         )
     else:
         raise ValueError(

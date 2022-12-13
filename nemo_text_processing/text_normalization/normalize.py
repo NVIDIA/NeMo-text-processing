@@ -153,12 +153,7 @@ class Normalizer:
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
         self.parser = TokenParser()
         self.lang = lang
-
-        try:
-            self.moses_detokenizer = MosesDetokenizer(lang=lang)
-        except:
-            self.moses_detokenizer = None
-            print("Moses detokenizer is not available.")
+        self.moses_detokenizer = MosesDetokenizer(lang=lang)
 
     def normalize_list(
         self,
@@ -340,12 +335,8 @@ class Normalizer:
 
         if punct_post_process:
             # do post-processing based on Moses detokenizer
-            if self.moses_detokenizer:
-                output = self.moses_detokenizer.detokenize([output], unescape=False)
-                output = post_process_punct(input=original_text, normalized_text=output)
-            else:
-                print("NEMO_NLP collection is not available: skipping punctuation post_processing")
-
+            output = self.moses_detokenizer.detokenize([output], unescape=False)
+            output = post_process_punct(input=original_text, normalized_text=output)
         return output
 
     def normalize_line(
@@ -358,6 +349,17 @@ class Normalizer:
         output_field: str = "normalized",
         **kwargs,
     ):
+        """
+        Normalizes "text_field" in line from a .json manifest
+
+        Args:
+            line: line of a .json manifest
+            verbose: set to True to see intermediate output of normalization
+            punct_pre_process: set to True to do punctuation pre-processing
+            punct_post_process: set to True to do punctuation post-processing
+            text_field: name of the field in the manifest to normalize
+            output_field: name of the field in the manifest to save normalized text
+        """
         line = json.loads(line)
 
         normalized_text = self.normalize(
@@ -382,8 +384,19 @@ class Normalizer:
         **kwargs,
     ):
         """
+        Normalizes "text_filed" from .json manifest.
+
         Args:
-            args.audio_data: path to .json manifest file.
+            manifest: path to .json manifest file
+            n_jobs: the maximum number of concurrently running jobs. If -1 all CPUs are used. If 1 is given,
+                no parallel computing code is used at all, which is useful for debugging. For n_jobs below -1,
+                (n_cpus + 1 + n_jobs) are used. Thus for n_jobs = -2, all CPUs but one are used.
+            punct_pre_process: set to True to do punctuation pre-processing
+            punct_post_process: set to True to do punctuation post-processing
+            batch_size: int,
+            output_filename: path to .json file to save normalized text
+            text_field: name of the field in the manifest to normalize
+            **kwargs are need for audio-based normalization that requires extra args
         """
 
         def _process_batch(
@@ -668,7 +681,7 @@ def parse_args():
     parser.add_argument("--batch_size", default=200, type=int, help="Number of examples for each process")
     parser.add_argument(
         "--max_number_of_permutations_per_split",
-        default=600,
+        default=729,
         type=int,
         help="a maximum number of permutations which can be generated from input sequence of tokens.",
     )
