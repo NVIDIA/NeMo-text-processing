@@ -30,9 +30,17 @@ class InverseNormalizer(Normalizer):
         lang: language specifying the ITN
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
+        max_number_of_permutations_per_split: a maximum number
+            of permutations which can be generated from input sequence of tokens.
     """
 
-    def __init__(self, lang: str = 'en', cache_dir: str = None, overwrite_cache: bool = False):
+    def __init__(
+        self,
+        lang: str = 'en',
+        cache_dir: str = None,
+        overwrite_cache: bool = False,
+        max_number_of_permutations_per_split: int = 729,
+    ):
 
         if lang == 'en':
             from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
@@ -78,6 +86,7 @@ class InverseNormalizer(Normalizer):
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
         self.lang = lang
+        self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
 
     def inverse_normalize_list(self, texts: List[str], verbose=False) -> List[str]:
         """
