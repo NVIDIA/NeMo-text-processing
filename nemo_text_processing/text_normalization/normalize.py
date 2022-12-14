@@ -87,7 +87,7 @@ class Normalizer:
         post_process: WFST-based post processing, e.g. to remove extra spaces added during TN.
             Note: punct_post_process flag in normalize() supports all languages.
         max_number_of_permutations_per_split: a maximum number
-                of permutations which can be generated from input sequence of tokens.
+            of permutations which can be generated from input sequence of tokens.
     """
 
     def __init__(
