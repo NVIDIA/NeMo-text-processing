@@ -37,8 +37,9 @@ class TestSpecialText:
         pred = self.normalizer_en.normalize(test_input, verbose=False)
         assert pred == expected
 
-        if self.normalizer_with_audio_en:
+        # Audio-based normalization will output only options without digits
+        if self.normalizer_with_audio_en and sum([1 for ch in expected if ch.isdigit()]) == 0:
             pred_non_deterministic = self.normalizer_with_audio_en.normalize(
-                test_input, n_tagged=30, punct_post_process=False,
+                test_input, n_tagged=30, punct_post_process=True,
             )
             assert expected in pred_non_deterministic, f"input: {test_input}"
