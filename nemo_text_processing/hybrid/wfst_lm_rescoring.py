@@ -183,9 +183,9 @@ def main():
     lang = args.lang
     input_f = args.data
 
-    if args.data == "text_normalization_dataset_files/LibriTTS.json":
+    if "LibriTTS.json" in args.data:
         args.dataset = "libritts"
-    elif args.data == "text_normalization_dataset_files/GoogleTN.json":
+    elif "GoogleTN.json" in args.data:
         args.dataset = "google"
     else:
         args.dataset = None

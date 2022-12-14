@@ -4,5 +4,4 @@
 Introduction
 ------------
 
-Hybrid text normalization requires `NeMo toolkit`.
-See [https://github.com/NVIDIA/NeMo](https://github.com/NVIDIA/NeMo) for details.
+See [https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/nlp/text_normalization/wfst/wfst_text_normalization.html#text-normalization](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/nlp/text_normalization/wfst/wfst_text_normalization.html#text-normalization) for details.
