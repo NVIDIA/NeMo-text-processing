@@ -15,8 +15,9 @@
 import pynini
 from nemo_text_processing.text_normalization.en.taggers.ordinal import OrdinalFst as OrdinalTagger
 from nemo_text_processing.text_normalization.en.taggers.whitelist import get_formats
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.en.utils import SINGULAR_TO_PLURAL, TO_LOWER, get_abs_path
 from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as OrdinalVerbalizer
+from nemo_text_processing.tn_itn_utils.file_utils import load_labels
 from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -24,8 +25,6 @@ from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_SIGMA,
     NEMO_SPACE,
     NEMO_UPPER,
-    SINGULAR_TO_PLURAL,
-    TO_LOWER,
     GraphFst,
     convert_space,
     delete_space,

@@ -15,7 +15,8 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
+from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
+from nemo_text_processing.tn_itn_utils.file_utils import num_to_word
 from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,

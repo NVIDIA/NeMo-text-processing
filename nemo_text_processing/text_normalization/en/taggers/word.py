@@ -14,6 +14,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.en.utils import get_abs_path
 from nemo_text_processing.tn_itn_utils.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_ALPHA,
@@ -22,7 +23,6 @@ from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_SIGMA,
     GraphFst,
     convert_space,
-    get_abs_path,
 )
 from pynini.examples import plurals
 from pynini.lib import pynutil

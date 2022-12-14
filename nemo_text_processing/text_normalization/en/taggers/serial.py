@@ -14,7 +14,8 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.en.utils import get_abs_path
+from nemo_text_processing.tn_itn_utils.file_utils import load_labels
 from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,

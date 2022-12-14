@@ -13,12 +13,11 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.utils import TO_UPPER, get_abs_path
 from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
-    TO_UPPER,
     GraphFst,
     delete_extra_space,
     delete_space,

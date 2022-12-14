@@ -19,9 +19,7 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
-from nemo_text_processing.tn_itn_utils.file_utils import get_abs_path
 from pynini import Far
-from pynini.examples import plurals
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
@@ -53,23 +51,6 @@ delete_preserve_order = pynini.closure(
     | (pynutil.delete(" field_order: \"") + NEMO_NOT_QUOTE + pynutil.delete("\""))
 )
 
-suppletive = pynini.string_file(get_abs_path("data/suppletive.tsv"))
-# _v = pynini.union("a", "e", "i", "o", "u")
-_c = pynini.union(
-    "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"
-)
-_ies = NEMO_SIGMA + _c + pynini.cross("y", "ies")
-_es = NEMO_SIGMA + pynini.union("s", "sh", "ch", "x", "z") + pynutil.insert("es")
-_s = NEMO_SIGMA + pynutil.insert("s")
-
-graph_plural = plurals._priority_union(
-    suppletive, plurals._priority_union(_ies, plurals._priority_union(_es, _s, NEMO_SIGMA), NEMO_SIGMA), NEMO_SIGMA
-).optimize()
-
-SINGULAR_TO_PLURAL = graph_plural
-PLURAL_TO_SINGULAR = pynini.invert(graph_plural)
-TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)])
-TO_UPPER = pynini.invert(TO_LOWER)
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 
@@ -89,7 +70,7 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     print(f'Created {file_name}')
 
 
-def get_plurals(fst):
+def get_plurals(fst, SINGULAR_TO_PLURAL):
     """
     Given singular returns plurals
 
@@ -101,7 +82,7 @@ def get_plurals(fst):
     return SINGULAR_TO_PLURAL @ fst
 
 
-def get_singulars(fst):
+def get_singulars(fst, PLURAL_TO_SINGULAR):
     """
     Given plural returns singulars
 

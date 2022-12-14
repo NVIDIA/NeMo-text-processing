@@ -14,17 +14,13 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.taggers.roman import get_names
-from nemo_text_processing.text_normalization.en.utils import (
-    augment_labels_with_punct_at_end,
-    get_abs_path,
-    load_labels,
-)
+from nemo_text_processing.text_normalization.en.utils import SINGULAR_TO_PLURAL, get_abs_path
+from nemo_text_processing.tn_itn_utils.file_utils import augment_labels_with_punct_at_end, load_labels
 from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_CHAR,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
     NEMO_UPPER,
-    SINGULAR_TO_PLURAL,
     GraphFst,
     convert_space,
 )

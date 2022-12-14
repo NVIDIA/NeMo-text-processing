@@ -15,6 +15,7 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.utils import SINGULAR_TO_PLURAL
 from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_SIGMA,
     GraphFst,
@@ -43,7 +44,7 @@ class MeasureFst(GraphFst):
 
         graph_unit = pynini.string_file(get_abs_path("data/measurements.tsv"))
         graph_unit_singular = pynini.invert(graph_unit)  # singular -> abbr
-        graph_unit_plural = get_singulars(graph_unit_singular)  # plural -> abbr
+        graph_unit_plural = get_singulars(graph_unit_singular, SINGULAR_TO_PLURAL)  # plural -> abbr
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("minus", "\"true\"") + delete_extra_space, 0, 1
