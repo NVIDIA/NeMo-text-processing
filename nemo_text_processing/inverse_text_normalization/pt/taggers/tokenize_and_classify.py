@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 
 import pynini
@@ -34,8 +35,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from pynini.lib import pynutil
-
-from nemo.utils import logging
 
 
 class ClassifyFst(GraphFst):

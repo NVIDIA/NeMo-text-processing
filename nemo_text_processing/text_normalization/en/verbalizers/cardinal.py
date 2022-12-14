@@ -33,6 +33,8 @@ class CardinalFst(GraphFst):
         self.optional_sign = pynini.cross("negative: \"true\"", "minus ")
         if not deterministic:
             self.optional_sign |= pynini.cross("negative: \"true\"", "negative ")
+            self.optional_sign |= pynini.cross("negative: \"true\"", "dash ")
+
         self.optional_sign = pynini.closure(self.optional_sign + delete_space, 0, 1)
 
         integer = pynini.closure(NEMO_NOT_QUOTE)

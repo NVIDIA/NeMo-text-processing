@@ -17,7 +17,7 @@ MIG-25/235212-asdg~MIG-twenty five/two three five two one two-asdg
 f++~f plus plus
 dfsd#sfgsfd$~dfsd hash sfgsfd dollar
 dfsd$$sfgsfd$~dfsd dollar dollar sfgsfd dollar
-$12@12%~dollar twelve at twelve percent sign
+$12@12%~dollar twelve at twelve percent
 @12~at twelve
 12@~twelve at
 @mypizza~at mypizza
