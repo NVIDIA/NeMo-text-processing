@@ -28,11 +28,11 @@ aaliyan's~aaliyan's
 mother-in-law~mother-in-law
 there -0.4kg~there minus zero point four kilograms
 there- -0.4kg~there- minus zero point four kilograms
-$ and 5% or %~dollar and five percent or percent sign
+$ and 5% or %~dollar and five percent or percent
  1~one
 1~one
 !1~! one
 mar~mar
-/$€₩£BB¥#%AA and $€₩£¥#%~slash dollar euro won pound BB yen hash percent sign AA and dollar euro won pound yen hash percent sign
+/$€₩£BB¥#%AA and $€₩£¥#%~slash dollar euro won pound BB yen hash percent AA and dollar euro won pound yen hash percent
 love him while we may,~love him while we may,
 mar~mar

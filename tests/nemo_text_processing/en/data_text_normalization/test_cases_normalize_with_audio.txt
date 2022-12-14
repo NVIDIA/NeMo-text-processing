@@ -163,3 +163,16 @@ two divided by eight
 [YI one]
 ~/ and $
 / and dollar
+~2,500
+twenty five hundred
+~A321sam
+A three twenty one sam
+~2.5x
+two point five x
+two point five times
+two and a half times
+~10% to 20%
+ten to twenty percent
+~0.5
+half
+zero point five

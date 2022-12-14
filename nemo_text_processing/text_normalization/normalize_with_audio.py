@@ -14,25 +14,17 @@
 
 import json
 import os
-import time
 from argparse import ArgumentParser
-from glob import glob
+from time import perf_counter
 from typing import List, Optional, Tuple
 
+import jiwer
 import pynini
-from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
+from pynini import Far
 from pynini.lib import rewrite
-from tqdm import tqdm
-
-try:
-    from nemo.collections.asr.metrics.wer import word_error_rate
-    from nemo.collections.asr.models import ASRModel
-
-    ASR_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    ASR_AVAILABLE = False
 
 
 """
@@ -40,25 +32,21 @@ The script provides multiple normalization options and chooses the best one that
 (most of the semiotic classes use deterministic=False flag).
 
 To run this script with a .json manifest file, the manifest file should contain the following fields:
-    "audio_data" - path to the audio file
-    "text" - raw text
-    "pred_text" - ASR model prediction
-
-    See https://github.com/NVIDIA/NeMo/blob/main/examples/asr/transcribe_speech.py on how to add ASR predictions
+    "text" - raw text (could be changed using "--manifest_text_field")
+    "pred_text" - ASR model prediction, see https://github.com/NVIDIA/NeMo/blob/main/examples/asr/transcribe_speech.py 
+        on how to transcribe manifest
+    
+    Example for a manifest line:
+        {"text": "In December 2015, ...", "pred_txt": "on december two thousand fifteen"}
 
     When the manifest is ready, run:
         python normalize_with_audio.py \
-               --audio_data PATH/TO/MANIFEST.JSON \
-               --language en
-
-
-To run with a single audio file, specify path to audio and text with:
-    python normalize_with_audio.py \
-           --audio_data PATH/TO/AUDIO.WAV \
-           --language en \
-           --text raw text OR PATH/TO/.TXT/FILE
-           --model QuartzNet15x5Base-En \
-           --verbose
+            --manifest PATH/TO/MANIFEST.JSON \
+            --language en \
+            --output_filename=<PATH TO OUTPUT .JSON MANIFEST> \
+            --n_jobs=-1 \
+            --batch_size=300 \
+            --manifest_text_field="text"
 
 To see possible normalization options for a text input without an audio file (could be used for debugging), run:
     python python normalize_with_audio.py --text "RAW TEXT"
@@ -80,6 +68,8 @@ class NormalizerWithAudio(Normalizer):
         whitelist: path to a file with whitelist replacements
         post_process: WFST-based post processing, e.g. to remove extra spaces added during TN.
             Note: punct_post_process flag in normalize() supports all languages.
+        max_number_of_permutations_per_split: a maximum number
+                of permutations which can be generated from input sequence of tokens.
     """
 
     def __init__(
@@ -91,8 +81,10 @@ class NormalizerWithAudio(Normalizer):
         whitelist: str = None,
         lm: bool = False,
         post_process: bool = True,
+        max_number_of_permutations_per_split: int = 729,
     ):
 
+        # initialize non-deterministic normalizer
         super().__init__(
             input_case=input_case,
             lang=lang,
@@ -103,9 +95,41 @@ class NormalizerWithAudio(Normalizer):
             lm=lm,
             post_process=post_process,
         )
+        self.tagger_non_deterministic = self.tagger
+        self.verbalizer_non_deterministic = self.verbalizer
+
+        # initialize deterministic normalizer
+        super().__init__(
+            input_case=input_case,
+            lang=lang,
+            deterministic=True,
+            cache_dir=cache_dir,
+            overwrite_cache=overwrite_cache,
+            whitelist=whitelist,
+            lm=lm,
+            post_process=post_process,
+            max_number_of_permutations_per_split=max_number_of_permutations_per_split,
+        )
+
+        fst_tc = f"{cache_dir}/en_tn_True_deterministic_cased__tokenize.far"
+        fst_ver = f"{cache_dir}/en_tn_True_deterministic_verbalizer.far"
+        fst_punct_post = f"{cache_dir}/en_tn_post_processing.far"
+        fst_tc = Far(fst_tc, mode='r')['tokenize_and_classify']
+        fst_ver = Far(fst_ver, mode='r')['verbalize']
+        fst_punct_post = Far(fst_punct_post, mode='r')['post_process_graph']
+        self.merged_tn_deterministic_graph = (fst_tc @ fst_ver) @ fst_punct_post
         self.lm = lm
 
-    def normalize(self, text: str, n_tagged: int, punct_post_process: bool = True, verbose: bool = False,) -> str:
+    def normalize(
+        self,
+        text: str,
+        n_tagged: int,
+        punct_post_process: bool = True,
+        verbose: bool = False,
+        pred_text: Optional[str] = None,
+        cer_threshold: float = -1,
+        **kwargs,
+    ) -> str:
         """
         Main function. Normalizes tokens from written to spoken form
             e.g. 12 kg -> twelve kilograms
@@ -115,28 +139,70 @@ class NormalizerWithAudio(Normalizer):
             n_tagged: number of tagged options to consider, -1 - to get all possible tagged options
             punct_post_process: whether to normalize punctuation
             verbose: whether to print intermediate meta information
+            pred_text: ASR model transcript
+            cer_threshold: if CER for pred_text and the normalization option is above the cer_threshold,
+                default deterministic normalization will be used. Set to -1 to disable cer-based filtering.
+                Specify the value in %, e.g. 100 not 1.
 
         Returns:
             normalized text options (usually there are multiple ways of normalizing a given semiotic class)
         """
-
-        if len(text.split()) > 500:
-            raise ValueError(
-                "Your input is too long. Please split up the input into sentences, "
-                "or strings with fewer than 500 words"
+        if pred_text is None:
+            return self.normalize_non_deterministic(
+                text=text, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
             )
 
-        original_text = text
-        text = pre_process(text)  # to handle []
+        try:
+            det_norm = super().normalize(
+                text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
+            )
+        except RecursionError:
+            raise RecursionError(f"RecursionError. Try decreasing --max_number_of_permutations_per_split")
 
+        semiotic_spans, pred_text_spans, norm_spans, text_with_span_tags_list, masked_idx_list = get_alignment(
+            text, det_norm, pred_text, verbose=False
+        )
+        sem_tag_idx = 0
+        for cur_semiotic_span, cur_pred_text, cur_deter_norm in zip(semiotic_spans, pred_text_spans, norm_spans):
+            if len(cur_semiotic_span) == 0:
+                text_with_span_tags_list[masked_idx_list[sem_tag_idx]] = ""
+            else:
+                non_deter_options = self.normalize_non_deterministic(
+                    text=cur_semiotic_span, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose,
+                )
+                try:
+                    best_option, cer, _ = self.select_best_match(
+                        normalized_texts=non_deter_options, pred_text=cur_pred_text, verbose=verbose,
+                    )
+                    if cer_threshold > 0 and cer > cer_threshold:
+                        best_option = cur_deter_norm
+                        if verbose and True:
+                            print(
+                                f"CER of the best normalization option is above cer_theshold, using determinictis option. CER: {cer}"
+                            )
+                except:
+                    # fall back to the default normalization option
+                    best_option = cur_deter_norm
+
+                text_with_span_tags_list[masked_idx_list[sem_tag_idx]] = best_option
+            sem_tag_idx += 1
+
+        normalized_text = " ".join(text_with_span_tags_list)
+        return normalized_text.replace("  ", " ")
+
+    def normalize_non_deterministic(
+        self, text: str, n_tagged: int, punct_post_process: bool = True, verbose: bool = False
+    ):
+        original_text = text
+
+        text = pre_process(text)  # to handle []
         text = text.strip()
         if not text:
             if verbose:
                 print(text)
             return text
-        text = pynini.escape(text)
-        print(text)
 
+        text = pynini.escape(text)
         if self.lm:
             if self.lang not in ["en"]:
                 raise ValueError(f"{self.lang} is not supported in LM mode")
@@ -145,12 +211,12 @@ class NormalizerWithAudio(Normalizer):
                 # this to keep arpabet phonemes in the list of options
                 if "[" in text and "]" in text:
 
-                    lattice = rewrite.rewrite_lattice(text, self.tagger.fst)
+                    lattice = rewrite.rewrite_lattice(text, self.tagger_non_deterministic.fst)
                 else:
                     try:
-                        lattice = rewrite.rewrite_lattice(text, self.tagger.fst_no_digits)
+                        lattice = rewrite.rewrite_lattice(text, self.tagger_non_deterministic.fst_no_digits)
                     except pynini.lib.rewrite.Error:
-                        lattice = rewrite.rewrite_lattice(text, self.tagger.fst)
+                        lattice = rewrite.rewrite_lattice(text, self.tagger_non_deterministic.fst)
                 lattice = rewrite.lattice_to_nshortest(lattice, n_tagged)
                 tagged_texts = [(x[1], float(x[2])) for x in lattice.paths().items()]
                 tagged_texts.sort(key=lambda x: x[1])
@@ -171,8 +237,8 @@ class NormalizerWithAudio(Normalizer):
 
         if punct_post_process:
             # do post-processing based on Moses detokenizer
-            if self.processor:
-                normalized_texts = [self.processor.detokenize([t]) for t in normalized_texts]
+            if self.moses_detokenizer:
+                normalized_texts = [self.moses_detokenizer.detokenize([t]) for t in normalized_texts]
                 normalized_texts = [
                     post_process_punct(input=original_text, normalized_text=t) for t in normalized_texts
                 ]
@@ -185,6 +251,47 @@ class NormalizerWithAudio(Normalizer):
         normalized_texts = set(normalized_texts)
         return normalized_texts
 
+    def normalize_line(
+        self,
+        n_tagged: int,
+        line: str,
+        verbose: bool = False,
+        punct_pre_process=False,
+        punct_post_process=True,
+        text_field: str = "text",
+        asr_pred_field: str = "pred_text",
+        output_field: str = "normalized",
+        cer_threshold: float = -1,
+    ):
+        """
+        Normalizes "text_field" in line from a .json manifest
+
+        Args:
+            n_tagged: number of normalization options to return
+            line: line of a .json manifest
+            verbose: set to True to see intermediate output of normalization
+            punct_pre_process: set to True to do punctuation pre-processing
+            punct_post_process: set to True to do punctuation post-processing
+            text_field: name of the field in the manifest to normalize
+            asr_pred_field: name of the field in the manifest with ASR predictions
+            output_field: name of the field in the manifest to save normalized text
+            cer_threshold: if CER for pred_text and the normalization option is above the cer_threshold,
+                default deterministic normalization will be used. Set to -1 to disable cer-based filtering.
+                Specify the value in %, e.g. 100 not 1.
+        """
+        line = json.loads(line)
+
+        normalized_text = self.normalize(
+            text=line["text"],
+            verbose=verbose,
+            n_tagged=n_tagged,
+            punct_post_process=punct_post_process,
+            pred_text=line[asr_pred_field],
+            cer_threshold=cer_threshold,
+        )
+        line[output_field] = normalized_text
+        return line
+
     def _get_tagged_text(self, text, n_tagged):
         """
         Returns text after tokenize and classify
@@ -196,27 +303,31 @@ class NormalizerWithAudio(Normalizer):
             if self.lang == "en":
                 # this to keep arpabet phonemes in the list of options
                 if "[" in text and "]" in text:
-                    tagged_texts = rewrite.rewrites(text, self.tagger.fst)
+                    tagged_texts = rewrite.rewrites(text, self.tagger_non_deterministic.fst)
                 else:
                     try:
-                        tagged_texts = rewrite.rewrites(text, self.tagger.fst_no_digits)
+                        tagged_texts = rewrite.rewrites(text, self.tagger_non_deterministic.fst_no_digits)
                     except pynini.lib.rewrite.Error:
-                        tagged_texts = rewrite.rewrites(text, self.tagger.fst)
+                        tagged_texts = rewrite.rewrites(text, self.tagger_non_deterministic.fst)
             else:
-                tagged_texts = rewrite.rewrites(text, self.tagger.fst)
+                tagged_texts = rewrite.rewrites(text, self.tagger_non_deterministic.fst)
         else:
             if self.lang == "en":
                 # this to keep arpabet phonemes in the list of options
                 if "[" in text and "]" in text:
-                    tagged_texts = rewrite.top_rewrites(text, self.tagger.fst, nshortest=n_tagged)
+                    tagged_texts = rewrite.top_rewrites(text, self.tagger_non_deterministic.fst, nshortest=n_tagged)
                 else:
                     try:
                         # try self.tagger graph that produces output without digits
-                        tagged_texts = rewrite.top_rewrites(text, self.tagger.fst_no_digits, nshortest=n_tagged)
+                        tagged_texts = rewrite.top_rewrites(
+                            text, self.tagger_non_deterministic.fst_no_digits, nshortest=n_tagged
+                        )
                     except pynini.lib.rewrite.Error:
-                        tagged_texts = rewrite.top_rewrites(text, self.tagger.fst, nshortest=n_tagged)
+                        tagged_texts = rewrite.top_rewrites(
+                            text, self.tagger_non_deterministic.fst, nshortest=n_tagged
+                        )
             else:
-                tagged_texts = rewrite.top_rewrites(text, self.tagger.fst, nshortest=n_tagged)
+                tagged_texts = rewrite.top_rewrites(text, self.tagger_non_deterministic.fst, nshortest=n_tagged)
         return tagged_texts
 
     def _verbalize(self, tagged_text: str, normalized_texts: List[str], verbose: bool = False):
@@ -246,44 +357,30 @@ class NormalizerWithAudio(Normalizer):
                 continue
 
     def select_best_match(
-        self,
-        normalized_texts: List[str],
-        input_text: str,
-        pred_text: str,
-        verbose: bool = False,
-        remove_punct: bool = False,
-        cer_threshold: int = 100,
+        self, normalized_texts: List[str], pred_text: str, verbose: bool = False, remove_punct: bool = False,
     ):
         """
         Selects the best normalization option based on the lowest CER
 
         Args:
             normalized_texts: normalized text options
-            input_text: input text
             pred_text: ASR model transcript of the audio file corresponding to the normalized text
             verbose: whether to print intermediate meta information
             remove_punct: whether to remove punctuation before calculating CER
-            cer_threshold: if CER for pred_text is above the cer_threshold, no normalization will be performed
 
         Returns:
             normalized text with the lowest CER and CER value
         """
-        if pred_text == "":
-            return input_text, cer_threshold
-
         normalized_texts_cer = calculate_cer(normalized_texts, pred_text, remove_punct)
         normalized_texts_cer = sorted(normalized_texts_cer, key=lambda x: x[1])
-        normalized_text, cer = normalized_texts_cer[0]
-
-        if cer > cer_threshold:
-            return input_text, cer
+        normalized_text, cer, idx = normalized_texts_cer[0]
 
         if verbose:
             print('-' * 30)
             for option in normalized_texts:
                 print(option)
             print('-' * 30)
-        return normalized_text, cer
+        return normalized_text, cer, idx
 
 
 def calculate_cer(normalized_texts: List[str], pred_text: str, remove_punct=False) -> List[Tuple[str, float]]:
@@ -297,32 +394,15 @@ def calculate_cer(normalized_texts: List[str], pred_text: str, remove_punct=Fals
     Returns: normalized options with corresponding CER
     """
     normalized_options = []
-    for text in normalized_texts:
+    for i, text in enumerate(normalized_texts):
         text_clean = text.replace('-', ' ').lower()
         if remove_punct:
             for punct in "!?:;,.-()*+-/<=>@^_":
-                text_clean = text_clean.replace(punct, "")
-        cer = round(word_error_rate([pred_text], [text_clean], use_cer=True) * 100, 2)
-        normalized_options.append((text, cer))
+                text_clean = text_clean.replace(punct, " ").replace("  ", " ")
+
+        cer = jiwer.cer(pred_text, text_clean) * 100
+        normalized_options.append((text, cer, i))
     return normalized_options
-
-
-def get_asr_model(asr_model):
-    """
-    Returns ASR Model
-
-    Args:
-        asr_model: NeMo ASR model
-    """
-    if os.path.exists(args.model):
-        asr_model = ASRModel.restore_from(asr_model)
-    elif args.model in ASRModel.get_available_model_names():
-        asr_model = ASRModel.from_pretrained(asr_model)
-    else:
-        raise ValueError(
-            f'Provide path to the pretrained checkpoint or choose from {ASRModel.get_available_model_names()}'
-        )
-    return asr_model
 
 
 def parse_args():
@@ -334,16 +414,25 @@ def parse_args():
     parser.add_argument(
         "--language", help="Select target language", choices=["en", "ru", "de", "es"], default="en", type=str
     )
-    parser.add_argument("--audio_data", default=None, help="path to an audio file or .json manifest")
+    parser.add_argument("--manifest", default=None, help="path to .json manifest")
     parser.add_argument(
         "--output_filename",
         default=None,
         help="Path of where to save .json manifest with normalization outputs."
-        " It will only be saved if --audio_data is a .json manifest.",
+        " It will only be saved if --manifest is a .json manifest.",
         type=str,
     )
     parser.add_argument(
-        '--model', type=str, default='QuartzNet15x5Base-En', help='Pre-trained model name or path to model checkpoint'
+        '--manifest_text_field',
+        help="A field in .json manifest to normalize (applicable only --manifest is specified)",
+        type=str,
+        default="text",
+    )
+    parser.add_argument(
+        '--manifest_asr_pred_field',
+        help="A field in .json manifest with ASR predictions (applicable only --manifest is specified)",
+        type=str,
+        default="pred_text",
     )
     parser.add_argument(
         "--n_tagged",
@@ -374,116 +463,23 @@ def parse_args():
     )
     parser.add_argument(
         "--cer_threshold",
-        default=100,
-        type=int,
-        help="if CER for pred_text is above the cer_threshold, no normalization will be performed",
+        default=-1,
+        type=float,
+        help="if CER for pred_text and the normalization option is above the cer_threshold, default deterministic normalization will be used. Set to -1 to disable cer-based filtering. Specify the value in %, e.g. 100 not 1.",
     )
     parser.add_argument("--batch_size", default=200, type=int, help="Number of examples for each process")
+    parser.add_argument(
+        "--max_number_of_permutations_per_split",
+        default=729,
+        type=int,
+        help="a maximum number of permutations which can be generated from input sequence of tokens.",
+    )
     return parser.parse_args()
-
-
-def _normalize_line(
-    normalizer: NormalizerWithAudio, n_tagged, verbose, line: str, remove_punct, punct_post_process, cer_threshold
-):
-    line = json.loads(line)
-    pred_text = line["pred_text"]
-
-    normalized_texts = normalizer.normalize(
-        text=line["text"], verbose=verbose, n_tagged=n_tagged, punct_post_process=punct_post_process,
-    )
-
-    normalized_texts = set(normalized_texts)
-    normalized_text, cer = normalizer.select_best_match(
-        normalized_texts=normalized_texts,
-        input_text=line["text"],
-        pred_text=pred_text,
-        verbose=verbose,
-        remove_punct=remove_punct,
-        cer_threshold=cer_threshold,
-    )
-    line["nemo_normalized"] = normalized_text
-    line["CER_nemo_normalized"] = cer
-    return line
-
-
-def normalize_manifest(
-    normalizer,
-    audio_data: str,
-    n_jobs: int,
-    n_tagged: int,
-    remove_punct: bool,
-    punct_post_process: bool,
-    batch_size: int,
-    cer_threshold: int,
-    output_filename: Optional[str] = None,
-):
-    """
-    Args:
-        args.audio_data: path to .json manifest file.
-    """
-
-    def __process_batch(batch_idx: int, batch: List[str], dir_name: str):
-        """
-        Normalizes batch of text sequences
-        Args:
-            batch: list of texts
-            batch_idx: batch index
-            dir_name: path to output directory to save results
-        """
-        normalized_lines = [
-            _normalize_line(
-                normalizer,
-                n_tagged,
-                verbose=False,
-                line=line,
-                remove_punct=remove_punct,
-                punct_post_process=punct_post_process,
-                cer_threshold=cer_threshold,
-            )
-            for line in tqdm(batch)
-        ]
-
-        with open(f"{dir_name}/{batch_idx:05}.json", "w") as f_out:
-            for line in normalized_lines:
-                f_out.write(json.dumps(line, ensure_ascii=False) + '\n')
-
-        print(f"Batch -- {batch_idx} -- is complete")
-
-    if output_filename is None:
-        output_filename = audio_data.replace('.json', '_normalized.json')
-
-    with open(audio_data, 'r') as f:
-        lines = f.readlines()
-
-    print(f'Normalizing {len(lines)} lines of {audio_data}...')
-
-    # to save intermediate results to a file
-    batch = min(len(lines), batch_size)
-
-    tmp_dir = output_filename.replace(".json", "_parts")
-    os.makedirs(tmp_dir, exist_ok=True)
-
-    Parallel(n_jobs=n_jobs)(
-        delayed(__process_batch)(idx, lines[i : i + batch], tmp_dir)
-        for idx, i in enumerate(range(0, len(lines), batch))
-    )
-
-    # aggregate all intermediate files
-    with open(output_filename, "w") as f_out:
-        for batch_f in sorted(glob(f"{tmp_dir}/*.json")):
-            with open(batch_f, "r") as f_in:
-                lines = f_in.read()
-            f_out.write(lines)
-
-    print(f'Normalized version saved at {output_filename}')
 
 
 if __name__ == "__main__":
     args = parse_args()
 
-    if not ASR_AVAILABLE and args.audio_data:
-        raise ValueError("NeMo ASR collection is not installed.")
-    start = time.time()
     args.whitelist = os.path.abspath(args.whitelist) if args.whitelist else None
     if args.text is not None:
         normalizer = NormalizerWithAudio(
@@ -493,62 +489,46 @@ if __name__ == "__main__":
             overwrite_cache=args.overwrite_cache,
             whitelist=args.whitelist,
             lm=args.lm,
+            max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
         )
-
+        start = perf_counter()
         if os.path.exists(args.text):
             with open(args.text, 'r') as f:
                 args.text = f.read().strip()
-        normalized_texts = normalizer.normalize(
+
+        options = normalizer.normalize(
             text=args.text,
-            verbose=args.verbose,
             n_tagged=args.n_tagged,
             punct_post_process=not args.no_punct_post_process,
+            verbose=args.verbose,
         )
-
-        if not normalizer.lm:
-            normalized_texts = set(normalized_texts)
-        if args.audio_data:
-            asr_model = get_asr_model(args.model)
-            pred_text = asr_model.transcribe([args.audio_data])[0]
-            normalized_text, cer = normalizer.select_best_match(
-                normalized_texts=normalized_texts,
-                pred_text=pred_text,
-                input_text=args.text,
-                verbose=args.verbose,
-                remove_punct=not args.no_remove_punct_for_cer,
-                cer_threshold=args.cer_threshold,
-            )
-            print(f"Transcript: {pred_text}")
-            print(f"Normalized: {normalized_text}")
-        else:
-            print("Normalization options:")
-            for norm_text in normalized_texts:
-                print(norm_text)
-    elif not os.path.exists(args.audio_data):
-        raise ValueError(f"{args.audio_data} not found.")
-    elif args.audio_data.endswith('.json'):
+        for option in options:
+            print(option)
+    elif args.manifest.endswith('.json'):
         normalizer = NormalizerWithAudio(
             input_case=args.input_case,
             lang=args.language,
             cache_dir=args.cache_dir,
             overwrite_cache=args.overwrite_cache,
             whitelist=args.whitelist,
+            max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
         )
-        normalize_manifest(
-            normalizer=normalizer,
-            audio_data=args.audio_data,
+        start = perf_counter()
+        normalizer.normalize_manifest(
+            manifest=args.manifest,
             n_jobs=args.n_jobs,
-            n_tagged=args.n_tagged,
-            remove_punct=not args.no_remove_punct_for_cer,
+            punct_pre_process=True,
             punct_post_process=not args.no_punct_post_process,
             batch_size=args.batch_size,
-            cer_threshold=args.cer_threshold,
             output_filename=args.output_filename,
+            n_tagged=args.n_tagged,
+            text_field=args.manifest_text_field,
+            asr_pred_field=args.manifest_asr_pred_field,
+            cer_threshold=args.cer_threshold,
         )
     else:
         raise ValueError(
-            "Provide either path to .json manifest in '--audio_data' OR "
-            + "'--audio_data' path to audio file and '--text' path to a text file OR"
-            "'--text' string text (for debugging without audio)"
+            "Provide either path to .json manifest with '--manifest' OR "
+            + "an input text with '--text' (for debugging without audio)"
         )
-    print(f'Execution time: {round((time.time() - start)/60, 2)} min.')
+    print(f'Execution time: {round((perf_counter() - start)/60, 2)} min.')

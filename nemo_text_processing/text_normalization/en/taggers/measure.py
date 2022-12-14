@@ -130,8 +130,7 @@ class MeasureFst(GraphFst):
 
         unit_graph = (
             pynutil.insert("cardinal { integer: \"-\" } units: \"")
-            + pynini.cross(pynini.union("/", "per"), "per")
-            + delete_zero_or_one_space
+            + ((pynini.cross("/", "per") + delete_zero_or_one_space) | (pynini.accep("per") + pynutil.delete(" ")))
             + pynutil.insert(NEMO_NON_BREAKING_SPACE)
             + graph_unit
             + pynutil.insert("\" preserve_order: true")
@@ -150,7 +149,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("decimal { ")
             + decimal.final_graph_wo_negative
             + pynutil.insert(" } units: \"")
-            + pynini.cross(pynini.union('x', "X"), 'x')
+            + (pynini.cross(pynini.union('x', "X"), 'x') | pynini.cross(pynini.union('x', "X"), ' times'))
             + pynutil.insert("\"")
         )
 
@@ -234,7 +233,7 @@ class MeasureFst(GraphFst):
         for x in [" x ", "x"]:
             range_graph |= cardinal + pynini.cross(x, " by ") + cardinal
             if not self.deterministic:
-                range_graph |= cardinal + pynini.cross(x, " times ") + cardinal
+                range_graph |= cardinal + pynini.cross(x, " times ") + pynini.closure(cardinal, 0, 1)
 
         for x in ["*", " * "]:
             range_graph |= cardinal + pynini.cross(x, " times ") + cardinal

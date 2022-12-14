@@ -303,7 +303,7 @@ def post_process_punct(input: str, normalized_text: str, add_unicode_punct: bool
         punct_unicode = [
             chr(i)
             for i in range(sys.maxunicode)
-            if category(chr(i)).startswith("P") and chr(i) not in punct_default and chr(i) in input
+            if category(chr(i)).startswith("P") and chr(i) not in punct_marks and chr(i) in input
         ]
         punct_marks = punct_marks.extend(punct_unicode)
 
