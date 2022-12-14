@@ -14,13 +14,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.de.utils import get_abs_path, load_labels
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR,
-    NEMO_DIGIT,
-    TO_LOWER,
-    GraphFst,
-    insert_space,
-)
+from nemo_text_processing.tn_itn_utils.graph_utils import NEMO_CHAR, NEMO_DIGIT, TO_LOWER, GraphFst, insert_space
 from pynini.lib import pynutil
 
 graph_teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv"))).optimize()

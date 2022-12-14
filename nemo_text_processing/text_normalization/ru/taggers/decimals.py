@@ -15,9 +15,9 @@
 from collections import defaultdict
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.en.utils import load_labels
 from nemo_text_processing.text_normalization.ru.utils import get_abs_path
+from nemo_text_processing.tn_itn_utils.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, insert_space
 from pynini.lib import pynutil
 
 delete_space = pynutil.delete(" ")

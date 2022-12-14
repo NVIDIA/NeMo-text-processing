@@ -14,7 +14,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.de.taggers.measure import singular_to_plural, unit_singular
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_SIGMA,
     GraphFst,
     convert_space,

@@ -26,7 +26,6 @@
 # acceptor (G).
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA
 from nemo_text_processing.text_normalization.ru.utils import get_abs_path, load_labels
 from pynini.lib import pynutil, rewrite
 
@@ -131,7 +130,7 @@ def get_alternative_formats():
 
 
 if __name__ == '__main__':
-    from nemo_text_processing.text_normalization.en.graph_utils import generator_main
+    from nemo_text_processing.tn_itn_utils.graph_utils import generator_main, NEMO_SIGMA
 
     numbers = get_number_names()
     for k, v in numbers.items():

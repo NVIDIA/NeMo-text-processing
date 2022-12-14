@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst, insert_space
 from nemo_text_processing.text_normalization.es.graph_utils import ones
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
+from nemo_text_processing.tn_itn_utils.graph_utils import NEMO_SIGMA, GraphFst, insert_space
 from pynini.lib import pynutil
 
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))

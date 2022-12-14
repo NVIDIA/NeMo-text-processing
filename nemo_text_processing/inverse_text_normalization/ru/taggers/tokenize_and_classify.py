@@ -28,13 +28,8 @@ from nemo_text_processing.inverse_text_normalization.ru.taggers.ordinal import O
 from nemo_text_processing.inverse_text_normalization.ru.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.ru.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ru.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
 from nemo_text_processing.text_normalization.ru.taggers.tokenize_and_classify import ClassifyFst as TNClassifyFst
+from nemo_text_processing.tn_itn_utils.graph_utils import GraphFst, delete_extra_space, delete_space, generator_main
 from pynini.lib import pynutil
 
 

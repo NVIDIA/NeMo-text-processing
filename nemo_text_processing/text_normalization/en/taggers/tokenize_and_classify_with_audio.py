@@ -16,16 +16,6 @@ import logging
 import os
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR,
-    NEMO_DIGIT,
-    NEMO_NOT_SPACE,
-    NEMO_WHITE_SPACE,
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
 from nemo_text_processing.text_normalization.en.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.en.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.en.taggers.date import DateFst
@@ -56,6 +46,16 @@ from nemo_text_processing.text_normalization.en.verbalizers.roman import RomanFs
 from nemo_text_processing.text_normalization.en.verbalizers.telephone import TelephoneFst as vTelephone
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTime
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWord
+from nemo_text_processing.tn_itn_utils.graph_utils import (
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    NEMO_NOT_SPACE,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from pynini.lib import pynutil
 
 

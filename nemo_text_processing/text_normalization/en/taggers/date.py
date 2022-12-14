@@ -13,7 +13,12 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.en.utils import (
+    augment_labels_with_punct_at_end,
+    get_abs_path,
+    load_labels,
+)
+from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
     NEMO_LOWER,
@@ -23,11 +28,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     insert_space,
-)
-from nemo_text_processing.text_normalization.en.utils import (
-    augment_labels_with_punct_at_end,
-    get_abs_path,
-    load_labels,
 )
 from pynini.examples import plurals
 from pynini.lib import pynutil

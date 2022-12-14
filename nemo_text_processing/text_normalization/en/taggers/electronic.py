@@ -14,7 +14,7 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,

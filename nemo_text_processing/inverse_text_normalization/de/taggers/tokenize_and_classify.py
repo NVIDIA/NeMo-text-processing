@@ -39,12 +39,7 @@ from nemo_text_processing.text_normalization.de.verbalizers.electronic import El
 from nemo_text_processing.text_normalization.de.verbalizers.fraction import FractionFst as TNFractionVerbalizer
 from nemo_text_processing.text_normalization.de.verbalizers.ordinal import OrdinalFst as TNOrdinalVerbalizer
 from nemo_text_processing.text_normalization.de.verbalizers.time import TimeFst as TNTimeVerbalizer
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
+from nemo_text_processing.tn_itn_utils.graph_utils import GraphFst, delete_extra_space, delete_space, generator_main
 from pynini.lib import pynutil
 
 

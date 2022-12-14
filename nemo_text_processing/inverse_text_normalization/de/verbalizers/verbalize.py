@@ -19,7 +19,7 @@ from nemo_text_processing.inverse_text_normalization.de.verbalizers.money import
 from nemo_text_processing.inverse_text_normalization.de.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.de.verbalizers.cardinal import CardinalFst as TNCardinalVerbalizer
 from nemo_text_processing.text_normalization.de.verbalizers.decimal import DecimalFst as TNDecimalVerbalizer
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.tn_itn_utils.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):

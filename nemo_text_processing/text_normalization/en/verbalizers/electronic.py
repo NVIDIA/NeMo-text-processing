@@ -13,7 +13,8 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.en.utils import get_abs_path
+from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
@@ -23,7 +24,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.en.utils import get_abs_path
 from pynini.examples import plurals
 from pynini.lib import pynutil
 

@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.es.graph_utils import (
+    accents,
+    shift_cardinal_gender,
+    strip_cardinal_apocope,
+)
+from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_CHAR,
     NEMO_NOT_QUOTE,
     NEMO_NOT_SPACE,
@@ -21,11 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_space,
     insert_space,
-)
-from nemo_text_processing.text_normalization.es.graph_utils import (
-    accents,
-    shift_cardinal_gender,
-    strip_cardinal_apocope,
 )
 from pynini.lib import pynutil
 
