@@ -17,9 +17,13 @@ import math
 import re
 from typing import List, Union
 
-import torch
 from nemo_text_processing.hybrid.mlm_scorer import MLMScorer
 from tqdm import tqdm
+
+try:
+    import torch
+except ImportError as e:
+    raise ImportError("torch is not installed")
 
 
 def init_models(model_name_list: str):

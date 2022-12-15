@@ -39,7 +39,7 @@ We recommend installing NeMo in a fresh Conda environment.
     conda create --name nemo_tn python==3.8
     conda activate nemo_tn
 
-Install PyTorch using their `configurator <https://pytorch.org/get-started/locally/>`_. 
+(Optional) To use [Hybrid Text Normalization](nemo_text_processing/hybrid/README.md) install PyTorch using their `configurator <https://pytorch.org/get-started/locally/>`_. 
 
 .. code-block:: bash
 

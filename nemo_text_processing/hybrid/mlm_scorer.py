@@ -16,9 +16,16 @@
 from typing import List
 
 import numpy as np
-import torch
-from torch.nn.functional import softmax
-from transformers import AutoModelForMaskedLM, AutoTokenizer
+
+try:
+    import torch
+    from torch.nn.functional import softmax
+except ImportError as e:
+    raise ImportError("torch is not installed")
+try:
+    from transformers import AutoModelForMaskedLM, AutoTokenizer
+except ImportError as e:
+    raise ImportError("transformers is not installed")
 
 __all__ = ['MLMScorer']
 
