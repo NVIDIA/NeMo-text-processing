@@ -1,4 +1,4 @@
-**Hybric Text Processing**
+**Hybrid Text Processing**
 ==========================
 
 Introduction

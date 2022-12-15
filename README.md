@@ -15,70 +15,60 @@ See [documentation](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en
 Documentation
 -------------
 
-`Text Processing (text normalization and inverse text normalization) <https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/main/nlp/text_normalization/intro.html>`_
+[Text Processing (text normalization and inverse text normalization)](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/main/nlp/text_normalization/intro.html).
 
 Tutorials
 ---------
-A great way to start with NeMo is by checking `one of our tutorials <https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/starthere/tutorials.html>`_.
+A great way to start with NeMo is by checking [one of our tutorials](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/starthere/tutorials.html).
 
 Getting help with NeMo
 ----------------------
-FAQ can be found on NeMo's `Discussions board <https://github.com/NVIDIA/NeMo/discussions>`_. You are welcome to ask questions or start discussions there.
+FAQ can be found on NeMo's [Discussions board](https://github.com/NVIDIA/NeMo/discussions). You are welcome to ask questions or start discussions there.
 
 
 Installation
 ------------
 
-Conda
-~~~~~
+### Conda virtual environment
 
-We recommend installing NeMo in a fresh Conda environment.
+We recommend setting up a fresh Conda environment to install NeMo.
 
-.. code-block:: bash
+```bash
+conda create --name nemo_tn python==3.8
+conda activate nemo_tn
+```
 
-    conda create --name nemo_tn python==3.8
-    conda activate nemo_tn
+(Optional) To use [hybrid text normalization](nemo_text_processing/hybrid/README.md) install PyTorch using their [configurator](https://pytorch.org/get-started/locally/). 
 
-(Optional) To use [Hybrid Text Normalization](nemo_text_processing/hybrid/README.md) install PyTorch using their `configurator <https://pytorch.org/get-started/locally/>`_. 
+```
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+```
+**_NOTE:_** The command used to install PyTorch may depend on your system.
 
-.. code-block:: bash
 
-    conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+###  Pip
 
-.. note::
-
-  The command used to install PyTorch may depend on your system.
-
-Pip
-~~~
 Use this installation mode if you want the latest released version.
+```
+pip install nemo_text_processing
+```
 
-.. code-block:: bash
+###  Pip from source
 
-    pip install nemo_text_processing
-
-
-Pip from source
-~~~~~~~~~~~~~~~
 Use this installation mode if you want the a version from particular GitHub branch (e.g main).
+```
+pip install Cython
+python -m pip install git+https://github.com/NVIDIA/NeMo-text-processing.git@{BRANCH}#egg=nemo_text_processing
+```
 
-.. code-block:: bash
 
-    pip install Cython
-    python -m pip install git+https://github.com/NVIDIA/NeMo-text-processing.git@{BRANCH}#egg=nemo_text_processing
+### From source
 
-
-From source
-~~~~~~~~~~~
 Use this installation mode if you are contributing to NeMo.
-
-.. code-block:: bash
-
+```
     git clone https://github.com/NVIDIA/NeMo-text-processing
     cd NeMo-text-processing
     ./reinstall.sh
+```
 
-.. note::
-
-    If you only want the toolkit without additional conda-based dependencies, you may replace ``reinstall.sh``
-    with ``pip install -e .`` when your PWD is the root of the NeMo repository.
+**_NOTE:_** If you only want the toolkit without additional conda-based dependencies, you may replace ``reinstall.sh`` with ``pip install -e .`` when your PWD is the root of the NeMo repository.
