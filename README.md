@@ -72,3 +72,29 @@ Use this installation mode if you are contributing to NeMo.
 ```
 
 **_NOTE:_** If you only want the toolkit without additional conda-based dependencies, you may replace ``reinstall.sh`` with ``pip install -e .`` when your PWD is the root of the NeMo repository.
+
+
+Citation
+--------
+
+```
+@inproceedings{zhang21ja_interspeech,
+  author={Yang Zhang and Evelina Bakhturina and Boris Ginsburg},
+  title={{NeMo (Inverse) Text Normalization: From Development to Production}},
+  year=2021,
+  booktitle={Proc. Interspeech 2021},
+  pages={4857--4859}
+}
+
+@inproceedings{bakhturina22_interspeech,
+  author={Evelina Bakhturina and Yang Zhang and Boris Ginsburg},
+  title={{Shallow Fusion of Weighted Finite-State Transducer and Language Model for
+Text Normalization}},
+  year=2022,
+  booktitle={Proc. Interspeech 2022}
+}
+```
+
+License
+-------
+NeMo is under [Apache 2.0 license](LICENSE).
