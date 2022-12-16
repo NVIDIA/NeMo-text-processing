@@ -179,13 +179,13 @@ def threshold(norm_texts_weights, unchanged=True, replacement=True):
 def main():
     args = parser.parse_args()
 
-    logging.setLevel(logging.INFO)
+    logging.getLogger().setLevel(logging.INFO)
     lang = args.lang
     input_f = args.data
 
-    if args.data == "text_normalization_dataset_files/LibriTTS.json":
+    if "LibriTTS.json" in args.data:
         args.dataset = "libritts"
-    elif args.data == "text_normalization_dataset_files/GoogleTN.json":
+    elif "GoogleTN.json" in args.data:
         args.dataset = "google"
     else:
         args.dataset = None
@@ -294,7 +294,7 @@ def main():
             # add constrain when multiple correct labels per example
             pred_is_correct = min(sum((df["labels"] == df[f"{model}_pred"]) & df["labels"] == 1), 1)
 
-            if not pred_is_correct or logging.getEffectiveLevel() <= logging.DEBUG:
+            if not pred_is_correct or logging.getLogger().level <= logging.DEBUG:
                 do_print = True
 
             if do_print:

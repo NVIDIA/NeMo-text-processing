@@ -2,9 +2,11 @@ cdifflib
 inflect
 jiwer>2.3.0
 joblib
+pandas
 regex
 sacremoses>=0.0.43
 setuptools==59.5.0
 tqdm>=4.41.0
+transformers
 wget
 wrapt

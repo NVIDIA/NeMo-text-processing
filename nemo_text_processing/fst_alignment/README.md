@@ -19,8 +19,6 @@ out indices: [55:69] \
 in: |2016| out: |twenty sixteen| 
 ```
 
-
-
 Disclaimer: 
 
 The heuristic algorithm relies on monotonous alignment and can fail in certain situations,

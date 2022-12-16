@@ -1,75 +1,103 @@
 **NeMo Text Processing**
 ==========================
 
-**This repository is under development, please refer to https://github.com/NVIDIA/NeMo/tree/main/nemo_text_processing for full functionality.**
+**This repository is under development, please refer to https://github.com/NVIDIA/NeMo/tree/main/nemo_text_processing for full functionality. See [documentation](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/nlp/text_normalization/wfst/wfst_text_normalization.html) for details.**
 
 Introduction
 ------------
 
-`NeMo Text Processing` is a Python package for text normalization and inverse text normalization.
-
-This repository is under development, please refer to https://github.com/NVIDIA/NeMo/tree/main/nemo_text_processing for full functionallity.
-See [documentation](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/nlp/text_normalization/wfst/wfst_text_normalization.html) for details.
-
+`nemo-text-processing` is a Python package for text normalization and inverse text normalization.
 
 Documentation
 -------------
 
-`Text Processing (text normalization and inverse text normalization) <https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/main/nlp/text_normalization/intro.html>`_
+[NeMo-text-processing (text normalization and inverse text normalization)](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/main/nlp/text_normalization/intro.html).
 
 Tutorials
----------
-A great way to start with NeMo is by checking `one of our tutorials <https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/starthere/tutorials.html>`_.
+-----------------
 
-Getting help with NeMo
-----------------------
-FAQ can be found on NeMo's `Discussions board <https://github.com/NVIDIA/NeMo/discussions>`_. You are welcome to ask questions or start discussions there.
+| Google Collab Notebook      | Description |
+| ----------- | ----------- |
+| [Text_(Inverse)_Normalization.ipynb](https://github.com/NVIDIA/NeMo-text-processing/blob/main/tutorials/Text_(Inverse)_Normalization.ipynb)     | Quick-start guide       |
+| [WFST_Tutorial](https://github.com/NVIDIA/NeMo-text-processing/blob/main/tutorials/WFST_Tutorial.ipynb)   | In-depth tutorial on grammar customization        |
+
+
+Getting help
+--------------
+If you have a question which is not answered in the [Github discussions](https://github.com/NVIDIA/NeMo-text-processing/discussions), encounter a bug or have a feature request, please create a [Github issue](https://github.com/NVIDIA/NeMo-text-processing/issues). We also welcome you to directly open a [pull request](https://github.com/NVIDIA/NeMo-text-processing/pulls) to fix a bug or add a feature.
 
 
 Installation
 ------------
 
-Conda
-~~~~~
+### Conda virtual environment
 
-We recommend installing NeMo in a fresh Conda environment.
+We recommend setting up a fresh Conda environment to install NeMo-text-processing.
 
-.. code-block:: bash
+```bash
+conda create --name nemo_tn python==3.8
+conda activate nemo_tn
+```
 
-    conda create --name nemo_tn python==3.8
-    conda activate nemo_tn
+(Optional) To use [hybrid text normalization](nemo_text_processing/hybrid/README.md) install PyTorch using their [configurator](https://pytorch.org/get-started/locally/). 
+
+```
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+```
+**_NOTE:_** The command used to install PyTorch may depend on your system.
 
 
-Pip
-~~~
+###  Pip
+
 Use this installation mode if you want the latest released version.
+```
+pip install nemo_text_processing
+```
 
-.. code-block:: bash
+###  Pip from source
 
-    pip install nemo_text_processing
-
-
-Pip from source
-~~~~~~~~~~~~~~~
 Use this installation mode if you want the a version from particular GitHub branch (e.g main).
 
-.. code-block:: bash
+```
+pip install Cython
+python -m pip install git+https://github.com/NVIDIA/NeMo-text-processing.git@{BRANCH}#egg=nemo_text_processing
+```
 
-    pip install Cython
-    python -m pip install git+https://github.com/NVIDIA/NeMo-text-processing.git@{BRANCH}#egg=nemo_text_processing
+
+### From source
+
+Use this installation mode if you are contributing to NeMo-text-processing.
+
+```
+git clone https://github.com/NVIDIA/NeMo-text-processing
+cd NeMo-text-processing
+./reinstall.sh
+```
+
+**_NOTE:_** If you only want the toolkit without additional conda-based dependencies, you may replace ``reinstall.sh`` with ``pip install -e .`` with the NeMo-text-processing root directory as your current working director.
 
 
-From source
-~~~~~~~~~~~
-Use this installation mode if you are contributing to NeMo.
+Citation
+--------
 
-.. code-block:: bash
+```
+@inproceedings{zhang21ja_interspeech,
+  author={Yang Zhang and Evelina Bakhturina and Boris Ginsburg},
+  title={{NeMo (Inverse) Text Normalization: From Development to Production}},
+  year=2021,
+  booktitle={Proc. Interspeech 2021},
+  pages={4857--4859}
+}
 
-    git clone https://github.com/NVIDIA/NeMo-text-processing
-    cd NeMo-text-processing
-    ./reinstall.sh
+@inproceedings{bakhturina22_interspeech,
+  author={Evelina Bakhturina and Yang Zhang and Boris Ginsburg},
+  title={{Shallow Fusion of Weighted Finite-State Transducer and Language Model for
+Text Normalization}},
+  year=2022,
+  booktitle={Proc. Interspeech 2022}
+}
+```
 
-.. note::
-
-    If you only want the toolkit without additional conda-based dependencies, you may replace ``reinstall.sh``
-    with ``pip install -e .`` when your PWD is the root of the NeMo repository.
+License
+-------
+NeMo-text-processing is under [Apache 2.0 license](LICENSE).
