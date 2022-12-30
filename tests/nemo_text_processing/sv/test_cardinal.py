@@ -18,7 +18,7 @@ from parameterized import parameterized
 from ..utils import CACHE_DIR, parse_test_case_file
 
 try:
-#    from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+    #    from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
     from nemo_text_processing.text_normalization.normalize import Normalizer
 
     PYNINI_AVAILABLE = True
@@ -42,7 +42,6 @@ class TestCardinal:
     # def test_denorm(self, test_input, expected):
     #     pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
     #     assert pred == expected
-
 
     normalizer = (
         Normalizer(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)

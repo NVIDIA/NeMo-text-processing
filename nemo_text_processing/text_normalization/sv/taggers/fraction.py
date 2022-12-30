@@ -43,33 +43,25 @@ class FractionFst(GraphFst):
         ordinal_graph = ordinal.graph
         numerator_graph = cardinal.graph_en
 
-        fractional_endings = pynini.string_map([
-            ("ljarte", "ljarddel"),
-            ("tionde", "tiondel"),
-            ("tonde", "tondel"),
-            ("ljonte", "ljondel"),
-            ("lliarte", "lliarddel"),
-            ("llionte", "lliondel"),
-            ("tusende", "tusendel"),
-            ("te", "tedel"),
-            ("de", "dedel"),
-            ("je", "jedel"),
-            ("drade", "dradel"),
-            ("a", "adel")
-        ])
-        alt_fractional_endings = pynini.string_map([
-            ("tondel", "tondedel"),
-            ("tiondel", "tiondedel")
-        ])
-        lexicalised = pynini.string_map([
-            ("andradel", "halv"),
-            ("fjärdedel", "kvart")
-        ])
-        alt_lexicalised = pynini.string_map([
-            ("halv", "andradel"),
-            ("kvart", "fjärdedel"),
-            ("kvart", "kvarts")
-        ])
+        fractional_endings = pynini.string_map(
+            [
+                ("ljarte", "ljarddel"),
+                ("tionde", "tiondel"),
+                ("tonde", "tondel"),
+                ("ljonte", "ljondel"),
+                ("lliarte", "lliarddel"),
+                ("llionte", "lliondel"),
+                ("tusende", "tusendel"),
+                ("te", "tedel"),
+                ("de", "dedel"),
+                ("je", "jedel"),
+                ("drade", "dradel"),
+                ("a", "adel"),
+            ]
+        )
+        alt_fractional_endings = pynini.string_map([("tondel", "tondedel"), ("tiondel", "tiondedel")])
+        lexicalised = pynini.string_map([("andradel", "halv"), ("fjärdedel", "kvart")])
+        alt_lexicalised = pynini.string_map([("halv", "andradel"), ("kvart", "fjärdedel"), ("kvart", "kvarts")])
 
         fractions = (
             ordinal_graph

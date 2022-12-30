@@ -25,7 +25,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
-
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
 digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
@@ -33,7 +32,7 @@ ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
 ett_to_en = pynini.string_map([("ett", "en")])
 
 
-def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: bool=True) -> 'pynini.FstLike':
+def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: bool = True) -> 'pynini.FstLike':
     """
     Helper function for millions/milliards and higher
     Args:
@@ -106,7 +105,7 @@ class CardinalFst(GraphFst):
         # Any single digit
         graph_digit = digit
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
-        both_ones = (pynini.cross("1", "en") | pynini.cross("1", "ett"))
+        both_ones = pynini.cross("1", "en") | pynini.cross("1", "ett")
         if deterministic:
             final_digit = digit
         else:
@@ -134,9 +133,7 @@ class CardinalFst(GraphFst):
 
         self.tens = graph_tens.optimize()
 
-        graph_two_digit_non_zero = pynini.union(
-            graph_digit, graph_tens, (pynutil.delete("0") + graph_digit)
-        )
+        graph_two_digit_non_zero = pynini.union(graph_digit, graph_tens, (pynutil.delete("0") + graph_digit))
         if not deterministic:
             graph_two_digit_non_zero |= pynini.union(
                 graph_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + graph_digit)
@@ -144,9 +141,7 @@ class CardinalFst(GraphFst):
 
         self.two_digit_non_zero = graph_two_digit_non_zero.optimize()
 
-        graph_final_two_digit_non_zero = pynini.union(
-            final_digit, graph_tens, (pynutil.delete("0") + final_digit)
-        )
+        graph_final_two_digit_non_zero = pynini.union(final_digit, graph_tens, (pynutil.delete("0") + final_digit))
         if not deterministic:
             graph_final_two_digit_non_zero |= pynini.union(
                 final_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + final_digit)
@@ -155,12 +150,12 @@ class CardinalFst(GraphFst):
         self.final_two_digit_non_zero = graph_final_two_digit_non_zero.optimize()
 
         # Three digit strings
-        graph_hundreds = hundreds + pynini.union(
-            pynutil.delete("00"), graph_tens, (pynutil.delete("0") + final_digit)
-        )
+        graph_hundreds = hundreds + pynini.union(pynutil.delete("00"), graph_tens, (pynutil.delete("0") + final_digit))
         if not deterministic:
             graph_hundreds |= hundreds + pynini.union(
-                pynutil.delete("00"), (graph_tens | pynutil.insert(NEMO_SPACE) + graph_tens), (pynini.cross("0", NEMO_SPACE) + final_digit)
+                pynutil.delete("00"),
+                (graph_tens | pynutil.insert(NEMO_SPACE) + graph_tens),
+                (pynini.cross("0", NEMO_SPACE) + final_digit),
             )
 
         self.hundreds = graph_hundreds.optimize()
@@ -174,8 +169,12 @@ class CardinalFst(GraphFst):
         graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
             pynutil.delete("00") + digits_no_one
         )
-        self.graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component_at_least_one_non_zero_digit
-        self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one.optimize()
+        self.graph_hundreds_component_at_least_one_non_zero_digit = (
+            graph_hundreds_component_at_least_one_non_zero_digit
+        )
+        self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = (
+            graph_hundreds_component_at_least_one_non_zero_digit_no_one.optimize()
+        )
 
         tusen = pynutil.insert("tusen")
         if not deterministic:

@@ -21,11 +21,11 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_space,
-    insert_space
+    insert_space,
 )
 from nemo_text_processing.text_normalization.es.graph_utils import roman_to_int, strip_accent
+from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import make_million, filter_punctuation
 from pynini.lib import pynutil
 
 digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
@@ -61,22 +61,17 @@ class OrdinalFst(GraphFst):
             graph_ties |= pynini.cross("4", "förtionde")
             graph_teens |= pynini.cross("18", "adertonde")
 
-        graph_tens_component = (
-            graph_teens
-            | graph_card_ties + graph_digit
-            | graph_ties + pynutil.delete('0')
-        )
+        graph_tens_component = graph_teens | graph_card_ties + graph_digit | graph_ties + pynutil.delete('0')
         self.graph_tens_component = graph_tens_component
         graph_tens = graph_tens_component
 
         digit_or_space = pynini.closure(NEMO_DIGIT | pynini.accep(" "))
         cardinal_format = (NEMO_DIGIT - "0") + pynini.closure(digit_or_space + NEMO_DIGIT, 0, 1)
         a_format = (
-            ((pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1) + pynini.union("1", "2"))
+            (pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1) + pynini.union("1", "2"))
             | (NEMO_DIGIT - "1") + pynini.union("1", "2")
-            | pynini.union("1", "2"))
-            + pynutil.delete(pynini.union(":a", ":A"))
-        )
+            | pynini.union("1", "2")
+        ) + pynutil.delete(pynini.union(":a", ":A"))
         e_format = pynini.closure(
             (NEMO_DIGIT - "1" - "2")
             | (cardinal_format + "1" + NEMO_DIGIT)
@@ -101,10 +96,7 @@ class OrdinalFst(GraphFst):
             hundreds |= pynini.cross("1", "ett hundra")
             hundreds |= digit + pynutil.insert(NEMO_SPACE) + pynutil.insert("hundra")
 
-        graph_hundreds = hundreds + pynini.union(
-            graph_tens,
-            (pynutil.delete("0") + graph_digit),
-        )
+        graph_hundreds = hundreds + pynini.union(graph_tens, (pynutil.delete("0") + graph_digit),)
         if not deterministic:
             graph_hundreds |= hundreds + pynini.union(
                 (graph_teens | pynutil.insert(NEMO_SPACE) + graph_teens), (pynini.cross("0", NEMO_SPACE) + graph_digit)
@@ -165,17 +157,19 @@ class OrdinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
-        ordinal_endings = pynini.string_map([
-            ("ljon", "ljonte"),
-            ("ljoner", "ljonte"),
-            ("llion", "llionte"),
-            ("llioner", "llionte"),
-            ("ljard", "ljarte"),
-            ("ljarder", "ljarte"),
-            ("lliard", "lliarte"),
-            ("lliarder", "lliarte"),
-            ("tusen", "tusende")
-        ])
+        ordinal_endings = pynini.string_map(
+            [
+                ("ljon", "ljonte"),
+                ("ljoner", "ljonte"),
+                ("llion", "llionte"),
+                ("llioner", "llionte"),
+                ("ljard", "ljarte"),
+                ("ljarder", "ljarte"),
+                ("lliard", "lliarte"),
+                ("lliarder", "lliarte"),
+                ("tusen", "tusende"),
+            ]
+        )
 
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
@@ -197,12 +191,7 @@ class OrdinalFst(GraphFst):
 
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
-        tok_graph = (
-            pynutil.insert("integer: \"")
-            + (cleaned_graph | self.suffixed_to_words)
-            + pynutil.insert("\"")
-        )
+        tok_graph = pynutil.insert("integer: \"") + (cleaned_graph | self.suffixed_to_words) + pynutil.insert("\"")
 
         final_graph = self.add_tokens(tok_graph)
         self.fst = final_graph.optimize()
-

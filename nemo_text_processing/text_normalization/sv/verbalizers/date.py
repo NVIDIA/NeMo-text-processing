@@ -39,11 +39,7 @@ class DateFst(GraphFst):
 
         month = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
-        year = (
-            pynutil.delete("year: \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
-        )
+        year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         # day month year
         graph_dmy = day + month + pynini.closure(pynini.accep(" ") + year, 0, 1)
