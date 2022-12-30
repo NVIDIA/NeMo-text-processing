@@ -28,21 +28,18 @@ from nemo_text_processing.text_normalization.en.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
-
 # from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst
-
 # from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst
 # from nemo_text_processing.text_normalization.sv.taggers.measure import MeasureFst
 # from nemo_text_processing.text_normalization.sv.taggers.money import MoneyFst
-# from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst
 # from nemo_text_processing.text_normalization.sv.taggers.range import RangeFst as RangeFst
 # from nemo_text_processing.text_normalization.sv.taggers.serial import SerialFst
 # from nemo_text_processing.text_normalization.sv.taggers.telephone import TelephoneFst
 # from nemo_text_processing.text_normalization.sv.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.sv.taggers.word import WordFst
-
 # from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst as vDateFst
 # from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 # from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as vTimeFst
@@ -104,10 +101,10 @@ class ClassifyFst(GraphFst):
             # decimal_graph = decimal.fst
             # logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
-            # start_time = time.time()
-            # fraction = FractionFst(deterministic=deterministic, cardinal=cardinal)
-            # fraction_graph = fraction.fst
-            # logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
+            start_time = time.time()
+            fraction = FractionFst(deterministic=deterministic, cardinal=cardinal)
+            fraction_graph = fraction.fst
+            logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
             # start_time = time.time()
             # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
@@ -171,10 +168,10 @@ class ClassifyFst(GraphFst):
                 # | pynutil.add_weight(decimal_graph, 1.1)
                 # | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
-                # | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(ordinal_graph, 1.1)
                 # | pynutil.add_weight(money_graph, 1.1)
                 # | pynutil.add_weight(telephone_graph, 1.1)
-                # | pynutil.add_weight(electonic_graph, 1.1)
+                | pynutil.add_weight(electonic_graph, 1.1)
                 # | pynutil.add_weight(fraction_graph, 1.1)
                 # | pynutil.add_weight(range_graph, 1.1)
                 # | pynutil.add_weight(serial_graph, 1.1001)  # should be higher than the rest of the classes
