@@ -32,6 +32,7 @@ digit_inline = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_
 tens = pynini.invert(pynini.string_file(get_abs_path("data/number/tens.tsv")))
 tens_inline = pynini.invert(pynini.string_file(get_abs_path("data/number/tens_inline.tsv")))
 delete_hyphen = pynutil.delete(pynini.closure("-"))
+delete_extra_hyphens = pynini.cross(pynini.closure("-", 1), "-")
 
 
 def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
@@ -107,6 +108,9 @@ class CardinalFst(GraphFst):
         )
         if not deterministic:
             base_hundreds |= pynini.cross("1", "egyszáz")
+            base_hundreds |= pynini.cross("1", " egyszáz")
+            base_hundreds |= pynini.cross("1", " száz")
+            digits_inline_no_one |= pynutil.insert(" száz")
 
         hundreds = pynini.union(
             pynini.cross("100", "száz"),
@@ -117,7 +121,11 @@ class CardinalFst(GraphFst):
         if not deterministic:
             hundreds |= pynini.union(
                 pynini.cross("100", "egyszáz"),
-                pynini.cross("1", "egyszáz") + graph_tens
+                pynini.cross("1", "egyszáz") + graph_tens,
+                pynini.cross("100", " egyszáz"),
+                pynini.cross("1", " egyszáz ") + graph_tens,
+                pynini.cross("100", " száz"),
+                pynini.cross("1", " száz ") + graph_tens
             )
 
         # Three digit strings
@@ -138,48 +146,35 @@ class CardinalFst(GraphFst):
             pynutil.delete("00") + digits_no_one
         )
 
-        one_thousand = pynini.union(
-            pynini.cross("1000", "ezer"),
-            pynini.cross("10", "ezer") + graph_tens,
-            pynini.cross("1", "ezer") + base_hundreds
-        )
+        ezer = pynutil.insert("ezer")
         if not deterministic:
-            one_thousand |= pynini.union(
-                pynini.cross("1000", "egyezer"),
-                pynini.cross("10", "egyezer") + graph_tens,
-                pynini.cross("1", "egyezer") + base_hundreds
-            )
+            ezer |= pynutil.insert(" ezer")
 
-        # FIXME: 1-9000 only
-        # FIXME: missing hundreds + digits: Error: No valid output with given input: '1111'
-        # FIXME: missing digits: Error: No valid output with given input: '1001'
-        other_thousands = pynini.union(
-            digits_inline_no_one + pynini.cross("000", "ezer"),
-            digits_inline_no_one + pynini.cross("0", "ezer") + insert_hyphen + graph_tens,
-            digits_inline_no_one + pynutil.insert("ezer") + insert_hyphen + base_hundreds
+        ezer1 = ezer
+        if not deterministic:
+            ezer1 |= pynutil.insert("egyezer")
+            ezer1 |= pynutil.insert(" egyezer")
+
+        graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
+            pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
+            graph_hundreds_component_at_least_one_non_zero_digit_no_one
+            + ezer
+            + (graph_hundreds_component_at_least_one_non_zero_digit | pynutil.delete("000")),
+            pynutil.delete("001")
+            + ezer1
+            + (graph_hundreds_component_at_least_one_non_zero_digit | pynutil.delete("000")),
         )
 
-        self.thousands = (one_thousand | other_thousands).optimize()
+        graph_thousands_component_at_least_one_none_zero_digit_no_one = pynini.union(
+            pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+            graph_hundreds_component_at_least_one_non_zero_digit_no_one
+            + ezer
+            + (graph_hundreds_component_at_least_one_non_zero_digit | pynutil.delete("000")),
+            pynutil.delete("001")
+            + ezer1
+            + (graph_hundreds_component_at_least_one_non_zero_digit | pynutil.delete("000")),
+        )
 
-        # graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
-        #     pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
-            
-        #     + pynutil.insert(" mil")
-        #     + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-        #     pynini.cross("001", "mil")
-        #     + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-        # )
-
-        # graph_thousands_component_at_least_one_none_zero_digit_no_one = pynini.union(
-        #     pynutil.delete("000"),
-            
-        #     + pynutil.insert(" mil")
-        #     + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-        #     pynini.cross("001", "mil")
-        #     + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-        # )
-        graph_thousands_component_at_least_one_non_zero_digit = one_thousand | other_thousands
-        graph_thousands_component_at_least_one_none_zero_digit_no_one = other_thousands
         self.graph_thousands_component_at_least_one_non_zero_digit = graph_thousands_component_at_least_one_non_zero_digit
         self.graph_thousands_component_at_least_one_none_zero_digit_no_one = graph_thousands_component_at_least_one_none_zero_digit_no_one
 
@@ -242,6 +237,7 @@ class CardinalFst(GraphFst):
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_extra_hyphens, "", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_hyphen, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_hyphen, "", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(
