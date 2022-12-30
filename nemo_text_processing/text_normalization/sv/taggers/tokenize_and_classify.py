@@ -28,8 +28,10 @@ from nemo_text_processing.text_normalization.en.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
+
 # from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst
+
 # from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst
 # from nemo_text_processing.text_normalization.sv.taggers.measure import MeasureFst
 # from nemo_text_processing.text_normalization.sv.taggers.money import MoneyFst
@@ -40,6 +42,7 @@ from nemo_text_processing.text_normalization.sv.taggers.electronic import Electr
 # from nemo_text_processing.text_normalization.sv.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.sv.taggers.word import WordFst
+
 # from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst as vDateFst
 # from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 # from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as vTimeFst
