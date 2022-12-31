@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
 from pynini.lib import pynutil
 
-digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
-zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
+digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
+zero = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
 
 graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv"))
 server_common = pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
