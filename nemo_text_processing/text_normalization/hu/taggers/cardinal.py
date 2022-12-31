@@ -33,13 +33,15 @@ tens = pynini.invert(pynini.string_file(get_abs_path("data/number/tens.tsv")))
 tens_inline = pynini.invert(pynini.string_file(get_abs_path("data/number/tens_inline.tsv")))
 delete_hyphen = pynutil.delete(pynini.closure("-"))
 delete_extra_hyphens = pynini.cross(pynini.closure("-", 1), "-")
+cardinal_separator = pynini.string_map([".", NEMO_SPACE])
 
 
 def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     """
-    Helper function for parsing number strings. Converts common cardinal strings (groups of three digits delineated by space)
+    Helper function for parsing number strings. Converts common cardinal strings (groups of three digits delineated by 'cardinal_separator' - see graph_utils)
     and converts to a string of digits:
         "1 000" -> "1000"
+        "1.000.000" -> "1000000"
     Args:
         fst: Any pynini.FstLike object. Function composes fst onto string parser fst
 
@@ -49,7 +51,6 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
 
-    cardinal_separator = NEMO_SPACE
     cardinal_string = pynini.closure(
         NEMO_DIGIT, 1
     )  # For string w/o punctuation (used for page numbers, thousand series)
