@@ -33,6 +33,7 @@ tens = pynini.invert(pynini.string_file(get_abs_path("data/number/tens.tsv")))
 tens_inline = pynini.invert(pynini.string_file(get_abs_path("data/number/tens_inline.tsv")))
 delete_hyphen = pynutil.delete(pynini.closure("-"))
 delete_extra_hyphens = pynini.cross(pynini.closure("-", 1), "-")
+delete_extra_spaces = pynini.cross(pynini.closure(" ", 1), " ")
 cardinal_separator = pynini.string_map([".", NEMO_SPACE])
 
 
@@ -192,6 +193,9 @@ class CardinalFst(GraphFst):
         graph_milliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("milliárd"))
         if not deterministic:
             graph_million |= pynutil.add_weight(pynini.cross("001", "egymilliárd"), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "egymilliárd "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "milliárd "), -0.001)
+            graph_milliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" milliárd "))
         graph_milliard |= pynutil.delete("000")
         graph_milliard += insert_hyphen
 
@@ -199,6 +203,9 @@ class CardinalFst(GraphFst):
         graph_billion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("billió"))
         if not deterministic:
             graph_million |= pynutil.add_weight(pynini.cross("001", "egybillió"), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "egybillió "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "billió "), -0.001)
+            graph_billion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" billió "))
         graph_billion |= pynutil.delete("000")
         graph_billion += insert_hyphen
 
@@ -206,6 +213,9 @@ class CardinalFst(GraphFst):
         graph_billiard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("billiárd"))
         if not deterministic:
             graph_million |= pynutil.add_weight(pynini.cross("001", "egybilliárd"), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "egybilliárd "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "billiárd "), -0.001)
+            graph_billiard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" billiárd "))
         graph_billiard |= pynutil.delete("000")
         graph_billiard += insert_hyphen
 
@@ -213,6 +223,9 @@ class CardinalFst(GraphFst):
         graph_trillion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("trillió"))
         if not deterministic:
             graph_million |= pynutil.add_weight(pynini.cross("001", "egytrillió"), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "egytrillió "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "trillió "), -0.001)
+            graph_trillion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" trillió "))
         graph_trillion |= pynutil.delete("000")
         graph_trillion += insert_hyphen
 
@@ -220,6 +233,9 @@ class CardinalFst(GraphFst):
         graph_trilliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("trilliárd"))
         if not deterministic:
             graph_million |= pynutil.add_weight(pynini.cross("001", "egytrilliárd"), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "egytrilliárd "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "trilliárd "), -0.001)
+            graph_trilliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" trilliárd "))
         graph_trilliard |= pynutil.delete("000")
         graph_trilliard += insert_hyphen
 
@@ -240,9 +256,10 @@ class CardinalFst(GraphFst):
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_extra_hyphens, "", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_hyphen, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_hyphen, "", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_extra_hyphens, "", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_extra_spaces, "", "", NEMO_SIGMA)
             @ pynini.cdrewrite(
                 pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), NEMO_ALPHA, NEMO_ALPHA, NEMO_SIGMA
             )
