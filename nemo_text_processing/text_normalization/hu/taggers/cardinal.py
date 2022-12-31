@@ -159,6 +159,7 @@ class CardinalFst(GraphFst):
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
             + ezer
+            + insert_hyphen
             + (graph_hundreds_component_at_least_one_non_zero_digit | pynutil.delete("000")),
             pynutil.delete("001")
             + ezer1
@@ -169,6 +170,7 @@ class CardinalFst(GraphFst):
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
             + ezer
+            + insert_hyphen
             + (graph_hundreds_component_at_least_one_non_zero_digit | pynutil.delete("000")),
             pynutil.delete("001")
             + ezer1
