@@ -20,11 +20,14 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, G
 from pynini.lib import pynutil
 
 
+endings = pynini.string_file(get_abs_path("data/ordinals/endings.tsv"))
+exceptions = pynini.string_file(get_abs_path("data/ordinals/exceptional.tsv"))
+
+
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g. 
-        "2." -> ordinal { integer: "zwei" } }
-        "2tes" -> ordinal { integer: "zwei" } }
+        "2." -> ordinal { integer: "második" } }
 
     Args:
         cardinal: cardinal GraphFst
@@ -36,14 +39,12 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
         cardinal_graph = cardinal.graph
-        endings = ["ter", "tes", "tem", "te", "ten"]
-        self.graph = (
-            (
-                pynini.closure(NEMO_DIGIT | pynini.accep("."))
-                + pynutil.delete(pynutil.add_weight(pynini.union(*endings), weight=0.0001) | pynini.accep("."))
-            )
-            @ cardinal_graph
+        self.bare_ordinals = (
+            cardinal_graph
+            @ pynini.cdrewrite(exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(endings, "", "[EOS]", NEMO_SIGMA)
         ).optimize()
+        self.graph = (self.bare_ordinals + pynutil.delete(".")).optimize()
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
