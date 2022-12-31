@@ -39,10 +39,12 @@ class OrdinalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic=False):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
-        fixup = pynini.cdrewrite(exceptions, "[BOS]", "[EOS]", NEMO_SIGMA) @ pynini.cdrewrite(endings, "", "[EOS]", NEMO_SIGMA)
         cardinal_graph = cardinal.graph
-        bare_ordinals = cardinal.graph @ fixup
-        self.bare_ordinals = bare_ordinals.optimize()
+        self.bare_ordinals = (
+            cardinal_graph
+            @ pynini.cdrewrite(exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(endings, "", "[EOS]", NEMO_SIGMA)
+        ).optimize()
         self.graph = pynini.union(
             self.bare_ordinals + pynutil.delete("."),
             self.bare_ordinals.project("output")
