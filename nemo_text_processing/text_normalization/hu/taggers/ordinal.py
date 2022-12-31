@@ -45,7 +45,10 @@ class OrdinalFst(GraphFst):
             @ pynini.cdrewrite(exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(endings, "", "[EOS]", NEMO_SIGMA)
         ).optimize()
-        self.graph = (self.bare_ordinals + pynutil.delete(".")).optimize()  
+        self.graph = pynini.union(
+            self.bare_ordinals + pynutil.delete("."),
+            self.bare_ordinals.project("output")
+        ).optimize()  
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
