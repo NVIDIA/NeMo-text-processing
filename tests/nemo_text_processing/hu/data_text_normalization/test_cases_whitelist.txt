@@ -4,3 +4,7 @@ tv.-ekként~törvényekként
 fn.-et~főnevet
 fn.-eket~főneveket
 fn.-vel~főnévvel
+isk.-t~iskolát
+isk.-kat~iskolákat
+isk.-val~iskolával
+kir.-ok~királyok
