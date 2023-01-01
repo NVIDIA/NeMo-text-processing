@@ -17,6 +17,38 @@ from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_
 from pynini.lib import pynutil
 
 
+def naive_inflector(abbr: str, word: str):
+    singular = {
+        "er": "t nek rel ért ré ig ként ben en nél be re hez ből ről től",
+        "ek": "et nek kel ért ké ig ként ben en nél be re hez ből ről től",
+        "amm": "ot nak al ért á ig ként ban on nál ba ra hoz ból ról tól",
+        "ok": "at nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
+        "alék": "ot nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
+        "erc": "et nek cel ért cé ig ként ben en nél be re hez ből ről től",
+    }
+    keys_sorted = sorted(singular, key=lambda k: len(k), reverse=True)
+    plural = {
+        "er": "ek",
+        "erc": "ek",
+        "amm": "ok",
+        "alék": "ok"
+    }
+    def get_key():
+        for key in keys_sorted:
+            if word.endswith(key):
+                return key
+        return None
+    forms = []
+    key = get_key()
+    for form in singular[key].split():
+        forms.append((f"{abbr}-{form}", f"{word}{form}"))
+    plural_form = plural[key]
+    forms.append((f"{abbr}-{plural_form}", f"{word}{plural_form}"))
+    for form in singular[plural_form].split():
+        forms.append((f"{abbr}-{plural_form}{form}", f"{word}{plural_form}{form}"))
+    return forms
+
+
 # TODO: inflected nouns/adjectives
 # everything in whitelist.tsv until stb. has many inflected forms
 class WhiteListFst(GraphFst):
