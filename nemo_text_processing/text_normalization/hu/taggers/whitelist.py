@@ -18,7 +18,7 @@ from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_
 from pynini.lib import pynutil
 
 
-def naive_inflector(abbr: str, word: str):
+def naive_inflector(abbr: str, word: str, singular_only = False):
     singular = {
         "er": "t nek rel ért ré ig ként ben en nél be re hez ből ről től",
         "ek": "et nek kel ért ké ig ként ben en nél be re hez ből ről től",
@@ -38,6 +38,9 @@ def naive_inflector(abbr: str, word: str):
         "ő": "t nek vel ért vé ig ként ben n nél be re höz ből ről től",
         "orint": "ot nak tal ért tá ig ként ban on nál ba ra hoz ból ról tól"
         "és": "t nek sel ért sé ig ként ben en nél be re hez ből ről től",
+        "ók": "ot nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
+        "on": "t nak nal ért ná ig ként ban on nál ba ra hoz ból ról tól",
+        "a": "át ának ával áért ává áig aként ában án ánál ába ára ához ából áról ától",
     }
     keys_sorted = sorted(singular, key=lambda k: len(k), reverse=True)
     plural = {
@@ -53,7 +56,10 @@ def naive_inflector(abbr: str, word: str):
         "és": "ek",
         "ég": "ek",
         "ő": "k ek",
-        "orint": "ok"
+        "orint": "ok",
+        "ók": "ok",
+        "on": "ok",
+        "a": "ák"
     }
 
     def get_key():
@@ -78,7 +84,7 @@ def naive_inflector(abbr: str, word: str):
 
     for form in singular[key].split():
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
-    if word[0] != word.upper()[0]:
+    if not singular_only:
         for plural_form in plural[key].split(" "):
             forms.append((f"{abbr}-{tweak(plural_form)}", f"{outword}{plural_form}"))
             for form in singular[plural_form].split():
