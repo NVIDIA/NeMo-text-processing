@@ -35,16 +35,16 @@ def naive_inflector(abbr: str, word: str, singular_only = False):
     forms = []
     key, ends = get_kv()
     outword = word
-    for wordend in ["a", "e", "ny"]:
+    for wordend in ["ny", "év", "a", "e"]:
         if outword.endswith(wordend):
             outword = outword[:-len(wordend)]
 
     def tweak(form: str) -> str:
         if outword == word:
             return form
-        endings = ["a", "á", "e", "é", "ny", "nny"]
+        endings = ["ny", "nny", "ev", "év", "a", "á", "e", "é"]
         undouble = {
-            "nny": "ny"
+            "nny": "ny",
         }
         for ending in endings:
             if form.startswith(ending):

@@ -1,3 +1,6 @@
 tv.-t~törvényt
 tv.-nyel~törvénnyel
 tv.-ekként~törvényekként
+fn.-et~főnevet
+fn.-eket~főneveket
+fn.-vel~főnévvel
