@@ -69,6 +69,18 @@ def naive_inflector(abbr: str, word: str):
     return forms
 
 
+def load_inflected(filename, skip_spaces = True):
+    forms = []
+    with open(filename) as tsv:
+        for line in tsv.readlines():
+            parts = line.strip().split("\t")
+            forms.append((parts[0], parts[1]))
+            if not (skip_spaces and " " in parts[1]):
+                forms += naive_inflector(parts[0], parts[1])
+    graph = pynini.string_map(forms)
+    return graph
+
+
 # TODO: inflected nouns/adjectives
 # everything in whitelist.tsv until stb. has many inflected forms
 class WhiteListFst(GraphFst):
