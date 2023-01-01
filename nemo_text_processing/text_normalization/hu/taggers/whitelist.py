@@ -41,6 +41,7 @@ def naive_inflector(abbr: str, word: str, singular_only = False):
         "ók": "ot nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
         "on": "t nak nal ért ná ig ként ban on nál ba ra hoz ból ról tól",
         "a": "át ának ával áért ává áig aként ában án ánál ába ára ához ából áról ától",
+        "ort": "ot nak tal ért tá ig ként ban on nál ba ra hoz ból ról tól",
     }
     keys_sorted = sorted(singular, key=lambda k: len(k), reverse=True)
     plural = {
@@ -59,7 +60,8 @@ def naive_inflector(abbr: str, word: str, singular_only = False):
         "orint": "ok",
         "ók": "ok",
         "on": "ok",
-        "a": "ák"
+        "a": "ák",
+        "ort": "ok",
     }
 
     def get_key():
