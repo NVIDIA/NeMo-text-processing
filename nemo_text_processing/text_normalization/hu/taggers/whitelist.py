@@ -64,20 +64,21 @@ def naive_inflector(abbr: str, word: str, singular_only = False):
     return forms
 
 
-def load_inflected(filename, skip_spaces = True):
+def load_inflected(filename, input_case, singular_only = False, skip_spaces = True):
     forms = []
     with open(filename) as tsv:
         for line in tsv.readlines():
             parts = line.strip().split("\t")
-            forms.append((parts[0], parts[1]))
+            key = parts[0]
+            if input_case == "lower_cased":
+                key = parts[0].lower()
+            forms.append((key, parts[1]))
             if not (skip_spaces and " " in parts[1]):
-                forms += naive_inflector(parts[0], parts[1])
+                forms += naive_inflector(key, parts[1], singular_only)
     graph = pynini.string_map(forms)
     return graph
 
 
-# TODO: inflected nouns/adjectives
-# everything in whitelist.tsv until stb. has many inflected forms
 class WhiteListFst(GraphFst):
     """
     Finite state transducer for classifying whitelist, e.g.
@@ -107,6 +108,13 @@ class WhiteListFst(GraphFst):
                 _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv")), weight=0.0001
             )
 
+        graph_inflected = load_inflected(get_abs_path("data/whitelist_inflect.tsv"), input_case, False)
+        graph_inflected_sg = load_inflected(get_abs_path("data/whitelist_inflect_sg.tsv"), input_case, True)
+        units_graph = load_inflected(get_abs_path("data/measures/measurements.tsv"), input_case, False)
+
+        graph |= graph_inflected
+        graph |= graph_inflected_sg
+
         if input_file:
             whitelist_provided = _get_whitelist_graph(input_case, input_file)
             if not deterministic:
@@ -115,7 +123,6 @@ class WhiteListFst(GraphFst):
                 graph = whitelist_provided
 
         if not deterministic:
-            units_graph = _get_whitelist_graph(input_case, file=get_abs_path("data/measures/measurements.tsv"))
             graph |= units_graph
 
         self.graph = graph
