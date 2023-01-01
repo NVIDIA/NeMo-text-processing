@@ -14,66 +14,26 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels, load_inflection
 from pynini.lib import pynutil
 
 
 def naive_inflector(abbr: str, word: str, singular_only = False):
-    singular = {
-        "er": "t nek rel ért ré ig ként ben en nél be re hez ből ről től",
-        "ek": "et nek kel ért ké ig ként ben en nél be re hez ből ről től",
-        "amm": "ot nak al ért á ig ként ban on nál ba ra hoz ból ról tól",
-        "um": "ot nak mal ért má ig ként ban on nál ba ra hoz ból ról tól",
-        "ok": "at nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
-        "ák": "at nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
-        "alék": "ot nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
-        "erc": "et nek cel ért cé ig ként ben en nél be re hez ből ről től",
-        "óra": "át ának ával áért ává áig aként ában án ánál ába ára ához ából áról ától akor",
-        "or": "t nak ral ért rá ig ként ban on nál ba ra hoz ból ról tól",
-        "méteres": "et t nek sel ért sé ig ként ben en nél be re hez ből ről től",
-        "es": "t nek sel ért sé ig ként ben en nél be re hez ből ről től",
-        "est": "et nek tel ért té ig ként ben en nél be re hez ből ről től",
-        "ág": "ot nak gal ért gá ig ként ban on nál ba ra hoz ból ról tól",
-        "ég": "et nek gel ért gé ig ként ben en nél be re hez ből ről től",
-        "ő": "t nek vel ért vé ig ként ben n nél be re höz ből ről től",
-        "orint": "ot nak tal ért tá ig ként ban on nál ba ra hoz ból ról tól"
-        "és": "t nek sel ért sé ig ként ben en nél be re hez ből ről től",
-        "ók": "ot nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
-        "on": "t nak nal ért ná ig ként ban on nál ba ra hoz ból ról tól",
-        "a": "át ának ával áért ává áig aként ában án ánál ába ára ához ából áról ától",
-        "ort": "ot nak tal ért tá ig ként ban on nál ba ra hoz ból ról tól",
-    }
+    singular = load_inflection(get_abs_path("data/inflection/endings.tsv"))
+    plural = load_inflection(get_abs_path("data/inflection/plural_endings.tsv"))
+    lexical = load_inflection(get_abs_path("data/inflection/word_endings.tsv"))
     keys_sorted = sorted(singular, key=lambda k: len(k), reverse=True)
-    plural = {
-        "er": "ek",
-        "erc": "ek",
-        "amm": "ok",
-        "um": "ok",
-        "alék": "ok",
-        "óra": "ák",
-        "or": "ok",
-        "méteres": "ek",
-        "es": "ek",
-        "és": "ek",
-        "ég": "ek",
-        "ő": "k ek",
-        "orint": "ok",
-        "ók": "ok",
-        "on": "ok",
-        "a": "ák",
-        "ort": "ok",
-    }
 
-    def get_key():
-        if word == "óra":
-            return "óra"
+    def get_kv():
+        if word in lexical:
+            return (word, lexical[word])
         for key in keys_sorted:
             if word.endswith(key):
-                return key
+                return (key, singular[key])
         return None
 
     forms = []
-    key = get_key()
+    key, ends = get_kv()
     outword = word
     if outword[-1] in ["a", "e"]:
         outword = outword[:-1]
@@ -84,7 +44,7 @@ def naive_inflector(abbr: str, word: str, singular_only = False):
         assert form[0] in ["a", "e", "á", "é"]
         return form[1:]
 
-    for form in singular[key].split():
+    for form in ends:
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
     if not singular_only:
         for plural_form in plural[key].split(" "):

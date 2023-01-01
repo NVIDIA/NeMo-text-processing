@@ -1,4 +1,5 @@
 # Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, Jim O'Regan.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,3 +41,18 @@ def load_labels(abs_path):
     label_tsv = open(abs_path)
     labels = list(csv.reader(label_tsv, delimiter="\t"))
     return labels
+
+
+def load_inflection(abs_path):
+    """
+    loads inflection information
+
+    Args:
+        abs_path: absolute path
+    
+    Returns dictionary of mappings
+    """
+    with open(abs_path) as inflection_tsv:
+        items = list(csv.reader(inflection_tsv, delimiter="\t"))
+        inflections = {k[0]: k[1].split(" ") for k in items}
+        return inflections
