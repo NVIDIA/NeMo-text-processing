@@ -29,6 +29,15 @@ def naive_inflector(abbr: str, word: str):
         "alék": "ot nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
         "erc": "et nek cel ért cé ig ként ben en nél be re hez ből ről től",
         "óra": "át ának ával áért ává áig aként ában án ánál ába ára ához ából áról ától akor",
+        "or": "t nak ral ért rá ig ként ban on nál ba ra hoz ból ról tól",
+        "méteres": "et t nek sel ért sé ig ként ben en nél be re hez ből ről től",
+        "es": "t nek sel ért sé ig ként ben en nél be re hez ből ről től",
+        "est": "et nek tel ért té ig ként ben en nél be re hez ből ről től",
+        "ág": "ot nak gal ért gá ig ként ban on nál ba ra hoz ból ról tól",
+        "ég": "et nek gel ért gé ig ként ben en nél be re hez ből ről től",
+        "ő": "t nek vel ért vé ig ként ben n nél be re höz ből ről től",
+        "orint": "ot nak tal ért tá ig ként ban on nál ba ra hoz ból ról tól"
+        "és": "t nek sel ért sé ig ként ben en nél be re hez ből ről től",
     }
     keys_sorted = sorted(singular, key=lambda k: len(k), reverse=True)
     plural = {
@@ -38,6 +47,13 @@ def naive_inflector(abbr: str, word: str):
         "um": "ok",
         "alék": "ok",
         "óra": "ák",
+        "or": "ok",
+        "méteres": "ek",
+        "es": "ek",
+        "és": "ek",
+        "ég": "ek",
+        "ő": "k ek",
+        "orint": "ok"
     }
 
     def get_key():
@@ -62,10 +78,11 @@ def naive_inflector(abbr: str, word: str):
 
     for form in singular[key].split():
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
-    plural_form = plural[key]
-    forms.append((f"{abbr}-{tweak(plural_form)}", f"{outword}{plural_form}"))
-    for form in singular[plural_form].split():
-        forms.append((f"{abbr}-{tweak(plural_form)}{form}", f"{outword}{plural_form}{form}"))
+    if word[0] != word.upper()[0]:
+        for plural_form in plural[key].split(" "):
+            forms.append((f"{abbr}-{tweak(plural_form)}", f"{outword}{plural_form}"))
+            for form in singular[plural_form].split():
+                forms.append((f"{abbr}-{tweak(plural_form)}{form}", f"{outword}{plural_form}{form}"))
     return forms
 
 
