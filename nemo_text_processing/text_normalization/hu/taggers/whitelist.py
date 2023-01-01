@@ -23,30 +23,49 @@ def naive_inflector(abbr: str, word: str):
         "er": "t nek rel ért ré ig ként ben en nél be re hez ből ről től",
         "ek": "et nek kel ért ké ig ként ben en nél be re hez ből ről től",
         "amm": "ot nak al ért á ig ként ban on nál ba ra hoz ból ról tól",
+        "um": "ot nak mal ért má ig ként ban on nál ba ra hoz ból ról tól",
         "ok": "at nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
+        "ák": "at nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
         "alék": "ot nak kal ért ká ig ként ban on nál ba ra hoz ból ról tól",
         "erc": "et nek cel ért cé ig ként ben en nél be re hez ből ről től",
+        "óra": "át ának ával áért ává áig aként ában án ánál ába ára ához ából áról ától akor",
     }
     keys_sorted = sorted(singular, key=lambda k: len(k), reverse=True)
     plural = {
         "er": "ek",
         "erc": "ek",
         "amm": "ok",
-        "alék": "ok"
+        "um": "ok",
+        "alék": "ok",
+        "óra": "ák",
     }
+
     def get_key():
+        if word == "óra":
+            return "óra"
         for key in keys_sorted:
             if word.endswith(key):
                 return key
         return None
+
     forms = []
     key = get_key()
+    outword = word
+    if outword[-1] in ["a", "e"]:
+        outword = outword[:-1]
+
+    def tweak(form: str) -> str:
+        if outword == word:
+            return form
+        assert form[0] in ["a", "e", "á", "é"]
+        return form[1:]
+
     for form in singular[key].split():
-        forms.append((f"{abbr}-{form}", f"{word}{form}"))
+        forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
     plural_form = plural[key]
-    forms.append((f"{abbr}-{plural_form}", f"{word}{plural_form}"))
+    forms.append((f"{abbr}-{tweak(plural_form)}", f"{outword}{plural_form}"))
     for form in singular[plural_form].split():
-        forms.append((f"{abbr}-{plural_form}{form}", f"{word}{plural_form}{form}"))
+        forms.append((f"{abbr}-{tweak(plural_form)}{form}", f"{outword}{plural_form}{form}"))
     return forms
 
 
