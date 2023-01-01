@@ -14,54 +14,8 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels, load_inflection
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels, naive_inflector
 from pynini.lib import pynutil
-
-
-def naive_inflector(abbr: str, word: str, singular_only = False):
-    singular = load_inflection(get_abs_path("data/inflection/endings.tsv"))
-    plural = load_inflection(get_abs_path("data/inflection/plural_endings.tsv"))
-    lexical = load_inflection(get_abs_path("data/inflection/word_endings.tsv"))
-    keys_sorted = sorted(singular, key=lambda k: len(k), reverse=True)
-
-    def get_kv():
-        if word in lexical:
-            return (word, lexical[word])
-        for key in keys_sorted:
-            if word.endswith(key):
-                return (key, singular[key])
-        return None
-
-    forms = []
-    key, ends = get_kv()
-    outword = word
-    for wordend in ["ny", "ly", "év", "a", "e"]:
-        if outword.endswith(wordend):
-            outword = outword[:-len(wordend)]
-
-    def tweak(form: str) -> str:
-        if outword == word:
-            return form
-        endings = ["ny", "nny", "ly", "lly", "ev", "év", "a", "á", "e", "é"]
-        undouble = {
-            "nny": "ny",
-            "lly": "ly",
-        }
-        for ending in endings:
-            if form.startswith(ending):
-                final = ""
-                if ending in undouble:
-                    final = undouble[ending]
-                return final + form[len(ending):]
-
-    for form in ends:
-        forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
-    if not singular_only:
-        for plural_form in plural[key]:
-            forms.append((f"{abbr}-{tweak(plural_form)}", f"{outword}{plural_form}"))
-            for form in singular[plural_form]:
-                forms.append((f"{abbr}-{tweak(plural_form)}{form}", f"{outword}{plural_form}{form}"))
-    return forms
 
 
 def load_inflected(filename, input_case, singular_only = False, skip_spaces = True):
