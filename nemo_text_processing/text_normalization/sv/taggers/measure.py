@@ -14,14 +14,10 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_NON_BREAKING_SPACE,
     NEMO_SIGMA,
     NEMO_SPACE,
-    NEMO_UPPER,
-    SINGULAR_TO_PLURAL,
-    TO_LOWER,
     GraphFst,
     convert_space,
     delete_space,
@@ -32,7 +28,7 @@ from nemo_text_processing.text_normalization.en.taggers.whitelist import get_for
 from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as OrdinalTagger
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as OrdinalVerbalizer
-from pynini.examples import plurals
+from nemo_text_processing.text_normalization.sv.graph_utils import TO_LOWER, SV_ALPHA, SV_UPPER
 from pynini.lib import pynutil
 
 
@@ -53,27 +49,39 @@ class MeasureFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
-        cardinal_graph = cardinal.graph_with_and | self.get_range(cardinal.graph_with_and)
+        cardinal_graph_ett = cardinal.graph
+        cardinal_graph_en = cardinal.graph_en
 
         graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
-        if not deterministic:
-            graph_unit |= pynini.string_file(get_abs_path("data/measure/unit_alternatives.tsv"))
+        graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
+        graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
 
         graph_unit |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (NEMO_ALPHA | TO_LOWER) + pynini.closure(NEMO_ALPHA | TO_LOWER), graph_unit
+            pynini.closure(TO_LOWER, 1) + (SV_ALPHA | TO_LOWER) + pynini.closure(SV_ALPHA | TO_LOWER), graph_unit
+        ).optimize()
+        graph_unit_ett |= pynini.compose(
+            pynini.closure(TO_LOWER, 1) + (SV_ALPHA | TO_LOWER) + pynini.closure(SV_ALPHA | TO_LOWER), graph_unit_ett
         ).optimize()
 
-        graph_unit_plural = convert_space(graph_unit @ SINGULAR_TO_PLURAL)
+        graph_unit_plural = convert_space(graph_unit @ graph_plurals)
+        graph_unit_plural_ett = convert_space(graph_unit_ett @ graph_plurals)
         graph_unit = convert_space(graph_unit)
+        graph_unit_ett = convert_space(graph_unit_ett)
 
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         graph_unit2 = (
             pynini.cross("/", "per") + delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit
         )
+        graph_unit2_ett = (
+            pynini.cross("/", "per") + delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_ett
+        )
 
         optional_graph_unit2 = pynini.closure(
             delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2, 0, 1,
+        )
+        optional_graph_unit2_ett = pynini.closure(
+            delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2_ett, 0, 1,
         )
 
         unit_plural = (
@@ -81,9 +89,17 @@ class MeasureFst(GraphFst):
             + (graph_unit_plural + optional_graph_unit2 | graph_unit2)
             + pynutil.insert("\"")
         )
+        unit_plural_ett = (
+            pynutil.insert("units: \"")
+            + (graph_unit_plural_ett + optional_graph_unit2 | graph_unit2)
+            + pynutil.insert("\"")
+        )
 
         unit_singular = (
             pynutil.insert("units: \"") + (graph_unit + optional_graph_unit2 | graph_unit2) + pynutil.insert("\"")
+        )
+        unit_singular_ett = (
+            pynutil.insert("units: \"") + (graph_unit_ett + optional_graph_unit2_ett | graph_unit2_ett) + pynutil.insert("\"")
         )
 
         subgraph_decimal = (
@@ -141,7 +157,7 @@ class MeasureFst(GraphFst):
             + decimal.final_graph_wo_negative
             + pynini.cross('-', '')
             + pynutil.insert(" } units: \"")
-            + pynini.closure(NEMO_ALPHA, 1)
+            + pynini.closure(SV_ALPHA, 1)
             + pynutil.insert("\"")
         )
 
@@ -155,7 +171,7 @@ class MeasureFst(GraphFst):
 
         alpha_dash_decimal = (
             pynutil.insert("units: \"")
-            + pynini.closure(NEMO_ALPHA, 1)
+            + pynini.closure(SV_ALPHA, 1)
             + pynini.accep('-')
             + pynutil.insert("\"")
             + pynutil.insert(" decimal { ")
@@ -167,13 +183,6 @@ class MeasureFst(GraphFst):
             pynutil.insert("fraction { ") + fraction.graph + delete_space + pynutil.insert(" } ") + unit_plural
         )
 
-        address = self.get_address_graph(cardinal)
-        address = (
-            pynutil.insert("units: \"address\" cardinal { integer: \"")
-            + address
-            + pynutil.insert("\" } preserve_order: true")
-        )
-
         math_operations = pynini.string_file(get_abs_path("data/measure/math_operation.tsv"))
         delimiter = pynini.accep(" ") | pynutil.insert(" ")
 
@@ -182,23 +191,23 @@ class MeasureFst(GraphFst):
             equals |= pynini.cross("=", "är lika med")
 
         math = (
-            (cardinal_graph | NEMO_ALPHA)
+            (cardinal_graph | SV_ALPHA)
             + delimiter
             + math_operations
-            + (delimiter | NEMO_ALPHA)
+            + (delimiter | SV_ALPHA)
             + cardinal_graph
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph | NEMO_ALPHA)
+            + (cardinal_graph | SV_ALPHA)
         )
 
         math |= (
-            (cardinal_graph | NEMO_ALPHA)
+            (cardinal_graph | SV_ALPHA)
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph | NEMO_ALPHA)
+            + (cardinal_graph | SV_ALPHA)
             + delimiter
             + math_operations
             + delimiter
@@ -218,7 +227,6 @@ class MeasureFst(GraphFst):
             | decimal_times
             | alpha_dash_decimal
             | subgraph_fraction
-            | address
             | math
         )
 
@@ -240,66 +248,3 @@ class MeasureFst(GraphFst):
         for x in ["*", " * "]:
             range_graph |= cardinal + pynini.cross(x, " gånger ") + cardinal
         return range_graph.optimize()
-
-    def get_address_graph(self, cardinal):
-        """
-        Finite state transducer for classifying serial.
-            The serial is a combination of digits, letters and dashes, e.g.:
-            2788 San Tomas Expy, Santa Clara, CA 95051 ->
-                units: "address" cardinal
-                { integer: "two seven eight eight San Tomas Expressway Santa Clara California nine five zero five one" }
-                 preserve_order: true
-        """
-        ordinal_verbalizer = OrdinalVerbalizer().graph
-        ordinal_tagger = OrdinalTagger(cardinal=cardinal).graph
-        ordinal_num = pynini.compose(
-            pynutil.insert("integer: \"") + ordinal_tagger + pynutil.insert("\""), ordinal_verbalizer
-        )
-
-        address_num = NEMO_DIGIT ** (1, 2) @ cardinal.graph_hundred_component_at_least_one_none_zero_digit
-        address_num += insert_space + NEMO_DIGIT ** 2 @ (
-            pynini.closure(pynini.cross("0", "zero "), 0, 1)
-            + cardinal.graph_hundred_component_at_least_one_none_zero_digit
-        )
-        # to handle the rest of the numbers
-        address_num = pynini.compose(NEMO_DIGIT ** (3, 4), address_num)
-        address_num = plurals._priority_union(address_num, cardinal.graph, NEMO_SIGMA)
-
-        direction = (
-            pynini.cross("E", "East")
-            | pynini.cross("S", "South")
-            | pynini.cross("W", "West")
-            | pynini.cross("N", "North")
-        ) + pynini.closure(pynutil.delete("."), 0, 1)
-
-        direction = pynini.closure(pynini.accep(NEMO_SPACE) + direction, 0, 1)
-        address_words = get_formats(get_abs_path("data/address/address_word.tsv"))
-        address_words = (
-            pynini.accep(NEMO_SPACE)
-            + (pynini.closure(ordinal_num, 0, 1) | NEMO_UPPER + pynini.closure(NEMO_ALPHA, 1))
-            + NEMO_SPACE
-            + pynini.closure(NEMO_UPPER + pynini.closure(NEMO_ALPHA) + NEMO_SPACE)
-            + address_words
-        )
-
-        city = pynini.closure(NEMO_ALPHA | pynini.accep(NEMO_SPACE), 1)
-        city = pynini.closure(pynini.accep(",") + pynini.accep(NEMO_SPACE) + city, 0, 1)
-
-        states = load_labels(get_abs_path("data/address/state.tsv"))
-
-        additional_options = []
-        for x, y in states:
-            additional_options.append((x, f"{y[0]}.{y[1:]}"))
-        states.extend(additional_options)
-        state_graph = pynini.string_map(states)
-        state = pynini.invert(state_graph)
-        state = pynini.closure(pynini.accep(",") + pynini.accep(NEMO_SPACE) + state, 0, 1)
-
-        zip_code = pynini.compose(NEMO_DIGIT ** 5, cardinal.single_digits_graph)
-        zip_code = pynini.closure(pynini.closure(pynini.accep(","), 0, 1) + pynini.accep(NEMO_SPACE) + zip_code, 0, 1,)
-
-        address = address_num + direction + address_words + pynini.closure(city + state + zip_code, 0, 1)
-
-        address |= address_num + direction + address_words + pynini.closure(pynini.cross(".", ""), 0, 1)
-
-        return address
