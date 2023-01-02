@@ -51,7 +51,7 @@ class ElectronicFst(GraphFst):
             return pynini.closure(NEMO_NOT_QUOTE - pynini.accep(" ") + insert_space) + (
                 NEMO_NOT_QUOTE - pynini.accep(" ")
             )
-        
+
         at_sign = pynutil.insert("kukac ")
         if not deterministic:
             at_sign |= pynutil.insert("kukacjel ")

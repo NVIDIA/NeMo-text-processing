@@ -36,25 +36,22 @@ class FractionFst(GraphFst):
         cardinal_graph = cardinal.graph
         # ordinals are formed by adding -ik to the fractional, but we're working backwards
         # Except, for some reason, this does not work.
-        #ordinal_graph = ordinal.bare_ordinals
+        # ordinal_graph = ordinal.bare_ordinals
         ord_endings = pynini.string_file(get_abs_path("data/ordinals/endings.tsv"))
         ord_exceptions = pynini.string_file(get_abs_path("data/ordinals/exceptional.tsv"))
 
-        exceptions = pynini.string_map(
-            [
-                ("első", "egyed"),
-                ("második", "fél")
-            ]
-        )
+        exceptions = pynini.string_map([("első", "egyed"), ("második", "fél")])
         # graph_fractional = (
         #     ordinal_graph
         #     @ pynini.cdrewrite(exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
         #     @ pynini.cdrewrite(pynutil.delete("ik"), "", "[EOS]", NEMO_SIGMA)
         # )
         graph_fractional = (
-            (cardinal_graph
-            @ pynini.cdrewrite(ord_exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(ord_endings, "", "[EOS]", NEMO_SIGMA))
+            (
+                cardinal_graph
+                @ pynini.cdrewrite(ord_exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
+                @ pynini.cdrewrite(ord_endings, "", "[EOS]", NEMO_SIGMA)
+            )
             @ pynini.cdrewrite(exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(pynutil.delete("ik"), "", "[EOS]", NEMO_SIGMA)
         )

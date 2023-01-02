@@ -20,7 +20,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, G
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
-
 endings = pynini.string_file(get_abs_path("data/ordinals/endings.tsv"))
 exceptions = pynini.string_file(get_abs_path("data/ordinals/exceptional.tsv"))
 
@@ -46,9 +45,8 @@ class OrdinalFst(GraphFst):
             @ pynini.cdrewrite(endings, "", "[EOS]", NEMO_SIGMA)
         ).optimize()
         self.graph = pynini.union(
-            self.bare_ordinals + pynutil.delete("."),
-            self.bare_ordinals.project("output")
-        ).optimize()  
+            self.bare_ordinals + pynutil.delete("."), self.bare_ordinals.project("output")
+        ).optimize()
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
