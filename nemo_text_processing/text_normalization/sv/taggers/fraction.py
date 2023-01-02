@@ -79,17 +79,8 @@ class FractionFst(GraphFst):
 
         self.fractions = fractions
 
-        fractional_pl_endings = pynini.string_map(
-            [
-                ("kvart", "kvartar"),
-                ("halv", "halva"),
-                ("del", "delar")
-            ]
-        )
-        fractions_pl = (
-            fractions
-            @ pynini.cdrewrite(fractional_pl_endings, "", "[EOS]", NEMO_SIGMA)
-        )
+        fractional_pl_endings = pynini.string_map([("kvart", "kvartar"), ("halv", "halva"), ("del", "delar")])
+        fractions_pl = fractions @ pynini.cdrewrite(fractional_pl_endings, "", "[EOS]", NEMO_SIGMA)
         self.fractions_plural = fractions_pl
 
         integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
