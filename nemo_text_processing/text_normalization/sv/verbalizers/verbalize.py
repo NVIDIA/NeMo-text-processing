@@ -18,10 +18,12 @@ from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.sv.verbalizers.decimals import DecimalFst
 from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.sv.verbalizers.fraction import FractionFst
+
 # from nemo_text_processing.text_normalization.sv.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.sv.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.sv.verbalizers.telephone import TelephoneFst
+
 # from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst
 
 
