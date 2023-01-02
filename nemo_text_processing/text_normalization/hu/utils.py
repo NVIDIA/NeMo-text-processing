@@ -59,7 +59,7 @@ def load_inflection(abs_path):
         return inflections
 
 
-def naive_inflector(abbr: str, word: str, singular_only = False):
+def naive_inflector(abbr: str, word: str, singular_only=False):
     """
     Performs naïve inflection of a pair of words: the abbreviation,
     and its expansion. Possessive forms are omitted, due to the
@@ -92,7 +92,7 @@ def naive_inflector(abbr: str, word: str, singular_only = False):
     outword = word
     for wordend in ["ny", "ly", "év", "a", "e"]:
         if outword.endswith(wordend):
-            outword = outword[:-len(wordend)]
+            outword = outword[: -len(wordend)]
 
     def tweak(form: str) -> str:
         if outword == word:
@@ -107,7 +107,7 @@ def naive_inflector(abbr: str, word: str, singular_only = False):
                 final = ""
                 if ending in undouble:
                     final = undouble[ending]
-                return final + form[len(ending):]
+                return final + form[len(ending) :]
 
     for form in ends:
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))

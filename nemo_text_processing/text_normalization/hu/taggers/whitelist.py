@@ -18,7 +18,7 @@ from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_
 from pynini.lib import pynutil
 
 
-def load_inflected(filename, input_case, singular_only = False, skip_spaces = True):
+def load_inflected(filename, input_case, singular_only=False, skip_spaces=True):
     forms = []
     with open(filename) as tsv:
         for line in tsv.readlines():
