@@ -19,7 +19,7 @@ $2~två dollar
 $2,00~två dollar
 $2.000~två dollar
 $20~tjugo dollar
-$20,506~tjugo komma fem noll sex dollar
+$20,506~tjugo komma femhundrasex dollar
 $20,50~tjugo dollar femtio cent
 $20,500~tjugo dollar femtio cent
 $20,5~tjugo dollar femtio cent
@@ -29,36 +29,36 @@ $0,010~en cent
 $0,02~två cent
 $0,20~tjugo cent
 $,01~en cent
-$,506~komma fem noll sex dollar
+$,506~komma femhundrasex dollar
 $18~arton dollar
 $18925000~arton miljoner niohundratjugofemtusen dollar
 $18 925 000~arton miljoner niohundratjugofemtusen dollar
-$18854~arton tusen åttahundrafemtiofyra dollar
-$18801~arton tusen åtta hundra och en dollar
-$18875~arton tusen åttahundrasjuttiofem dollar
-$18081~arton tusen åttioen dollar
-$18052~arton tusen och femtiotvå dollar
-$18542~arton tusen femhundrafyrtiotvå dollar
-$18519~arton tusen femhundra nitton dollar
-$18570~arton tusen femhundrasjuttio dollar
-$18578~arton tusen femhundrasjuttioåtta dollar
-$18516~arton tusen femhundrasexton dollar
-$18482~artontusenfyrahundraåttiotvå dollar
-$18478~artontusenfyrahundrasjuttioåtta dollar
-$18468~artontusenfyrahundrasextioåtta dollar
-$18903~arton tusen nio hundra och tre dollar
-$18929~arton tusen nio hundra tjugonio dollar
-$18095~arton tusen och nittiofem dollar
-$18117~arton tusen etthundrasjutton dollar
-$18128~arton tusen etthundratjugoåtta dollar
-$18125~arton tusen etthundratjugofem dollar
-$18124~arton tusen etthundratjugofyra dollar
-$18129~arton tusen etthundratjugonio dollar
-£18 000~arton tusen pund
+$18854~artontusen åttahundrafemtiofyra dollar
+$18801~artontusen åtta hundra och en dollar
+$18875~artontusen åttahundrasjuttiofem dollar
+$18081~artontusen åttioen dollar
+$18052~artontusen femtiotvå dollar
+$18542~artontusen femhundrafyrtiotvå dollar
+$18519~artontusen femhundra nitton dollar
+$18570~artontusen femhundrasjuttio dollar
+$18578~artontusen femhundrasjuttioåtta dollar
+$18516~artontusen femhundrasexton dollar
+$18482~artontusen fyrahundraåttiotvå dollar
+$18478~artontusen fyrahundrasjuttioåtta dollar
+$18468~artontusen fyrahundrasextioåtta dollar
+$18903~artontusen niohundratre dollar
+$18929~artontusen niohundratjugonio dollar
+$18095~artontusen nittiofem dollar
+$18117~artontusen etthundrasjutton dollar
+$18128~artontusen etthundratjugoåtta dollar
+$18125~artontusen etthundratjugofem dollar
+$18124~artontusen etthundratjugofyra dollar
+$18129~artontusen etthundratjugonio dollar
+£18 000~artontusen pund
 £1,20~ett pund tjugo pence
-£1,111~en komma ett och ett pund
-£2,01~två pund ett öre
-$50,00-$100,00~50 dollar - etthundra dollar
+£1,111~en komma etthundraelva pund
+£2,01~två pund en penny
+$50,00-$100,00~50 dollar - hundra dollar
 $1 925,21~ett tusen nio hundra tjugofem dollar tjugoen cent
 $1.234,123~ett tusen tvåhundratrettiofyra komma hundratjugotre dollar
 US $76,3 biljoner~US sjuttiosex komma tre biljoner dollar
