@@ -14,9 +14,9 @@
 
 
 import pynini
+from pynini.lib import pynutil
 from SV_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
 from SV_text_processing.text_normalization.sv.graph_utils import SV_UPPER
-from pynini.lib import pynutil
 
 
 class AbbreviationFst(GraphFst):
