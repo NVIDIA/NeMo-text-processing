@@ -19,7 +19,7 @@ from pynini.lib import pynutil
 class WordFst(GraphFst):
     """
     Finite state transducer for classifying word.
-        e.g. szeretlek -> tokens { name: "szeretlek" }
+        e.g. nyomok -> tokens { name: "nyomok" }
 
     Args:
         deterministic: if True will provide a single transduction option,
