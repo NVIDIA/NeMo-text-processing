@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space
 from pynini.lib import pynutil
 
 
@@ -21,7 +21,7 @@ class FractionFst(GraphFst):
     """
     Finite state transducer for verbalizing fraction
         e.g. tokens { fraction { integer: "huszonhárom" numerator: "négy" denominator: "hatod" } } ->
-        huszonhárom négyhatod
+        huszonhárom négy hatod
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -33,49 +33,21 @@ class FractionFst(GraphFst):
 
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
 
-        denominator_rest = (
+        denominator = (
             pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         )
 
-        denominators = plurals._priority_union(
-            denominator_one,
-            plurals._priority_union(
-                denominator_half,
-                plurals._priority_union(denominator_quarter, denominator_rest, NEMO_SIGMA),
-                NEMO_SIGMA,
-            ),
-            NEMO_SIGMA,
-        ).optimize()
-        if not deterministic:
-            denominators |= pynutil.delete("denominator: \"") + (pynini.accep("four") @ suffix) + pynutil.delete("\"")
+        numerator = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
 
-        numerator_one = pynutil.delete("numerator: \"") + pynini.accep("one") + pynutil.delete("\" ")
-        numerator_one = numerator_one + insert_space + denominators
-        numerator_rest = (
-            pynutil.delete("numerator: \"")
-            + (pynini.closure(NEMO_NOT_QUOTE) - pynini.accep("one"))
-            + pynutil.delete("\" ")
-        )
-        numerator_rest = numerator_rest + insert_space + denominators
-        numerator_rest @= pynini.cdrewrite(
-            plurals._priority_union(pynini.cross("half", "halves"), pynutil.insert("s"), NEMO_SIGMA),
-            "",
-            "[EOS]",
-            NEMO_SIGMA,
-        )
+        graph = numerator
 
-        graph = numerator_one | numerator_rest
-
-        conjunction = pynutil.insert("and ")
+        conjunction = pynutil.insert("és ")
         if not deterministic and not lm:
             conjunction = pynini.closure(conjunction, 0, 1)
 
         integer = pynini.closure(integer + insert_space + conjunction, 0, 1)
 
         graph = integer + graph
-        graph @= pynini.cdrewrite(
-            pynini.cross("and one half", "and a half") | pynini.cross("over ones", "over one"), "", "[EOS]", NEMO_SIGMA
-        )
 
         self.graph = graph
         delete_tokens = self.delete_tokens(self.graph)
