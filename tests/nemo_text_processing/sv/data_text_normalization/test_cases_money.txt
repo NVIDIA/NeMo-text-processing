@@ -1,0 +1,65 @@
+$2~två dollar
+$2,00~två dollar
+₩460 miljarder~fyrahundrasextio miljarder won
+¥30 miljarder~30 miljarder yen
+¥30 b~trettio miljarder yen
+¥30b~30 miljarder yen
+¥30B~30 miljarder yen
+$45 miljarder-fyrtiofem miljarder dollar
+$0,2 miljoner dollar~noll komma två miljoner dollar
+$2,5 miljoner dollar~två komma fem miljoner dollar
+$15,2 miljarder dollar~femton komma två miljarder dollar
+1,436 miljarder yuan~en komma fyrahundratrettiosex miljarder yuan
+4 miljoner yuan~fyra miljoner yuan
+$15 000~femton tusen dollar
+$1~en dollar
+$1,00~en dollar
+$1,00~en dollar
+$2~två dollar
+$2,00~två dollar
+$2.000~två dollar
+$20~tjugo dollar
+$20,506~tjugo komma fem noll sex dollar
+$20,50~tjugo dollar femtio cent
+$20,500~tjugo dollar femtio cent
+$20,5~tjugo dollar femtio cent
+$20,01~tjugo dollar en cent
+$20,010~tjugo dollar en cent
+$0,010~en cent
+$0,02~två cent
+$0,20~tjugo cent
+$,01~en cent
+$,506~komma fem noll sex dollar
+$18~arton dollar
+$18925000~arton miljoner niohundratjugofemtusen dollar
+$18 925 000~arton miljoner niohundratjugofemtusen dollar
+$18854~arton tusen åttahundrafemtiofyra dollar
+$18801~arton tusen åtta hundra och en dollar
+$18875~arton tusen åttahundrasjuttiofem dollar
+$18081~arton tusen åttioen dollar
+$18052~arton tusen och femtiotvå dollar
+$18542~arton tusen femhundrafyrtiotvå dollar
+$18519~arton tusen femhundra nitton dollar
+$18570~arton tusen femhundrasjuttio dollar
+$18578~arton tusen femhundrasjuttioåtta dollar
+$18516~arton tusen femhundrasexton dollar
+$18482~artontusenfyrahundraåttiotvå dollar
+$18478~artontusenfyrahundrasjuttioåtta dollar
+$18468~artontusenfyrahundrasextioåtta dollar
+$18903~arton tusen nio hundra och tre dollar
+$18929~arton tusen nio hundra tjugonio dollar
+$18095~arton tusen och nittiofem dollar
+$18117~arton tusen etthundrasjutton dollar
+$18128~arton tusen etthundratjugoåtta dollar
+$18125~arton tusen etthundratjugofem dollar
+$18124~arton tusen etthundratjugofyra dollar
+$18129~arton tusen etthundratjugonio dollar
+£18 000~arton tusen pund
+£1,20~ett pund tjugo pence
+£1,111~en komma ett och ett pund
+£2,01~två pund ett öre
+$50,00-$100,00~50 dollar - etthundra dollar
+$1 925,21~ett tusen nio hundra tjugofem dollar tjugoen cent
+$1.234,123~ett tusen tvåhundratrettiofyra komma hundratjugotre dollar
+US $76,3 biljoner~US sjuttiosex komma tre biljoner dollar
+USD$76,3 biljoner~sjuttiosex komma tre biljoner amerikanska dollar
