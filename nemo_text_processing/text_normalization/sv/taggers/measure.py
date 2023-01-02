@@ -28,8 +28,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_zero_or_one_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as OrdinalTagger
 from nemo_text_processing.text_normalization.en.taggers.whitelist import get_formats
+from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as OrdinalTagger
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as OrdinalVerbalizer
 from pynini.examples import plurals
