@@ -35,25 +35,22 @@ class FractionFst(GraphFst):
 
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
 
-        denominators_sg = (
-            pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        )
+        denominators_sg = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         denominators_pl = (
             pynutil.delete("denominator: \"")
             + (pynini.closure(NEMO_NOT_QUOTE) @ pynini.cdrewrite(plurals, "", "[EOS]", NEMO_SIGMA))
             + pynutil.delete("\"")
         )
 
-        either_one = pynini.union(
-            pynini.accep("en"),
-            pynini.cross("ett", "en")
-        )
+        either_one = pynini.union(pynini.accep("en"), pynini.cross("ett", "en"))
         numerator_one = pynutil.delete("numerator: \"") + either_one + pynutil.delete("\" ")
         numerator_one = numerator_one + insert_space + denominators_sg
         numerator_rest = (
             pynutil.delete("numerator: \"")
-            + ((pynini.closure(NEMO_NOT_QUOTE) - pynini.accep("en") - pynini.accep("ett"))
-               @ pynini.cdrewrite(pynini.cross("ett", "en"), "", "[EOS]", NEMO_SIGMA))
+            + (
+                (pynini.closure(NEMO_NOT_QUOTE) - pynini.accep("en") - pynini.accep("ett"))
+                @ pynini.cdrewrite(pynini.cross("ett", "en"), "", "[EOS]", NEMO_SIGMA)
+            )
             + pynutil.delete("\" ")
         )
         numerator_rest = numerator_rest + insert_space + denominators
