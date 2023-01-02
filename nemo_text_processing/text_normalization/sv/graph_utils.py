@@ -12,8 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pynini.lib import byte
+
 _ALPHA_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖÜÉ"
 _ALPHA_LOWER = "abcdefghijklmnopqrstuvwxyzåäöüé"
 
 TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(_ALPHA_UPPER, _ALPHA_LOWER)])
 TO_UPPER = pynini.invert(TO_LOWER)
+
+SV_LOWER = pynini.union(*_ALPHA_LOWER).optimize()
+SV_UPPER = pynini.union(*_ALPHA_UPPER).optimize()
+SV_ALPHA = pynini.union(SV_LOWER, SV_UPPER).optimize()
+SV_ALNUM = pynini.union(byte.DIGIT, SV_ALPHA).optimize()
