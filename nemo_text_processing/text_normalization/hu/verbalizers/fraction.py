@@ -33,11 +33,11 @@ class FractionFst(GraphFst):
 
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
 
-        denominator = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-
         numerator = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
 
-        graph = numerator
+        denominator = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+
+        graph = numerator + insert_space + denominator
 
         conjunction = pynutil.insert("és ")
         if not deterministic and not lm:
