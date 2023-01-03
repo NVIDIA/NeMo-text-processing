@@ -14,7 +14,6 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    HU_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
@@ -22,6 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_space,
 )
+from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
