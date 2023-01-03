@@ -29,7 +29,7 @@ from pynini.lib import pynutil
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g. 
+    Finite state transducer for classifying cardinals, e.g.
         -23 -> cardinal { negative: "true"  integer: "twenty three" } }
 
     Args:
@@ -81,7 +81,7 @@ class CardinalFst(GraphFst):
 
         graph = (
             pynini.closure(NEMO_DIGIT, 1, 3)
-            + (pynini.closure(pynutil.delete(",") + NEMO_DIGIT ** 3) | pynini.closure(NEMO_DIGIT ** 3))
+            + (pynini.closure(pynutil.delete(",") + NEMO_DIGIT**3) | pynini.closure(NEMO_DIGIT**3))
         ) @ graph
 
         self.graph = graph
@@ -116,7 +116,7 @@ class CardinalFst(GraphFst):
             )
             final_graph |= pynini.compose(final_graph, one_to_a_replacement_graph.optimize() + NEMO_SIGMA).optimize()
             # remove commas for 4 digits numbers
-            four_digit_comma_graph = (NEMO_DIGIT - "0") + pynutil.delete(",") + NEMO_DIGIT ** 3
+            four_digit_comma_graph = (NEMO_DIGIT - "0") + pynutil.delete(",") + NEMO_DIGIT**3
             final_graph |= pynini.compose(four_digit_comma_graph.optimize(), final_graph).optimize()
 
         self.final_graph = final_graph
