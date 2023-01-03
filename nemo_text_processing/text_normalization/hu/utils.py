@@ -38,9 +38,9 @@ def load_labels(abs_path):
 
     Returns dictionary of mappings
     """
-    label_tsv = open(abs_path)
-    labels = list(csv.reader(label_tsv, delimiter="\t"))
-    return labels
+    with open(abs_path) as label_tsv:
+        labels = list(csv.reader(label_tsv, delimiter="\t"))
+        return labels
 
 
 def load_inflection(abs_path):
@@ -77,7 +77,7 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
     singular = load_inflection(get_abs_path("data/inflection/endings.tsv"))
     plural = load_inflection(get_abs_path("data/inflection/plural_endings.tsv"))
     lexical = load_inflection(get_abs_path("data/inflection/word_endings.tsv"))
-    keys_sorted = sorted(singular, key=lambda k: len(k), reverse=True)
+    keys_sorted = sorted(singular, key=len, reverse=True)
 
     def get_kv():
         if word in lexical:
@@ -108,6 +108,7 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
                 if ending in undouble:
                     final = undouble[ending]
                 return final + form[len(ending) :]
+        return form
 
     for form in ends:
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
