@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
 quantities = pynini.string_file(get_abs_path("data/numbers/quantities.tsv"))
@@ -59,16 +59,28 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph
-        digit_no_zero = (NEMO_DIGIT - "0")
+        digit_no_zero = NEMO_DIGIT - "0"
         digit_or_del_zero = pynutil.delete("0") | digit_no_zero
         final_zero = pynini.closure(pynutil.delete("0"))
 
         decimal_number = digit_no_zero @ cardinal_graph + final_zero + pynutil.insert(" tized")
         decimal_number |= (digit_or_del_zero + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" század")
         order = 2
-        for decimal_name in ["ezred", "milliomod", "milliárdod", "billiomod", "billiárdod", "trilliomod", "trilliárdod"]:
+        for decimal_name in [
+            "ezred",
+            "milliomod",
+            "milliárdod",
+            "billiomod",
+            "billiárdod",
+            "trilliomod",
+            "trilliárdod",
+        ]:
             for modifier in ["", "tíz", "száz"]:
-                decimal_number |= (digit_or_del_zero**order + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(f" {modifier}{decimal_name}")
+                decimal_number |= (
+                    (digit_or_del_zero ** order + NEMO_DIGIT) @ cardinal_graph
+                    + final_zero
+                    + pynutil.insert(f" {modifier}{decimal_name}")
+                )
                 order += 1
 
         point = pynutil.delete(",")
