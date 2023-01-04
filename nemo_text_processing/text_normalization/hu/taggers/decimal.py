@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.de.utils import get_abs_path
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
 from pynini.lib import pynutil
 
@@ -58,11 +58,19 @@ class DecimalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+        cardinal_graph = cardinal.graph
+        digit_no_zero = (NEMO_DIGIT - "0")
+        digit_or_del_zero = pynutil.delete("0") | digit_no_zero
+        final_zero = pynini.closure(pynutil.delete("0"))
 
-        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
-        graph_digit |= pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
-        graph_digit |= pynini.cross("1", "eins")
-        self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
+        digit1 = digit_no_zero @ cardinal_graph + final_zero + pynutil.insert(" tized")
+        digit2 = (digit_or_del_zero + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" század")
+        digit3 = (digit_or_del_zero**2 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" ezred")
+        digit4 = (digit_or_del_zero**3 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" tízezred")
+        digit5 = (digit_or_del_zero**4 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" százezred")
+        digit6 = (digit_or_del_zero**5 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" milliomod")
+        digit7 = (digit_or_del_zero**6 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" tízmilliomod")
+        digit8 = (digit_or_del_zero**7 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" százmilliomod")
 
         point = pynutil.delete(",")
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
