@@ -182,6 +182,10 @@ class CardinalFst(GraphFst):
         self.graph_hundreds_component_at_least_one_non_zero_digit = (
             graph_hundreds_component_at_least_one_non_zero_digit
         )
+        self.graph_hundreds_component_at_least_one_non_zero_digit_en = (
+            self.graph_hundreds_component_at_least_one_non_zero_digit
+            @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
+        )
         self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = (
             graph_hundreds_component_at_least_one_non_zero_digit_no_one.optimize()
         )
