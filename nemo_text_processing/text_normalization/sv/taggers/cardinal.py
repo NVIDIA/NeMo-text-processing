@@ -242,7 +242,7 @@ class CardinalFst(GraphFst):
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(
-                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE),SV_ALPHA, SV_ALPHA, NEMO_SIGMA
+                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), SV_ALPHA, SV_ALPHA, NEMO_SIGMA
             )
         )
         self.graph |= zero

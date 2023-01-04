@@ -70,12 +70,7 @@ class TimeFst(GraphFst):
         graph_minute_single = pynini.union(*labels_minute_single) @ cardinal
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
 
-        final_graph_hour = (
-            klockan_optional
-            + pynutil.insert("hours: \"")
-            + graph_hour
-            + pynutil.insert("\"")
-        )
+        final_graph_hour = klockan_optional + pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
         final_graph_minute = (
             pynutil.insert("minutes: \"")
             + (pynini.delete("0") + insert_space + graph_minute_single | graph_minute_double)
@@ -88,9 +83,7 @@ class TimeFst(GraphFst):
                 + pynutil.insert("\"")
             )
             final_graph_minute |= (
-                pynutil.insert("minutes: \"")
-                + pynini.cross("00", "noll noll")
-                + pynutil.insert("\"")
+                pynutil.insert("minutes: \"") + pynini.cross("00", "noll noll") + pynutil.insert("\"")
             )
         final_graph_second = (
             pynutil.insert("seconds: \"")
@@ -104,9 +97,7 @@ class TimeFst(GraphFst):
                 + pynutil.insert("\"")
             )
             final_graph_second |= (
-                pynutil.insert("seconds: \"")
-                + pynini.cross("00", "noll noll")
-                + pynutil.insert("\"")
+                pynutil.insert("seconds: \"") + pynini.cross("00", "noll noll") + pynutil.insert("\"")
             )
         final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
         final_suffix_optional = pynini.closure(delete_space + insert_space + final_suffix, 0, 1)

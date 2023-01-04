@@ -22,7 +22,10 @@ quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
 
 
 def get_quantity(
-    decimal: 'pynini.FstLike', decimal_en: 'pynini.FstLike', cardinal_up_to_thousand: 'pynini.FstLike', include_abbr: bool
+    decimal: 'pynini.FstLike',
+    decimal_en: 'pynini.FstLike',
+    cardinal_up_to_thousand: 'pynini.FstLike',
+    include_abbr: bool,
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,

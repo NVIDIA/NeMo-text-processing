@@ -28,7 +28,6 @@ from nemo_text_processing.text_normalization.en.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
-
 from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst
