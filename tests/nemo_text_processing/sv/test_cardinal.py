@@ -28,9 +28,9 @@ except (ImportError, ModuleNotFoundError):
 
 class TestCardinal:
 
-    inverse_normalizer = (
-        InverseNormalizer(lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False) if PYNINI_AVAILABLE else None
-    )
+    # inverse_normalizer = (
+    #     InverseNormalizer(lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False) if PYNINI_AVAILABLE else None
+    # )
 
     # @parameterized.expand(parse_test_case_file('sv/data_inverse_text_normalization/test_cases_cardinal.txt'))
     # @pytest.mark.skipif(
