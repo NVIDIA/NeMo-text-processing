@@ -63,14 +63,13 @@ class DecimalFst(GraphFst):
         digit_or_del_zero = pynutil.delete("0") | digit_no_zero
         final_zero = pynini.closure(pynutil.delete("0"))
 
-        digit1 = digit_no_zero @ cardinal_graph + final_zero + pynutil.insert(" tized")
-        digit2 = (digit_or_del_zero + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" század")
-        digit3 = (digit_or_del_zero**2 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" ezred")
-        digit4 = (digit_or_del_zero**3 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" tízezred")
-        digit5 = (digit_or_del_zero**4 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" százezred")
-        digit6 = (digit_or_del_zero**5 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" milliomod")
-        digit7 = (digit_or_del_zero**6 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" tízmilliomod")
-        digit8 = (digit_or_del_zero**7 + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" százmilliomod")
+        decimal_number = digit_no_zero @ cardinal_graph + final_zero + pynutil.insert(" tized")
+        decimal_number |= (digit_or_del_zero + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" század")
+        order = 2
+        for decimal_name in ["ezred", "milliomod", "milliárdod", "billiomod", "billiárdod", "trilliomod", "trilliárdod"]:
+            for modifier in ["", "tíz", "száz"]:
+                decimal_number |= (digit_or_del_zero**order + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(f" {modifier}{decimal_name}")
+                order += 1
 
         point = pynutil.delete(",")
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
