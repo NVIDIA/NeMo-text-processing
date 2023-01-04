@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
@@ -33,14 +33,14 @@ maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")
 class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money, suppletive aware, e.g. 
-        $12.05 -> money { integer_part: "twelve" currency_maj: "dollars" fractional_part: "five" currency_min: "cents" preserve_order: true }
-        $12.0500 -> money { integer_part: "twelve" currency_maj: "dollars" fractional_part: "five" currency_min: "cents" preserve_order: true }
-        $1 -> money { currency_maj: "dollar" integer_part: "one" }
-        $1.00 -> money { currency_maj: "dollar" integer_part: "one" }
-        $0.05 -> money { fractional_part: "five"  currency_min: "cents" preserve_order: true }
-        $1 million -> money { currency_maj: "dollars" integer_part: "one" quantity: "million" }
-        $1.2 million -> money { currency_maj: "dollars" integer_part: "one"  fractional_part: "two" quantity: "million" }
-        $1.2320 -> money { currency_maj: "dollars" integer_part: "one"  fractional_part: "two three two" }
+        $12.05 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
+        $12.0500 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
+        $1 -> money { currency_maj: "dollar" integer_part: "en" }
+        $1.00 -> money { currency_maj: "dollar" integer_part: "en" }
+        $0.05 -> money { fractional_part: "fem"  currency_min: "cent" preserve_order: true }
+        $1 miljon -> money { currency_maj: "dollar" integer_part: "en" quantity: "miljon" }
+        $1,2 miljon -> money { currency_maj: "dollar" integer_part: "en"  fractional_part: "två" quantity: "miljon" }
+        $1,2320 -> money { currency_maj: "dollar" integer_part: "en"  fractional_part: "two three two" }
 
     Args:
         cardinal: CardinalFst
@@ -65,7 +65,8 @@ class MoneyFst(GraphFst):
             pynutil.delete(".") + pynini.closure(pynutil.delete("0"), 1), 0, 1
         )
 
-        graph_integer_one = pynutil.insert("integer_part: \"") + pynini.cross("1", "one") + pynutil.insert("\"")
+        graph_integer_en = pynutil.insert("integer_part: \"") + pynini.cross("1", "en") + pynutil.insert("\"")
+        graph_integer_ett = pynutil.insert("integer_part: \"") + pynini.cross("1", "ett") + pynutil.insert("\"")
         # only for decimals where third decimal after comma is non-zero or with quantity
         decimal_delete_last_zeros = (
             pynini.closure(NEMO_DIGIT | pynutil.delete(","))
