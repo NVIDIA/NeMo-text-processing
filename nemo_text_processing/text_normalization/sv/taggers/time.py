@@ -29,14 +29,14 @@ from pynini.lib import pynutil
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
-        12:30 a.m. est -> time { hours: "twelve" minutes: "thirty" suffix: "a m" zone: "e s t" }
-        2.30 a.m. -> time { hours: "two" minutes: "thirty" suffix: "a m" }
-        02.30 a.m. -> time { hours: "two" minutes: "thirty" suffix: "a m" }
-        2.00 a.m. -> time { hours: "two" suffix: "a m" }
-        2 a.m. -> time { hours: "two" suffix: "a m" }
-        02:00 -> time { hours: "two" }
-        2:00 -> time { hours: "two" }
-        10:00:05 a.m. -> time { hours: "ten" minutes: "zero" seconds: "five" suffix: "a m" }
+        12:30 e.m. est -> time { hours: "tolv" minutes: "trettio" suffix: "e m" zone: "e s t" }
+        2.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "e m" }
+        02.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "e m" }
+        2.00 e.m. -> time { hours: "två" suffix: "e m" }
+        kl. 2 e.m. -> time { hours: "två" suffix: "e m" }
+        02:00 -> time { hours: "två" }
+        2:00 -> time { hours: "två" }
+        10:00:05 e.m. -> time { hours: "tio" minutes: "noll" seconds: "fem" suffix: "e m" }
     
     Args:
         cardinal: CardinalFst
@@ -46,6 +46,7 @@ class TimeFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
+        suffix_graph = pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv")))
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
 
         # only used for < 1000 thousand -> 0 weight
@@ -60,13 +61,21 @@ class TimeFst(GraphFst):
         )
 
         time_sep = pynini.union(":", ".")
+        optional_space = pynini.closure(" ", 0, 1)
+        klockan = pynini.union("kl.", "klockan")
+        klockan_optional = pynini.closure(klockan + optional_space, 0, 1)
 
         graph_hour = delete_leading_zero_to_double_digit @ pynini.union(*labels_hour) @ cardinal
 
         graph_minute_single = pynini.union(*labels_minute_single) @ cardinal
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
 
-        final_graph_hour = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
+        final_graph_hour = (
+            klockan_optional
+            + pynutil.insert("hours: \"")
+            + graph_hour
+            + pynutil.insert("\"")
+        )
         final_graph_minute = (
             pynutil.insert("minutes: \"")
             + (pynini.delete("0") + insert_space + graph_minute_single | graph_minute_double)
