@@ -26,13 +26,6 @@ from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
-zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
-digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
-teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
-ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
-ett_to_en = pynini.string_map([("ett", "en")])
-ties_alt_endings = pynini.string_map([("go", "gi"), ("tio", "ti")])
-
 
 def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: bool = True) -> 'pynini.FstLike':
     """
@@ -103,6 +96,12 @@ class CardinalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+        zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
+        digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
+        teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
+        ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
+        ett_to_en = pynini.string_map([("ett", "en")])
+        ties_alt_endings = pynini.string_map([("go", "gi"), ("tio", "ti")])
 
         # Any single digit
         graph_digit = digit
