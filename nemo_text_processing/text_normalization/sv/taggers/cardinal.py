@@ -112,7 +112,7 @@ class CardinalFst(GraphFst):
         else:
             final_digit = digits_no_one | both_ones
 
-        single_digits_graph = pynini.invert(graph_digit | graph_zero)
+        single_digits_graph = pynini.invert(graph_digit | zero)
         self.single_digits_graph = single_digits_graph + pynini.closure(insert_space + single_digits_graph)
 
         # spoken this way, so useful for e2e ASR
