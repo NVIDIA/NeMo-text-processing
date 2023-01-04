@@ -31,6 +31,7 @@ digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
 ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
 ett_to_en = pynini.string_map([("ett", "en")])
+ties_alt_endings = pynini.string_map([("go", "gi"), ("tio", "ti")])
 
 
 def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: bool = True) -> 'pynini.FstLike':
@@ -112,6 +113,13 @@ class CardinalFst(GraphFst):
         else:
             final_digit = digits_no_one | both_ones
 
+        # spoken this way, so useful for e2e ASR
+        alt_ties = ties @ pynini.cdrewrite(ties_alt_endings, "", "[EOS]", NEMO_SIGMA)
+        if not deterministic:
+            ties |= alt_ties
+            ties |= pynini.cross("4", "förtio")
+            ties |= pynini.cross("4", "förti")
+
         # Any double digit
         graph_tens = teen
         final_tens = graph_tens
@@ -120,7 +128,6 @@ class CardinalFst(GraphFst):
             graph_tens |= graph_ties + (pynutil.delete('0') | graph_digit)
             final_tens = graph_tens
         else:
-            graph_ties |= pynini.cross("4", "förtio")
             graph_tens |= pynini.cross("18", "aderton")
             graph_tens |= graph_ties + (pynutil.delete('0') | (graph_digit | pynutil.insert(' ') + graph_digit))
             final_tens |= graph_ties + (pynutil.delete('0') | (final_digit | pynutil.insert(' ') + final_digit))
