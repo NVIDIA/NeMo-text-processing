@@ -13,48 +13,61 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, TO_UPPER, GraphFst, get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
 delete_space = pynutil.delete(" ")
-quantities = pynini.string_file(get_abs_path("data/number/thousand.tsv"))
-quantities_abbr = pynini.string_file(get_abs_path("data/number/quantity_abbr.tsv"))
-quantities_abbr |= TO_UPPER @ quantities_abbr
+quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
 
 
 def get_quantity(
-    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', include_abbr: bool
+    decimal: 'pynini.FstLike', decimal_en: 'pynini.FstLike', cardinal_up_to_thousand: 'pynini.FstLike', include_abbr: bool
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
-    e.g. 1 million -> integer_part: "one" quantity: "million"
-    e.g. 1.5 million -> integer_part: "one" fractional_part: "five" quantity: "million"
+    e.g. 1 miljon -> integer_part: "en" quantity: "miljon"
+    e.g. 1,5 miljoner -> integer_part: "en" fractional_part: "fem" quantity: "miljoner"
 
     Args: 
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
-    quantity_wo_thousand = pynini.project(quantities, "input") - pynini.union("k", "K", "thousand")
-    if include_abbr:
-        quantity_wo_thousand |= pynini.project(quantities_abbr, "input") - pynini.union("k", "K", "thousand")
+    quantities_pl = quantities + "er"
+    quantities_pl |= quantities + pynutil.insert("er")
+
     res = (
         pynutil.insert("integer_part: \"")
-        + cardinal_up_to_hundred
+        + cardinal_up_to_thousand
         + pynutil.insert("\"")
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
-        + (quantity_wo_thousand @ (quantities | quantities_abbr))
+        + quantities_pl
         + pynutil.insert("\"")
     )
-    if include_abbr:
-        quantity = quantities | quantities_abbr
-    else:
-        quantity = quantities
+    res |= (
+        pynutil.insert("integer_part: \"")
+        + pynini.cross("1", "ett")
+        + pynutil.insert("\"")
+        + pynini.closure(pynutil.delete(" "), 0, 1)
+        + pynutil.insert(" quantity: \"")
+        + "tusen"
+        + pynutil.insert("\"")
+    )
+    res |= (
+        pynutil.insert("integer_part: \"")
+        + pynini.cross("1", "en")
+        + pynutil.insert("\"")
+        + pynini.closure(pynutil.delete(" "), 0, 1)
+        + pynutil.insert(" quantity: \"")
+        + quantities
+        + pynutil.insert("\"")
+    )
     res |= (
         decimal
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert("quantity: \"")
-        + quantity
+        + quantities
         + pynutil.insert("\"")
     )
     return res
@@ -63,8 +76,8 @@ def get_quantity(
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal, e.g. 
-        -12.5006 billion -> decimal { negative: "true" integer_part: "12"  fractional_part: "five o o six" quantity: "billion" }
-        1 billion -> decimal { integer_part: "one" quantity: "billion" }
+        -12,5006 biljon -> decimal { negative: "true" integer_part: "tolv"  fractional_part: "fem noll noll sex" quantity: "biljon" }
+        1 biljon -> decimal { integer_part: "en" quantity: "biljon" }
 
     cardinal: CardinalFst
     """
@@ -72,9 +85,10 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-        cardinal_graph = cardinal.graph_with_and
-        cardinal_graph_hundred_component_at_least_one_none_zero_digit = (
-            cardinal.graph_hundred_component_at_least_one_none_zero_digit
+        cardinal_graph = cardinal.graph
+        cardinal_graph_en = cardinal.graph_en
+        cardinal_graph_hundreds_component_at_least_one_non_zero_digit = (
+            cardinal.graph_hundreds_component_at_least_one_non_zero_digit
         )
 
         self.graph = cardinal.single_digits_graph.optimize()
@@ -82,7 +96,7 @@ class DecimalFst(GraphFst):
         if not deterministic:
             self.graph = self.graph | cardinal_graph
 
-        point = pynutil.delete(".")
+        point = pynutil.delete(",")
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
@@ -95,33 +109,13 @@ class DecimalFst(GraphFst):
         )
 
         quantity_w_abbr = get_quantity(
-            final_graph_wo_sign, cardinal_graph_hundred_component_at_least_one_none_zero_digit, include_abbr=True
+            final_graph_wo_sign, cardinal_graph_hundreds_component_at_least_one_non_zero_digit, include_abbr=True
         )
         quantity_wo_abbr = get_quantity(
-            final_graph_wo_sign, cardinal_graph_hundred_component_at_least_one_none_zero_digit, include_abbr=False
+            final_graph_wo_sign, cardinal_graph_hundreds_component_at_least_one_non_zero_digit, include_abbr=False
         )
         self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
         self.final_graph_wo_negative = final_graph_wo_sign | quantity_wo_abbr
-
-        # reduce options for non_deterministic and allow either "oh" or "zero", but not combination
-        if not deterministic:
-            no_oh_zero = pynini.difference(
-                NEMO_SIGMA,
-                (NEMO_SIGMA + "oh" + NEMO_SIGMA + "zero" + NEMO_SIGMA)
-                | (NEMO_SIGMA + "zero" + NEMO_SIGMA + "oh" + NEMO_SIGMA),
-            ).optimize()
-            no_zero_oh = pynini.difference(
-                NEMO_SIGMA, NEMO_SIGMA + pynini.accep("zero") + NEMO_SIGMA + pynini.accep("oh") + NEMO_SIGMA
-            ).optimize()
-
-            self.final_graph_wo_negative |= pynini.compose(
-                self.final_graph_wo_negative,
-                pynini.cdrewrite(
-                    pynini.cross("integer_part: \"zero\"", "integer_part: \"oh\""), NEMO_SIGMA, NEMO_SIGMA, NEMO_SIGMA
-                ),
-            )
-            self.final_graph_wo_negative = pynini.compose(self.final_graph_wo_negative, no_oh_zero).optimize()
-            self.final_graph_wo_negative = pynini.compose(self.final_graph_wo_negative, no_zero_oh).optimize()
 
         final_graph = optional_graph_negative + self.final_graph_wo_negative
 
