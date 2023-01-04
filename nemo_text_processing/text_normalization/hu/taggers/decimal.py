@@ -48,8 +48,8 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal, e.g. 
-        -11,4006 billion -> decimal { negative: "true" integer_part: "elf"  fractional_part: "vier null null sechs" quantity: "billion" preserve_order: true }
-        1 billion -> decimal { integer_part: "eins" quantity: "billion" preserve_order: true }
+        -11,4006 milliárd -> decimal { negative: "true" integer_part: "tizenegy"  fractional_part: "négyezer-hat tízezred" quantity: "milliárd" preserve_order: true }
+        1 milliárd -> decimal { integer_part: "egy" quantity: "milliárd" preserve_order: true }
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -63,6 +63,9 @@ class DecimalFst(GraphFst):
         digit_or_del_zero = pynutil.delete("0") | digit_no_zero
         final_zero = pynini.closure(pynutil.delete("0"))
 
+        # In Hungarian, the fraction is read as a whole number
+        # with a word for the decimal place added
+        # see: https://helyesiras.mta.hu/helyesiras/default/numerals
         decimal_number = digit_no_zero @ cardinal_graph + final_zero + pynutil.insert(" tized")
         decimal_number |= (digit_or_del_zero + NEMO_DIGIT) @ cardinal_graph + final_zero + pynutil.insert(" század")
         order = 2
@@ -82,6 +85,10 @@ class DecimalFst(GraphFst):
                     + pynutil.insert(f" {modifier}{decimal_name}")
                 )
                 order += 1
+        if not deterministic:
+            alts = pynini.string_map([("billiomod", "ezer milliárdod"), ("billiárdod", "millió milliárdod")])
+            decimal_alts = decimal_number @ pynini.cdrewrite(alts, "", "[EOS]", NEMO_SIGMA)
+            decimal_number |= decimal_alts
 
         point = pynutil.delete(",")
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
