@@ -1,4 +1,5 @@
 # Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2022, Jim O'Regan
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,3 +41,23 @@ def load_labels(abs_path):
     label_tsv = open(abs_path)
     labels = list(csv.reader(label_tsv, delimiter="\t"))
     return labels
+
+
+def extend_list_with_mutations(input):
+    out = []
+
+    UPPER_VOWELS = "AEIOUÁÉÍÓÚ"
+    LOWER_VOWELS = "aeiouáéíóú"
+
+    for word in input:
+        out.append(word)
+        if word[0] in UPPER_VOWELS:
+            out.append(f"h{word}")
+            out.append(f"n{word}")
+            out.append(f"t{word}")
+        elif word[0] in LOWER_VOWELS:
+            out.append(f"h{word}")
+            out.append(f"n-{word}")
+            out.append(f"t-{word}")
+
+    return out
