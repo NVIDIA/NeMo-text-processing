@@ -129,6 +129,7 @@ class OrdinalFst(GraphFst):
         self.graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component_at_least_one_non_zero_digit
         self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one.optimize()
 
+        # from here on, construct as though cardinals
         duhat = pynutil.insert("duhát")
         if not deterministic:
             duhat |= pynutil.insert("duhat")
@@ -160,10 +161,12 @@ class OrdinalFst(GraphFst):
         graph_million = pynutil.add_weight(pynini.cross("001", "miljon"), -0.001)
         graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("miljovnna"))
         if not deterministic:
+            graph_million |= pynutil.add_weight(pynini.cross("001", "miljun"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "miljovdna"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "milliuvdna"), -0.001)
             graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("milliuvnna"))
             graph_million |= pynutil.add_weight(pynini.cross("001", "miljon "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "miljun "), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "miljovdna "), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "milliuvdna "), -0.001)
             graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("miljovnna "))
@@ -180,10 +183,12 @@ class OrdinalFst(GraphFst):
         graph_billion = pynutil.add_weight(pynini.cross("001", "biljon"), -0.001)
         graph_billion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("biljovnna"))
         if not deterministic:
+            graph_million |= pynutil.add_weight(pynini.cross("001", "biljun"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "biljovdna"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "billiuvdna"), -0.001)
             graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("billiuvnna"))
             graph_million |= pynutil.add_weight(pynini.cross("001", "biljon "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "biljun "), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "biljovdna "), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "billiuvdna "), -0.001)
             graph_billion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("biljovnna "))
@@ -200,10 +205,12 @@ class OrdinalFst(GraphFst):
         graph_trillion = pynutil.add_weight(pynini.cross("001", "triljon"), -0.001)
         graph_trillion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("triljovnna"))
         if not deterministic:
+            graph_million |= pynutil.add_weight(pynini.cross("001", "triljun"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "triljovdna"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "trilliuvdna"), -0.001)
             graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("trilliuvnna"))
             graph_million |= pynutil.add_weight(pynini.cross("001", "triljon "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "triljun "), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "triljovdna "), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "trilliuvdna "), -0.001)
             graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("triljovnna "))
@@ -227,6 +234,20 @@ class OrdinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
+        higher_endings = pynini.string_map(
+            [
+                ("duhát", "duháhat"),
+                ("duhat", "duháhat"),
+                ("iljárda", "iljárddat"),
+                ("iljon", "iljovnnat"),
+                ("iljun", "iljovnnat"),
+                ("iljovdna", "iljovnnat"),
+                ("illiuvdna", "iljovnnat"),
+                ("iljovnna", "iljovnnat"),
+                ("illiuvnna", "iljovnnat"),
+            ]
+        )
+
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
@@ -239,12 +260,12 @@ class OrdinalFst(GraphFst):
             )
         )
         self.graph |= graph_zero
+        self.graph @= pynini.cdrewrite(higher_endings, "", "[EOS]", NEMO_SIGMA)
 
-        self.graph = filter_punctuation(self.graph).optimize()
+        self.graph_bare_ordinals = filter_punctuation(self.graph).optimize()
+        self.graph = (self.graph_bare_ordinals + pynutil.delete(".")).optimize()
 
-        optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
-
-        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
