@@ -179,13 +179,6 @@ class CardinalFst(GraphFst):
         graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
             pynutil.delete("00") + digits_no_one
         )
-        self.graph_hundreds_component_at_least_one_non_zero_digit = (
-            graph_hundreds_component_at_least_one_non_zero_digit
-        )
-        self.graph_hundreds_component_at_least_one_non_zero_digit_en = (
-            self.graph_hundreds_component_at_least_one_non_zero_digit
-            @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
-        )
         self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = (
             graph_hundreds_component_at_least_one_non_zero_digit_no_one.optimize()
         )
@@ -245,6 +238,15 @@ class CardinalFst(GraphFst):
                 pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), SV_ALPHA, SV_ALPHA, NEMO_SIGMA
             )
         )
+
+        self.graph_hundreds_component_at_least_one_non_zero_digit = (
+            pynini.closure(NEMO_DIGIT, 2, 3) | pynini.difference(NEMO_DIGIT, pynini.accep("0"))
+        ) @ self.graph
+        self.graph_hundreds_component_at_least_one_non_zero_digit_en = (
+            self.graph_hundreds_component_at_least_one_non_zero_digit
+            @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
+        )
+
         self.graph |= zero
 
         self.graph = filter_punctuation(self.graph).optimize()
