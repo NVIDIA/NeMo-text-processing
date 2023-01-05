@@ -137,6 +137,8 @@ class CardinalFst(GraphFst):
         duhat_cross = pynini.cross("001", "duhát")
         if not deterministic:
             duhat_cross |= pynini.cross("001", "duhat")
+            duhat_cross |= pynini.cross("001", "duhat ")
+            duhat_cross |= pynini.cross("001", "duhát ")
 
         graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
@@ -163,10 +165,18 @@ class CardinalFst(GraphFst):
             graph_million |= pynutil.add_weight(pynini.cross("001", "miljovdna"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "milliuvdna"), -0.001)
             graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("milliuvnna"))
+            graph_million |= pynutil.add_weight(pynini.cross("001", "miljon "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "miljovdna "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "milliuvdna "), -0.001)
+            graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("miljovnna "))
+            graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("milliuvnna "))
         graph_million |= pynutil.delete("000")
 
         graph_milliard = pynutil.add_weight(pynini.cross("001", "miljárda"), -0.001)
         graph_milliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("miljárdda"))
+        if not deterministic:
+            graph_milliard |= pynutil.add_weight(pynini.cross("001", "miljárda "), -0.001)
+            graph_milliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("miljárdda "))
         graph_milliard |= pynutil.delete("000")
 
         graph_billion = pynutil.add_weight(pynini.cross("001", "biljon"), -0.001)
@@ -175,23 +185,38 @@ class CardinalFst(GraphFst):
             graph_million |= pynutil.add_weight(pynini.cross("001", "biljovdna"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "billiuvdna"), -0.001)
             graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("billiuvnna"))
+            graph_million |= pynutil.add_weight(pynini.cross("001", "biljon "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "biljovdna "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "billiuvdna "), -0.001)
+            graph_billion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("biljovnna "))
+            graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("billiuvnna "))
         graph_billion |= pynutil.delete("000")
 
         graph_billiard = pynutil.add_weight(pynini.cross("001", "biljárda"), -0.001)
         graph_billiard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("biljárdda"))
+        if not deterministic:
+            graph_milliard |= pynutil.add_weight(pynini.cross("001", "biljárda "), -0.001)
+            graph_milliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("biljárdda "))
         graph_billiard |= pynutil.delete("000")
 
-        # Guess
         graph_trillion = pynutil.add_weight(pynini.cross("001", "triljon"), -0.001)
         graph_trillion |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("triljovnna"))
         if not deterministic:
             graph_million |= pynutil.add_weight(pynini.cross("001", "triljovdna"), -0.001)
             graph_million |= pynutil.add_weight(pynini.cross("001", "trilliuvdna"), -0.001)
             graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("trilliuvnna"))
+            graph_million |= pynutil.add_weight(pynini.cross("001", "triljon "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "triljovdna "), -0.001)
+            graph_million |= pynutil.add_weight(pynini.cross("001", "trilliuvdna "), -0.001)
+            graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("triljovnna "))
+            graph_million |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("trilliuvnna "))
         graph_trillion |= pynutil.delete("000")
 
         graph_trilliard = pynutil.add_weight(pynini.cross("001", "triljárda"), -0.001)
         graph_trilliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("triljárdda"))
+        if not deterministic:
+            graph_milliard |= pynutil.add_weight(pynini.cross("001", "triljárda "), -0.001)
+            graph_milliard |= (graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("triljárdda "))
         graph_trilliard |= pynutil.delete("000")
 
         graph = (
