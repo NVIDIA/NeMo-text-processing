@@ -248,13 +248,11 @@ class CardinalFst(GraphFst):
         )
         # For plurals, because the 'one' in 21, etc. still needs to agree
         self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = (
-            (pynini.project(self.graph_hundreds_component_at_least_one_non_zero_digit, "input") - "1")
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit
-        )
+            pynini.project(self.graph_hundreds_component_at_least_one_non_zero_digit, "input") - "1"
+        ) @ self.graph_hundreds_component_at_least_one_non_zero_digit
         self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en = (
-            (pynini.project(self.graph_hundreds_component_at_least_one_non_zero_digit_en, "input") - "1")
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_en
-        )
+            pynini.project(self.graph_hundreds_component_at_least_one_non_zero_digit_en, "input") - "1"
+        ) @ self.graph_hundreds_component_at_least_one_non_zero_digit_en
 
         self.graph |= zero
 
