@@ -88,11 +88,8 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-        cardinal_graph = cardinal.graph
-        cardinal_graph_en = cardinal.graph_en
-        cardinal_graph_hundreds_component_at_least_one_non_zero_digit = (
-            cardinal.graph_hundreds_component_at_least_one_non_zero_digit
-        )
+        cardinal_graph = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
+        cardinal_graph_en = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en
 
         self.graph = cardinal.single_digits_graph.optimize()
 
