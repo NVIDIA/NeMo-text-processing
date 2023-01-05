@@ -82,13 +82,6 @@ class MeasureFst(GraphFst):
             + unit
             + pynini.closure(preserve_order)
         )
-        address = (
-            pynutil.delete("units: \"address\" ")
-            + delete_space
-            + graph_cardinal
-            + delete_space
-            + pynini.closure(preserve_order)
-        )
         math = (
             pynutil.delete("units: \"math\" ")
             + delete_space
@@ -96,7 +89,7 @@ class MeasureFst(GraphFst):
             + delete_space
             + pynini.closure(preserve_order)
         )
-        graph |= address | math
+        graph |= math
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
