@@ -46,7 +46,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
 
-    cardinal_separator = (NEMO_SPACE | ".")
+    cardinal_separator = pynini.union(NEMO_SPACE, ".")
     cardinal_string = pynini.closure(
         NEMO_DIGIT, 1
     )  # For string w/o punctuation (used for page numbers, thousand series)
@@ -78,15 +78,9 @@ class OrdinalFst(GraphFst):
         # Any single digit
         graph_digit = digit
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
+        ord_digits_no_one = (NEMO_DIGIT - "1") @ ord_digit
 
         graph_zero = zero
-        if not deterministic:
-            graph_zero |= pynini.cross("0", "nulˈla")
-            graph_zero |= pynini.cross("0", "nol'la")
-            graph_zero |= pynini.cross("0", "nul'la")
-            graph_zero |= pynini.cross("0", "nolˈla")
-            graph_zero |= pynini.cross("0", "nulla")
-            graph_digit |= pynini.cross("2", "guoktẹ")
 
         teen = pynutil.delete("1") + digit + pynutil.insert("nuppelogát")
         teen |= pynini.cross("10", "logát")
@@ -111,10 +105,12 @@ class OrdinalFst(GraphFst):
         # Three digit strings
         hundreds = digits_no_one + pynutil.insert("čuođi")
         hundreds |= pynini.cross("1", "čuođi")
+        hundreds_ord = digits_no_one + pynutil.insert("čuođát")
+        hundreds_ord |= pynini.cross("1", "čuođát")
 
-        final_hundreds = hundreds + pynini.union(
-            two_digit_non_zero, pynutil.delete("00")
-        )
+        final_hundreds = hundreds + two_digit_non_zero
+        final_hundreds |= hundreds_ord + pynutil.delete("00")
+        
         graph_hundreds = pynini.union(
             final_hundreds, graph_two_digit_non_zero
         )
@@ -125,10 +121,10 @@ class OrdinalFst(GraphFst):
         graph_hundreds_component = pynini.union(graph_hundreds, pynutil.delete("0") + (graph_tens | graph_ties))
 
         graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component | (
-            pynutil.delete("00") + graph_digit
+            pynutil.delete("00") + ord_digit
         )
         graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
-            pynutil.delete("00") + digits_no_one
+            pynutil.delete("00") + ord_digits_no_one
         )
         self.graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component_at_least_one_non_zero_digit
         self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one.optimize()
