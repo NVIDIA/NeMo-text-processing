@@ -192,7 +192,7 @@ class CardinalFst(GraphFst):
             + graph_billion
             + graph_milliard
             + graph_million
-            + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000"))
+            + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
         self.graph = (
