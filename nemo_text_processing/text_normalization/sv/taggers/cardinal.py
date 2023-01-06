@@ -201,6 +201,16 @@ class CardinalFst(GraphFst):
                 + insert_space
                 + digit
             )
+            self.three_digits_read |= (
+                ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens
+                + insert_space
+                + digit
+            )
+            self.three_digits_read |= (
+                digit
+                + insert_space
+                + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens
+            )
             self.two_digits_read |= (
                 digit
                 + insert_space
