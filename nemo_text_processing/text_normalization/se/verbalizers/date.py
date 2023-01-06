@@ -47,7 +47,13 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        month = pynutil.delete("month:") + delete_space + pynutil.delete("\"") + (month @ months_nom2gen) + pynutil.delete("\"")
+        month = (
+            pynutil.delete("month:")
+            + delete_space
+            + pynutil.delete("\"")
+            + (month @ months_nom2gen)
+            + pynutil.delete("\"")
+        )
 
         year = (
             pynutil.delete("year:")
@@ -58,9 +64,7 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        graph_mdy = (
-            month + delete_extra_space + day + pynini.closure(delete_extra_space + year, 0, 1)
-        )
+        graph_mdy = month + delete_extra_space + day + pynini.closure(delete_extra_space + year, 0, 1)
 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
@@ -72,10 +76,6 @@ class DateFst(GraphFst):
             + delete_space
         )
 
-        final_graph = (
-            (graph_mdy | year)
-            + delete_space
-            + optional_preserve_order
-        )
+        final_graph = (graph_mdy | year) + delete_space + optional_preserve_order
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
