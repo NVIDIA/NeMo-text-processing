@@ -42,7 +42,7 @@ class DateFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool):
+    def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
 
         month_abbr_graph = load_labels(get_abs_path("data/months/months_abbr.tsv"))
@@ -74,20 +74,19 @@ class DateFst(GraphFst):
         day = (pynutil.insert("day: \"") + digit_day + pynutil.insert("\"")).optimize()
 
         digit_month = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 13)])
-        number_to_month = digit_month @ self.months_num2gen
-        digit_month @= numbers
+        graph_number_to_month = digit_month @ number_to_month
 
         month_name = (pynutil.insert("month: \"") + month_graph + pynutil.insert("\"")).optimize()
         month_number = (
             pynutil.insert("month: \"")
-            + (pynutil.add_weight(digit_month, weight=0.0001) | number_to_month)
+            + graph_number_to_month
             + pynutil.insert("\"")
         ).optimize()
 
         # prefer cardinal over year
         year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
         year @= numbers
-        self.year = year
+        self.year = year.optimize()
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
 
@@ -109,7 +108,7 @@ class DateFst(GraphFst):
             + pynini.closure(pynini.accep(" ") + year_only, 0, 1)
             + preserve_order
         )
-        self.mdy = graph_mdy
+        self.mdy = graph_mdy.optimize()
 
         graph_dmy = (
             day
@@ -118,6 +117,7 @@ class DateFst(GraphFst):
             + month_number
             + pynini.closure(pynutil.delete("/") + insert_space + year_only, 0, 1)
         )
+        self.dmy = graph_dmy.optimize()
         graph_ymd = (
             year_only
             + pynutil.delete("/")
@@ -125,6 +125,7 @@ class DateFst(GraphFst):
             + month_number
             + pynini.closure(pynutil.delete("/") + insert_space + day, 0, 1)
         )
+        self.ymd = graph_ymd.optimize()
 
         separators = ["/", "-"]
         for sep in separators:
