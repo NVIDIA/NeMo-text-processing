@@ -13,17 +13,17 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    insert_space,
     delete_space,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import TO_LOWER
+from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
@@ -77,11 +77,7 @@ class DateFst(GraphFst):
         graph_number_to_month = digit_month @ number_to_month
 
         month_name = (pynutil.insert("month: \"") + month_graph + pynutil.insert("\"")).optimize()
-        month_number = (
-            pynutil.insert("month: \"")
-            + graph_number_to_month
-            + pynutil.insert("\"")
-        ).optimize()
+        month_number = (pynutil.insert("month: \"") + graph_number_to_month + pynutil.insert("\"")).optimize()
 
         # prefer cardinal over year
         year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
@@ -93,21 +89,10 @@ class DateFst(GraphFst):
         beaivi = pynutil.delete(pynini.union("b.", "beaivi"))
         preserve_order = pynutil.insert(" preserve_order: true")
 
-        graph_md = (
-            month_name
-            + NEMO_SPACE
-            + day
-            + pynini.closure(pynutil.delete("."), 0, 1)
-            + NEMO_SPACE
-            + beaivi
-        )
+        graph_md = month_name + NEMO_SPACE + day + pynini.closure(pynutil.delete("."), 0, 1) + NEMO_SPACE + beaivi
         self.md = (graph_md + preserve_order).optimize()
 
-        graph_mdy = (
-            graph_md
-            + pynini.closure(pynini.accep(" ") + year_only, 0, 1)
-            + preserve_order
-        )
+        graph_mdy = graph_md + pynini.closure(pynini.accep(" ") + year_only, 0, 1) + preserve_order
         self.mdy = graph_mdy.optimize()
 
         graph_dmy = (

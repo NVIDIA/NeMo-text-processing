@@ -25,4 +25,3 @@ SE_LOWER = pynini.union(*_ALPHA_LOWER).optimize()
 SE_UPPER = pynini.union(*_ALPHA_UPPER).optimize()
 SE_ALPHA = pynini.union(SE_LOWER, SE_UPPER).optimize()
 SE_ALNUM = pynini.union(byte.DIGIT, SE_ALPHA).optimize()
-
