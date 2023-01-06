@@ -17,15 +17,13 @@ from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
+    NEMO_SIGMA,
     GraphFst,
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import TO_LOWER
 from pynini.lib import pynutil
 
-graph_teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv"))).optimize()
-graph_digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv"))).optimize()
-ties_graph = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv"))).optimize()
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
 
@@ -97,7 +95,7 @@ class DateFst(GraphFst):
         month_graph |= (TO_LOWER + pynini.closure(NEMO_CHAR)) @ month_graph
         month_graph |= month_abbr_graph
 
-        numbers = cardinal.graph_hundred_component_at_least_one_none_zero_digit
+        numbers = cardinal.graph_hundreds_component_at_least_one_non_zero_digit
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
         # 01, 31, 1
         digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ ordinal.graph_bare_ordinals
