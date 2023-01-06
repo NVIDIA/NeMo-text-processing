@@ -238,17 +238,9 @@ class CardinalFst(GraphFst):
         graph_trilliard |= pynutil.delete("000")
 
         self.graph_higher = (
-            graph_trilliard
-            + graph_trillion
-            + graph_billiard
-            + graph_billion
-            + graph_milliard
-            + graph_million
+            graph_trilliard + graph_trillion + graph_billiard + graph_billion + graph_milliard + graph_million
         )
-        graph = (
-            self.graph_higher
-            + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
-        )
+        graph = self.graph_higher + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
 
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
