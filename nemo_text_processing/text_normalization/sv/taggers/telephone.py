@@ -14,7 +14,6 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
     GraphFst,
@@ -23,31 +22,40 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
     plurals,
 )
-from nemo_text_processing.text_normalization.en.utils import get_abs_path
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone, and IP, and SSN which includes country code, number part and extension 
-    country code optional: +*** 
-    number part: ***-***-****, or (***) ***-****
-    extension optional: 1-9999
-    E.g 
-    +1 123-123-5678-1 -> telephone { country_code: "one" number_part: "one two three, one two three, five six seven eight" extension: "one" }
-    1-800-GO-U-HAUL -> telephone { country_code: "one" number_part: "one, eight hundred GO U HAUL" }
+    tfn. 08-789 52 25
+    Finite state transducer for classifying telephone numbers, e.g.
+        123-123-5678 -> { number_part: "ett två tre ett två tre fyra sex sju åtta" }.
+
+    Swedish numbers are written in the following formats:
+        0X-XXX XXX XX
+        0X-XXX XX XX
+        0X-XX XX XX
+        0XX-XXX XX XX
+        0XX-XX XX XX
+        0XX-XXX XX
+        0XXX-XX XX XX
+        0XXX-XXX XX
+    
+    See:
+        https://en.wikipedia.org/wiki/National_conventions_for_writing_telephone_numbers#Sweden
+        https://codegolf.stackexchange.com/questions/195787/format-a-swedish-phone-number
+
     Args:
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
+		deterministic: if True will provide a single transduction option,
+			for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
 
-        add_separator = pynutil.insert(", ")  # between components
-        zero = pynini.cross("0", "zero")
-        if not deterministic:
-            zero |= pynini.cross("0", pynini.union("o", "oh"))
+        zero = pynini.cross("0", "null")
         digit = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize() | zero
 
         telephone_prompts = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
@@ -56,7 +64,6 @@ class TelephoneFst(GraphFst):
             + pynini.closure(pynini.cross("+", "plus "), 0, 1)
             + pynini.closure(digit + insert_space, 0, 2)
             + digit
-            + pynutil.insert(",")
         )
         country_code |= telephone_prompts
         country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
