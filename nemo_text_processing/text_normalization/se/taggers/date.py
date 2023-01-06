@@ -20,43 +20,12 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     GraphFst,
     insert_space,
+    delete_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import TO_LOWER
 from pynini.lib import pynutil
 
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
-
-
-def get_year_graph(cardinal: GraphFst) -> 'pynini.FstLike':
-    """
-    Returns year verbalizations as fst
-
-     < 2000 neunzehn (hundert) (vier und zwanzig), >= 2000 regular cardinal
-    **00 ** hundert
-
-    Args:
-        delete_leading_zero: removed leading zero
-        cardinal: cardinal GraphFst
-    """
-
-    year_gt_2000 = (pynini.union("21", "20") + NEMO_DIGIT ** 2) @ cardinal.graph
-
-    graph_two_digit = delete_leading_zero @ cardinal.two_digit_non_zero
-    hundred = pynutil.insert("hundert")
-    graph_double_double = (
-        (pynini.accep("1") + NEMO_DIGIT) @ graph_two_digit
-        + insert_space
-        + pynini.closure(hundred + insert_space, 0, 1)
-        + graph_two_digit
-    )
-    # for 20**
-    graph_double_double |= pynini.accep("20") @ graph_two_digit + insert_space + graph_two_digit
-    graph = (
-        graph_double_double
-        | (pynini.accep("1") + NEMO_DIGIT) @ graph_two_digit + insert_space + pynutil.delete("00") + hundred
-        | year_gt_2000
-    )
-    return graph
 
 
 class DateFst(GraphFst):
@@ -95,7 +64,7 @@ class DateFst(GraphFst):
         month_graph |= (TO_LOWER + pynini.closure(NEMO_CHAR)) @ month_graph
         month_graph |= month_abbr_graph
 
-        numbers = cardinal.graph_hundreds_component_at_least_one_non_zero_digit
+        numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
         # 01, 31, 1
         digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ ordinal.graph_bare_ordinals
@@ -113,28 +82,30 @@ class DateFst(GraphFst):
         ).optimize()
 
         # prefer cardinal over year
-        year = pynutil.add_weight(get_year_graph(cardinal=cardinal), weight=0.001)
+        year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
+        year @= numbers
         self.year = year
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
 
+        space = (insert_space + delete_space)
         graph_dmy = (
             day
             + pynutil.delete(".")
-            + pynini.closure(pynutil.delete(" "), 0, 1)
-            + insert_space
+            + space
             + month_name
-            + pynini.closure(pynini.accep(" ") + year_only, 0, 1)
+            + pynini.closure(space + year_only, 0, 1)
         )
 
-        beaivi = pynini.union("b.", "beaivi")
+        beaivi = pynutil.delete(pynini.union("b.", "beaivi"))
         preserve_order = pynutil.insert(" preserve_order: true")
 
         graph_md = (
             month_name
-            + pynini.closure(pynutil.delete("."), 0, 1)
-            + pynini.closure(pynutil.delete(" "), 0, 1)
+            + pynutil.delete(" ")
+            + pynutil.insert(" ")
             + day
+            + pynini.closure(pynutil.delete("."), 0, 1)
             + pynini.closure(pynutil.delete(" "), 0, 1)
             + beaivi
         )
