@@ -155,9 +155,8 @@ class OrdinalFst(GraphFst):
             duhat_cross + (graph_hundreds_component_at_least_one_non_zero_digit | pynutil.delete("000")),
         )
 
-        graph = (
-            cardinal.graph_higher
-            + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
+        graph = cardinal.graph_higher + (
+            graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000")
         )
 
         higher_endings = pynini.string_map(
