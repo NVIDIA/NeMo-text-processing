@@ -58,14 +58,15 @@ class TelephoneFst(GraphFst):
         zero = pynini.cross("0", "null")
         digit = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize() | zero
 
-        telephone_prompts = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
+        telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
+        prompt = pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
+
         country_code = (
             pynini.closure(telephone_prompts + delete_extra_space, 0, 1)
             + pynini.closure(pynini.cross("+", "plus "), 0, 1)
             + pynini.closure(digit + insert_space, 0, 2)
             + digit
         )
-        country_code |= telephone_prompts
         country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
         country_code = country_code + pynini.closure(pynutil.delete("-"), 0, 1) + delete_space + insert_space
 
