@@ -93,7 +93,13 @@ class DateFst(GraphFst):
 
         graph_days_suffixed = pynini.string_map(days_suffixed)
         graph_days_suffixed |= pynini.project(graph_days_suffixed, "output")
+        self.days_suffixed = graph_days_suffixed
         self.days_only = pynutil.insert("day: \"") + graph_days_suffixed + pynutil.insert("\"")
+
+        # these express from and to, respectively
+        # december 25-től január 27-ig -> from December 25 to January 27
+        self.days_tol = (pynini.closure(NEMO_CHAR) + pynini.union("től", "tól")) @ graph_days_suffixed
+        self.days_ig = (pynini.closure(NEMO_CHAR) + "ig") @ graph_days_suffixed
 
         delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
