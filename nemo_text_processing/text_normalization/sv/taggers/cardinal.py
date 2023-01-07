@@ -184,6 +184,7 @@ class CardinalFst(GraphFst):
         )
 
         zero_space = zero + insert_space
+        self.zero_space = zero_space
         self.three_digits_read = pynini.union(
             ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2)) @ graph_hundreds_component_at_least_one_non_zero_digit_no_one,
             zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),

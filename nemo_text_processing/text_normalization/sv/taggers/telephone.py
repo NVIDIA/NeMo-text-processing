@@ -23,6 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     plurals,
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
+from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -54,9 +55,16 @@ class TelephoneFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
+        cardinal = CardinalFst(deterministic)
+        zero_space = cardinal.zero_space
+        two_digits = cardinal.two_digits_read
+        three_digits = cardinal.three_digits_read
+        zero_after_country_code = pynini.union(
+            pynini.cross("(0)", "null "),
+            zero_space
+        )
 
         zero = pynini.cross("0", "null")
-        digit = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize() | zero
 
         telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
         prompt = pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
