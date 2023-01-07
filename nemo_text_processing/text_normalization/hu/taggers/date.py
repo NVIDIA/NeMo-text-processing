@@ -70,13 +70,13 @@ def day_inflector(number, day):
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g. 
-        "2010. április 1." -> date { day: "1" month: "április" year: "2010" preserve_order: true }
-        "2010. ápr. 1." -> date { day: "1" month: "április" year: "2010" preserve_order: true }
-        "2010. IV. 1." -> date { day: "1" month: "április" year: "2010" preserve_order: true }
-        "2010. 04. 1." -> date { day: "1" month: "április" year: "2010" preserve_order: true }
-        "2010. 04. 1-je" -> date { day: "1" month: "április" year: "2010" preserve_order: true }
-        "2010. 04. 1-jén" -> date { day: "1" month: "április" year: "2010" preserve_order: true }
-        "2010. 04. 1-én" -> date { day: "1" month: "április" year: "2010" preserve_order: true }
+        "2010. április 1." -> date { year: "kettőezer-tíz" month: "április" day: "elseje" preserve_order: true }
+        "2010. ápr. 1." -> date { year: "kettőezer-tíz" month: "április" day: "elseje" preserve_order: true }
+        "2010. IV. 1." -> date { year: "kettőezer-tíz" month: "április" day: "elseje" preserve_order: true }
+        "2010. 04. 1." -> date { year: "kettőezer-tíz" month: "április" day: "elseje" preserve_order: true }
+        "2010. 04. 1-je" -> date { year: "kettőezer-tíz" month: "április" day: "elseje" preserve_order: true }
+        "2010. 04. 1-jén" -> date { year: "kettőezer-tíz" month: "április" day: "elsején" preserve_order: true }
+        "2010. 04. 1-én" -> date { year: "kettőezer-tíz" month: "április" day: "elsején" preserve_order: true }
 
     Args:
         cardinal: cardinal GraphFst
