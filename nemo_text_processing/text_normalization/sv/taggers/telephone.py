@@ -59,10 +59,7 @@ class TelephoneFst(GraphFst):
         zero_space = cardinal.zero_space
         two_digits = cardinal.two_digits_read
         three_digits = cardinal.three_digits_read
-        zero_after_country_code = pynini.union(
-            pynini.cross("(0)", "null "),
-            zero_space
-        )
+        zero_after_country_code = pynini.union(pynini.cross("(0)", "null "), zero_space)
 
         zero = pynini.cross("0", "null")
 
