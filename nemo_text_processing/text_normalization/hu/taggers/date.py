@@ -62,7 +62,7 @@ def day_inflector(number, day):
     return output
 
 
-def day_adj_endings(number, word, basic = True):
+def day_adj_endings(number, word, basic=True):
     """
     Two adjective forms can be formed from the days (three for 1):
         1-i -> elseji
