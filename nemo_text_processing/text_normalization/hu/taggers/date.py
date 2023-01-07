@@ -62,6 +62,41 @@ def day_inflector(number, day):
     return output
 
 
+def day_adj_endings(number, word):
+    """
+    Two adjective forms can be formed from the days (three for 1):
+        1-i -> elseji
+        1-ji -> elseji
+        1-jei -> elsejei
+        2-i -> másodiki
+        2-ai -> másodikai
+        4-i -> negyediki 
+        4-ei -> negyedikei
+    This is based on other -i adjectives, because these forms are rare.
+    """
+    endings_pl = {
+        "e": "iek ieket ieknek iekkel iekért iekké iekig iekként iekben ieken ieknél iekbe iekre iekhez iekből iekről iektől",
+        "a": "iak iakat iaknak iakkal iakért iakká iakig iakként iakban iakon iaknál iakba iakra iakhoz iakból iakról iaktól",
+    }
+    endings_sg = {
+        "e": "i it inek ivel iért ivé iig iként iben in inél ibe ire ihez iből iről itől",
+        "a": "i it inak ival iért ivá iig iként iban in inál iba ira ihoz iból iról itól",
+    }
+    last = word[-1]
+    short = word[:-1]
+    output = []
+    endings = endings_sg[last].split(" ") + endings_pl[last].split(" ")
+    for ending in endings:
+        if word == "elseje":
+            output.append((f"{number}-{ending}", f"{short}{ending}"))
+            output.append((f"{number}-j{ending}", f"{short}{ending}"))
+            output.append((f"{number}-{last}{ending}", f"{word}{ending}"))
+        else:
+            output.append((f"{number}-{ending}", f"{short}{ending}"))
+            output.append((f"{number}-{last}{ending}", f"{word}{ending}"))
+    return output
+
+
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g. 
@@ -87,9 +122,11 @@ class DateFst(GraphFst):
         day_tsv = load_labels(get_abs_path("data/dates/days.tsv"))
         graph_day = pynini.string_map(day_tsv)
         days_suffixed = get_suffixed_days(day_tsv)
+        day_adj_forms = []
 
         for day in day_tsv:
             days_suffixed += day_inflector(day[0], day[1])
+            day_adj_forms += day_adj_endings(day[0], day[1])
 
         graph_days_suffixed = pynini.string_map(days_suffixed)
         graph_days_suffixed |= pynini.project(graph_days_suffixed, "output")
