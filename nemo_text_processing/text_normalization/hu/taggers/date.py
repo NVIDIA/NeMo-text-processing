@@ -70,9 +70,13 @@ def day_inflector(number, day):
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g. 
-        "01.04.2010" -> date { day: "erster" month: "april" year: "zwei tausend zehn" preserve_order: true }
-        "1994" -> date { year: "neunzehn vier und neuzig" }
-        "1900" -> date { year: "neunzehn hundert" }
+        "2010. április 1." -> date { day: "1" month: "április" year: "2010" preserve_order: true }
+        "2010. ápr. 1." -> date { day: "1" month: "április" year: "2010" preserve_order: true }
+        "2010. IV. 1." -> date { day: "1" month: "április" year: "2010" preserve_order: true }
+        "2010. 04. 1." -> date { day: "1" month: "április" year: "2010" preserve_order: true }
+        "2010. 04. 1-je" -> date { day: "1" month: "április" year: "2010" preserve_order: true }
+        "2010. 04. 1-jén" -> date { day: "1" month: "április" year: "2010" preserve_order: true }
+        "2010. 04. 1-én" -> date { day: "1" month: "április" year: "2010" preserve_order: true }
 
     Args:
         cardinal: cardinal GraphFst
