@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -22,7 +21,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.graph_utils import TO_UPPER, TO_LOWER
+from nemo_text_processing.text_normalization.hu.graph_utils import TO_LOWER, TO_UPPER
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 
@@ -105,9 +105,7 @@ class DateFst(GraphFst):
         month_abbr_graph = load_labels(get_abs_path("data/dates/month_abbr.tsv"))
         number_to_month = pynini.string_file(get_abs_path("data/dates/months.tsv")).optimize()
         month_romans = pynini.string_file(get_abs_path("data/dates/months_roman.tsv")).optimize()
-        month_romans |= pynini.invert(
-            pynini.invert(month_romans) @ pynini.closure(TO_UPPER)
-        )
+        month_romans |= pynini.invert(pynini.invert(month_romans) @ pynini.closure(TO_UPPER))
         month_romans_dot = month_romans + delete_dot
         month_graph = pynini.union(*[x[1] for x in month_abbr_graph]).optimize()
         month_abbr_graph = pynini.string_map(month_abbr_graph)
@@ -132,16 +130,9 @@ class DateFst(GraphFst):
         self.month = month_part
 
         month_component = (pynutil.insert("month: \"") + month_part + pynutil.insert("\"")).optimize()
-        month_number_only = (
-            pynutil.insert("month: \"")
-            + number_to_month
-            + pynutil.insert("\"")
-        ).optimize()
+        month_number_only = (pynutil.insert("month: \"") + number_to_month + pynutil.insert("\"")).optimize()
         month_number_dot = (
-            pynutil.insert("month: \"")
-            + number_to_month
-            + pynutil.delete(".")
-            + pynutil.insert("\"")
+            pynutil.insert("month: \"") + number_to_month + pynutil.delete(".") + pynutil.insert("\"")
         ).optimize()
         self.month_component = month_component
         self.month_number_only = month_number_only
@@ -156,12 +147,7 @@ class DateFst(GraphFst):
         year_dot = pynutil.insert("year: \"") + year + pynutil.delete(".") + pynutil.insert("\"")
         optional_year_dot_space = pynini.closure(year_dot + NEMO_SPACE, 0, 1)
 
-        graph_ymd = (
-            optional_year_dot_space
-            + month_component
-            + pynini.cross("/", " ")
-            + day_dot
-        )
+        graph_ymd = optional_year_dot_space + month_component + pynini.cross("/", " ") + day_dot
 
         # separators = ["."]
         # for sep in separators:
