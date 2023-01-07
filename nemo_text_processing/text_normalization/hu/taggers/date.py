@@ -129,9 +129,14 @@ class DateFst(GraphFst):
             day_adj_forms += day_adj_endings(day[0], day[1])
 
         graph_days_suffixed = pynini.string_map(days_suffixed)
+        graph_days_adj_suffixed = pynini.string_map(day_adj_forms)
         graph_days_suffixed |= pynini.project(graph_days_suffixed, "output")
+        graph_days_adj_suffixed |= pynini.project(graph_days_adj_suffixed, "output")
         self.days_suffixed = graph_days_suffixed
+        self.days_suffixed_ext = graph_days_suffixed | graph_days_adj_suffixed
         self.days_only = pynutil.insert("day: \"") + graph_days_suffixed + pynutil.insert("\"")
+        self.days_adj_only = pynutil.insert("day: \"") + graph_days_adj_suffixed + pynutil.insert("\"")
+        self.days_only_ext = (self.days_only | self.days_adj_only).optimize()
 
         # these express from and to, respectively
         # december 25-től január 27-ig -> from December 25 to January 27
