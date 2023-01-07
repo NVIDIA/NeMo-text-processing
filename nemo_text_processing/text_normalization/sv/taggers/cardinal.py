@@ -188,35 +188,14 @@ class CardinalFst(GraphFst):
         self.three_digits_read = pynini.union(
             ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2)) @ graph_hundreds_component_at_least_one_non_zero_digit_no_one,
             zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
-            zero_space + zero_space + digit
+            zero_space + zero_space + digit,
         )
-        self.two_digits_read = pynini.union(
-            ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens,
-            zero_space + digit
-        )
+        self.two_digits_read = pynini.union(((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, zero_space + digit)
         if not deterministic:
-            self.three_digits_read |= (
-                digit
-                + insert_space
-                + digit
-                + insert_space
-                + digit
-            )
-            self.three_digits_read |= (
-                ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens
-                + insert_space
-                + digit
-            )
-            self.three_digits_read |= (
-                digit
-                + insert_space
-                + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens
-            )
-            self.two_digits_read |= (
-                digit
-                + insert_space
-                + digit
-            )
+            self.three_digits_read |= digit + insert_space + digit + insert_space + digit
+            self.three_digits_read |= ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens + insert_space + digit
+            self.three_digits_read |= digit + insert_space + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens
+            self.two_digits_read |= digit + insert_space + digit
 
         tusen = pynutil.insert("tusen")
         if not deterministic:
