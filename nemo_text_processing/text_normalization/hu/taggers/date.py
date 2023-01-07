@@ -105,7 +105,7 @@ class DateFst(GraphFst):
         # jan.-> januar, Jan-> januar, januar-> januar
         month_graph |= month_abbr_graph
 
-        numbers = cardinal.graph_hundred_component_at_least_one_none_zero_digit
+        numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
         # 01, 31, 1
         digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ numbers
@@ -123,10 +123,12 @@ class DateFst(GraphFst):
         ).optimize()
 
         # prefer cardinal over year
-        year = pynutil.add_weight(get_year_graph(cardinal=cardinal), weight=0.001)
+        year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
+        year @= numbers
         self.year = year
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
+        year_dot = pynutil.insert("year: \"") + year + pynutil.delete(".") + pynutil.insert("\"")
 
         graph_dmy = (
             day
