@@ -73,7 +73,6 @@ def day_adj_endings(number, word, basic = True):
         4-i -> negyediki 
         4-ei -> negyedikei
     This is based on other -i adjectives, because these forms are rare.
-
     """
     endings_pl = {
         "e": "iek ieket ieknek iekkel iekért iekké iekig iekként iekben ieken ieknél iekbe iekre iekhez iekből iekről iektől",
@@ -126,21 +125,22 @@ class DateFst(GraphFst):
         day_tsv = load_labels(get_abs_path("data/dates/days.tsv"))
         graph_day = pynini.string_map(day_tsv)
         days_suffixed = get_suffixed_days(day_tsv)
-        day_adj_forms = []
 
+        use_full_adj_forms = False
+        if not deterministic:
+            use_full_adj_forms = True
+        day_adj_forms = []
         for day in day_tsv:
             days_suffixed += day_inflector(day[0], day[1])
-            day_adj_forms += day_adj_endings(day[0], day[1])
+            day_adj_forms += day_adj_endings(day[0], day[1], use_full_adj_forms)
 
         graph_days_suffixed = pynini.string_map(days_suffixed)
         graph_days_adj_suffixed = pynini.string_map(day_adj_forms)
         graph_days_suffixed |= pynini.project(graph_days_suffixed, "output")
         graph_days_adj_suffixed |= pynini.project(graph_days_adj_suffixed, "output")
         self.days_suffixed = graph_days_suffixed
-        self.days_suffixed_ext = graph_days_suffixed | graph_days_adj_suffixed
+        self.days_suffixed |= graph_days_adj_suffixed
         self.days_only = pynutil.insert("day: \"") + graph_days_suffixed + pynutil.insert("\"")
-        self.days_adj_only = pynutil.insert("day: \"") + graph_days_adj_suffixed + pynutil.insert("\"")
-        self.days_only_ext = (self.days_only | self.days_adj_only).optimize()
 
         # these express from and to, respectively
         # december 25-től január 27-ig -> from December 25 to January 27
@@ -213,7 +213,6 @@ class DateFst(GraphFst):
         final_graph = graph_ymd + pynutil.insert(" preserve_order: true")
         final_graph |= graph_ym + pynutil.insert(" preserve_order: true")
         final_graph |= year_only
-        final_graph |= self.days_only_ext
         final_graph |= graph_dmy
 
         self.final_graph = final_graph.optimize()
