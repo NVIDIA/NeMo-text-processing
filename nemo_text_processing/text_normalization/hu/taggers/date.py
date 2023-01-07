@@ -18,10 +18,10 @@ from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
-    TO_LOWER,
     GraphFst,
     insert_space,
 )
+from nemo_text_processing.text_normalization.hu.graph_utils import TO_UPPER, TO_LOWER
 from pynini.lib import pynutil
 
 
@@ -93,6 +93,10 @@ class DateFst(GraphFst):
 
         month_abbr_graph = load_labels(get_abs_path("data/months/abbr_to_name.tsv"))
         number_to_month = pynini.string_file(get_abs_path("data/months/numbers.tsv")).optimize()
+        month_romans = pynini.string_file(get_abs_path("data/dates/months_roman.tsv")).optimize()
+        month_romans |= pynini.invert(
+            pynini.invert(month_romans) @ pynini.closure(TO_UPPER)
+        )
         month_graph = pynini.union(*[x[1] for x in month_abbr_graph]).optimize()
         month_abbr_graph = pynini.string_map(month_abbr_graph)
         month_abbr_graph = (
