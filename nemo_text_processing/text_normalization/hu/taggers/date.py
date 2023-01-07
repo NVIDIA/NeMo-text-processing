@@ -62,6 +62,9 @@ def day_inflector(number, day):
     return output
 
 
+# TODO: check which endings actually are used
+# adjectives only agree when they are predicative,
+# which is not a likely use of a day adjective
 def day_adj_endings(number, word):
     """
     Two adjective forms can be formed from the days (three for 1):
@@ -209,7 +212,7 @@ class DateFst(GraphFst):
         final_graph = graph_ymd + pynutil.insert(" preserve_order: true")
         final_graph |= graph_ym + pynutil.insert(" preserve_order: true")
         final_graph |= year_only
-        final_graph |= self.days_only
+        final_graph |= self.days_only_ext
         final_graph |= graph_dmy
 
         self.final_graph = final_graph.optimize()
