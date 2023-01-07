@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
 import pynini
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.graph_utils import (
@@ -29,13 +28,41 @@ def get_suffixed_days(labels):
     endings = ["je", "a", "e"]
     output = []
     for label in labels:
-        current = []
         for ending in endings:
             if label[1].endswith(ending):
-                current.append(f"{label[0]}-{ending}")
-                current.append(label[1])
-                output.append(current)
+                output.append((f"{label[0]}-{ending}", label[1]))
                 break
+    return output
+
+
+def day_inflector(number, day):
+    """
+    Generates pairs of inflected day numbers and their full forms,
+    according to the options listed here:
+    https://helyesiras.mta.hu/helyesiras/default/akh#298
+
+    Args:
+        number: the day number
+        day: the day name
+    
+    Returns:
+        a list of expanded forms, two per ending.
+    """
+    endings = {
+        "e": "ét ének ével éért évé éig eként éül ében én énél ébe ére éhez éből éről étől",
+        "a": "át ának ával áért ává áig aként ául ában án ánál ába ára ához ából áról ától",
+    }
+    output = []
+    daylast = day[-1]
+    for ending in endings[daylast].split(" "):
+        daybase = day[:-1]
+        endtrimmed = ending[1:]
+        if day.endswith("eje"):
+            output.append((f"{number}-j{ending}", f"{daybase}{ending}"))
+            output.append((f"{number}-{ending}", f"{daybase}{ending}"))
+        else:
+            output.append((f"{number}-{ending}", f"{daybase}{ending}"))
+            output.append((f"{number}-{endtrimmed}", f"{daybase}{ending}"))
     return output
 
 
