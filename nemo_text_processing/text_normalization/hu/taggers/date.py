@@ -14,12 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR,
-    NEMO_DIGIT,
-    NEMO_SPACE,
-    GraphFst,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_DIGIT, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.hu.graph_utils import TO_LOWER, TO_UPPER
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
@@ -150,24 +145,12 @@ class DateFst(GraphFst):
         year_dot = pynutil.insert("year: \"") + year + pynutil.delete(".") + pynutil.insert("\"")
         optional_year_dot_space = pynini.closure(year_dot + NEMO_SPACE, 0, 1)
 
-        graph_ymd = (
-            optional_year_dot_space
-            + month_component
-            + NEMO_SPACE
-            + day_part
-        )
+        graph_ymd = optional_year_dot_space + month_component + NEMO_SPACE + day_part
         self.ymd = graph_ymd
-        graph_ym = (
-            year_dot
-            + NEMO_SPACE
-            + month_component
-        )
+        graph_ym = year_dot + NEMO_SPACE + month_component
 
         graph_dmy = (
-            day
-            + pynini.cross("-", " ")
-            + month_number_only
-            + pynini.closure(pynini.cross("-", " ") + year_only, 0, 1)
+            day + pynini.cross("-", " ") + month_number_only + pynini.closure(pynini.cross("-", " ") + year_only, 0, 1)
         )
         separators = [".", "/"]
         for sep in separators:
