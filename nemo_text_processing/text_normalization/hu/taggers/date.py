@@ -62,10 +62,7 @@ def day_inflector(number, day):
     return output
 
 
-# TODO: check which endings actually are used
-# adjectives only agree when they are predicative,
-# which is not a likely use of a day adjective
-def day_adj_endings(number, word):
+def day_adj_endings(number, word, basic = True):
     """
     Two adjective forms can be formed from the days (three for 1):
         1-i -> elseji
@@ -76,6 +73,7 @@ def day_adj_endings(number, word):
         4-i -> negyediki 
         4-ei -> negyedikei
     This is based on other -i adjectives, because these forms are rare.
+
     """
     endings_pl = {
         "e": "iek ieket ieknek iekkel iekért iekké iekig iekként iekben ieken ieknél iekbe iekre iekhez iekből iekről iektől",
@@ -88,7 +86,10 @@ def day_adj_endings(number, word):
     last = word[-1]
     short = word[:-1]
     output = []
-    endings = endings_sg[last].split(" ") + endings_pl[last].split(" ")
+    if basic:
+        endings = ["i"]
+    else:
+        endings = endings_sg[last].split(" ") + endings_pl[last].split(" ")
     for ending in endings:
         if word == "elseje":
             output.append((f"{number}-{ending}", f"{short}{ending}"))
