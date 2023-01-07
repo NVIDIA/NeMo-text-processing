@@ -18,6 +18,7 @@ from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
+    NEMO_SPACE,
     GraphFst,
     insert_space,
 )
@@ -86,8 +87,10 @@ class DateFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
+        delete_dot = pynutil.delete(".")
 
         day_tsv = load_labels(get_abs_path("data/dates/days.tsv"))
+        graph_day = pynini.string_map(day_tsv)
         days_suffixed = get_suffixed_days(day_tsv)
 
         for day in day_tsv:
@@ -105,30 +108,44 @@ class DateFst(GraphFst):
         month_romans |= pynini.invert(
             pynini.invert(month_romans) @ pynini.closure(TO_UPPER)
         )
+        month_romans_dot = month_romans + delete_dot
         month_graph = pynini.union(*[x[1] for x in month_abbr_graph]).optimize()
         month_abbr_graph = pynini.string_map(month_abbr_graph)
 
         self.month_abbr = month_abbr_graph
         month_graph |= (TO_LOWER + pynini.closure(NEMO_CHAR)) @ month_graph
         # jan.-> januar, Jan-> januar, januar-> januar
-        month_graph |= month_abbr_graph
+        month_abbr_dot = month_abbr_graph + delete_dot
 
         numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
         # 01, 31, 1
-        digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ numbers
+        digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ graph_day
         day = (pynutil.insert("day: \"") + digit_day + pynutil.insert("\"")).optimize()
+        day_dot = (pynutil.insert("day: \"") + digit_day + pynutil.delete(".") + pynutil.insert("\"")).optimize()
+        self.day_dot = day_dot
 
         digit_month = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 13)])
         number_to_month = digit_month @ number_to_month
-        digit_month @= numbers
+        number_to_month_dot = number_to_month + delete_dot
+        month_part = month_abbr_dot | month_graph | month_romans_dot | number_to_month_dot
+        self.month = month_part
 
-        month_name = (pynutil.insert("month: \"") + month_graph + pynutil.insert("\"")).optimize()
-        month_number = (
+        month_component = (pynutil.insert("month: \"") + month_part + pynutil.insert("\"")).optimize()
+        month_number_only = (
             pynutil.insert("month: \"")
-            + (pynutil.add_weight(digit_month, weight=0.0001) | number_to_month)
+            + number_to_month
             + pynutil.insert("\"")
         ).optimize()
+        month_number_dot = (
+            pynutil.insert("month: \"")
+            + number_to_month
+            + pynutil.delete(".")
+            + pynutil.insert("\"")
+        ).optimize()
+        self.month_component = month_component
+        self.month_number_only = month_number_only
+        self.month_number = month_number_dot
 
         # prefer cardinal over year
         year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
@@ -137,29 +154,28 @@ class DateFst(GraphFst):
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         year_dot = pynutil.insert("year: \"") + year + pynutil.delete(".") + pynutil.insert("\"")
+        optional_year_dot_space = pynini.closure(year_dot + NEMO_SPACE, 0, 1)
 
-        graph_dmy = (
-            day
-            + pynutil.delete(".")
-            + pynini.closure(pynutil.delete(" "), 0, 1)
-            + insert_space
-            + month_name
-            + pynini.closure(pynini.accep(" ") + year_only, 0, 1)
+        graph_ymd = (
+            optional_year_dot_space
+            + month_component
+            + pynini.cross("/", " ")
+            + day_dot
         )
 
-        separators = ["."]
-        for sep in separators:
-            year_optional = pynini.closure(pynini.cross(sep, " ") + year_only, 0, 1)
-            new_graph = day + pynini.cross(sep, " ") + month_number + year_optional
-            graph_dmy |= new_graph
+        # separators = ["."]
+        # for sep in separators:
+        #     year_optional = pynini.closure(pynini.cross(sep, " ") + year_only, 0, 1)
+        #     new_graph = day + pynini.cross(sep, " ") + number_to_month + year_optional
+        #     graph_dmy |= new_graph
 
-        dash = "-"
-        day_optional = pynini.closure(pynini.cross(dash, " ") + day, 0, 1)
-        graph_ymd = year_only + pynini.cross(dash, " ") + month_number + day_optional
+        # dash = "-"
+        # day_optional = pynini.closure(pynini.cross(dash, " ") + day, 0, 1)
+        # graph_ymd = year_only + pynini.cross(dash, " ") + number_to_month + day_optional
 
-        final_graph = graph_dmy + pynutil.insert(" preserve_order: true")
+        final_graph = graph_ymd + pynutil.insert(" preserve_order: true")
         final_graph |= year_only
-        final_graph |= graph_ymd
+        final_graph |= self.days_only
 
         self.final_graph = final_graph.optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()
