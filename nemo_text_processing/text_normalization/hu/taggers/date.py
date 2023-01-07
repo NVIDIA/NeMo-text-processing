@@ -89,20 +89,24 @@ class DateFst(GraphFst):
 
         day_tsv = load_labels(get_abs_path("data/dates/days.tsv"))
         days_suffixed = get_suffixed_days(day_tsv)
+
+        for day in day_tsv:
+            days_suffixed += day_inflector(day[0], day[1])
+
+        graph_days_suffixed = pynini.string_map(days_suffixed)
+        graph_days_suffixed |= pynini.project(graph_days_suffixed, "output")
+        self.days_only = pynutil.insert("day: \"") + graph_days_suffixed + pynutil.insert("\"")
+
         delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
-        month_abbr_graph = load_labels(get_abs_path("data/months/abbr_to_name.tsv"))
-        number_to_month = pynini.string_file(get_abs_path("data/months/numbers.tsv")).optimize()
+        month_abbr_graph = load_labels(get_abs_path("data/dates/month_abbr.tsv"))
+        number_to_month = pynini.string_file(get_abs_path("data/dates/months.tsv")).optimize()
         month_romans = pynini.string_file(get_abs_path("data/dates/months_roman.tsv")).optimize()
         month_romans |= pynini.invert(
             pynini.invert(month_romans) @ pynini.closure(TO_UPPER)
         )
         month_graph = pynini.union(*[x[1] for x in month_abbr_graph]).optimize()
         month_abbr_graph = pynini.string_map(month_abbr_graph)
-        month_abbr_graph = (
-            pynutil.add_weight(month_abbr_graph, weight=0.0001)
-            | ((TO_LOWER + pynini.closure(NEMO_CHAR)) @ month_abbr_graph)
-        ) + pynini.closure(pynutil.delete(".", weight=-0.0001), 0, 1)
 
         self.month_abbr = month_abbr_graph
         month_graph |= (TO_LOWER + pynini.closure(NEMO_CHAR)) @ month_graph
