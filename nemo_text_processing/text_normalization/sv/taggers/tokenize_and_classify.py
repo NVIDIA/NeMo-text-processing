@@ -96,7 +96,7 @@ class ClassifyFst(GraphFst):
             logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
             start_time = time.time()
-            fraction = FractionFst(deterministic=deterministic, cardinal=cardinal)
+            fraction = FractionFst(deterministic=deterministic, ordinal=ordinal, cardinal=cardinal)
             fraction_graph = fraction.fst
             logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 

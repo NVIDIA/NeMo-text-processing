@@ -72,7 +72,7 @@ class TimeFst(GraphFst):
         final_graph_hour = klockan_optional + pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
         final_graph_minute = (
             pynutil.insert("minutes: \"")
-            + (pynini.delete("0") + insert_space + graph_minute_single | graph_minute_double)
+            + (pynutil.delete("0") + insert_space + graph_minute_single | graph_minute_double)
             + pynutil.insert("\"")
         )
         if not deterministic:
@@ -86,7 +86,7 @@ class TimeFst(GraphFst):
             )
         final_graph_second = (
             pynutil.insert("seconds: \"")
-            + (pynini.delete("0") + insert_space + graph_minute_single | graph_minute_double)
+            + (pynutil.delete("0") + insert_space + graph_minute_single | graph_minute_double)
             + pynutil.insert("\"")
         )
         if not deterministic:

@@ -207,7 +207,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("fraction { ") + fraction.graph + delete_space + pynutil.insert(" } ") + unit_plural
         )
 
-        math_operations = pynini.string_file(get_abs_path("data/measure/math_operation.tsv"))
+        math_operations = pynini.string_file(get_abs_path("data/math_operations.tsv"))
         delimiter = pynini.accep(" ") | pynutil.insert(" ")
 
         equals = pynini.cross("=", "är")
