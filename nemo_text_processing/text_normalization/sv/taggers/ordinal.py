@@ -192,7 +192,11 @@ class OrdinalFst(GraphFst):
 
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
-        tok_graph = pynutil.insert("integer: \"") + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words) + pynutil.insert("\"")
+        tok_graph = (
+            pynutil.insert("integer: \"")
+            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words)
+            + pynutil.insert("\"")
+        )
 
         final_graph = self.add_tokens(tok_graph)
         self.fst = final_graph.optimize()
