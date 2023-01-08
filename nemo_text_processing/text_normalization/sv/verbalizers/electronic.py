@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from pynini.lib import pynutil
 
 digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))

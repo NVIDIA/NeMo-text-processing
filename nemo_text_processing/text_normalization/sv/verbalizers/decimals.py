@@ -42,6 +42,7 @@ class DecimalFst(GraphFst):
             pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         )
 
+        self.integer = integer
         conjunction = pynutil.insert(" komma ")
         fractional = conjunction + fractional_default
 
@@ -65,6 +66,7 @@ class DecimalFst(GraphFst):
 
         self.graph = (graph + delete_preserve_order).optimize()
 
+        self.numbers = graph
         graph += delete_preserve_order
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
