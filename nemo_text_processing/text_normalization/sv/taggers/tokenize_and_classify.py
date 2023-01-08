@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import logging
 import time
 
 import pynini
@@ -27,8 +28,7 @@ from nemo_text_processing.text_normalization.en.taggers.punctuation import Punct
 from nemo_text_processing.text_normalization.en.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
-
-# from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
+from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
 from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst
@@ -40,8 +40,6 @@ from nemo_text_processing.text_normalization.sv.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.sv.taggers.word import WordFst
 from pynini.lib import pynutil
-
-from nemo.utils import logging
 
 
 class ClassifyFst(GraphFst):
