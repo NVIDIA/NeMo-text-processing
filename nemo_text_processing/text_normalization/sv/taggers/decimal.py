@@ -23,8 +23,9 @@ quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
 
 def get_quantity(
     decimal: 'pynini.FstLike',
-    decimal_en: 'pynini.FstLike',
+    decimal_ett: 'pynini.FstLike',
     cardinal_up_to_thousand: 'pynini.FstLike',
+    cardinal_up_to_thousand_ett: 'pynini.FstLike',
     include_abbr: bool,
 ) -> 'pynini.FstLike':
     """
@@ -50,6 +51,15 @@ def get_quantity(
     )
     res |= (
         pynutil.insert("integer_part: \"")
+        + cardinal_up_to_thousand_ett
+        + pynutil.insert("\"")
+        + pynini.closure(pynutil.delete(" "), 0, 1)
+        + pynutil.insert(" quantity: \"")
+        + "tusen"
+        + pynutil.insert("\"")
+    )
+    res |= (
+        pynutil.insert("integer_part: \"")
         + pynini.cross("1", "ett")
         + pynutil.insert("\"")
         + pynini.closure(pynutil.delete(" "), 0, 1)
@@ -67,10 +77,26 @@ def get_quantity(
         + pynutil.insert("\"")
     )
     res |= (
+        pynutil.insert("integer_part: \"")
+        + pynini.cross("1", "en")
+        + pynutil.insert("\"")
+        + pynini.closure(pynutil.delete(" "), 0, 1)
+        + pynutil.insert(" quantity: \"")
+        + quantities
+        + pynutil.insert("\"")
+    )
+    res |= (
         decimal
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert("quantity: \"")
         + quantities
+        + pynutil.insert("\"")
+    )
+    res |= (
+        decimal_ett
+        + pynini.closure(pynutil.delete(" "), 0, 1)
+        + pynutil.insert("quantity: \"")
+        + "tusen"
         + pynutil.insert("\"")
     )
     return res
@@ -90,6 +116,8 @@ class DecimalFst(GraphFst):
 
         cardinal_graph = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
+        cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit
+        cardinal_graph_hundreds_one_non_zero_en = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_en
 
         self.graph = cardinal.single_digits_graph.optimize()
 
@@ -101,18 +129,25 @@ class DecimalFst(GraphFst):
 
         self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
         self.graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
+        self.graph_integer_en = pynutil.insert("integer_part: \"") + cardinal_graph_en + pynutil.insert("\"")
         final_graph_wo_sign = (
             pynini.closure(self.graph_integer + pynutil.insert(" "), 0, 1)
             + point
             + pynutil.insert(" ")
             + self.graph_fractional
         )
+        final_graph_wo_sign_en = (
+            pynini.closure(self.graph_integer_en + pynutil.insert(" "), 0, 1)
+            + point
+            + pynutil.insert(" ")
+            + self.graph_fractional
+        )
 
         quantity_w_abbr = get_quantity(
-            final_graph_wo_sign, cardinal_graph_hundreds_component_at_least_one_non_zero_digit, include_abbr=True
+            final_graph_wo_sign_en, final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero_en, cardinal_graph_hundreds_one_non_zero, include_abbr=True
         )
         quantity_wo_abbr = get_quantity(
-            final_graph_wo_sign, cardinal_graph_hundreds_component_at_least_one_non_zero_digit, include_abbr=False
+            final_graph_wo_sign_en, final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero_en, cardinal_graph_hundreds_one_non_zero, include_abbr=False
         )
         self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
         self.final_graph_wo_negative = final_graph_wo_sign | quantity_wo_abbr
