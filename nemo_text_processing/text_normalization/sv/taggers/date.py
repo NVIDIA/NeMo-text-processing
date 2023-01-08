@@ -58,16 +58,15 @@ class DateFst(GraphFst):
 
         month_name = (pynutil.insert("month: \"") + month_graph + pynutil.insert("\"")).optimize()
         month_number = (pynutil.insert("month: \"") + number_to_month + pynutil.insert("\"")).optimize()
-        month_abbreviation = (pynutil.insert("month: \"") + self.month_abbr + optional_dot + pynutil.insert("\"")).optimize()
+        month_abbreviation = (
+            pynutil.insert("month: \"") + self.month_abbr + optional_dot + pynutil.insert("\"")
+        ).optimize()
 
         # prefer cardinal over year
         year_first = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 1)) @ numbers
         year_second = (NEMO_DIGIT + NEMO_DIGIT) @ numbers
         year_cardinal = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)) @ numbers
-        year = pynini.union(
-            year_first + year_second,
-            year_first
-        ) # 90, 990, 1990
+        year = pynini.union(year_first + year_second, year_first)  # 90, 990, 1990
         if not deterministic:
             year |= year_cardinal
         self.year = year
