@@ -28,7 +28,7 @@ except (ImportError, ModuleNotFoundError):
 
 class TestFraction:
     normalizer = (
-        Normalizer(input_case='cased', lang='es', cache_dir=CACHE_DIR, overwrite_cache=False)
+        Normalizer(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
         if PYNINI_AVAILABLE
         else None
     )
