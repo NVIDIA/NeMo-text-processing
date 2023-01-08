@@ -54,9 +54,10 @@ class FractionFst(GraphFst):
             )
             + pynutil.delete("\" ")
         )
-        numerator_rest = numerator_rest + insert_space + denominators
 
-        graph = numerator_one | numerator_rest
+        graph_sg = numerator_one + insert_space + denominators_sg
+        graph_pl = numerator_rest + insert_space + denominators_pl
+        graph = graph_sg | graph_pl
 
         conjunction = pynutil.insert("och ")
         if not deterministic and not lm:
