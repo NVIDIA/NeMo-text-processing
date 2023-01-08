@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_preserve_order,
     insert_space,
 )
+from nemo_text_processing.text_normalization.sv.graph_utils import bos_or_space, eos_or_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -61,8 +62,6 @@ class ElectronicFst(GraphFst):
         domain = convert_defaults + pynini.closure(insert_space + convert_defaults)
         domain @= verbalize_characters
 
-        bos_or_space = pynini.union("[BOS]", " ")
-        eos_or_space = pynini.union("[EOS]", " ")
         domain = pynutil.delete("domain: \"") + domain + pynutil.delete("\"")
         protocol = (
             pynutil.delete("protocol: \"")

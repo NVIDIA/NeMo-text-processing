@@ -25,3 +25,6 @@ SV_LOWER = pynini.union(*_ALPHA_LOWER).optimize()
 SV_UPPER = pynini.union(*_ALPHA_UPPER).optimize()
 SV_ALPHA = pynini.union(SV_LOWER, SV_UPPER).optimize()
 SV_ALNUM = pynini.union(byte.DIGIT, SV_ALPHA).optimize()
+
+bos_or_space = pynini.union("[BOS]", " ")
+eos_or_space = pynini.union("[EOS]", " ")
