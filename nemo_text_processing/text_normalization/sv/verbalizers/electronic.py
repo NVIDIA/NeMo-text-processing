@@ -66,10 +66,9 @@ class ElectronicFst(GraphFst):
         domain = pynutil.delete("domain: \"") + domain + pynutil.delete("\"")
         protocol = (
             pynutil.delete("protocol: \"")
-            + (add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA))
-            @ pynini.cdrewrite(pynini.cross("snedstreck snedstreck", "dubbla snedstreck"), bos_or_space, eos_or_space, NEMO_SIGMA)
+            + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + pynutil.delete("\"")
-        )
+        ) @ pynini.cdrewrite(pynini.cross("snedstreck snedstreck", "dubbla snedstreck"), bos_or_space, eos_or_space, NEMO_SIGMA)
         self.graph = (pynini.closure(protocol + pynini.accep(" "), 0, 1) + domain) | (
             user_name + pynini.accep(" ") + pynutil.insert("snabel-a ") + domain
         )
