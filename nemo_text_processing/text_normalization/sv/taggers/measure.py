@@ -71,7 +71,10 @@ class MeasureFst(GraphFst):
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         graph_unit2 = (
-            pynini.cross("/", "per") + delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + (graph_unit | graph_unit_ett)
+            pynini.cross("/", "per")
+            + delete_zero_or_one_space
+            + pynutil.insert(NEMO_NON_BREAKING_SPACE)
+            + (graph_unit | graph_unit_ett)
         )
 
         optional_graph_unit2 = pynini.closure(
@@ -93,9 +96,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("units: \"") + (graph_unit + optional_graph_unit2 | graph_unit2) + pynutil.insert("\"")
         )
         unit_singular_ett = (
-            pynutil.insert("units: \"")
-            + (graph_unit_ett + optional_graph_unit2 | graph_unit2)
-            + pynutil.insert("\"")
+            pynutil.insert("units: \"") + (graph_unit_ett + optional_graph_unit2 | graph_unit2) + pynutil.insert("\"")
         )
 
         subgraph_decimal = (
