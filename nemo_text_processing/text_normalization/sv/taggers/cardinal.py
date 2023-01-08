@@ -113,7 +113,7 @@ class CardinalFst(GraphFst):
             final_digit = digits_no_one | both_ones
         self.digit = final_digit
 
-        single_digits_graph = pynini.invert(graph_digit | zero)
+        single_digits_graph = graph_digit | zero
         self.single_digits_graph = single_digits_graph + pynini.closure(insert_space + single_digits_graph)
 
         # spoken this way, so useful for e2e ASR
@@ -266,6 +266,14 @@ class CardinalFst(GraphFst):
             ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
             zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
             zero_space + zero_space + digit,
+        )
+        self.three_digits_read_frac = pynini.union(
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+            zero_space + digit + insert_space + digit,
+        )
+        self.three_digits_read_frac_en = pynini.union(
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
+            zero_space + digit + insert_space + digit,
         )
         self.two_digits_read = pynini.union(((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, zero_space + digit)
         self.two_digits_read_en = pynini.union(
