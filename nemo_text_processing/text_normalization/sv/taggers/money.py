@@ -16,7 +16,6 @@ import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
-    SINGULAR_TO_PLURAL,
     GraphFst,
     convert_space,
     insert_space,
@@ -28,7 +27,7 @@ from pynini.lib import pynutil
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
 min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")))
-
+maj_plural = pynini.string_file((get_abs_path("data/money/currency_plurals.tsv")))
 
 class MoneyFst(GraphFst):
     """
@@ -56,7 +55,7 @@ class MoneyFst(GraphFst):
         graph_decimal_final = decimal.final_graph_wo_negative_w_abbr
 
         maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
-        maj_unit_plural = convert_space(maj_singular @ SINGULAR_TO_PLURAL)
+        maj_unit_plural = convert_space(maj_singular @ maj_plural)
         maj_unit_singular = convert_space(maj_singular)
 
         graph_maj_singular = pynutil.insert("currency_maj: \"") + maj_unit_singular + pynutil.insert("\"")
