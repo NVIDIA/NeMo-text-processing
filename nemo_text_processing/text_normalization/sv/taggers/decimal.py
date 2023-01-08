@@ -144,10 +144,18 @@ class DecimalFst(GraphFst):
         )
 
         quantity_w_abbr = get_quantity(
-            final_graph_wo_sign_en, final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero_en, cardinal_graph_hundreds_one_non_zero, include_abbr=True
+            final_graph_wo_sign_en,
+            final_graph_wo_sign,
+            cardinal_graph_hundreds_one_non_zero_en,
+            cardinal_graph_hundreds_one_non_zero,
+            include_abbr=True,
         )
         quantity_wo_abbr = get_quantity(
-            final_graph_wo_sign_en, final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero_en, cardinal_graph_hundreds_one_non_zero, include_abbr=False
+            final_graph_wo_sign_en,
+            final_graph_wo_sign,
+            cardinal_graph_hundreds_one_non_zero_en,
+            cardinal_graph_hundreds_one_non_zero,
+            include_abbr=False,
         )
         self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
         self.final_graph_wo_negative = final_graph_wo_sign | quantity_wo_abbr
