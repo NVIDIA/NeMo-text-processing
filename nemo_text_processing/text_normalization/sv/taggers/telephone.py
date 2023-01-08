@@ -106,13 +106,17 @@ class TelephoneFst(GraphFst):
         number_part = area_part + number_words
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
         extension = (
-            pynutil.insert("extension: \"") + pynini.closure(digit + insert_space, 0, 3) + digit + pynutil.insert("\"")
+            pynutil.insert("extension: \"") + pynini.closure(one_two_or_three_digits, 0, 3) + pynutil.insert("\"")
         )
         extension = pynini.closure(insert_space + extension, 0, 1)
 
         graph = plurals._priority_union(country_code + number_part, number_part, NEMO_SIGMA).optimize()
         graph = plurals._priority_union(country_code + number_part + extension, graph, NEMO_SIGMA).optimize()
         graph = plurals._priority_union(number_part + extension, graph, NEMO_SIGMA).optimize()
+        graph = plurals._priority_union(prompt + country_code + number_part, number_part, NEMO_SIGMA).optimize()
+        graph = plurals._priority_union(prompt + country_code + number_part + extension, graph, NEMO_SIGMA).optimize()
+        graph = plurals._priority_union(prompt + number_part + extension, graph, NEMO_SIGMA).optimize()
+        prompt
 
         # ip
         ip_prompts = pynini.string_file(get_abs_path("data/telephone/ip_prompt.tsv"))
