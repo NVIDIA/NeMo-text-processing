@@ -41,6 +41,7 @@ class FractionFst(GraphFst):
             + (pynini.closure(NEMO_NOT_QUOTE) @ pynini.cdrewrite(plurals, "", "[EOS]", NEMO_SIGMA))
             + pynutil.delete("\"")
         )
+        denominators = denominators_sg | denominators_pl
 
         either_one = pynini.union(pynini.accep("en"), pynini.cross("ett", "en"))
         numerator_one = pynutil.delete("numerator: \"") + either_one + pynutil.delete("\" ")

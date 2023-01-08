@@ -50,7 +50,7 @@ class MeasureFst(GraphFst):
             + delete_space
             + optional_sign
             + delete_space
-            + decimal.numbers
+            + decimal.final_graph_wo_negative
             + delete_space
             + pynutil.delete("}")
         )
@@ -59,7 +59,7 @@ class MeasureFst(GraphFst):
             + delete_space
             + optional_sign
             + delete_space
-            + cardinal.numbers
+            + cardinal.final_graph_wo_negative
             + delete_space
             + pynutil.delete("}")
         )

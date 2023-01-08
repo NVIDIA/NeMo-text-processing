@@ -51,7 +51,8 @@ class MoneyFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True):
         super().__init__(name="money", kind="classify", deterministic=deterministic)
-        cardinal_graph = cardinal.graph_with_and
+        cardinal_graph = cardinal.graph_en
+        cardinal_graph_ett = cardinal.graph
         graph_decimal_final = decimal.final_graph_wo_negative_w_abbr
 
         maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
@@ -85,6 +86,8 @@ class MoneyFst(GraphFst):
             pynutil.insert("integer_part: \"") + ((NEMO_SIGMA - "1") @ cardinal_graph) + pynutil.insert("\"")
         )
 
+        # FIXME: this needs to be done properly
+        graph_integer_one = graph_integer_en
         graph_integer_only = graph_maj_singular + insert_space + graph_integer_one
         graph_integer_only |= graph_maj_plural + insert_space + graph_integer
 
@@ -123,7 +126,7 @@ class MoneyFst(GraphFst):
             graph_fractional = (
                 two_digits_fractional_part
                 @ (pynini.closure(NEMO_DIGIT, 1, 2) - "1")
-                @ cardinal.graph_hundred_component_at_least_one_none_zero_digit
+                @ cardinal.graph_hundreds_component_at_least_one_non_zero_digit
             )
             graph_fractional = pynutil.insert("fractional_part: \"") + graph_fractional + pynutil.insert("\"")
 
