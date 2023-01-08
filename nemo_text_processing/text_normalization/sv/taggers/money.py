@@ -29,6 +29,7 @@ min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.t
 maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")))
 maj_plural = pynini.string_file((get_abs_path("data/money/currency_plurals.tsv")))
 
+
 class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money, suppletive aware, e.g. 
