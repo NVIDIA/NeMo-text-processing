@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst, insert_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -119,10 +119,10 @@ class DecimalFst(GraphFst):
         cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit
         cardinal_graph_hundreds_one_non_zero_en = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_en
 
-        self.graph = cardinal.single_digits_graph.optimize()
+        self.graph = cardinal.three_digits_read_frac + pynini.closure(insert_space + cardinal.single_digits_graph)
 
         if not deterministic:
-            self.graph = self.graph | cardinal_graph
+            self.graph |= cardinal.single_digits_graph.optimize() | cardinal_graph
 
         point = pynutil.delete(",")
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)

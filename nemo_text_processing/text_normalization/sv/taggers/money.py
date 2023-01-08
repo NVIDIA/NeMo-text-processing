@@ -14,7 +14,6 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
     SINGULAR_TO_PLURAL,
@@ -22,6 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
@@ -75,7 +75,7 @@ class MoneyFst(GraphFst):
             + (NEMO_DIGIT - "0")
             + pynini.closure(pynutil.delete("0"))
         )
-        decimal_with_quantity = NEMO_SIGMA + NEMO_ALPHA
+        decimal_with_quantity = NEMO_SIGMA + SV_ALPHA
 
         graph_decimal = (
             graph_maj_plural + insert_space + (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
