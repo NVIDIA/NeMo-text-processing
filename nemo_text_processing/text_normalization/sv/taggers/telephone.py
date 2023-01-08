@@ -57,6 +57,7 @@ class TelephoneFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
         cardinal = CardinalFst(deterministic)
+        add_separator = pynutil.insert(", ")
         zero_space = cardinal.zero_space
         digit = cardinal.digit
         two_digits = cardinal.two_digits_read
@@ -66,6 +67,9 @@ class TelephoneFst(GraphFst):
         one_two_or_three_digits = (digit | two_or_three_digits).optimize()
 
         zero = pynini.cross("0", "null")
+        digit |= zero
+
+        special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
 
         telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
         telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
@@ -80,33 +84,26 @@ class TelephoneFst(GraphFst):
         country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
         country_code = country_code + pynini.closure(pynutil.delete("-"), 0, 1) + NEMO_SPACE
 
-        area_part_default = pynini.closure(digit + insert_space, 2, 2) + digit
-        area_part = pynini.cross("800", "eight hundred") | pynini.compose(
-            pynini.difference(NEMO_SIGMA, "800"), area_part_default
-        )
+        area_part = pynini.cross("900", "niohundra")
+        area_part |= one_two_or_three_digits
 
         area_part = (
-            (area_part + (pynutil.delete("-") | pynutil.delete(".")))
-            | (
-                pynutil.delete("(")
+            zero_space
+            + (
+                pynini.closure(pynutil.delete("("), 0, 1)
                 + area_part
-                + ((pynutil.delete(")") + pynini.closure(pynutil.delete(" "), 0, 1)) | pynutil.delete(")-"))
+                + pynini.closure(((pynutil.delete(")") + pynini.closure(pynutil.delete(" "), 0, 1)) | pynutil.delete(")-")), 0, 1)
             )
         ) + add_separator
 
-        del_separator = pynini.closure(pynini.union("-", " ", "."), 0, 1)
-        number_length = ((NEMO_DIGIT + del_separator) | (SV_ALPHA + del_separator)) ** 7
-        number_words = pynini.closure(
-            (NEMO_DIGIT @ digit) + (insert_space | (pynini.cross("-", ', ')))
-            | SV_ALPHA
-            | (SV_ALPHA + pynini.cross("-", ' '))
+        number_words = pynini.union(
+            three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + two_digits,
+            three_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
+            two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
+            three_digits + NEMO_SPACE + two_digits,
+            special_numbers
         )
-        number_words |= pynini.closure(
-            (NEMO_DIGIT @ digit) + (insert_space | (pynini.cross(".", ', ')))
-            | SV_ALPHA
-            | (SV_ALPHA + pynini.cross(".", ' '))
-        )
-        number_words = pynini.compose(number_length, number_words)
+
         number_part = area_part + number_words
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
         extension = (
@@ -120,8 +117,7 @@ class TelephoneFst(GraphFst):
 
         # ip
         ip_prompts = pynini.string_file(get_abs_path("data/telephone/ip_prompt.tsv"))
-        digit_to_str_graph = digit + pynini.closure(pynutil.insert(" ") + digit, 0, 2)
-        ip_graph = digit_to_str_graph + (pynini.cross(".", " punkt ") + digit_to_str_graph) ** 3
+        ip_graph = one_two_or_three_digits + (pynini.cross(".", " punkt ") + one_two_or_three_digits) ** 3
         graph |= (
             pynini.closure(
                 pynutil.insert("country_code: \"") + ip_prompts + pynutil.insert("\"") + delete_extra_space, 0, 1
