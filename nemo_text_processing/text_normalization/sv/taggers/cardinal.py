@@ -111,6 +111,7 @@ class CardinalFst(GraphFst):
             final_digit = digit
         else:
             final_digit = digits_no_one | both_ones
+        self.digit = final_digit
 
         single_digits_graph = pynini.invert(graph_digit | zero)
         self.single_digits_graph = single_digits_graph + pynini.closure(insert_space + single_digits_graph)
