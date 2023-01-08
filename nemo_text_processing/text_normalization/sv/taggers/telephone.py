@@ -67,7 +67,7 @@ class TelephoneFst(GraphFst):
         prompt = pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
 
         country_code = (
-            pynini.closure(telephone_prompts + delete_extra_space, 0, 1)
+            pynini.closure(prompt + delete_extra_space, 0, 1)
             + pynini.closure(pynini.cross("+", "plus "), 0, 1)
             + pynini.closure(digit + insert_space, 0, 2)
             + digit
@@ -90,16 +90,16 @@ class TelephoneFst(GraphFst):
         ) + add_separator
 
         del_separator = pynini.closure(pynini.union("-", " ", "."), 0, 1)
-        number_length = ((NEMO_DIGIT + del_separator) | (NEMO_ALPHA + del_separator)) ** 7
+        number_length = ((NEMO_DIGIT + del_separator) | (SV_ALPHA + del_separator)) ** 7
         number_words = pynini.closure(
             (NEMO_DIGIT @ digit) + (insert_space | (pynini.cross("-", ', ')))
-            | NEMO_ALPHA
-            | (NEMO_ALPHA + pynini.cross("-", ' '))
+            | SV_ALPHA
+            | (SV_ALPHA + pynini.cross("-", ' '))
         )
         number_words |= pynini.closure(
             (NEMO_DIGIT @ digit) + (insert_space | (pynini.cross(".", ', ')))
-            | NEMO_ALPHA
-            | (NEMO_ALPHA + pynini.cross(".", ' '))
+            | SV_ALPHA
+            | (SV_ALPHA + pynini.cross(".", ' '))
         )
         number_words = pynini.compose(number_length, number_words)
         number_part = area_part + number_words
