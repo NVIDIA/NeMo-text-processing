@@ -70,7 +70,6 @@ class TelephoneFst(GraphFst):
         digit |= zero
 
         special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
-        self.special_numbers = special_numbers
 
         telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
         telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
@@ -83,7 +82,6 @@ class TelephoneFst(GraphFst):
         country_code = country_code + pynini.closure(pynutil.delete("-"), 0, 1) + NEMO_SPACE
 
         area_part = (zero_space | pynini.cross("(0)", "noll ")) + one_two_or_three_digits + add_separator
-        self.area_part = area_part
 
         base_number_part = pynini.union(
             three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + two_digits,
@@ -91,22 +89,34 @@ class TelephoneFst(GraphFst):
             two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
             three_digits + NEMO_SPACE + two_digits,
         )
-        self.base_number = base_number_part.optimize()
         number_part = (area_part + delete_space + base_number_part) | special_numbers
 
         self.number_graph = number_part
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
         extension = (
-            pynutil.insert("extension: \"") + pynini.closure(one_two_or_three_digits, 0, 3) + pynutil.insert("\"")
+            pynutil.insert("extension: \"") + one_two_or_three_digits + pynutil.insert("\"")
         )
         extension = pynini.closure(insert_space + extension, 0, 1)
+        optional_space = pynini.closure(pynutil.delete(" "), 0, 1) + insert_space
+        ext_prompt = NEMO_SPACE + pynutil.delete(pynini.union(
+            pynini.cross("ankn", "anknytning"),
+            pynini.cross("ankn.", "anknytning"),
+            "anknytning"
+        )) + optional_space
 
-        graph = plurals._priority_union(country_code + number_part, number_part, NEMO_SIGMA).optimize()
-        graph = plurals._priority_union(country_code + number_part + extension, graph, NEMO_SIGMA).optimize()
-        graph = plurals._priority_union(number_part + extension, graph, NEMO_SIGMA).optimize()
-        graph = plurals._priority_union(prompt + country_code + number_part, number_part, NEMO_SIGMA).optimize()
-        graph = plurals._priority_union(prompt + country_code + number_part + extension, graph, NEMO_SIGMA).optimize()
-        graph = plurals._priority_union(prompt + number_part + extension, graph, NEMO_SIGMA).optimize()
+        prompt_pass = pynini.closure(pynutil.delete(":"), 0, 1) + optional_space
+
+        prompt = prompt + prompt_pass
+        graph = pynini.union(
+            country_code + number_part,
+            country_code + number_part + ext_prompt + extension,
+            number_part + ext_prompt + extension,
+            prompt + number_part,
+            prompt + country_code + number_part,
+            prompt + country_code + number_part + ext_prompt + extension,
+            prompt + number_part + ext_prompt + extension,
+        )
+        self.tel_graph = graph.optimize()
 
         # ip
         ip_prompts = pynini.string_file(get_abs_path("data/telephone/ip_prompt.tsv"))
