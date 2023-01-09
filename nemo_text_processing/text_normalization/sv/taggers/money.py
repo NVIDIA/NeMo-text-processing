@@ -53,8 +53,8 @@ class MoneyFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True):
         super().__init__(name="money", kind="classify", deterministic=deterministic)
-        cardinal_graph = cardinal.graph_en
-        cardinal_graph_ett = cardinal.graph
+        cardinal_graph = cardinal.graph_no_one_en
+        cardinal_graph_ett = cardinal.graph_no_one
         graph_decimal_final = decimal.final_graph_wo_negative_w_abbr
 
         maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
@@ -90,10 +90,10 @@ class MoneyFst(GraphFst):
         )
 
         graph_integer = (
-            pynutil.insert("integer_part: \"") + ((NEMO_SIGMA - "1") @ cardinal_graph) + pynutil.insert("\"")
+            pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         )
         graph_integer_ett = (
-            pynutil.insert("integer_part: \"") + ((NEMO_SIGMA - "1") @ cardinal_graph_ett) + pynutil.insert("\"")
+            pynutil.insert("integer_part: \"") + cardinal_graph_ett + pynutil.insert("\"")
         )
 
         graph_integer_sg_en = graph_integer_en

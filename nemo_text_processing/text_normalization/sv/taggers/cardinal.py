@@ -294,6 +294,12 @@ class CardinalFst(GraphFst):
 
         self.graph = filter_punctuation(self.graph).optimize()
         self.graph_en = self.graph @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
+        self.graph_no_one = (
+            pynini.project(self.graph, "input") - "1"
+        ) @ self.graph
+        self.graph_no_one_en = (
+            pynini.project(self.graph_en, "input") - "1"
+        ) @ self.graph_en
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
