@@ -36,7 +36,7 @@ $18875~artontusen åttahundrasjuttiofem dollar
 $18081~artontusen åttioen dollar
 $18052~artontusen femtiotvå dollar
 $18542~artontusen femhundrafyrtiotvå dollar
-$18519~artontusen femhundra nitton dollar
+$18519~artontusen femhundranitton dollar
 $18570~artontusen femhundrasjuttio dollar
 $18578~artontusen femhundrasjuttioåtta dollar
 $18516~artontusen femhundrasexton dollar
