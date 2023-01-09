@@ -13,16 +13,16 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.en.utils import SINGULAR_TO_PLURAL, get_abs_path
+from nemo_text_processing.tn_itn_utils.file_utils import load_labels
+from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
-    SINGULAR_TO_PLURAL,
     GraphFst,
     convert_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))

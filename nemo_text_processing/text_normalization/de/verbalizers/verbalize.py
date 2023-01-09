@@ -23,8 +23,8 @@ from nemo_text_processing.text_normalization.de.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.de.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.de.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.de.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.tn_itn_utils.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):

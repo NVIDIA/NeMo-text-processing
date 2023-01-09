@@ -14,7 +14,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.de.taggers.money import maj_singular, min_plural, min_singular
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
     GraphFst,

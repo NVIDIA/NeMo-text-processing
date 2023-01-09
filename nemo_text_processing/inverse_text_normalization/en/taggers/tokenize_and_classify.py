@@ -29,12 +29,7 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import
 from nemo_text_processing.inverse_text_normalization.en.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
+from nemo_text_processing.tn_itn_utils.graph_utils import GraphFst, delete_extra_space, delete_space, generator_main
 from pynini.lib import pynutil
 
 

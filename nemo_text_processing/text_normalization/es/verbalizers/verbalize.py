@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.es.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.es.verbalizers.date import DateFst
@@ -23,6 +22,7 @@ from nemo_text_processing.text_normalization.es.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.es.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.es.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.es.verbalizers.time import TimeFst
+from nemo_text_processing.tn_itn_utils.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):

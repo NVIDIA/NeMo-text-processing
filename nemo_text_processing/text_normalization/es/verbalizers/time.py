@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.es.utils import get_abs_path
+from nemo_text_processing.tn_itn_utils.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
     GraphFst,
@@ -20,7 +21,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.es.utils import get_abs_path
 from pynini.lib import pynutil
 
 alt_minutes = pynini.string_file(get_abs_path("data/time/alt_minutes.tsv"))

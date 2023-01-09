@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.ru.alphabet import RU_ALPHA_OR_SPACE
+from nemo_text_processing.tn_itn_utils.graph_utils import NEMO_DIGIT, GraphFst, delete_space, insert_space
 from pynini.lib import pynutil
 
 

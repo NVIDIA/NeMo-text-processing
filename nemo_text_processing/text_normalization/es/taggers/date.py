@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_extra_space
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
+from nemo_text_processing.tn_itn_utils.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_extra_space
 from pynini.lib import pynutil
 
 articles = pynini.union("de", "del", "el", "del año")

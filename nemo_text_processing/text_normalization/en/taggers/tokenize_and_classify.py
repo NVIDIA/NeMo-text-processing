@@ -17,13 +17,6 @@ import os
 import time
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_WHITE_SPACE,
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
 from nemo_text_processing.text_normalization.en.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.en.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.en.taggers.date import DateFst
@@ -44,6 +37,13 @@ from nemo_text_processing.text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.verbalizers.date import DateFst as vDateFst
 from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTimeFst
+from nemo_text_processing.tn_itn_utils.graph_utils import (
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from pynini.lib import pynutil
 
 

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.en.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.en.verbalizers.date import DateFst
@@ -26,6 +25,7 @@ from nemo_text_processing.text_normalization.en.verbalizers.roman import RomanFs
 from nemo_text_processing.text_normalization.en.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.tn_itn_utils.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):
