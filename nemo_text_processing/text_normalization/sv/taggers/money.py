@@ -70,7 +70,7 @@ class MoneyFst(GraphFst):
         graph_maj_plural_nt = pynutil.insert("currency_maj: \"") + maj_unit_plural_nt + pynutil.insert("\"")
 
         optional_delete_fractional_zeros = pynini.closure(
-            pynutil.delete(".") + pynini.closure(pynutil.delete("0"), 1), 0, 1
+            pynutil.delete(",") + pynini.closure(pynutil.delete("0"), 1), 0, 1
         )
 
         graph_integer_en = pynutil.insert("integer_part: \"") + pynini.cross("1", "en") + pynutil.insert("\"")
@@ -156,20 +156,20 @@ class MoneyFst(GraphFst):
                 graph_fractional_en + insert_space + pynutil.insert(curr_symbol) @ graph_min_singular
             )
 
-            decimal_graph_with_minor_curr = integer_plus_maj + pynini.cross(".", " ") + fractional_plus_min
+            decimal_graph_with_minor_curr = integer_plus_maj + pynini.cross(",", " ") + fractional_plus_min
 
             if not deterministic:
                 decimal_graph_with_minor_curr |= pynutil.add_weight(
                     integer_plus_maj
-                    + pynini.cross(".", " ")
+                    + pynini.cross(",", " ")
                     + pynutil.insert("fractional_part: \"")
-                    + two_digits_fractional_part @ cardinal.graph_hundreds_component_at_least_one_non_zero_digit
+                    + two_digits_fractional_part @ cardinal.graph_hundreds_component_at_least_one_non_zero_digit_en
                     + pynutil.insert("\""),
                     weight=0.0001,
                 )
                 default_fraction_graph = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
             decimal_graph_with_minor_curr |= (
-                pynini.closure(pynutil.delete("0"), 0, 1) + pynutil.delete(".") + fractional_plus_min
+                pynini.closure(pynutil.delete("0"), 0, 1) + pynutil.delete(",") + fractional_plus_min
             )
             decimal_graph_with_minor_curr = (
                 pynutil.delete(curr_symbol) + decimal_graph_with_minor_curr + preserve_order
