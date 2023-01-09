@@ -118,18 +118,23 @@ class MoneyFst(GraphFst):
 
         graph_min_singular = pynutil.insert(" currency_min: \"") + min_singular + pynutil.insert("\"")
         graph_min_plural = pynutil.insert(" currency_min: \"") + min_plural + pynutil.insert("\"")
+
+        maj_singular_labels_all = [(x[0], "en") for x in maj_singular_labels]
+        maj_singular_labels_all += [(x[0], "ett") for x in maj_singular_labels_nt]
         # format ** dollars ** cent
         decimal_graph_with_minor = None
         integer_graph_reordered = None
         decimal_default_reordered = None
-        for curr_symbol, _ in maj_singular_labels:
+        for curr_symbol, one_form in maj_singular_labels:
             preserve_order = pynutil.insert(" preserve_order: true")
-            integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural
-            integer_plus_maj |= graph_integer_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural_nt
-            integer_plus_maj |= graph_integer_sg_en + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
-            integer_plus_maj |= (
-                graph_integer_sg_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular_nt
-            )
+            if one_form == "en":
+                integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural
+                integer_plus_maj |= graph_integer_sg_en + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
+            else:
+                integer_plus_maj = graph_integer_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural_nt
+                integer_plus_maj |= (
+                    graph_integer_sg_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular_nt
+                )
 
             integer_plus_maj_with_comma = pynini.compose(
                 NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | pynutil.delete(".") | delete_space), integer_plus_maj
