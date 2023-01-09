@@ -51,7 +51,6 @@ class MoneyFst(GraphFst):
         #  *** currency_maj + (***) | ((and) *** current_min)
         fractional = fractional_part + delete_extra_space + min
 
-
         if not deterministic:
             fractional |= pynutil.insert("och ") + fractional
             fractional |= pynutil.insert("komma ") + fractional
