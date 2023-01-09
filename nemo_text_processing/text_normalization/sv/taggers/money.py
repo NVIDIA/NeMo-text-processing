@@ -18,8 +18,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     GraphFst,
     convert_space,
-    insert_space,
     delete_space,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
@@ -127,7 +127,9 @@ class MoneyFst(GraphFst):
             integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural
             integer_plus_maj |= graph_integer_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural_nt
             integer_plus_maj |= graph_integer_sg_en + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
-            integer_plus_maj |= graph_integer_sg_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular_nt
+            integer_plus_maj |= (
+                graph_integer_sg_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular_nt
+            )
 
             integer_plus_maj_with_comma = pynini.compose(
                 NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | pynutil.delete(".") | delete_space), integer_plus_maj
