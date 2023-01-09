@@ -1,7 +1,13 @@
 $	cent
 €	cent
 £	penny
+GBP	penny
+nzd	cent
+nz$	cent
+₩	chon
 sek	öre
+czk	haléř
+kč	haléř
 crc	céntimo
 ₽	kopek
 pln	grosz
