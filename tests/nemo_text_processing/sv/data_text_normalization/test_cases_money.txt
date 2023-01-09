@@ -14,7 +14,7 @@ $1,00~en dollar
 $1,00~en dollar
 $2~två dollar
 $2,00~två dollar
-$2.000~två dollar
+$2,000~två dollar
 $20~tjugo dollar
 $20,506~tjugo komma femhundrasex dollar
 $20,50~tjugo dollar femtio cent
