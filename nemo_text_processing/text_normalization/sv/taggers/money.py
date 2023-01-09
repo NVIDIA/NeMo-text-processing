@@ -125,7 +125,7 @@ class MoneyFst(GraphFst):
         decimal_graph_with_minor = None
         integer_graph_reordered = None
         decimal_default_reordered = None
-        for curr_symbol, one_form in maj_singular_labels:
+        for curr_symbol, one_form in maj_singular_labels_all:
             preserve_order = pynutil.insert(" preserve_order: true")
             if one_form == "en":
                 integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural
