@@ -55,7 +55,7 @@ $18129~artontusen hundratjugonio dollar
 £1,20~ett pund tjugo pence
 £1,111~en komma hundraelva pund
 £2,01~två pund en penny
-$50,00-$100,00~50 dollar - hundra dollar
+$50,00-$100,00~femtio dollar - hundra dollar
 $1 925,21~tusen niohundratjugofem dollar tjugoen cent
 $1.234,123~tusen tvåhundratrettiofyra komma hundratjugotre dollar
 US $76,3 biljoner~US sjuttiosex komma tre biljoner dollar
