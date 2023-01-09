@@ -89,12 +89,8 @@ class MoneyFst(GraphFst):
             graph_maj_plural + insert_space + (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
         )
 
-        graph_integer = (
-            pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        )
-        graph_integer_ett = (
-            pynutil.insert("integer_part: \"") + cardinal_graph_ett + pynutil.insert("\"")
-        )
+        graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
+        graph_integer_ett = pynutil.insert("integer_part: \"") + cardinal_graph_ett + pynutil.insert("\"")
 
         graph_integer_sg_en = graph_integer_en
         graph_integer_sg_ett = graph_integer_ett
