@@ -19,6 +19,7 @@ from pynini.lib import pynutil
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))
 month_abbr = pynini.string_file(get_abs_path("data/dates/month_abbr.tsv"))
+era_suffix = pynini.string_file(get_abs_path("data/dates/era_suffix.tsv"))
 
 
 class DateFst(GraphFst):
@@ -72,12 +73,15 @@ class DateFst(GraphFst):
         self.year = year
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
+        era_only = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
+        optional_era = pynini.closure(NEMO_SPACE + era_only, 0, 1)
+        year_opt_era = year_only + optional_era
 
         graph_dmy = (
             (day | day_sfx | day_words)
             + NEMO_SPACE
             + (month_name | month_abbreviation)
-            + pynini.closure(NEMO_SPACE + year_only, 0, 1)
+            + pynini.closure(NEMO_SPACE + year_opt_era, 0, 1)
         )
 
         day_optional = pynini.closure(pynini.cross("-", NEMO_SPACE) + day, 0, 1)
@@ -87,7 +91,7 @@ class DateFst(GraphFst):
         for sep in separators:
             day_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + day, 0, 1)
             year_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + year_only, 0, 1)
-            new_graph = day + pynini.cross(sep, NEMO_SPACE) + month_number + year_optional
+            new_graph = day + pynini.cross(sep, NEMO_SPACE) + month_number + year_optional + optional_era
             graph_dmy |= new_graph
             graph_ymd |= year_only + pynini.cross(sep, NEMO_SPACE) + month_number + day_optional
 
