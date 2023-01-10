@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space, insert_space
 from pynini.lib import pynutil
 
 
@@ -50,7 +50,7 @@ class TelephoneFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynini.closure(pynutil.add_weight(pynutil.delete(" "), -0.0001), 0, 1)
             + pynutil.delete("\"")
-        )
+        ) + NEMO_SPACE
 
         number_part = (
             pynutil.delete("number_part: \"")
@@ -70,8 +70,7 @@ class TelephoneFst(GraphFst):
         )
 
         graph = pynini.union(
-            prompt_part + number_part + optional_extension,
-            prompt_part + country_code + number_part + optional_extension,
+            prompt_part + optional_country_code + number_part + optional_extension,
             optional_country_code + number_part + optional_extension
         )
         delete_tokens = self.delete_tokens(graph)

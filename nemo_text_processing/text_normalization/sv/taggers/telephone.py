@@ -63,10 +63,10 @@ class TelephoneFst(GraphFst):
         three_digits = cardinal.three_digits_read
         two_or_three_digits = (two_digits | three_digits).optimize()
         one_two_or_three_digits = (digit | two_or_three_digits).optimize()
-        zero_after_country_code = pynini.union(pynini.cross("(0)", "null "), zero_space)
-        bracketed = pynutil.delete("(") + one_two_or_three_digits + pynutil.delete(")") + (NEMO_SPACE | insert_space)
+        zero_after_country_code = pynini.union(pynini.cross("(0)", "noll "), zero_space)
+        bracketed = pynutil.delete("(") + one_two_or_three_digits + pynutil.delete(")")
 
-        zero = pynini.cross("0", "null")
+        zero = pynini.cross("0", "noll")
         digit |= zero
 
         special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
@@ -79,15 +79,17 @@ class TelephoneFst(GraphFst):
 
         country_code = pynini.closure(pynini.cross("+", "plus "), 0, 1) + one_two_or_three_digits
         country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
-        country_code = country_code + (pynini.cross("-", " ") | NEMO_SPACE)
 
-        area_part = ((zero_after_country_code + one_two_or_three_digits) | bracketed) + add_separator
+        opt_dash = pynini.closure(pynutil.delete("-"), 0, 1)
+        area_part = zero_after_country_code + one_two_or_three_digits + opt_dash + add_separator
+        area_part |= bracketed + add_separator
 
         base_number_part = pynini.union(
             three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + two_digits,
             three_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
             three_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
             two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
+            two_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
             three_digits + NEMO_SPACE + two_digits,
         )
         number_part = (area_part + delete_space + base_number_part)
