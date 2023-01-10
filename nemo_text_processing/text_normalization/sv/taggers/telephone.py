@@ -107,7 +107,7 @@ class TelephoneFst(GraphFst):
         prompt = prompt + prompt_pass
         graph = pynini.union(
             country_code + ensure_space + number_part,
-            country_code + ensure_space  + number_part + ext_prompt + extension,
+            country_code + ensure_space + number_part + ext_prompt + extension,
             number_part + ext_prompt + extension,
             prompt + number_part,
             prompt + special_numbers,
