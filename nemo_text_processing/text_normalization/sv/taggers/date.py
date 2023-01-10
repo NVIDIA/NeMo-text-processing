@@ -67,18 +67,28 @@ class DateFst(GraphFst):
 
         # prefer cardinal over year
         year_first = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 1)) @ numbers
-        year_second = (NEMO_DIGIT + NEMO_DIGIT) @ numbers
+        year_second = pynini.union(
+            (NEMO_DIGIT - "0") + (NEMO_DIGIT - "0"),
+            "0" + (NEMO_DIGIT - "0"),
+            (NEMO_DIGIT - "0") + "0"
+        ) @ numbers
+        year_second |= pynini.cross("00", "hundra")
         year_cardinal = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)) @ numbers
         year = pynini.union(year_first + year_second, year_first)  # 90, 990, 1990
         if not deterministic:
             year |= year_cardinal
         self.year = year
 
-        year_second_decades = (NEMO_DIGIT + "0") @ numbers
+        year_second_decades = ((NEMO_DIGIT - "0") + "0") @ numbers
+        year_second_decades |= pynini.cross("00", "hundra")
         decade_num = pynini.union(year_first + year_second_decades, year_second_decades)
         decade_word = pynini.union("tal", "talet", "tals")
         tals_word = "tals" + pynini.closure(SV_ALPHA, 1)
-        decade = (decade_num + "-" + (decade_word | tals_word)).optimize()
+        tal_hyphen = pynutil.delete("-")
+        if not deterministic:
+            tal_hyphen |= pynini.cross("-", " ")
+            decade_num |= ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 2) + "0") @ numbers
+        decade = (decade_num + tal_hyphen + (decade_word | tals_word)).optimize()
         decade_only = pynutil.insert("decade: \"") + decade + pynutil.insert("\"")
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
