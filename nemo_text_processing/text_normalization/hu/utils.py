@@ -85,19 +85,19 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
         for key in keys_sorted:
             if word.endswith(key):
                 return (key, singular[key])
-        return None
+        raise KeyError(f"Key {key} not found ({word})")
 
     forms = []
     key, ends = get_kv()
     outword = word
-    for wordend in ["ny", "ly", "év", "a", "e"]:
+    for wordend in ["ny", "ly", "év", "út", "a", "e"]:
         if outword.endswith(wordend):
             outword = outword[: -len(wordend)]
 
     def tweak(form: str) -> str:
         if outword == word:
             return form
-        endings = ["ny", "nny", "ly", "lly", "ev", "év", "a", "á", "e", "é"]
+        endings = ["ny", "nny", "ly", "lly", "ev", "év", "út", "ut", "a", "á", "e", "é"]
         undouble = {
             "nny": "ny",
             "lly": "ly",
@@ -114,10 +114,11 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
     if not singular_only:
         plural_key = key
-        if plural[key] == "k":
-            plural_key = key + "k"
-        for plural_form in plural[plural_key]:
+        for plural_form in plural[key]:
+            plural_key = plural_form
+            if plural_form == "k":
+                plural_key = key + "k"
             forms.append((f"{abbr}-{tweak(plural_form)}", f"{outword}{plural_form}"))
-            for form in singular[plural_form]:
+            for form in singular[plural_key]:
                 forms.append((f"{abbr}-{tweak(plural_form)}{form}", f"{outword}{plural_form}{form}"))
     return forms
