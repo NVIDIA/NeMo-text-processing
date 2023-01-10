@@ -129,7 +129,9 @@ class MoneyFst(GraphFst):
                     graph_integer_sg_en + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_singular)
                 )
             else:
-                integer_plus_maj = graph_integer_ett + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_plural_nt)
+                integer_plus_maj = (
+                    graph_integer_ett + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_plural_nt)
+                )
                 integer_plus_maj |= (
                     graph_integer_sg_ett + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_singular_nt)
                 )
