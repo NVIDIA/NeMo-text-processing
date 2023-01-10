@@ -14,6 +14,7 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_extra_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
 from pynini.lib import pynutil
 
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
@@ -22,6 +23,7 @@ month_abbr = pynini.string_file(get_abs_path("data/dates/month_abbr.tsv"))
 era_suffix = pynini.string_file(get_abs_path("data/dates/era_suffix.tsv"))
 
 
+# TODO: handle decades
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g.
@@ -73,6 +75,13 @@ class DateFst(GraphFst):
             year |= year_cardinal
         self.year = year
 
+        year_second_decades = (NEMO_DIGIT + "0") @ numbers
+        decade_num = pynini.union(year_first + year_second_decades, year_second_decades)
+        decade_word = pynini.union("tal", "talet", "tals")
+        tals_word = "tals" + pynini.closure(SV_ALPHA, 1)
+        decade = (decade_num + "-" + (decade_word | tals_word)).optimize()
+        decade_only = pynutil.insert("decade: \"") + decade + pynutil.insert("\"")
+
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         era_only = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
         optional_era = pynini.closure(NEMO_SPACE + era_only, 0, 1)
@@ -98,7 +107,7 @@ class DateFst(GraphFst):
             graph_dmy |= new_graph
             graph_ymd |= year_only + pynini.cross(sep, NEMO_SPACE) + month_number + day_optional
 
-        final_graph = graph_ymd | (graph_dmy + pynutil.insert(" preserve_order: true")) | year_era
+        final_graph = graph_ymd | (graph_dmy + pynutil.insert(" preserve_order: true")) | year_era | decade_only
 
         self.final_graph = final_graph.optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()
