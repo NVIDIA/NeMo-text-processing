@@ -45,15 +45,22 @@ class DateFst(GraphFst):
         year_opt = pynini.closure(NEMO_SPACE + year, 0, 1)
 
         era = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        era_opt = pynini.closure(NEMO_SPACE + era @ era_words, 0, 1)
+        era_opt = pynini.closure(NEMO_SPACE + (era @ era_words), 0, 1)
         year_era_opt = year + era_opt
         delete_preserve_order = pynutil.delete(" preserve_order: true")
 
         # day month year
-        graph_dmy = day + NEMO_SPACE + month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
-        # TODO: dates written ymd?
+        graph_year_era = year + NEMO_SPACE + era + delete_preserve_order
+        graph_year_era |= year + NEMO_SPACE + era
+        graph_dmy = pynini.union(
+            day + NEMO_SPACE + month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
+        )
+        graph_was_ymd = pynini.union(
+            month + NEMO_SPACE + year,
+            day + NEMO_SPACE + month + NEMO_SPACE + year
+        )
 
-        self.graph = graph_dmy
+        self.graph = graph_dmy | graph_year_era | graph_was_ymd
         final_graph = self.graph
 
         delete_tokens = self.delete_tokens(final_graph)

@@ -44,6 +44,7 @@ class DateFst(GraphFst):
         numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
         optional_dot = pynini.closure(pynutil.delete("."), 0, 1)
+        optional_comma = pynini.closure(pynutil.delete(","), 0, 1)
 
         # 01, 31, 1
         digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ ordinal.graph
@@ -75,12 +76,14 @@ class DateFst(GraphFst):
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         era_only = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
         optional_era = pynini.closure(NEMO_SPACE + era_only, 0, 1)
+        year_era = year_only + NEMO_SPACE + era_only + pynutil.insert(" preserve_order: true")
         year_opt_era = year_only + optional_era
 
         graph_dmy = (
             (day | day_sfx | day_words)
             + NEMO_SPACE
             + (month_name | month_abbreviation)
+            + optional_comma
             + pynini.closure(NEMO_SPACE + year_opt_era, 0, 1)
         )
 
@@ -91,11 +94,11 @@ class DateFst(GraphFst):
         for sep in separators:
             day_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + day, 0, 1)
             year_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + year_only, 0, 1)
-            new_graph = day + pynini.cross(sep, NEMO_SPACE) + month_number + year_optional + optional_era
+            new_graph = day + pynini.cross(sep, NEMO_SPACE) + month_number +  pynini.closure(year_only + optional_era)
             graph_dmy |= new_graph
             graph_ymd |= year_only + pynini.cross(sep, NEMO_SPACE) + month_number + day_optional
 
-        final_graph = graph_ymd | (graph_dmy + pynutil.insert(" preserve_order: true"))
+        final_graph = graph_ymd | (graph_dmy + pynutil.insert(" preserve_order: true")) | year_era
 
         self.final_graph = final_graph.optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()
