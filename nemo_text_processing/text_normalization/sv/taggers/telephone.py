@@ -21,7 +21,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     insert_space,
-    plurals,
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
@@ -62,9 +61,10 @@ class TelephoneFst(GraphFst):
         digit = cardinal.digit
         two_digits = cardinal.two_digits_read
         three_digits = cardinal.three_digits_read
-        zero_after_country_code = pynini.union(pynini.cross("(0)", "null "), zero_space)
         two_or_three_digits = (two_digits | three_digits).optimize()
         one_two_or_three_digits = (digit | two_or_three_digits).optimize()
+        zero_after_country_code = pynini.union(pynini.cross("(0)", "null "), zero_space)
+        bracketed = pynutil.delete("(") + one_two_or_three_digits + pynutil.delete(")") + (NEMO_SPACE | insert_space)
 
         zero = pynini.cross("0", "null")
         digit |= zero
@@ -79,17 +79,18 @@ class TelephoneFst(GraphFst):
 
         country_code = pynini.closure(pynini.cross("+", "plus "), 0, 1) + one_two_or_three_digits
         country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
-        country_code = country_code + pynini.closure(pynutil.delete("-"), 0, 1) + NEMO_SPACE
+        country_code = country_code + (pynini.cross("-", " ") | NEMO_SPACE)
 
-        area_part = (zero_space | pynini.cross("(0)", "noll ")) + one_two_or_three_digits + add_separator
+        area_part = ((zero_after_country_code + one_two_or_three_digits) | bracketed) + add_separator
 
         base_number_part = pynini.union(
             three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + two_digits,
             three_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
+            three_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
             two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
             three_digits + NEMO_SPACE + two_digits,
         )
-        number_part = (area_part + delete_space + base_number_part) | special_numbers
+        number_part = (area_part + delete_space + base_number_part)
 
         self.number_graph = number_part
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
@@ -99,7 +100,7 @@ class TelephoneFst(GraphFst):
         ext_prompt = (
             NEMO_SPACE
             + pynutil.delete(
-                pynini.union(pynini.cross("ankn", "anknytning"), pynini.cross("ankn.", "anknytning"), "anknytning")
+                pynini.union("ankn", "ankn.", "anknytning")
             )
             + optional_space
         )
@@ -112,6 +113,7 @@ class TelephoneFst(GraphFst):
             country_code + number_part + ext_prompt + extension,
             number_part + ext_prompt + extension,
             prompt + number_part,
+            prompt + special_numbers,
             prompt + country_code + number_part,
             prompt + country_code + number_part + ext_prompt + extension,
             prompt + number_part + ext_prompt + extension,
