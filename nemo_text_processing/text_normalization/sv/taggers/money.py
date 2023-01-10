@@ -35,11 +35,11 @@ maj_plural = pynini.string_file((get_abs_path("data/money/currency_plurals.tsv")
 class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money, suppletive aware, e.g. 
-        $12.05 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
-        $12.0500 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
+        $12,05 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
+        $12,0500 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
         $1 -> money { currency_maj: "dollar" integer_part: "en" }
-        $1.00 -> money { currency_maj: "dollar" integer_part: "en" }
-        $0.05 -> money { fractional_part: "fem"  currency_min: "cent" preserve_order: true }
+        $1,00 -> money { currency_maj: "dollar" integer_part: "en" }
+        $0,05 -> money { fractional_part: "fem"  currency_min: "cent" preserve_order: true }
         $1 miljon -> money { currency_maj: "dollar" integer_part: "en" quantity: "miljon" }
         $1,2 miljon -> money { currency_maj: "dollar" integer_part: "en"  fractional_part: "två" quantity: "miljon" }
         $1,2320 -> money { currency_maj: "dollar" integer_part: "en"  fractional_part: "two three two" }
