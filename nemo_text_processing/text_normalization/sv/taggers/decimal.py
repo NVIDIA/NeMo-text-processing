@@ -38,6 +38,7 @@ def get_quantity(
         cardinal_up_to_hundred: cardinal FST
     """
     quantities_pl = quantities + "er"
+    # This is odd, but it's so we can accept miljard for miljarder
     quantities_pl |= quantities + pynutil.insert("er")
 
     res = (
