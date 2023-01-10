@@ -81,6 +81,7 @@ class TelephoneFst(GraphFst):
         country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
 
         opt_dash = pynini.closure(pynutil.delete("-"), 0, 1)
+        ensure_space = pynini.closure(pynutil.delete(" "), 0, 1) + insert_space
         area_part = zero_after_country_code + one_two_or_three_digits + opt_dash + add_separator
         area_part |= bracketed + add_separator
 
@@ -105,8 +106,8 @@ class TelephoneFst(GraphFst):
 
         prompt = prompt + prompt_pass
         graph = pynini.union(
-            country_code + number_part,
-            country_code + number_part + ext_prompt + extension,
+            country_code + ensure_space + number_part,
+            country_code + ensure_space  + number_part + ext_prompt + extension,
             number_part + ext_prompt + extension,
             prompt + number_part,
             prompt + special_numbers,
