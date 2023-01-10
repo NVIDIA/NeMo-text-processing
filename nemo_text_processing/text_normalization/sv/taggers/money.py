@@ -124,14 +124,14 @@ class MoneyFst(GraphFst):
         for curr_symbol, one_form in maj_singular_labels_all:
             preserve_order = pynutil.insert(" preserve_order: true")
             if one_form == "en":
-                integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural
+                integer_plus_maj = graph_integer + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_plural)
                 integer_plus_maj |= (
-                    graph_integer_sg_en + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
+                    graph_integer_sg_en + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_singular)
                 )
             else:
-                integer_plus_maj = graph_integer_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural_nt
+                integer_plus_maj = graph_integer_ett + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_plural_nt)
                 integer_plus_maj |= (
-                    graph_integer_sg_ett + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular_nt
+                    graph_integer_sg_ett + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_singular_nt)
                 )
 
             integer_plus_maj_with_comma = pynini.compose(
