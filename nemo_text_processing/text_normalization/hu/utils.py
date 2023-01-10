@@ -113,7 +113,10 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
     for form in ends:
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
     if not singular_only:
-        for plural_form in plural[key]:
+        plural_key = key
+        if plural[key] == "k":
+            plural_key = key + "k"
+        for plural_form in plural[plural_key]:
             forms.append((f"{abbr}-{tweak(plural_form)}", f"{outword}{plural_form}"))
             for form in singular[plural_form]:
                 forms.append((f"{abbr}-{tweak(plural_form)}{form}", f"{outword}{plural_form}{form}"))
