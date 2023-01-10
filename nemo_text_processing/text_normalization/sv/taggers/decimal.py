@@ -127,10 +127,11 @@ class DecimalFst(GraphFst):
         cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit
         cardinal_graph_hundreds_one_non_zero_en = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_en
 
-        self.graph = cardinal.three_digits_read_frac + pynini.closure(insert_space + cardinal.single_digits_graph)
+        self.graph = cardinal.two_or_three_digits_read_frac
 
         if not deterministic:
-            self.graph |= cardinal.single_digits_graph.optimize() | cardinal_graph
+            self.graph |= cardinal.single_digits_graph.optimize()
+            self.graph |= cardinal_graph
 
         point = pynutil.delete(",")
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
