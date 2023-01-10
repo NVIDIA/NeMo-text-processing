@@ -99,11 +99,11 @@ class TelephoneFst(GraphFst):
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
         extension = pynutil.insert("extension: \"") + one_two_or_three_digits + pynutil.insert("\"")
         extension = pynini.closure(insert_space + extension, 0, 1)
-        optional_space = pynini.closure(pynutil.delete(" "), 0, 1) + insert_space
-        ext_prompt = NEMO_SPACE + pynutil.delete(pynini.union("ankn", "ankn.", "anknytning")) + optional_space
+        ext_prompt = NEMO_SPACE + pynutil.delete(pynini.union("ankn", "ankn.", "anknytning")) + ensure_space
+        passable = pynini.union(":", ": ", " ")
+        prompt_pass = passable + insert_space
 
-        prompt_pass = pynini.closure(pynutil.delete(":"), 0, 1) + optional_space
-
+        special_numbers = pynutil.insert("number_part: \"") + special_numbers + pynutil.insert("\"")
         prompt = prompt + prompt_pass
         graph = pynini.union(
             country_code + ensure_space + number_part,
