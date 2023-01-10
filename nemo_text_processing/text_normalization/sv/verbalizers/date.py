@@ -42,14 +42,15 @@ class DateFst(GraphFst):
         month = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        year_opt = pynini.closure(pynini.accep(" ") + year, 0, 1)
+        year_opt = pynini.closure(NEMO_SPACE + year, 0, 1)
 
-        era = pynutil.delete("era: \"") + era_words + pynutil.delete("\"")
-        era_opt = pynini.closure(pynini.accep(" ") + era, 0, 1)
+        era = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        era_opt = pynini.closure(NEMO_SPACE + era @ era_words, 0, 1)
         year_era_opt = year + era_opt
+        delete_preserve_order = pynutil.delete(" preserve_order: true")
 
         # day month year
-        graph_dmy = day + month + pynini.closure(pynini.accep(" ") + year_era_opt, 0, 1)
+        graph_dmy = day + month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
         # TODO: dates written ymd?
 
         self.graph = graph_dmy
