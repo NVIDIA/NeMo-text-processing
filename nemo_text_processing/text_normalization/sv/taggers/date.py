@@ -23,7 +23,6 @@ month_abbr = pynini.string_file(get_abs_path("data/dates/month_abbr.tsv"))
 era_suffix = pynini.string_file(get_abs_path("data/dates/era_suffix.tsv"))
 
 
-# TODO: handle decades
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g.
