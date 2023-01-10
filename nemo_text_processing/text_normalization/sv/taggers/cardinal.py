@@ -285,7 +285,7 @@ class CardinalFst(GraphFst):
             ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens,
             zero_space + digit + pynini.closure(insert_space + digit, 0, 1),
             digit + pynini.closure(insert_space + digit, 3),
-            digit
+            digit,
         )
         self.two_or_three_digits_read_frac_en = pynini.union(
             ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
@@ -293,7 +293,7 @@ class CardinalFst(GraphFst):
             ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ (graph_tens @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)),
             zero_space + digit + pynini.closure(insert_space + digit, 0, 1),
             digit + pynini.closure(insert_space + digit, 3),
-            digit
+            digit,
         )
         self.two_digits_read = pynini.union(((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, zero_space + digit)
         self.two_digits_read_en = pynini.union(
