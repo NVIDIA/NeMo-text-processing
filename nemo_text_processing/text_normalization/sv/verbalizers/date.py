@@ -50,7 +50,7 @@ class DateFst(GraphFst):
         delete_preserve_order = pynutil.delete(" preserve_order: true")
 
         # day month year
-        graph_dmy = day + month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
+        graph_dmy = day + NEMO_SPACE + month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
         # TODO: dates written ymd?
 
         self.graph = graph_dmy
