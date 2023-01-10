@@ -44,7 +44,7 @@ def get_quantity(
 
     if include_abbr:
         quantity = quantities | quantities_abbr
-        quantities_pl |= (quantities_abbr + pynutil.insert("er"))
+        quantities_pl |= quantities_abbr + pynutil.insert("er")
     else:
         quantity = quantities
 
@@ -125,7 +125,9 @@ class DecimalFst(GraphFst):
         cardinal_graph = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
         cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
-        cardinal_graph_hundreds_one_non_zero_en = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en
+        cardinal_graph_hundreds_one_non_zero_en = (
+            cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en
+        )
 
         self.graph = cardinal.two_or_three_digits_read_frac
 
