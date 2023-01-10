@@ -101,7 +101,7 @@ class TelephoneFst(GraphFst):
         extension = pynini.closure(insert_space + extension, 0, 1)
         ext_prompt = NEMO_SPACE + pynutil.delete(pynini.union("ankn", "ankn.", "anknytning")) + ensure_space
         passable = pynini.union(":", ": ", " ")
-        prompt_pass = passable + insert_space
+        prompt_pass = pynutil.delete(passable) + insert_space
 
         special_numbers = pynutil.insert("number_part: \"") + special_numbers + pynutil.insert("\"")
         prompt = prompt + prompt_pass
