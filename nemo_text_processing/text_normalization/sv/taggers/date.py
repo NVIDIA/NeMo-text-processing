@@ -13,8 +13,8 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_extra_space
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
