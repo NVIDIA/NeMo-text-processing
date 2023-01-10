@@ -50,10 +50,7 @@ class DateFst(GraphFst):
         graph_dmy = pynini.union(
             day + NEMO_SPACE + month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
         )
-        graph_was_ymd = pynini.union(
-            month + NEMO_SPACE + year,
-            day + NEMO_SPACE + month + NEMO_SPACE + year
-        )
+        graph_was_ymd = pynini.union(month + NEMO_SPACE + year, day + NEMO_SPACE + month + NEMO_SPACE + year)
 
         self.graph = graph_dmy | graph_year_era | graph_was_ymd
         final_graph = self.graph

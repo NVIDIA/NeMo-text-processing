@@ -94,7 +94,7 @@ class DateFst(GraphFst):
         for sep in separators:
             day_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + day, 0, 1)
             year_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + year_only, 0, 1)
-            new_graph = day + pynini.cross(sep, NEMO_SPACE) + month_number +  pynini.closure(year_only + optional_era)
+            new_graph = day + pynini.cross(sep, NEMO_SPACE) + month_number + pynini.closure(year_only + optional_era)
             graph_dmy |= new_graph
             graph_ymd |= year_only + pynini.cross(sep, NEMO_SPACE) + month_number + day_optional
 
