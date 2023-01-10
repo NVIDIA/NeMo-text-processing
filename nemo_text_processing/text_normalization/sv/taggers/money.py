@@ -156,9 +156,9 @@ class MoneyFst(GraphFst):
             )
             graph_fractional = pynutil.insert("fractional_part: \"") + graph_fractional + pynutil.insert("\"")
 
-            fractional_plus_min = graph_fractional + insert_space + pynutil.insert(curr_symbol) @ graph_min_plural
+            fractional_plus_min = graph_fractional + insert_space + (pynutil.insert(curr_symbol) @ graph_min_plural)
             fractional_plus_min |= (
-                graph_fractional_en + insert_space + pynutil.insert(curr_symbol) @ graph_min_singular
+                graph_fractional_en + insert_space + (pynutil.insert(curr_symbol) @ graph_min_singular)
             )
 
             decimal_graph_with_minor_curr = integer_plus_maj + pynini.cross(",", " ") + fractional_plus_min
