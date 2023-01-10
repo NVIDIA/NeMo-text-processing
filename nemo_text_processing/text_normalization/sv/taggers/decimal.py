@@ -19,6 +19,7 @@ from pynini.lib import pynutil
 
 delete_space = pynutil.delete(" ")
 quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
+quantities_abbr = pynini.string_file(get_abs_path("data/numbers/millions_abbr.tsv"))
 
 
 def get_quantity(
@@ -40,6 +41,12 @@ def get_quantity(
     quantities_pl = quantities + "er"
     # This is odd, but it's so we can accept miljard for miljarder
     quantities_pl |= quantities + pynutil.insert("er")
+
+    if include_abbr:
+        quantity = quantities | quantities_abbr
+        quantities_pl |= quantities_abbr @ (quantities + pynutil.insert("er"))
+    else:
+        quantity = quantities
 
     res = (
         pynutil.insert("integer_part: \"")
@@ -74,7 +81,7 @@ def get_quantity(
         + pynutil.insert("\"")
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
-        + quantities
+        + quantity
         + pynutil.insert("\"")
     )
     res |= (
@@ -83,14 +90,14 @@ def get_quantity(
         + pynutil.insert("\"")
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
-        + quantities
+        + quantity
         + pynutil.insert("\"")
     )
     res |= (
         decimal
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert("quantity: \"")
-        + quantities
+        + quantity
         + pynutil.insert("\"")
     )
     res |= (
