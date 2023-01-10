@@ -39,8 +39,8 @@ class DateFst(GraphFst):
         year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         year_opt = pynini.closure(NEMO_SPACE + year, 0, 1)
 
-        era = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        era_opt = pynini.closure(NEMO_SPACE + (era @ era_words), 0, 1)
+        era = pynutil.delete("era: \"") + (pynini.closure(NEMO_NOT_QUOTE, 1) @ era_words) + pynutil.delete("\"")
+        era_opt = pynini.closure(NEMO_SPACE + era, 0, 1)
         year_era_opt = year + era_opt
         delete_preserve_order = pynutil.delete(" preserve_order: true")
 
