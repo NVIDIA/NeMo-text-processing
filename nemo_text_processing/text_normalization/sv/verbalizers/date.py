@@ -17,10 +17,12 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    delete_preserve_order,
 )
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
+
+era_words = pynini.string_file(get_abs_path("data/dates/era_words.tsv"))
 
 class DateFst(GraphFst):
     """
@@ -40,9 +42,14 @@ class DateFst(GraphFst):
         month = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        year_opt = pynini.closure(pynini.accep(" ") + year, 0, 1)
+
+        era = pynutil.delete("era: \"") + era_words + pynutil.delete("\"")
+        era_opt = pynini.closure(pynini.accep(" ") + era, 0, 1)
+        year_era_opt = year + era_opt
 
         # day month year
-        graph_dmy = day + month + pynini.closure(pynini.accep(" ") + year, 0, 1)
+        graph_dmy = day + month + pynini.closure(pynini.accep(" ") + year_era_opt, 0, 1)
         # TODO: dates written ymd?
 
         self.graph = graph_dmy
