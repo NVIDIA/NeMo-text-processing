@@ -53,7 +53,7 @@ $18124~artontusen hundratjugofyra dollar
 $18129~artontusen hundratjugonio dollar
 £18 000~artontusen pund
 £1,20~ett pund tjugo pence
-£1,111~en komma hundraelva pund
+£1,111~tusen hundraelva pund
 £2,01~två pund en penny
 $50,00-$100,00~femtio dollar - hundra dollar
 $1 925,21~tusen niohundratjugofem dollar tjugoen cent
