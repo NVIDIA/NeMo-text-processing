@@ -1,5 +1,6 @@
 $2~två dollar
 $2,00~två dollar
+€2,00~två euro
 ₩460 miljarder~fyrahundrasextio miljarder won
 ¥30 miljarder~trettio miljarder yen
 $45 miljarder~fyrtiofem miljarder dollar
@@ -10,7 +11,6 @@ $15,2 miljarder dollar~femton komma två miljarder dollar
 4 miljoner yuan~fyra miljoner yuan
 $15 000~femtontusen dollar
 $1~en dollar
-$1,00~en dollar
 $1,00~en dollar
 $2~två dollar
 $2,00~två dollar
