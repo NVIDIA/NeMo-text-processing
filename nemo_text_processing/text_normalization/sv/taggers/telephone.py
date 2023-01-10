@@ -92,20 +92,14 @@ class TelephoneFst(GraphFst):
             two_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
             three_digits + NEMO_SPACE + two_digits,
         )
-        number_part = (area_part + delete_space + base_number_part)
+        number_part = area_part + delete_space + base_number_part
 
         self.number_graph = number_part
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
         extension = pynutil.insert("extension: \"") + one_two_or_three_digits + pynutil.insert("\"")
         extension = pynini.closure(insert_space + extension, 0, 1)
         optional_space = pynini.closure(pynutil.delete(" "), 0, 1) + insert_space
-        ext_prompt = (
-            NEMO_SPACE
-            + pynutil.delete(
-                pynini.union("ankn", "ankn.", "anknytning")
-            )
-            + optional_space
-        )
+        ext_prompt = NEMO_SPACE + pynutil.delete(pynini.union("ankn", "ankn.", "anknytning")) + optional_space
 
         prompt_pass = pynini.closure(pynutil.delete(":"), 0, 1) + optional_space
 
