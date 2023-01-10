@@ -44,7 +44,7 @@ def get_quantity(
 
     if include_abbr:
         quantity = quantities | quantities_abbr
-        quantities_pl |= quantities_abbr @ (quantities + pynutil.insert("er"))
+        quantities_pl |= (quantities_abbr + pynutil.insert("er"))
     else:
         quantity = quantities
 
@@ -96,14 +96,14 @@ def get_quantity(
     res |= (
         decimal
         + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert("quantity: \"")
-        + quantity
+        + pynutil.insert(" quantity: \"")
+        + quantities_pl
         + pynutil.insert("\"")
     )
     res |= (
         decimal_ett
         + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert("quantity: \"")
+        + pynutil.insert(" quantity: \"")
         + "tusen"
         + pynutil.insert("\"")
     )
@@ -124,8 +124,8 @@ class DecimalFst(GraphFst):
 
         cardinal_graph = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
-        cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit
-        cardinal_graph_hundreds_one_non_zero_en = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_en
+        cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
+        cardinal_graph_hundreds_one_non_zero_en = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en
 
         self.graph = cardinal.two_or_three_digits_read_frac
 
@@ -145,12 +145,14 @@ class DecimalFst(GraphFst):
             + pynutil.insert(" ")
             + self.graph_fractional
         )
+        self.final_graph_wo_sign = final_graph_wo_sign
         final_graph_wo_sign_en = (
             pynini.closure(self.graph_integer_en + pynutil.insert(" "), 0, 1)
             + point
             + pynutil.insert(" ")
             + self.graph_fractional
         )
+        self.final_graph_wo_sign_en = final_graph_wo_sign_en
 
         quantity_w_abbr = get_quantity(
             final_graph_wo_sign_en,
@@ -169,7 +171,7 @@ class DecimalFst(GraphFst):
         self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
         self.final_graph_wo_negative = final_graph_wo_sign | quantity_wo_abbr
 
-        final_graph = optional_graph_negative + self.final_graph_wo_negative
+        final_graph = optional_graph_negative + self.final_graph_wo_negative_w_abbr
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
