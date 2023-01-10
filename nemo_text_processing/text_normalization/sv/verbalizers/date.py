@@ -18,11 +18,11 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
 )
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 
-era_words = pynini.string_file(get_abs_path("data/dates/era_words.tsv"))
+era_words = pynini.string_file(load_labels(get_abs_path("data/dates/era_words.tsv")))
 
 class DateFst(GraphFst):
     """
