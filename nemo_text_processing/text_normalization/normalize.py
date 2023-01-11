@@ -647,8 +647,8 @@ def parse_args():
         "--input_file",
         dest="input_file",
         help="input file path. "
-             "The input file could be either a .txt file containing once example for normalziation per line or "
-             ".json manifest file. Field to normalized in .json manifest is specifie with `--text_field` arg.",
+        "The input file could be either a .txt file containing once example for normalziation per line or "
+        ".json manifest file. Field to normalized in .json manifest is specifie with `--text_field` arg.",
         type=str,
     )
     parser.add_argument(
@@ -662,7 +662,7 @@ def parse_args():
     parser.add_argument(
         "--input_case",
         help="Input text capitalization, set to 'cased' if text contains capital letters."
-             "This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.",
+        "This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.",
         choices=["lower_cased", "cased"],
         default="cased",
         type=str,
@@ -682,7 +682,7 @@ def parse_args():
     parser.add_argument(
         "--whitelist",
         help="Path to a file with with whitelist replacement,"
-             "e.g., for English whitelist files are stored under text_normalization/en/data/whitelist",
+        "e.g., for English whitelist files are stored under text_normalization/en/data/whitelist",
         default=None,
         type=str,
     )
