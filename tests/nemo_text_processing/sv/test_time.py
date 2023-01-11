@@ -27,12 +27,12 @@ except (ImportError, ModuleNotFoundError):
 
 class TestTime:
     normalizer = (
-        Normalizer(input_case='cased', lang='es', cache_dir=CACHE_DIR, overwrite_cache=False)
+        Normalizer(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
         if PYNINI_AVAILABLE
         else None
     )
 
-    @parameterized.expand(parse_test_case_file('es/data_text_normalization/test_cases_time.txt'))
+    @parameterized.expand(parse_test_case_file('sv/data_text_normalization/test_cases_time.txt'))
     @pytest.mark.skipif(
         not PYNINI_AVAILABLE,
         reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
