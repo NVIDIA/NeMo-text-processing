@@ -646,7 +646,9 @@ def parse_args():
     input.add_argument(
         "--input_file",
         dest="input_file",
-        help="input file path. The input file could be either a .txt file containing once example for normalziation per line or or .json manifest file. Field to normalized in .json manifest is specifie with `--text_field` arg.",
+        help="input file path. "
+             "The input file could be either a .txt file containing once example for normalziation per line or "
+             ".json manifest file. Field to normalized in .json manifest is specifie with `--text_field` arg.",
         type=str,
     )
     parser.add_argument(
@@ -655,10 +657,15 @@ def parse_args():
         type=str,
         default="text",
     )
-    parser.add_argument('--output_file', dest="output_file", help="output file path", type=str)
+    parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
     parser.add_argument("--language", help="language", choices=["en", "de", "es", "zh"], default="en", type=str)
     parser.add_argument(
-        "--input_case", help="input capitalization", choices=["lower_cased", "cased"], default="cased", type=str
+        "--input_case",
+        help="Input text capitalization, set to 'cased' if text contains capital letters."
+             "This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.",
+        choices=["lower_cased", "cased"],
+        default="cased",
+        type=str,
     )
     parser.add_argument("--verbose", help="print info for debugging", action='store_true')
     parser.add_argument(
@@ -667,10 +674,18 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
-        "--punct_pre_process", help="set to True to enable punctuation pre processing", action="store_true"
+        "--punct_pre_process",
+        help="Set to True to add spaces around square brackets, otherwise text between square brackets won't be normalized",
+        action="store_true",
     )
     parser.add_argument("--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true")
-    parser.add_argument("--whitelist", help="path to a file with with whitelist", default=None, type=str)
+    parser.add_argument(
+        "--whitelist",
+        help="Path to a file with with whitelist replacement,"
+             "e.g., for English whitelist files are stored under text_normalization/en/data/whitelist",
+        default=None,
+        type=str,
+    )
     parser.add_argument(
         "--cache_dir",
         help="path to a dir with .far grammar file. Set to None to avoid using cache",
