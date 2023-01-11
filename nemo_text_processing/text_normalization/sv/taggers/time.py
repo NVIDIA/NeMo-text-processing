@@ -62,6 +62,7 @@ class TimeFst(GraphFst):
 
         time_sep = pynini.union(":", ".")
         optional_space = pynini.closure(" ", 0, 1)
+        ensure_space = pynini.closure(delete_space, 0, 1) + insert_space
         klockan = pynini.union(pynini.cross("kl.", "klockan"), "klockan", "klockan är")
         klockan_graph = pynutil.insert("prompt: \"") + klockan + pynutil.insert("\"")
         klockan_optional = pynini.closure(klockan_graph + NEMO_SPACE, 0, 1)
@@ -122,6 +123,7 @@ class TimeFst(GraphFst):
             + final_graph_hour
             + time_sep
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + ensure_space
             + final_suffix_optional
             + final_time_zone_optional
         )
@@ -129,13 +131,34 @@ class TimeFst(GraphFst):
             final_graph_hour
             + time_sep
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + ensure_space
             + (final_suffix + final_time_zone_optional | final_time_zone)
         )
         graph_hm = graph_hm_kl | graph_hm_sfx
 
         # 10:30:05 pm,
-        graph_hms = (
+        graph_hms_sfx = (
             final_graph_hour
+            + pynutil.delete(":")
+            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + pynutil.delete(":")
+            + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+            + ensure_space
+            + (final_suffix + final_time_zone_optional | final_time_zone)
+        )
+        graph_hms_sfx |= (
+            final_graph_hour
+            + pynutil.delete(".")
+            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + pynutil.delete(".")
+            + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+            + ensure_space
+            + (final_suffix + final_time_zone_optional | final_time_zone)
+        )
+        graph_hms_kl = (
+            klockan_graph
+            + NEMO_SPACE
+            + final_graph_hour
             + pynutil.delete(":")
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
             + pynutil.delete(":")
@@ -143,8 +166,10 @@ class TimeFst(GraphFst):
             + final_suffix_optional
             + final_time_zone_optional
         )
-        graph_hms |= (
-            final_graph_hour
+        graph_hms_kl |= (
+            klockan_graph
+            + NEMO_SPACE
+            + final_graph_hour
             + pynutil.delete(".")
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
             + pynutil.delete(".")
@@ -152,19 +177,35 @@ class TimeFst(GraphFst):
             + final_suffix_optional
             + final_time_zone_optional
         )
+        graph_hms = graph_hms_kl | graph_hms_sfx
+        if not deterministic:
+            graph_hms |= (
+                final_graph_hour
+                + pynutil.delete(".")
+                + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+                + pynutil.delete(".")
+                + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+            )
+            graph_hms |= (
+                final_graph_hour
+                + pynutil.delete(":")
+                + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+                + pynutil.delete(":")
+                + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+            )
 
         # 2.xx pm/am
         graph_hm2 = (
             final_graph_hour
             + pynutil.delete(".")
             + (pynutil.delete("00") | insert_space + final_graph_minute)
-            + delete_space
-            + insert_space
+            + ensure_space
             + final_suffix
             + final_time_zone_optional
         )
         # 2 pm est
-        graph_h = final_graph_hour + delete_space + insert_space + final_suffix + final_time_zone_optional
+        graph_h = final_graph_hour + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
+        graph_h = klockan + NEMO_SPACE + final_graph_hour + final_suffix_optional + final_time_zone_optional
         final_graph = (graph_hm | graph_h | graph_hm2 | graph_hms).optimize()
 
         final_graph = self.add_tokens(final_graph)
