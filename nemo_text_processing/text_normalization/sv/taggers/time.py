@@ -60,7 +60,7 @@ class TimeFst(GraphFst):
             pynini.closure(pynutil.delete("0"), 0, 1) + NEMO_DIGIT
         )
 
-        time_sep = pynini.union(":", ".")
+        time_sep = pynutil.delete(pynini.union(":", "."))
         optional_space = pynini.closure(" ", 0, 1)
         ensure_space = pynini.closure(delete_space, 0, 1) + insert_space
         klockan = pynini.union(pynini.cross("kl.", "klockan"), "klockan", "klockan är")
@@ -139,9 +139,9 @@ class TimeFst(GraphFst):
         # 10:30:05 pm,
         graph_hms_sfx = (
             final_graph_hour
-            + pynutil.delete(":")
+            + time_sep
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
-            + pynutil.delete(":")
+            + time_sep
             + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
             + ensure_space
             + (final_suffix + final_time_zone_optional | final_time_zone)
@@ -193,20 +193,10 @@ class TimeFst(GraphFst):
                 + pynutil.delete(":")
                 + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
             )
-
-        # 2.xx pm/am
-        graph_hm2 = (
-            final_graph_hour
-            + pynutil.delete(".")
-            + (pynutil.delete("00") | insert_space + final_graph_minute)
-            + ensure_space
-            + final_suffix
-            + final_time_zone_optional
-        )
         # 2 pm est
         graph_h = final_graph_hour + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
-        graph_h = klockan + NEMO_SPACE + final_graph_hour + final_suffix_optional + final_time_zone_optional
-        final_graph = (graph_hm | graph_h | graph_hm2 | graph_hms).optimize()
+        graph_h = klockan_graph + NEMO_SPACE + final_graph_hour + final_suffix_optional + final_time_zone_optional
+        final_graph = (graph_hm | graph_h | graph_hms).optimize()
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
