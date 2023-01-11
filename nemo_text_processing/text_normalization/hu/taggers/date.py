@@ -212,7 +212,6 @@ class DateFst(GraphFst):
 
         final_graph = graph_ymd + pynutil.insert(" preserve_order: true")
         final_graph |= graph_ym + pynutil.insert(" preserve_order: true")
-        final_graph |= year_only
         final_graph |= graph_dmy
 
         self.final_graph = final_graph.optimize()
