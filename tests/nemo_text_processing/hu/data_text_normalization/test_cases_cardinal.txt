@@ -45,7 +45,7 @@
 1110~ezerszáztíz
 1111~ezerszáztizenegy
 2000~kettőezer
-2002~kettőezer-két
+2002~kettőezer-kettő
 2010~kettőezer-tíz
 2020~kettőezer-húsz
 2100~kettőezer-száz
