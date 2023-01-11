@@ -14,6 +14,7 @@
 # limitations under the License.
 import pynini
 from pynini.lib import byte, pynutil
+
 from .utils import get_abs_path, load_labels
 
 _ALPHA_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖÜÉ"
