@@ -71,7 +71,7 @@ class TimeFst(GraphFst):
         graph_minute_single = pynini.union(*labels_minute_single) @ cardinal
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
 
-        final_graph_hour = klockan_optional + pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
+        final_graph_hour = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
         final_graph_minute = (
             pynutil.insert("minutes: \"")
             + (pynutil.delete("0") + insert_space + graph_minute_single | graph_minute_double)
@@ -102,24 +102,36 @@ class TimeFst(GraphFst):
             )
         final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
         final_suffix_optional = pynini.closure(delete_space + insert_space + final_suffix, 0, 1)
+        final_time_zone = (
+            pynutil.insert("zone: \"")
+            + convert_space(time_zone_graph)
+            + pynutil.insert("\"")
+        )
         final_time_zone_optional = pynini.closure(
             delete_space
             + insert_space
-            + pynutil.insert("zone: \"")
-            + convert_space(time_zone_graph)
-            + pynutil.insert("\""),
+            + final_time_zone,
             0,
             1,
         )
 
         # 2:30 pm, 02:30, 2:00
-        graph_hm = (
-            final_graph_hour
+        graph_hm_kl = (
+            klockan_graph
+            + NEMO_SPACE
+            + final_graph_hour
             + time_sep
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
             + final_suffix_optional
             + final_time_zone_optional
         )
+        graph_hm_sfx = (
+            final_graph_hour
+            + time_sep
+            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + (final_suffix + final_time_zone_optional | final_time_zone)
+        )
+        graph_hm = graph_hm_kl | graph_hm_sfx
 
         # 10:30:05 pm,
         graph_hms = (
