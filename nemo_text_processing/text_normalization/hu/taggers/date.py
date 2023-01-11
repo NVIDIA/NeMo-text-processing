@@ -187,6 +187,7 @@ class DateFst(GraphFst):
         self.month_component = month_component
         self.month_number_only = month_number_only
         self.month_number = month_number_dot
+        month_component = (self.month_component | self.month_number).optimize()
 
         # prefer cardinal over year
         year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
