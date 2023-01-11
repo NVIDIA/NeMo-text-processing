@@ -59,6 +59,32 @@ def load_inflection(abs_path):
         return inflections
 
 
+def _modify_ending(outword: str, word: str, form: str) -> str:
+    """
+    Helper for the inflector. Modifies endings where there is a difference
+    between how they are written for abbreviations, and for full words.
+
+    Args:
+        outword: the form of the word to be output
+        word: the base form of the word
+        form: the ending to be appended
+    """
+    if outword == word:
+        return form
+    endings = ["ny", "nny", "ly", "lly", "ev", "év", "út", "ut", "a", "á", "e", "é"]
+    undouble = {
+        "nny": "ny",
+        "lly": "ly",
+    }
+    for ending in endings:
+        if form.startswith(ending):
+            final = ""
+            if ending in undouble:
+                final = undouble[ending]
+            return final + form[len(ending) :]
+    return form
+
+
 def naive_inflector(abbr: str, word: str, singular_only=False):
     """
     Performs naïve inflection of a pair of words: the abbreviation,
@@ -95,20 +121,7 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
             outword = outword[: -len(wordend)]
 
     def tweak(form: str) -> str:
-        if outword == word:
-            return form
-        endings = ["ny", "nny", "ly", "lly", "ev", "év", "út", "ut", "a", "á", "e", "é"]
-        undouble = {
-            "nny": "ny",
-            "lly": "ly",
-        }
-        for ending in endings:
-            if form.startswith(ending):
-                final = ""
-                if ending in undouble:
-                    final = undouble[ending]
-                return final + form[len(ending) :]
-        return form
+        return _modify_ending(outword, word, form)
 
     for form in ends:
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
