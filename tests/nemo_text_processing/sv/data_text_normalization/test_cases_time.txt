@@ -1,4 +1,7 @@
 12:30 e.m. est~tolv trettio EM e s t
+2.30 e.m.~två trettio EM
+02.30 e.m.~två trettio EM
+2.00 e.m.~två EM
 kl. 12~klockan tolv
 kl. 12 e.m.~klockan tolv EM
 kl. 12 e.m. cet~klockan tolv EM c e t
