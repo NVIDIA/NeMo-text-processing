@@ -182,9 +182,13 @@ class TimeFst(GraphFst):
                 + pynutil.delete(":")
                 + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
             )
+        self.graph_hms = graph_hms
+        self.graph_hm = graph_hm
         # 2 pm est
         graph_h = final_graph_hour + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
         graph_h |= klockan_graph + ensure_space + final_graph_hour + final_suffix_optional + final_time_zone_optional
+        self.graph_h = graph_h
+
         final_graph = (graph_hm | graph_h | graph_hms).optimize()
 
         final_graph = self.add_tokens(final_graph)
