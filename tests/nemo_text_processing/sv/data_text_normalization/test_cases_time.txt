@@ -1,1 +1,8 @@
-12:30 e.m. est~tolv trettio em e s t
+12:30 e.m. est~tolv trettio EM e s t
+kl. 12~klockan tolv
+kl. 12 e.m.~klockan tolv EM
+kl. 12 e.m. cet~klockan tolv EM c e t
+kl. 12 cet~klockan tolv c e t
+12 e.m.~tolv EM
+12 e.m. est~tolv EM e s t
+12:00 e.m. est~tolv EM e s t
