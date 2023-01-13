@@ -144,11 +144,6 @@ class TimeFst(GraphFst):
             + ensure_space
             + (final_suffix + final_time_zone_optional | final_time_zone)
         )
-        graph_hms_sfx |= (
-            final_graph_hour
-            + ensure_space
-            + (final_suffix + final_time_zone_optional | final_time_zone)
-        )
         graph_hms_kl = (
             klockan_graph
             + NEMO_SPACE
@@ -171,13 +166,6 @@ class TimeFst(GraphFst):
             + final_suffix_optional
             + final_time_zone_optional
         )
-        graph_hms_kl |= (
-            klockan_graph
-            + ensure_space
-            + final_graph_hour
-            + final_suffix_optional
-            + final_time_zone_optional
-        )
         graph_hms = graph_hms_kl | graph_hms_sfx
         if not deterministic:
             graph_hms |= (
@@ -196,7 +184,7 @@ class TimeFst(GraphFst):
             )
         # 2 pm est
         graph_h = final_graph_hour + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
-        graph_h = klockan_graph + NEMO_SPACE + final_graph_hour + final_suffix_optional + final_time_zone_optional
+        graph_h |= klockan_graph + ensure_space + final_graph_hour + final_suffix_optional + final_time_zone_optional
         final_graph = (graph_hm | graph_h | graph_hms).optimize()
 
         final_graph = self.add_tokens(final_graph)
