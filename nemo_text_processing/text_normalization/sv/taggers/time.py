@@ -186,8 +186,17 @@ class TimeFst(GraphFst):
         self.graph_hm = graph_hm
         # 2 pm est
         ins_minutes = pynutil.insert(" minutes: \"noll\"")
-        graph_h = final_graph_hour + ins_minutes + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
-        graph_h |= klockan_graph + ensure_space + final_graph_hour + ins_minutes + final_suffix_optional + final_time_zone_optional
+        graph_h = (
+            final_graph_hour + ins_minutes + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
+        )
+        graph_h |= (
+            klockan_graph
+            + ensure_space
+            + final_graph_hour
+            + ins_minutes
+            + final_suffix_optional
+            + final_time_zone_optional
+        )
         self.graph_h = graph_h
 
         final_graph = (graph_hm | graph_h | graph_hms).optimize()
