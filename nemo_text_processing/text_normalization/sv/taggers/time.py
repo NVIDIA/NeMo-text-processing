@@ -63,7 +63,7 @@ class TimeFst(GraphFst):
         time_sep = pynutil.delete(pynini.union(":", "."))
         optional_space = pynini.closure(" ", 0, 1)
         ensure_space = pynini.closure(delete_space, 0, 1) + insert_space
-        klockan = pynini.union(pynini.cross("kl.", "klockan"), "klockan", "klockan är")
+        klockan = pynini.union(pynini.cross("kl.", "klockan"), pynini.cross("kl", "klockan"), "klockan", "klockan är")
         klockan_graph = pynutil.insert("prompt: \"") + klockan + pynutil.insert("\"")
         klockan_optional = pynini.closure(klockan_graph + NEMO_SPACE, 0, 1)
 
@@ -146,7 +146,7 @@ class TimeFst(GraphFst):
         )
         graph_hms_kl = (
             klockan_graph
-            + NEMO_SPACE
+            + ensure_space
             + final_graph_hour
             + pynutil.delete(":")
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
@@ -157,7 +157,7 @@ class TimeFst(GraphFst):
         )
         graph_hms_kl |= (
             klockan_graph
-            + NEMO_SPACE
+            + ensure_space
             + final_graph_hour
             + pynutil.delete(".")
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
@@ -185,8 +185,9 @@ class TimeFst(GraphFst):
         self.graph_hms = graph_hms
         self.graph_hm = graph_hm
         # 2 pm est
-        graph_h = final_graph_hour + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
-        graph_h |= klockan_graph + ensure_space + final_graph_hour + final_suffix_optional + final_time_zone_optional
+        ins_minutes = pynutil.insert(" minutes: \"noll\"")
+        graph_h = final_graph_hour + ins_minutes + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
+        graph_h |= klockan_graph + ensure_space + final_graph_hour + ins_minutes + final_suffix_optional + final_time_zone_optional
         self.graph_h = graph_h
 
         final_graph = (graph_hm | graph_h | graph_hms).optimize()
