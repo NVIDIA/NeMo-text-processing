@@ -181,13 +181,10 @@ class DateFst(GraphFst):
 
         month_component = (pynutil.insert("month: \"") + month_part + pynutil.insert("\"")).optimize()
         month_number_only = (pynutil.insert("month: \"") + number_to_month + pynutil.insert("\"")).optimize()
-        month_number_dot = (
-            pynutil.insert("month: \"") + number_to_month + pynutil.delete(".") + pynutil.insert("\"")
-        ).optimize()
         self.month_component = month_component
         self.month_number_only = month_number_only
-        self.month_number = month_number_dot
-        month_component = (self.month_component | self.month_number).optimize()
+        self.month_number = number_to_month_dot
+        month_component = self.month_component.optimize()
 
         # prefer cardinal over year
         year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
