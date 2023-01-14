@@ -17,6 +17,7 @@ from pynini.lib import byte
 
 _ALPHA_UPPER = "AÁBCDEÉFGHIÍJKLMNOÓÖŐPQRSTUÚÜŰVWXYZ"
 _ALPHA_LOWER = "aábcdeéfghiíjklmnoóöőpqrstuúüűvwxyz"
+_VOWELS = "AÁEÉIÍOÓÖŐUÚÜŰaáeéiíoóöőuúüű"
 
 TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(_ALPHA_UPPER, _ALPHA_LOWER)])
 TO_UPPER = pynini.invert(TO_LOWER)
@@ -25,4 +26,4 @@ HU_LOWER = pynini.union(*_ALPHA_LOWER).optimize()
 HU_UPPER = pynini.union(*_ALPHA_UPPER).optimize()
 HU_ALPHA = pynini.union(HU_LOWER, HU_UPPER).optimize()
 HU_ALNUM = pynini.union(byte.DIGIT, HU_ALPHA).optimize()
-HU_VOWELS = "AÁEÉIÍOÓÖŐUÚÜŰaáeéiíoóöőuúüű"
+HU_VOWELS = pynini.union([x for x in _VOWELS])
