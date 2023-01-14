@@ -31,7 +31,7 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
         self.optional_sign = pynini.cross("negative: \"true\"", "mínusz ")
         self.optional_sign = pynini.closure(self.optional_sign + delete_space, 0, 1)
-        self.integer = pynutil.delete("integer_part:") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        self.integer = pynutil.delete("integer_part:") + delete_space + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         self.optional_integer = pynini.closure(self.integer + delete_space + insert_space, 0, 1)
         self.fractional_default = (
             pynutil.delete("fractional_part:")
@@ -44,19 +44,17 @@ class DecimalFst(GraphFst):
         self.fractional = pynutil.insert("egész ") + self.fractional_default
 
         self.quantity = (
-            delete_space
-            + insert_space
-            + pynutil.delete("quantity:")
+            pynutil.delete("quantity:")
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        self.optional_quantity = pynini.closure(self.quantity, 0, 1)
+        self.optional_quantity = pynini.closure(delete_space + insert_space + self.quantity, 0, 1)
 
         graph = self.optional_sign + (
             self.integer
-            | (self.integer + self.quantity)
+            | (self.integer + delete_space + insert_space + self.quantity)
             | (self.optional_integer + self.fractional + self.optional_quantity)
         )
 
