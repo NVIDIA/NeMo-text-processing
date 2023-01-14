@@ -1,2 +1,3 @@
 -11,4006 milliárd~mínusz tizenegy négyezer-hat tízezred milliárd
 1 milliárd~egy milliárd
+1 mrd~egy milliárd
