@@ -34,7 +34,7 @@ class DateFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, ordinal: GraphFst, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
 
         month = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
@@ -44,7 +44,7 @@ class DateFst(GraphFst):
         day = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         # day month year
-        graph_ymd = pynini.closure(pynini.accep(" ") + year, 0, 1) + pynini.accep(" ") + month + pynini.accep(" ") + day
+        graph_ymd = pynini.closure(year + pynini.accep(" "), 0, 1) + month + pynini.accep(" ") + day
 
         self.graph = graph_ymd
         final_graph = self.graph + delete_preserve_order
