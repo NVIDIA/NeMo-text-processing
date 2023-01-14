@@ -25,3 +25,4 @@ HU_LOWER = pynini.union(*_ALPHA_LOWER).optimize()
 HU_UPPER = pynini.union(*_ALPHA_UPPER).optimize()
 HU_ALPHA = pynini.union(HU_LOWER, HU_UPPER).optimize()
 HU_ALNUM = pynini.union(byte.DIGIT, HU_ALPHA).optimize()
+HU_VOWELS = "AÁEÉIÍOÓÖŐUÚÜŰaáeéiíoóöőuúüű"
