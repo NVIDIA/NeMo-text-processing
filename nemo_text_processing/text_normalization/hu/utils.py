@@ -123,6 +123,8 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
     def tweak(form: str) -> str:
         return _modify_ending(outword, word, form)
 
+    if "-" in abbr:
+        abbr = abbr.split("-")[0]
     for form in ends:
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
     if not singular_only:
