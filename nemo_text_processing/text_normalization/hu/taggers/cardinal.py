@@ -139,9 +139,7 @@ class CardinalFst(GraphFst):
             pynutil.delete("00") + graph_digit
         )
         self.graph_hundreds_component_at_least_one_non_zero_digit = (
-            graph_hundreds_component_at_least_one_non_zero_digit
-            | graph_tens
-            | graph_digit
+            graph_hundreds_component_at_least_one_non_zero_digit | graph_tens | graph_digit
         ).optimize()
         # Needed?
         graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (

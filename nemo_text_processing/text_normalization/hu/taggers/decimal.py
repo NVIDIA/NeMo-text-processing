@@ -114,7 +114,7 @@ class DecimalFst(GraphFst):
             alts = pynini.string_map([("billiomod", "ezer milliárdod"), ("billiárdod", "millió milliárdod")])
             decimal_alts = decimal_number @ pynini.cdrewrite(alts, "", "[EOS]", NEMO_SIGMA)
             decimal_number |= decimal_alts
-        
+
         self.graph = decimal_number
 
         point = pynutil.delete(",")
