@@ -26,8 +26,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.hu.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hu.taggers.date import DateFst
-
-# from nemo_text_processing.text_normalization.hu.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.hu.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.hu.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.hu.taggers.fraction import FractionFst
 
@@ -85,8 +84,8 @@ class ClassifyFst(GraphFst):
             self.ordinal = OrdinalFst(cardinal=self.cardinal, deterministic=deterministic)
             ordinal_graph = self.ordinal.fst
 
-            # self.decimal = DecimalFst(cardinal=self.cardinal, deterministic=deterministic)
-            # decimal_graph = self.decimal.fst
+            self.decimal = DecimalFst(cardinal=self.cardinal, deterministic=deterministic)
+            decimal_graph = self.decimal.fst
 
             self.fraction = FractionFst(cardinal=self.cardinal, ordinal=self.ordinal, deterministic=deterministic)
             fraction_graph = self.fraction.fst
@@ -114,10 +113,10 @@ class ClassifyFst(GraphFst):
                 # | pynutil.add_weight(time_graph, 1.09)
                 # | pynutil.add_weight(measure_graph, 1.08)
                 | pynutil.add_weight(cardinal_graph, 1.1)
-                # | pynutil.add_weight(fraction_graph, 1.09)
+                | pynutil.add_weight(fraction_graph, 1.09)
                 | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
-                # | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
                 # | pynutil.add_weight(money_graph, 1.1)
                 # | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(electronic_graph, 1.1)
