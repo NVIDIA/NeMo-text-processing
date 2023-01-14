@@ -197,10 +197,7 @@ class DateFst(GraphFst):
 
         graph_ymd = optional_year_dot_space + month_component + NEMO_SPACE + day_part
         graph_ymd |= (
-            pynini.closure(year_only + pynini.cross("-", " "), 0, 1)
-            + month_number_only
-            + pynini.cross("-", " ")
-            + day
+            pynini.closure(year_only + pynini.cross("-", " "), 0, 1) + month_number_only + pynini.cross("-", " ") + day
         )
         self.ymd = graph_ymd
         graph_ym = year_dot + NEMO_SPACE + month_component
