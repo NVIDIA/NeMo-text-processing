@@ -37,7 +37,11 @@ class TimeFst(GraphFst):
 
         ora_suffix = pynutil.delete(" ") + (pynutil.delete("ó") | pynutil.delete("óra"))
         ora_forms = pynini.string_map(naive_inflector("ó", "óra", True) + [("ó", "óra")])
-        final_suffix = pynutil.insert("hours: \"") + ora_forms + pynutil.insert("\"")
+        perc_forms = pynini.string_map(naive_inflector("p", "perc", True) + [("p", "perc")])
+        masodperc_forms = pynini.string_map(naive_inflector("mp", "másodperc", True) + [("mp", "másodperc")])
+        final_forms = ora_forms | perc_forms | masodperc_forms
+        final_forms |= pynini.project(final_forms, "output")
+        final_suffix = pynutil.insert("suffix: \"") + final_forms + pynutil.insert("\"")
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
 
         labels_hour = [str(x) for x in range(0, 25)]
