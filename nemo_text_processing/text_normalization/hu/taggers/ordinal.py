@@ -23,6 +23,7 @@ from pynini.lib import pynutil
 endings = pynini.string_file(get_abs_path("data/ordinals/endings.tsv"))
 exceptions = pynini.string_file(get_abs_path("data/ordinals/exceptional.tsv"))
 superessive_endings = pynini.string_file(get_abs_path("data/ordinals/superessive_endings.tsv"))
+superscript2digit = pynini.string_file(get_abs_path("data/ordinals/superscript_digits.tsv"))
 
 class OrdinalFst(GraphFst):
     """
@@ -47,6 +48,9 @@ class OrdinalFst(GraphFst):
 
         self.superessive = (
             self.bare_ordinals @ pynini.cdrewrite(superessive_endings, "", "[EOS]", NEMO_SIGMA)
+        )
+        self.superscript_to_superessive = (
+            pynini.closure(superscript2digit) @ self.superessive
         )
 
         self.graph = pynini.union(
