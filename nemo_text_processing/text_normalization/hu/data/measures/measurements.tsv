@@ -9,6 +9,7 @@ pg	pikogramm
 fg	femtogramm
 ag	attogramm
 km²	négyzetkilométer
+km2	négyzetkilométer
 L	liter
 l	liter
 dl	deciliter
@@ -39,7 +40,9 @@ am	attométer
 zm	zeptométer
 ym	yoktométer
 m²	négyzetméter
+m2	négyzetméter
 m³	köbméter
+m3	köbméter
 mph	mérföld per óra
 mi/h	mérföld per óra
 ml	milliliter
