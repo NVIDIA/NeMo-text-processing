@@ -20,10 +20,28 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels, naive_inflector
 from pynini.lib import pynutil
 
-quantities = pynini.string_file(get_abs_path("data/numbers/quantities.tsv"))
+quantities = load_labels(get_abs_path("data/number/quantities.tsv"))
+
+
+def inflect_quantities():
+    output = []
+    for quantity in quantities:
+        if len(quantity) == 2:
+            output.append((quantity[0], quantity[1]))
+            output += naive_inflector(quantity[0], quantity[1], True)
+        else:
+            output.append(quantity[0])
+            tmp = naive_inflector(".", quantity[0], True)
+            real = [t[1] for t in tmp]
+            output += real
+            if "lli" in quantity[0]:
+                output.append((quantity[0].replace("lli", "li"), quantity[0]))
+                orth = [(x.replace("lli", "li"), x) for x in real]
+                output += orth
+    return output
 
 
 def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike') -> 'pynini.FstLike':
@@ -37,6 +55,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
         cardinal_up_to_hundred: cardinal FST
     """
     numbers = cardinal_up_to_hundred
+    quant_fst = pynini.string_map(inflect_quantities())
 
     res = (
         pynutil.insert("integer_part: \"")
@@ -44,10 +63,10 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
         + pynutil.insert("\"")
         + pynini.accep(" ")
         + pynutil.insert("quantity: \"")
-        + quantities
+        + quant_fst
         + pynutil.insert("\"")
     )
-    res |= decimal + pynini.accep(" ") + pynutil.insert("quantity: \"") + quantities + pynutil.insert("\"")
+    res |= decimal + pynini.accep(" ") + pynutil.insert("quantity: \"") + quant_fst + pynutil.insert("\"")
     return res
 
 
@@ -95,6 +114,8 @@ class DecimalFst(GraphFst):
             alts = pynini.string_map([("billiomod", "ezer milliárdod"), ("billiárdod", "millió milliárdod")])
             decimal_alts = decimal_number @ pynini.cdrewrite(alts, "", "[EOS]", NEMO_SIGMA)
             decimal_number |= decimal_alts
+        
+        self.graph = decimal_number
 
         point = pynutil.delete(",")
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
@@ -104,7 +125,7 @@ class DecimalFst(GraphFst):
         final_graph_wo_sign = self.graph_integer + point + insert_space + self.graph_fractional
 
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
+            final_graph_wo_sign, cardinal.graph_hundreds_component_at_least_one_non_zero_digit
         )
         final_graph = optional_graph_negative + self.final_graph_wo_negative
         final_graph += pynutil.insert(" preserve_order: true")
