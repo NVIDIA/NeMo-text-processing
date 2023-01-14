@@ -1,3 +1,5 @@
--11,4006 milliárd~mínusz tizenegy négyezer-hat tízezred milliárd
+-11,4006 milliárd~mínusz tizenegy egész négyezer-hat tízezred milliárd
+-11,4006~mínusz tizenegy egész négyezer-hat tízezred
+11,4006~tizenegy egész négyezer-hat tízezred
 1 milliárd~egy milliárd
 1 mrd~egy milliárd
