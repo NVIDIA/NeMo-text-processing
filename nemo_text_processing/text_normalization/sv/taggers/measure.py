@@ -14,21 +14,15 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
     NEMO_NON_BREAKING_SPACE,
     NEMO_SIGMA,
-    NEMO_SPACE,
     GraphFst,
     convert_space,
     delete_space,
     delete_zero_or_one_space,
-    insert_space,
 )
-from nemo_text_processing.text_normalization.en.taggers.whitelist import get_formats
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, SV_UPPER, TO_LOWER
-from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as OrdinalTagger
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
-from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as OrdinalVerbalizer
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, TO_LOWER
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
 
