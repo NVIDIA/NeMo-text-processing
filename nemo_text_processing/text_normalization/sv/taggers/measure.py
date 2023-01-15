@@ -67,6 +67,10 @@ class MeasureFst(GraphFst):
         graph_unit_plural_ett = convert_space(graph_unit_ett @ graph_plurals)
         graph_unit = convert_space(graph_unit)
         graph_unit_ett = convert_space(graph_unit_ett)
+        self.unit_plural_en = graph_unit_plural
+        self.unit_plural_ett = graph_unit_plural_ett
+        self.unit_en = graph_unit
+        self.unit_ett = graph_unit_ett
 
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
