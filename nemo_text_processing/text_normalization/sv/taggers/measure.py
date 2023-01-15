@@ -103,7 +103,6 @@ class MeasureFst(GraphFst):
             pynutil.insert("units: \"") + (graph_unit_ett + optional_graph_unit2 | graph_unit2) + pynutil.insert("\"")
         )
 
-        # Fix here: check that it's the right thing, and rename or merge
         subgraph_decimal = (
             pynutil.insert("decimal { ")
             + optional_graph_negative
