@@ -17,7 +17,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, N
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
-common_domains = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
+common_domains = [x[0] for x in load_labels(get_abs_path("data/electronic/domain.tsv"))]
 symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
 
 
@@ -36,14 +36,15 @@ class ElectronicFst(GraphFst):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
         dot = pynini.accep(".")
+        accepted_common_domains = pynini.union(*common_domains)
         accepted_symbols = pynini.union(*symbols) - dot
         accepted_characters = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols)
-        accepted_characters_with_dot = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | dot)
+        acceepted_characters_with_dot = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | dot)
 
         # email
         username = (
             pynutil.insert("username: \"")
-            + accepted_characters_with_dot
+            + acceepted_characters_with_dot
             + pynutil.insert("\"")
             + pynini.cross('@', ' ')
         )
@@ -52,7 +53,7 @@ class ElectronicFst(GraphFst):
         domain_common_graph = (
             pynutil.insert("domain: \"")
             + accepted_characters
-            + common_domains
+            + accepted_common_domains
             + pynini.closure((accepted_symbols | dot) + pynini.closure(accepted_characters, 1), 0, 1)
             + pynutil.insert("\"")
         )
