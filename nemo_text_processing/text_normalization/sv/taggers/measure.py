@@ -49,6 +49,9 @@ class MeasureFst(GraphFst):
         graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
         graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
+        greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
+        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
+        greek = greek_lower | greek_upper
 
         graph_unit |= pynini.compose(
             pynini.closure(TO_LOWER, 1) + (SV_ALPHA | TO_LOWER) + pynini.closure(SV_ALPHA | TO_LOWER), graph_unit
@@ -214,7 +217,7 @@ class MeasureFst(GraphFst):
             equals |= pynini.cross("=", "är lika med")
 
         math = (
-            (cardinal_graph_ett | SV_ALPHA)
+            (cardinal_graph_ett | SV_ALPHA | greek)
             + delimiter
             + math_operations
             + (delimiter | SV_ALPHA)
@@ -222,15 +225,15 @@ class MeasureFst(GraphFst):
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph_ett | SV_ALPHA)
+            + (cardinal_graph_ett | SV_ALPHA | greek)
         )
 
         math |= (
-            (cardinal_graph_ett | SV_ALPHA)
+            (cardinal_graph_ett | SV_ALPHA | greek)
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph_ett | SV_ALPHA)
+            + (cardinal_graph_ett | SV_ALPHA | greek)
             + delimiter
             + math_operations
             + delimiter
