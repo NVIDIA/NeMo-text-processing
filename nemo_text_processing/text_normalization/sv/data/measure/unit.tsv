@@ -38,7 +38,6 @@ f	grad Fahrenheit
 °F	grad Fahrenheit
 ℉	grad Fahrenheit
 ft	fot
-gb	gigabyte
 GB	gigabyte
 ghz	gigahertz
 gj	gigajoule
@@ -57,11 +56,10 @@ h	timme
 hz	hertz
 jk	joule
 kb	kilobit
-kb	kilobyte
+KB	kilobyte
 kbps	kilobit per sekund
 kcal	kilokalori
 kgf	kilogram-force
-kgf	kilopond
 khz	kilohertz
 kl	kiloliter
 km2	kvadratkilometer
@@ -75,7 +73,6 @@ kp	kilopond
 kvfot	kvadratfot
 kv	kilovolt
 kwh	kilowattimme
-kwh	kilowatttimme
 kw	kilowatt
 kW	kilowatt
 lm	lumen
@@ -86,7 +83,6 @@ m³	kubikmeter
 ma	megaampere
 mA	milliampere
 mb	megabit
-mb	megabyte
 MB	megabyte
 mbps	megabit per sekund
 mc	mega coulomb
@@ -105,15 +101,15 @@ ml	milliliter
 mm2	kvadratmillimeter
 mm²	kvadratmillimeter
 m	meter
-mm	megameter
+Mm	megameter
 mm	millimeter
 mol	mol
 mpa	megapascal
 mph	mil per timme
-ms	megasekund
-ms	megasiemens
+Ms	megasekund
+MS	megasiemens
 ms	millisekund
-mv	megavolt
+Mv	megavolt
 mv	millivolt
 mw	megawatt
 nm	nanometer
@@ -123,7 +119,6 @@ ns	nanosekund
 º	grad
 pa	pascal
 pb	petabit
-pb	petabyte
 PB	petabyte
 pj	petajoule
 %	procent
