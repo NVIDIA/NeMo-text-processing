@@ -1,4 +1,5 @@
 -12kg~minus tolv kilogram
 1kg~ett kilogram
-,5kg~komma fem kilogram
-3,5tim~tre komma fem timmar
+3,5 tim~tre komma fem timmar
+3,5 mm~tre komma fem millimeter
+3mm~tre millimeter
