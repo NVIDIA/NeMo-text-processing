@@ -220,7 +220,7 @@ class MeasureFst(GraphFst):
             (cardinal_graph_ett | SV_ALPHA | greek)
             + delimiter
             + math_operations
-            + (delimiter | SV_ALPHA)
+            + (delimiter | SV_ALPHA | greek)
             + cardinal_graph_ett
             + delimiter
             + equals
