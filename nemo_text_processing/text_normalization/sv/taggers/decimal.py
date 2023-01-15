@@ -172,6 +172,7 @@ class DecimalFst(GraphFst):
         )
         self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
         self.final_graph_wo_negative = final_graph_wo_sign | quantity_wo_abbr
+        self.final_graph_wo_negative_en = final_graph_wo_sign_en | quantity_wo_abbr
 
         final_graph = optional_graph_negative + self.final_graph_wo_negative_w_abbr
 
