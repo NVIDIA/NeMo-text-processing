@@ -1,16 +1,13 @@
 bar	bar
-°	grad
-º	grad
 °c	celsiusgrad
 °C	celsiusgrad
-ºc	celsiusgrad
-ºC	celsiusgrad
 ℃	celsiusgrad
 cm2	kvadratcentimeter
 cm²	kvadratcentimeter
 cm3	kubikcentimeter
 cm³	kubikcentimeter
 cm	centimeter
+cu mi	kubikmil
 cwt	centner
 db	decibel
 dm2	kvadratdecimeter
@@ -24,10 +21,10 @@ ds	decisekund
 ℉	fahrenheitgrad
 ft	fot
 ghz	gigahertz
+°	grad
 gw	gigawatt
 gwh	gigawattimme
 hz	hertz
-"	tum
 kbps	kilobit per sekund
 kcal	kilokalori
 kgf	kilogram-force
@@ -38,6 +35,7 @@ km3	kubikkilometer
 km³	kubikkilometer
 km	kilometer
 kpa	kilopascal
+kvfot	kvadratfot
 kwh	kilowatttimme
 kw	kilowatt
 kW	kilowatt
@@ -51,7 +49,6 @@ mi2	kvadratmil
 mi²	kvadratmil
 mi3	kubikmil
 mi³	kubikmil
-cu mi	kubikmil
 mi	mil
 min	minut
 ml	milliliter
@@ -62,17 +59,20 @@ mpa	megapascal
 mph	mil per timme
 nm	nanometer
 ns	nanosekund
+ºc	celsiusgrad
+ºC	celsiusgrad
+º	grad
 pa	pascal
 %	procent
+qvadratmil	kvadratmil
 rad	radian
 sq ft	kvadratfot
-kvfot	kvadratfot
 sq mi	kvadratmil
-qvadratmil	kvadratmil
 sv	sievert
 tb	terabyte
 tj	terajoule
 tl	teraliter
+"	tum
 v	volt
 yd	yard
 μm	mikrometer
