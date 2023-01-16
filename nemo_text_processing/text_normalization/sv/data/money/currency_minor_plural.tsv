@@ -7,7 +7,6 @@ nzd	cent
 nz$	cent
 czk	haléř
 kč	haléř
-crc	céntimos
 ₽	kopek
 pln	groszy
 fim	penni
@@ -34,7 +33,6 @@ mk	penni
 ¥	sen
 crc	céntimo
 ₡	céntimo
-hkd	cent
 awg	cent
 nok	öre
 sek	öre
@@ -55,7 +53,6 @@ fjd	cent
 fj$	cent
 gyd	cent
 gy$	cent
-hkd	cent
 hk$	cent
 jmd	cent
 ja$	cent
@@ -80,4 +77,3 @@ xcd	cent
 ec$	cent
 krw	jeon
 svc	centavo
-crc	centimo
