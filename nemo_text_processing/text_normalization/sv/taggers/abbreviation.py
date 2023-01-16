@@ -42,9 +42,10 @@ class AbbreviationFst(GraphFst):
         graph |= SV_UPPER + pynini.closure(insert_space + SV_UPPER, 1)
 
         # exclude words that are included in the whitelist
-        graph = pynini.compose(
-            pynini.difference(pynini.project(graph, "input"), pynini.project(whitelist.graph, "input")), graph
-        )
+        if whitelist is not None:
+            graph = pynini.compose(
+                pynini.difference(pynini.project(graph, "input"), pynini.project(whitelist.graph, "input")), graph
+            )
 
         graph = pynutil.insert("value: \"") + graph.optimize() + pynutil.insert("\"")
         graph = self.add_tokens(graph)
