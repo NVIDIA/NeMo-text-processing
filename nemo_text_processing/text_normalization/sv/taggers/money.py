@@ -60,7 +60,7 @@ class MoneyFst(GraphFst):
         maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
         maj_singular_labels_nt = load_labels(get_abs_path("data/money/currency_major_nt.tsv"))
         maj_unit_plural = convert_space(maj_singular @ maj_plural)
-        maj_unit_plural_nt = convert_space(maj_singular @ maj_plural)
+        maj_unit_plural_nt = convert_space(maj_singular_nt @ maj_plural)
         maj_unit_singular = convert_space(maj_singular)
         maj_unit_singular_nt = convert_space(maj_singular_nt)
     
