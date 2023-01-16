@@ -29,7 +29,6 @@ $0,010~en cent
 $0,02~två cent
 $0,20~tjugo cent
 $,01~en cent
-$,506~komma femhundrasex dollar
 $18~arton dollar
 $18925000~arton miljoner niohundratjugofemtusen dollar
 $18 925 000~arton miljoner niohundratjugofemtusen dollar
@@ -61,6 +60,6 @@ $1 111~tusen hundraelva dollar
 £2,01~två pund en penny
 $50,00-$100,00~femtio dollar - hundra dollar
 $1 925,21~tusen niohundratjugofem dollar tjugoen cent
-$1.234,123~tusen tvåhundratrettiofyra komma hundratjugotre dollar
+$1 234,123~tusen tvåhundratrettiofyra komma hundratjugotre dollar
 US $76,3 biljoner~US sjuttiosex komma tre biljoner dollar
 USD$76,3 biljoner~sjuttiosex komma tre biljoner amerikanska dollar

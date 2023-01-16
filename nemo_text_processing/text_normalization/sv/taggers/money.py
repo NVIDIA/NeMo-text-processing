@@ -83,7 +83,7 @@ class MoneyFst(GraphFst):
         graph_integer_sg_ett = pynutil.insert("integer_part: \"") + pynini.cross("1", "ett") + pynutil.insert("\"")
         # only for decimals where third decimal after comma is non-zero or with quantity
         decimal_delete_last_zeros = (
-            pynini.closure(NEMO_DIGIT | pynutil.delete("."))
+            pynini.closure(NEMO_DIGIT | pynutil.delete(" "))
             + pynini.accep(",")
             + pynini.closure(NEMO_DIGIT, 2)
             + (NEMO_DIGIT - "0")
@@ -150,7 +150,7 @@ class MoneyFst(GraphFst):
                 )
 
             integer_plus_maj_with_comma = pynini.compose(
-                NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | pynutil.delete(".") | delete_space), integer_plus_maj
+                NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | delete_space), integer_plus_maj
             )
             integer_plus_maj = pynini.compose(pynini.closure(NEMO_DIGIT) - "0", integer_plus_maj)
             integer_plus_maj |= integer_plus_maj_with_comma
@@ -165,9 +165,9 @@ class MoneyFst(GraphFst):
             )
             graph_fractional = pynutil.insert("fractional_part: \"") + graph_fractional + pynutil.insert("\"")
 
-            fractional_plus_min = graph_fractional + insert_space + (pynutil.insert(curr_symbol) @ graph_min_plural)
+            fractional_plus_min = graph_fractional + ensure_space + (pynutil.insert(curr_symbol) @ graph_min_plural)
             fractional_plus_min |= (
-                graph_fractional_one + insert_space + (pynutil.insert(curr_symbol) @ graph_min_singular)
+                graph_fractional_one + ensure_space + (pynutil.insert(curr_symbol) @ graph_min_singular)
             )
 
             decimal_graph_with_minor_curr = integer_plus_maj + pynini.cross(",", " ") + fractional_plus_min
@@ -209,7 +209,7 @@ class MoneyFst(GraphFst):
                 decimal_default_reordered_curr = (
                     pynutil.delete(curr_symbol)
                     + default_fraction_graph
-                    + insert_space
+                    + ensure_space
                     + pynutil.insert(curr_symbol) @ graph_maj_plural
                 )
 
