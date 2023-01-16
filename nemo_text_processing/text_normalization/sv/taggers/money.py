@@ -97,7 +97,7 @@ class MoneyFst(GraphFst):
             graph_maj_plural + ensure_space + decimal_part,
             graph_maj_plural_nt + ensure_space + decimal_part_ett,
             decimal_part_ett + ensure_space + graph_maj_plural_nt,
-            decimal_part + ensure_space + graph_maj_plural
+            decimal_part + ensure_space + graph_maj_plural,
         )
 
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
