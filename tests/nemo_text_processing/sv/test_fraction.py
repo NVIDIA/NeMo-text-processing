@@ -20,6 +20,7 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 try:
     from nemo_text_processing.text_normalization.normalize import Normalizer
+    from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
     PYNINI_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
@@ -33,6 +34,14 @@ class TestFraction:
         else None
     )
 
+    normalizer_with_audio = (
+        NormalizerWithAudio(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
+        if PYNINI_AVAILABLE
+        else None
+        if CACHE_DIR and RUN_AUDIO_BASED_TESTS and PYNINI_AVAILABLE
+        else None
+    )
+
     @parameterized.expand(parse_test_case_file('sv/data_text_normalization/test_cases_fraction.txt'))
     @pytest.mark.skipif(
         not PYNINI_AVAILABLE,
@@ -43,3 +52,9 @@ class TestFraction:
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
+
+        if self.normalizer_with_audio:
+            pred_non_deterministic = self.normalizer_with_audio.normalize(
+                test_input, n_tagged=500, punct_post_process=False
+            )
+            assert expected in pred_non_deterministic
