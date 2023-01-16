@@ -63,6 +63,11 @@ class MoneyFst(GraphFst):
         maj_unit_plural_nt = convert_space(maj_singular @ maj_plural)
         maj_unit_singular = convert_space(maj_singular)
         maj_unit_singular_nt = convert_space(maj_singular_nt)
+    
+        self.maj_unit_plural = maj_unit_plural
+        self.maj_unit_plural_nt = maj_unit_plural_nt
+        self.maj_unit_singular = maj_unit_singular
+        self.maj_unit_singular_nt = maj_unit_singular_nt
 
         graph_maj_singular = pynutil.insert("currency_maj: \"") + maj_unit_singular + pynutil.insert("\"")
         graph_maj_plural = pynutil.insert("currency_maj: \"") + maj_unit_plural + pynutil.insert("\"")
@@ -140,7 +145,7 @@ class MoneyFst(GraphFst):
             integer_plus_maj = pynini.compose(pynini.closure(NEMO_DIGIT) - "0", integer_plus_maj)
             integer_plus_maj |= integer_plus_maj_with_comma
 
-
+            # all of the minor currency units are "en"
             graph_fractional_one = two_digits_fractional_part @ pynini.cross("1", "en")
             graph_fractional_one = pynutil.insert("fractional_part: \"") + graph_fractional_one + pynutil.insert("\"")
             graph_fractional = (
