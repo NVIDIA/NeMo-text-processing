@@ -318,6 +318,8 @@ class CardinalFst(GraphFst):
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        if not deterministic:
+            final_graph |= optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\"")
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
