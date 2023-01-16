@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pytest
 from parameterized import parameterized
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from ..utils import CACHE_DIR, get_test_cases_multiple
 
 try:
-    from nemo_text_processing.text_normalization.normalize import Normalizer
     from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
     PYNINI_AVAILABLE = True
@@ -27,22 +25,15 @@ except (ImportError, ModuleNotFoundError):
     PYNINI_AVAILABLE = False
 
 
-class TestMoney:
-    normalizer = (
-        Normalizer(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
-        if PYNINI_AVAILABLE
-        else None
-    )
+class TestNormalizeWithAudio:
 
-    normalizer_with_audio = (
+    normalizer_es = (
         NormalizerWithAudio(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
         if PYNINI_AVAILABLE
         else None
-        if CACHE_DIR and RUN_AUDIO_BASED_TESTS and PYNINI_AVAILABLE
-        else None
     )
 
-    @parameterized.expand(parse_test_case_file('sv/data_text_normalization/test_cases_money.txt'))
+    @parameterized.expand(get_test_cases_multiple('sv/data_text_normalization/test_cases_normalize_with_audio.txt'))
     @pytest.mark.skipif(
         not PYNINI_AVAILABLE,
         reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
@@ -50,11 +41,10 @@ class TestMoney:
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
-        pred = self.normalizer.normalize(test_input, verbose=False)
-        assert pred == expected
-
-        if self.normalizer_with_audio:
-            pred_non_deterministic = self.normalizer_with_audio.normalize(
-                test_input, n_tagged=500, punct_post_process=False
-            )
-            assert expected in pred_non_deterministic
+        pred = self.normalizer_es.normalize(test_input, n_tagged=50, punct_post_process=False)
+        print(expected)
+        print("pred")
+        print(pred)
+        assert len(set(pred).intersection(set(expected))) == len(
+            expected
+        ), f'missing: {set(expected).difference(set(pred))}'

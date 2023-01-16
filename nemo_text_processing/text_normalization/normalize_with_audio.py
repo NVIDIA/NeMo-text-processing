@@ -110,14 +110,6 @@ class NormalizerWithAudio(Normalizer):
             post_process=post_process,
             max_number_of_permutations_per_split=max_number_of_permutations_per_split,
         )
-
-        fst_tc = f"{cache_dir}/en_tn_True_deterministic_cased__tokenize.far"
-        fst_ver = f"{cache_dir}/en_tn_True_deterministic_verbalizer.far"
-        fst_punct_post = f"{cache_dir}/en_tn_post_processing.far"
-        fst_tc = Far(fst_tc, mode='r')['tokenize_and_classify']
-        fst_ver = Far(fst_ver, mode='r')['verbalize']
-        fst_punct_post = Far(fst_punct_post, mode='r')['post_process_graph']
-        self.merged_tn_deterministic_graph = (fst_tc @ fst_ver) @ fst_punct_post
         self.lm = lm
 
     def normalize(
@@ -412,7 +404,7 @@ def parse_args():
         "--input_case", help="input capitalization", choices=["lower_cased", "cased"], default="cased", type=str
     )
     parser.add_argument(
-        "--language", help="Select target language", choices=["en", "ru", "de", "es"], default="en", type=str
+        "--language", help="Select target language", choices=["en", "ru", "de", "es", "sv"], default="en", type=str
     )
     parser.add_argument("--manifest", default=None, help="path to .json manifest")
     parser.add_argument(

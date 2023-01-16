@@ -154,7 +154,7 @@ class ClassifyFst(GraphFst):
             )
 
             if not deterministic:
-                abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst
+                abbreviation_graph = AbbreviationFst(whitelist, deterministic=deterministic).fst
                 classify |= pynutil.add_weight(abbreviation_graph, 100)
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
