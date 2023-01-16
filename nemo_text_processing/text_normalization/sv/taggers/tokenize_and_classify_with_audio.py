@@ -27,6 +27,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import AbbreviationFst as vAbbreviationFst
+from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWordFst
 from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
@@ -40,7 +42,6 @@ from nemo_text_processing.text_normalization.sv.taggers.telephone import Telepho
 from nemo_text_processing.text_normalization.sv.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.sv.taggers.word import WordFst
-from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import AbbreviationFst as vAbbreviationFst
 from nemo_text_processing.text_normalization.sv.verbalizers.cardinal import CardinalFst as vCardinalFst
 from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst as vDateFst
 from nemo_text_processing.text_normalization.sv.verbalizers.decimals import DecimalFst as vDecimalFst
@@ -51,7 +52,6 @@ from nemo_text_processing.text_normalization.sv.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.sv.verbalizers.telephone import TelephoneFst as vTelephoneFst
 from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as vTimeFst
-from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWordFst
 from pynini.lib import pynutil
 
 
@@ -152,9 +152,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(pynini.compose(money_graph, v_money_graph), sem_w)
                 | pynutil.add_weight(word_graph, word_w)
                 | pynutil.add_weight(pynini.compose(date_graph, v_date_graph), sem_w - 0.01)
-                | pynutil.add_weight(
-                    v_word_graph, 1.1001
-                )
+                | pynutil.add_weight(v_word_graph, 1.1001)
             ).optimize()
 
             if not deterministic:

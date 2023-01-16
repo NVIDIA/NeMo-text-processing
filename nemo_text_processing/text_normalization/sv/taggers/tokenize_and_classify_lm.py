@@ -28,6 +28,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWordFst
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
 from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst
@@ -50,9 +51,8 @@ from nemo_text_processing.text_normalization.sv.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.sv.verbalizers.telephone import TelephoneFst as vTelephoneFst
 from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as vTimeFst
-from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWordFst
-from pynini.lib import pynutil
 from pynini.examples import plurals
+from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
@@ -150,9 +150,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(pynini.compose(money_graph, v_money_graph), sem_w)
                 | pynutil.add_weight(cardinal_or_date_final, sem_w)
                 | pynutil.add_weight(whitelist_graph, sem_w)
-                | pynutil.add_weight(
-                    v_word_graph, 1.1001
-                )
+                | pynutil.add_weight(v_word_graph, 1.1001)
             ).optimize()
 
             classify_and_verbalize = pynutil.insert("< ") + classify_and_verbalize + pynutil.insert(" >")
