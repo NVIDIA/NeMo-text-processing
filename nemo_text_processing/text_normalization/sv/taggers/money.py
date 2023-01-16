@@ -55,7 +55,8 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph_no_one_en
         cardinal_graph_ett = cardinal.graph_no_one
-        graph_decimal_final = decimal.final_graph_wo_negative_w_abbr
+        graph_decimal_final = decimal.final_graph_wo_negative_w_abbr_en
+        graph_decimal_final_ett = decimal.final_graph_wo_negative_w_abbr
 
         maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
         maj_singular_labels_nt = load_labels(get_abs_path("data/money/currency_major_nt.tsv"))
@@ -90,17 +91,26 @@ class MoneyFst(GraphFst):
         )
         decimal_with_quantity = NEMO_SIGMA + SV_ALPHA
 
-        graph_decimal = (
-            graph_maj_plural + ensure_space + (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
+        decimal_part = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
+        decimal_part_ett = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final_ett
+        graph_decimal = pynini.union(
+            graph_maj_plural + ensure_space + decimal_part,
+            graph_maj_plural_nt + ensure_space + decimal_part_ett,
+            decimal_part_ett + ensure_space + graph_maj_plural_nt,
+            decimal_part + ensure_space + graph_maj_plural
         )
 
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         graph_integer_ett = pynutil.insert("integer_part: \"") + cardinal_graph_ett + pynutil.insert("\"")
 
-        graph_integer_only = graph_maj_singular + insert_space + graph_integer_sg_en
-        graph_integer_only |= graph_maj_singular_nt + insert_space + graph_integer_sg_ett
-        graph_integer_only |= graph_maj_plural + insert_space + graph_integer
-        graph_integer_only |= graph_maj_plural_nt + insert_space + graph_integer_ett
+        graph_integer_only = graph_maj_singular + ensure_space + graph_integer_sg_en
+        graph_integer_only |= graph_maj_singular_nt + ensure_space + graph_integer_sg_ett
+        graph_integer_only |= graph_maj_plural + ensure_space + graph_integer
+        graph_integer_only |= graph_maj_plural_nt + ensure_space + graph_integer_ett
+        graph_integer_only |= graph_integer_sg_en + ensure_space + graph_maj_singular
+        graph_integer_only |= graph_integer_sg_ett + ensure_space + graph_maj_singular_nt
+        graph_integer_only |= graph_integer + ensure_space + graph_maj_plural
+        graph_integer_only |= graph_integer_ett + ensure_space + graph_maj_plural_nt
 
         final_graph = (graph_integer_only + optional_delete_fractional_zeros) | graph_decimal
 
