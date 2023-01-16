@@ -63,7 +63,7 @@ class MoneyFst(GraphFst):
         maj_unit_plural_nt = convert_space(maj_singular_nt @ maj_plural)
         maj_unit_singular = convert_space(maj_singular)
         maj_unit_singular_nt = convert_space(maj_singular_nt)
-    
+
         self.maj_unit_plural = maj_unit_plural
         self.maj_unit_plural_nt = maj_unit_plural_nt
         self.maj_unit_singular = maj_unit_singular
