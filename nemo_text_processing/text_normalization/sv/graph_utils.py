@@ -15,6 +15,7 @@
 import pynini
 from pynini.lib import byte, pynutil
 
+from nemo_text_processing.text_normalization.en.graph_utils import delete_space, insert_space
 from .utils import get_abs_path, load_labels
 
 _ALPHA_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖÜÉ"
@@ -30,6 +31,8 @@ SV_ALNUM = pynini.union(byte.DIGIT, SV_ALPHA).optimize()
 
 bos_or_space = pynini.union("[BOS]", " ")
 eos_or_space = pynini.union("[EOS]", " ")
+
+ensure_space = pynini.closure(delete_space, 0, 1) + insert_space
 
 
 def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':

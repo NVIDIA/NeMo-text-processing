@@ -19,9 +19,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     convert_space,
-    delete_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
@@ -62,7 +62,6 @@ class TimeFst(GraphFst):
 
         time_sep = pynutil.delete(pynini.union(":", "."))
         optional_space = pynini.closure(" ", 0, 1)
-        ensure_space = pynini.closure(delete_space, 0, 1) + insert_space
         klockan = pynini.union(pynini.cross("kl.", "klockan"), pynini.cross("kl", "klockan"), "klockan", "klockan är")
         klockan_graph = pynutil.insert("prompt: \"") + klockan + pynutil.insert("\"")
         klockan_optional = pynini.closure(klockan_graph + NEMO_SPACE, 0, 1)

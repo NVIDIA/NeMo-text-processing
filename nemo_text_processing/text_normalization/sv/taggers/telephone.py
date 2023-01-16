@@ -14,15 +14,13 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
     delete_extra_space,
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
+from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
@@ -81,7 +79,6 @@ class TelephoneFst(GraphFst):
         country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
 
         opt_dash = pynini.closure(pynutil.delete("-"), 0, 1)
-        ensure_space = pynini.closure(pynutil.delete(" "), 0, 1) + insert_space
         area_part = zero_after_country_code + one_two_or_three_digits + opt_dash + add_separator
         area_part |= bracketed + add_separator
 
