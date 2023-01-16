@@ -25,7 +25,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.en.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
@@ -170,9 +169,6 @@ class ClassifyFst(GraphFst):
                 # | pynutil.add_weight(range_graph, 1.1)
                 # | pynutil.add_weight(serial_graph, 1.1001)  # should be higher than the rest of the classes
             )
-
-            roman_graph = RomanFst(deterministic=deterministic).fst
-            classify |= pynutil.add_weight(roman_graph, 1.1)
 
             if not deterministic:
                 abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst
