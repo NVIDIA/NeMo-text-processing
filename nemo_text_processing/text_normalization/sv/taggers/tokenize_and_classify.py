@@ -139,21 +139,6 @@ class ClassifyFst(GraphFst):
             word_graph = WordFst(deterministic=deterministic).fst
             logging.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
-            # start_time = time.time()
-            # serial_graph = SerialFst(cardinal=cardinal, ordinal=ordinal, deterministic=deterministic).fst
-            # logging.debug(f"serial: {time.time() - start_time: .2f}s -- {serial_graph.num_states()} nodes")
-
-            # start_time = time.time()
-            # v_time_graph = vTimeFst(deterministic=deterministic).fst
-            # v_ordinal_graph = vOrdinalFst(deterministic=deterministic)
-            # v_date_graph = vDateFst(ordinal=v_ordinal_graph, deterministic=deterministic).fst
-            # time_final = pynini.compose(time_graph, v_time_graph)
-            # date_final = pynini.compose(date_graph, v_date_graph)
-            # range_graph = RangeFst(
-            #     time=time_final, date=date_final, cardinal=cardinal, deterministic=deterministic
-            # ).fst
-            # logging.debug(f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes")
-
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(time_graph, 1.1)
@@ -166,8 +151,6 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(electonic_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
-                # | pynutil.add_weight(range_graph, 1.1)
-                # | pynutil.add_weight(serial_graph, 1.1001)  # should be higher than the rest of the classes
             )
 
             if not deterministic:
