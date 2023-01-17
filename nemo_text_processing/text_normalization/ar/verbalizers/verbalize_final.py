@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 
 from nemo_text_processing.text_normalization.ar.graph_utils import (
@@ -22,8 +23,6 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
 )
 from nemo_text_processing.text_normalization.ar.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.ar.verbalizers.word import WordFst
-
-import logging
 
 try:
     import pynini

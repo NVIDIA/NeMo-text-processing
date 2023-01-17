@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 
 from nemo_text_processing.text_normalization.ar.graph_utils import (
@@ -28,8 +29,6 @@ from nemo_text_processing.text_normalization.ar.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ar.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-
-import logging
 
 try:
     import pynini
