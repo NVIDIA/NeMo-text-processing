@@ -32,7 +32,7 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
 
         ora_suffix = pynutil.delete(" ") + (pynutil.delete("ó") | pynutil.delete("óra"))
