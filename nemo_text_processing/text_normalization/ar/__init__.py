@@ -16,7 +16,7 @@ from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify im
 from nemo_text_processing.text_normalization.en.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
 
-from nemo.utils import logging
+import logging
 
 try:
     import pynini

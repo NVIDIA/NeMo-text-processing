@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
 from nemo_text_processing.text_normalization.ar.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.ar.verbalizers.word import WordFst
 
-from nemo.utils import logging
+import logging
 
 try:
     import pynini

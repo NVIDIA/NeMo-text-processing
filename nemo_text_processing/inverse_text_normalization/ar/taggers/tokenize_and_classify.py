@@ -27,8 +27,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst as TNClassifyFst
-
-from nemo.utils import logging
+import logging
 
 try:
     import pynini

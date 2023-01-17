@@ -29,7 +29,7 @@ from nemo_text_processing.text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ar.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 
-from nemo.utils import logging
+import logging
 
 try:
     import pynini
