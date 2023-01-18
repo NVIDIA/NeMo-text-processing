@@ -14,6 +14,7 @@
 
 import logging
 import os
+import pynini
 
 from nemo_text_processing.inverse_text_normalization.ar.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.decimal import DecimalFst
@@ -28,14 +29,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst as TNClassifyFst
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):

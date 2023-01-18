@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 import logging
 import os
+import pynini
 
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     GraphFst,
@@ -23,15 +24,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
 )
 from nemo_text_processing.text_normalization.ar.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.ar.verbalizers.word import WordFst
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
-
+from pynini.lib import pynutil
 
 class VerbalizeFinalFst(GraphFst):
     """

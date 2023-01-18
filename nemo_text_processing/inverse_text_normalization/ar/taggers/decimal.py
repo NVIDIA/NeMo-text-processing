@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pynini
 
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_SPACE,
@@ -19,15 +20,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     delete_extra_space,
     insert_space,
 )
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
-
+from pynini.lib import pynutil
 
 class DecimalFst(GraphFst):
     """

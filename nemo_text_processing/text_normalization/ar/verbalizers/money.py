@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pynini
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,

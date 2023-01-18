@@ -12,16 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pynini
+
 from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
+from pynini.lib import pynutil
 
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
 
 
 class FractionFst(GraphFst):
