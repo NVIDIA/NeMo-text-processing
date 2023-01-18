@@ -73,7 +73,7 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--output_dir", help="output directory for grammars", required=True, type=str)
     parser.add_argument(
-        "--language", help="language", choices=["en", "de", "es", "pt", "ru", 'fr', 'vi', 'zh'], type=str, default='en'
+        "--language", help="language", choices=["en", "de", "es", "pt", "ru", 'fr', 'sv', 'vi', 'zh'], type=str, default='en'
     )
     parser.add_argument(
         "--grammars", help="grammars to be exported", choices=["tn_grammars", "itn_grammars"], type=str, required=True
@@ -151,6 +151,11 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+    elif args.language == 'sv':
+        from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.sv.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'vi':
         from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
