@@ -14,8 +14,8 @@
 
 import logging
 import os
-import pynini
 
+import pynini
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -25,6 +25,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
 from nemo_text_processing.text_normalization.ar.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.ar.verbalizers.word import WordFst
 from pynini.lib import pynutil
+
 
 class VerbalizeFinalFst(GraphFst):
     """

@@ -14,7 +14,6 @@
 
 
 import pynini
-
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SPACE,

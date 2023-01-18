@@ -14,8 +14,8 @@
 
 import logging
 import os
-import pynini
 
+import pynini
 from nemo_text_processing.inverse_text_normalization.ar.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.fraction import FractionFst
