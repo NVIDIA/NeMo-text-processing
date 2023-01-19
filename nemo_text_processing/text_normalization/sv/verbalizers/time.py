@@ -38,7 +38,6 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
         ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
         NOT_NOLL = pynini.difference(ANY_NOT_QUOTE, "noll")
-        prompt = pynutil.delete("prompt:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         hour = pynutil.delete("hours:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         minute = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + NOT_NOLL + pynutil.delete("\"")
         minute |= (
@@ -56,23 +55,15 @@ class TimeFst(GraphFst):
                 + pynini.cross("noll", "noll noll")
                 + pynutil.delete("\"")
             )
-        suffix = pynutil.delete("suffix:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
+        suffix = pynutil.delete("era:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         optional_suffix = pynini.closure(delete_space + insert_space + suffix, 0, 1)
-        zone = (
-            pynutil.delete("zone:")
+        second = (
+            pynutil.delete("seconds:")
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        optional_zone = pynini.closure(delete_space + insert_space + zone, 0, 1)
-        # second = (
-        #     pynutil.delete("seconds:")
-        #     + delete_space
-        #     + pynutil.delete("\"")
-        #     + pynini.closure(NEMO_NOT_QUOTE, 1)
-        #     + pynutil.delete("\"")
-        # )
         # graph_hms = (
         #     hour
         #     + pynutil.insert(" hours ")
@@ -94,11 +85,10 @@ class TimeFst(GraphFst):
         #     "",
         #     NEMO_SIGMA,
         # )
-        graph = hour + NEMO_SPACE + minute + optional_suffix + optional_zone
-        graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + minute + optional_suffix + optional_zone
+        graph = hour + NEMO_SPACE + minute + optional_suffix
+        graph |= hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix
         # graph |= hour + insert_space + pynutil.insert("o'clock") + optional_zone
-        graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + suffix + optional_zone
-        graph |= hour + NEMO_SPACE + suffix + optional_zone
+        graph |= hour + NEMO_SPACE + suffix
         # graph |= graph_hms
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
