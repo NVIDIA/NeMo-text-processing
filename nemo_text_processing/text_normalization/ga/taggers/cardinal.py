@@ -53,7 +53,7 @@ def make_number_form(fst: 'pynini.FstLike', deterministic = True) -> 'pynini.Fst
         numbers_ecl + insert_space + pynutil.insert(fst @ LOWER_ECLIPSIS)
     )
     if not deterministic:
-        output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst),
+        output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION),
     return output
 
 
@@ -61,14 +61,15 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     """
     Helper function for parsing number strings. Converts common cardinal strings (groups of three digits delineated by 'cardinal_separator' - see graph_utils)
     and converts to a string of digits:
-        "1 000" -> "1000"
-        "1.000.000" -> "1000000"
+        "1,000" -> "1000"
+        "1,000,000" -> "1000000"
     Args:
         fst: Any pynini.FstLike object. Function composes fst onto string parser fst
 
     Returns:
         fst: A pynini.FstLike object
     """
+    cardinal_separator = pynini.accep(",")
     exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
 
