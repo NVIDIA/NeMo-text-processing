@@ -129,8 +129,6 @@ class ClassifyFst(GraphFst):
             v_money_graph = vMoneyFst(decimal=decimal, deterministic=deterministic).fst
             v_abbreviation = vAbbreviationFst(deterministic=deterministic).fst
 
-            det_v_time_graph = vTimeFst(deterministic=True).fst
-            det_v_date_graph = vDateFst(ordinal=vOrdinalFst(deterministic=True), deterministic=True).fst
             v_word_graph = vWordFst(deterministic=deterministic).fst
 
             sem_w = 1
