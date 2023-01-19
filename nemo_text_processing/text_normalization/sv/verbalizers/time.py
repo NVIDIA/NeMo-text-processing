@@ -96,6 +96,7 @@ class TimeFst(GraphFst):
         graph = hour + NEMO_SPACE + minute + optional_suffix + optional_zone
         graph |= hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix + optional_zone
         graph |= hour + NEMO_SPACE + suffix + optional_zone
+        graph |= hour + optional_zone
         # graph |= graph_hms
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
