@@ -30,14 +30,14 @@ from pynini.lib import pynutil
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
-        12:30 e.m. est -> time { hours: "tolv" minutes: "trettio" era: "e m" zone: "e s t" }
-        2.30 e.m. -> time { hours: "två" minutes: "trettio" era: "e m" }
-        02.30 e.m. -> time { hours: "två" minutes: "trettio" era: "e m" }
-        2.00 e.m. -> time { hours: "två" era: "e m" }
-        kl. 2 e.m. -> time { hours: "två" era: "e m" }
+        12:30 e.m. est -> time { hours: "tolv" minutes: "trettio" suffix: "e m" zone: "e s t" }
+        2.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "e m" }
+        02.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "e m" }
+        2.00 e.m. -> time { hours: "två" suffix: "e m" }
+        kl. 2 e.m. -> time { hours: "två" suffix: "e m" }
         02:00 -> time { hours: "två" }
         2:00 -> time { hours: "två" }
-        10:00:05 e.m. -> time { hours: "tio" minutes: "noll" seconds: "fem" era: "e m" }
+        10:00:05 e.m. -> time { hours: "tio" minutes: "noll" seconds: "fem" suffix: "e m" }
     
     Args:
         cardinal: CardinalFst
@@ -63,8 +63,7 @@ class TimeFst(GraphFst):
 
         time_sep = pynutil.delete(pynini.union(":", "."))
         klockan = pynini.union(pynini.cross("kl.", "klockan"), pynini.cross("kl", "klockan"), "klockan", "klockan är")
-        # klockan_graph = pynutil.insert("prompt: \"") + klockan + pynutil.insert("\"")
-        klockan_graph = pynutil.insert("hours: \"") + klockan
+        klockan_graph = pynutil.insert("prompt: \"") + klockan + pynutil.insert("\"")
 
         graph_hour = delete_leading_zero_to_double_digit @ pynini.union(*labels_hour) @ cardinal
 
@@ -72,7 +71,6 @@ class TimeFst(GraphFst):
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
 
         final_graph_hour = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
-        klockan_graph_hour = graph_hour + pynutil.insert("\"")
         final_graph_minute = (
             pynutil.insert("minutes: \"")
             + (pynutil.delete("0") + insert_space + graph_minute_single | graph_minute_double)
@@ -101,27 +99,27 @@ class TimeFst(GraphFst):
             final_graph_second |= (
                 pynutil.insert("seconds: \"") + pynini.cross("00", "noll noll") + pynutil.insert("\"")
             )
-        final_suffix = pynutil.insert("era: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
-        final_time_zone = pynutil.insert("era: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
-        final_suffix_plus_tz = pynutil.insert("era: \"") + convert_space(suffix_graph) + ensure_space + convert_space(time_zone_graph) + pynutil.insert("\"")
-        final_suffix_andor_tz = final_suffix_plus_tz | final_suffix | final_time_zone
-        final_suffix_andor_tz_optional = pynini.closure(NEMO_SPACE + final_suffix_andor_tz, 0, 1,)
+        final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
+        final_suffix_optional = pynini.closure(ensure_space + final_suffix, 0, 1)
+        final_time_zone = pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
+        final_time_zone_optional = pynini.closure(NEMO_SPACE + final_time_zone, 0, 1,)
 
         # 2:30 pm, 02:30, 2:00
         graph_hm_kl = (
             klockan_graph
             + NEMO_SPACE
-            + klockan_graph_hour
+            + final_graph_hour
             + time_sep
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
-            + final_suffix_andor_tz_optional
+            + final_suffix_optional
+            + final_time_zone_optional
         )
         graph_hm_sfx = (
             final_graph_hour
             + time_sep
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
             + ensure_space
-            + final_suffix_andor_tz
+            + (final_suffix + final_time_zone_optional | final_time_zone)
         )
         graph_hm = graph_hm_kl | graph_hm_sfx
 
@@ -133,7 +131,7 @@ class TimeFst(GraphFst):
             + time_sep
             + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
             + ensure_space
-            + final_suffix_andor_tz
+            + (final_suffix + final_time_zone_optional | final_time_zone)
         )
         graph_hms_sfx |= (
             final_graph_hour
@@ -142,27 +140,29 @@ class TimeFst(GraphFst):
             + pynutil.delete(".")
             + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
             + ensure_space
-            + final_suffix_andor_tz
+            + (final_suffix + final_time_zone_optional | final_time_zone)
         )
         graph_hms_kl = (
             klockan_graph
             + ensure_space
-            + klockan_graph_hour
+            + final_graph_hour
             + pynutil.delete(":")
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
             + pynutil.delete(":")
             + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
-            + final_suffix_andor_tz_optional
+            + final_suffix_optional
+            + final_time_zone_optional
         )
         graph_hms_kl |= (
             klockan_graph
             + ensure_space
-            + klockan_graph_hour
+            + final_graph_hour
             + pynutil.delete(".")
             + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
             + pynutil.delete(".")
             + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
-            + final_suffix_andor_tz_optional
+            + final_suffix_optional
+            + final_time_zone_optional
         )
         graph_hms = graph_hms_kl | graph_hms_sfx
         if not deterministic:
@@ -185,14 +185,15 @@ class TimeFst(GraphFst):
         # 2 pm est
         ins_minutes = pynutil.insert(" minutes: \"noll\"")
         graph_h = (
-            final_graph_hour + ins_minutes + ensure_space + final_suffix_andor_tz
+            final_graph_hour + ins_minutes + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
         )
         graph_h |= (
             klockan_graph
             + ensure_space
-            + klockan_graph_hour
+            + final_graph_hour
             + ins_minutes
-            + final_suffix_andor_tz_optional
+            + final_suffix_optional
+            + final_time_zone_optional
         )
         self.graph_h = graph_h
 
