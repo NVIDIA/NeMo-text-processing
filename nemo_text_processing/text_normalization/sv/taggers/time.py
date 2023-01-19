@@ -184,15 +184,12 @@ class TimeFst(GraphFst):
         graph_h = (
             final_graph_hour + ins_minutes + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
         )
-        graph_h |= (
-            klockan_hour_graph
-            + ins_minutes
-            + final_suffix_optional
-            + final_time_zone_optional
-        )
+        graph_h |= klockan_hour_graph + ins_minutes + final_suffix_optional + final_time_zone_optional
         self.graph_h = graph_h
 
-        final_graph = (graph_hm | graph_h | graph_hms).optimize() @ pynini.cdrewrite(delete_extra_space, "", "", NEMO_SIGMA)
+        final_graph = (graph_hm | graph_h | graph_hms).optimize() @ pynini.cdrewrite(
+            delete_extra_space, "", "", NEMO_SIGMA
+        )
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
