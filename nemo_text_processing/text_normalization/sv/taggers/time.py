@@ -30,14 +30,14 @@ from pynini.lib import pynutil
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
-        12:30 e.m. est -> time { hours: "tolv" minutes: "trettio" suffix: "e m" zone: "e s t" }
-        2.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "e m" }
-        02.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "e m" }
-        2.00 e.m. -> time { hours: "två" suffix: "e m" }
-        kl. 2 e.m. -> time { hours: "två" suffix: "e m" }
+        12:30 e.m. est -> time { hours: "tolv" minutes: "trettio" suffix: "eftermiddag" zone: "e s t" }
+        2.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "eftermiddag" }
+        02.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "eftermiddag" }
+        2.00 e.m. -> time { hours: "två" suffix: "eftermiddag" }
+        kl. 2 e.m. -> time { hours: "två" suffix: "eftermiddag" }
         02:00 -> time { hours: "två" }
         2:00 -> time { hours: "två" }
-        10:00:05 e.m. -> time { hours: "tio" minutes: "noll" seconds: "fem" suffix: "e m" }
+        10:00:05 e.m. -> time { hours: "tio" minutes: "noll" seconds: "fem" suffix: "eftermiddag" }
     
     Args:
         cardinal: CardinalFst

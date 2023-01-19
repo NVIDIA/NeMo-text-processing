@@ -26,8 +26,8 @@ from pynini.lib import pynutil
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time, e.g.
-        time { hours: "twelve" minutes: "thirty" suffix: "a m" zone: "e s t" } -> twelve thirty a m e s t
-        time { hours: "twelve" } -> twelve o'clock
+        time { hours: "tolv" minutes: "trettio" suffix: "förmiddag" zone: "e s t" } -> tolv trettio förmiddag e s t
+        time { hours: "tolv" } -> tolv
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -66,13 +66,13 @@ class TimeFst(GraphFst):
             + pynutil.delete("\"")
         )
         optional_zone = pynini.closure(delete_space + insert_space + zone, 0, 1)
-        # second = (
-        #     pynutil.delete("seconds:")
-        #     + delete_space
-        #     + pynutil.delete("\"")
-        #     + pynini.closure(NEMO_NOT_QUOTE, 1)
-        #     + pynutil.delete("\"")
-        # )
+        second = (
+            pynutil.delete("seconds:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
         # graph_hms = (
         #     hour
         #     + pynutil.insert(" hours ")
@@ -96,8 +96,9 @@ class TimeFst(GraphFst):
         # )
         graph = hour + NEMO_SPACE + minute + optional_suffix + optional_zone
         graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + minute + optional_suffix + optional_zone
-        # graph |= hour + insert_space + pynutil.insert("o'clock") + optional_zone
+        graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix + optional_zone
         graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + suffix + optional_zone
+        graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + NEMO_SPACE + second + suffix + optional_zone
         graph |= hour + NEMO_SPACE + suffix + optional_zone
         # graph |= graph_hms
         delete_tokens = self.delete_tokens(graph)
