@@ -13,7 +13,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 from pynini.lib import pynutil
 
 
@@ -54,6 +60,19 @@ class MeasureFst(GraphFst):
             + delete_space
             + pynutil.delete("}")
         )
+
+        if not deterministic:
+            graph_decimal |= pynini.compose(
+                graph_decimal,
+                NEMO_SIGMA
+                + (
+                    pynini.cross(" point five", " and a half")
+                    | pynini.cross("zero point five", "half")
+                    | pynini.cross(" point two five", " and a quarter")
+                    | pynini.cross("zero point two five", "quarter")
+                ),
+            ).optimize()
+
         graph_cardinal = (
             pynutil.delete("cardinal {")
             + delete_space
