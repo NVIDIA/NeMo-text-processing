@@ -109,7 +109,7 @@ class RangeFst(GraphFst):
             # 10% to 20% -> ten to twenty percent
             range_graph |= (
                 cardinal
-                + pynini.closure(pynini.cross("%", " percent") | pynutil.delete("%"), 0, 1)
+                + pynini.closure(pynini.cross("%", " percent"), 0, 1)
                 + pynini.union(" to ", "-", " - ")
                 + cardinal
                 + pynini.cross("%", " percent")
