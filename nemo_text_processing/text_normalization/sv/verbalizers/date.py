@@ -38,8 +38,6 @@ class DateFst(GraphFst):
 
         year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
-        decade = pynutil.delete("decade: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-
         era = pynutil.delete("era: \"") + (pynini.closure(NEMO_NOT_QUOTE, 1) @ era_words) + pynutil.delete("\"")
         era_opt = pynini.closure(NEMO_SPACE + era, 0, 1)
         year_era_opt = year + era_opt
@@ -53,7 +51,7 @@ class DateFst(GraphFst):
         )
         graph_was_ymd = pynini.union(month + NEMO_SPACE + year, day + NEMO_SPACE + month + NEMO_SPACE + year)
 
-        self.graph = graph_dmy | graph_year_era | graph_was_ymd | decade
+        self.graph = graph_dmy | graph_year_era | graph_was_ymd | year
         final_graph = self.graph
 
         delete_tokens = self.delete_tokens(final_graph)
