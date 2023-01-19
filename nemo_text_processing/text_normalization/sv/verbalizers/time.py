@@ -15,8 +15,10 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
+    delete_extra_space,
     delete_space,
     insert_space,
 )
@@ -97,6 +99,11 @@ class TimeFst(GraphFst):
         graph |= hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix + optional_zone
         graph |= hour + NEMO_SPACE + suffix + optional_zone
         graph |= hour + optional_zone
+        graph = (
+            graph
+            @ pynini.cdrewrite(delete_extra_space, "", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
+        )
         # graph |= graph_hms
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

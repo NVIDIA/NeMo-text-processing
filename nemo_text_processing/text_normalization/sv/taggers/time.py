@@ -17,9 +17,11 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
+    NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
     convert_space,
+    delete_extra_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
@@ -190,7 +192,7 @@ class TimeFst(GraphFst):
         )
         self.graph_h = graph_h
 
-        final_graph = (graph_hm | graph_h | graph_hms).optimize()
+        final_graph = (graph_hm | graph_h | graph_hms).optimize() @ pynini.cdrewrite(delete_extra_space, "", "", NEMO_SIGMA)
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
