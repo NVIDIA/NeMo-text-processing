@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_preserve_order
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -41,7 +41,6 @@ class DateFst(GraphFst):
         era = pynutil.delete("era: \"") + (pynini.closure(NEMO_NOT_QUOTE, 1) @ era_words) + pynutil.delete("\"")
         era_opt = pynini.closure(NEMO_SPACE + era, 0, 1)
         year_era_opt = year + era_opt
-        delete_preserve_order = pynutil.delete(" preserve_order: true")
 
         # day month year
         graph_year_era = year + NEMO_SPACE + era + delete_preserve_order
