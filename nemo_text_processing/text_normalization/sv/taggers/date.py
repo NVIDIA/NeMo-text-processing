@@ -89,7 +89,8 @@ class DateFst(GraphFst):
             tal_hyphen |= pynini.cross("-", " ")
             decade_num |= ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 2) + "0") @ numbers
         decade = (decade_num + tal_hyphen + (decade_word | tals_word)).optimize()
-        decade_only = pynutil.insert("decade: \"") + decade + pynutil.insert("\"")
+        # decade_only = pynutil.insert("decade: \"") + decade + pynutil.insert("\"")
+        decade_only = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         era_only = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
