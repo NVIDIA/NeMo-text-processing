@@ -197,7 +197,9 @@ class CardinalFst(GraphFst):
             pynini.cross("001", tusen)
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
-        self.graph_thousands_component_at_least_one_non_zero_digit = graph_thousands_component_at_least_one_non_zero_digit.optimize()
+        self.graph_thousands_component_at_least_one_non_zero_digit = (
+            graph_thousands_component_at_least_one_non_zero_digit.optimize()
+        )
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
@@ -207,7 +209,9 @@ class CardinalFst(GraphFst):
             pynini.cross("001", tusen)
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
-        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = graph_thousands_component_at_least_one_non_zero_digit_no_one.optimize()
+        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = (
+            graph_thousands_component_at_least_one_non_zero_digit_no_one.optimize()
+        )
 
         non_zero_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one
         graph_million = make_million("miljon", non_zero_no_one, deterministic)
