@@ -38,7 +38,6 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
         ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
         NOT_NOLL = pynini.difference(ANY_NOT_QUOTE, "noll")
-        prompt = pynutil.delete("prompt:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         hour = pynutil.delete("hours:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         minute = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + NOT_NOLL + pynutil.delete("\"")
         minute |= (
@@ -95,10 +94,8 @@ class TimeFst(GraphFst):
         #     NEMO_SIGMA,
         # )
         graph = hour + NEMO_SPACE + minute + optional_suffix + optional_zone
-        graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + minute + optional_suffix + optional_zone
-        graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix + optional_zone
-        graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + suffix + optional_zone
-        graph |= prompt + NEMO_SPACE + hour + NEMO_SPACE + NEMO_SPACE + second + suffix + optional_zone
+        graph |= hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix + optional_zone
+        graph |= hour + NEMO_SPACE + second + suffix + optional_zone
         graph |= hour + NEMO_SPACE + suffix + optional_zone
         # graph |= graph_hms
         delete_tokens = self.delete_tokens(graph)
