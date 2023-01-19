@@ -94,7 +94,6 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
-            deterministic_ordinal = OrdinalFst(cardinal=cardinal, deterministic=True)
             ordinal_graph = ordinal.fst
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
@@ -115,7 +114,7 @@ class ClassifyFst(GraphFst):
 
             v_cardinal = vCardinalFst(deterministic=deterministic)
             v_cardinal_graph = v_cardinal.fst
-            v_decimal = vDecimalFst(cardinal=v_cardinal, deterministic=deterministic)
+            v_decimal = vDecimalFst(deterministic=deterministic)
             v_decimal_graph = v_decimal.fst
             v_ordinal = vOrdinalFst(deterministic=deterministic)
             v_ordinal_graph = v_ordinal.fst
@@ -126,14 +125,12 @@ class ClassifyFst(GraphFst):
             v_measure = vMeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
             v_measure_graph = v_measure.fst
             v_time_graph = vTimeFst(deterministic=deterministic).fst
-            v_date_graph = vDateFst(ordinal=ordinal, deterministic=deterministic).fst
+            v_date_graph = vDateFst(deterministic=deterministic).fst
             v_money_graph = vMoneyFst(decimal=decimal, deterministic=deterministic).fst
             v_abbreviation = vAbbreviationFst(deterministic=deterministic).fst
 
             det_v_time_graph = vTimeFst(deterministic=True).fst
             det_v_date_graph = vDateFst(ordinal=vOrdinalFst(deterministic=True), deterministic=True).fst
-            time_final = pynini.compose(time_graph, det_v_time_graph)
-            date_final = pynini.compose(date_graph, det_v_date_graph)
             v_word_graph = vWordFst(deterministic=deterministic).fst
 
             sem_w = 1

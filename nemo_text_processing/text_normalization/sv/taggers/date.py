@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_extra_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
@@ -111,7 +111,6 @@ class DateFst(GraphFst):
         separators = [".", "-", "/"]
         for sep in separators:
             day_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + day, 0, 1)
-            year_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + year_only, 0, 1)
             new_graph = day + pynini.cross(sep, NEMO_SPACE) + month_number + pynini.closure(year_only + optional_era)
             graph_dmy |= new_graph
             graph_ymd |= year_only + pynini.cross(sep, NEMO_SPACE) + month_number + day_optional

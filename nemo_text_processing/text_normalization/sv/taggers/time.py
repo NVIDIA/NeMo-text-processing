@@ -62,10 +62,8 @@ class TimeFst(GraphFst):
         )
 
         time_sep = pynutil.delete(pynini.union(":", "."))
-        optional_space = pynini.closure(" ", 0, 1)
         klockan = pynini.union(pynini.cross("kl.", "klockan"), pynini.cross("kl", "klockan"), "klockan", "klockan är")
         klockan_graph = pynutil.insert("prompt: \"") + klockan + pynutil.insert("\"")
-        klockan_optional = pynini.closure(klockan_graph + NEMO_SPACE, 0, 1)
 
         graph_hour = delete_leading_zero_to_double_digit @ pynini.union(*labels_hour) @ cardinal
 

@@ -94,7 +94,6 @@ class ClassifyFst(GraphFst):
             logging.info(f'ClassifyFst.fst was restored from {far_file}.')
         else:
             cardinal = CardinalFst(deterministic=True)
-            cardinal_tagger = cardinal
             cardinal_graph = cardinal.fst
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=True)
             ordinal_graph = ordinal.fst
@@ -117,7 +116,7 @@ class ClassifyFst(GraphFst):
 
             v_cardinal = vCardinalFst(deterministic=True)
             v_cardinal_graph = v_cardinal.fst
-            v_decimal = vDecimalFst(cardinal=v_cardinal, deterministic=True)
+            v_decimal = vDecimalFst(deterministic=True)
             v_decimal_graph = v_decimal.fst
             v_ordinal = vOrdinalFst(deterministic=True)
             v_ordinal_graph = v_ordinal.fst
@@ -128,7 +127,7 @@ class ClassifyFst(GraphFst):
             v_measure = vMeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=False)
             v_measure_graph = v_measure.fst
             v_time_graph = vTimeFst(deterministic=True).fst
-            v_date_graph = vDateFst(ordinal=ordinal, deterministic=deterministic).fst
+            v_date_graph = vDateFst(deterministic=deterministic).fst
             v_money_graph = vMoneyFst(decimal=decimal, deterministic=deterministic).fst
             v_word_graph = vWordFst(deterministic=deterministic).fst
 

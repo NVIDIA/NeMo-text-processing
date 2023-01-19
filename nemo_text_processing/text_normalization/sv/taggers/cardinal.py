@@ -125,15 +125,12 @@ class CardinalFst(GraphFst):
 
         # Any double digit
         graph_tens = teen
-        final_tens = graph_tens
         graph_ties = ties
         if deterministic:
             graph_tens |= graph_ties + (pynutil.delete('0') | graph_digit)
-            final_tens = graph_tens
         else:
             graph_tens |= pynini.cross("18", "aderton")
             graph_tens |= graph_ties + (pynutil.delete('0') | (graph_digit | pynutil.insert(' ') + graph_digit))
-            final_tens |= graph_ties + (pynutil.delete('0') | (final_digit | pynutil.insert(' ') + final_digit))
 
         hundreds = digits_no_one + pynutil.insert("hundra")
         hundreds |= pynini.cross("1", "hundra")
@@ -200,6 +197,7 @@ class CardinalFst(GraphFst):
             pynini.cross("001", tusen)
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
+        self.graph_thousands_component_at_least_one_non_zero_digit = graph_thousands_component_at_least_one_non_zero_digit.optimize()
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
@@ -209,6 +207,7 @@ class CardinalFst(GraphFst):
             pynini.cross("001", tusen)
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
+        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = graph_thousands_component_at_least_one_non_zero_digit_no_one.optimize()
 
         non_zero_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one
         graph_million = make_million("miljon", non_zero_no_one, deterministic)

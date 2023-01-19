@@ -15,7 +15,6 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
-    NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
     delete_space,
@@ -67,13 +66,13 @@ class TimeFst(GraphFst):
             + pynutil.delete("\"")
         )
         optional_zone = pynini.closure(delete_space + insert_space + zone, 0, 1)
-        second = (
-            pynutil.delete("seconds:")
-            + delete_space
-            + pynutil.delete("\"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
-        )
+        # second = (
+        #     pynutil.delete("seconds:")
+        #     + delete_space
+        #     + pynutil.delete("\"")
+        #     + pynini.closure(NEMO_NOT_QUOTE, 1)
+        #     + pynutil.delete("\"")
+        # )
         # graph_hms = (
         #     hour
         #     + pynutil.insert(" hours ")

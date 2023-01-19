@@ -15,7 +15,6 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
-    NEMO_CHAR,
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
@@ -24,7 +23,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.es.graph_utils import roman_to_int, strip_accent
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
@@ -49,8 +47,6 @@ class OrdinalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify")
-        cardinal_graph = cardinal.graph
-
         graph_digit = digit.optimize()
         graph_teens = teens.optimize()
         graph_ties = ties.optimize()
@@ -130,6 +126,7 @@ class OrdinalFst(GraphFst):
             pynini.cross("001", tusen)
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
+        self.graph_thousands_component_at_least_one_non_zero_digit = graph_thousands_component_at_least_one_non_zero_digit.optimize()
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
@@ -139,6 +136,7 @@ class OrdinalFst(GraphFst):
             pynini.cross("001", tusen)
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
+        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = graph_thousands_component_at_least_one_non_zero_digit_no_one.optimize()
 
         non_zero_no_one = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
         graph_million = make_million("miljon", non_zero_no_one, deterministic)
