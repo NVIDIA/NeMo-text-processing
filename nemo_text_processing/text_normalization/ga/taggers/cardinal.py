@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.ga.utils import get_abs_path
+from nemo_text_processing.text_normalization.ga.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.ga.graph_utils import LOWER_LENITION, LOWER_ECLIPSIS
 from pynini.lib import pynutil
 
@@ -32,7 +32,10 @@ teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teens_count.t
 ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 
-def make_number_form(fst: 'pynini.FstLike', deterministic = True) -> 'pynini.FstLike':
+def make_number_form(word: str, deterministic = True, teens = False, tens = False) -> 'pynini.FstLike':
+    fst = pynini.accep(word)
+    if tens and not teens:
+        teens = True
     numbers_len = pynini.string_map([
         ("2", "dhá"),
         ("3", "trí"),
@@ -51,7 +54,23 @@ def make_number_form(fst: 'pynini.FstLike', deterministic = True) -> 'pynini.Fst
         numbers_ecl + insert_space + pynutil.insert(fst @ LOWER_ECLIPSIS)
     )
     if not deterministic:
-        output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION),
+        output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
+
+    if teens:
+        deag = pynini.accep("déag")
+        if word[-1] in "aáeéiíoóuú":
+            deag = deag @ LOWER_LENITION
+        teen_graph = pynutil.delete("1") + output + insert_space + pynutil.insert(deag)
+        if not tens:
+            output |= teen_graph
+
+    if tens:
+        tens_words = load_labels(get_abs_path("data/numbers/tens.tsv"))
+        for numword, num in tens_words:
+            tmp_graph = pynutil.delete(num) + output + pynutil.insert(" is ") + pynutil.insert(numword)
+            output |= tmp_graph
+        output |= teen_graph
+
     return output
 
 
@@ -116,7 +135,7 @@ class CardinalFst(GraphFst):
         ).optimize()
 
         # Three digit strings
-        hundreds = make_number_form(pynini.accep("céad"))
+        hundreds = make_number_form("céad")
         graph_hundreds = hundreds + pynini.union(
             pynutil.delete("00"), (insert_space + graph_tens), (pynini.cross("0", NEMO_SPACE) + graph_digit)
         )
@@ -126,7 +145,7 @@ class CardinalFst(GraphFst):
         self.three_digit_non_zero = pynini.union(
             graph_digit,
             self.hundreds,
-            graph_tens
+            graph_tens,
             (pynini.cross("0", NEMO_SPACE) + graph_tens),
             (pynini.cross("00", NEMO_SPACE) + graph_digit)
         ).optimize()
@@ -141,6 +160,7 @@ class CardinalFst(GraphFst):
             pynutil.delete("00") + digits_no_one
         )
 
+        thousands = make_number_form("míle")
         graph_thousands_component_at_least_one_none_zero_digit = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_none_zero_digit,
             graph_hundreds_component_at_least_one_none_zero_digit_no_one
