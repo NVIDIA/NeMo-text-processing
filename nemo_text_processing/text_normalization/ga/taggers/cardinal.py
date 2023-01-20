@@ -52,6 +52,7 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         ("9", "naoi"),
     ])
     output = pynini.union(
+        pynutil.delete("1") + pynutil.insert(fst),
         numbers_len + insert_space + fst_len,
         numbers_ecl + insert_space + fst_ecl
     )
@@ -77,7 +78,6 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         output |= pynini.cross("10", "deich ") + fst_ecl
         output |= teen_graph
 
-    output |= pynutil.delete("1") + pynutil.insert(fst)
     return output
 
 
