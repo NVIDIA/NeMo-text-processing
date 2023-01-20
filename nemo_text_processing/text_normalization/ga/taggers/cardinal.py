@@ -51,11 +51,11 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         ("8", "ocht"),
         ("9", "naoi"),
     ])
-    output = pynini.union(
-        pynutil.delete("1") + pynutil.insert(fst),
+    output_no_one = pynini.union(
         numbers_len + insert_space + fst_len,
         numbers_ecl + insert_space + fst_ecl
     )
+    output = output_no_one | pynutil.delete("1") + pynutil.insert(fst)
     if not deterministic:
         output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
 
@@ -63,7 +63,7 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         deag = pynini.accep("déag")
         if word[-1] in "aáeéiíoóuú":
             deag = deag @ LOWER_LENITION
-        teen_graph = pynutil.delete("1") + output + insert_space + pynutil.insert(deag)
+        teen_graph = pynutil.delete("1") + output_no_one + insert_space + pynutil.insert(deag)
         if not tens:
             output |= pynini.cross("11", "aon ") + fst_len + insert_space + pynutil.insert(deag)
             output |= pynini.cross("10", "deich ") + fst_ecl
