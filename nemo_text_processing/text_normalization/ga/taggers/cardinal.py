@@ -34,6 +34,9 @@ ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 def make_number_form(word: str, deterministic = True, teens = False, tens = False) -> 'pynini.FstLike':
     fst = pynini.accep(word)
+    fst_len = pynutil.insert(fst @ LOWER_LENITION)
+    fst_ecl = pynutil.insert(fst @ LOWER_ECLIPSIS)
+
     if tens and not teens:
         teens = True
     numbers_len = pynini.string_map([
@@ -49,9 +52,8 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         ("9", "naoi"),
     ])
     output = pynini.union(
-        pynutil.delete("1") + pynutil.insert(fst),
-        numbers_len + insert_space + pynutil.insert(fst @ LOWER_LENITION),
-        numbers_ecl + insert_space + pynutil.insert(fst @ LOWER_ECLIPSIS)
+        numbers_len + insert_space + fst_len,
+        numbers_ecl + insert_space + fst_ecl
     )
     if not deterministic:
         output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
@@ -62,6 +64,8 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
             deag = deag @ LOWER_LENITION
         teen_graph = pynutil.delete("1") + output + insert_space + pynutil.insert(deag)
         if not tens:
+            output |= pynini.cross("11", "aon ") + fst_len + insert_space + pynutil.insert(deag)
+            output |= pynini.cross("10", "deich ") + fst_ecl
             output |= teen_graph
 
     if tens:
@@ -69,8 +73,11 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         for numword, num in tens_words:
             tmp_graph = pynutil.delete(num) + output + pynutil.insert(" is ") + pynutil.insert(numword)
             output |= tmp_graph
+        output |= pynini.cross("11", "aon ") + fst_len + insert_space + pynutil.insert(deag)
+        output |= pynini.cross("10", "deich ") + fst_ecl
         output |= teen_graph
 
+    output |= pynutil.delete("1") + pynutil.insert(fst)
     return output
 
 
