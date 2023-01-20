@@ -28,10 +28,8 @@ from pynini.lib import pynutil
 
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
 digit_count = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit_count.tsv")))
-teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
-ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
-twenties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/twenties.tsv")))
-hundreds = pynini.invert(pynini.string_file(get_abs_path("data/numbers/hundreds.tsv")))
+teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teens_count.tsv")))
+ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 
 def make_number_form(fst: 'pynini.FstLike', deterministic = True) -> 'pynini.FstLike':
@@ -102,13 +100,14 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
         # Any single digit
-        graph_digit = digit
+        graph_digit = digit_count
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
 
         # Any double digit
         graph_tens = teen
-        graph_tens |= ties + (pynutil.delete('0') | (pynutil.insert(" y ") + graph_digit))
-        graph_tens |= twenties
+        graph_tens |= ties + (pynutil.delete('0') | insert_space + graph_digit)
+        if not deterministic:
+            graph_tens |= ties + (pynutil.delete('0') | (pynutil.insert(" is ") + graph_digit))
 
         self.tens = graph_tens.optimize()
 
@@ -117,15 +116,20 @@ class CardinalFst(GraphFst):
         ).optimize()
 
         # Three digit strings
+        hundreds = make_number_form(pynini.accep("céad"))
         graph_hundreds = hundreds + pynini.union(
             pynutil.delete("00"), (insert_space + graph_tens), (pynini.cross("0", NEMO_SPACE) + graph_digit)
         )
-        graph_hundreds |= pynini.cross("100", "cien")
-        graph_hundreds |= (
-            pynini.cross("1", "ciento") + insert_space + pynini.union(graph_tens, pynutil.delete("0") + graph_digit)
-        )
 
         self.hundreds = graph_hundreds.optimize()
+        self.up_to_three_digits = (self.hundreds | graph_tens | graph_digit)
+        self.three_digit_non_zero = pynini.union(
+            graph_digit,
+            self.hundreds,
+            graph_tens
+            (pynini.cross("0", NEMO_SPACE) + graph_tens),
+            (pynini.cross("00", NEMO_SPACE) + graph_digit)
+        ).optimize()
 
         # For all three digit strings with leading zeroes (graph appends '0's to manage place in string)
         graph_hundreds_component = pynini.union(graph_hundreds, pynutil.delete("0") + graph_tens)
