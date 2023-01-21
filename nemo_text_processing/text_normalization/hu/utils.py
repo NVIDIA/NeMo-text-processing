@@ -98,7 +98,7 @@ def inflect_abbreviation(abbr: str, word: str, singular_only=False):
         ending = "á"
     else:
         return []
-    
+
     word_part = naive_inflector(".", word, singular_only)
     abbr_part = naive_inflector(abbr_orig, ending, singular_only)
 
