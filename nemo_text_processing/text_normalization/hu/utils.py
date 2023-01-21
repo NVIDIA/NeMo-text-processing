@@ -85,6 +85,28 @@ def _modify_ending(outword: str, word: str, form: str) -> str:
     return form
 
 
+def inflect_abbreviation(abbr: str, word: str, singular_only=False):
+    abbr_orig = abbr
+    abbr = abbr.lower()
+    if abbr[-1] in "bcdégjptvz":
+        ending = "é"
+    elif abbr[-1] in "aeiíoóöőuúüű":
+        ending = abbr[-1]
+    elif abbr[-1] in "flmnrs":
+        ending = "e" + abbr[-1]
+    elif abbr[-1] in "hk":
+        ending = "á"
+    else:
+        return []
+    
+    word_part = naive_inflector(".", word, singular_only)
+    abbr_part = naive_inflector(abbr_orig, ending, singular_only)
+
+    word_useful = [x[1] for x in word_part]
+    abbr_useful = [x[0] for x in abbr_part]
+    return zip(abbr_useful, word_useful)
+
+
 def naive_inflector(abbr: str, word: str, singular_only=False):
     """
     Performs naïve inflection of a pair of words: the abbreviation,
