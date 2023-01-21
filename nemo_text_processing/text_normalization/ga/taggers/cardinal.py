@@ -32,13 +32,18 @@ teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teens_count.t
 ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 
-def make_number_form(word: str, deterministic = True, teens = False, tens = False) -> 'pynini.FstLike':
+def make_number_form(word: str, deterministic = True, teens = False, tens = False, higher = False) -> 'pynini.FstLike':
     fst = pynini.accep(word)
     fst_len = pynutil.insert(fst @ LOWER_LENITION)
     fst_ecl = pynutil.insert(fst @ LOWER_ECLIPSIS)
 
-    if tens and not teens:
+    if tens:
         teens = True
+
+    if higher:
+        tens = True
+        teens = True
+
     numbers_len = pynini.string_map([
         ("2", "dhá"),
         ("3", "trí"),
@@ -55,8 +60,11 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         numbers_len + insert_space + fst_len,
         numbers_ecl + insert_space + fst_ecl
     )
-    output = output_no_one | pynutil.delete("1") + pynutil.insert(fst)
-    if not deterministic:
+    if not higher:
+        output = output_no_one | pynutil.delete("1") + pynutil.insert(fst)
+        if not deterministic:
+            output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
+    else:
         output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
 
     if teens:
@@ -160,44 +168,46 @@ class CardinalFst(GraphFst):
         # For all three digit strings with leading zeroes (graph appends '0's to manage place in string)
         graph_hundreds_component = pynini.union(graph_hundreds, pynutil.delete("0") + graph_tens)
 
-        graph_hundreds_component_at_least_one_none_zero_digit = graph_hundreds_component | (
+        graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component | (
             pynutil.delete("00") + graph_digit
         )
-        graph_hundreds_component_at_least_one_none_zero_digit_no_one = graph_hundreds_component | (
+        graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
             pynutil.delete("00") + digits_no_one
         )
 
-        thousands = make_number_form("míle")
-        graph_thousands_component_at_least_one_none_zero_digit = pynini.union(
-            pynutil.delete("000") + graph_hundreds_component_at_least_one_none_zero_digit,
-            graph_hundreds_component_at_least_one_none_zero_digit_no_one
+        thousands_two_digits = make_number_form("míle")
+        thousands_three_digits = graph_hundreds_component_at_least_one_non_zero_digit + insert_space + thousands_two_digits
+        self.thousands_three_digits = thousands_three_digits
+        graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
+            pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
+            graph_hundreds_component_at_least_one_non_zero_digit_no_one
             + pynutil.insert(" mil")
-            + ((insert_space + graph_hundreds_component_at_least_one_none_zero_digit) | pynutil.delete("000")),
+            + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
             pynini.cross("001", "mil")
-            + ((insert_space + graph_hundreds_component_at_least_one_none_zero_digit) | pynutil.delete("000")),
+            + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
 
-        graph_thousands_component_at_least_one_none_zero_digit_no_one = pynini.union(
-            pynutil.delete("000") + graph_hundreds_component_at_least_one_none_zero_digit_no_one,
-            graph_hundreds_component_at_least_one_none_zero_digit_no_one
+        graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
+            pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+            graph_hundreds_component_at_least_one_non_zero_digit_no_one
             + pynutil.insert(" mil")
-            + ((insert_space + graph_hundreds_component_at_least_one_none_zero_digit) | pynutil.delete("000")),
+            + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
             pynini.cross("001", "mil")
-            + ((insert_space + graph_hundreds_component_at_least_one_none_zero_digit) | pynutil.delete("000")),
+            + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
 
         graph_million = pynutil.add_weight(pynini.cross("000001", "un millón"), -0.001)
-        graph_million |= graph_thousands_component_at_least_one_none_zero_digit_no_one + pynutil.insert(" millones")
+        graph_million |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" millones")
         graph_million |= pynutil.delete("000000")
         graph_million += insert_space
 
         graph_billion = pynutil.add_weight(pynini.cross("000001", "un billón"), -0.001)
-        graph_billion |= graph_thousands_component_at_least_one_none_zero_digit_no_one + pynutil.insert(" billones")
+        graph_billion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" billones")
         graph_billion |= pynutil.delete("000000")
         graph_billion += insert_space
 
         graph_trillion = pynutil.add_weight(pynini.cross("000001", "un trillón"), -0.001)
-        graph_trillion |= graph_thousands_component_at_least_one_none_zero_digit_no_one + pynutil.insert(" trillones")
+        graph_trillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" trillones")
         graph_trillion |= pynutil.delete("000000")
         graph_trillion += insert_space
 
@@ -205,7 +215,7 @@ class CardinalFst(GraphFst):
             graph_trillion
             + graph_billion
             + graph_million
-            + (graph_thousands_component_at_least_one_none_zero_digit | pynutil.delete("000000"))
+            + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
         self.graph = (
