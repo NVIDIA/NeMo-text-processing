@@ -103,9 +103,9 @@ def inflect_abbreviation(abbr: str, word: str, singular_only=False):
     """
     abbr_orig = abbr
     abbr = abbr.lower()
-    if abbr[-1] in "bcdégjptvz":
+    if abbr[-1] in "bcdgjptvz":
         ending = "é"
-    elif abbr[-1] in "aeiíoóöőuúüű":
+    elif abbr[-1] in "aáeéiíoóöőuúüű":
         ending = abbr[-1]
     elif abbr[-1] in "flmnrs":
         ending = "e" + abbr[-1]
