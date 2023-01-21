@@ -86,6 +86,21 @@ def _modify_ending(outword: str, word: str, form: str) -> str:
 
 
 def inflect_abbreviation(abbr: str, word: str, singular_only=False):
+    """
+    For currency symbols, the inflection can either be taken from
+    the underlying final word, or from the letter itself.
+    This (ab)uses naive_inflector to get the letter-based
+    inflection.
+
+    Args:
+        abbr: the abbreviated base form
+        word: the base (nominative singular) form of the expansion
+              of abbr
+        singular_only: whether or not to add plural forms
+    
+    Returns a list of tuples containing the inflected abbreviation and
+    its expansion.
+    """
     abbr_orig = abbr
     abbr = abbr.lower()
     if abbr[-1] in "bcdégjptvz":
