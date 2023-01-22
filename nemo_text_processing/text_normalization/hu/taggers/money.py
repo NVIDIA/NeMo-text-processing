@@ -101,13 +101,12 @@ class MoneyFst(GraphFst):
         decimal_graph_with_minor = None
         for curr_symbol, _ in maj_singular_labels:
             preserve_order = pynutil.insert(" preserve_order: true")
-            integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural
-            integer_plus_maj |= graph_integer_one + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
+            integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
             # non zero integer part
             integer_plus_maj = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj
 
             graph_fractional = (
-                two_digits_fractional_part @ (pynini.closure(NEMO_DIGIT, 1, 2) - "1") @ cardinal.two_digit_non_zero
+                two_digits_fractional_part @ pynini.closure(NEMO_DIGIT, 1, 2) @ cardinal.two_digit_non_zero
             )
             graph_fractional = pynutil.insert("fractional_part: \"") + graph_fractional + pynutil.insert("\"")
 
