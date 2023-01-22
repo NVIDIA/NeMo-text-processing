@@ -13,7 +13,12 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.hu.utils import (
+    get_abs_path,
+    inflect_abbreviation,
+    load_labels,
+    naive_inflector
+)
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -23,9 +28,11 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from pynini.lib import pynutil
+import re
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency.tsv")))
+letters = pynini.string_file((get_abs_path("data/money/alphabet.tsv")))
 
 
 class MoneyFst(GraphFst):
@@ -55,13 +62,17 @@ class MoneyFst(GraphFst):
         maj_singular_graph = convert_space(maj_singular)
         maj_plural_graph = maj_singular_graph
 
+        if not deterministic:
+            letters |= pynini.cross("W", "vé")
+            letters |= pynini.cross("W", "kettős vé")
+        read_letters = letters + pynini.closure(insert_space + letters)
+
         graph_maj_singular = pynutil.insert("currency_maj: \"") + maj_singular_graph + pynutil.insert("\"")
         graph_maj_plural = pynutil.insert("currency_maj: \"") + maj_plural_graph + pynutil.insert("\"")
 
         optional_delete_fractional_zeros = pynini.closure(
             pynutil.delete(",") + pynini.closure(pynutil.delete("0"), 1), 0, 1
         )
-        graph_integer_one = pynutil.insert("integer_part: \"") + pynini.cross("1", "egy") + pynutil.insert("\"")
 
         # only for decimals where third decimal after comma is non-zero or with quantity
         decimal_delete_last_zeros = (
@@ -99,11 +110,15 @@ class MoneyFst(GraphFst):
 
         # format ** euro ** cent
         decimal_graph_with_minor = None
-        for curr_symbol, _ in maj_singular_labels:
+        for curr_symbol, cur_word in maj_singular_labels:
             preserve_order = pynutil.insert(" preserve_order: true")
             integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
             # non zero integer part
             integer_plus_maj = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj
+
+            if re.match("^[A-Z]{3}$", curr_symbol):
+                letter_expansion = inflect_abbreviation(curr_symbol, cur_word)
+                abbr_expansion = naive_inflector(curr_symbol, cur_word)
 
             graph_fractional = (
                 two_digits_fractional_part @ pynini.closure(NEMO_DIGIT, 1, 2) @ cardinal.two_digit_non_zero
