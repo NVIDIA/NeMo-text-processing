@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.hu.utils import (
     load_labels,
     naive_inflector
 )
+from nemo_text_processing.text_normalization.hu.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -27,7 +28,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     convert_space,
     insert_space,
-    insert_preserve_order,
 )
 from pynini.lib import pynutil
 import re
@@ -126,14 +126,26 @@ class MoneyFst(GraphFst):
                 letter_expansion = pynini.string_map(inflect_abbreviation(curr_symbol, cur_word))
                 abbr_expansion = pynini.string_map(naive_inflector(curr_symbol, cur_word))
                 maj_inflected = letter_expansion | abbr_expansion
+                maj_inflected |= pynini.cross(curr_symbol, cur_word)
+                maj_inflected |= pynini.accep(cur_word)
+                maj_inflected |= pynini.project(abbr_expansion, "output")
                 if not deterministic:
                     expanded = curr_symbol @ read_letters
                     get_endings = pynini.project(letter_expansion, "input")
                     letter_endings = get_endings @ (pynini.cdrewrite(pynini.cross(f"{curr_symbol}-", expanded), "[BOS]", "", NEMO_SIGMA))
                     maj_inflected |= letter_endings
+                    maj_inflected |= pynini.project(letter_endings, "output")
                 graph_maj_final = pynutil.insert("currency_maj: \"") + maj_inflected + pynutil.insert("\"")
-                graph |= graph_decimal_final + NEMO_SPACE + graph_maj_final + preserve_order
-                graph |= graph_integer + NEMO_SPACE + graph_maj_final + preserve_order
+                graph |= graph_decimal_final + ensure_space + graph_maj_final + preserve_order
+                graph |= graph_integer + ensure_space + graph_maj_final + preserve_order
+            else:
+                abbr_expansion = pynini.string_map(naive_inflector(curr_symbol, cur_word))
+                maj_inflected = pynini.project(abbr_expansion, "output")
+                maj_inflected |= pynini.accep(cur_word)
+                graph_maj_final = pynutil.insert("currency_maj: \"") + maj_inflected + pynutil.insert("\"")
+                graph |= graph_decimal_final + ensure_space + graph_maj_final + preserve_order
+                graph |= graph_integer + ensure_space + graph_maj_final + preserve_order
+                
 
             graph_fractional = (
                 two_digits_fractional_part @ pynini.closure(NEMO_DIGIT, 1, 2) @ cardinal.two_digit_non_zero

@@ -15,6 +15,8 @@
 import pynini
 from pynini.lib import byte
 
+from nemo_text_processing.text_normalization.en.graph_utils import insert_space, delete_space
+
 _ALPHA_UPPER = "AÁBCDEÉFGHIÍJKLMNOÓÖŐPQRSTUÚÜŰVWXYZ"
 _ALPHA_LOWER = "aábcdeéfghiíjklmnoóöőpqrstuúüűvwxyz"
 _VOWELS = "AÁEÉIÍOÓÖŐUÚÜŰaáeéiíoóöőuúüű"
@@ -27,3 +29,5 @@ HU_UPPER = pynini.union(*_ALPHA_UPPER).optimize()
 HU_ALPHA = pynini.union(HU_LOWER, HU_UPPER).optimize()
 HU_ALNUM = pynini.union(byte.DIGIT, HU_ALPHA).optimize()
 HU_VOWELS = pynini.union(*[x for x in _VOWELS])
+
+ensure_space = pynini.closure(delete_space, 0, 1) + insert_space
