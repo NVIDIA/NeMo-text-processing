@@ -12,14 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 import pynini
-from nemo_text_processing.text_normalization.hu.utils import (
-    get_abs_path,
-    inflect_abbreviation,
-    load_labels,
-    naive_inflector
-)
-from nemo_text_processing.text_normalization.hu.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -29,8 +24,14 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.hu.graph_utils import ensure_space
+from nemo_text_processing.text_normalization.hu.utils import (
+    get_abs_path,
+    inflect_abbreviation,
+    load_labels,
+    naive_inflector,
+)
 from pynini.lib import pynutil
-import re
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency.tsv")))
@@ -85,13 +86,9 @@ class MoneyFst(GraphFst):
         )
         decimal_with_quantity = NEMO_SIGMA + NEMO_ALPHA
         decimal_part = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
-        graph_decimal = (
-            graph_maj_singular + insert_space + decimal_part
-        )
+        graph_decimal = graph_maj_singular + insert_space + decimal_part
 
-        graph_integer = (
-            pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        )
+        graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
 
         graph_integer_only = graph_maj_singular + insert_space + graph_integer
 
@@ -131,7 +128,9 @@ class MoneyFst(GraphFst):
                 if not deterministic:
                     expanded = curr_symbol @ read_letters
                     get_endings = pynini.project(letter_expansion, "input")
-                    letter_endings = get_endings @ (pynini.cdrewrite(pynini.cross(f"{curr_symbol}-", expanded), "[BOS]", "", NEMO_SIGMA))
+                    letter_endings = get_endings @ (
+                        pynini.cdrewrite(pynini.cross(f"{curr_symbol}-", expanded), "[BOS]", "", NEMO_SIGMA)
+                    )
                     maj_inflected |= letter_endings
                     maj_inflected |= pynini.project(letter_endings, "output")
             graph_maj_final = pynutil.insert("currency_maj: \"") + maj_inflected + pynutil.insert("\"")

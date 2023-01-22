@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -22,6 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.examples import plurals
 from pynini.lib import pynutil
 
@@ -69,13 +69,16 @@ class MeasureFst(GraphFst):
         subgraph_decimal = decimal.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_singular_graph
 
         subgraph_cardinal = (
-            optional_graph_negative + pynini.closure(NEMO_DIGIT) @ cardinal.fst
+            optional_graph_negative
+            + pynini.closure(NEMO_DIGIT) @ cardinal.fst
             + insert_space
             + pynini.closure(pynutil.delete(" "), 0, 1)
             + unit_singular_graph
         )
 
-        subgraph_fraction = fraction.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_singular_graph
+        subgraph_fraction = (
+            fraction.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_singular_graph
+        )
 
         cardinal_dash_alpha = (
             pynutil.insert("cardinal { integer: \"")

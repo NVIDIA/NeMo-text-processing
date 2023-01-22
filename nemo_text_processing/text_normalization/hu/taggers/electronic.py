@@ -61,8 +61,10 @@ class ElectronicFst(GraphFst):
         # url
         protocol_start = pynini.accep("https://") | pynini.accep("http://")
         protocol_end = (
-            pynini.accep("www.") if deterministic else (
-                pynini.accep("www.")             
+            pynini.accep("www.")
+            if deterministic
+            else (
+                pynini.accep("www.")
                 | pynini.cross("www.", "vé vé vé.")
                 | pynini.cross("www.", "dupla vé dupla vé dupla vé.")
                 | pynini.cross("www.", "kettős vé kettős vé kettős vé.")

@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from nemo_text_processing.text_normalization.en.graph_utils import delete_space, insert_space
 from pynini.lib import byte
-
-from nemo_text_processing.text_normalization.en.graph_utils import insert_space, delete_space
 
 _ALPHA_UPPER = "AÁBCDEÉFGHIÍJKLMNOÓÖŐPQRSTUÚÜŰVWXYZ"
 _ALPHA_LOWER = "aábcdeéfghiíjklmnoóöőpqrstuúüűvwxyz"
