@@ -85,6 +85,7 @@ class CardinalFst(GraphFst):
             graph_zero |= pynini.cross("0", "nolˈla")
             graph_zero |= pynini.cross("0", "nulla")
             graph_digit |= pynini.cross("2", "guoktẹ")
+            graph_digit |= pynini.cross("1", "akta")
 
         teen = pynutil.delete("1") + digit + pynutil.insert("nuppelohkái")
         teen |= pynini.cross("10", "logi")
