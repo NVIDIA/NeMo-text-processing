@@ -32,7 +32,6 @@ import re
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency.tsv")))
-letters = pynini.string_file((get_abs_path("data/money/alphabet.tsv")))
 
 
 class MoneyFst(GraphFst):
@@ -62,10 +61,12 @@ class MoneyFst(GraphFst):
         maj_singular_graph = convert_space(maj_singular)
         maj_plural_graph = maj_singular_graph
 
+        letters = pynini.string_file((get_abs_path("data/money/alphabet.tsv")))
         if not deterministic:
             letters |= pynini.cross("W", "vé")
             letters |= pynini.cross("W", "kettős vé")
         read_letters = letters + pynini.closure(insert_space + letters)
+        self.read_letters = read_letters
 
         graph_maj_singular = pynutil.insert("currency_maj: \"") + maj_singular_graph + pynutil.insert("\"")
         graph_maj_plural = pynutil.insert("currency_maj: \"") + maj_plural_graph + pynutil.insert("\"")
@@ -117,8 +118,14 @@ class MoneyFst(GraphFst):
             integer_plus_maj = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj
 
             if re.match("^[A-Z]{3}$", curr_symbol):
-                letter_expansion = inflect_abbreviation(curr_symbol, cur_word)
-                abbr_expansion = naive_inflector(curr_symbol, cur_word)
+                letter_expansion = pynini.string_map(inflect_abbreviation(curr_symbol, cur_word))
+                abbr_expansion = pynini.string_map(naive_inflector(curr_symbol, cur_word))
+                maj_inflected = letter_expansion | abbr_expansion
+                if not deterministic:
+                    expanded = curr_symbol @ read_letters
+                    get_endings = pynini.project(letter_expansion, "input")
+                    letter_endings = get_endings @ (pynini.cdrewrite(pynini.cross(f"{curr_symbol}-", expanded), "[BOS]", "", NEMO_SIGMA))
+                    maj_inflected |= letter_endings
 
             graph_fractional = (
                 two_digits_fractional_part @ pynini.closure(NEMO_DIGIT, 1, 2) @ cardinal.two_digit_non_zero
