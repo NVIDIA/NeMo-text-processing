@@ -23,9 +23,11 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
+    NEMO_SPACE,
     GraphFst,
     convert_space,
     insert_space,
+    insert_preserve_order,
 )
 from pynini.lib import pynutil
 import re
@@ -59,7 +61,6 @@ class MoneyFst(GraphFst):
 
         maj_singular_labels = load_labels(get_abs_path("data/money/currency.tsv"))
         maj_singular_graph = convert_space(maj_singular)
-        maj_plural_graph = maj_singular_graph
 
         letters = pynini.string_file((get_abs_path("data/money/alphabet.tsv")))
         if not deterministic:
@@ -69,7 +70,6 @@ class MoneyFst(GraphFst):
         self.read_letters = read_letters
 
         graph_maj_singular = pynutil.insert("currency_maj: \"") + maj_singular_graph + pynutil.insert("\"")
-        graph_maj_plural = pynutil.insert("currency_maj: \"") + maj_plural_graph + pynutil.insert("\"")
 
         optional_delete_fractional_zeros = pynini.closure(
             pynutil.delete(",") + pynini.closure(pynutil.delete("0"), 1), 0, 1
@@ -84,8 +84,9 @@ class MoneyFst(GraphFst):
             + pynini.closure(pynutil.delete("0"))
         )
         decimal_with_quantity = NEMO_SIGMA + NEMO_ALPHA
+        decimal_part = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
         graph_decimal = (
-            graph_maj_plural + insert_space + (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
+            graph_maj_singular + insert_space + decimal_part
         )
 
         graph_integer = (
@@ -117,6 +118,10 @@ class MoneyFst(GraphFst):
             # non zero integer part
             integer_plus_maj = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj
 
+            # so, where a currency abbreviation (like GBP) appears inflected (GBP-t),
+            # we read the number as a pure fraction, because to add a minor currency
+            # would involve moving the inflectional piece from major to minor
+            graph_maj_final = None
             if re.match("^[A-Z]{3}$", curr_symbol):
                 letter_expansion = pynini.string_map(inflect_abbreviation(curr_symbol, cur_word))
                 abbr_expansion = pynini.string_map(naive_inflector(curr_symbol, cur_word))
@@ -126,6 +131,8 @@ class MoneyFst(GraphFst):
                     get_endings = pynini.project(letter_expansion, "input")
                     letter_endings = get_endings @ (pynini.cdrewrite(pynini.cross(f"{curr_symbol}-", expanded), "[BOS]", "", NEMO_SIGMA))
                     maj_inflected |= letter_endings
+                graph_maj_final = pynutil.insert("currency_maj: \"") + maj_inflected + pynutil.insert("\"")
+                graph |= graph_decimal_final + NEMO_SPACE + graph_maj_final
 
             graph_fractional = (
                 two_digits_fractional_part @ pynini.closure(NEMO_DIGIT, 1, 2) @ cardinal.two_digit_non_zero
