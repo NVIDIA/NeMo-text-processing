@@ -118,12 +118,12 @@ class MoneyFst(GraphFst):
             # non zero integer part
             integer_plus_maj = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj
 
+            abbr_expansion = pynini.string_map(naive_inflector(curr_symbol, cur_word))
+            maj_inflected = pynini.accep(cur_word)
+            maj_inflected |= pynini.project(abbr_expansion, "output")
             # where a currency abbreviation (like GBP) appears inflected (GBP-t),
             # we read the number as a pure fraction, because to add a minor currency
             # would involve moving the inflectional piece from major to minor
-            abbr_expansion = pynini.string_map(naive_inflector(curr_symbol, cur_word))
-            maj_inflected = pynini.project(abbr_expansion, "output")
-            maj_inflected |= pynini.accep(cur_word)
             if re.match("^[A-Z]{3}$", curr_symbol):
                 letter_expansion = pynini.string_map(inflect_abbreviation(curr_symbol, cur_word))
                 maj_inflected = letter_expansion | abbr_expansion
@@ -137,7 +137,6 @@ class MoneyFst(GraphFst):
             graph_maj_final = pynutil.insert("currency_maj: \"") + maj_inflected + pynutil.insert("\"")
             graph |= graph_decimal_final + ensure_space + graph_maj_final + preserve_order
             graph |= graph_integer + ensure_space + graph_maj_final + preserve_order
-                
 
             graph_fractional = (
                 two_digits_fractional_part @ pynini.closure(NEMO_DIGIT, 1, 2) @ cardinal.two_digit_non_zero
