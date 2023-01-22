@@ -118,7 +118,7 @@ class MoneyFst(GraphFst):
             # non zero integer part
             integer_plus_maj = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj
 
-            # so, where a currency abbreviation (like GBP) appears inflected (GBP-t),
+            # where a currency abbreviation (like GBP) appears inflected (GBP-t),
             # we read the number as a pure fraction, because to add a minor currency
             # would involve moving the inflectional piece from major to minor
             graph_maj_final = None
@@ -132,7 +132,8 @@ class MoneyFst(GraphFst):
                     letter_endings = get_endings @ (pynini.cdrewrite(pynini.cross(f"{curr_symbol}-", expanded), "[BOS]", "", NEMO_SIGMA))
                     maj_inflected |= letter_endings
                 graph_maj_final = pynutil.insert("currency_maj: \"") + maj_inflected + pynutil.insert("\"")
-                graph |= graph_decimal_final + NEMO_SPACE + graph_maj_final
+                graph |= graph_decimal_final + NEMO_SPACE + graph_maj_final + preserve_order
+                graph |= graph_integer + NEMO_SPACE + graph_maj_final + preserve_order
 
             graph_fractional = (
                 two_digits_fractional_part @ pynini.closure(NEMO_DIGIT, 1, 2) @ cardinal.two_digit_non_zero
