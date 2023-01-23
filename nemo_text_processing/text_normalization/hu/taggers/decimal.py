@@ -34,10 +34,10 @@ def inflect_quantities():
             output.append((quantity[0], quantity[1]))
             output += naive_inflector(quantity[0], quantity[1], True)
         else:
-            output.append(quantity[0])
+            output.append((quantity[0], quantity[0]))
             tmp = naive_inflector(".", quantity[0], True)
             real = [t[1] for t in tmp]
-            output += real
+            output += [(t, t) for t in real]
             if "lli" in quantity[0]:
                 output.append((quantity[0].replace("lli", "li"), quantity[0]))
                 orth = [(x.replace("lli", "li"), x) for x in real]
@@ -48,8 +48,8 @@ def inflect_quantities():
 def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike') -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
-    e.g. 1 million -> integer_part: "eine" quantity: "million"
-    e.g. 1.4 million -> integer_part: "eins" fractional_part: "vier" quantity: "million"
+    e.g. 1 millió -> integer_part: "egy" quantity: "millió"
+    e.g. 1,4 million -> integer_part: "egy" fractional_part: "négy" quantity: "millió"
 
     Args: 
         decimal: decimal FST
