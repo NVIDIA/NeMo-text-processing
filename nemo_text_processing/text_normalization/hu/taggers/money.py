@@ -43,10 +43,10 @@ class MoneyFst(GraphFst):
         "€1" -> money { currency_maj: "euró" integer_part: "egy"}
         "€1,000" -> money { currency_maj: "euró" integer_part: "egy" }
         "€1,001" -> money { currency_maj: "euró" integer_part: "egy" fractional_part: "egy"}
-        "£1,4" -> money { integer_part: "ein" currency_maj: "pfund" fractional_part: "vierzig" preserve_order: true}
-               -> money { integer_part: "ein" currency_maj: "pfund" fractional_part: "vierzig" currency_min: "pence" preserve_order: true}
-        "£0,01" -> money { fractional_part: "ein" currency_min: "penny" preserve_order: true}
-        "£0,01 million" -> money { currency_maj: "pfund" integer_part: "null" fractional_part: "null eins" quantity: "million"}
+        "£1,4" -> money { integer_part: "egy" currency_maj: "font" fractional_part: "negyven" preserve_order: true}
+               -> money { integer_part: "egy" currency_maj: "font" fractional_part: "negyven" currency_min: "penny" preserve_order: true}
+        "£0,01" -> money { fractional_part: "egy" currency_min: "penny" preserve_order: true}
+        "£0,01 million" -> money { currency_maj: "font" integer_part: "nulla" fractional_part: "egy század" quantity: "millió"}
 
     Args:
         cardinal: CardinalFst
