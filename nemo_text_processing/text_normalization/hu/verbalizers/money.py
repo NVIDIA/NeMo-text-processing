@@ -54,15 +54,8 @@ class MoneyFst(GraphFst):
         #  *** currency_maj + (***) | ((und) *** current_min)
         minor_part = fractional_part | (fractional_part + keep_space + min)
         if not deterministic:
-            minor_part |= (optional_add_and + fractional_part + keep_space + min)
-        graph_integer_with_minor = (
-            integer_part
-            + keep_space
-            + maj
-            + keep_space
-            + minor_part
-            + delete_preserve_order
-        )
+            minor_part |= optional_add_and + fractional_part + keep_space + min
+        graph_integer_with_minor = integer_part + keep_space + maj + keep_space + minor_part + delete_preserve_order
 
         # *** komma *** currency_maj
         graph_decimal = decimal.fst + keep_space + maj
