@@ -28,6 +28,7 @@ teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv"))
 twenties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/twenties.tsv")))
 ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/ties.tsv")))
 hundreds = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/hundreds.tsv")))
+gender_suffix = pynini.string_file(get_abs_path("data/ordinals/gender_suffix.tsv"))
 
 
 def get_one_to_one_thousand(cardinal: 'pynini.FstLike') -> 'pynini.FstLike':
@@ -71,7 +72,7 @@ class OrdinalFst(GraphFst):
 
         if not deterministic:
             # Some alternative derivations
-            graph_ties = graph_ties | pynini.cross("sesenta", "setuagésimo")
+            graph_ties = graph_ties | pynini.cross("setenta", "setuagésimo")
 
             graph_teens = graph_teens | pynini.cross("once", "decimoprimero")
             graph_teens |= pynini.cross("doce", "decimosegundo")
@@ -125,27 +126,24 @@ class OrdinalFst(GraphFst):
 
         self.graph = ordinal_graph.optimize()
 
-        masc = pynini.accep("gender_masc")
-        fem = pynini.accep("gender_fem")
-        apocope = pynini.accep("apocope")
+        delete_period = pynini.closure(pynutil.delete("."), 0, 1)  # Sometimes the period is omitted
+        convert_gender_suffix = delete_period + gender_suffix
 
-        delete_period = pynini.closure(pynutil.delete("."), 0, 1)  # Sometimes the period is omitted f
+        # Managing Romanization, excluding words that may be ambiguous
+        roman_ordinals = roman_to_int(ordinal_graph)
+        exceptions = pynini.accep("vi") | pynini.accep("di") | pynini.accep("mi")
+        graph_exception = pynini.project(exceptions, 'input')
+        roman_ordinals = (pynini.project(roman_ordinals, "input") - graph_exception.arcsort()) @ roman_ordinals
 
-        accept_masc = delete_period + pynini.cross("º", masc)
-        accep_fem = delete_period + pynini.cross("ª", fem)
-        accep_apocope = delete_period + pynini.cross("ᵉʳ", apocope)
+        graph_roman = pynutil.insert("integer: \"") + roman_ordinals + pynutil.insert("\"")
 
-        # Managing Romanization
-        graph_roman = pynutil.insert("integer: \"") + roman_to_int(ordinal_graph) + pynutil.insert("\"")
         if not deterministic:
             # Introduce plural
             plural = pynini.closure(pynutil.insert("/plural"), 0, 1)
-            accept_masc += plural
-            accep_fem += plural
+            convert_gender_suffix += plural
 
             # Romanizations have no morphology marker, so in non-deterministic case we provide option for all
-            insert_morphology = pynutil.insert(pynini.union(masc, fem)) + plural
-            insert_morphology |= pynutil.insert(apocope)
+            insert_morphology = pynutil.insert(convert_gender_suffix) + plural
             insert_morphology = (
                 pynutil.insert(" morphosyntactic_features: \"") + insert_morphology + pynutil.insert("\"")
             )
@@ -158,15 +156,12 @@ class OrdinalFst(GraphFst):
                 " morphosyntactic_features: \"gender_fem\""
             )
 
-        # Rest of graph
-        convert_abbreviation = accept_masc | accep_fem | accep_apocope
-
         graph = (
             pynutil.insert("integer: \"")
             + ordinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" morphosyntactic_features: \"")
-            + convert_abbreviation
+            + convert_gender_suffix
             + pynutil.insert("\"")
         )
         graph = pynini.union(graph, graph_roman)

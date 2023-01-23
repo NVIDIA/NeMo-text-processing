@@ -32,7 +32,7 @@ else:
     cardinal_separator = pynini.string_map([".", NEMO_SPACE])
     decimal_separator = pynini.accep(",")
 
-ones = pynini.union("un", "ún")
+ones = pynini.union("un", "ún", "uno")
 fem_ones = pynini.union(pynini.cross("un", "una"), pynini.cross("ún", "una"), pynini.cross("uno", "una"))
 one_to_one_hundred = pynini.union(digits, "uno", tens, teens, twenties, tens + pynini.accep(" y ") + digits)
 fem_hundreds = hundreds @ pynini.cdrewrite(pynini.cross("ientos", "ientas"), "", "", NEMO_SIGMA)
@@ -160,12 +160,19 @@ def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     digit = _load_roman("data/roman/digit.tsv")
     ties = _load_roman("data/roman/ties.tsv")
     hundreds = _load_roman("data/roman/hundreds.tsv")
+    thousands = _load_roman("data/roman/thousands.tsv")
 
     graph = (
         digit
         | ties + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
         | (
             hundreds
+            + (ties | pynutil.add_weight(pynutil.insert("0"), 0.01))
+            + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
+        )
+        | (
+            thousands
+            + (hundreds | pynutil.add_weight(pynutil.insert("0"), 0.01))
             + (ties | pynutil.add_weight(pynutil.insert("0"), 0.01))
             + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
         )

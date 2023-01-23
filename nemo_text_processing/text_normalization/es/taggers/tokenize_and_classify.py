@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
@@ -37,6 +36,8 @@ from nemo_text_processing.text_normalization.es.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.es.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.es.taggers.word import WordFst
 from pynini.lib import pynutil
+
+import logging
 
 
 class ClassifyFst(GraphFst):
@@ -116,7 +117,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
-                | pynutil.add_weight(telephone_graph, 1.1)
+                | pynutil.add_weight(telephone_graph, 1.11)
                 | pynutil.add_weight(electronic_graph, 1.1)
                 | pynutil.add_weight(word_graph, 200)
             )

@@ -42,96 +42,92 @@ class TelephoneFst(GraphFst):
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
         graph_twenties = pynini.string_file(get_abs_path("data/numbers/twenties.tsv"))
 
-        single_digits = pynini.invert(graph_digit).optimize() | pynini.cross("0", "cero")
+        single_digits = graph_digit.optimize() | pynini.cross("cero", "0")
 
         double_digits = pynini.union(
             graph_twenties,
             graph_teen,
             (graph_ties + pynutil.insert("0")),
             (graph_ties + delete_space + pynutil.delete("y") + delete_space + graph_digit),
-        ).invert()
-
-        # define `ten_digit_graph`, `nine_digit_graph`, `eight_digit_graph`
-        # which accept telephone numbers spoken (1) only with single digits,
-        # or (2) spoken with double digits (and sometimes single digits)
-
-        # 10-digit option (1): all single digits
-        ten_digit_graph = (
-            pynini.closure(single_digits + insert_space, 3, 3)
-            + pynutil.delete("-")
-            + pynini.closure(single_digits + insert_space, 3, 3)
-            + pynutil.delete("-")
-            + pynini.closure(single_digits + insert_space, 3, 3)
-            + single_digits
         )
 
-        # 10-digit option (2): (1+2) + (1+2) + (2+2) digits
-        ten_digit_graph |= (
-            single_digits
-            + insert_space
-            + double_digits
-            + insert_space
-            + pynutil.delete("-")
-            + single_digits
-            + insert_space
-            + double_digits
-            + insert_space
-            + pynutil.delete("-")
-            + double_digits
-            + insert_space
-            + double_digits
+        # self.single_digits = single_digits
+        # self.double_digits = double_digits
+        digit_twice = single_digits + pynutil.delete(" ") + single_digits
+        digit_thrice = digit_twice + pynutil.delete(" ") + single_digits
+
+        # accept `doble cero` -> `00` and `triple ocho` -> `888`
+        digit_words = pynini.union(graph_digit.optimize(), pynini.cross("cero", "0")).invert()
+
+        doubled_digit = pynini.union(
+            *[
+                pynini.cross(
+                    pynini.project(str(i) @ digit_words, "output")
+                    + pynini.accep(" ")
+                    + pynini.project(str(i) @ digit_words, "output"),
+                    pynutil.insert("doble ") + pynini.project(str(i) @ digit_words, "output"),
+                )
+                for i in range(10)
+            ]
+        )
+        doubled_digit.invert()
+        doubled_digit @= digit_twice
+
+        tripled_digit = pynini.union(
+            *[
+                pynini.cross(
+                    pynini.project(str(i) @ digit_words, "output")
+                    + pynini.accep(" ")
+                    + pynini.project(str(i) @ digit_words, "output")
+                    + pynini.accep(" ")
+                    + pynini.project(str(i) @ digit_words, "output"),
+                    pynutil.insert("triple ") + pynini.project(str(i) @ digit_words, "output"),
+                )
+                for i in range(10)
+            ]
+        )
+        tripled_digit.invert()
+        tripled_digit @= digit_thrice
+
+        # Denormalized phone numbers are grouped in sets of 3 or 4 digits
+        group_of_two = pynini.union(doubled_digit, digit_twice, double_digits)
+
+        group_of_three = pynini.union(tripled_digit, single_digits + pynutil.delete(" ") + group_of_two,)
+
+        group_of_four = pynini.union(
+            group_of_two + pynutil.delete(" ") + group_of_two,
+            tripled_digit + pynutil.delete(" ") + single_digits,
+            single_digits + pynutil.delete(" ") + tripled_digit,
         )
 
-        # 9-digit option (1): all single digits
-        nine_digit_graph = (
-            pynini.closure(single_digits + insert_space, 3, 3)
-            + pynutil.delete("-")
-            + pynini.closure(single_digits + insert_space, 3, 3)
-            + pynutil.delete("-")
-            + pynini.closure(single_digits + insert_space, 2, 2)
-            + single_digits
+        insert_separator = pynini.cross(" ", "-")
+
+        # 10-digit option
+        ten_digit_graph = group_of_three + insert_separator + group_of_three + insert_separator + group_of_four
+
+        # 9-digit option
+        nine_digit_graph = group_of_three + insert_separator + group_of_three + insert_separator + group_of_three
+
+        # 8-digit option
+        eight_digit_graph = group_of_four + insert_separator + group_of_four
+
+        # optionally denormalize country codes
+        optional_country_code = pynini.closure(
+            pynini.cross("más ", "+") + (single_digits | group_of_two | group_of_three) + insert_separator, 0, 1
         )
 
-        # 9-digit option (2): (1+2) + (1+2) + (1+2) digits
-        nine_digit_graph |= (
-            single_digits
-            + insert_space
-            + double_digits
-            + insert_space
-            + pynutil.delete("-")
-            + single_digits
-            + insert_space
-            + double_digits
-            + insert_space
-            + pynutil.delete("-")
-            + single_digits
-            + insert_space
-            + double_digits
+        # optionally denormalize extensions
+        optional_extension = pynini.closure(
+            pynini.cross(" extensión ", " ext. ") + (single_digits | group_of_two | group_of_three), 0, 1
         )
 
-        # 8-digit option (1): all single digits
-        eight_digit_graph = (
-            pynini.closure(single_digits + insert_space, 4, 4)
-            + pynutil.delete("-")
-            + pynini.closure(single_digits + insert_space, 3, 3)
-            + single_digits
+        number_part = (
+            optional_country_code
+            + pynini.union(pynutil.add_weight(ten_digit_graph, -0.01), nine_digit_graph, eight_digit_graph)
+            + optional_extension
         )
 
-        # 8-digit option (2): (2+2) + (2+2) digits
-        eight_digit_graph |= (
-            double_digits
-            + insert_space
-            + double_digits
-            + insert_space
-            + pynutil.delete("-")
-            + double_digits
-            + insert_space
-            + double_digits
-        )
-
-        number_part = pynini.union(ten_digit_graph, nine_digit_graph, eight_digit_graph,)
-
-        number_part = pynutil.insert("number_part: \"") + pynini.invert(number_part) + pynutil.insert("\"")
+        number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
 
         graph = number_part
         final_graph = self.add_tokens(graph)
