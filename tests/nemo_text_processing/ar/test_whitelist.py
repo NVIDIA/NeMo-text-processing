@@ -32,10 +32,7 @@ class TestWhitelist:
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected, f"input: {test_input}"
 
-
-
     normalizer = Normalizer(input_case='cased', lang='ar', cache_dir=CACHE_DIR, overwrite_cache=False)
-
 
     @parameterized.expand(parse_test_case_file('ar/data_inverse_text_normalization/test_cases_whitelist.txt'))
     @pytest.mark.run_only_on('CPU')
@@ -43,5 +40,3 @@ class TestWhitelist:
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected, f"input: {test_input}"
-
-

@@ -73,9 +73,11 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--output_dir", help="output directory for grammars", required=True, type=str)
     parser.add_argument(
-        "--language", help="language",
+        "--language",
+        help="language",
         choices=["en", "de", "es", "pt", "ru", 'fr', 'vi', 'zh', 'ar'],
-        type=str, default='en'
+        type=str,
+        default='en',
     )
     parser.add_argument(
         "--grammars", help="grammars to be exported", choices=["tn_grammars", "itn_grammars"], type=str, required=True
