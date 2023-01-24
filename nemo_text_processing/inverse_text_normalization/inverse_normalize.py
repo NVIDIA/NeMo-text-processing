@@ -42,43 +42,48 @@ class InverseNormalizer(Normalizer):
         max_number_of_permutations_per_split: int = 729,
     ):
 
-        if lang == 'en':
+        if lang == 'en':  # English
             from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.en.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'es':
+        elif lang == 'es':  # Spanish (Espanol)
             from nemo_text_processing.inverse_text_normalization.es.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.es.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'pt':
+        elif lang == 'pt':  # Portuguese (Português)
             from nemo_text_processing.inverse_text_normalization.pt.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.pt.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'ru':
+        elif lang == 'ru':  # Russian (Russkiy Yazyk)
             from nemo_text_processing.inverse_text_normalization.ru.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.ru.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'de':
+        elif lang == 'de':  # German (Deutsch)
             from nemo_text_processing.inverse_text_normalization.de.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.de.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
-        elif lang == 'fr':
+        elif lang == 'fr':  # French (Français)
             from nemo_text_processing.inverse_text_normalization.fr.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
-        elif lang == 'vi':
+        elif lang == 'vi':  # Vietnamese (Tiếng Việt)
             from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.vi.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
+        elif lang == 'ar':  # Arabic
+            from nemo_text_processing.inverse_text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 

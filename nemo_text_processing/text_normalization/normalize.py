@@ -136,6 +136,9 @@ class Normalizer:
         elif lang == 'zh':
             from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'ar':
+            from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.ar.verbalizers.verbalize_final import VerbalizeFinalFst
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
