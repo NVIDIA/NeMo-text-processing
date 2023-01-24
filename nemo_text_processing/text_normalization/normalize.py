@@ -664,7 +664,7 @@ def parse_args():
         default="text",
     )
     parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
-    parser.add_argument("--language", help="language", choices=["en", "de", "es", "zh"], default="en", type=str)
+    parser.add_argument("--language", help="language", choices=["en", "de", "es", "sv", "zh"], default="en", type=str)
     parser.add_argument(
         "--input_case",
         help="Input text capitalization, set to 'cased' if text contains capital letters."
