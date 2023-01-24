@@ -98,18 +98,21 @@ class NormalizerWithAudio(Normalizer):
         self.tagger_non_deterministic = self.tagger
         self.verbalizer_non_deterministic = self.verbalizer
 
-        # initialize deterministic normalizer
-        super().__init__(
-            input_case=input_case,
-            lang=lang,
-            deterministic=True,
-            cache_dir=cache_dir,
-            overwrite_cache=overwrite_cache,
-            whitelist=whitelist,
-            lm=lm,
-            post_process=post_process,
-            max_number_of_permutations_per_split=max_number_of_permutations_per_split,
-        )
+        if lang != "ru":
+            # initialize deterministic normalizer
+            super().__init__(
+                input_case=input_case,
+                lang=lang,
+                deterministic=True,
+                cache_dir=cache_dir,
+                overwrite_cache=overwrite_cache,
+                whitelist=whitelist,
+                lm=lm,
+                post_process=post_process,
+                max_number_of_permutations_per_split=max_number_of_permutations_per_split,
+            )
+        else:
+            self.tagger, self.verbalizer = None, None
         self.lm = lm
 
     def normalize(
@@ -139,7 +142,7 @@ class NormalizerWithAudio(Normalizer):
         Returns:
             normalized text options (usually there are multiple ways of normalizing a given semiotic class)
         """
-        if pred_text is None:
+        if pred_text is None or self.tagger is None:
             return self.normalize_non_deterministic(
                 text=text, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
             )
