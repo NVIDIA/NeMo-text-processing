@@ -22,9 +22,7 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 
 class TestDecimal:
-    inverse_normalizer = (
-        InverseNormalizer(lang='de', cache_dir=CACHE_DIR, overwrite_cache=False) if PYNINI_AVAILABLE else None
-    )
+    inverse_normalizer = InverseNormalizer(lang='de', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('de/data_inverse_text_normalization/test_cases_decimal.txt'))
     @pytest.mark.run_only_on('CPU')
