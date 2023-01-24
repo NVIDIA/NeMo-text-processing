@@ -215,6 +215,7 @@ class NormalizerWithAudio(Normalizer):
                 tagged_texts, weights = list(zip(*tagged_texts))
         else:
             tagged_texts = self._get_tagged_text(text, n_tagged)
+
         # non-deterministic Eng normalization uses tagger composed with verbalizer, no permutation in between
         if self.lang == "en":
             normalized_texts = tagged_texts
@@ -222,7 +223,7 @@ class NormalizerWithAudio(Normalizer):
         else:
             normalized_texts = []
             for tagged_text in tagged_texts:
-                self._verbalize(tagged_text, normalized_texts, verbose=verbose)
+                self._verbalize(tagged_text, normalized_texts, n_tagged, verbose=verbose)
 
         if len(normalized_texts) == 0:
             raise ValueError()
@@ -322,7 +323,7 @@ class NormalizerWithAudio(Normalizer):
                 tagged_texts = rewrite.top_rewrites(text, self.tagger_non_deterministic.fst, nshortest=n_tagged)
         return tagged_texts
 
-    def _verbalize(self, tagged_text: str, normalized_texts: List[str], verbose: bool = False):
+    def _verbalize(self, tagged_text: str, normalized_texts: List[str], n_tagged: int, verbose: bool = False):
         """
         Verbalizes tagged text
 
@@ -333,7 +334,7 @@ class NormalizerWithAudio(Normalizer):
         """
 
         def get_verbalized_text(tagged_text):
-            return rewrite.rewrites(tagged_text, self.verbalizer.fst)
+            return rewrite.top_rewrites(tagged_text, self.verbalizer_non_deterministic.fst, n_tagged)
 
         self.parser(tagged_text)
         tokens = self.parser.parse()
