@@ -46,6 +46,7 @@ class TestOrdinal:
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
 
+
 #        if self.normalizer_with_audio:
 #            pred_non_deterministic = self.normalizer_with_audio.normalize(
 #                test_input, n_tagged=500, punct_post_process=False,
