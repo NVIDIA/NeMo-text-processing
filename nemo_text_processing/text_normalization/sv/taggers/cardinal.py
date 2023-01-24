@@ -182,19 +182,21 @@ class CardinalFst(GraphFst):
         )
 
         tusen = pynutil.insert("tusen")
+        etttusen = tusen
         if not deterministic:
             tusen |= pynutil.insert(" tusen")
-            tusen |= pynutil.insert("ettusen")
-            tusen |= pynutil.insert(" ettusen")
-            tusen |= pynutil.insert("ett tusen")
-            tusen |= pynutil.insert(" ett tusen")
+            etttusen = tusen
+            etttusen |= pynutil.insert("ettusen")
+            etttusen |= pynutil.insert(" ettusen")
+            etttusen |= pynutil.insert("ett tusen")
+            etttusen |= pynutil.insert(" ett tusen")
 
         graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
             + tusen
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-            pynini.cross("001", tusen)
+            pynini.cross("001", etttusen)
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
         self.graph_thousands_component_at_least_one_non_zero_digit = (
