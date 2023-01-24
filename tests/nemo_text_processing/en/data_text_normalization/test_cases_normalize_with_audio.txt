@@ -173,6 +173,10 @@ two point five times
 two and a half times
 ~10% to 20%
 ten to twenty percent
+ten percent to twenty percent
+~2%-10%
+two percent-ten percent
+two-ten percent
 ~0.5
 half
 zero point five
