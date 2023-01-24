@@ -81,18 +81,10 @@ class CardinalFst(GraphFst):
         graph_digit = digit
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
 
-        # Account for grammatical gender variation
-        if not deterministic:
-            graph_digit |= pynini.string_map([("1", "uno"), ("1", "una")])
-
         # Any double digit
         graph_tens = teen
         graph_tens |= ties + (pynutil.delete('0') | (pynutil.insert(" y ") + graph_digit))
         graph_tens |= twenties
-
-        # Account for grammatical gender variation
-        if not deterministic:
-            graph_tens |= pynini.string_map([("21", "veintiuno"), ("21", "veintiuna")])
 
         self.tens = graph_tens.optimize()
 
@@ -100,16 +92,7 @@ class CardinalFst(GraphFst):
             graph_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + graph_digit)
         ).optimize()
 
-        # Three digit strings
-        graph_hundreds = hundreds
-
-        # Account for grammatical gender variation
-        if not deterministic:
-            start_of_hundreds = pynini.project(digits_no_one, "output")
-            change_hundreds = start_of_hundreds + pynini.cross("cientos", "cientas") | pynini.cross("quinientos", "quinientas")
-            graph_hundreds |= hundreds @ change_hundreds
-
-        graph_hundreds += pynini.union(
+        graph_hundreds = hundreds + pynini.union(
             pynutil.delete("00"), (insert_space + graph_tens), (pynini.cross("0", NEMO_SPACE) + graph_digit)
         )
         graph_hundreds |= pynini.cross("100", "cien")

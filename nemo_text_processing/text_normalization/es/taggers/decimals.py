@@ -97,10 +97,10 @@ class DecimalFst(GraphFst):
                 + pynini.closure(insert_space + graph_digit),  # For cases such as "1,010"
             )
 
-            # Need to strip apocope everywhere BUT end of string
-            reverse_apocope = pynini.string_map([("un", "uno"), ("ún", "uno")])
-            apply_reverse_apocope = pynini.cdrewrite(reverse_apocope, "", NEMO_SPACE, NEMO_SIGMA)
-            graph @= apply_reverse_apocope
+        # Need to strip apocope everywhere BUT end of string
+        reverse_apocope = pynini.string_map([("un", "uno"), ("ún", "uno")])
+        apply_reverse_apocope = pynini.cdrewrite(reverse_apocope, "", NEMO_SPACE, NEMO_SIGMA)
+        graph @= apply_reverse_apocope
 
         # If there are spaces within decimals (e.g. 1,333 333), this removes any possible spaces
         strip_formatting = pynini.cdrewrite(delete_space, "", "", NEMO_SIGMA)
