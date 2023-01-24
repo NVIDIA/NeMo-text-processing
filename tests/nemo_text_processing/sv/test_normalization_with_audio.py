@@ -17,27 +17,13 @@ from parameterized import parameterized
 
 from ..utils import CACHE_DIR, get_test_cases_multiple
 
-try:
-    from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
-
-    PYNINI_AVAILABLE = True
-except (ImportError, ModuleNotFoundError):
-    PYNINI_AVAILABLE = False
+from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
 
 class TestNormalizeWithAudio:
-
-    normalizer_es = (
-        NormalizerWithAudio(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
-        if PYNINI_AVAILABLE
-        else None
-    )
+    normalizer = NormalizerWithAudio(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(get_test_cases_multiple('sv/data_text_normalization/test_cases_normalize_with_audio.txt'))
-    @pytest.mark.skipif(
-        not PYNINI_AVAILABLE,
-        reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
-    )
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
