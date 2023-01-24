@@ -208,7 +208,7 @@ class CardinalFst(GraphFst):
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
             + tusen
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-            pynini.cross("001", tusen)
+            pynini.cross("001", etttusen)
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
         self.graph_thousands_component_at_least_one_non_zero_digit_no_one = (
