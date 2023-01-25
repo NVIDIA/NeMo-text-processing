@@ -39,7 +39,6 @@ from nemo_text_processing.text_normalization.es.taggers.word import WordFst
 from pynini.lib import pynutil
 
 
-
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence, that is lower cased.
