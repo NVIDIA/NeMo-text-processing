@@ -107,8 +107,6 @@ class CardinalFst(GraphFst):
         graph_digit = digit
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
         both_ones = pynini.cross("1", "en") | pynini.cross("1", "ett")
-        digits_both_ones = digits_no_one | both_ones
-        digits_both_ones_no_zero = (NEMO_DIGIT - "0") @ digits_both_ones
         if deterministic:
             final_digit = digit
         else:
@@ -311,8 +309,6 @@ class CardinalFst(GraphFst):
         )
         self.any_read_digit = ((NEMO_DIGIT - "0") @ digit) + pynini.closure(insert_space + digit)
         if not deterministic:
-            self.any_read_digit = digits_both_ones_no_zero + pynini.closure(insert_space + digits_both_ones)
-        if not deterministic:
             self.three_digits_read |= digit + insert_space + digit + insert_space + digit
             self.three_digits_read |= ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens + insert_space + digit
             self.three_digits_read |= digit + insert_space + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens
@@ -330,7 +326,7 @@ class CardinalFst(GraphFst):
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         if not deterministic:
             final_graph |= optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\"")
-            final_graph |= pynutil.insert("integer: \"") + self.any_read_digit + pynutil.insert("\"")
+            final_graph |= pynutil.insert("integer: \"") + self.single_digits_graph + pynutil.insert("\"")
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
