@@ -160,12 +160,19 @@ def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     digit = _load_roman("data/roman/digit.tsv")
     ties = _load_roman("data/roman/ties.tsv")
     hundreds = _load_roman("data/roman/hundreds.tsv")
+    thousands = _load_roman("data/roman/thousands.tsv")
 
     graph = (
         digit
         | ties + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
         | (
             hundreds
+            + (ties | pynutil.add_weight(pynutil.insert("0"), 0.01))
+            + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
+        )
+        | (
+            thousands
+            + (hundreds | pynutil.add_weight(pynutil.insert("0"), 0.01))
             + (ties | pynutil.add_weight(pynutil.insert("0"), 0.01))
             + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
         )

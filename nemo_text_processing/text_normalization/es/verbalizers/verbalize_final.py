@@ -27,6 +27,7 @@ from nemo_text_processing.text_normalization.es.verbalizers.verbalize import Ver
 from pynini.lib import pynutil
 
 
+
 class VerbalizeFinalFst(GraphFst):
     """
     Finite state transducer that verbalizes an entire sentence

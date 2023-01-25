@@ -13,12 +13,16 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_extra_space
+from nemo_text_processing.text_normalization.es.graph_utils import roman_to_int, strip_cardinal_apocope
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
 from pynini.lib import pynutil
 
-articles = pynini.union("de", "del", "el", "del año")
+articles = pynini.union("de", "del", "el", "del año", "año")
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))
+month_abbr = pynini.string_file(get_abs_path("data/dates/months_abbr.tsv"))
+weekdays = pynini.string_file(get_abs_path("data/dates/days_abbr.tsv"))
+year_suffix = pynini.string_file(get_abs_path("data/dates/year_suffix.tsv"))
 
 
 class DateFst(GraphFst):
@@ -40,12 +44,18 @@ class DateFst(GraphFst):
         number_to_month = month_numbers.optimize()
         month_graph = pynini.project(number_to_month, "output")
 
+        abbr_to_month = month_abbr.optimize()
+        month_graph |= abbr_to_month
+
         numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
 
         # 01, 31, 1
         digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ numbers
-        day = (pynutil.insert("day: \"") + digit_day + pynutil.insert("\"")).optimize()
+
+        # weekdays
+        optional_weekdays = pynini.closure(weekdays + NEMO_SPACE, 0, 1)
+        day = (pynutil.insert("day: \"") + optional_weekdays + digit_day + pynutil.insert("\"")).optimize()
 
         digit_month = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 13)])
         number_to_month = digit_month @ number_to_month
@@ -55,12 +65,31 @@ class DateFst(GraphFst):
 
         # prefer cardinal over year
         year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
-        year @= numbers
+        year = strip_cardinal_apocope(year @ numbers)
         self.year = year
+
+        # handle roman centuries and years
+        roman_numbers = roman_to_int(numbers)
+        roman_centuries = pynini.union("siglo ", "año ") + roman_numbers
+        roman_centuries_graph = (
+            pynutil.insert("year: \"")
+            + roman_centuries
+            + pynutil.insert("\"")
+            + pynutil.insert(" preserve_order: true")
+        ).optimize()
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         year_with_articles = (
             pynutil.insert("year: \"") + pynini.closure(articles + NEMO_SPACE, 0, 1) + year + pynutil.insert("\"")
+        )
+
+        # handle years with eras
+        year_suffix_graph = (
+            pynutil.insert("year: \"")
+            + (numbers | roman_centuries)
+            + pynini.closure(NEMO_SPACE, 0, 1)
+            + year_suffix
+            + pynutil.insert("\"")
         )
 
         graph_dmy = (
@@ -91,6 +120,8 @@ class DateFst(GraphFst):
         final_graph = graph_dmy + pynutil.insert(" preserve_order: true")
         final_graph |= graph_ymd
         final_graph |= graph_mdy
+        final_graph |= roman_centuries_graph
+        final_graph |= year_suffix_graph
 
         self.final_graph = final_graph.optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()
