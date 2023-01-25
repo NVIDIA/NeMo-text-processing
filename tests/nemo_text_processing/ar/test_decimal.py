@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,12 +23,10 @@ from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file
 class TestDecimal:
     inverse_normalizer_ar = InverseNormalizer(
         lang='ar', cache_dir=CACHE_DIR, overwrite_cache=False
-    )  # if PYNINI_AVAILABLE else None
+    )
 
     @parameterized.expand(parse_test_case_file('ar/data_inverse_text_normalization/test_cases_decimal.txt'))
-    # @pytest.mark.skipif(
-    #     not PYNINI_AVAILABLE, reason="`pynini` not installed, please install via nemo_text_processing/setup.sh"
-    # )
+
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
@@ -38,15 +36,8 @@ class TestDecimal:
     normalizer_ar = Normalizer(
         lang='ar', input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
     )
-    # normalizer_with_audio_en = (
-    #     NormalizerWithAudio(input_case='cased', lang='ar', cache_dir=CACHE_DIR, overwrite_cache=False)
-    #     if PYNINI_AVAILABLE and RUN_AUDIO_BASED_TESTS
-    #     else None
-    # )
 
     @parameterized.expand(parse_test_case_file('ar/data_text_normalization/test_cases_decimal.txt'))
-    # @pytest.mark.skipif(
-    #     not PYNINI_AVAILABLE, reason="`pynini` not installed, please install via nemo_text_processing/setup.sh"
 
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
@@ -54,8 +45,3 @@ class TestDecimal:
         pred = self.normalizer_ar.normalize(test_input, verbose=False)
         assert pred == expected
 
-        # if self.normalizer_with_audio_ar:
-        #     pred_non_deterministic = self.normalizer_with_audio_ar.normalize(
-        #         test_input, n_tagged=30, punct_post_process=False,
-        #     )
-        #     assert expected in pred_non_deterministic
