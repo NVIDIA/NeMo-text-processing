@@ -19,7 +19,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
-    NEMO_SPACE,
     GraphFst,
     convert_space,
     insert_space,
@@ -145,14 +144,6 @@ class MoneyFst(GraphFst):
             fractional_plus_min = graph_fractional + pynutil.insert(curr_symbol) @ graph_min_singular
 
             decimal_graph_with_minor_curr = integer_plus_maj + pynini.cross(",", " ") + fractional_plus_min
-            # decimal_graph_with_minor_curr |= pynutil.add_weight(
-            #     integer_plus_maj
-            #     + pynini.cross(",", " ")
-            #     + pynutil.insert("fractional_part: \"")
-            #     + two_digits_fractional_part @ cardinal.two_digit_non_zero
-            #     + pynutil.insert("\""),
-            #     weight=0.0001,
-            # )
 
             decimal_graph_with_minor_curr |= pynutil.delete("0,") + fractional_plus_min
             decimal_graph_with_minor_curr = (
