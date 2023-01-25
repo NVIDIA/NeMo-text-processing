@@ -14,7 +14,7 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, convert_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, convert_space, insert_space
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path, naive_inflector
 from pynini.lib import pynutil
 
@@ -35,7 +35,8 @@ class TimeFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
 
-        ora_suffix = pynutil.delete(" ") + (pynutil.delete("ó") | pynutil.delete("óra"))
+        ora_word = pynini.cross("ó", "óra") | pynini.accep("óra")
+        ora_suffix = pynutil.delete(" ") + pynutil.delete(ora_word)
         ora_forms = pynini.string_map(naive_inflector("ó", "óra", True) + [("ó", "óra")])
         perc_forms = pynini.string_map(naive_inflector("p", "perc", True) + [("p", "perc")])
         masodperc_forms = pynini.string_map(naive_inflector("mp", "másodperc", True) + [("mp", "másodperc")])
@@ -58,6 +59,9 @@ class TimeFst(GraphFst):
         final_graph_hour_only = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
         final_graph_hour = (
             pynutil.insert("hours: \"") + delete_leading_zero_to_double_digit @ graph_hour + pynutil.insert("\"")
+        )
+        hour_only_delimited = (
+            pynutil.insert("hours: \"") + delete_leading_zero_to_double_digit @ graph_hour + NEMO_SPACE + ora_forms + pynutil.insert("\"") + pynutil.insert(" preserve_order: true")
         )
         final_graph_minute = (
             pynutil.insert("minutes: \"")
@@ -98,6 +102,7 @@ class TimeFst(GraphFst):
 
         # 2 Uhr est
         graph_h = final_graph_hour_only + final_suffix + final_time_zone_optional
-        final_graph = (graph_hm | graph_h | graph_hms).optimize()
+        word_delim = hour_only_delimited
+        final_graph = (graph_hm | graph_h | graph_hms | word_delim).optimize()
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
