@@ -14,7 +14,13 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, convert_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_SPACE,
+    GraphFst,
+    convert_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path, naive_inflector
 from pynini.lib import pynutil
 
@@ -61,7 +67,12 @@ class TimeFst(GraphFst):
             pynutil.insert("hours: \"") + delete_leading_zero_to_double_digit @ graph_hour + pynutil.insert("\"")
         )
         hour_only_delimited = (
-            pynutil.insert("hours: \"") + delete_leading_zero_to_double_digit @ graph_hour + NEMO_SPACE + ora_forms + pynutil.insert("\"") + pynutil.insert(" preserve_order: true")
+            pynutil.insert("hours: \"")
+            + delete_leading_zero_to_double_digit @ graph_hour
+            + NEMO_SPACE
+            + ora_forms
+            + pynutil.insert("\"")
+            + pynutil.insert(" preserve_order: true")
         )
         final_graph_minute = (
             pynutil.insert("minutes: \"")
