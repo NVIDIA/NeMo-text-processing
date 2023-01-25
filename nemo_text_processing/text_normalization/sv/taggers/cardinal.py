@@ -130,7 +130,9 @@ class CardinalFst(GraphFst):
             graph_tens |= graph_ties + (pynutil.delete('0') | graph_digit)
         else:
             graph_tens |= pynutil.add_weight(pynini.cross("18", "aderton"), -0.001)
-            graph_tens |= pynutil.add_weight(graph_ties + (pynutil.delete('0') | (graph_digit | pynutil.insert(' ') + graph_digit)), -0.001)
+            graph_tens |= pynutil.add_weight(
+                graph_ties + (pynutil.delete('0') | (graph_digit | pynutil.insert(' ') + graph_digit)), -0.001
+            )
 
         hundreds = digits_no_one + pynutil.insert("hundra")
         hundreds |= pynini.cross("1", "hundra")
@@ -143,28 +145,32 @@ class CardinalFst(GraphFst):
 
         graph_two_digit_non_zero = pynini.union(graph_digit, graph_tens, (pynutil.delete("0") + graph_digit))
         if not deterministic:
-            graph_two_digit_non_zero |= pynutil.add_weight(pynini.union(
-                graph_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + graph_digit)
-            ), -0.001)
+            graph_two_digit_non_zero |= pynutil.add_weight(
+                pynini.union(graph_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + graph_digit)), -0.001
+            )
 
         self.two_digit_non_zero = graph_two_digit_non_zero.optimize()
 
         graph_final_two_digit_non_zero = pynini.union(final_digit, graph_tens, (pynutil.delete("0") + final_digit))
         if not deterministic:
-            graph_final_two_digit_non_zero |= pynutil.add_weight(pynini.union(
-                final_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + final_digit)
-            ), -0.001)
+            graph_final_two_digit_non_zero |= pynutil.add_weight(
+                pynini.union(final_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + final_digit)), -0.001
+            )
 
         self.final_two_digit_non_zero = graph_final_two_digit_non_zero.optimize()
 
         # Three digit strings
         graph_hundreds = hundreds + pynini.union(pynutil.delete("00"), graph_tens, (pynutil.delete("0") + final_digit))
         if not deterministic:
-            graph_hundreds |= pynutil.add_weight(hundreds + pynini.union(
-                pynutil.delete("00"),
-                (graph_tens | pynutil.insert(NEMO_SPACE) + graph_tens),
-                (pynini.cross("0", NEMO_SPACE) + final_digit),
-            ), -0.001)
+            graph_hundreds |= pynutil.add_weight(
+                hundreds
+                + pynini.union(
+                    pynutil.delete("00"),
+                    (graph_tens | pynutil.insert(NEMO_SPACE) + graph_tens),
+                    (pynini.cross("0", NEMO_SPACE) + final_digit),
+                ),
+                -0.001,
+            )
 
         self.hundreds = graph_hundreds.optimize()
 
@@ -310,8 +316,12 @@ class CardinalFst(GraphFst):
         self.any_read_digit = ((NEMO_DIGIT - "0") @ digit) + pynini.closure(insert_space + digit)
         if not deterministic:
             self.three_digits_read |= pynutil.add_weight(digit + insert_space + digit + insert_space + digit, -0.001)
-            self.three_digits_read |= pynutil.add_weight(((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens + insert_space + digit, -0.001)
-            self.three_digits_read |= pynutil.add_weight(digit + insert_space + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, -0.001)
+            self.three_digits_read |= pynutil.add_weight(
+                ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens + insert_space + digit, -0.001
+            )
+            self.three_digits_read |= pynutil.add_weight(
+                digit + insert_space + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, -0.001
+            )
             self.two_digits_read |= pynutil.add_weight(digit + insert_space + digit, -0.001)
 
         self.graph |= zero
@@ -325,8 +335,12 @@ class CardinalFst(GraphFst):
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         if not deterministic:
-            final_graph |= pynutil.add_weight(optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\""), -0.001)
-            final_graph |= pynutil.add_weight(pynutil.insert("integer: \"") + self.single_digits_graph + pynutil.insert("\""), -0.001)
+            final_graph |= pynutil.add_weight(
+                optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\""), -0.001
+            )
+            final_graph |= pynutil.add_weight(
+                pynutil.insert("integer: \"") + self.single_digits_graph + pynutil.insert("\""), -0.001
+            )
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
