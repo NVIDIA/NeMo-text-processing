@@ -18,7 +18,7 @@ We do all of NeMo-text-processing's development in the open. Contributions from 
 7) Add ``__init__.py`` for every folder and subfolder.
 8) Remove import guards (`try import: ... except: ...`) if not already done.
 9) follow codeQL results and remove unused variables and imports (report is at the bottom of the PR in github review box)
-10) Add your language support to [tools/text_processing_deployment/export_grammars.sh](tools/text_processing_deployment/export_grammars.sh) and [tools/text_processing_deployment/pynini_export.sh](tools/text_processing_deployment/pynini_export.sh).
+10) Add your language support to [tools/text_processing_deployment/pynini_export.py](tools/text_processing_deployment/pynini_export.py).
 11) Optional: if you added a new language or a new feature please update the [NeMo documentation](https://github.com/NVIDIA/NeMo/blob/main/docs/source/nlp/text_normalization/wfst/wfst_text_normalization.rst) (lives in different repo).
 12) Send your PR and request a review
 
