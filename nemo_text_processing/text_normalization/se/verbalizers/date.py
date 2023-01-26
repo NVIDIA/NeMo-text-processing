@@ -59,6 +59,7 @@ class DateFst(GraphFst):
             pynutil.delete("year:")
             + delete_space
             + pynutil.delete("\"")
+            + pynutil.insert("beaivi ")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + delete_space
             + pynutil.delete("\"")
