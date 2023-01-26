@@ -92,6 +92,7 @@ class TelephoneFst(GraphFst):
             three_digits + separators + three_digits,
             three_digits + separators + two_digits + separators + two_digits,
             three_digits + separators + four_digits,
+            two_digits + separators + four_digits,
             four_digits + separators + three_digits,
             two_digits + separators + two_digits + separators + three_digits,
         )
@@ -109,8 +110,8 @@ class TelephoneFst(GraphFst):
         special_numbers = pynutil.insert("number_part: \"") + special_numbers + pynutil.insert("\"")
         prompt = prompt + prompt_pass
         graph = pynini.union(
-            country_code + ensure_space + number_part,
-            country_code + ensure_space + number_part + extension,
+            country_code + separators + number_part,
+            country_code + separators + number_part + extension,
             number_part + extension,
             trunk_number_part,
             trunk_number_part + extension,
@@ -118,8 +119,8 @@ class TelephoneFst(GraphFst):
             prompt + trunk_number_part,
             prompt + trunk_number_part + extension,
             prompt + special_numbers,
-            prompt + country_code + number_part,
-            prompt + country_code + number_part + extension,
+            prompt + country_code + separators + number_part,
+            prompt + country_code + separators + number_part + extension,
             prompt + number_part + extension,
         )
         self.tel_graph = graph.optimize()
