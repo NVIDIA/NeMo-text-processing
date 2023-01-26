@@ -37,7 +37,7 @@ delete_extra_spaces = pynini.cross(pynini.closure(" ", 1), " ")
 cardinal_separator = pynini.string_map([".", NEMO_SPACE])
 
 
-def make_million(word: str, hundreds: 'pynini.FstLike', deterministic = False):
+def make_million(word: str, hundreds: 'pynini.FstLike', deterministic=False):
     insert_hyphen = pynutil.insert("-")
     # in the non-deterministic case, add an optional space
     if not deterministic:
@@ -202,12 +202,24 @@ class CardinalFst(GraphFst):
             graph_thousands_component_at_least_one_non_zero_digit_no_one
         )
 
-        graph_million = make_million("millió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
-        graph_milliard = make_million("milliárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
-        graph_billion = make_million("billió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
-        graph_billiard = make_million("billiárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
-        graph_trillion = make_million("trillió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
-        graph_trilliard = make_million("trilliárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
+        graph_million = make_million(
+            "millió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic
+        )
+        graph_milliard = make_million(
+            "milliárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic
+        )
+        graph_billion = make_million(
+            "billió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic
+        )
+        graph_billiard = make_million(
+            "billiárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic
+        )
+        graph_trillion = make_million(
+            "trillió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic
+        )
+        graph_trilliard = make_million(
+            "trilliárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic
+        )
 
         graph = (
             graph_trilliard
