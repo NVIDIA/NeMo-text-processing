@@ -48,18 +48,18 @@ class TelephoneFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
-        area_codes = pynini.string_file(get_abs_path("data/telephone/area_codes.tsv"))
         cardinal = CardinalFst(deterministic)
+        area_codes = pynini.string_file(get_abs_path("data/telephone/area_codes.tsv")) @ cardinal.graph
+        country_codes = pynini.string_file(get_abs_path("data/telephone/country_codes.tsv")) @ cardinal.graph
+        self.country_codes = country_codes.optimize()
+
         add_separator = pynutil.insert(", ")
+
         zero_space = cardinal.zero_space
         digit = cardinal.digit
         two_digits = cardinal.two_digits_read
         three_digits = cardinal.three_digits_read
         four_digits = cardinal.four_digits_read
-        two_or_three_digits = (two_digits | three_digits).optimize()
-        one_two_or_three_digits = (digit | two_or_three_digits).optimize()
-        zero_after_country_code = pynini.union(pynini.cross("(0)", "nulla "), zero_space)
-        bracketed = pynutil.delete("(") + one_two_or_three_digits + pynutil.delete(")")
 
         separators = pynini.union(
             NEMO_SPACE,
@@ -81,20 +81,25 @@ class TelephoneFst(GraphFst):
         prompt |= pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
         prompt |= pynutil.insert("prompt: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
 
-        country_code = pynini.closure(pynini.cross("+", "plusz "), 0, 1) + one_two_or_three_digits
-        country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
+        plus = pynini.cross("+", "plusz ")
+        plus |= pynini.cross("00", "nulla nulla ")
 
-        opt_dash = pynini.closure(pynutil.delete("-"), 0, 1)
-        area_part = zero_after_country_code + one_two_or_three_digits + opt_dash + add_separator
+        country = pynini.closure(pynutil.delete("("), 0, 1) + country_codes + pynini.closure(pynutil.delete(")"), 0, 1)
+        country = plus + pynini.closure(pynutil.delete(" "), 0, 1) + country
+        country_code = pynutil.insert("country_code: \"") + country + pynutil.insert("\"")
+
+        trunk = "06" @ cardinal.two_digits_read
+
+
+        area_part = area_codes + area_separators
         area_part |= bracketed + add_separator
 
         base_number_part = pynini.union(
-            three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + two_digits,
-            three_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
-            three_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
-            two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
-            two_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
-            three_digits + NEMO_SPACE + two_digits,
+            three_digits + separators + three_digits,
+            three_digits + separators + two_digits + separators + two_digits,
+            three_digits + separators + four_digits,
+            four_digits + separators + three_digits,
+            two_digits + separators + two_digits + separators + three_digits,
         )
         number_part = area_part + delete_space + base_number_part
 
