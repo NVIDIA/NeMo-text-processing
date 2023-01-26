@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_space,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
@@ -166,7 +167,7 @@ class CardinalFst(GraphFst):
             + (graph_hundreds_component_at_least_one_non_zero_digit | pynutil.delete("000")),
         )
 
-        graph_thousands_component_at_least_one_none_zero_digit_no_one = pynini.union(
+        graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
             + ezer
@@ -180,8 +181,8 @@ class CardinalFst(GraphFst):
         self.graph_thousands_component_at_least_one_non_zero_digit = (
             graph_thousands_component_at_least_one_non_zero_digit
         )
-        self.graph_thousands_component_at_least_one_none_zero_digit_no_one = (
-            graph_thousands_component_at_least_one_none_zero_digit_no_one
+        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = (
+            graph_thousands_component_at_least_one_non_zero_digit_no_one
         )
 
         graph_million = pynutil.add_weight(pynini.cross("001", "millió"), -0.001)
@@ -272,6 +273,24 @@ class CardinalFst(GraphFst):
                 pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
             )
         )
+        zero_space = zero + insert_space
+        self.two_digits_read = pynini.union(
+            ((NEMO_DIGIT - "0") + NEMO_DIGIT)
+            @ self.graph_hundreds_component_at_least_one_non_zero_digit,
+            zero_space + digit,
+        ).optimize()
+        self.three_digits_read = pynini.union(
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+            @ self.graph_hundreds_component_at_least_one_non_zero_digit,
+            zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
+            zero_space + zero_space + digit,
+        ).optimize()
+        self.four_digits_read = pynini.union(
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 3))
+            @ self.graph,
+            zero_space + self.three_digits_read
+        ).optimize()
+
         self.graph |= graph_zero
 
         self.graph = filter_punctuation(self.graph).optimize()
