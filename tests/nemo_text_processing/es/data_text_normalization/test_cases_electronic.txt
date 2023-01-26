@@ -7,6 +7,9 @@ a1b2@abc.com~a uno b dos arroba a b c punto com
 ab3.sdd.3@gmail.com~a b tres punto s d d punto tres arroba gmail punto com
 https://www.nvidia.com~h t t p s dos puntos barra barra w w w punto nvidia punto com
 www.nvidia.com~w w w punto nvidia punto com
-www.abc.es/efg~w w w punto a b c punto es barra e f g
-www.abc.es~w w w punto a b c punto es
+www.abc.es/efg~w w w punto a b c punto e s barra e f g
+www.abc.es~w w w punto a b c punto e s
 http://www.ourdailynews.com.sm~h t t p dos puntos barra barra w w w punto o u r d a i l y n e w s punto com punto s m
+nvidia.com/1|2~nvidia punto com barra uno barra vertical dos
+nvidia.com/2^~nvidia punto com barra dos acento circunflejo
+www.unicef.org~w w w punto u n i c e f punto o r g

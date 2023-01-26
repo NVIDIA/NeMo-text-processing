@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
 from pynini.lib import pynutil
 
-time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
+time_zones = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
 suffix = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
 
 
@@ -77,7 +77,7 @@ class TimeFst(GraphFst):
         graph_hour_24 = graph_24 @ cardinal_graph
         graph_hour_12 = graph_12 @ cardinal_graph
 
-        graph_minute_single = delete_leading_zero_to_double_digit @ pynini.union(*labels_minute_single)
+        graph_minute_single = (NEMO_DIGIT | pynutil.delete("0")) + NEMO_DIGIT @ pynini.union(*labels_minute_single)
         graph_minute_double = pynini.union(*labels_minute_double)
 
         graph_minute = pynini.union(graph_minute_single, graph_minute_double) @ cardinal_graph
@@ -92,6 +92,27 @@ class TimeFst(GraphFst):
 
         final_graph_minute = pynutil.insert("minutes: \"") + graph_minute + pynutil.insert("\"")
         final_graph_second = pynutil.insert("seconds: \"") + graph_minute + pynutil.insert("\"")
+
+        # handle suffixes like gmt or utc+1
+        utc_one = pynini.string_map([("un", "uno"), ("ún", "uno")])
+        change_utc_one = pynini.cdrewrite(utc_one, "", "", NEMO_SIGMA)
+        utc_cardinal_graph = cardinal.graph @ change_utc_one
+
+        utc_or_gmt_numbers = (NEMO_DIGIT @ utc_cardinal_graph) | (
+            graph_hour_24 + delete_time_delimiter + pynutil.insert(" ") + graph_minute
+        )
+
+        utc_or_gmt_diff = (
+            pynutil.delete(pynini.closure(" ", 0, 1))
+            + pynutil.insert(" ")
+            + pynini.string_map([("+", "más"), ("-", "menos")])
+            + pynutil.delete(pynini.closure(" ", 0, 1))
+            + pynutil.insert(" ")
+            + utc_or_gmt_numbers
+        )
+
+        time_zone_graph = time_zones + pynini.closure(utc_or_gmt_diff, 0, 1)
+
         final_time_zone_optional = pynini.closure(
             delete_space + insert_space + pynutil.insert("zone: \"") + time_zone_graph + pynutil.insert("\""), 0, 1,
         )
