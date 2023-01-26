@@ -21,31 +21,25 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.hu.graph_utils import ensure_space
+from nemo_text_processing.text_normalization.hu.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
 
 class TelephoneFst(GraphFst):
     """
-    tfn. 08-789 52 25
+    tel: + (36) 1 441-4000
     Finite state transducer for classifying telephone numbers, e.g.
-        123-123-5678 -> { number_part: "ett två tre ett två tre fyra sex sju åtta" }.
+        + (36) 1 441-4000 -> { number_part: "plusz harminchat egy négyszáznegyvenegy négyezer" }.
 
-    Swedish numbers are written in the following formats:
-        0X-XXX XXX XX
-        0X-XXX XX XX
-        0X-XX XX XX
-        0XX-XXX XX XX
-        0XX-XX XX XX
-        0XX-XXX XX
-        0XXX-XX XX XX
-        0XXX-XXX XX
-    
+    Hungarian numbers are written in the following formats:
+        06 1 XXX XXXX
+        06 AA XXX-XXX
+        06 AA XXX-XXXX (mobile phones)
+
     See:
-        https://en.wikipedia.org/wiki/National_conventions_for_writing_telephone_numbers#Sweden
-        https://codegolf.stackexchange.com/questions/195787/format-a-swedish-phone-number
+        https://en.wikipedia.org/wiki/Telephone_numbers_in_Hungary
 
     Args:
 		deterministic: if True will provide a single transduction option,
@@ -54,18 +48,29 @@ class TelephoneFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
+        area_codes = pynini.string_file(get_abs_path("data/telephone/area_codes.tsv"))
         cardinal = CardinalFst(deterministic)
         add_separator = pynutil.insert(", ")
         zero_space = cardinal.zero_space
         digit = cardinal.digit
         two_digits = cardinal.two_digits_read
         three_digits = cardinal.three_digits_read
+        four_digits = cardinal.four_digits_read
         two_or_three_digits = (two_digits | three_digits).optimize()
         one_two_or_three_digits = (digit | two_or_three_digits).optimize()
-        zero_after_country_code = pynini.union(pynini.cross("(0)", "noll "), zero_space)
+        zero_after_country_code = pynini.union(pynini.cross("(0)", "nulla "), zero_space)
         bracketed = pynutil.delete("(") + one_two_or_three_digits + pynutil.delete(")")
 
-        zero = pynini.cross("0", "noll")
+        separators = pynini.union(
+            NEMO_SPACE,
+            pynini.cross("-", " ")
+        )
+        area_separators = pynini.union(
+            separators,
+            pynini.cross("/", " ")
+        )
+
+        zero = pynini.cross("0", "nulla")
         digit |= zero
 
         special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
@@ -76,7 +81,7 @@ class TelephoneFst(GraphFst):
         prompt |= pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
         prompt |= pynutil.insert("prompt: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
 
-        country_code = pynini.closure(pynini.cross("+", "plus "), 0, 1) + one_two_or_three_digits
+        country_code = pynini.closure(pynini.cross("+", "plusz "), 0, 1) + one_two_or_three_digits
         country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
 
         opt_dash = pynini.closure(pynutil.delete("-"), 0, 1)
