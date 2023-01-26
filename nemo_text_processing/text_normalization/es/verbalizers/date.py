@@ -65,6 +65,9 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
 
+        # Roman centuries
+        graph_roman_centuries = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+
         # day month year
         graph_dmy = day + pynini.cross(NEMO_SPACE, " de ") + month + pynini.closure(pynini.accep(" ") + year, 0, 1)
 
@@ -72,7 +75,7 @@ class DateFst(GraphFst):
         if deterministic:
             graph_mdy += pynutil.delete(" preserve_order: true")  # Only accepts this if was explicitly passed
 
-        self.graph = graph_dmy | graph_mdy
+        self.graph = graph_dmy | graph_mdy | graph_roman_centuries
         final_graph = self.graph + delete_preserve_order
 
         delete_tokens = self.delete_tokens(final_graph)
