@@ -44,6 +44,8 @@ class FractionFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
+        optional_sign = pynini.closure(pynini.cross('negative: "true" ', "menos "), 0, 1)
+        self.optional_sign = optional_sign
 
         # Derivational strings append 'avo' as a suffix. Adding space for processing aid
         fraction_stem = pynutil.insert(" avo")
@@ -51,28 +53,26 @@ class FractionFst(GraphFst):
         conjunction = pynutil.insert(" y ")
 
         integer = (
-            pynutil.delete("integer_part: \"")
+            pynutil.delete('integer_part: "')
             + strip_cardinal_apocope(pynini.closure(NEMO_NOT_QUOTE))
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
 
-        numerator_one = pynutil.delete("numerator: \"") + pynini.accep("un") + pynutil.delete("\" ")
+        numerator_one = pynutil.delete('numerator: "') + pynini.accep("un") + pynutil.delete('" ')
         numerator = (
-            pynutil.delete("numerator: \"")
+            pynutil.delete('numerator: "')
             + pynini.difference(pynini.closure(NEMO_NOT_QUOTE), "un")
-            + pynutil.delete("\" ")
+            + pynutil.delete('" ')
         )
 
-        denominator_add_stem = pynutil.delete("denominator: \"") + (
-            pynini.closure(NEMO_NOT_QUOTE)
-            + fraction_stem
-            + pynutil.delete("\" morphosyntactic_features: \"add_root\"")
+        denominator_add_stem = pynutil.delete('denominator: "') + (
+            pynini.closure(NEMO_NOT_QUOTE) + fraction_stem + pynutil.delete('" morphosyntactic_features: "add_root"')
         )
-        denominator_ordinal = pynutil.delete("denominator: \"") + (
-            pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" morphosyntactic_features: \"ordinal\"")
+        denominator_ordinal = pynutil.delete('denominator: "') + (
+            pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('" morphosyntactic_features: "ordinal"')
         )
-        denominator_cardinal = pynutil.delete("denominator: \"") + (
-            pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        denominator_cardinal = pynutil.delete('denominator: "') + (
+            pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('"')
         )
 
         denominator_singular = pynini.union(denominator_add_stem, denominator_ordinal)
@@ -140,7 +140,7 @@ class FractionFst(GraphFst):
 
             fraction_with_one_fem = numerator_one_fem + delete_space + insert_space
             fraction_with_one_fem += pynini.union(
-                denominator_singular_fem @ merge_stem, denominator_singular_fem @ merge_into_single_word
+                denominator_singular_fem @ merge_stem, denominator_singular_fem @ merge_into_single_word,
             )  # Both forms exists
             fraction_with_one_fem += pynutil.insert(" parte")
             fraction_with_one_fem @= pynini.cdrewrite(
@@ -149,7 +149,7 @@ class FractionFst(GraphFst):
 
             fraction_default_fem = numerator_fem + delete_space + insert_space
             fraction_default_fem += pynini.union(
-                denominator_plural_fem @ merge_stem, denominator_plural_fem @ merge_into_single_word
+                denominator_plural_fem @ merge_stem, denominator_plural_fem @ merge_into_single_word,
             )
             fraction_default_fem += pynutil.insert(" partes")
 
@@ -166,7 +166,7 @@ class FractionFst(GraphFst):
         )  # "medio" not "un medio"
 
         fraction = fraction_with_one | fraction_default | fraction_with_cardinal
-        graph_masc = pynini.closure(integer + delete_space + conjunction, 0, 1) + fraction
+        graph_masc = optional_sign + pynini.closure(integer + delete_space + conjunction, 0, 1) + fraction
 
         # Manage cases of fem gender (only shows on integer except for "medio")
         integer_fem = shift_cardinal_gender(integer)
@@ -181,7 +181,7 @@ class FractionFst(GraphFst):
         )
 
         fraction_fem = fraction_with_one | fraction_default | fraction_with_cardinal
-        graph_fem = pynini.closure(integer_fem + delete_space + conjunction, 0, 1) + fraction_fem
+        graph_fem = optional_sign + pynini.closure(integer_fem + delete_space + conjunction, 0, 1) + fraction_fem
 
         self.graph_masc = pynini.optimize(graph_masc)
         self.graph_fem = pynini.optimize(graph_fem)

@@ -1,4 +1,3 @@
-(non-ideal case) entre dieciséis mil y dieciocho mil~(non-ideal case) entre 16018 1000
 doscientos cincuenta y uno~251
 novecientos noventa y nueve millones novecientos noventa y nueve mil novecientos noventa y nueve~999999999
 cero~cero
@@ -48,3 +47,5 @@ dos millardos cincuenta y dos~2000000052
 muchas millones~muchas millones
 mil billones uno~1000000000000001
 mil trillones uno~1000000000000000000001
+veintiacuátro~veintiacuátro
+entre dieciséis mil y dieciocho mil~entre 16000 y 18000

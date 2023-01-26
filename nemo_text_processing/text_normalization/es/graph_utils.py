@@ -1,4 +1,5 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2022, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -160,12 +161,19 @@ def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     digit = _load_roman("data/roman/digit.tsv")
     ties = _load_roman("data/roman/ties.tsv")
     hundreds = _load_roman("data/roman/hundreds.tsv")
+    thousands = _load_roman("data/roman/thousands.tsv")
 
     graph = (
         digit
         | ties + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
         | (
             hundreds
+            + (ties | pynutil.add_weight(pynutil.insert("0"), 0.01))
+            + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
+        )
+        | (
+            thousands
+            + (hundreds | pynutil.add_weight(pynutil.insert("0"), 0.01))
             + (ties | pynutil.add_weight(pynutil.insert("0"), 0.01))
             + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
         )

@@ -33,7 +33,7 @@ digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
 
 
-def get_quantity(decimal_graph: 'pynini.FstLike', cardinal_graph: 'pynini.FstLike') -> 'pynini.FstLike':
+def get_quantity(decimal_graph: "pynini.FstLike", cardinal_graph: "pynini.FstLike") -> "pynini.FstLike":
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. 2 millones -> integer_part: "dos" quantity: "millones"
@@ -48,15 +48,15 @@ def get_quantity(decimal_graph: 'pynini.FstLike', cardinal_graph: 'pynini.FstLik
     numbers = pynini.cdrewrite(pynutil.delete(cardinal_separator), "", "", NEMO_SIGMA) @ numbers
 
     res = (
-        pynutil.insert("integer_part: \"")
+        pynutil.insert('integer_part: "')
         + numbers  # The cardinal we're passing only produces 'un' for one, so gender agreement is safe (all quantities are masculine). Limit to 10^6 power.
-        + pynutil.insert("\"")
+        + pynutil.insert('"')
         + NEMO_SPACE
-        + pynutil.insert("quantity: \"")
+        + pynutil.insert('quantity: "')
         + quantities
-        + pynutil.insert("\"")
+        + pynutil.insert('"')
     )
-    res |= decimal_graph + NEMO_SPACE + pynutil.insert("quantity: \"") + quantities + pynutil.insert("\"")
+    res |= decimal_graph + NEMO_SPACE + pynutil.insert('quantity: "') + quantities + pynutil.insert('"')
     return res
 
 
@@ -80,12 +80,17 @@ class DecimalFst(GraphFst):
             graph += pynini.closure(insert_space + graph)
 
         else:
-            # General pattern seems to be 1-3 digits: map as cardinal, default to digits otherwise \
+            # General pattern is 1-3 digits: map as cardinal, default to tens followed by digits otherwise \
             graph = pynini.union(
-                graph_digit,
-                cardinal.tens,
-                cardinal.hundreds,
-                graph_digit + pynini.closure(insert_space + graph_digit, 3),
+                graph_digit + pynini.closure(insert_space + zero),
+                cardinal.tens + pynini.closure(insert_space + zero),
+                cardinal.hundreds + pynini.closure(insert_space + zero),
+                cardinal.tens
+                + pynini.closure(insert_space + cardinal.tens, 1)
+                + pynini.closure(insert_space + zero, 0, 1)
+                + (
+                    pynini.closure(insert_space + graph_digit, 0, 1) | pynini.closure(insert_space + zero, 0)
+                ),  # Read out as tens and a possible trailing digit or zeroes
                 zero
                 + pynini.closure(insert_space + zero)
                 + pynini.closure(insert_space + graph_digit),  # For cases such as "1,010"
@@ -103,9 +108,9 @@ class DecimalFst(GraphFst):
         self.graph = graph.optimize()
 
         graph_separator = pynutil.delete(decimal_separator)
-        optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
+        optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
 
-        self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
+        self.graph_fractional = pynutil.insert('fractional_part: "') + self.graph + pynutil.insert('"')
 
         # Integer graph maintains apocope except for ones place
         graph_integer = (
@@ -113,7 +118,7 @@ class DecimalFst(GraphFst):
             if deterministic
             else pynini.union(cardinal.graph, strip_cardinal_apocope(cardinal.graph))
         )  # Gives us forms w/ and w/o apocope
-        self.graph_integer = pynutil.insert("integer_part: \"") + graph_integer + pynutil.insert("\"")
+        self.graph_integer = pynutil.insert('integer_part: "') + graph_integer + pynutil.insert('"')
         final_graph_wo_sign = self.graph_integer + graph_separator + insert_space + self.graph_fractional
 
         self.final_graph_wo_negative = (

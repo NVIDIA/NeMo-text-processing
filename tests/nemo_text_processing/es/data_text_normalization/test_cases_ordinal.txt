@@ -105,3 +105,12 @@
 2000.º~dosmilésimo
 100 000.º~cienmilésimo
 999.º~noningentésimo nonagésimo noveno
+28º~vigesimoctavo
+28°~vigesimoctavo
+1.000ª~milésima
+1.000º~milésimo
+1er~primer
+1ro~primero
+1ra~primera
+luis vii~luis séptimo
+todo mi reconocimiento~todo mi reconocimiento

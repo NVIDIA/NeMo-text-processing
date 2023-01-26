@@ -24,6 +24,7 @@ from pynini.lib import pynutil
 
 ordinal_exceptions = pynini.string_file(get_abs_path("data/fractions/ordinal_exceptions.tsv"))
 higher_powers_of_ten = pynini.string_file(get_abs_path("data/fractions/powers_of_ten.tsv"))
+fraction_symbols = pynini.string_file(get_abs_path("data/fractions/fraction_symbols.tsv"))
 
 
 class FractionFst(GraphFst):
@@ -66,7 +67,7 @@ class FractionFst(GraphFst):
         graph_higher_powers_of_ten += higher_powers_of_ten
         graph_higher_powers_of_ten = cardinal_graph @ graph_higher_powers_of_ten
         graph_higher_powers_of_ten @= pynini.cdrewrite(
-            pynutil.delete("un "), pynini.accep("[BOS]"), pynini.project(higher_powers_of_ten, "output"), NEMO_SIGMA
+            pynutil.delete("un "), pynini.accep("[BOS]"), pynini.project(higher_powers_of_ten, "output"), NEMO_SIGMA,
         )  # we drop 'un' from these ordinals (millionths, not one-millionths)
 
         graph_higher_powers_of_ten = multiples_of_thousand | graph_hundreds | graph_higher_powers_of_ten
@@ -76,19 +77,19 @@ class FractionFst(GraphFst):
 
         graph_fractions_ordinals = graph_higher_powers_of_ten | graph_three_to_ten
         graph_fractions_ordinals += pynutil.insert(
-            "\" morphosyntactic_features: \"ordinal\""
+            '" morphosyntactic_features: "ordinal"'
         )  # We note the root for processing later
 
         # Blocking the digits and hundreds from Cardinal graph
         graph_fractions_cardinals = pynini.cdrewrite(
-            block_three_to_ten | block_higher_powers_of_ten, pynini.accep("[BOS]"), pynini.accep("[EOS]"), NEMO_SIGMA
+            block_three_to_ten | block_higher_powers_of_ten, pynini.accep("[BOS]"), pynini.accep("[EOS]"), NEMO_SIGMA,
         )
         graph_fractions_cardinals @= NEMO_CHAR.plus @ pynini.cdrewrite(
-            pynutil.delete("0"), pynini.accep("[BOS]"), pynini.accep("[EOS]"), NEMO_SIGMA
+            pynutil.delete("0"), pynini.accep("[BOS]"), pynini.accep("[EOS]"), NEMO_SIGMA,
         )  # Empty characters become '0' for NEMO_CHAR fst, so need to block
         graph_fractions_cardinals @= cardinal_graph
         graph_fractions_cardinals += pynutil.insert(
-            "\" morphosyntactic_features: \"add_root\""
+            '" morphosyntactic_features: "add_root"'
         )  # blocking these entries to reduce erroneous possibilities in debugging
 
         if deterministic:
@@ -99,16 +100,20 @@ class FractionFst(GraphFst):
         graph_denominator = pynini.union(
             graph_fractions_ordinals,
             graph_fractions_cardinals,
-            pynutil.add_weight(cardinal_graph + pynutil.insert("\""), 0.001),
+            pynutil.add_weight(cardinal_graph + pynutil.insert('"'), 0.001),
         )  # Last form is simply recording the cardinal. Weighting so last resort
 
-        integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"") + NEMO_SPACE
+        integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"') + NEMO_SPACE
         numerator = (
-            pynutil.insert("numerator: \"") + cardinal_graph + (pynini.cross("/", "\" ") | pynini.cross(" / ", "\" "))
+            pynutil.insert('numerator: "') + cardinal_graph + (pynini.cross("/", '" ') | pynini.cross(" / ", '" '))
         )
-        denominator = pynutil.insert("denominator: \"") + graph_denominator
+        denominator = pynutil.insert('denominator: "') + graph_denominator
 
-        self.graph = pynini.closure(integer, 0, 1) + numerator + denominator
+        fraction = (fraction_symbols @ (numerator + denominator)) | (numerator + denominator)
+
+        optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
+
+        self.graph = optional_minus_graph + pynini.closure(integer, 0, 1) + fraction
 
         final_graph = self.add_tokens(self.graph)
         self.fst = final_graph.optimize()

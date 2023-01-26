@@ -10,4 +10,7 @@ doble ve doble ve doble ve punto n vidia punto com~www.nvidia.com
 doble ve doble ve doble ve punto nvidia punto com~www.nvidia.com
 w w w punto nvidia punto com~www.nvidia.com
 doble ve doble ve doble ve punto a b c punto es barra e f g~www.abc.es/efg
-doble ve doble ve doble ve punto a b c punto es~www.abc.es
+doble ve doble ve doble ve punto a b c punto e s~www.abc.es
+doble ve doble ve doble ve punto a b c punto es barra e f g signo de interrogación i d signo igual a b c~www.abc.es/efg?id=abc
+doble ve doble ve doble ve punto a b c punto gob~www.abc.gob
+doble ve doble ve doble ve punto a b c punto d e f~www.abc.def
