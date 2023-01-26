@@ -18,13 +18,11 @@ from nemo_text_processing.text_normalization.hu.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.hu.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.hu.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.hu.verbalizers.fraction import FractionFst
-
-# from nemo_text_processing.text_normalization.hu.verbalizers.measure import MeasureFst
-# from nemo_text_processing.text_normalization.hu.verbalizers.money import MoneyFst
+from nemo_text_processing.text_normalization.hu.verbalizers.measure import MeasureFst
+from nemo_text_processing.text_normalization.hu.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.hu.verbalizers.ordinal import OrdinalFst
-
-# from nemo_text_processing.text_normalization.hu.verbalizers.telephone import TelephoneFst
-# from nemo_text_processing.text_normalization.hu.verbalizers.time import TimeFst
+from nemo_text_processing.text_normalization.hu.verbalizers.telephone import TelephoneFst
+from nemo_text_processing.text_normalization.hu.verbalizers.time import TimeFst
 
 
 class VerbalizeFst(GraphFst):
@@ -50,26 +48,26 @@ class VerbalizeFst(GraphFst):
         fraction_graph = fraction.fst
         date = DateFst(deterministic=deterministic)
         date_graph = date.fst
-        # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
-        # measure_graph = measure.fst
+        measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+        measure_graph = measure.fst
         electronic = ElectronicFst(deterministic=deterministic)
         electronic_graph = electronic.fst
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
-        # money_graph = MoneyFst(decimal=decimal, deterministic=deterministic).fst
-        # telephone_graph = TelephoneFst(deterministic=deterministic).fst
-        # time_graph = TimeFst(deterministic=deterministic).fst
+        money_graph = MoneyFst(decimal=decimal, deterministic=deterministic).fst
+        telephone_graph = TelephoneFst(deterministic=deterministic).fst
+        time_graph = TimeFst(deterministic=deterministic).fst
 
         graph = (
             cardinal_graph
-            # | measure_graph
+            | measure_graph
             | decimal_graph
             | ordinal_graph
             | date_graph
             | electronic_graph
-            # | money_graph
+            | money_graph
             | fraction_graph
             | whitelist_graph
-            # | telephone_graph
-            # | time_graph
+            | telephone_graph
+            | time_graph
         )
         self.fst = graph
