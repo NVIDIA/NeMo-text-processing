@@ -37,6 +37,23 @@ delete_extra_spaces = pynini.cross(pynini.closure(" ", 1), " ")
 cardinal_separator = pynini.string_map([".", NEMO_SPACE])
 
 
+def make_million(word: str, hundreds: 'pynini.FstLike', deterministic = False):
+    insert_hyphen = pynutil.insert("-")
+    # in the non-deterministic case, add an optional space
+    if not deterministic:
+        insert_hyphen |= pynini.closure(pynutil.insert(" "), 0, 1)
+
+    graph_million = pynutil.add_weight(pynini.cross("001", word), -0.001)
+    graph_million |= hundreds + pynutil.insert(word)
+    if not deterministic:
+        graph_million |= pynutil.add_weight(pynini.cross("001", "egy{word}"), -0.001)
+        graph_million |= pynutil.add_weight(pynini.cross("001", "egy{word} "), -0.001)
+        graph_million |= pynutil.add_weight(pynini.cross("001", "{word} "), -0.001)
+    graph_million |= pynutil.delete("000")
+    graph_million += insert_hyphen
+    return graph_million
+
+
 def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     """
     Helper function for parsing number strings. Converts common cardinal strings (groups of three digits delineated by 'cardinal_separator' - see graph_utils)
@@ -185,68 +202,12 @@ class CardinalFst(GraphFst):
             graph_thousands_component_at_least_one_non_zero_digit_no_one
         )
 
-        graph_million = pynutil.add_weight(pynini.cross("001", "millió"), -0.001)
-        graph_million |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("millió")
-        if not deterministic:
-            graph_million |= pynutil.add_weight(pynini.cross("001", "egymillió"), -0.001)
-        graph_million |= pynutil.delete("000")
-        graph_million += insert_hyphen
-
-        graph_milliard = pynutil.add_weight(pynini.cross("001", "milliárd"), -0.001)
-        graph_milliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("milliárd")
-        if not deterministic:
-            graph_milliard |= pynutil.add_weight(pynini.cross("001", "egymilliárd"), -0.001)
-            graph_milliard |= pynutil.add_weight(pynini.cross("001", "egymilliárd "), -0.001)
-            graph_milliard |= pynutil.add_weight(pynini.cross("001", "milliárd "), -0.001)
-            graph_milliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-                " milliárd "
-            )
-        graph_milliard |= pynutil.delete("000")
-        graph_milliard += insert_hyphen
-
-        graph_billion = pynutil.add_weight(pynini.cross("001", "billió"), -0.001)
-        graph_billion |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("billió")
-        if not deterministic:
-            graph_billion |= pynutil.add_weight(pynini.cross("001", "egybillió"), -0.001)
-            graph_billion |= pynutil.add_weight(pynini.cross("001", "egybillió "), -0.001)
-            graph_billion |= pynutil.add_weight(pynini.cross("001", "billió "), -0.001)
-            graph_billion |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" billió ")
-        graph_billion |= pynutil.delete("000")
-        graph_billion += insert_hyphen
-
-        graph_billiard = pynutil.add_weight(pynini.cross("001", "billiárd"), -0.001)
-        graph_billiard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("billiárd")
-        if not deterministic:
-            graph_billiard |= pynutil.add_weight(pynini.cross("001", "egybilliárd"), -0.001)
-            graph_billiard |= pynutil.add_weight(pynini.cross("001", "egybilliárd "), -0.001)
-            graph_billiard |= pynutil.add_weight(pynini.cross("001", "billiárd "), -0.001)
-            graph_billiard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-                " billiárd "
-            )
-        graph_billiard |= pynutil.delete("000")
-        graph_billiard += insert_hyphen
-
-        graph_trillion = pynutil.add_weight(pynini.cross("001", "trillió"), -0.001)
-        graph_trillion |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("trillió")
-        if not deterministic:
-            graph_trillion |= pynutil.add_weight(pynini.cross("001", "egytrillió"), -0.001)
-            graph_trillion |= pynutil.add_weight(pynini.cross("001", "egytrillió "), -0.001)
-            graph_trillion |= pynutil.add_weight(pynini.cross("001", "trillió "), -0.001)
-            graph_trillion |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" trillió ")
-        graph_trillion |= pynutil.delete("000")
-        graph_trillion += insert_hyphen
-
-        graph_trilliard = pynutil.add_weight(pynini.cross("001", "trilliárd"), -0.001)
-        graph_trilliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("trilliárd")
-        if not deterministic:
-            graph_trilliard |= pynutil.add_weight(pynini.cross("001", "egytrilliárd"), -0.001)
-            graph_trilliard |= pynutil.add_weight(pynini.cross("001", "egytrilliárd "), -0.001)
-            graph_trilliard |= pynutil.add_weight(pynini.cross("001", "trilliárd "), -0.001)
-            graph_trilliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-                " trilliárd "
-            )
-        graph_trilliard |= pynutil.delete("000")
-        graph_trilliard += insert_hyphen
+        graph_million = make_million("millió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
+        graph_milliard = make_million("milliárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
+        graph_billion = make_million("billió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
+        graph_billiard = make_million("billiárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
+        graph_trillion = make_million("trillió", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
+        graph_trilliard = make_million("trilliárd", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
 
         graph = (
             graph_trilliard
