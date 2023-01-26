@@ -5,3 +5,10 @@ saint george~st. george
 i like for example ice cream~i like e.g. ice cream
 s and p five hundred~s&p 500
 seven eleven stores~7-eleven stores
+Doctor dao~Dr. dao
+Misses smith~Mrs. smith
+Mister dao~Mr. dao
+Saint george~St. george
+I like for example ice cream~I like e.g. ice cream
+S and p five hundred~S&p 500
+Seven eleven stores~7-eleven stores

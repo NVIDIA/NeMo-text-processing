@@ -16,7 +16,11 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    MAX_NEG_WEIGHT,
+    MIN_NEG_WEIGHT,
     NEMO_DIGIT,
+    NEMO_SIGMA,
+    TO_LOWER,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -74,7 +78,11 @@ class DecimalFst(GraphFst):
         point = pynutil.delete("point")
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("minus", "\"true\"") + delete_extra_space, 0, 1
+            pynutil.insert("negative: ")
+            + pynini.cross(pynini.union("minus", "Minus"), "\"true\"")
+            + delete_extra_space,
+            0,
+            1,
         )
 
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
@@ -87,8 +95,20 @@ class DecimalFst(GraphFst):
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
             final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
         )
-        final_graph |= optional_graph_negative + get_quantity(
+
+        # accept semiotic spans that start with a capital letter
+        self.final_graph_wo_negative |= pynutil.add_weight(
+            pynini.compose(TO_LOWER + NEMO_SIGMA, self.final_graph_wo_negative).optimize(), MIN_NEG_WEIGHT
+        )
+
+        quantity_graph = get_quantity(
             final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
+        )
+        final_graph |= optional_graph_negative + pynutil.add_weight(quantity_graph, MAX_NEG_WEIGHT)
+
+        # accept semiotic spans that start with a capital letter
+        final_graph |= pynutil.add_weight(
+            pynini.compose(TO_LOWER + NEMO_SIGMA, final_graph).optimize(), MIN_NEG_WEIGHT
         )
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

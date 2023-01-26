@@ -17,10 +17,12 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    MIN_NEG_WEIGHT,
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
+    TO_LOWER,
     GraphFst,
     delete_space,
 )
@@ -121,20 +123,24 @@ class CardinalFst(GraphFst):
         )
 
         labels_exception = [num_to_word(x) for x in range(0, 13)]
-        graph_exception = pynini.union(*labels_exception)
+        labels_exception += [x.capitalize() for x in labels_exception]
+        graph_exception = pynini.union(*labels_exception).optimize()
 
         graph = (
             pynini.cdrewrite(pynutil.delete("and"), NEMO_SPACE, NEMO_SPACE, NEMO_SIGMA)
             @ (NEMO_ALPHA + NEMO_SIGMA)
             @ graph
-        )
+        ).optimize()
+
+        # accept semiotic spans that start with a capital letter
+        graph |= pynutil.add_weight(pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize(), MIN_NEG_WEIGHT)
 
         self.graph_no_exception = graph
 
         self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
 
         optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("minus", "\"-\"") + NEMO_SPACE, 0, 1
+            pynutil.insert("negative: ") + pynini.cross(pynini.union("minus", "Minus"), "\"-\"") + NEMO_SPACE, 0, 1
         )
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")

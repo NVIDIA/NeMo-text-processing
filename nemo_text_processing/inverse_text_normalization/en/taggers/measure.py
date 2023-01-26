@@ -46,7 +46,11 @@ class MeasureFst(GraphFst):
         graph_unit_plural = get_singulars(graph_unit_singular)  # plural -> abbr
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("minus", "\"true\"") + delete_extra_space, 0, 1
+            pynutil.insert("negative: ")
+            + pynini.cross(pynini.union("minus", "Minus"), "\"true\"")
+            + delete_extra_space,
+            0,
+            1,
         )
 
         unit_singular = convert_space(graph_unit_singular)
@@ -76,7 +80,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + pynutil.insert("integer: \"")
-            + ((NEMO_SIGMA - "one") @ cardinal_graph)
+            + ((NEMO_SIGMA - pynini.union("one", "One")) @ cardinal_graph)
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + delete_extra_space
@@ -86,7 +90,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + pynutil.insert("integer: \"")
-            + pynini.cross("one", "1")
+            + pynini.cross(pynini.union("one", "One"), "1")
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + delete_extra_space

@@ -71,6 +71,7 @@ PLURAL_TO_SINGULAR = pynini.invert(graph_plural)
 TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)])
 TO_UPPER = pynini.invert(TO_LOWER)
 MIN_NEG_WEIGHT = -0.0001
+MAX_NEG_WEIGHT = -100
 MIN_POS_WEIGHT = 0.0001
 
 

@@ -23,3 +23,28 @@ n vidia dot com~nvidia.com
 abc at gmail dot com~abc@gmail.com
 athreed at gmail dot com~athreed@gmail.com
 kore dot ai~kore.ai
+A dot b c at g mail dot com~A.bc@gmail.com
+A at gmail dot com~A@gmail.com
+A at m s n dot fr~A@msn.fr
+A at a o l dot com~A@aol.com
+A at m s n dot com~A@msn.com
+A at nvidia dot com~A@nvidia.com
+A dot b c at nvidia dot com~A.bc@nvidia.com
+C d f at a b c dot e d u~Cdf@abc.edu
+A b c at g mail dot a b c~Abc@gmail.abc
+A b c at a b c dot com~Abc@abc.com
+A s d f one two three at a b c dot com~Asdf123@abc.com
+A one b two at a b c dot com~A1b2@abc.com
+A b three dot s d d dot three at g mail dot com~Ab3.sdd.3@gmail.com
+Dot three at g mail dot com~Dot 3@gmail.com
+One three at g mail dot com~13@gmail.com
+A b three hyphen s d d dash three at g mail dot com~Ab3-sdd-3@gmail.com
+H t t p colon slash slash w w w dot o u r d a i l y n e w s dot com dot s m~Http://www.ourdailynews.com.sm
+H t t p colon slash slash w w w dot c o m d a i l y n e w s dot a b dot s m~Http://www.comdailynews.ab.sm
+H t t p colon slash slash w w w dot c o m d a i l y n e w s dot a b slash s m~Http://www.comdailynews.ab/sm
+W w w dot c o m d a i l y n e w s dot a b slash s m~Www.comdailynews.ab/sm
+C o m d a i l y n e w s dot a b slash s m~Comdailynews.ab/sm
+N vidia dot com~Nvidia.com
+Abc at gmail dot com~Abc@gmail.com
+Athreed at gmail dot com~Athreed@gmail.com
+Kore dot ai~Kore.ai
