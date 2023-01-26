@@ -18,7 +18,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     delete_extra_space,
-    delete_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.hu.graph_utils import ensure_space
