@@ -16,7 +16,6 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    MAX_NEG_WEIGHT,
     MIN_NEG_WEIGHT,
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -104,11 +103,9 @@ class DecimalFst(GraphFst):
         quantity_graph = get_quantity(
             final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
         )
-        final_graph |= optional_graph_negative + pynutil.add_weight(quantity_graph, MAX_NEG_WEIGHT)
+        final_graph |= optional_graph_negative + quantity_graph
 
         # accept semiotic spans that start with a capital letter
-        final_graph |= pynutil.add_weight(
-            pynini.compose(TO_LOWER + NEMO_SIGMA, final_graph).optimize(), MIN_NEG_WEIGHT
-        )
+        final_graph |= pynini.compose(TO_LOWER + NEMO_SIGMA, final_graph).optimize()
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

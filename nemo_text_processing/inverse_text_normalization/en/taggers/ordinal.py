@@ -15,7 +15,13 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    MIN_NEG_WEIGHT,
+    NEMO_CHAR,
+    NEMO_SIGMA,
+    TO_LOWER,
+    GraphFst,
+)
 from pynini.lib import pynutil
 
 
@@ -38,7 +44,11 @@ class OrdinalFst(GraphFst):
             graph_digit, graph_teens, pynini.cross("tieth", "ty"), pynini.cross("th", "")
         )
 
-        self.graph = graph @ cardinal_graph
+        graph = pynini.compose(graph, cardinal_graph)
+
+        # accept semiotic spans that start with a capital letter
+        self.graph = graph | pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
+
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

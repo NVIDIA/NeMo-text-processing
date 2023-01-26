@@ -133,7 +133,7 @@ class CardinalFst(GraphFst):
         ).optimize()
 
         # accept semiotic spans that start with a capital letter
-        graph |= pynutil.add_weight(pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize(), MIN_NEG_WEIGHT)
+        graph |= pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
 
         self.graph_no_exception = graph
 

@@ -1,7 +1,6 @@
 five point two million~5.2 million
 one hundred sixty four point five eight thousand~164.58 thousand
 four hundred million~400 million
-four hundred million ------ Four hundred million~400 million ------ 400 million
 fifty billion~50 billion
 four hundred five billion~405 billion
 four point eight five billion~4.85 billion

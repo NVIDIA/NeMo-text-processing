@@ -16,9 +16,12 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    MIN_NEG_WEIGHT,
     NEMO_ALNUM,
     NEMO_ALPHA,
     NEMO_DIGIT,
+    NEMO_SIGMA,
+    TO_LOWER,
     GraphFst,
     insert_space,
 )
@@ -126,6 +129,11 @@ class TelephoneFst(GraphFst):
         ip_graph = digit_or_double + (pynini.cross(" dot ", ".") + digit_or_double) ** 3
 
         graph |= pynutil.insert("number_part: \"") + ip_graph.optimize() + pynutil.insert("\"")
+
+        # accept semiotic spans that start with a capital letter
+        graph = graph | pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
+
+        # serial graph shouldn't apply TO_LOWER
         graph |= (
             pynutil.insert("number_part: \"")
             + pynutil.add_weight(get_serial_number(cardinal=cardinal), weight=0.0001)
