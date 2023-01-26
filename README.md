@@ -77,6 +77,12 @@ cd NeMo-text-processing
 **_NOTE:_** If you only want the toolkit without additional conda-based dependencies, you may replace ``reinstall.sh`` with ``pip install -e .`` with the NeMo-text-processing root directory as your current working director.
 
 
+Contributing
+------------
+We welcome community contributions! Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+
+
 Citation
 --------
 
