@@ -61,14 +61,8 @@ class TelephoneFst(GraphFst):
         three_digits = cardinal.three_digits_read
         four_digits = cardinal.four_digits_read
 
-        separators = pynini.union(
-            NEMO_SPACE,
-            pynini.cross("-", " ")
-        )
-        area_separators = pynini.union(
-            separators,
-            pynini.cross("/", " ")
-        )
+        separators = pynini.union(NEMO_SPACE, pynini.cross("-", " "))
+        area_separators = pynini.union(separators, pynini.cross("/", " "))
 
         zero = pynini.cross("0", "nulla")
         digit |= zero
@@ -89,7 +83,6 @@ class TelephoneFst(GraphFst):
         country_code = pynutil.insert("country_code: \"") + country + pynutil.insert("\"")
 
         trunk = "06" @ cardinal.two_digits_read
-
 
         area_part = area_codes + area_separators
         area_part |= bracketed + add_separator

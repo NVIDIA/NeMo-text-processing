@@ -276,20 +276,16 @@ class CardinalFst(GraphFst):
         zero_space = zero + insert_space
         self.zero_space = zero_space
         self.two_digits_read = pynini.union(
-            ((NEMO_DIGIT - "0") + NEMO_DIGIT)
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit,
+            ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ self.graph_hundreds_component_at_least_one_non_zero_digit,
             zero_space + digit,
         ).optimize()
         self.three_digits_read = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit,
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit,
             zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
             zero_space + zero_space + digit,
         ).optimize()
         self.four_digits_read = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 3))
-            @ self.graph,
-            zero_space + self.three_digits_read
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 3)) @ self.graph, zero_space + self.three_digits_read
         ).optimize()
 
         self.graph |= graph_zero

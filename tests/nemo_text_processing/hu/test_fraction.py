@@ -14,17 +14,14 @@
 
 
 import pytest
+from nemo_text_processing.text_normalization.normalize import Normalizer
 from parameterized import parameterized
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
-from nemo_text_processing.text_normalization.normalize import Normalizer
-
 
 class TestFraction:
-    normalizer = (
-        Normalizer(input_case='cased', lang='hu', cache_dir=CACHE_DIR, overwrite_cache=False)
-    )
+    normalizer = Normalizer(input_case='cased', lang='hu', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('hu/data_text_normalization/test_cases_fraction.txt'))
     @pytest.mark.run_only_on('CPU')
