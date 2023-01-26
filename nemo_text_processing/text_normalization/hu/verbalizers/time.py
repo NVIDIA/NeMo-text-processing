@@ -46,17 +46,9 @@ class TimeFst(GraphFst):
             pynutil.delete("minutes:")
             + delete_space
             + pynutil.delete("\"")
-            + pynutil.delete("noll")
+            + pynutil.delete("nulla")
             + pynutil.delete("\"")
         )
-        if not deterministic:
-            minute |= (
-                pynutil.delete("minutes:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.cross("noll", "noll noll")
-                + pynutil.delete("\"")
-            )
         suffix = pynutil.delete("suffix:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         optional_suffix = pynini.closure(delete_space + insert_space + suffix, 0, 1)
         zone = (
