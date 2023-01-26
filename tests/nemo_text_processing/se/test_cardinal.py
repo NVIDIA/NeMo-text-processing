@@ -16,11 +16,10 @@ import pytest
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from parameterized import parameterized
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestCardinal:
-
     normalizer = Normalizer(input_case='cased', lang='se', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('se/data_text_normalization/test_cases_cardinal.txt'))
