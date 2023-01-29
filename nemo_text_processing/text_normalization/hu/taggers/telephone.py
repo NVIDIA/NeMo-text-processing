@@ -101,7 +101,9 @@ class TelephoneFst(GraphFst):
 
         self.number_graph = number_part
         number_part = pynutil.insert("number_part: \"") + self.number_graph + pynutil.insert("\"")
-        trunk_number_part = pynutil.insert("number_part: \"") + trunk + separators + self.number_graph + pynutil.insert("\"")
+        trunk_number_part = (
+            pynutil.insert("number_part: \"") + trunk + separators + self.number_graph + pynutil.insert("\"")
+        )
         mellek = NEMO_SPACE + pynutil.delete("mellék")
         extension = pynutil.insert("extension: \"") + up_to_four_digits + pynutil.insert("\"")
         extension = pynini.closure(area_separators + extension + mellek, 0, 1)
