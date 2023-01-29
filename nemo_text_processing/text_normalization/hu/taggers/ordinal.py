@@ -20,11 +20,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, G
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
-endings = pynini.string_file(get_abs_path("data/ordinals/endings.tsv"))
-exceptions = pynini.string_file(get_abs_path("data/ordinals/exceptional.tsv"))
-superessive_endings = pynini.string_file(get_abs_path("data/ordinals/superessive_endings.tsv"))
-superscript2digit = pynini.string_file(get_abs_path("data/ordinals/superscript_digits.tsv"))
-
 
 class OrdinalFst(GraphFst):
     """
@@ -39,6 +34,11 @@ class OrdinalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic=False):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
+
+        endings = pynini.string_file(get_abs_path("data/ordinals/endings.tsv"))
+        exceptions = pynini.string_file(get_abs_path("data/ordinals/exceptional.tsv"))
+        superessive_endings = pynini.string_file(get_abs_path("data/ordinals/superessive_endings.tsv"))
+        superscript2digit = pynini.string_file(get_abs_path("data/ordinals/superscript_digits.tsv"))
 
         cardinal_graph = cardinal.graph
         self.bare_ordinals = (
