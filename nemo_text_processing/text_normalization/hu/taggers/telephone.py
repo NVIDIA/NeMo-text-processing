@@ -49,6 +49,7 @@ class TelephoneFst(GraphFst):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
         cardinal = CardinalFst(deterministic)
         area_codes = pynini.string_file(get_abs_path("data/telephone/area_codes.tsv")) @ cardinal.graph
+        self.area_codes = area_codes
         country_codes = pynini.string_file(get_abs_path("data/telephone/country_codes.tsv")) @ cardinal.graph
         self.country_codes = country_codes.optimize()
 
@@ -83,7 +84,7 @@ class TelephoneFst(GraphFst):
         country = plus + pynini.closure(pynutil.delete(" "), 0, 1) + country
         country_code = pynutil.insert("country_code: \"") + country + pynutil.insert("\"")
 
-        trunk = "06" @ cardinal.two_digits_read
+        trunk = pynini.cross("06", "nulla hat")
         trunk |= pynutil.delete("(") + trunk + pynutil.delete(")")
 
         area_part = area_codes + area_separators
@@ -99,8 +100,8 @@ class TelephoneFst(GraphFst):
         number_part = area_part + base_number_part
 
         self.number_graph = number_part
-        number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
-        trunk_number_part = pynutil.insert("number_part: \"") + trunk + separators + number_part + pynutil.insert("\"")
+        number_part = pynutil.insert("number_part: \"") + self.number_graph + pynutil.insert("\"")
+        trunk_number_part = pynutil.insert("number_part: \"") + trunk + separators + self.number_graph + pynutil.insert("\"")
         mellek = NEMO_SPACE + pynutil.delete("mellék")
         extension = pynutil.insert("extension: \"") + up_to_four_digits + pynutil.insert("\"")
         extension = pynini.closure(area_separators + extension + mellek, 0, 1)
