@@ -17,7 +17,9 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.hu.taggers.cardinal import filter_punctuation
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
+
 from pynini.lib import pynutil
 
 
@@ -41,17 +43,19 @@ class OrdinalFst(GraphFst):
         superscript2digit = pynini.string_file(get_abs_path("data/ordinals/superscript_digits.tsv"))
 
         cardinal_graph = cardinal.graph
-        self.bare_ordinals = (
+        bare_ordinals = (
             cardinal_graph
             @ pynini.cdrewrite(exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(endings, "", "[EOS]", NEMO_SIGMA)
-        ).optimize()
+        )
+        self.bare_ordinals = bare_ordinals
+        self.filtered_ordinals = filter_punctuation(bare_ordinals).optimize()
 
         self.superessive = self.bare_ordinals @ pynini.cdrewrite(superessive_endings, "", "[EOS]", NEMO_SIGMA)
         self.superscript_to_superessive = pynini.closure(superscript2digit) @ self.superessive
 
         self.graph = pynini.union(
-            self.bare_ordinals + pynutil.delete("."), self.bare_ordinals.project("output")
+            self.filtered_ordinals + pynutil.delete("."), self.filtered_ordinals.project("output")
         ).optimize()
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
