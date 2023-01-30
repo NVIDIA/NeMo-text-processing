@@ -15,7 +15,7 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, GraphFst, insert_space
 from pynini.lib import pynutil
 
 
@@ -35,7 +35,6 @@ class ElectronicFst(GraphFst):
             | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         )
 
-        symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).invert()
         url_symbols = pynini.string_file(get_abs_path("data/electronic/url_symbols.tsv")).invert()
         accepted_username = alpha_num | url_symbols
         process_dot = pynini.cross("dot", ".")
