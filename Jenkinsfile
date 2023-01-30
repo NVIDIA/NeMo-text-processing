@@ -14,8 +14,8 @@ pipeline {
 
     stage('Add git safe directory'){
       steps{
-        sh 'git config --global user.name "jenkinsci"'
-        sh 'git config --global user.email "$(whoami)@$(hostname)"'
+//         sh 'git config --global user.name "jenkinsci"'
+//         sh 'git config --global user.email "$(whoami)@$(hostname)"'
         sh 'git config --global --add safe.directory /var/lib/jenkins/workspace/NTP_$GIT_BRANCH'
         sh 'git config --global --add safe.directory /home/jenkinsci/workspace/NTP_$GIT_BRANCH'
       }
