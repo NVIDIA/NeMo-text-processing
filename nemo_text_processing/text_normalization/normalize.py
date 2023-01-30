@@ -28,6 +28,7 @@ from typing import Dict, List, Optional, Union
 import joblib
 import pynini
 import regex
+import tqdm
 from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
