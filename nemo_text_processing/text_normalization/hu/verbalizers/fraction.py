@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space, delete_space
 from pynini.lib import pynutil
 
 
@@ -31,6 +31,8 @@ class FractionFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
 
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "mínusz "), 0, 1)
+
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
 
         numerator = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
@@ -38,12 +40,14 @@ class FractionFst(GraphFst):
         denominator = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
         graph = numerator + insert_space + denominator
+        if not deterministic:
+            graph |= numerator + denominator
 
         conjunction = pynutil.insert("és ")
         if not deterministic and not lm:
             conjunction = pynini.closure(conjunction, 0, 1)
 
-        integer = pynini.closure(integer + insert_space + conjunction, 0, 1)
+        integer = pynini.closure(optional_sign + integer + insert_space + conjunction, 0, 1)
 
         graph = integer + graph
 
