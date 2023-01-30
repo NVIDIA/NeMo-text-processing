@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space, delete_preserve_order
 from pynini.lib import pynutil
 
 
@@ -49,7 +49,7 @@ class FractionFst(GraphFst):
 
         integer = pynini.closure(optional_sign + integer + insert_space + conjunction, 0, 1)
 
-        graph = integer + graph
+        graph = integer + graph + delete_preserve_order
 
         self.graph = graph
         delete_tokens = self.delete_tokens(self.graph)
