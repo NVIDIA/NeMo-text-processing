@@ -85,7 +85,7 @@ pipeline {
           steps {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_norm/output_${TIME} && \
             cd tools/text_processing_deployment && python pynini_export.py --output=$NORM_OUTPUT_DIR --grammars=tn_grammars --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/01-30-23 --language=en && ls -R $NORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
-            sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_norm/output_${TIME} && mkdir $NORM_OUTPUT_DIR \
+            sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_norm/output_${TIME} && mkdir $NORM_OUTPUT_DIR && \
             cd nemo_text_processing/text_normalization/ &&  python normalize.py --input_file=/home/jenkinsci/TestData/text_norm/ci/test.txt --input_case="lower_cased" --language=en --output_file=$NORM_OUTPUT_DIR/test.pynini.txt --verbose && \
             cat $NORM_OUTPUT_DIR/test.pynini.txt && \
             cmp --silent $NORM_OUTPUT_DIR/test.pynini.txt /home/jenkinsci/TestData/text_norm/ci/test_goal_py.txt || exit 1 && \
@@ -95,9 +95,9 @@ pipeline {
 
         stage('L2: Eng ITN export') {
           steps {
-            sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && mkdir $DENORM_OUTPUT_DIR \
-            cd tools/text_processing_deployment && python pynini_export.py --output=$DENORM_OUTPUT_DIR --grammars=itn_grammars --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/01-30-23 --language=en && ls -R $DENORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
             sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && \
+            cd tools/text_processing_deployment && python pynini_export.py --output=$DENORM_OUTPUT_DIR --grammars=itn_grammars --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/01-30-23 --language=en && ls -R $DENORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
+            sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && mkdir $DENORM_OUTPUT_DIR && \
             cd nemo_text_processing/inverse_text_normalization/ &&  python inverse_normalize.py --input_file=/home/jenkinsci/TestData/text_denorm/ci/test.txt --language=en --output_file=$DENORM_OUTPUT_DIR/test.pynini.txt --verbose && \
             cmp --silent $DENORM_OUTPUT_DIR/test.pynini.txt /home/jenkinsci/TestData/text_denorm/ci/test_goal_py.txt || exit 1 && \
             rm -rf $OUTPUT_DIR'
