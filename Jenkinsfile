@@ -93,10 +93,10 @@ pipeline {
 
         stage('L2: Eng ITN export') {
           steps {
-            sh 'cd tools/text_processing_deployment && python pynini_export.py --output=/home/jenkinsci/TestData/text_denorm/output/ --grammars=itn_grammars --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/01-30-23 --language=en && ls -R /home/jenkinsci/TestData/text_denorm/output/ && echo ".far files created "|| exit 1'
-            sh 'cd nemo_text_processing/inverse_text_normalization/ &&  python inverse_normalize.py --input_file=/home/jenkinsci/TestData/text_denorm/ci/test.txt --language=en --output_file=/home/jenkinsci/TestData/text_denorm/output/test.pynini.txt --verbose'
-            sh 'cmp --silent /home/jenkinsci/TestData/text_denorm/output/test.pynini.txt /home/jenkinsci/TestData/text_denorm/ci/test_goal_py.txt || exit 1'
-            sh 'rm -rf /home/jenkinsci/TestData/text_denorm/output/*'
+            sh 'cd tools/text_processing_deployment && python pynini_export.py --output=/home/jenkinsci/TestData/text_norm/output/ --grammars=itn_grammars --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/01-30-23 --language=en && ls -R /home/jenkinsci/TestData/text_norm/output/ && echo ".far files created "|| exit 1'
+            sh 'cd nemo_text_processing/inverse_text_normalization/ &&  python inverse_normalize.py --input_file=/home/jenkinsci/TestData/text_norm/ci/test.txt --language=en --output_file=/home/jenkinsci/TestData/text_norm/output/test.pynini.txt --verbose'
+            sh 'cmp --silent /home/jenkinsci/TestData/text_norm/output/test.pynini.txt /home/jenkinsci/TestData/text_norm/ci/test_goal_py.txt || exit 1'
+            sh 'rm -rf /home/jenkinsci/TestData/text_norm/output/*'
           }
         }
 
