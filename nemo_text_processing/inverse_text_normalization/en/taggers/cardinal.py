@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
@@ -31,7 +30,7 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
         e.g. minus twenty three -> cardinal { integer: "23" negative: "-" } }
-    Numbers below thirteen are not converted. 
+    Numbers below thirteen are not converted.
     """
 
     def __init__(self):
@@ -67,6 +66,17 @@ class CardinalFst(GraphFst):
 
         graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
 
+        graph_ties_component = pynini.union(
+            graph_teen | pynutil.insert("00"),
+            (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")),
+        )
+
+        graph_ties_component_at_least_one_none_zero_digit = graph_ties_component @ (
+            pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
+        )
+        self.graph_ties_component_at_least_one_none_zero_digit = graph_ties_component_at_least_one_none_zero_digit
+
+        # %%% International numeric format
         graph_thousands = pynini.union(
             graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("thousand"),
             pynutil.insert("000", weight=0.1),
@@ -96,8 +106,9 @@ class CardinalFst(GraphFst):
             graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("sextillion"),
             pynutil.insert("000", weight=0.1),
         )
+        # %%%
 
-        graph = pynini.union(
+        graph_int = (
             graph_sextillion
             + delete_space
             + graph_quintillion
@@ -111,10 +122,83 @@ class CardinalFst(GraphFst):
             + graph_million
             + delete_space
             + graph_thousands
-            + delete_space
-            + graph_hundreds,
-            graph_zero,
         )
+
+        # %% Indian numeric format simple https://en.wikipedia.org/wiki/Indian_numbering_system
+        # This only covers "standard format".
+        # Conventional format like thousand crores/lakh crores is yet to be implemented
+        graph_in_thousands = pynini.union(
+            graph_ties_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("thousand"),
+            pynutil.insert("00", weight=0.1),
+        )
+        graph_in_lakhs = pynini.union(
+            graph_ties_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("lakh") | pynutil.delete("lakhs")),
+            pynutil.insert("00", weight=0.1),
+        )
+
+        graph_in_crores = pynini.union(
+            graph_ties_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("crore") | pynutil.delete("crores")),
+            pynutil.insert("00", weight=0.1),
+        )
+
+        graph_in_arabs = pynini.union(
+            graph_ties_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("arab") | pynutil.delete("arabs")),
+            pynutil.insert("00", weight=0.1),
+        )
+
+        graph_in_kharabs = pynini.union(
+            graph_ties_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("kharab") | pynutil.delete("kharabs")),
+            pynutil.insert("00", weight=0.1),
+        )
+
+        graph_in_nils = pynini.union(
+            graph_ties_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("nil") | pynutil.delete("nils")),
+            pynutil.insert("00", weight=0.1),
+        )
+
+        graph_in_padmas = pynini.union(
+            graph_ties_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("padma") | pynutil.delete("padmas")),
+            pynutil.insert("00", weight=0.1),
+        )
+
+        graph_in_shankhs = pynini.union(
+            graph_ties_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("shankh") | pynutil.delete("shankhs")),
+            pynutil.insert("00", weight=0.1),
+        )
+
+        graph_ind = (
+            graph_in_shankhs
+            + delete_space
+            + graph_in_padmas
+            + delete_space
+            + graph_in_nils
+            + delete_space
+            + graph_in_kharabs
+            + delete_space
+            + graph_in_arabs
+            + delete_space
+            + graph_in_crores
+            + delete_space
+            + graph_in_lakhs
+            + delete_space
+            + graph_in_thousands
+        )
+
+        graph = pynini.union((graph_int | graph_ind) + delete_space + graph_hundreds, graph_zero,)
 
         graph = graph @ pynini.union(
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"
