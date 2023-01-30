@@ -18,6 +18,9 @@ from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
 
+fraction_symbols = pynini.string_file(get_abs_path("data/fractions/fraction_symbols.tsv"))
+
+
 class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
@@ -44,11 +47,12 @@ class FractionFst(GraphFst):
         )
         self.denominator = pynutil.insert("denominator: \"") + ordinal.fractional + pynutil.insert("\"")
 
+        fraction = (fraction_symbols @ (self.numerator + self.denominator)) | (self.numerator + self.denominator)
+
         self.graph = (
             self.optional_graph_negative
             + pynini.closure(self.integer + pynini.accep(" "), 0, 1)
-            + self.numerator
-            + self.denominator
+            + fraction
         )
 
         graph = self.graph + pynutil.insert(" preserve_order: true")
