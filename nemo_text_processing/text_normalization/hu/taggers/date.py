@@ -208,7 +208,10 @@ class DateFst(GraphFst):
         separators = [".", "/"]
         for sep in separators:
             year_optional = pynini.closure(pynini.cross(sep, " ") + year_only, 0, 1)
-            new_graph = day + pynini.cross(sep, " ") + month_number_only + year_optional
+            if not deterministic:
+                new_graph = day + pynini.cross(sep, " ") + month_number_only + year_optional
+            else:
+                new_graph = day + pynini.cross(sep, " ") + month_number_only + year_only
             graph_dmy |= new_graph
 
         final_graph = graph_ymd + pynutil.insert(" preserve_order: true")
