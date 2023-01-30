@@ -133,6 +133,9 @@ class Normalizer:
         elif lang == 'es':
             from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.es.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'sv':
+            from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.sv.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'zh':
             from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
@@ -661,7 +664,7 @@ def parse_args():
         default="text",
     )
     parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
-    parser.add_argument("--language", help="language", choices=["en", "de", "es", "zh"], default="en", type=str)
+    parser.add_argument("--language", help="language", choices=["en", "de", "es", "sv", "zh"], default="en", type=str)
     parser.add_argument(
         "--input_case",
         help="Input text capitalization, set to 'cased' if text contains capital letters."
