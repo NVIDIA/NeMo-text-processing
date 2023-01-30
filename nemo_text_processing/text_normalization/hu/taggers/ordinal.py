@@ -57,6 +57,17 @@ class OrdinalFst(GraphFst):
         self.graph = pynini.union(
             self.filtered_ordinals + pynutil.delete("."), self.filtered_ordinals.project("output")
         ).optimize()
+
+        # For some reason, bare_ordinals does not work when exported, so doing this here
+        fractional_exceptions = pynini.string_map([("első", "egyed"), ("második", "fél")])
+        self.fractional = (
+            bare_ordinals
+            @ pynini.cdrewrite(fractional_exceptions, "[BOS]", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(pynutil.delete("ik"), "", "[EOS]", NEMO_SIGMA)
+        ).optimize()
+        if not deterministic:
+            self.fractional |= pynini.cross("2", "ketted")
+
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
