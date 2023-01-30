@@ -98,8 +98,8 @@ pipeline {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && \
             cd tools/text_processing_deployment && python pynini_export.py --output=$OUTPUT_DIR --grammars=itn_grammars --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/01-30-23 --language=en && ls -R $OUTPUT_DIR && echo ".far files created "|| exit 1'
             sh 'TIME=`date +"%Y-%m-%d-%T"` && OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && \
-            cd nemo_text_processing/inverse_text_normalization/ &&  python inverse_normalize.py --input_file=/home/jenkinsci/TestData/text_denorm/ci/test.txt --language=en --output_file=$OUTPUT_DIR/test.pynini.txt --verbose && \'
-            cmp --silent $OUTPUT_DIR/test.pynini.txt /home/jenkinsci/TestData/text_denorm/ci/test_goal_py.txt || exit 1 && \'
+            cd nemo_text_processing/inverse_text_normalization/ &&  python inverse_normalize.py --input_file=/home/jenkinsci/TestData/text_denorm/ci/test.txt --language=en --output_file=$OUTPUT_DIR/test.pynini.txt --verbose && \
+            cmp --silent $OUTPUT_DIR/test.pynini.txt /home/jenkinsci/TestData/text_denorm/ci/test_goal_py.txt || exit 1 && \
             rm -rf $OUTPUT_DIR'
           }
         }
