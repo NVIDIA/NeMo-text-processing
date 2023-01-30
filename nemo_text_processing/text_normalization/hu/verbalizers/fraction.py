@@ -13,7 +13,12 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space, delete_preserve_order
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_preserve_order,
+    insert_space,
+)
 from pynini.lib import pynutil
 
 
