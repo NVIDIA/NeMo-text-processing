@@ -52,13 +52,15 @@ class MoneyFst(GraphFst):
         )
         cardinal_graph |= with_hundred
         graph_decimal_final = decimal.final_graph_wo_negative
-
+        print(get_abs_path("data/currency.tsv"))
         unit = pynini.string_file(get_abs_path("data/currency.tsv"))
         unit_singular = pynini.invert(unit)
         unit_plural = get_singulars(unit_singular)
 
         graph_unit_singular = pynutil.insert("currency: \"") + convert_space(unit_singular) + pynutil.insert("\"")
-        graph_unit_plural = pynutil.insert("currency: \"") + convert_space(unit_plural) + pynutil.insert("\"")
+        graph_unit_plural = (
+            pynutil.insert("currency: \"") + convert_space(unit_plural | unit_singular) + pynutil.insert("\"")
+        )
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         # twelve dollars (and) fifty cents, zero cents
