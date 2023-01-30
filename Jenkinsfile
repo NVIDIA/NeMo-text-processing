@@ -55,7 +55,7 @@ pipeline {
       parallel {
         stage('En TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processint/text_normalization/normalize.py --text="1" --cache_dir /home/jenkinsci/nlp/text_norm/ci/grammars/01-30-23'
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="1" --cache_dir /home/jenkinsci/nlp/text_norm/ci/grammars/01-30-23'
           }
         }
         stage('En ITN grammars') {
