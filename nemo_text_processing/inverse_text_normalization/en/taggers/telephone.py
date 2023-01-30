@@ -135,14 +135,13 @@ class TelephoneFst(GraphFst):
         space_five_digits = space_four_digits + NEMO_DIGIT
         space_six_digits = space_five_digits + NEMO_DIGIT
         credit_card_graph = pynini.compose(
-            single_double_or_triple_digit, NEMO_DIGIT ** 4 + (space_six_digits|(space_four_digits**2)) + space_four_digits
+            single_double_or_triple_digit,
+            NEMO_DIGIT ** 4 + (space_six_digits | (space_four_digits ** 2)) + space_four_digits,
         ).optimize()
 
         credit_card_graph |= pynini.compose(
-            single_double_or_triple_digit,
-            NEMO_DIGIT ** 4 + space_six_digits + space_five_digits
+            single_double_or_triple_digit, NEMO_DIGIT ** 4 + space_six_digits + space_five_digits
         ).optimize()
-
 
         graph |= pynutil.insert("number_part: \"") + credit_card_graph.optimize() + pynutil.insert("\"")
 
