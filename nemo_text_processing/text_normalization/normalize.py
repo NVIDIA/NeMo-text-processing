@@ -40,8 +40,6 @@ from pynini.lib.rewrite import top_rewrite
 from sacremoses import MosesDetokenizer
 from tqdm import tqdm
 
-# THIS IS TEST
-
 # this is to handle long input
 sys.setrecursionlimit(3000)
 
