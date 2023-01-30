@@ -14,8 +14,15 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, GraphFst, insert_space
+from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, get_various_formats
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA,
+    NEMO_SIGMA,
+    TO_LOWER,
+    GraphFst,
+    insert_space,
+)
+from nemo_text_processing.text_normalization.en.utils import load_labels
 from pynini.lib import pynutil
 
 
@@ -29,11 +36,12 @@ class ElectronicFst(GraphFst):
         super().__init__(name="electronic", kind="classify")
 
         delete_extra_space = pynutil.delete(" ")
-        alpha_num = (
-            NEMO_ALPHA
-            | pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-            | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+
+        num = pynini.string_file(get_abs_path("data/numbers/digit.tsv")) | pynini.string_file(
+            get_abs_path("data/numbers/zero.tsv")
         )
+        num |= pynini.compose(TO_LOWER + NEMO_SIGMA, num).optimize()
+        alpha_num = (NEMO_ALPHA | num).optimize()
 
         symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).invert()
 
@@ -44,8 +52,18 @@ class ElectronicFst(GraphFst):
         )
         username = pynutil.insert("username: \"") + username + pynutil.insert("\"")
         single_alphanum = pynini.closure(alpha_num + delete_extra_space) + alpha_num
-        server = single_alphanum | pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
-        domain = single_alphanum | pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
+        server = (
+            single_alphanum
+            | pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
+            | pynini.closure(NEMO_ALPHA, 2)
+        )
+        domain = single_alphanum | pynini.closure(NEMO_ALPHA, 2)
+
+        domain_labels = load_labels(get_abs_path("data/electronic/domain.tsv"))
+        # get domain formats
+        for d in domain_labels:
+            domain |= pynini.union(*get_various_formats(d[0]), d[0])
+
         domain_graph = (
             pynutil.insert("domain: \"")
             + server
@@ -58,10 +76,13 @@ class ElectronicFst(GraphFst):
         graph = username + delete_extra_space + pynutil.delete("at") + insert_space + delete_extra_space + domain_graph
 
         ############# url ###
-        protocol_end = pynini.cross(pynini.union("w w w", "www"), "www")
-        protocol_start = (pynini.cross("h t t p", "http") | pynini.cross("h t t p s", "https")) + pynini.cross(
-            " colon slash slash ", "://"
+        protocol_end = pynini.cross(pynini.union(*get_various_formats("www")), "www")
+        protocol_start = pynini.cross(pynini.union(*get_various_formats("http")), "http") | pynini.cross(
+            pynini.union(*get_various_formats("https")), "https"
         )
+
+        protocol_start += pynini.cross(" colon slash slash ", "://")
+
         # .com,
         ending = (
             delete_extra_space
@@ -85,7 +106,9 @@ class ElectronicFst(GraphFst):
 
         protocol = pynutil.insert("protocol: \"") + protocol.optimize() + pynutil.insert("\"")
         graph |= protocol
-        ########
+
+        # accept semiotic spans that start with a capital letter
+        graph |= pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()
