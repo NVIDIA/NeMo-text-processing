@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     GraphFst,
+    delete_space,
     insert_space,
 )
 from pynini.lib import pynutil
@@ -74,25 +75,50 @@ class TelephoneFst(GraphFst):
         )
         double_digit.invert()
 
+        triple_digit = pynini.union(
+            *[
+                pynini.cross(
+                    pynini.project(str(i) @ digit_to_str, "output")
+                    + pynini.accep(" ")
+                    + pynini.project(str(i) @ digit_to_str, "output")
+                    + pynini.accep(" ")
+                    + pynini.project(str(i) @ digit_to_str, "output"),
+                    pynutil.insert("triple ") + pynini.project(str(i) @ digit_to_str, "output"),
+                )
+                for i in range(10)
+            ]
+        )
+        triple_digit.invert()
+
         # to handle cases like "one twenty three"
         two_digit_cardinal = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT ** 2)
         double_digit_to_digit = (
             pynini.compose(double_digit, str_to_digit + pynutil.delete(" ") + str_to_digit) | two_digit_cardinal
         )
-
+        triple_digit_to_digit = pynini.compose(
+            triple_digit, str_to_digit + delete_space + str_to_digit + delete_space + str_to_digit
+        )
         single_or_double_digit = (pynutil.add_weight(double_digit_to_digit, -0.0001) | str_to_digit).optimize()
+        single_double_or_triple_digit = (
+            pynutil.add_weight(triple_digit_to_digit, -0.0001) | single_or_double_digit | delete_space
+        ).optimize()
+
         single_or_double_digit |= (
             single_or_double_digit
             + pynini.closure(pynutil.add_weight(pynutil.delete(" ") + single_or_double_digit, 0.0001))
         ).optimize()
+        single_double_or_triple_digit |= (
+            single_double_or_triple_digit
+            + pynini.closure(pynutil.add_weight(pynutil.delete(" ") + single_double_or_triple_digit, 0.0001))
+        ).optimize()
 
         number_part = pynini.compose(
-            single_or_double_digit,
+            single_double_or_triple_digit,
             NEMO_DIGIT ** 3 + pynutil.insert("-") + NEMO_DIGIT ** 3 + pynutil.insert("-") + NEMO_DIGIT ** 4,
         ).optimize()
         number_part = pynutil.insert("number_part: \"") + number_part.optimize() + pynutil.insert("\"")
 
-        cardinal_option = pynini.compose(single_or_double_digit, NEMO_DIGIT ** (2, 3))
+        cardinal_option = pynini.compose(single_double_or_triple_digit, NEMO_DIGIT ** (2, 3))
 
         country_code = (
             pynutil.insert("country_code: \"")
@@ -106,12 +132,22 @@ class TelephoneFst(GraphFst):
 
         # credit card number
         space_four_digits = insert_space + NEMO_DIGIT ** 4
-        credit_card_graph = pynini.compose(single_or_double_digit, NEMO_DIGIT ** 4 + space_four_digits ** 3).optimize()
+        space_five_digits = space_four_digits + NEMO_DIGIT
+        space_six_digits = space_five_digits + NEMO_DIGIT
+        credit_card_graph = pynini.compose(
+            single_double_or_triple_digit,
+            NEMO_DIGIT ** 4 + (space_six_digits | (space_four_digits ** 2)) + space_four_digits,
+        ).optimize()
+
+        credit_card_graph |= pynini.compose(
+            single_double_or_triple_digit, NEMO_DIGIT ** 4 + space_six_digits + space_five_digits
+        ).optimize()
+
         graph |= pynutil.insert("number_part: \"") + credit_card_graph.optimize() + pynutil.insert("\"")
 
         # SSN
         ssn_graph = pynini.compose(
-            single_or_double_digit,
+            single_double_or_triple_digit,
             NEMO_DIGIT ** 3 + pynutil.insert("-") + NEMO_DIGIT ** 2 + pynutil.insert("-") + NEMO_DIGIT ** 4,
         ).optimize()
         graph |= pynutil.insert("number_part: \"") + ssn_graph.optimize() + pynutil.insert("\"")
