@@ -17,7 +17,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, N
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
-
 fraction_symbols = pynini.string_file(get_abs_path("data/fractions/fraction_symbols.tsv"))
 
 
@@ -49,11 +48,7 @@ class FractionFst(GraphFst):
 
         fraction = (fraction_symbols @ (self.numerator + self.denominator)) | (self.numerator + self.denominator)
 
-        self.graph = (
-            self.optional_graph_negative
-            + pynini.closure(self.integer + pynini.accep(" "), 0, 1)
-            + fraction
-        )
+        self.graph = self.optional_graph_negative + pynini.closure(self.integer + pynini.accep(" "), 0, 1) + fraction
 
         graph = self.graph + pynutil.insert(" preserve_order: true")
         final_graph = self.add_tokens(graph)
