@@ -111,6 +111,7 @@ class CardinalFst(GraphFst):
             final_digit = digit
         else:
             final_digit = digits_no_one | both_ones
+            graph_digit = digit | both_ones
         self.digit = final_digit
 
         single_digits_graph = graph_digit | zero
@@ -180,6 +181,7 @@ class CardinalFst(GraphFst):
         graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component | (
             pynutil.delete("00") + graph_digit
         )
+
         graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
             pynutil.delete("00") + digits_no_one
         )
