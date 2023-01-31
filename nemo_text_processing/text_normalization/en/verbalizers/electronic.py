@@ -58,13 +58,12 @@ class ElectronicFst(GraphFst):
         ).optimize()
 
         # this is far cases when user name was split by dictionary words, i.e. "sevicepart@ab.com" -> "service part"
-        user_name = NEMO_ALPHA + pynini.closure(NEMO_ALPHA | NEMO_SPACE) + NEMO_SPACE + pynini.closure(NEMO_ALPHA | NEMO_SPACE) + pynutil.insert(" ")
+        space_separated_dict_words = NEMO_ALPHA + pynini.closure(NEMO_ALPHA | NEMO_SPACE) + NEMO_SPACE + pynini.closure(NEMO_ALPHA | NEMO_SPACE)
         user_name = (
             pynutil.delete("username:") + delete_space + pynutil.delete("\"") + default_chars_symbols #(user_name | default_chars_symbols)
             + pynutil.delete("\"")
         )
-        # from pynini.lib.rewrite import top_rewrite
-        # import pdb; pdb.set_trace()
+
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 
         domain = (
@@ -77,11 +76,13 @@ class ElectronicFst(GraphFst):
                 insert_space + (pynini.cdrewrite(TO_UPPER, "", "", NEMO_SIGMA) @ default_chars_symbols), 0, 1
             )
         )
+        from pynini.lib.rewrite import top_rewrite
+        import pdb; pdb.set_trace()
         domain = (
             pynutil.delete("domain:")
             + delete_space
             + pynutil.delete("\"")
-            + domain
+            + pynini.closure(domain | space_separated_dict_words, 1)
             + delete_space
             + pynutil.delete("\"")
         ).optimize()

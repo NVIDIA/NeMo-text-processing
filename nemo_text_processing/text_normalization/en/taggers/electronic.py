@@ -52,7 +52,10 @@ class ElectronicFst(GraphFst):
         # X"services" -> " services"
         dict_words_without_delimiter = (pynutil.insert(" ") + dict_words).optimize()
 
-        all_accepted_symbols_graph = (NEMO_ALPHA | dict_words).optimize() + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | symbols_graph | (dict_words_with_delimiter | dict_words_without_delimiter).optimize())
+        all_accepted_symbols_graph = (NEMO_ALPHA | dict_words).optimize() + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | (dict_words_with_delimiter | dict_words_without_delimiter).optimize())
+
+        # from pynini.lib.rewrite import top_rewrite
+        # import pdb; pdb.set_trace()
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
         username = (
@@ -108,7 +111,7 @@ class ElectronicFst(GraphFst):
         # email
         graph = username + domain_graph
         # abc.com, abc.com/123-sm
-        # graph |= domain_common_graph
+        graph |= domain_graph
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph
 
