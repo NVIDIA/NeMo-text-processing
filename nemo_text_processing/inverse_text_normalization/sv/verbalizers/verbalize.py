@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.de.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.de.verbalizers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.de.verbalizers.measure import MeasureFst
-from nemo_text_processing.inverse_text_normalization.de.verbalizers.money import MoneyFst
-from nemo_text_processing.inverse_text_normalization.de.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.de.verbalizers.cardinal import CardinalFst as TNCardinalVerbalizer
-from nemo_text_processing.text_normalization.de.verbalizers.decimal import DecimalFst as TNDecimalVerbalizer
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.money import MoneyFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.time import TimeFst
+from nemo_text_processing.text_normalization.sv.verbalizers.cardinal import CardinalFst as TNCardinalVerbalizer
+from nemo_text_processing.text_normalization.sv.verbalizers.decimals import DecimalFst as TNDecimalVerbalizer
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
