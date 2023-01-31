@@ -21,18 +21,10 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals. Numbers below ten are not converted. 
     Allows both compound numeral strings or separated by whitespace.
-    "und" (en: "and") can be inserted between "hundert" and following number or "tausend" and following single or double digit number.
 
         e.g. minus tjugoen -> cardinal { negative: "-" integer: "21" } }
         e.g. minus tjugoett -> cardinal { negative: "-" integer: "21" } }
-        e.g. minus dreiundzwanzig -> cardinal { integer: "23" } }
-        e.g. dreizehn -> cardinal { integer: "13" } }
-        e.g. ein hundert -> cardinal { integer: "100" } }
-        e.g. einhundert -> cardinal { integer: "100" } }
-        e.g. ein tausend -> cardinal { integer: "1000" } }
-        e.g. eintausend -> cardinal { integer: "1000" } }
-        e.g. ein tausend zwanzig -> cardinal { integer: "1020" } }
-    
+
     Args:
         tn_cardinal_tagger: TN cardinal tagger
     """
