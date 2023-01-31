@@ -76,8 +76,8 @@ class ElectronicFst(GraphFst):
                 insert_space + (pynini.cdrewrite(TO_UPPER, "", "", NEMO_SIGMA) @ default_chars_symbols), 0, 1
             )
         )
-        from pynini.lib.rewrite import top_rewrite
-        import pdb; pdb.set_trace()
+        # from pynini.lib.rewrite import top_rewrite
+        # import pdb; pdb.set_trace()
         domain = (
             pynutil.delete("domain:")
             + delete_space

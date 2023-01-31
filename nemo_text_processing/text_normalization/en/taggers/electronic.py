@@ -52,7 +52,8 @@ class ElectronicFst(GraphFst):
         # X"services" -> " services"
         dict_words_without_delimiter = (pynutil.insert(" ") + dict_words).optimize()
 
-        all_accepted_symbols_graph = (NEMO_ALPHA | dict_words).optimize() + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | (dict_words_with_delimiter | dict_words_without_delimiter).optimize())
+        all_accepted_symbols_end = (NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | (dict_words_with_delimiter | dict_words_without_delimiter).optimize()).optimize()
+        all_accepted_symbols_graph = (NEMO_ALPHA | dict_words).optimize() + pynini.closure(all_accepted_symbols_end)
 
         # from pynini.lib.rewrite import top_rewrite
         # import pdb; pdb.set_trace()
@@ -62,7 +63,7 @@ class ElectronicFst(GraphFst):
             pynutil.insert("username: \"") + all_accepted_symbols_graph + pynutil.insert("\"") + pynini.cross('@', ' ')
         )
 
-        domain_graph = all_accepted_symbols_graph + pynini.accep('.') + (all_accepted_symbols_graph + NEMO_ALPHA | dict_words.optimize())
+        domain_graph = all_accepted_symbols_graph + pynini.accep('.') + (all_accepted_symbols_graph + NEMO_ALPHA | dict_words.optimize()) + pynini.closure(all_accepted_symbols_end)
 
         protocol_symbols = pynini.closure((graph_symbols | pynini.cross(":", "colon")) + pynutil.insert(" "))
         protocol_start = (pynini.cross("https", "HTTPS ") | pynini.cross("http", "HTTP ")) + (
@@ -89,6 +90,9 @@ class ElectronicFst(GraphFst):
         #     )
         #     + pynutil.insert("\"")
         # )
+
+        from pynini.lib.rewrite import top_rewrite
+        import pdb; pdb.set_trace()
 
         domain_graph = (
             pynutil.insert("domain: \"")
