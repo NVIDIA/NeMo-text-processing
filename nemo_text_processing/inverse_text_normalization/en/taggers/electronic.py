@@ -43,9 +43,8 @@ class ElectronicFst(GraphFst):
         num |= pynini.compose(TO_LOWER + NEMO_SIGMA, num).optimize()
         alpha_num = (NEMO_ALPHA | num).optimize()
 
-        symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).invert()
-
-        accepted_username = alpha_num | symbols
+        url_symbols = pynini.string_file(get_abs_path("data/electronic/url_symbols.tsv")).invert()
+        accepted_username = alpha_num | url_symbols
         process_dot = pynini.cross("dot", ".")
         username = (alpha_num + pynini.closure(delete_extra_space + accepted_username)) | pynutil.add_weight(
             pynini.closure(NEMO_ALPHA, 1), weight=0.0001
@@ -86,7 +85,7 @@ class ElectronicFst(GraphFst):
         # .com,
         ending = (
             delete_extra_space
-            + symbols
+            + url_symbols
             + delete_extra_space
             + (domain | pynini.closure(accepted_username + delete_extra_space,) + accepted_username)
         )
