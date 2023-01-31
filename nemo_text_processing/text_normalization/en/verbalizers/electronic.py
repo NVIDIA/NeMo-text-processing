@@ -22,6 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     insert_space,
+    NEMO_ALPHA, NEMO_SPACE
 )
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
 from pynini.examples import plurals
@@ -56,14 +57,14 @@ class ElectronicFst(GraphFst):
             pynini.closure(NEMO_NOT_SPACE), default_chars_symbols.optimize()
         ).optimize()
 
+        # this is far cases when user name was split by dictionary words, i.e. "sevicepart@ab.com" -> "service part"
+        user_name = NEMO_ALPHA + pynini.closure(NEMO_ALPHA | NEMO_SPACE) + NEMO_SPACE + pynini.closure(NEMO_ALPHA | NEMO_SPACE) + pynutil.insert(" ")
         user_name = (
-            pynutil.delete("username:")
-            + delete_space
-            + pynutil.delete("\"")
-            + default_chars_symbols
+            pynutil.delete("username:") + delete_space + pynutil.delete("\"") + default_chars_symbols #(user_name | default_chars_symbols)
             + pynutil.delete("\"")
         )
-
+        # from pynini.lib.rewrite import top_rewrite
+        # import pdb; pdb.set_trace()
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 
         domain = (

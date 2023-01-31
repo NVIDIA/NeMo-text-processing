@@ -23,6 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.en.utils import load_labels
 
 
 class ElectronicFst(GraphFst):
@@ -39,17 +40,28 @@ class ElectronicFst(GraphFst):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
+        symbols_graph = pynini.string_file(get_abs_path("data/electronic/symbol.tsv"))
         accepted_common_domains = pynini.project(
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
         )
-        all_accepted_symbols = NEMO_ALPHA + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols)
+        dict_words = [x[0] for x in load_labels(get_abs_path("data/electronic/words.tsv"))]
+        dict_words = pynini.union(*dict_words).optimize()
+
+        # X"-services" -> "dash services"
+        dict_words_with_delimiter = (accepted_symbols + dict_words).optimize()
+        # X"services" -> " services"
+        dict_words_without_delimiter = (pynutil.insert(" ") + dict_words).optimize()
+
+        all_accepted_symbols_graph = (NEMO_ALPHA | dict_words).optimize() + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | symbols_graph | (dict_words_with_delimiter | dict_words_without_delimiter).optimize())
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
         username = (
-            pynutil.insert("username: \"") + all_accepted_symbols + pynutil.insert("\"") + pynini.cross('@', ' ')
+            pynutil.insert("username: \"") + all_accepted_symbols_graph + pynutil.insert("\"") + pynini.cross('@', ' ')
         )
-        domain_graph = all_accepted_symbols + pynini.accep('.') + all_accepted_symbols + NEMO_ALPHA
-        protocol_symbols = pynini.closure((graph_symbols | pynini.cross(":", "semicolon")) + pynutil.insert(" "))
+
+        domain_graph = all_accepted_symbols_graph + pynini.accep('.') + (all_accepted_symbols_graph + NEMO_ALPHA | dict_words.optimize())
+
+        protocol_symbols = pynini.closure((graph_symbols | pynini.cross(":", "colon")) + pynutil.insert(" "))
         protocol_start = (pynini.cross("https", "HTTPS ") | pynini.cross("http", "HTTP ")) + (
             pynini.accep("://") @ protocol_symbols
         )
@@ -58,27 +70,45 @@ class ElectronicFst(GraphFst):
         protocol_end = pynini.cross("www", "WWW ") + pynini.accep(".") @ protocol_symbols
         protocol = protocol_file_start | protocol_start | protocol_end | (protocol_start + protocol_end)
 
+        # domain_graph = (
+        #     pynutil.insert("domain: \"")
+        #     + pynini.difference(domain_graph, pynini.project(protocol, "input") + NEMO_SIGMA)
+        #     + pynini.closure((pynini.cross("-", " dash ") | pynutil.insert(" ")) + dict_words)
+        #     + pynutil.insert("\"")
+        # )
+        # domain_common_graph = (
+        #     pynutil.insert("domain: \"")
+        #     + pynini.difference(
+        #         all_accepted_symbols
+        #         + accepted_common_domains
+        #         + pynini.closure(accepted_symbols + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols), 0, 1),
+        #         pynini.project(protocol, "input") + NEMO_SIGMA,
+        #     )
+        #     + pynutil.insert("\"")
+        # )
+
         domain_graph = (
             pynutil.insert("domain: \"")
-            + pynini.difference(domain_graph, pynini.project(protocol, "input") + NEMO_SIGMA)
+            + domain_graph
+            + pynini.closure((pynini.cross("-", " dash ") | pynutil.insert(" ")) + dict_words)
             + pynutil.insert("\"")
         )
-        domain_common_graph = (
-            pynutil.insert("domain: \"")
-            + pynini.difference(
-                all_accepted_symbols
-                + accepted_common_domains
-                + pynini.closure(accepted_symbols + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols), 0, 1),
-                pynini.project(protocol, "input") + NEMO_SIGMA,
-            )
-            + pynutil.insert("\"")
-        )
+        # domain_common_graph = (
+        #     pynutil.insert("domain: \"")
+        #     + pynini.difference(
+        #         all_accepted_symbols
+        #         + accepted_common_domains
+        #         + pynini.closure(accepted_symbols + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols), 0, 1),
+        #         pynini.project(protocol, "input") + NEMO_SIGMA,
+        #     )
+        #     + pynutil.insert("\"")
+        # )
 
         protocol = pynutil.insert("protocol: \"") + protocol + pynutil.insert("\"")
         # email
         graph = username + domain_graph
         # abc.com, abc.com/123-sm
-        graph |= domain_common_graph
+        # graph |= domain_common_graph
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph
 
