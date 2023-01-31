@@ -40,17 +40,14 @@ class CardinalFst(GraphFst):
     def __init__(self, tn_cardinal_tagger: GraphFst, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
-        # add_space_between_chars = pynini.cdrewrite(pynini.closure(insert_space, 0, 1), NEMO_CHAR, NEMO_CHAR, NEMO_SIGMA)
-        optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" "))
-
-        graph = (tn_cardinal_tagger.graph @ optional_delete_space).invert().optimize()
+        graph = tn_cardinal_tagger.graph.invert().optimize()
         self.graph_hundred_component_at_least_one_none_zero_digit = (
-            (tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit @ optional_delete_space)
+            (tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit)
             .invert()
             .optimize()
         )
 
-        self.graph_ties = (tn_cardinal_tagger.two_digit_non_zero @ optional_delete_space).invert().optimize()
+        self.graph_ties = (tn_cardinal_tagger.two_digit_non_zero).invert().optimize()
         # this is to make sure if there is an ambiguity with decimal, decimal is chosen, e.g. 1000000 vs. 1 million
         graph = pynutil.add_weight(graph, weight=0.001)
         self.graph_no_exception = graph
