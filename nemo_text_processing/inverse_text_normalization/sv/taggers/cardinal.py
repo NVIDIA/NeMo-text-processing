@@ -23,7 +23,8 @@ class CardinalFst(GraphFst):
     Allows both compound numeral strings or separated by whitespace.
     "und" (en: "and") can be inserted between "hundert" and following number or "tausend" and following single or double digit number.
 
-        e.g. minus drei und zwanzig -> cardinal { negative: "-" integer: "23" } }
+        e.g. minus tjugoen -> cardinal { negative: "-" integer: "21" } }
+        e.g. minus tjugoett -> cardinal { negative: "-" integer: "21" } }
         e.g. minus dreiundzwanzig -> cardinal { integer: "23" } }
         e.g. dreizehn -> cardinal { integer: "13" } }
         e.g. ein hundert -> cardinal { integer: "100" } }
@@ -44,7 +45,7 @@ class CardinalFst(GraphFst):
 
         graph = (tn_cardinal_tagger.graph @ optional_delete_space).invert().optimize()
         self.graph_hundred_component_at_least_one_none_zero_digit = (
-            (tn_cardinal_tagger.graph_hundred_component_at_least_one_none_zero_digit @ optional_delete_space)
+            (tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit @ optional_delete_space)
             .invert()
             .optimize()
         )

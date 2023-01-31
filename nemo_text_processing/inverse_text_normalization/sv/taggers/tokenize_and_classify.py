@@ -30,6 +30,7 @@ from nemo_text_processing.inverse_text_normalization.sv.taggers.whitelist import
 from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst as TNCardinalTagger
+from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as TNOrdinalTagger
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst as TNDateTagger
 from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst as TNDecimalTagger
 from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst as TNElectronicTagger
@@ -65,19 +66,20 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != 'None':
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, "_de_itn.far")
+            far_file = os.path.join(cache_dir, "_sv_itn.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logging.info(f"Creating ClassifyFst grammars.")
             tn_cardinal_tagger = TNCardinalTagger(deterministic=False)
-            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False)
+            tn_ordinal_tagger = TNOrdinalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
+            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=False)
             tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
             tn_ordinal_verbalizer = TNOrdinalVerbalizer(deterministic=False)
-            tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
-            tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, deterministic=False)
-            tn_date_verbalizer = TNDateVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
+            tn_fraction_verbalizer = TNFractionVerbalizer(deterministic=False)
+            tn_time_verbalizer = TNTimeVerbalizer(deterministic=False)
+            tn_date_verbalizer = TNDateVerbalizer(deterministic=False)
             tn_electronic_tagger = TNElectronicTagger(deterministic=False)
             tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
             tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False)
