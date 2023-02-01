@@ -119,7 +119,6 @@ class CardinalFst(GraphFst):
             four_digit_comma_graph = (NEMO_DIGIT - "0") + pynutil.delete(",") + NEMO_DIGIT ** 3
             final_graph |= pynini.compose(four_digit_comma_graph.optimize(), final_graph).optimize()
 
-        
         self.final_graph = final_graph
         final_graph |= self.add_optional_and(graph_au)
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + final_graph + pynutil.insert("\"")
