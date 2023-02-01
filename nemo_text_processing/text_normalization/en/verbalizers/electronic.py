@@ -16,13 +16,19 @@ import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_NOT_SPACE,
+    NEMO_LOWER,
+    NEMO_UPPER,
+    TO_LOWER,
+    MIN_NEG_WEIGHT,
     NEMO_SIGMA,
     TO_UPPER,
     GraphFst,
     delete_extra_space,
     delete_space,
     insert_space,
-    NEMO_ALPHA, NEMO_SPACE
+    NEMO_ALPHA, NEMO_SPACE,
+    MIN_POS_WEIGHT,
+    NEMO_CHAR
 )
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
 from pynini.examples import plurals
@@ -50,42 +56,42 @@ class ElectronicFst(GraphFst):
         graph_digit = graph_digit_no_zero | graph_zero
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
-        default_chars_symbols = pynini.cdrewrite(
-            pynutil.insert(" ") + (graph_symbols | graph_digit) + pynutil.insert(" "), "", "", NEMO_SIGMA
-        )
-        default_chars_symbols = pynini.compose(
-            pynini.closure(NEMO_NOT_SPACE), default_chars_symbols.optimize()
-        ).optimize()
+        NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
+        dict_words = pynini.project(pynini.string_file(get_abs_path("data/electronic/words.tsv")), "output")
+        default_chars_symbols = pynini.cdrewrite(pynutil.insert(" ") + (graph_symbols | graph_digit) + pynutil.insert(" "), "", "", NEMO_SIGMA)
+        default_chars_symbols = pynini.compose(pynini.closure(NEMO_NOT_BRACKET), default_chars_symbols.optimize()).optimize()
 
         # this is far cases when user name was split by dictionary words, i.e. "sevicepart@ab.com" -> "service part"
-        space_separated_dict_words = NEMO_ALPHA + pynini.closure(NEMO_ALPHA | NEMO_SPACE) + NEMO_SPACE + pynini.closure(NEMO_ALPHA | NEMO_SPACE)
+        space_separated_dict_words = pynutil.add_weight(NEMO_ALPHA + pynini.closure(NEMO_ALPHA | NEMO_SPACE) + NEMO_SPACE + pynini.closure(NEMO_ALPHA | NEMO_SPACE), MIN_NEG_WEIGHT)
+        # default_chars_symbols_to_upper = pynini.closure(pynutil.add_weight(NEMO_SIGMA, MIN_POS_WEIGHT) | TO_UPPER, 1)
+        # default_chars_symbols_to_upper = pynini.compose(default_chars_symbols_to_upper, pynini.cdrewrite(pynutil.insert(" ") + (graph_symbols | graph_digit) + pynutil.insert(" "), "", "", NEMO_SIGMA))
+
+        # default_chars_symbols = pynini.compose(pynini.closure(NEMO_NOT_SPACE), default_chars_symbols.optimize()).optimize()
+
+
         user_name = (
-            pynutil.delete("username:") + delete_space + pynutil.delete("\"") + default_chars_symbols #(user_name | default_chars_symbols)
+            pynutil.delete("username:") + delete_space + pynutil.delete("\"") + (default_chars_symbols | space_separated_dict_words).optimize()
             + pynutil.delete("\"")
         )
 
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
-
-        domain = (
-            default_chars_symbols
+        # default_chars_symbols_to_upper = pynini.compose(default_chars_symbols, pynini.closure(TO_UPPER | NEMO_UPPER | NEMO_SPACE))
+        domain = (pynini.compose(default_chars_symbols, pynini.closure(TO_LOWER | NEMO_LOWER | NEMO_SPACE | pynutil.add_weight(dict_words, MIN_NEG_WEIGHT)))
             + insert_space
-            + plurals._priority_union(
-                domain_common, pynutil.add_weight(pynini.cross(".", "dot"), weight=0.0001), NEMO_SIGMA
-            )
-            + pynini.closure(
-                insert_space + (pynini.cdrewrite(TO_UPPER, "", "", NEMO_SIGMA) @ default_chars_symbols), 0, 1
-            )
+            + plurals._priority_union(domain_common, pynutil.add_weight(pynini.cross(".", "dot"), weight=0.0001), NEMO_SIGMA)
+            + pynini.closure(insert_space + default_chars_symbols, 0, 1)
         )
-        # from pynini.lib.rewrite import top_rewrite
-        # import pdb; pdb.set_trace()
         domain = (
             pynutil.delete("domain:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(domain | space_separated_dict_words, 1)
+            + domain
             + delete_space
             + pynutil.delete("\"")
         ).optimize()
+
+        # from pynini.lib.rewrite import top_rewrites
+        # import pdb; pdb.set_trace()
 
         protocol = pynutil.delete("protocol: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         graph = (

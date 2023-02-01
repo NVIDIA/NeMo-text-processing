@@ -3,13 +3,14 @@ sim
 early
 access
 program
-rtx
+rtx	RTX
 developer
-basepod
-cuda
+basepod	BASEPOD
+cuda	CUDA
 cv
 enterprise
 services
-nvidia
+nvidia	NVIDIA
+dgx	DGX
 pro
 help

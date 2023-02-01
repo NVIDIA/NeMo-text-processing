@@ -18,9 +18,12 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
+    MIN_NEG_WEIGHT,
     GraphFst,
     get_abs_path,
     insert_space,
+    NEMO_UPPER,
+    TO_UPPER
 )
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.en.utils import load_labels
@@ -32,11 +35,12 @@ class ElectronicFst(GraphFst):
         e.g. cdf1@abc.edu -> tokens { electronic { username: "cdf1" domain: "abc.edu" } }
 
     Args:
+        cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
@@ -44,26 +48,25 @@ class ElectronicFst(GraphFst):
         accepted_common_domains = pynini.project(
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
         )
-        dict_words = [x[0] for x in load_labels(get_abs_path("data/electronic/words.tsv"))]
-        dict_words = pynini.union(*dict_words).optimize()
+        # dict_words = [x[0] for x in load_labels(get_abs_path("data/electronic/words.tsv"))]
+        # dict_words = pynini.union(*dict_words).optimize()
+        dict_words = pynini.string_file(get_abs_path("data/electronic/words.tsv"))
 
         # X"-services" -> "dash services"
-        dict_words_with_delimiter = (accepted_symbols + dict_words).optimize()
+        dict_words_with_delimiter = pynutil.add_weight(accepted_symbols + dict_words, MIN_NEG_WEIGHT).optimize()
         # X"services" -> " services"
-        dict_words_without_delimiter = (pynutil.insert(" ") + dict_words).optimize()
-
-        all_accepted_symbols_end = (NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | (dict_words_with_delimiter | dict_words_without_delimiter).optimize()).optimize()
-        all_accepted_symbols_graph = (NEMO_ALPHA | dict_words).optimize() + pynini.closure(all_accepted_symbols_end)
-
-        # from pynini.lib.rewrite import top_rewrite
+        dict_words_without_delimiter = pynutil.add_weight(pynutil.insert(" ") + dict_words, MIN_NEG_WEIGHT).optimize()
+        # from pynini.lib.rewrite import top_rewrites
         # import pdb; pdb.set_trace()
+        all_accepted_symbols_start = pynini.closure(TO_UPPER | NEMO_UPPER | (pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" ")) | accepted_symbols | (dict_words_with_delimiter | dict_words_without_delimiter).optimize(), 1).optimize()
+        # all_accepted_symbols_graph = (TO_UPPER | NEMO_UPPER | dict_words | pynutil.add_weight(accepted_common_domains, MIN_NEG_WEIGHT)).optimize()
+
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
+        username = (NEMO_ALPHA | pynutil.add_weight(dict_words, MIN_NEG_WEIGHT)) + pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | (dict_words_with_delimiter | dict_words_without_delimiter))
+        username = (pynutil.insert("username: \"") + username + pynutil.insert("\"") + pynini.cross('@', ' '))
 
-        username = (
-            pynutil.insert("username: \"") + all_accepted_symbols_graph + pynutil.insert("\"") + pynini.cross('@', ' ')
-        )
-
-        domain_graph = all_accepted_symbols_graph + pynini.accep('.') + (all_accepted_symbols_graph + NEMO_ALPHA | dict_words.optimize()) + pynini.closure(all_accepted_symbols_end)
+        # end = all_accepted_symbols_graph | accepted_common_domains
+        domain_graph = all_accepted_symbols_start + ((pynini.accep('.') + all_accepted_symbols_start) | accepted_common_domains) + pynini.closure(all_accepted_symbols_start | accepted_common_domains)
 
         protocol_symbols = pynini.closure((graph_symbols | pynini.cross(":", "colon")) + pynutil.insert(" "))
         protocol_start = (pynini.cross("https", "HTTPS ") | pynini.cross("http", "HTTP ")) + (
@@ -71,7 +74,7 @@ class ElectronicFst(GraphFst):
         )
         protocol_file_start = pynini.accep("file") + insert_space + (pynini.accep(":///") @ protocol_symbols)
 
-        protocol_end = pynini.cross("www", "WWW ") + pynini.accep(".") @ protocol_symbols
+        protocol_end = pynutil.add_weight(pynini.cross("www", "WWW ") + pynini.accep(".") @ protocol_symbols, -1000)
         protocol = protocol_file_start | protocol_start | protocol_end | (protocol_start + protocol_end)
 
         # domain_graph = (
@@ -91,9 +94,9 @@ class ElectronicFst(GraphFst):
         #     + pynutil.insert("\"")
         # )
 
-        from pynini.lib.rewrite import top_rewrite
-        import pdb; pdb.set_trace()
-
+        # from pynini.lib.rewrite import top_rewrite
+        # import pdb;
+        # pdb.set_trace()
         domain_graph = (
             pynutil.insert("domain: \"")
             + domain_graph
@@ -111,9 +114,14 @@ class ElectronicFst(GraphFst):
         #     + pynutil.insert("\"")
         # )
 
-        protocol = pynutil.insert("protocol: \"") + protocol + pynutil.insert("\"")
+        protocol = pynutil.insert("protocol: \"") + pynutil.add_weight(protocol, MIN_NEG_WEIGHT) + pynutil.insert("\"")
         # email
         graph = username + domain_graph
+
+        # from pynini.lib.rewrite import top_rewrites
+        # import pdb;
+        # pdb.set_trace()
+
         # abc.com, abc.com/123-sm
         graph |= domain_graph
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
