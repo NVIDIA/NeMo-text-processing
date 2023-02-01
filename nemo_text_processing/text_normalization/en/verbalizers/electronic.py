@@ -74,10 +74,6 @@ class ElectronicFst(GraphFst):
             + pynini.closure(NEMO_ALPHA | NEMO_SPACE),
             MIN_NEG_WEIGHT,
         )
-        # default_chars_symbols_to_upper = pynini.closure(pynutil.add_weight(NEMO_SIGMA, MIN_POS_WEIGHT) | TO_UPPER, 1)
-        # default_chars_symbols_to_upper = pynini.compose(default_chars_symbols_to_upper, pynini.cdrewrite(pynutil.insert(" ") + (graph_symbols | graph_digit) + pynutil.insert(" "), "", "", NEMO_SIGMA))
-
-        # default_chars_symbols = pynini.compose(pynini.closure(NEMO_NOT_SPACE), default_chars_symbols.optimize()).optimize()
 
         user_name = (
             pynutil.delete("username:")
@@ -88,7 +84,7 @@ class ElectronicFst(GraphFst):
         )
 
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
-        # default_chars_symbols_to_upper = pynini.compose(default_chars_symbols, pynini.closure(TO_UPPER | NEMO_UPPER | NEMO_SPACE))
+
         domain = (
             pynini.compose(
                 default_chars_symbols,
@@ -108,9 +104,6 @@ class ElectronicFst(GraphFst):
             + delete_space
             + pynutil.delete("\"")
         ).optimize()
-
-        # from pynini.lib.rewrite import top_rewrites
-        # import pdb; pdb.set_trace()
 
         protocol = pynutil.delete("protocol: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         graph = (
