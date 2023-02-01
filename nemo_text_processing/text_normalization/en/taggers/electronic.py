@@ -42,7 +42,10 @@ class ElectronicFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
-        numbers = pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" ")
+        if deterministic:
+            numbers = NEMO_DIGIT
+        else:
+            numbers = pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" ")
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
         accepted_common_domains = pynini.project(

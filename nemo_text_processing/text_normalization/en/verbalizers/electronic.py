@@ -46,6 +46,7 @@ class ElectronicFst(GraphFst):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
         graph_digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize()
         graph_zero = pynini.cross("0", "zero")
+        long_numbers = graph_digit_no_zero + pynini.cross("000", " thousand")
 
         if not deterministic:
             graph_zero |= pynini.cross("0", "o") | pynini.cross("0", "oh")
@@ -56,7 +57,10 @@ class ElectronicFst(GraphFst):
         NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
         dict_words = pynini.project(pynini.string_file(get_abs_path("data/electronic/words.tsv")), "output")
         default_chars_symbols = pynini.cdrewrite(
-            pynutil.insert(" ") + (graph_symbols | graph_digit) + pynutil.insert(" "), "", "", NEMO_SIGMA
+            pynutil.insert(" ") + (graph_symbols | graph_digit | long_numbers) + pynutil.insert(" "),
+            "",
+            "",
+            NEMO_SIGMA,
         )
         default_chars_symbols = pynini.compose(
             pynini.closure(NEMO_NOT_BRACKET), default_chars_symbols.optimize()

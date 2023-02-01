@@ -7,7 +7,7 @@ a@msn.it~a at msn dot IT
 cdf@abc.edu~cdf at abc dot EDU
 abc@gmail.abc~abc at gmail dot ABC
 abc@abc.com~abc at abc dot com
-asdf123@abc.com~asdf one hundred and twenty three at abc dot com
+asdf123@abc.com~asdf one two three at abc dot com
 a1b2@abc.com~a one b two at abc dot com
 ab3.sdd.3@gmail.com~ab three dot sdd dot three at gmail dot com
 email is abc1@gmail.com~email is abc one at gmail dot com
@@ -19,12 +19,12 @@ test.abc~test.abc
 http://www.ourdailynews.com.sm~HTTP colon slash slash WWW dot ourdailynews dot com dot SM
 https://www.ourdailynews.com.sm~HTTPS colon slash slash WWW dot ourdailynews dot com dot SM
 www.ourdailynews.com.sm~WWW dot ourdailynews dot com dot SM
-www.ourdailynews.com/123-sm~WWW dot ourdailynews dot com slash one hundred and twenty three dash SM
+www.ourdailynews.com/123-sm~WWW dot ourdailynews dot com slash one two three dash SM
 sdf@gmail.com.sm~sdf at gmail dot com dot SM
-sdf@gmail.com/123-sm~sdf at gmail dot com slash one hundred and twenty three dash SM
-sdf@gmail.abc/123-sm~sdf at gmail dot ABC slash one hundred and twenty three dash SM
-sdf@gmail.abc/123456-sm~sdf at gmail dot ABC slash one hundred and twenty three four hundred and fifty six dash SM
-ourdailynews.com/12-sm~ourdailynews dot com slash twelve dash SM
+sdf@gmail.com/123-sm~sdf at gmail dot com slash one two three dash SM
+sdf@gmail.abc/123-sm~sdf at gmail dot ABC slash one two three dash SM
+sdf@gmail.abc/123456-sm~sdf at gmail dot ABC slash one two three four five six dash SM
+ourdailynews.com/12-sm~ourdailynews dot com slash one two dash SM
 ourdailynews.abc~ourdailynews.abc
 file:///c/code/NeMo/docs/build/html/processing/intro.html~file colon slash slash slash c slash code slash nemo slash docs slash build slash html slash processing slash intro dot HTML
 file:///photos/image.jpg~file colon slash slash slash photos slash image dot jpeg
