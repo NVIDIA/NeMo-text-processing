@@ -124,7 +124,7 @@ class ClassifyFst(GraphFst):
 
             start_time = time.time()
             electonic_graph = ElectronicFst(cardinal=cardinal, deterministic=deterministic).fst
-            logging.debug(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
+            print(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
 
             start_time = time.time()
             money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic).fst
