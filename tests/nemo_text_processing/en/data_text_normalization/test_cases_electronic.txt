@@ -15,6 +15,7 @@ abs@nvidia.com~abs at NVIDIA dot com
 email is a-1.b3_c&-d@gma4i-l.com test~email is a dash one dot b three underscore c ampersand dash d at gma four i dash l dot com test
 nvidia.com~NVIDIA dot com
 test.com~test dot com
+test.abc~test.abc
 http://www.ourdailynews.com.sm~HTTP colon slash slash WWW dot ourdailynews dot com dot SM
 https://www.ourdailynews.com.sm~HTTPS colon slash slash WWW dot ourdailynews dot com dot SM
 www.ourdailynews.com.sm~WWW dot ourdailynews dot com dot SM
@@ -24,7 +25,7 @@ sdf@gmail.com/123-sm~sdf at gmail dot com slash one hundred and twenty three das
 sdf@gmail.abc/123-sm~sdf at gmail dot ABC slash one hundred and twenty three dash SM
 sdf@gmail.abc/123456-sm~sdf at gmail dot ABC slash one hundred and twenty three four hundred and fifty six dash SM
 ourdailynews.com/12-sm~ourdailynews dot com slash twelve dash SM
-ourdailynews.abc~ourdailynews dot ABC
+ourdailynews.abc~ourdailynews.abc
 file:///c/code/NeMo/docs/build/html/processing/intro.html~file colon slash slash slash c slash code slash nemo slash docs slash build slash html slash processing slash intro dot HTML
 file:///photos/image.jpg~file colon slash slash slash photos slash image dot jpeg
 electronic test.com and test2.uk~electronic test dot com and test two dot UK
