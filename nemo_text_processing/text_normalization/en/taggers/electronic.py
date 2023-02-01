@@ -42,37 +42,39 @@ class ElectronicFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
+        # NOT_DIGIT = pynini.difference(NEMO_CHAR, NEMO_DIGIT).optimize()
+        numbers = pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" ")
+        # numbers = pynutil.add_weight(pynini.cdrewrite(numbers, NOT_DIGIT, NOT_DIGIT, NEMO_SIGMA), MIN_NEG_WEIGHT)
+
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
         accepted_common_domains = pynini.project(
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
         )
 
-        dict_words = pynini.string_file(get_abs_path("data/electronic/words.tsv"))
+        dict_words = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/words.tsv")), MIN_NEG_WEIGHT)
 
-        # X"-services" -> "dash services"
-        dict_words_with_delimiter = pynutil.add_weight(accepted_symbols + dict_words, MIN_NEG_WEIGHT).optimize()
-        # X"services" -> " services"
-        dict_words_without_delimiter = pynutil.add_weight(pynutil.insert(" ") + dict_words, MIN_NEG_WEIGHT).optimize()
-        all_accepted_symbols_start = pynini.closure(
-            TO_UPPER
-            | NEMO_UPPER
-            | (pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" "))
-            | accepted_symbols
-            | (dict_words_with_delimiter | dict_words_without_delimiter).optimize(),
-            1,
+        dict_words_without_delimiter = dict_words + pynini.closure(
+            pynutil.add_weight(pynutil.insert(" ") + dict_words, MIN_NEG_WEIGHT), 1
+        )
+        dict_words_graph = dict_words_without_delimiter | dict_words
+
+        all_accepted_symbols_start = (
+            dict_words_graph | pynini.closure(TO_UPPER) | pynini.closure(NEMO_UPPER) | accepted_symbols
+        ).optimize()
+
+        all_accepted_symbols_end = (
+            dict_words_graph | numbers | pynini.closure(TO_UPPER) | pynini.closure(NEMO_UPPER) | accepted_symbols
         ).optimize()
 
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
-        username = (NEMO_ALPHA | pynutil.add_weight(dict_words, MIN_NEG_WEIGHT)) + pynini.closure(
-            NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | (dict_words_with_delimiter | dict_words_without_delimiter)
+        username = (NEMO_ALPHA | dict_words_graph) + pynini.closure(
+            NEMO_ALPHA | numbers | accepted_symbols | dict_words_graph
         )
+
         username = pynutil.insert("username: \"") + username + pynutil.insert("\"") + pynini.cross('@', ' ')
 
-        # end = all_accepted_symbols_graph | accepted_common_domains
-        domain_graph = (
-            all_accepted_symbols_start
-            + ((pynini.accep('.') + all_accepted_symbols_start) | accepted_common_domains)
-            + pynini.closure(all_accepted_symbols_start | accepted_common_domains)
+        domain_graph = all_accepted_symbols_start + pynini.closure(
+            all_accepted_symbols_end | pynutil.add_weight(accepted_common_domains, MIN_NEG_WEIGHT)
         )
 
         protocol_symbols = pynini.closure((graph_symbols | pynini.cross(":", "colon")) + pynutil.insert(" "))
@@ -83,8 +85,6 @@ class ElectronicFst(GraphFst):
 
         protocol_end = pynutil.add_weight(pynini.cross("www", "WWW ") + pynini.accep(".") @ protocol_symbols, -1000)
         protocol = protocol_file_start | protocol_start | protocol_end | (protocol_start + protocol_end)
-
-        domain_graph += pynini.closure((pynini.cross("-", " dash ") | pynutil.insert(" ")) + dict_words)
 
         domain_graph_with_class_tags = (
             pynutil.insert("domain: \"")

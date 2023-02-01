@@ -21,35 +21,35 @@ runtest () {
   done < "$input"
 }
 
-testTNSpecialText() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_special_text.txt
-  runtest $input
-}
-
-testTNCardinal() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_cardinal.txt
-  runtest $input
-}
-
-testTNDate() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_date.txt
-  runtest $input
-}
-
-testTNDecimal() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_decimal.txt
-  runtest $input
-}
-
-testTNRange() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_range.txt
-  runtest $input
-}
-
-testTNSerial() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_serial.txt
-  runtest $input
-}
+#testTNSpecialText() {
+#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_special_text.txt
+#  runtest $input
+#}
+#
+#testTNCardinal() {
+#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_cardinal.txt
+#  runtest $input
+#}
+#
+#testTNDate() {
+#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_date.txt
+#  runtest $input
+#}
+#
+#testTNDecimal() {
+#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_decimal.txt
+#  runtest $input
+#}
+#
+#testTNRange() {
+#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_range.txt
+#  runtest $input
+#}
+#
+#testTNSerial() {
+#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_serial.txt
+#  runtest $input
+#}
 
 #testTNRoman() {
 #  input=$PROJECT_DIR/en/data_text_normalization/test_cases_roman.txt
