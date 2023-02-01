@@ -123,7 +123,7 @@ class ClassifyFst(GraphFst):
             logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
 
             start_time = time.time()
-            electonic_graph = ElectronicFst(deterministic=deterministic).fst
+            electonic_graph = ElectronicFst(cardinal=cardinal, deterministic=deterministic).fst
             logging.debug(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
 
             start_time = time.time()
