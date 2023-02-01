@@ -46,7 +46,7 @@ class ElectronicFst(GraphFst):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
         graph_digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize()
         graph_zero = pynini.cross("0", "zero")
-        long_numbers = graph_digit_no_zero + pynini.cross("000", " thousand")
+        long_numbers = pynutil.add_weight(graph_digit_no_zero + pynini.cross("000", " thousand"), MIN_NEG_WEIGHT)
 
         if not deterministic:
             graph_zero |= pynini.cross("0", "o") | pynini.cross("0", "oh")
