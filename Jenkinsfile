@@ -42,7 +42,7 @@ pipeline {
 
 
 
-    stage('L0: TN/ITN Tests CPU') {
+    stage('L0: TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -56,18 +56,33 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="1" --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-2'
           }
         }
+        stage('En TN non-deterministic grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize_with_audio.py --text="1" --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-2'
+          }
+        }
         stage('En ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --language en --text="twenty" --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-2'
           }
         }
-        stage('Test En non-deterministic TN & Run all En TN/ITN tests (restore grammars from cache)') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/en/ -m "not pleasefixme" --cpu --tn_cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-2'
-          }
-        }
 
       }
+    }
+    
+    stage('L1: TN/ITN Tests CPU') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      stage('Test En non-deterministic TN & Run all En TN/ITN tests (restore grammars from cache)') {
+        steps {
+          sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/en/ -m "not pleasefixme" --cpu --tn_cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-2'
+          }
+        }
     }
 
     stage('L2: NeMo text processing') {
