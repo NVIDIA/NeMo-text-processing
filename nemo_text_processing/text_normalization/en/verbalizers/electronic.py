@@ -14,10 +14,14 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    MIN_NEG_WEIGHT,
+    NEMO_ALPHA,
+    NEMO_CHAR,
+    NEMO_LOWER,
     NEMO_NOT_QUOTE,
-    NEMO_NOT_SPACE,
     NEMO_SIGMA,
-    TO_UPPER,
+    NEMO_SPACE,
+    TO_LOWER,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -42,6 +46,7 @@ class ElectronicFst(GraphFst):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
         graph_digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize()
         graph_zero = pynini.cross("0", "zero")
+        long_numbers = pynutil.add_weight(graph_digit_no_zero + pynini.cross("000", " thousand"), MIN_NEG_WEIGHT)
 
         if not deterministic:
             graph_zero |= pynini.cross("0", "o") | pynini.cross("0", "oh")
@@ -49,32 +54,47 @@ class ElectronicFst(GraphFst):
         graph_digit = graph_digit_no_zero | graph_zero
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
+        NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
+        dict_words = pynini.project(pynini.string_file(get_abs_path("data/electronic/words.tsv")), "output")
         default_chars_symbols = pynini.cdrewrite(
-            pynutil.insert(" ") + (graph_symbols | graph_digit) + pynutil.insert(" "), "", "", NEMO_SIGMA
+            pynutil.insert(" ") + (graph_symbols | graph_digit | long_numbers) + pynutil.insert(" "),
+            "",
+            "",
+            NEMO_SIGMA,
         )
         default_chars_symbols = pynini.compose(
-            pynini.closure(NEMO_NOT_SPACE), default_chars_symbols.optimize()
+            pynini.closure(NEMO_NOT_BRACKET), default_chars_symbols.optimize()
         ).optimize()
+
+        # this is far cases when user name was split by dictionary words, i.e. "sevicepart@ab.com" -> "service part"
+        space_separated_dict_words = pynutil.add_weight(
+            NEMO_ALPHA
+            + pynini.closure(NEMO_ALPHA | NEMO_SPACE)
+            + NEMO_SPACE
+            + pynini.closure(NEMO_ALPHA | NEMO_SPACE),
+            MIN_NEG_WEIGHT,
+        )
 
         user_name = (
             pynutil.delete("username:")
             + delete_space
             + pynutil.delete("\"")
-            + default_chars_symbols
+            + (default_chars_symbols | space_separated_dict_words).optimize()
             + pynutil.delete("\"")
         )
 
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 
         domain = (
-            default_chars_symbols
+            pynini.compose(
+                default_chars_symbols,
+                pynini.closure(TO_LOWER | NEMO_LOWER | NEMO_SPACE | pynutil.add_weight(dict_words, MIN_NEG_WEIGHT)),
+            )
             + insert_space
             + plurals._priority_union(
                 domain_common, pynutil.add_weight(pynini.cross(".", "dot"), weight=0.0001), NEMO_SIGMA
             )
-            + pynini.closure(
-                insert_space + (pynini.cdrewrite(TO_UPPER, "", "", NEMO_SIGMA) @ default_chars_symbols), 0, 1
-            )
+            + pynini.closure(insert_space + default_chars_symbols, 0, 1)
         )
         domain = (
             pynutil.delete("domain:")
