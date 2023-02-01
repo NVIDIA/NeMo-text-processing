@@ -44,6 +44,7 @@ class CardinalFst(GraphFst):
         self.deterministic = deterministic
         # TODO replace to have "oh" as a default for "0"
         graph = pynini.Far(get_abs_path("data/number/cardinal_number_name.far")).get_fst()
+        graph_au = pynini.Far(get_abs_path("data/number/cardinal_number_name_au.far")).get_fst()
         self.graph_hundred_component_at_least_one_none_zero_digit = (
             pynini.closure(NEMO_DIGIT, 2, 3) | pynini.difference(NEMO_DIGIT, pynini.accep("0"))
         ) @ graph
@@ -94,6 +95,7 @@ class CardinalFst(GraphFst):
                 pynini.accep("0") + pynini.closure(NEMO_DIGIT), self.single_digits_graph
             )
             final_graph = self.long_numbers | cardinal_with_leading_zeros
+            final_graph |= self.add_optional_and(graph_au)
         else:
             leading_zeros = pynini.compose(pynini.closure(pynini.accep("0"), 1), self.single_digits_graph)
             cardinal_with_leading_zeros = (
