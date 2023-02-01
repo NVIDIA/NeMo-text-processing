@@ -78,11 +78,13 @@ pipeline {
         }
       }
       failFast true
+      parallel {
       stage('Test En non-deterministic TN & Run all En TN/ITN tests (restore grammars from cache)') {
         steps {
           sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/en/ -m "not pleasefixme" --cpu --tn_cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-2'
           }
         }
+      }
     }
 
     stage('L2: NeMo text processing') {
