@@ -15,17 +15,13 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
-    MIN_POS_WEIGHT,
     NEMO_ALPHA,
     NEMO_CHAR,
     NEMO_LOWER,
     NEMO_NOT_QUOTE,
-    NEMO_NOT_SPACE,
     NEMO_SIGMA,
     NEMO_SPACE,
-    NEMO_UPPER,
     TO_LOWER,
-    TO_UPPER,
     GraphFst,
     delete_extra_space,
     delete_space,
