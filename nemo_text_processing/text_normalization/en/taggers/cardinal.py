@@ -89,21 +89,20 @@ class CardinalFst(GraphFst):
 
         if deterministic:
             long_numbers = pynini.compose(NEMO_DIGIT ** (5, ...), self.single_digits_graph).optimize()
-            final_graph = plurals._priority_union(long_numbers, self.graph_with_and, NEMO_SIGMA).optimize()
+            self.long_numbers = plurals._priority_union(long_numbers, self.graph_with_and, NEMO_SIGMA).optimize()
             cardinal_with_leading_zeros = pynini.compose(
                 pynini.accep("0") + pynini.closure(NEMO_DIGIT), self.single_digits_graph
             )
-            final_graph |= cardinal_with_leading_zeros
+            final_graph = self.long_numbers | cardinal_with_leading_zeros
         else:
             leading_zeros = pynini.compose(pynini.closure(pynini.accep("0"), 1), self.single_digits_graph)
             cardinal_with_leading_zeros = (
                 leading_zeros + pynutil.insert(" ") + pynini.compose(pynini.closure(NEMO_DIGIT), self.graph_with_and)
             )
-
+            self.long_numbers = self.graph_with_and | pynutil.add_weight(self.single_digits_graph, 0.0001)
             # add small weight to non-default graphs to make sure the deterministic option is listed first
             final_graph = (
-                self.graph_with_and
-                | pynutil.add_weight(self.single_digits_graph, 0.0001)
+                self.long_numbers
                 | get_four_digit_year_graph()  # allows e.g. 4567 be pronounced as forty five sixty seven
                 | pynutil.add_weight(single_digits_graph_with_commas, 0.0001)
                 | cardinal_with_leading_zeros
