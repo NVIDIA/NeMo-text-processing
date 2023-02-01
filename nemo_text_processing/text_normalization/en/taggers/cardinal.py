@@ -95,6 +95,7 @@ class CardinalFst(GraphFst):
                 pynini.accep("0") + pynini.closure(NEMO_DIGIT), self.single_digits_graph
             )
             final_graph = self.long_numbers | cardinal_with_leading_zeros
+            final_graph |= self.add_optional_and(graph_au)
         else:
             leading_zeros = pynini.compose(pynini.closure(pynini.accep("0"), 1), self.single_digits_graph)
             cardinal_with_leading_zeros = (
@@ -120,7 +121,6 @@ class CardinalFst(GraphFst):
             final_graph |= pynini.compose(four_digit_comma_graph.optimize(), final_graph).optimize()
 
         self.final_graph = final_graph
-        final_graph |= self.add_optional_and(graph_au)
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + final_graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
