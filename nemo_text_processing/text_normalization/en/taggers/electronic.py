@@ -42,9 +42,7 @@ class ElectronicFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
-        # NOT_DIGIT = pynini.difference(NEMO_CHAR, NEMO_DIGIT).optimize()
         numbers = pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" ")
-        # numbers = pynutil.add_weight(pynini.cdrewrite(numbers, NOT_DIGIT, NOT_DIGIT, NEMO_SIGMA), MIN_NEG_WEIGHT)
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
         accepted_common_domains = pynini.project(
