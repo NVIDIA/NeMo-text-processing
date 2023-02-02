@@ -25,10 +25,12 @@ class WhiteListFst(GraphFst):
     """
     Finite state transducer for classifying whitelisted tokens
         e.g. misses -> tokens { name: "mrs." }
-    This class has highest priority among all classifier grammars. Whitelisted tokens are defined and loaded from "data/whitelist.tsv".
+    This class has highest priority among all classifier grammars.
+    Whitelisted tokens are defined and loaded from "data/whitelist.tsv" (unless input_file specified).
 
     Args:
-        input_file: path to a file with whitelist replacements
+        input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
+        e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
     """
 
     def __init__(self, input_file: str = None):

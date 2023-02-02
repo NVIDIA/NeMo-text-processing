@@ -29,7 +29,8 @@ class InverseNormalizer(Normalizer):
 
     Args:
         lang: language specifying the ITN
-        whitelist: path to a file with whitelist replacements
+        whitelist: path to a file with whitelist replacements. (each line of the file: written_form\tspoken_form\n),
+            e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
         max_number_of_permutations_per_split: a maximum number
@@ -133,8 +134,7 @@ def parse_args():
     )
     parser.add_argument(
         "--whitelist",
-        help="Path to a file with with whitelist replacements,"
-        "e.g., for English whitelist files are stored under inverse_normalization/en/data/whitelist",
+        help="Path to a file with with whitelist replacements," "e.g., inverse_normalization/en/data/whitelist.tsv",
         default=None,
         type=str,
     )

@@ -27,7 +27,8 @@ class WhiteListFst(GraphFst):
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
-        input_file: path to a file with whitelist replacements
+        input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
+            e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
     """
 
     def __init__(self, deterministic: bool = True, input_file: str = None):

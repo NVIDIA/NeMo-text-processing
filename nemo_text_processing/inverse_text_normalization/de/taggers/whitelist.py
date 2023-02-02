@@ -24,7 +24,8 @@ class WhiteListFst(GraphFst):
         e.g. misses -> tokens { name: "Mrs." }
     Args:
         tn_whitelist_tagger: TN whitelist tagger
-        input_file: path to a file with whitelist replacements
+        input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
+        e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
     """
 
     def __init__(self, tn_whitelist_tagger: GraphFst, deterministic: bool = True, input_file: str = None):
