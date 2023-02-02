@@ -24,11 +24,16 @@ class WhiteListFst(GraphFst):
         e.g. misses -> tokens { name: "Mrs." }
     Args:
         tn_whitelist_tagger: TN whitelist tagger
+        input_file: path to a file with whitelist replacements
     """
 
-    def __init__(self, tn_whitelist_tagger: GraphFst, deterministic: bool = True):
+    def __init__(self, tn_whitelist_tagger: GraphFst, deterministic: bool = True, input_file: str = None):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
 
-        whitelist = pynini.invert(tn_whitelist_tagger.graph)
+        if input_file:
+            whitelist = pynini.string_file(input_file).invert()
+        else:
+            whitelist = pynini.invert(tn_whitelist_tagger.graph)
+
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
         self.fst = graph.optimize()

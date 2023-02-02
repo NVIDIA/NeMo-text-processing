@@ -47,9 +47,10 @@ class ClassifyFst(GraphFst):
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
+        whitelist: path to a file with whitelist replacements
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False):
+    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, whitelist: str = None):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
@@ -78,7 +79,7 @@ class ClassifyFst(GraphFst):
             word_graph = WordFst().fst
             time_graph = TimeFst(tn_time=tn_classify.time).fst
             money_graph = MoneyFst(tn_money=tn_classify.money).fst
-            whitelist_graph = WhiteListFst().fst
+            whitelist_graph = WhiteListFst(input_file=whitelist).fst
             punct_graph = PunctuationFst().fst
             electronic_graph = ElectronicFst(tn_electronic=tn_classify.electronic).fst
             telephone_graph = TelephoneFst(tn_telephone=tn_classify.telephone).fst
