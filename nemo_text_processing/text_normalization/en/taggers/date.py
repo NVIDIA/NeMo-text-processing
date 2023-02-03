@@ -138,9 +138,21 @@ def _get_year_graph(cardinal_graph, deterministic: bool = True):
 
 
 def _get_two_digit_year(cardinal_graph, single_digits_graph):
-    wo_digit_year = NEMO_DIGIT ** (2) @ plurals._priority_union(cardinal_graph, single_digits_graph, NEMO_SIGMA)
-    return wo_digit_year
+    two_digit_year = NEMO_DIGIT ** (2) @ plurals._priority_union(cardinal_graph, single_digits_graph, NEMO_SIGMA)
+    return two_digit_year
 
+def _get_financial_period_graph():
+    # 1H23 -> first half of twenty three
+    # 3Q22 -> third quarter of twenty two
+
+    h_ordinals=pynini.cross('1','first') | pynini.cross('2','second')
+    q_ordinals = h_ordinals | pynini.cross('3','third') | pynini.cross('4','fourth')
+
+    h_graph = h_ordinals+pynini.cross('H',' half')
+    q_graph = q_ordinals+pynini.cross('Q',' quarter')
+    period_graph =   h_graph|q_graph
+
+    return period_graph
 
 class DateFst(GraphFst):
     """
@@ -297,7 +309,10 @@ class DateFst(GraphFst):
         else:
             final_graph += pynutil.insert(" preserve_order: true")
 
-        final_graph |= graph_ymd | year_graph
+        period_fy = pynutil.insert("period: \"") + _get_financial_period_graph() + pynutil.insert("\"")
+        graph_fy = period_fy + insert_space + two_digit_year
+
+        final_graph |= graph_ymd | year_graph | graph_fy
 
         if not deterministic or lm:
             ymd_to_mdy_graph = None
