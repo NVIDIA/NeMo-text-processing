@@ -132,7 +132,7 @@ class CardinalFst(GraphFst):
         else:
             graph_tens |= pynutil.add_weight(pynini.cross("18", "aderton"), -0.001)
             graph_tens |= pynutil.add_weight(
-                graph_ties + (pynutil.delete('0') | (graph_digit | pynutil.insert(' ') + graph_digit)), -0.001
+                graph_ties + (pynutil.delete('0') | (graph_digit | insert_space + graph_digit)), -0.001
             )
 
         hundreds = digits_no_one + pynutil.insert("hundra")
