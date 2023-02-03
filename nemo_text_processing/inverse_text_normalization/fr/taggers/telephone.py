@@ -70,7 +70,7 @@ class TelephoneFst(GraphFst):
         doubled_digit.invert()
         digit_twice = single_digits + pynutil.delete(" ") + single_digits
         doubled_digit @= digit_twice
-        
+
         graph_first_pair = graph_zero + delete_space + graph_digit
         graph_first_pair |= pynutil.insert("0") + graph_digit  # if zero is omitted
         graph_first_pair |= doubled_digit
@@ -82,7 +82,7 @@ class TelephoneFst(GraphFst):
         graph_pair_all_digits = single_digits + delete_space
         graph_pair_all_digits += single_digits
         graph_pair_all_digits |= doubled_digit
-        
+
         graph_all_digits = pynini.closure(graph_pair_all_digits + delete_space + insert_space, 3, 3)
         graph_all_digits = graph_first_pair + graph_all_digits + graph_pair_all_digits
 
