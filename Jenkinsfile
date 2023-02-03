@@ -9,7 +9,9 @@ pipeline {
     timeout(time: 2, unit: 'HOURS')
     disableConcurrentBuilds(abortPrevious: true)
   }
-
+  environment {
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-03-23-1'
+  }
   stages {
 
     stage('Add git safe directory'){
@@ -53,17 +55,17 @@ pipeline {
       parallel {
         stage('L0: En TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="1" --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-3'
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="1" --cache_dir ${EN_TN_CACHE}'
           }
         }
         stage('L0: En TN non-deterministic grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize_with_audio.py --text="1" --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-3'
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize_with_audio.py --text="1" --cache_dir ${EN_TN_CACHE}'
           }
         }
         stage('L0: En ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --language en --text="twenty" --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-3'
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --language en --text="twenty" --cache_dir ${EN_TN_CACHE}'
           }
         }
 
@@ -81,7 +83,7 @@ pipeline {
       parallel {
       stage('L1: Test En non-deterministic TN & Run all En TN/ITN tests (restore grammars from cache)') {
         steps {
-          sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/en/ -m "not pleasefixme" --cpu --tn_cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-3'
+          sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/en/ -m "not pleasefixme" --cpu --tn_cache_dir ${EN_TN_CACHE}'
           }
         }
       }
@@ -99,7 +101,7 @@ pipeline {
         stage('L2: Eng TN') {
           steps {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_norm/output_${TIME} && \
-            cd tools/text_processing_deployment && python pynini_export.py --output=$NORM_OUTPUT_DIR --grammars=tn_grammars --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-3 --language=en && ls -R $NORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
+            cd tools/text_processing_deployment && python pynini_export.py --output=$NORM_OUTPUT_DIR --grammars=tn_grammars --cache_dir ${EN_TN_CACHE} --language=en && ls -R $NORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
             sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_norm/output_${TIME} && mkdir $NORM_OUTPUT_DIR && \
             cd nemo_text_processing/text_normalization/ &&  python normalize.py --input_file=/home/jenkinsci/TestData/text_norm/ci/test.txt --input_case="lower_cased" --language=en --output_file=$NORM_OUTPUT_DIR/test.pynini.txt --verbose && \
             cat $NORM_OUTPUT_DIR/test.pynini.txt && \
@@ -111,7 +113,7 @@ pipeline {
         stage('L2: Eng ITN export') {
           steps {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && \
-            cd tools/text_processing_deployment && python pynini_export.py --output=$DENORM_OUTPUT_DIR --grammars=itn_grammars --cache_dir /home/jenkinsci/TestData/text_norm/ci/grammars/02-01-23-3 --language=en && ls -R $DENORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
+            cd tools/text_processing_deployment && python pynini_export.py --output=$DENORM_OUTPUT_DIR --grammars=itn_grammars --cache_dir ${EN_TN_CACHE} --language=en && ls -R $DENORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
             sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && mkdir $DENORM_OUTPUT_DIR && \
             cd nemo_text_processing/inverse_text_normalization/ &&  python inverse_normalize.py --input_file=/home/jenkinsci/TestData/text_denorm/ci/test.txt --language=en --output_file=$DENORM_OUTPUT_DIR/test.pynini.txt --verbose && \
             cmp --silent $DENORM_OUTPUT_DIR/test.pynini.txt /home/jenkinsci/TestData/text_denorm/ci/test_goal_py.txt || exit 1 && \
