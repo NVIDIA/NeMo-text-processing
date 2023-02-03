@@ -41,9 +41,10 @@ class ClassifyFst(GraphFst):
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
+        whitelist: path to a file with whitelist replacements
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False):
+    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, whitelist: str = None):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
