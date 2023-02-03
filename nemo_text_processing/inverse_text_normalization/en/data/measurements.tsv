@@ -1,5 +1,8 @@
-f	fahrenheit
-c	celsius
+°f	fahrenheit
+°c	celsius
+°f	degree fahrenheit
+°c	degree celsius
+k	kelvin
 km	kilometer
 m	meter
 cm	centimeter
@@ -35,7 +38,6 @@ mv	milli volt
 mw	megawatt
 μm	micrometer
 "	inch
-tb	terabyte
 cc	c c
 g	gram
 da	dalton
@@ -47,13 +49,38 @@ oz	ounce
 hl	hecto liter
 μg	microgram
 pg	petagram
-gb	gigabyte
 kb	kilobit
+mb	megabit
+gb	gigabit
+tb	terabit
+pb	petabit
 ev	electron volt
 mb	megabyte
 kb	kilobyte
+gb	gigabyte
+tb	terabyte
+pb	peta byte
+bps	bit per second
 kbps	kilobit per second
 mbps	megabit per second
+gbps	gigabit per second
+kbps	kilo bit per second
+mbps	mega bit per second
+mbps	mega bit per second
+tbps	terabit per second
+tbps	tera bit per second
+pbps	petabit per second
+pbps	peta bit per second
+kb/s	kilobyte per second
+kb/s	kilo byte per second
+mb/s	megabyte  per second
+mb/s	mega byte  per second
+gb/s	gigabyte per second
+gb/s	giga byte per second
+tb/s	terabyte per second
+tb/s	tera byte per second
+pb/s	petabyte per second
+pb/s	peta byte per second
 st	stone
 kl	kilo liter
 tj	tera joule
@@ -86,7 +113,6 @@ ms	milli second
 dm	deci meter
 dm³	cubic deci meter
 amu	atomic mass unit
-mb	megabit
 mf	mega farad
 bq	becquerel
 pb	petabit
@@ -100,7 +126,6 @@ tl	tera liter
 ms	mega second
 mpa	megapascal
 pm	peta meter
-pb	peta byte
 gwh	giga watt hour
 kcal	kilo calory
 gy	gray
