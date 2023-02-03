@@ -117,7 +117,7 @@ class ClassifyFst(GraphFst):
             word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).graph
             time_graph = TimeFst(cardinal=cardinal, deterministic=deterministic).fst
             telephone_graph = TelephoneFst(deterministic=deterministic).fst
-            electronic_graph = ElectronicFst(deterministic=deterministic).fst
+            electronic_graph = ElectronicFst(cardinal=cardinal, deterministic=deterministic).fst
             money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic).fst
             whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             whitelist_graph = whitelist.graph
