@@ -87,10 +87,10 @@ class CardinalFst(GraphFst):
             graph_digit |= pynini.cross("2", "guoktẹ")
             graph_digit |= pynini.cross("1", "akta")
 
-        CASE_KEYS = [
-            "ess", "com_pl", "com_sg", "gen_sg", "gen_pl", "ill_pl", "ill_sg", "loc_sg", "nom_pl"
-        ]
-        DIGIT_SUFFIX = {a: b for a, b in zip(CASE_KEYS, [":n", ":iguin", ":in", ":a", ":id", ":ide", ":i", ":s", ":t"]) }
+        CASE_KEYS = ["ess", "com_pl", "com_sg", "gen_sg", "gen_pl", "ill_pl", "ill_sg", "loc_sg", "nom_pl"]
+        DIGIT_SUFFIX = {
+            a: b for a, b in zip(CASE_KEYS, [":n", ":iguin", ":in", ":a", ":id", ":ide", ":i", ":s", ":t"])
+        }
 
         # digits_cased = {}
         # for key in CASE_KEYS:
