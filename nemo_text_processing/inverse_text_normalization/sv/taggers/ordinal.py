@@ -20,7 +20,7 @@ from pynini.lib import pynutil
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal
-        e.g. dreizehnter -> tokens { name: "13." }
+        e.g. hundraandra -> tokens { name: "102." }
 
     Args:
         itn_cardinal_tagger: ITN Cardinal Tagger
@@ -30,9 +30,10 @@ class OrdinalFst(GraphFst):
     def __init__(self, tn_ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
-        graph = pynini.arcmap(tn_ordinal.graph, map_type="rmweight").invert().optimize()
+        graph = pynini.arcmap(tn_ordinal.bare_ordinals, map_type="rmweight").invert().optimize()
 
         final_graph = graph + pynutil.insert(".")
+        self.graph = final_graph
 
         graph = pynutil.insert("name: \"") + final_graph + pynutil.insert("\"")
         self.fst = graph.optimize()
