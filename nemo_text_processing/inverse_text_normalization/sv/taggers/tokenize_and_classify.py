@@ -76,7 +76,6 @@ class ClassifyFst(GraphFst):
             tn_ordinal_tagger = TNOrdinalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
             tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=False)
             tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
-            tn_ordinal_verbalizer = TNOrdinalVerbalizer(deterministic=False)
             tn_fraction_verbalizer = TNFractionVerbalizer(deterministic=False)
             tn_time_verbalizer = TNTimeVerbalizer(deterministic=False)
             tn_date_verbalizer = TNDateVerbalizer(deterministic=False)
@@ -87,7 +86,7 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger)
             cardinal_graph = cardinal.fst
 
-            ordinal = OrdinalFst(itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer)
+            ordinal = OrdinalFst(tn_ordinal=tn_ordinal_tagger)
             ordinal_graph = ordinal.fst
             decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger)
             decimal_graph = decimal.fst

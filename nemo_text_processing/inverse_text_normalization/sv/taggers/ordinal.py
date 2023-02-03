@@ -27,16 +27,12 @@ class OrdinalFst(GraphFst):
         tn_ordinal_verbalizer: TN Ordinal Verbalizer
     """
 
-    def __init__(self, itn_cardinal_tagger: GraphFst, tn_ordinal_verbalizer: GraphFst, deterministic: bool = True):
+    def __init__(self, tn_ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
-        tagger = tn_ordinal_verbalizer.graph.invert().optimize()
+        graph = pynini.arcmap(tn_ordinal.graph, map_type="rmweight").invert().optimize()
 
-        graph = (
-            pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        ) @ itn_cardinal_tagger.graph
-
-        final_graph = tagger @ graph + pynutil.insert(".")
+        final_graph = graph + pynutil.insert(".")
 
         graph = pynutil.insert("name: \"") + final_graph + pynutil.insert("\"")
         self.fst = graph.optimize()
