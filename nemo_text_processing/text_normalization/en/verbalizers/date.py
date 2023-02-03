@@ -62,10 +62,7 @@ class DateFst(GraphFst):
 
         # financial period
         graph_fy = (
-                pynutil.insert("the ")
-                + period
-                + pynutil.insert(" of ")
-                + pynini.closure(delete_extra_space + year, 0, 1)
+            pynutil.insert("the ") + period + pynutil.insert(" of ") + pynini.closure(delete_extra_space + year, 0, 1)
         )
 
         # month (day) year

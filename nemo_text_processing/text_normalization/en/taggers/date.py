@@ -141,18 +141,20 @@ def _get_two_digit_year(cardinal_graph, single_digits_graph):
     two_digit_year = NEMO_DIGIT ** (2) @ plurals._priority_union(cardinal_graph, single_digits_graph, NEMO_SIGMA)
     return two_digit_year
 
+
 def _get_financial_period_graph():
     # 1H23 -> first half of twenty three
     # 3Q22 -> third quarter of twenty two
 
-    h_ordinals=pynini.cross('1','first') | pynini.cross('2','second')
-    q_ordinals = h_ordinals | pynini.cross('3','third') | pynini.cross('4','fourth')
+    h_ordinals = pynini.cross('1', 'first') | pynini.cross('2', 'second')
+    q_ordinals = h_ordinals | pynini.cross('3', 'third') | pynini.cross('4', 'fourth')
 
-    h_graph = h_ordinals+pynini.cross('H',' half')
-    q_graph = q_ordinals+pynini.cross('Q',' quarter')
-    period_graph =   h_graph|q_graph
+    h_graph = h_ordinals + pynini.cross('H', ' half')
+    q_graph = q_ordinals + pynini.cross('Q', ' quarter')
+    period_graph = h_graph | q_graph
 
     return period_graph
+
 
 class DateFst(GraphFst):
     """
