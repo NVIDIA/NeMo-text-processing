@@ -10,7 +10,7 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: true)
   }
   environment {
-    EN_TN_CACHE=/home/jenkinsci/TestData/text_norm/ci/grammars/02-03-23-1
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-03-23-1'
   }
   stages {
 
