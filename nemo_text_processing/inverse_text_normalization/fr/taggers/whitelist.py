@@ -22,12 +22,20 @@ class WhiteListFst(GraphFst):
     """
     Finite state transducer for classifying whitelisted tokens
         e.g. misses -> tokens { name: "mrs." }
-    This class has highest priority among all classifier grammars. Whitelisted tokens are defined and loaded from "data/whitelist.tsv".
+    This class has highest priority among all classifier grammars.
+    Whitelisted tokens are defined and loaded from "data/whitelist.tsv" (unless input_file specified).
+
+    Args:
+        input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
+        e.g. nemo_text_processing/inverse_text_normalization/fr/data/whitelist.tsv
     """
 
-    def __init__(self):
+    def __init__(self, input_file: str = None):
         super().__init__(name="whitelist", kind="classify")
 
-        whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv"))
+        if input_file:
+            whitelist = pynini.string_file(input_file).invert()
+        else:
+            whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv"))
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
         self.fst = graph.optimize()
