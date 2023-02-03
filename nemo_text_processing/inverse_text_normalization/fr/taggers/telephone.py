@@ -52,18 +52,37 @@ class TelephoneFst(GraphFst):
             (graph_ties + delete_hyphen + graph_digit),
         )
 
+        # accept `double zéro` -> `00`
+        single_digits = graph_digit | graph_zero
+        digit_words = pynini.union(graph_digit.optimize(), pynini.cross("zéro", "0")).invert()
+
+        doubled_digit = pynini.union(
+            *[
+                pynini.cross(
+                    pynini.project(str(i) @ digit_words, "output")
+                    + pynini.accep(" ")
+                    + pynini.project(str(i) @ digit_words, "output"),
+                    pynutil.insert("double ") + pynini.project(str(i) @ digit_words, "output"),
+                )
+                for i in range(10)
+            ]
+        )
+        doubled_digit.invert()
+        digit_twice = single_digits + pynutil.delete(" ") + single_digits
+        doubled_digit @= digit_twice
+        
         graph_first_pair = graph_zero + delete_space + graph_digit
         graph_first_pair |= pynutil.insert("0") + graph_digit  # if zero is omitted
+        graph_first_pair |= doubled_digit
         graph_first_pair += (
             delete_space + insert_space
         )  # delete_space since closure allows possible gaps to be removed
 
         # All digits
-        single_digits = graph_digit | graph_zero
-
         graph_pair_all_digits = single_digits + delete_space
         graph_pair_all_digits += single_digits
-
+        graph_pair_all_digits |= doubled_digit
+        
         graph_all_digits = pynini.closure(graph_pair_all_digits + delete_space + insert_space, 3, 3)
         graph_all_digits = graph_first_pair + graph_all_digits + graph_pair_all_digits
 
