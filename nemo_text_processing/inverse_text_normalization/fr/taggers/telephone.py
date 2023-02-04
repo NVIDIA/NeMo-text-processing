@@ -54,7 +54,7 @@ class TelephoneFst(GraphFst):
 
         # accept `double zéro` -> `00`
         single_digits = graph_digit | graph_zero
-        digit_words = pynini.union(graph_digit.optimize(), pynini.cross("zéro", "0")).invert()
+        digit_words = pynini.union(graph_digit.optimize(), graph_zero).invert()
 
         doubled_digit = pynini.union(
             *[
