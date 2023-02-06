@@ -92,7 +92,7 @@ def parse_args():
         "e.g., for English whitelist files are stored under inverse_normalization/en/data/whitelist. If None,"
         "the default file will be used.",
         default=None,
-        type=str,
+        type=lambda x: None if x == "None" else x,
     )
     parser.add_argument("--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true")
     parser.add_argument(
