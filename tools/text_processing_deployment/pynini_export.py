@@ -70,7 +70,6 @@ def export_grammars(output_dir, grammars):
         generator_main(f"{out_dir}/{category}.far", graphs)
 
 
-
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--output_dir", help="output directory for grammars", required=True, type=str)
