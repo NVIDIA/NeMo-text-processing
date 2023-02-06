@@ -70,6 +70,7 @@ def export_grammars(output_dir, grammars):
         generator_main(f"{out_dir}/{category}.far", graphs)
 
 
+
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--output_dir", help="output directory for grammars", required=True, type=str)
@@ -92,7 +93,7 @@ def parse_args():
         "e.g., for English whitelist files are stored under inverse_normalization/en/data/whitelist. If None,"
         "the default file will be used.",
         default=None,
-        type=str,
+        type=lambda x: None if x == "None" else x,
     )
     parser.add_argument("--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true")
     parser.add_argument(
