@@ -55,6 +55,28 @@ class TimeFst(GraphFst):
         labels_minute_single = [str(x) for x in range(1, 10)]
         labels_minute_double = [str(x) for x in range(10, 60)]
 
+        minutes_to = pynini.string_map([(str(i), str(60-i)) for i in range(1, 60)])
+        minutes_inverse = pynini.invert(
+            pynini.project(minutes_to, "input")
+            @ cardinal.graph
+        )
+        self.minute_words_to_words = minutes_inverse @ minutes_to @ cardinal.graph
+        minute_words_to_words = pynutil.insert("minutes: \"") + self.minute_words_to_words + pynutil.insert("\"")
+        def hours_to_pairs():
+            for x in range(1, 13):
+                if x == 12:
+                    y = 1
+                else:
+                    y = x + 1
+                yield x, y
+        hours_to = pynini.string_map([(str(x[0]), str(x[1])) for x in hours_to_pairs()])
+        hours_inverse = pynini.invert(
+            pynini.project(hours_to, "input")
+            @ cardinal.graph
+        )
+        self.hour_words_to_words = hours_inverse @ hours_to @ cardinal.graph
+        hour_words_to_words = pynutil.insert("hours: \"") + self.hour_words_to_words + pynutil.insert("\"")
+
         delete_leading_zero_to_double_digit = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
         graph_hour = pynini.union(*labels_hour)
