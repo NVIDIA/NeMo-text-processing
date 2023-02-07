@@ -39,9 +39,10 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
 
         minutes_to = pynini.string_map([(str(i), str(60-i)) for i in range(1, 60)])
-        minutes = pynini.string_map([str(i) for i in range(1, 60)])
-        # minutes_to_words = minutes @ minutes_to @ tn_cardinal_tagger.graph_en
-        minutes_inverse = pynini.invert(minutes @ tn_cardinal_tagger.graph_en)
+        minutes_inverse = pynini.invert(
+            pynini.project(minutes_to, "input")
+            @ tn_cardinal_tagger.graph_en
+        )
         minute_words_to_words = minutes_inverse @ minutes_to @ tn_cardinal_tagger.graph_en
         minute_words_to_words = pynutil.insert("minutes: \"") + minute_words_to_words + pynutil.insert("\"")
         def hours_to_pairs():
@@ -53,7 +54,6 @@ class TimeFst(GraphFst):
                 yield x, y
         hours_to = pynini.string_map([(str(x[0]), str(x[1])) for x in hours_to_pairs()])
 
-        
 
         # lazy way to make sure compounds work
         optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))
