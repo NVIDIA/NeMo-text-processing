@@ -10,3 +10,4 @@ tqdm>=4.41.0
 transformers
 wget
 wrapt
+pynini==2.1.5

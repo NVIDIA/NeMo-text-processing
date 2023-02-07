@@ -10,3 +10,4 @@ sphinxcontrib-bibtex
 wandb
 wget
 wrapt
+pynini==2.1.5
