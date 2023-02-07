@@ -29,7 +29,7 @@ def itn_grammars(**kwargs):
     d = {}
     d['classify'] = {
         'TOKENIZE_AND_CLASSIFY': ITNClassifyFst(
-            cache_dir=kwargs["cache_dir"], overwrite_cache=kwargs["overwrite_cache"]
+            cache_dir=kwargs["cache_dir"], overwrite_cache=kwargs["overwrite_cache"], whitelist=kwargs["whitelist"]
         ).fst
     }
     d['verbalize'] = {'ALL': ITNVerbalizeFst().fst, 'REDUP': pynini.accep("REDUP")}
@@ -44,6 +44,7 @@ def tn_grammars(**kwargs):
             deterministic=True,
             cache_dir=kwargs["cache_dir"],
             overwrite_cache=kwargs["overwrite_cache"],
+            whitelist=kwargs["whitelist"],
         ).fst
     }
     d['verbalize'] = {'ALL': TNVerbalizeFst(deterministic=True).fst, 'REDUP': pynini.accep("REDUP")}
@@ -75,7 +76,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "pt", "ru", 'fr', 'vi', 'zh', 'ar'],
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'sv', 'vi', 'zh', 'ar'],
         type=str,
         default='en',
     )
@@ -84,6 +85,14 @@ def parse_args():
     )
     parser.add_argument(
         "--input_case", help="input capitalization", choices=["lower_cased", "cased"], default="cased", type=str
+    )
+    parser.add_argument(
+        "--whitelist",
+        help="Path to a file with with whitelist replacements,"
+        "e.g., for English whitelist files are stored under inverse_normalization/en/data/whitelist. If None,"
+        "the default file will be used.",
+        default=None,
+        type=lambda x: None if x == "None" else x,
     )
     parser.add_argument("--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true")
     parser.add_argument(
@@ -155,6 +164,11 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+    elif args.language == 'sv':
+        from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.sv.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'vi':
         from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -181,6 +195,9 @@ if __name__ == '__main__':
     export_grammars(
         output_dir=output_dir,
         grammars=locals()[args.grammars](
-            input_case=args.input_case, cache_dir=args.cache_dir, overwrite_cache=args.overwrite_cache
+            input_case=args.input_case,
+            cache_dir=args.cache_dir,
+            overwrite_cache=args.overwrite_cache,
+            whitelist=args.whitelist,
         ),
     )
