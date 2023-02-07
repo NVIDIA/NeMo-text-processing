@@ -101,7 +101,7 @@ class ClassifyFst(GraphFst):
                 itn_cardinal_tagger=cardinal, tn_date_verbalizer=tn_date_verbalizer, tn_date_tagger=tn_date_tagger
             ).fst
             word_graph = WordFst().fst
-            time_graph = TimeFst(tn_time_verbalizer=tn_time_verbalizer).fst
+            time_graph = TimeFst(tn_cardinal_tagger=tn_cardinal_tagger, tn_time_verbalizer=tn_time_verbalizer).fst
             money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal).fst
             whitelist_graph = WhiteListFst(tn_whitelist_tagger=tn_whitelist_tagger).fst
             punct_graph = PunctuationFst().fst

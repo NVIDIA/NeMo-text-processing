@@ -35,8 +35,24 @@ class TimeFst(GraphFst):
         tn_time_verbalizer: TN time verbalizer
     """
 
-    def __init__(self, tn_time_verbalizer: GraphFst, deterministic: bool = True):
+    def __init__(self, tn_cardinal_tagger: GraphFst, tn_time_verbalizer: GraphFst, deterministic: bool = True):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
+
+        minutes_to = pynini.string_map([(str(i), str(60-i)) for i in range(1, 60)])
+        minutes = pynini.string_map([str(i) for i in range(1, 60)])
+        # minutes_to_words = minutes @ minutes_to @ tn_cardinal_tagger.graph_en
+        minutes_inverse = pynini.invert(minutes @ tn_cardinal_tagger.graph_en)
+        minute_words_to_words = minutes_inverse @ minutes_to @ tn_cardinal_tagger.graph_en
+        minute_words_to_words = pynutil.insert("minutes: \"") + minute_words_to_words + pynutil.insert("\"")
+        def hours_to():
+            for x in range(1, 12):
+                if x == 12:
+                    y = 1
+                else:
+                    y = x + 1
+                yield x, y
+        
+
         # lazy way to make sure compounds work
         optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))
         graph = (tn_time_verbalizer.graph @ optional_delete_space).invert().optimize()
