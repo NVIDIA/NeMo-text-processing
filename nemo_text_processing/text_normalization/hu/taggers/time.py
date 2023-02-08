@@ -104,15 +104,24 @@ class TimeFst(GraphFst):
                     y = x + 1
                 yield y, x
         hours_next = pynini.string_map([(str(x[0]), str(x[1])) for x in hours_to_pairs()])
-        self_hour_words_to_words = hours_next @ cardinal.graph
-        hour_words_to_words = pynutil.insert("hours: \"") + self_hour_words_to_words + pynutil.insert("\"")
+        hours_next_inverse = pynini.invert(
+            pynini.project(hours_next, "input")
+            @ cardinal.graph
+        )
+        self.hour_numbers_to_words = hours_next @ cardinal.graph
+        self.hour_words_to_words = hours_next_inverse @ self.hour_numbers_to_words
+        hour_numbers_to_words = pynutil.insert("hours: \"") + self.hour_numbers_to_words + pynutil.insert("\"")
+        hour_words_to_words = pynutil.insert("hours: \"") + self.hour_words_to_words + pynutil.insert("\"")
 
         quarter_map = pynini.string_map([(p[1], str(p[0])) for p in QUARTERS.items()])
         quarter_map_graph = pynutil.insert("minutes: \"") + (quarter_map @ cardinal.graph) + pynutil.insert("\"")
         quarter_words = pynini.string_map(QUARTERS.values())
         quarter_words_graph = pynutil.insert("minutes: \"") + quarter_words + pynutil.insert("\"")
+        # {quarter} {hour_next}
         # negyed 2 -> minutes: "tizenöt" hours: "egy"
-        self.quarter_prefixed_next_to_current = quarter_map_graph + NEMO_SPACE + hour_words_to_words
+        self.quarter_prefixed_next_to_current = quarter_map_graph + NEMO_SPACE + hour_numbers_to_words
+        # For ITN
+        self.quarter_prefixed_next_to_current_words = quarter_map_graph + NEMO_SPACE + hour_words_to_words
 
         delete_leading_zero_to_double_digit = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
