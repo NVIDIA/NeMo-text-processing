@@ -102,21 +102,17 @@ class TimeFst(GraphFst):
                     y = 1
                 else:
                     y = x + 1
-                yield x, y
-        hours_to = pynini.string_map([(str(x[0]), str(x[1])) for x in hours_to_pairs()])
-        hours_inverse = pynini.invert(
-            pynini.project(hours_to, "input")
-            @ cardinal.graph
-        )
-        self.hour_words_to_words = hours_inverse @ hours_to @ cardinal.graph
-        hour_words_to_words = pynutil.insert("hours: \"") + self.hour_words_to_words + pynutil.insert("\"")
+                yield y, x
+        hours_next = pynini.string_map([(str(x[0]), str(x[1])) for x in hours_to_pairs()])
+        self_hour_words_to_words = hours_next @ cardinal.graph
+        hour_words_to_words = pynutil.insert("hours: \"") + self_hour_words_to_words + pynutil.insert("\"")
 
         quarter_map = pynini.string_map([(p[1], str(p[0])) for p in QUARTERS.items()])
-        quarter_map_graph = pynutil.insert("minutes: \"") + quarter_map + pynutil.insert("\"")
+        quarter_map_graph = pynutil.insert("minutes: \"") + (quarter_map @ cardinal.graph) + pynutil.insert("\"")
         quarter_words = pynini.string_map(QUARTERS.values())
         quarter_words_graph = pynutil.insert("minutes: \"") + quarter_words + pynutil.insert("\"")
-        simple_prefixed = quarter_map_graph + NEMO_SPACE + hour_words_to_words
-        quarter_prefixed_hours = quarter_words_graph + NEMO_SPACE + hour_words_to_words
+        # negyed 2 -> minutes: "tizenöt" hours: "egy"
+        self.quarter_prefixed_next_to_current = quarter_map_graph + NEMO_SPACE + hour_words_to_words
 
         delete_leading_zero_to_double_digit = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
