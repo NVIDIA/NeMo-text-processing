@@ -14,6 +14,8 @@
 
 import pytest
 from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+
 from parameterized import parameterized
 
 from ..utils import CACHE_DIR, parse_test_case_file
@@ -28,3 +30,12 @@ class TestDate:
     def test_norm_date(self, test_input, expected):
         preds = self.normalizer_zh.normalize(test_input)
         assert expected == preds
+
+    inverse_normalizer = InverseNormalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False)
+
+    @parameterized.expand(parse_test_case_file('zh/data_inverse_text_normalization/test_cases_date.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm(self, test_input, expected):
+        pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
+        assert pred == expected
