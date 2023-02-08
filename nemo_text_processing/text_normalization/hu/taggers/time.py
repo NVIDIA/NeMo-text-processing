@@ -113,8 +113,10 @@ class TimeFst(GraphFst):
 
         quarter_map = pynini.string_map([(p[1], str(p[0])) for p in QUARTERS.items()])
         quarter_map_graph = pynutil.insert("minutes: \"") + quarter_map + pynutil.insert("\"")
+        quarter_words = pynini.string_map(QUARTERS.values())
+        quarter_words_graph = pynutil.insert("minutes: \"") + quarter_words + pynutil.insert("\"")
         simple_prefixed = quarter_map_graph + NEMO_SPACE + hour_words_to_words
-
+        quarter_prefixed_hours = quarter_words_graph + NEMO_SPACE + hour_words_to_words
 
         delete_leading_zero_to_double_digit = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
