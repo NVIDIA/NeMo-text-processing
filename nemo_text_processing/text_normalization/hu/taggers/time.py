@@ -25,14 +25,14 @@ from nemo_text_processing.text_normalization.hu.utils import get_abs_path, naive
 from pynini.lib import pynutil
 
 
-def get_all_to_or_from():
-    quarters = {
-        15: "negyed",
-        30: "fél",
-        45: "háromnegyed"
-    }
+QUARTERS = {
+    15: "negyed",
+    30: "fél",
+    45: "háromnegyed"
+}
+def get_all_to_or_from_numbers():
     output = {}
-    for num, word in quarters.items():
+    for num, word in QUARTERS.items():
         current_past = []
         current_to = []
         for i in range(1, 60):
@@ -45,6 +45,17 @@ def get_all_to_or_from():
         output[word] = {}
         output[word]["past"] = current_past
         output[word]["to"] = current_to
+    return output
+
+
+def get_all_to_or_from_fst(cardinal: GraphFst):
+    numbers = get_all_to_or_from_numbers()
+    output = {}
+    for key in numbers:
+        for when in ["past", "to"]:
+            output[key] = {}
+            map = pynini.string_map(numbers[key][when])
+            output[key][when] = pynini.project(map, "input") @ map @ cardinal.graph
     return output
 
 
@@ -99,6 +110,11 @@ class TimeFst(GraphFst):
         )
         self.hour_words_to_words = hours_inverse @ hours_to @ cardinal.graph
         hour_words_to_words = pynutil.insert("hours: \"") + self.hour_words_to_words + pynutil.insert("\"")
+
+        quarter_map = pynini.string_map([(p[1], str(p[0])) for p in QUARTERS.items()])
+        quarter_map_graph = pynutil.insert("minutes: \"") + quarter_map + pynutil.insert("\"")
+        simple_prefixed = quarter_map_graph + NEMO_SPACE + hour_words_to_words
+
 
         delete_leading_zero_to_double_digit = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
