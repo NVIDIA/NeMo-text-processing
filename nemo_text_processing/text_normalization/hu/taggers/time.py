@@ -25,6 +25,29 @@ from nemo_text_processing.text_normalization.hu.utils import get_abs_path, naive
 from pynini.lib import pynutil
 
 
+def get_all_to_or_from():
+    quarters = {
+        15: "negyed",
+        30: "fél",
+        45: "háromnegyed"
+    }
+    output = {}
+    for num, word in quarters.items():
+        current_past = []
+        current_to = []
+        for i in range(1, 60):
+            if i == num:
+                continue
+            elif i < num:
+                current_to.append((str(i), str(num-i)))
+            else:
+                current_past.append((str(i), str(i-num)))
+        output[word] = {}
+        output[word]["past"] = current_past
+        output[word]["to"] = current_to
+    return output
+
+
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
