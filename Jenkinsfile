@@ -16,7 +16,9 @@ pipeline {
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
-
+    RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
+    VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
+    SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
 
 
@@ -204,7 +206,7 @@ pipeline {
         }
       }
       failFast true
-      parallel {
+      stages {
         stage('L1: Test EN non-deterministic TN & Run all En TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/en/ -m "not pleasefixme" --cpu --tn_cache_dir ${EN_TN_CACHE}'
