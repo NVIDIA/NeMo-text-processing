@@ -22,7 +22,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
-from pynini.examples import plurals
 from pynini.lib import pynutil
 
 unit_singular = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
