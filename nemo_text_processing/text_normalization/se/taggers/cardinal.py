@@ -79,12 +79,7 @@ class CardinalFst(GraphFst):
 
         graph_zero = zero
         if not deterministic:
-            graph_zero |= pynini.cross("0", "nulˈla")
-            graph_zero |= pynini.cross("0", "nol'la")
-            graph_zero |= pynini.cross("0", "nul'la")
-            graph_zero |= pynini.cross("0", "nolˈla")
             graph_zero |= pynini.cross("0", "nulla")
-            graph_digit |= pynini.cross("2", "guoktẹ")
             graph_digit |= pynini.cross("1", "akta")
 
         CASE_KEYS = ["ess", "com_pl", "com_sg", "gen_sg", "gen_pl", "ill_pl", "ill_sg", "loc_sg", "nom_pl"]
