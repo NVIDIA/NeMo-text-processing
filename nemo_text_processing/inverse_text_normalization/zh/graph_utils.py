@@ -19,9 +19,7 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
-from nemo_text_processing.text_normalization.en.utils import get_abs_path
 from pynini import Far
-from pynini.examples import plurals
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 

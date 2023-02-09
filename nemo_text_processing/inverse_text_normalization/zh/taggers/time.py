@@ -113,7 +113,6 @@ class TimeFst(GraphFst):
         graph_hours_to_component = graph_hours | graph_noon | graph_midnight  # | graph_hours_count
         graph_hours_to_component @= hours_to  # hours_to is the string_file data
         graph_hours_to_component = pynutil.insert("hours: \"") + graph_hours_to_component + pynutil.insert("\"")
-        graph_hours_to_component = graph_hours_to_component
 
         # converting minutes back
         graph_minutes_to_component = minutes | graph_half | graph_quarter | graph_three_quarter | graph_half_alt

@@ -65,7 +65,6 @@ class TimeFst(GraphFst):
             + pynini.accep("p.m.")
             + pynutil.delete("\"")
         )
-        optional_affix_pm = pynutil.insert(" ") + pynini.closure(affix_pm, 0, 1)
         graph_pm = token_hour @ add_leading_zero + delete_space + pynutil.insert(":") + token_minute
         graph_pm_affix = (
             token_hour @ add_leading_zero
