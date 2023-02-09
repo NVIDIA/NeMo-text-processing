@@ -31,6 +31,7 @@ class TestFraction:
         assert expected == preds
 
     inverse_normalizer = InverseNormalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False)
+
     @parameterized.expand(parse_test_case_file('zh/data_inverse_text_normalization/test_cases_fraction.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit

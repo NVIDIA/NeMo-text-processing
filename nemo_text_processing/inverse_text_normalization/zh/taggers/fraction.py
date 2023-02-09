@@ -17,6 +17,7 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
 from pynini.lib import pynutil
 
+
 class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction

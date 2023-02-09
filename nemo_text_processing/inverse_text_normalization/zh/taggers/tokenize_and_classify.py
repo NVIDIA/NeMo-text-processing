@@ -14,8 +14,8 @@
 
 import logging
 import os
-import pynini
 
+import pynini
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -53,7 +53,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: set to True to overwrite .far files
     """
 
-    def __init__(self, cache_dir: str = None, whitelist: str=None, overwrite_cache: bool = False):
+    def __init__(self, cache_dir: str = None, whitelist: str = None, overwrite_cache: bool = False):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
@@ -73,7 +73,6 @@ class ClassifyFst(GraphFst):
 
             decimal = DecimalFst(cardinal)
             decimal_graph = decimal.fst
-
 
             date_graph = DateFst().fst
             word_graph = WordFst().fst

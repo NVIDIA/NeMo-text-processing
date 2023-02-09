@@ -30,7 +30,6 @@ class TestMoney:
         preds = self.normalizer_zh.normalize(test_input)
         assert expected == preds
 
-
     inverse_normalizer = InverseNormalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('zh/data_inverse_text_normalization/test_cases_money.txt'))

@@ -50,13 +50,5 @@ class VerbalizeFst(GraphFst):
         time_graph = TimeFst().fst
         date_graph = DateFst().fst
 
-        graph = (
-            time_graph
-            | date_graph
-            | money_graph
-            | fraction_graph
-            | ordinal_graph
-            | decimal_graph
-            | cardinal_graph
-        )
+        graph = time_graph | date_graph | money_graph | fraction_graph | ordinal_graph | decimal_graph | cardinal_graph
         self.fst = graph
