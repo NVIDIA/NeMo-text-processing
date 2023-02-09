@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from argparse import ArgumentParser
 from time import perf_counter
 from typing import List
@@ -28,6 +29,8 @@ class InverseNormalizer(Normalizer):
 
     Args:
         lang: language specifying the ITN
+        whitelist: path to a file with whitelist replacements. (each line of the file: written_form\tspoken_form\n),
+            e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
         max_number_of_permutations_per_split: a maximum number
@@ -37,52 +40,58 @@ class InverseNormalizer(Normalizer):
     def __init__(
         self,
         lang: str = 'en',
+        whitelist: str = None,
         cache_dir: str = None,
         overwrite_cache: bool = False,
         max_number_of_permutations_per_split: int = 729,
     ):
 
-        if lang == 'en':
+        if lang == 'en':  # English
             from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.en.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'es':
+        elif lang == 'es':  # Spanish (Espanol)
             from nemo_text_processing.inverse_text_normalization.es.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.es.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'pt':
+        elif lang == 'pt':  # Portuguese (Português)
             from nemo_text_processing.inverse_text_normalization.pt.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.pt.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'ru':
+        elif lang == 'ru':  # Russian (Russkiy Yazyk)
             from nemo_text_processing.inverse_text_normalization.ru.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.ru.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'de':
+        elif lang == 'de':  # German (Deutsch)
             from nemo_text_processing.inverse_text_normalization.de.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.de.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
-        elif lang == 'fr':
+        elif lang == 'fr':  # French (Français)
             from nemo_text_processing.inverse_text_normalization.fr.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
-        elif lang == 'vi':
+        elif lang == 'vi':  # Vietnamese (Tiếng Việt)
             from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.vi.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'ar':  # Arabic
+            from nemo_text_processing.inverse_text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
 
-        self.tagger = ClassifyFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
+        self.tagger = ClassifyFst(cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache)
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
         self.lang = lang
@@ -123,6 +132,12 @@ def parse_args():
     parser.add_argument(
         "--language", help="language", choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi'], default="en", type=str
     )
+    parser.add_argument(
+        "--whitelist",
+        help="Path to a file with with whitelist replacements," "e.g., inverse_normalization/en/data/whitelist.tsv",
+        default=None,
+        type=str,
+    )
     parser.add_argument("--verbose", help="print info for debugging", action='store_true')
     parser.add_argument("--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true")
     parser.add_argument(
@@ -136,9 +151,11 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
+
+    whitelist = os.path.abspath(args.whitelist) if args.whitelist else None
     start_time = perf_counter()
     inverse_normalizer = InverseNormalizer(
-        lang=args.language, cache_dir=args.cache_dir, overwrite_cache=args.overwrite_cache
+        lang=args.language, cache_dir=args.cache_dir, overwrite_cache=args.overwrite_cache, whitelist=whitelist,
     )
     print(f'Time to generate graph: {round(perf_counter() - start_time, 2)} sec')
 

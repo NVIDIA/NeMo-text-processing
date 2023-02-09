@@ -51,15 +51,18 @@ from pynini.lib import pynutil
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence, that is lower cased.
-    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File. 
+    For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
     More details to deployment at NeMo/tools/text_processing_deployment.
 
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
+        whitelist: path to a file with whitelist replacements
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, deterministic: bool = True):
+    def __init__(
+        self, cache_dir: str = None, overwrite_cache: bool = False, deterministic: bool = True, whitelist: str = None
+    ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
         far_file = None
@@ -80,7 +83,7 @@ class ClassifyFst(GraphFst):
             tn_date_verbalizer = TNDateVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
             tn_electronic_tagger = TNElectronicTagger(deterministic=False)
             tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
-            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False)
+            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False, input_file=whitelist)
 
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger)
             cardinal_graph = cardinal.fst

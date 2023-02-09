@@ -50,7 +50,7 @@ from pynini.lib import pynutil
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence including punctuation.
-    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File. 
+    For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
     More details to deployment at NeMo/tools/text_processing_deployment.
     
     Args:
@@ -123,7 +123,7 @@ class ClassifyFst(GraphFst):
             logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
 
             start_time = time.time()
-            electonic_graph = ElectronicFst(deterministic=deterministic).fst
+            electonic_graph = ElectronicFst(cardinal=cardinal, deterministic=deterministic).fst
             logging.debug(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
 
             start_time = time.time()

@@ -23,7 +23,6 @@ import pynini
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
-from pynini import Far
 from pynini.lib import rewrite
 
 
@@ -98,26 +97,21 @@ class NormalizerWithAudio(Normalizer):
         self.tagger_non_deterministic = self.tagger
         self.verbalizer_non_deterministic = self.verbalizer
 
-        # initialize deterministic normalizer
-        super().__init__(
-            input_case=input_case,
-            lang=lang,
-            deterministic=True,
-            cache_dir=cache_dir,
-            overwrite_cache=overwrite_cache,
-            whitelist=whitelist,
-            lm=lm,
-            post_process=post_process,
-            max_number_of_permutations_per_split=max_number_of_permutations_per_split,
-        )
-
-        fst_tc = f"{cache_dir}/en_tn_True_deterministic_cased__tokenize.far"
-        fst_ver = f"{cache_dir}/en_tn_True_deterministic_verbalizer.far"
-        fst_punct_post = f"{cache_dir}/en_tn_post_processing.far"
-        fst_tc = Far(fst_tc, mode='r')['tokenize_and_classify']
-        fst_ver = Far(fst_ver, mode='r')['verbalize']
-        fst_punct_post = Far(fst_punct_post, mode='r')['post_process_graph']
-        self.merged_tn_deterministic_graph = (fst_tc @ fst_ver) @ fst_punct_post
+        if lang != "ru":
+            # initialize deterministic normalizer
+            super().__init__(
+                input_case=input_case,
+                lang=lang,
+                deterministic=True,
+                cache_dir=cache_dir,
+                overwrite_cache=overwrite_cache,
+                whitelist=whitelist,
+                lm=lm,
+                post_process=post_process,
+                max_number_of_permutations_per_split=max_number_of_permutations_per_split,
+            )
+        else:
+            self.tagger, self.verbalizer = None, None
         self.lm = lm
 
     def normalize(
@@ -147,7 +141,7 @@ class NormalizerWithAudio(Normalizer):
         Returns:
             normalized text options (usually there are multiple ways of normalizing a given semiotic class)
         """
-        if pred_text is None:
+        if pred_text is None or self.tagger is None:
             return self.normalize_non_deterministic(
                 text=text, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
             )
@@ -193,6 +187,14 @@ class NormalizerWithAudio(Normalizer):
     def normalize_non_deterministic(
         self, text: str, n_tagged: int, punct_post_process: bool = True, verbose: bool = False
     ):
+        # get deterministic option
+        if self.tagger:
+            deterministic_form = super().normalize(
+                text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
+            )
+        else:
+            deterministic_form = None
+
         original_text = text
 
         text = pre_process(text)  # to handle []
@@ -223,6 +225,7 @@ class NormalizerWithAudio(Normalizer):
                 tagged_texts, weights = list(zip(*tagged_texts))
         else:
             tagged_texts = self._get_tagged_text(text, n_tagged)
+
         # non-deterministic Eng normalization uses tagger composed with verbalizer, no permutation in between
         if self.lang == "en":
             normalized_texts = tagged_texts
@@ -230,7 +233,7 @@ class NormalizerWithAudio(Normalizer):
         else:
             normalized_texts = []
             for tagged_text in tagged_texts:
-                self._verbalize(tagged_text, normalized_texts, verbose=verbose)
+                self._verbalize(tagged_text, normalized_texts, n_tagged, verbose=verbose)
 
         if len(normalized_texts) == 0:
             raise ValueError()
@@ -247,6 +250,9 @@ class NormalizerWithAudio(Normalizer):
             remove_dup = sorted(list(set(zip(normalized_texts, weights))), key=lambda x: x[1])
             normalized_texts, weights = zip(*remove_dup)
             return list(normalized_texts), weights
+
+        if deterministic_form is not None:
+            normalized_texts.append(deterministic_form)
 
         normalized_texts = set(normalized_texts)
         return normalized_texts
@@ -330,7 +336,7 @@ class NormalizerWithAudio(Normalizer):
                 tagged_texts = rewrite.top_rewrites(text, self.tagger_non_deterministic.fst, nshortest=n_tagged)
         return tagged_texts
 
-    def _verbalize(self, tagged_text: str, normalized_texts: List[str], verbose: bool = False):
+    def _verbalize(self, tagged_text: str, normalized_texts: List[str], n_tagged: int, verbose: bool = False):
         """
         Verbalizes tagged text
 
@@ -341,7 +347,7 @@ class NormalizerWithAudio(Normalizer):
         """
 
         def get_verbalized_text(tagged_text):
-            return rewrite.rewrites(tagged_text, self.verbalizer.fst)
+            return rewrite.top_rewrites(tagged_text, self.verbalizer_non_deterministic.fst, n_tagged)
 
         self.parser(tagged_text)
         tokens = self.parser.parse()

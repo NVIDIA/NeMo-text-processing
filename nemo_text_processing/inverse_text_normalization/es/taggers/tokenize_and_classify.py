@@ -20,6 +20,7 @@ from nemo_text_processing.inverse_text_normalization.es.taggers.cardinal import 
 from nemo_text_processing.inverse_text_normalization.es.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.electronic import ElectronicFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.ordinal import OrdinalFst
@@ -40,15 +41,16 @@ from pynini.lib import pynutil
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence, that is lower cased.
-    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File. 
+    For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
     More details to deployment at NeMo/tools/text_processing_deployment.
 
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
+        whitelist: path to a file with whitelist replacements
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False):
+    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, whitelist: str = None):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
@@ -70,12 +72,15 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal)
             decimal_graph = decimal.fst
 
-            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal).fst
-            date_graph = DateFst().fst
+            fraction = FractionFst(cardinal, ordinal)
+            fraction_graph = fraction.fst
+
+            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction).fst
+            date_graph = DateFst(cardinal).fst
             word_graph = WordFst().fst
             time_graph = TimeFst().fst
             money_graph = MoneyFst(cardinal=cardinal, decimal=decimal).fst
-            whitelist_graph = WhiteListFst().fst
+            whitelist_graph = WhiteListFst(input_file=whitelist).fst
             punct_graph = PunctuationFst().fst
             electronic_graph = ElectronicFst().fst
             telephone_graph = TelephoneFst().fst
@@ -85,12 +90,13 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.09)
                 | pynutil.add_weight(decimal_graph, 1.09)
-                | pynutil.add_weight(measure_graph, 1.1)
-                | pynutil.add_weight(cardinal_graph, 1.1)
-                | pynutil.add_weight(ordinal_graph, 1.1)
-                | pynutil.add_weight(money_graph, 1.1)
-                | pynutil.add_weight(telephone_graph, 1.1)
-                | pynutil.add_weight(electronic_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.09)
+                | pynutil.add_weight(measure_graph, 1.6)
+                | pynutil.add_weight(cardinal_graph, 1.6)
+                | pynutil.add_weight(ordinal_graph, 1.6)
+                | pynutil.add_weight(money_graph, 1.6)
+                | pynutil.add_weight(telephone_graph, 1.6)
+                | pynutil.add_weight(electronic_graph, 1.6)
                 | pynutil.add_weight(word_graph, 100)
             )
 
