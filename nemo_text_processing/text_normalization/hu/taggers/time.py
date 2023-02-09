@@ -1,4 +1,5 @@
 # Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, Jim O'Regan.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -66,6 +67,7 @@ class TimeFst(GraphFst):
         "9 óra" -> time { hours: "2" }
         "09:00 óra" -> time { hours: "2" }
         "02:15:10 óra" -> time { hours: "2" minutes: "15" seconds: "10"}
+        "negyed 2" -> time { minutes: "15" hours: "1" }
     
     Args:
         deterministic: if True will provide a single transduction option,
