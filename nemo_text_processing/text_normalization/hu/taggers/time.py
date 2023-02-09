@@ -25,12 +25,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path, naive_inflector
 from pynini.lib import pynutil
 
+QUARTERS = {15: "negyed", 30: "fél", 45: "háromnegyed"}
 
-QUARTERS = {
-    15: "negyed",
-    30: "fél",
-    45: "háromnegyed"
-}
+
 def get_all_to_or_from_numbers():
     output = {}
     for num, word in QUARTERS.items():
@@ -40,9 +37,9 @@ def get_all_to_or_from_numbers():
             if i == num:
                 continue
             elif i < num:
-                current_to.append((str(i), str(num-i)))
+                current_to.append((str(i), str(num - i)))
             else:
-                current_past.append((str(i), str(i-num)))
+                current_past.append((str(i), str(i - num)))
         output[word] = {}
         output[word]["past"] = current_past
         output[word]["to"] = current_to
@@ -91,13 +88,11 @@ class TimeFst(GraphFst):
         labels_minute_single = [str(x) for x in range(1, 10)]
         labels_minute_double = [str(x) for x in range(10, 60)]
 
-        minutes_to = pynini.string_map([(str(i), str(60-i)) for i in range(1, 60)])
-        minutes_inverse = pynini.invert(
-            pynini.project(minutes_to, "input")
-            @ cardinal.graph
-        )
+        minutes_to = pynini.string_map([(str(i), str(60 - i)) for i in range(1, 60)])
+        minutes_inverse = pynini.invert(pynini.project(minutes_to, "input") @ cardinal.graph)
         self.minute_words_to_words = minutes_inverse @ minutes_to @ cardinal.graph
         minute_words_to_words = pynutil.insert("minutes: \"") + self.minute_words_to_words + pynutil.insert("\"")
+
         def hours_to_pairs():
             for x in range(1, 13):
                 if x == 12:
@@ -105,11 +100,9 @@ class TimeFst(GraphFst):
                 else:
                     y = x + 1
                 yield y, x
+
         hours_next = pynini.string_map([(str(x[0]), str(x[1])) for x in hours_to_pairs()])
-        hours_next_inverse = pynini.invert(
-            pynini.project(hours_next, "input")
-            @ cardinal.graph
-        )
+        hours_next_inverse = pynini.invert(pynini.project(hours_next, "input") @ cardinal.graph)
         self.hour_numbers_to_words = hours_next @ cardinal.graph
         self.hour_words_to_words = hours_next_inverse @ self.hour_numbers_to_words
         hour_numbers_to_words = pynutil.insert("hours: \"") + self.hour_numbers_to_words + pynutil.insert("\"")
