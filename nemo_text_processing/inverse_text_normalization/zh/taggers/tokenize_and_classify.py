@@ -1,5 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,7 +53,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: set to True to overwrite .far files
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False):
+    def __init__(self, cache_dir: str = None, whitelist: str=None, overwrite_cache: bool = False):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
@@ -75,32 +74,23 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal)
             decimal_graph = decimal.fst
 
-            # measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal).fst
-            # date_graph = DateFst(ordinal=ordinal).fst
-            date = DateFst()
-            date_graph = date.fst
+
+            date_graph = DateFst().fst
             word_graph = WordFst().fst
             time_graph = TimeFst().fst
             money_graph = MoneyFst(cardinal=cardinal, decimal=decimal).fst
             fraction = FractionFst(cardinal)
             fraction_graph = fraction.fst
-            # whitelist_graph = WhiteListFst().fst
             punct_graph = PunctuationFst().fst
-            # electronic_graph = ElectronicFst().fst
-            # telephone_graph = TelephoneFst(cardinal).fst
 
             classify = (
-                # pynutil.add_weight(whitelist_graph, 1.01)
                 pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.09)
                 | pynutil.add_weight(decimal_graph, 1.2)
-                # | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
-                # | pynutil.add_weight(telephone_graph, 1.1)
-                # | pynutil.add_weight(electronic_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
 

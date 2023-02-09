@@ -1,5 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,12 +69,10 @@ class MoneyFst(GraphFst):
         graph_tencent_fractional_comp = pynutil.insert("tencent_part: \"") + fraction_integer + pynutil.insert("\"")
 
         # yuan symbol part
-        # graph_currency_major = pynutil.insert("currency: \"") + major_currency + pynutil.insert("\"")
         graph_currency_minor_cent = pynutil.insert("currency: \"") + minor_currency_cent + pynutil.insert("\"")
         graph_currency_minor_tencent = pynutil.insert("currency: \"") + minor_currency_tencent + pynutil.insert("\"")
 
         # yuan combine number and symbol part
-        # graph_only_major_yuan = graph_integer_component + pynutil.insert(" ") + graph_major_currency# + pynutil.insert(" ") + graph_currency_rmb_token
         graph_only_cent = graph_cent_fractional_comp + pynutil.insert(" ") + graph_currency_minor_cent
         graph_only_tencent = graph_tencent_fractional_comp + pynutil.insert(" ") + graph_currency_minor_tencent
 
@@ -119,7 +116,6 @@ class MoneyFst(GraphFst):
         )
 
         # final graph for yuan
-        # graph_yuan_only = graph_only_major_yuan | graph_only_cent | graph_only_tencent
         graph_yuan_only = graph_only_cent | graph_only_tencent
         graph_yuan_comb = graph_major_cent | graph_major_tencent | graph_tencent_cent | graph_major_minor
 

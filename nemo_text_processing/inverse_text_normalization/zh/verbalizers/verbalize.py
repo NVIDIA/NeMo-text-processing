@@ -1,5 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,25 +45,18 @@ class VerbalizeFst(GraphFst):
         decimal_graph = decimal.fst
         fraction = FractionFst()
         fraction_graph = fraction.fst
-        # measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal).fst
         money = MoneyFst()
         money_graph = money.fst
         time_graph = TimeFst().fst
         date_graph = DateFst().fst
-        # whitelist_graph = WhiteListFst().fst
-        # telephone_graph = TelephoneFst().fst
-        # electronic_graph = ElectronicFst().fst
+
         graph = (
             time_graph
             | date_graph
             | money_graph
             | fraction_graph
-            # | measure_graph
             | ordinal_graph
             | decimal_graph
             | cardinal_graph
-            # | whitelist_graph
-            # | telephone_graph
-            # | electronic_graph
         )
         self.fst = graph

@@ -1,5 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,7 +69,6 @@ class TimeFst(GraphFst):
         graph_hours = hours + graph_delete_hours
 
         # graph for minutes
-        # graph_minutes = pynini.closure(pynutil.delete("分"), 0, 1)
         graph_minutes = pynutil.delete('分')
         graph_minutes = minutes + graph_minutes
 

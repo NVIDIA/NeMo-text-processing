@@ -90,6 +90,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'zh':  # Arabic
+            from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
 
         self.tagger = ClassifyFst(cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache)
         self.verbalizer = VerbalizeFinalFst()
