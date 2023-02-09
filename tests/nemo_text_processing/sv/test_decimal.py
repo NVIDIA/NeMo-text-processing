@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from parameterized import parameterized
 
