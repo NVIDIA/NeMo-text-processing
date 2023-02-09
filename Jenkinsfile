@@ -10,12 +10,14 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: true)
   }
   environment {
-    AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-07-23-1'
-    DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-07-23-1'
+    AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
+    DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-03-23-1'
-    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-07-23-1'
-    FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-07-23-1'
-    DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-07-23-1'
+    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
+    FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
+    PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
+
+    DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
 
 
   }
@@ -51,7 +53,7 @@ pipeline {
 
 
 
-    stage('L0: EN TN/ITN Grammars') {
+    stage('L0: Create EN TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -79,7 +81,7 @@ pipeline {
       }
     }
 
-    stage('L0: DE TN/ITN Grammars') {
+    stage('L0: Create DE TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -102,7 +104,7 @@ pipeline {
       }
     }
 
-    stage('L0: ES TN/ITN Grammars') {
+    stage('L0: Create ES TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -125,7 +127,7 @@ pipeline {
       }
     }
 
-    stage('L0: AR TN/ITN Grammars') {
+    stage('L0: Create AR TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -148,7 +150,7 @@ pipeline {
       }
     }
 
-    stage('L0: FR TN/ITN Grammars') {
+    stage('L0: Create FR TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -171,7 +173,7 @@ pipeline {
       }
     }
 
-    stage('L0: PT TN/ITN Grammars') {
+    stage('L0: Create PT TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -187,13 +189,12 @@ pipeline {
        // }
         stage('L0: PT ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=pt --text="dez " --cache_dir ${DEFAULT_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=pt --text="dez " --cache_dir ${PT_TN_CACHE}'
           }
         }
 
       }
     }
-
 
     stage('L1: TN/ITN Tests CPU') {
       when {
@@ -231,7 +232,7 @@ pipeline {
         }
         stage('L1: Run all PT TN/ITN tests (restore grammars from cache)') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/pt/ -m "not pleasefixme" --cpu --tn_cache_dir ${DEFAULT_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/pt/ -m "not pleasefixme" --cpu --tn_cache_dir ${PT_TN_CACHE}'
           }
         }
       }
