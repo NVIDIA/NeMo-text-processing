@@ -90,7 +90,7 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
-        elif lang == 'zh':  # Arabic
+        elif lang == 'zh':  # Mandarin
             from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
@@ -135,7 +135,7 @@ def parse_args():
     input.add_argument("--input_file", dest="input_file", help="input file path", type=str)
     parser.add_argument('--output_file', dest="output_file", help="output file path", type=str)
     parser.add_argument(
-        "--language", help="language", choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi'], default="en", type=str
+        "--language", help="language", choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'zh'], default="en", type=str
     )
     parser.add_argument(
         "--whitelist",
