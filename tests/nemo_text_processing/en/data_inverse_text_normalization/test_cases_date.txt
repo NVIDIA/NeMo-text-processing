@@ -40,6 +40,7 @@ The twenty fifth of july twenty twelve~25 july 2012
 The twenty fifth of july two thousand twelve~25 july 2012
 The twenty second of july twenty twelve~22 july 2012
 The fifteenth of january~15 january
+The fifteenth of January~15 january
 The seventeenth of may twenty ten~17 may 2010
 January first~January 1
 July twenty second two thousand eight~July 22 2008
@@ -53,6 +54,7 @@ July two thousand twelve~July 2012
 October nineteen oh five~October 1905
 July fifteen o six~July 1506
 The twenty fifth of july twenty twelve~25 july 2012
+The twenty fifth of July twenty twelve~25 July 2012
 July twenty fifth twenty twelve~July 25 2012
 July twenty fifth two thousand twelve~July 25 2012
 July one thousand eight hundred seventy six~July 1876

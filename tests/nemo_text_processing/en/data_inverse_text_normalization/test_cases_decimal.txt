@@ -71,6 +71,7 @@ One hundred billion~100 billion
 One hundred ten billion~110 billion
 One hundred thirty two billion~132 billion
 One point eight four billion~1.84 billion
+One point eight four Billion~1.84 Billion
 One point eight one billion~1.81 billion
 One point five nine billion~1.59 billion
 One point four five three billion~1.453 billion
@@ -95,6 +96,7 @@ Forty five million~45 million
 Fifteen million~15 million
 Fifteen trillion~15 trillion
 Fifteen billion~15 billion
+Fifteen Billion~15 Billion
 Two million~2 million
 Eight million~8 million
 Point one two o five~.1205

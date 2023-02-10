@@ -62,15 +62,17 @@ class MoneyFst(GraphFst):
         )
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
+
+        one_graph = pynini.union("one", "One").optimize()
         # twelve dollars (and) fifty cents, zero cents
         cents_standalone = (
             pynutil.insert("fractional_part: \"")
             + pynini.union(
-                pynutil.add_weight(((NEMO_SIGMA - pynini.union("one", "One")) @ cardinal_graph), -0.7)
+                pynutil.add_weight(((NEMO_SIGMA - one_graph) @ cardinal_graph), -0.7)
                 @ add_leading_zero_to_double_digit
                 + delete_space
                 + pynutil.delete("cents"),
-                pynini.cross(pynini.union("one", "One"), "01") + delete_space + pynutil.delete("cent"),
+                pynini.cross(one_graph, "01") + delete_space + pynutil.delete("cent"),
             )
             + pynutil.insert("\"")
         )
@@ -95,7 +97,7 @@ class MoneyFst(GraphFst):
 
         graph_integer = (
             pynutil.insert("integer_part: \"")
-            + ((NEMO_SIGMA - pynini.union("one", "One")) @ cardinal_graph)
+            + ((NEMO_SIGMA - one_graph) @ cardinal_graph)
             + pynutil.insert("\"")
             + delete_extra_space
             + graph_unit_plural
@@ -103,7 +105,7 @@ class MoneyFst(GraphFst):
         )
         graph_integer |= (
             pynutil.insert("integer_part: \"")
-            + pynini.cross(pynini.union("one", "One"), "1")
+            + pynini.cross(one_graph, "1")
             + pynutil.insert("\"")
             + delete_extra_space
             + graph_unit_singular

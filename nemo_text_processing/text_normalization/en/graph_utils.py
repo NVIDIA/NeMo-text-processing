@@ -73,6 +73,16 @@ TO_UPPER = pynini.invert(TO_LOWER)
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 
+MINUS = pynini.union("minus", "Minus").optimize()
+
+
+def apply_graph_without_casing(graph: 'pynini.FstLike') -> 'pynini.FstLike':
+    """
+    Allow input to be cases (e.g. for ITN)
+    """
+    graph |= pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
+    return graph.optimize()
+
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     """

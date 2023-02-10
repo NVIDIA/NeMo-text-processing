@@ -23,6 +23,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
+    MINUS,
+    apply_graph_without_casing
 )
 from pynini.lib import pynutil
 
@@ -78,7 +80,7 @@ class DecimalFst(GraphFst):
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ")
-            + pynini.cross(pynini.union("minus", "Minus"), "\"true\"")
+            + pynini.cross(MINUS, "\"true\"")
             + delete_extra_space,
             0,
             1,
@@ -105,7 +107,6 @@ class DecimalFst(GraphFst):
         )
         final_graph |= optional_graph_negative + quantity_graph
 
-        # accept semiotic spans that start with a capital letter
-        final_graph |= pynini.compose(TO_LOWER + NEMO_SIGMA, final_graph).optimize()
+        final_graph = apply_graph_without_casing(final_graph)
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

@@ -22,6 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
     plurals,
+    apply_graph_without_casing
 )
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
 from pynini.lib import pynutil

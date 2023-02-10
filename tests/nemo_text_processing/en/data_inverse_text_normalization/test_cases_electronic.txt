@@ -52,3 +52,8 @@ N vidia dot com~nvidia.com
 Abc at gmail dot com~Abc@gmail.com
 Athreed at gmail dot com~Athreed@gmail.com
 Kore dot ai~Kore.ai
+NVIDIA dot com~nvdiia.com
+NVIDIA dot COM~nvidia.com
+WWW.A B C at A B C dot com~WWW.ABC@ABC.com
+WWW . A B C at A B C dot com~WWW.ABC@ABC.com
+W W W. A B C at A B C dot com~WWW.ABC@ABC.com

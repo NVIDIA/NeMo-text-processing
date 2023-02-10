@@ -16,7 +16,7 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    MIN_NEG_WEIGHT,
+    MINUS,
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -224,7 +224,7 @@ class CardinalFst(GraphFst):
         self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
 
         optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(pynini.union("minus", "Minus"), "\"-\"") + NEMO_SPACE, 0, 1
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"-\"") + NEMO_SPACE, 0, 1
         )
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")

@@ -21,6 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     TO_LOWER,
     GraphFst,
     insert_space,
+    apply_graph_without_casing
 )
 from nemo_text_processing.text_normalization.en.utils import load_labels
 from pynini.lib import pynutil
@@ -106,8 +107,7 @@ class ElectronicFst(GraphFst):
         protocol = pynutil.insert("protocol: \"") + protocol.optimize() + pynutil.insert("\"")
         graph |= protocol
 
-        # accept semiotic spans that start with a capital letter
-        graph |= pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
+        graph = apply_graph_without_casing(graph)
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

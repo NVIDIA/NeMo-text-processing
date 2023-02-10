@@ -22,6 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     get_singulars,
+    MINUS
 )
 from pynini.lib import pynutil
 
@@ -47,7 +48,7 @@ class MeasureFst(GraphFst):
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ")
-            + pynini.cross(pynini.union("minus", "Minus"), "\"true\"")
+            + pynini.cross(MINUS, "\"true\"")
             + delete_extra_space,
             0,
             1,
@@ -56,7 +57,7 @@ class MeasureFst(GraphFst):
         unit_singular = convert_space(graph_unit_singular)
         unit_plural = convert_space(graph_unit_plural)
         unit_misc = pynutil.insert("/") + pynutil.delete("per") + delete_space + convert_space(graph_unit_singular)
-
+        one_graph = pynini.union("one", "One").optimize()
         unit_singular = (
             pynutil.insert("units: \"")
             + (unit_singular | unit_misc | pynutil.add_weight(unit_singular + delete_space + unit_misc, 0.01))
@@ -80,7 +81,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + pynutil.insert("integer: \"")
-            + ((NEMO_SIGMA - pynini.union("one", "One")) @ cardinal_graph)
+            + ((NEMO_SIGMA - one_graph) @ cardinal_graph)
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + delete_extra_space
@@ -90,7 +91,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + pynutil.insert("integer: \"")
-            + pynini.cross(pynini.union("one", "One"), "1")
+            + pynini.cross(one_graph, "1")
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + delete_extra_space

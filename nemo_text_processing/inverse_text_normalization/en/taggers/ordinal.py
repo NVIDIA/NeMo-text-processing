@@ -16,7 +16,7 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    MIN_NEG_WEIGHT,
+    apply_graph_without_casing,
     NEMO_CHAR,
     NEMO_SIGMA,
     TO_LOWER,
@@ -46,8 +46,7 @@ class OrdinalFst(GraphFst):
 
         graph = pynini.compose(graph, cardinal_graph)
 
-        # accept semiotic spans that start with a capital letter
-        self.graph = graph | pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
+        self.graph = apply_graph_without_casing(graph)
 
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
