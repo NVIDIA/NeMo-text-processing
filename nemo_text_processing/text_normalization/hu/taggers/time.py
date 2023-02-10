@@ -75,13 +75,18 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
 
         ora_word = pynini.cross("ó", "óra") | pynini.accep("óra")
-        ora_suffix = pynutil.delete(" ") + pynutil.delete(ora_word)
         ora_forms = pynini.string_map(naive_inflector("ó", "óra", True) + [("ó", "óra")])
+        ora_forms_both = ora_forms | pynini.project(ora_forms, "output")
+        perc_word = pynini.cross("p", "perc") | pynini.accep("perc")
         perc_forms = pynini.string_map(naive_inflector("p", "perc", True) + [("p", "perc")])
+        perc_forms_both = perc_forms | pynini.project(perc_forms, "output")
+        masodperc_word = pynini.cross("mp", "másodperc") | pynini.accep("másodperc")
         masodperc_forms = pynini.string_map(naive_inflector("mp", "másodperc", True) + [("mp", "másodperc")])
-        final_forms = ora_forms | perc_forms | masodperc_forms
-        final_forms |= pynini.project(final_forms, "output")
+        masodperc_forms_both = masodperc_forms | pynini.project(masodperc_forms, "output")
+        final_forms = ora_forms_both | perc_forms_both | masodperc_forms_both
         final_suffix = pynutil.insert("suffix: \"") + final_forms + pynutil.insert("\"")
+        ora_suffix = pynutil.insert("suffix: \"") + ora_forms_both + pynutil.insert("\"")
+        perc_suffix = pynutil.insert("suffix: \"") + (ora_forms_both | perc_forms_both) + pynutil.insert("\"")
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
 
         labels_hour = [str(x) for x in range(0, 25)]
@@ -129,22 +134,23 @@ class TimeFst(GraphFst):
         final_graph_hour = (
             pynutil.insert("hours: \"") + delete_leading_zero_to_double_digit @ graph_hour + pynutil.insert("\"")
         )
+        # This might be better as just the inflected forms
         hour_only_delimited = (
             pynutil.insert("hours: \"")
-            + delete_leading_zero_to_double_digit @ graph_hour
-            + NEMO_SPACE
-            + ora_forms
+            + delete_leading_zero_to_double_digit @ graph_hour @ cardinal.graph
             + pynutil.insert("\"")
+            + NEMO_SPACE
+            + ora_suffix
             + pynutil.insert(" preserve_order: true")
         )
         final_graph_minute = (
             pynutil.insert("minutes: \"")
-            + (pynutil.delete("0") + graph_minute_single | graph_minute_double)
+            + (pynutil.delete("0") + graph_minute_single | graph_minute_double) @ cardinal.graph
             + pynutil.insert("\"")
         )
         final_graph_second = (
             pynutil.insert("seconds: \"")
-            + (pynutil.delete("0") + graph_minute_single | graph_minute_double)
+            + (pynutil.delete("0") + graph_minute_single | graph_minute_double) @ cardinal.graph
             + pynutil.insert("\"")
         )
         final_time_zone_optional = pynini.closure(
@@ -153,12 +159,12 @@ class TimeFst(GraphFst):
             1,
         )
 
-        # 02:30 Uhr
+        # 02:30 óra
         graph_hm = (
             final_graph_hour
             + pynutil.delete(":")
             + (pynutil.delete("00") | (insert_space + final_graph_minute))
-            + final_suffix
+            + pynini.closure(ora_forms | perc_forms)
             + final_time_zone_optional
         )
 
