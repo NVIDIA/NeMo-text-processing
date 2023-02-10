@@ -41,18 +41,12 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
         ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
         NOT_NULLA = pynini.difference(ANY_NOT_QUOTE, "nulla")
-        hour = pynutil.delete("hours:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
+        hour = pynutil.delete("hours: \"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         hour_ora = hour + pynutil.insert(" óra")
-        minute = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + NOT_NULLA + pynutil.delete("\"")
-        minute |= (
-            pynutil.delete("minutes:")
-            + delete_space
-            + pynutil.delete("\"")
-            + pynutil.delete("nulla")
-            + pynutil.delete("\"")
-        )
+        minute = pynutil.delete("minutes: \"") + NOT_NULLA + pynutil.delete("\"")
+        minute |= pynutil.delete("minutes: \"nulla\"")
         minute_perc = minute + pynutil.insert(" perc")
-        suffix = pynutil.delete("suffix:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
+        suffix = pynutil.delete("suffix: \"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         optional_suffix = pynini.closure(delete_space + insert_space + suffix, 0, 1)
         zone = (
             pynutil.delete("zone:")
@@ -90,7 +84,10 @@ class TimeFst(GraphFst):
         #     "",
         #     NEMO_SIGMA,
         # )
-        graph = hour + NEMO_SPACE + minute + optional_suffix + optional_zone
+        # graph = hour + NEMO_SPACE + minute + optional_suffix + optional_zone
+        graph = hour_ora + NEMO_SPACE + minute + NEMO_SPACE + suffix + optional_zone
+        graph |= hour_ora + NEMO_SPACE + minute + NEMO_SPACE + suffix + delete_preserve_order
+        graph |= hour + NEMO_SPACE + suffix + delete_preserve_order
         graph |= hour_ora + delete_preserve_order
         graph |= hour_ora + NEMO_SPACE + minute_perc + delete_preserve_order
         graph |= hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix + optional_zone

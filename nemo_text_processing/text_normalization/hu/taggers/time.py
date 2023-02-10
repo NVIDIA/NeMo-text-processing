@@ -182,6 +182,7 @@ class TimeFst(GraphFst):
             + (pynutil.delete("00") | (insert_space + final_graph_minute))
             + pynini.closure(ora_forms | perc_forms)
             + final_time_zone_optional
+            + pynutil.insert(" preserve_order: true")
         )
         graph_hm |= (
             final_graph_hour_maybe_zero
