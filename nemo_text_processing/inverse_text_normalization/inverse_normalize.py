@@ -130,7 +130,7 @@ def parse_args():
     input.add_argument("--input_file", dest="input_file", help="input file path", type=str)
     parser.add_argument('--output_file', dest="output_file", help="output file path", type=str)
     parser.add_argument(
-        "--language", help="language", choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi'], default="en", type=str
+        "--language", help="language", choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar'], default="en", type=str
     )
     parser.add_argument(
         "--whitelist",
