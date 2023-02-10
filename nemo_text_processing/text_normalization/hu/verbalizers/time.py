@@ -21,6 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     insert_space,
+    delete_preserve_order,
 )
 from pynini.lib import pynutil
 
@@ -39,9 +40,10 @@ class TimeFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
         ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
-        NOT_NOLL = pynini.difference(ANY_NOT_QUOTE, "noll")
+        NOT_NULLA = pynini.difference(ANY_NOT_QUOTE, "nulla")
         hour = pynutil.delete("hours:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
-        minute = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + NOT_NOLL + pynutil.delete("\"")
+        hour_ora = hour + pynutil.insert(" óra")
+        minute = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + NOT_NULLA + pynutil.delete("\"")
         minute |= (
             pynutil.delete("minutes:")
             + delete_space
@@ -49,6 +51,7 @@ class TimeFst(GraphFst):
             + pynutil.delete("nulla")
             + pynutil.delete("\"")
         )
+        minute_perc = minute + pynutil.insert(" perc")
         suffix = pynutil.delete("suffix:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         optional_suffix = pynini.closure(delete_space + insert_space + suffix, 0, 1)
         zone = (
@@ -88,6 +91,8 @@ class TimeFst(GraphFst):
         #     NEMO_SIGMA,
         # )
         graph = hour + NEMO_SPACE + minute + optional_suffix + optional_zone
+        graph |= hour_ora + delete_preserve_order
+        graph |= hour_ora + NEMO_SPACE + minute_perc + delete_preserve_order
         graph |= hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix + optional_zone
         graph |= hour + NEMO_SPACE + suffix + optional_zone
         graph |= hour + optional_zone
