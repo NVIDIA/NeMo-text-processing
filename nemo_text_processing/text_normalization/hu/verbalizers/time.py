@@ -19,9 +19,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     delete_extra_space,
+    delete_preserve_order,
     delete_space,
     insert_space,
-    delete_preserve_order,
 )
 from pynini.lib import pynutil
 
