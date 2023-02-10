@@ -231,7 +231,7 @@ pipeline {
       parallel {
         stage('L0: RU TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ru --text="03" --cache_dir ${RU_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize_with_audio.py --lang=ru --text="03" --cache_dir ${RU_TN_CACHE}'
           }
         }
         stage('L0: RU ITN grammars') {
