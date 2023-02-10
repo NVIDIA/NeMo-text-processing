@@ -19,6 +19,7 @@ pipeline {
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
+    ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
 
 
@@ -219,7 +220,7 @@ pipeline {
 
       }
     }
-      stage('L0: Create RU TN/ITN Grammars') {
+    stage('L0: Create RU TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -238,9 +239,9 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ru --text="три " --cache_dir ${RU_TN_CACHE}'
           }
         }
-
       }
-     stage('L0: Create SV TN/ITN Grammars') {
+    }
+    stage('L0: Create SV TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -259,7 +260,27 @@ pipeline {
        //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=sv --text="hundra " --cache_dir ${SV_TN_CACHE}'
        //   }
        // }
-
+      }
+    }
+    stage('L0: Create ZH TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: ZH TN grammars') {
+         steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=zh --text="你" --cache_dir ${ZH_TN_CACHE}'
+          }
+        }
+       // stage('L0: ZH ITN grammars') {
+       //   steps {
+       //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=zh --text="二零零二年一月二十八日 " --cache_dir ${ZH_TN_CACHE}'
+       //   }
+       // }
       }
     }
 
@@ -316,6 +337,11 @@ pipeline {
         stage('L1: Run all SV TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/sv/ -m "not pleasefixme" --cpu --tn_cache_dir ${SV_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all ZH TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/zh/ -m "not pleasefixme" --cpu --tn_cache_dir ${ZH_TN_CACHE}'
           }
         }
       }
