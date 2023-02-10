@@ -125,7 +125,7 @@ class TimeFst(GraphFst):
 
         delete_leading_zero_to_double_digit = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
-        graph_hour = pynini.union(*labels_hour)
+        graph_hour = pynini.union(*labels_hour) @ cardinal.graph
 
         graph_minute_single = pynini.union(*labels_minute_single)
         graph_minute_double = pynini.union(*labels_minute_double)
@@ -137,7 +137,7 @@ class TimeFst(GraphFst):
         # This might be better as just the inflected forms
         hour_only_delimited = (
             pynutil.insert("hours: \"")
-            + delete_leading_zero_to_double_digit @ graph_hour @ cardinal.graph
+            + delete_leading_zero_to_double_digit @ graph_hour
             + pynutil.insert("\"")
             + NEMO_SPACE
             + ora_suffix
@@ -167,6 +167,16 @@ class TimeFst(GraphFst):
             + pynini.closure(ora_forms | perc_forms)
             + final_time_zone_optional
         )
+        graph_hm |= (
+            final_graph_hour
+            + NEMO_SPACE
+            + pynutil.delete(ora_word)
+            + NEMO_SPACE
+            + final_graph_minute
+            + NEMO_SPACE
+            + perc_suffix
+            + pynutil.insert(" preserve_order: true")
+        )
 
         # 10:30:05 Uhr,
         graph_hms = (
@@ -179,10 +189,21 @@ class TimeFst(GraphFst):
             + final_time_zone_optional
             + pynutil.insert(" preserve_order: true")
         )
+        graph_hms |= (
+            final_graph_hour
+            + NEMO_SPACE
+            + pynutil.delete(ora_word + NEMO_SPACE)
+            + final_graph_minute
+            + NEMO_SPACE
+            + pynutil.delete(perc_word + NEMO_SPACE)
+            + final_graph_second
+            + NEMO_SPACE
+            + final_suffix
+            + pynutil.insert(" preserve_order: true")
+        )
 
         # 2 Uhr est
-        graph_h = final_graph_hour_only + final_suffix + final_time_zone_optional
-        word_delim = hour_only_delimited
-        final_graph = (graph_hm | graph_h | graph_hms | word_delim).optimize()
+        graph_h = hour_only_delimited
+        final_graph = (graph_hm | graph_h | graph_hms).optimize()
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
