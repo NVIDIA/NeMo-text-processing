@@ -57,36 +57,18 @@ class TimeFst(GraphFst):
         )
         optional_zone = pynini.closure(delete_space + insert_space + zone, 0, 1)
         second = (
-            pynutil.delete("seconds:")
-            + delete_space
-            + pynutil.delete("\"")
+            pynutil.delete("seconds: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        # graph_hms = (
-        #     hour
-        #     + pynutil.insert(" hours ")
-        #     + delete_space
-        #     + minute
-        #     + pynutil.insert(" minutes and ")
-        #     + delete_space
-        #     + second
-        #     + pynutil.insert(" seconds")
-        #     + optional_suffix
-        #     + optional_zone
-        # )
-        # graph_hms @= pynini.cdrewrite(
-        #     pynutil.delete("o ")
-        #     | pynini.cross("one minutes", "one minute")
-        #     | pynini.cross("one seconds", "one second")
-        #     | pynini.cross("one hours", "one hour"),
-        #     pynini.union(" ", "[BOS]"),
-        #     "",
-        #     NEMO_SIGMA,
-        # )
-        # graph = hour + NEMO_SPACE + minute + optional_suffix + optional_zone
+        second |= pynutil.delete("seconds: \"nulla\"")
+        second_masodperc = second + pynutil.insert(" masodperc")
         graph = hour_ora + NEMO_SPACE + minute + NEMO_SPACE + suffix + optional_zone
         graph |= hour_ora + NEMO_SPACE + minute + NEMO_SPACE + suffix + delete_preserve_order
+        graph |= hour_ora + NEMO_SPACE + minute_perc + NEMO_SPACE + second + NEMO_SPACE + suffix + delete_preserve_order
+        graph |= hour_ora + NEMO_SPACE + second + NEMO_SPACE + suffix + delete_preserve_order
+        graph |= hour_ora + NEMO_SPACE + minute_perc + NEMO_SPACE + second_masodperc + delete_preserve_order
+        graph |= hour_ora + NEMO_SPACE + second_masodperc + delete_preserve_order
         graph |= hour + NEMO_SPACE + suffix + delete_preserve_order
         graph |= hour_ora + delete_preserve_order
         graph |= hour_ora + NEMO_SPACE + minute_perc + delete_preserve_order

@@ -87,6 +87,7 @@ class TimeFst(GraphFst):
         masodperc_forms_both = masodperc_forms | pynini.project(masodperc_forms, "output")
         final_forms = ora_forms_both | perc_forms_both | masodperc_forms_both
         final_suffix = pynutil.insert("suffix: \"") + final_forms + pynutil.insert("\"")
+        final_suffix_optional = pynini.closure(pynutil.insert(" suffix: \"") + final_forms + pynutil.insert("\""), 0, 1)
         ora_suffix = pynutil.insert("suffix: \"") + ora_forms_both + pynutil.insert("\"")
         perc_suffix = pynutil.insert("suffix: \"") + (ora_forms_both | perc_forms_both) + pynutil.insert("\"")
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
@@ -199,10 +200,10 @@ class TimeFst(GraphFst):
         graph_hms = (
             final_graph_hour
             + pynutil.delete(":")
-            + (pynini.cross("00", " minutes: \"0\"") | (insert_space + final_graph_minute))
+            + (pynutil.delete("00") | (insert_space + final_graph_minute))
             + pynutil.delete(":")
-            + (pynini.cross("00", " seconds: \"0\"") | (insert_space + final_graph_second))
-            + final_suffix
+            + (pynutil.delete("00") | (insert_space + final_graph_second))
+            + final_suffix_optional
             + final_time_zone_optional
             + pynutil.insert(" preserve_order: true")
         )
