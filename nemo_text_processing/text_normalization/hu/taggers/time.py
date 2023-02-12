@@ -127,7 +127,9 @@ class TimeFst(GraphFst):
         self.quarter_prefixed_next_to_current_words = quarter_map_graph + NEMO_SPACE + hour_words_to_words
 
         delete_leading_zero_to_double_digit = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
-        optional_delete_leading_zero_to_double_digit = (pynini.closure(pynutil.delete("0"), 0, 1) | (NEMO_DIGIT - "0")) + NEMO_DIGIT
+        optional_delete_leading_zero_to_double_digit = (
+            pynini.closure(pynutil.delete("0"), 0, 1) | (NEMO_DIGIT - "0")
+        ) + NEMO_DIGIT
 
         graph_hour = pynini.union(*labels_hour) @ cardinal.graph
 
@@ -139,7 +141,9 @@ class TimeFst(GraphFst):
             pynutil.insert("hours: \"") + delete_leading_zero_to_double_digit @ graph_hour + pynutil.insert("\"")
         )
         final_graph_hour_maybe_zero = (
-            pynutil.insert("hours: \"") + optional_delete_leading_zero_to_double_digit @ graph_hour + pynutil.insert("\"")
+            pynutil.insert("hours: \"")
+            + optional_delete_leading_zero_to_double_digit @ graph_hour
+            + pynutil.insert("\"")
         )
         # This might be better as just the inflected forms
         hour_only_delimited = (
