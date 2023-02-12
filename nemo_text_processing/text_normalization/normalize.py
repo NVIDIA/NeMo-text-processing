@@ -668,7 +668,7 @@ def parse_args():
     )
     parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
     parser.add_argument(
-        "--language", help="language", choices=["en", "de", "es", "hu", "sv", "zh"], default="en", type=str
+        "--language", help="language", choices=["en", "de", "es", "hu", "sv", "zh", "ar"], default="en", type=str
     )
     parser.add_argument(
         "--input_case",
