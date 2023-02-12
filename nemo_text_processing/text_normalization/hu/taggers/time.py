@@ -87,7 +87,9 @@ class TimeFst(GraphFst):
         masodperc_forms_both = masodperc_forms | pynini.project(masodperc_forms, "output")
         final_forms = ora_forms_both | perc_forms_both | masodperc_forms_both
         final_suffix = pynutil.insert("suffix: \"") + final_forms + pynutil.insert("\"")
-        final_suffix_optional = pynini.closure(pynutil.insert(" suffix: \"") + final_forms + pynutil.insert("\""), 0, 1)
+        final_suffix_optional = pynini.closure(
+            pynutil.insert(" suffix: \"") + final_forms + pynutil.insert("\""), 0, 1
+        )
         ora_suffix = pynutil.insert("suffix: \"") + ora_forms_both + pynutil.insert("\"")
         perc_suffix = pynutil.insert("suffix: \"") + (ora_forms_both | perc_forms_both) + pynutil.insert("\"")
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))

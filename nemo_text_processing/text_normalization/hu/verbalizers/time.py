@@ -56,16 +56,14 @@ class TimeFst(GraphFst):
             + pynutil.delete("\"")
         )
         optional_zone = pynini.closure(delete_space + insert_space + zone, 0, 1)
-        second = (
-            pynutil.delete("seconds: \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
-        )
+        second = pynutil.delete("seconds: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         second |= pynutil.delete("seconds: \"nulla\"")
         second_masodperc = second + pynutil.insert(" masodperc")
         graph = hour_ora + NEMO_SPACE + minute + NEMO_SPACE + suffix + optional_zone
         graph |= hour_ora + NEMO_SPACE + minute + NEMO_SPACE + suffix + delete_preserve_order
-        graph |= hour_ora + NEMO_SPACE + minute_perc + NEMO_SPACE + second + NEMO_SPACE + suffix + delete_preserve_order
+        graph |= (
+            hour_ora + NEMO_SPACE + minute_perc + NEMO_SPACE + second + NEMO_SPACE + suffix + delete_preserve_order
+        )
         graph |= hour_ora + NEMO_SPACE + second + NEMO_SPACE + suffix + delete_preserve_order
         graph |= hour_ora + NEMO_SPACE + minute_perc + NEMO_SPACE + second_masodperc + delete_preserve_order
         graph |= hour_ora + NEMO_SPACE + second_masodperc + delete_preserve_order
