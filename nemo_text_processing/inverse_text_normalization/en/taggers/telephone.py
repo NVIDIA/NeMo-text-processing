@@ -16,11 +16,10 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    MIN_NEG_WEIGHT,
     NEMO_ALNUM,
     NEMO_ALPHA,
     NEMO_DIGIT,
-    NEMO_SIGMA,
-    TO_LOWER,
     GraphFst,
     capitalized_input_graph,
     delete_space,
@@ -164,7 +163,11 @@ class TelephoneFst(GraphFst):
 
         ip_graph = digit_or_double + (pynini.cross(" dot ", ".") + digit_or_double) ** 3
 
-        graph |= pynutil.insert("number_part: \"") + ip_graph.optimize() + pynutil.insert("\"")
+        graph |= (
+            pynutil.insert("number_part: \"")
+            + pynutil.add_weight(ip_graph.optimize(), MIN_NEG_WEIGHT)
+            + pynutil.insert("\"")
+        )
 
         graph = capitalized_input_graph(graph)
 

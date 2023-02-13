@@ -16,6 +16,7 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, get_various_formats
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    MIN_POS_WEIGHT,
     NEMO_ALPHA,
     NEMO_SIGMA,
     TO_LOWER,
@@ -60,12 +61,13 @@ class ElectronicFst(GraphFst):
             | pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
             | pynini.closure(NEMO_ALPHA, 2)
         )
-        domain = single_alphanum | pynini.closure(NEMO_ALPHA, 2)
 
-        domain_labels = load_labels(get_abs_path("data/electronic/domain.tsv"))
+        domain_labels = []
         # get domain formats
-        for d in domain_labels:
-            domain |= pynini.union(*get_various_formats(d[0]), d[0])
+        for d in load_labels(get_abs_path("data/electronic/domain.tsv")):
+            domain_labels.extend(get_various_formats(d[0]))
+        domain_labels = pynini.string_map(domain_labels).optimize()
+        domain = single_alphanum | domain_labels | pynini.closure(NEMO_ALPHA, 2)
 
         domain_graph = (
             pynutil.insert("domain: \"")
@@ -113,7 +115,8 @@ class ElectronicFst(GraphFst):
         protocol = pynutil.insert("protocol: \"") + protocol.optimize() + pynutil.insert("\"")
         graph |= protocol
 
-        graph = capitalized_input_graph(graph)
+        graph = capitalized_input_graph(graph, capitalized_graph_weight=MIN_POS_WEIGHT)
 
+        # graph = capitalized_input_graph(graph) | pynutil.add_weight(graph, MIN_NEG_WEIGHT)
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()
