@@ -65,11 +65,11 @@ class TimeFst(GraphFst):
             hour_ora + NEMO_SPACE + minute_perc + NEMO_SPACE + second + NEMO_SPACE + suffix + delete_preserve_order
         )
         graph |= hour_ora + NEMO_SPACE + second + NEMO_SPACE + suffix + delete_preserve_order
-        graph |= hour_ora + NEMO_SPACE + minute_perc + NEMO_SPACE + second_masodperc + delete_preserve_order
-        graph |= hour_ora + NEMO_SPACE + second_masodperc + delete_preserve_order
+        graph |= hour_ora + NEMO_SPACE + minute_perc + NEMO_SPACE + second_masodperc + optional_zone + delete_preserve_order
+        graph |= hour_ora + NEMO_SPACE + second_masodperc + optional_zone + delete_preserve_order
         graph |= hour + NEMO_SPACE + suffix + delete_preserve_order
-        graph |= hour_ora + delete_preserve_order
-        graph |= hour_ora + NEMO_SPACE + minute_perc + delete_preserve_order
+        graph |= hour_ora + optional_zone + delete_preserve_order
+        graph |= hour_ora + NEMO_SPACE + minute_perc + optional_zone + delete_preserve_order
         graph |= hour + NEMO_SPACE + minute + NEMO_SPACE + second + optional_suffix + optional_zone
         graph |= hour + NEMO_SPACE + suffix + optional_zone
         graph |= hour + optional_zone

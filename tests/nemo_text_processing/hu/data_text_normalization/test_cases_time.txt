@@ -6,3 +6,5 @@
 08:05:00~nyolc óra öt perc
 08:05:05~nyolc óra öt perc öt masodperc
 00:00~nulla óra
+00:00 cet~nulla óra c e t
+00:00 cet-t~nulla óra c e t-t

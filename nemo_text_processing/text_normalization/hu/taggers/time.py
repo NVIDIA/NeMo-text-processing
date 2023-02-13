@@ -21,10 +21,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     convert_space,
-    delete_extra_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path, naive_inflector
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path, naive_inflector, inflect_abbreviation, load_labels
 from pynini.lib import pynutil
 
 QUARTERS = {15: "negyed", 30: "fél", 45: "háromnegyed"}
@@ -93,6 +92,12 @@ class TimeFst(GraphFst):
         ora_suffix = pynutil.insert("suffix: \"") + ora_forms_both + pynutil.insert("\"")
         perc_suffix = pynutil.insert("suffix: \"") + (ora_forms_both | perc_forms_both) + pynutil.insert("\"")
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
+        time_zone_entries = load_labels(get_abs_path("data/time/time_zone.tsv"))
+        for entry in time_zone_entries:
+            # Inflect 'a' because there's nothing else meaningful to use
+            inflected = inflect_abbreviation(entry[1], "a", True)
+            mapping = [(x[0].replace(" ", ""), x[0]) for x in inflected]
+            time_zone_graph |= pynini.string_map(mapping)
 
         labels_hour = [str(x) for x in range(0, 25)]
         labels_minute_single = [str(x) for x in range(1, 10)]
@@ -147,15 +152,6 @@ class TimeFst(GraphFst):
             + optional_delete_leading_zero_to_double_digit @ graph_hour
             + pynutil.insert("\"")
         )
-        # This might be better as just the inflected forms
-        hour_only_delimited = (
-            pynutil.insert("hours: \"")
-            + optional_delete_leading_zero_to_double_digit @ graph_hour
-            + pynutil.insert("\"")
-            + NEMO_SPACE
-            + ora_suffix
-            + pynutil.insert(" preserve_order: true")
-        )
         final_graph_minute = (
             pynutil.insert("minutes: \"")
             + (pynutil.delete("0") + graph_minute_single | graph_minute_double) @ cardinal.graph
@@ -176,12 +172,33 @@ class TimeFst(GraphFst):
             + (pynini.closure(pynutil.delete("0"), 0, 1) + graph_minute_single | graph_minute_double) @ cardinal.graph
             + pynutil.insert("\"")
         )
+        final_time_zone = (
+            pynini.accep(" ") + pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
+        )
         final_time_zone_optional = pynini.closure(
-            pynini.accep(" ") + pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\""),
+            final_time_zone,
             0,
             1,
         )
 
+        # This might be better as just the inflected forms
+        hour_only_delimited = (
+            pynutil.insert("hours: \"")
+            + optional_delete_leading_zero_to_double_digit @ graph_hour
+            + pynutil.insert("\"")
+            + NEMO_SPACE
+            + ora_suffix
+            + pynutil.insert(" preserve_order: true")
+        )
+        hour_only_delimited |= (
+            pynutil.insert("hours: \"")
+            + optional_delete_leading_zero_to_double_digit @ graph_hour
+            + pynutil.insert("\"")
+            + NEMO_SPACE
+            + ora_word
+            + final_time_zone
+            + pynutil.insert(" preserve_order: true")
+        )
         # 02:30 óra
         graph_hm = (
             final_graph_hour
@@ -199,6 +216,17 @@ class TimeFst(GraphFst):
             + final_graph_minute_maybe_zero
             + pynini.closure(NEMO_SPACE, 0, 1)
             + perc_suffix
+            + pynutil.insert(" preserve_order: true")
+        )
+        graph_hm |= (
+            final_graph_hour_maybe_zero
+            + pynini.closure(NEMO_SPACE, 0, 1)
+            + pynutil.delete(ora_word)
+            + NEMO_SPACE
+            + final_graph_minute_maybe_zero
+            + pynini.closure(NEMO_SPACE, 0, 1)
+            + perc_word
+            + final_time_zone
             + pynutil.insert(" preserve_order: true")
         )
 
