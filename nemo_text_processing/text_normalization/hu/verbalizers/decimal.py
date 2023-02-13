@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space, delete_preserve_order
 from pynini.lib import pynutil
 
 
@@ -62,7 +62,7 @@ class DecimalFst(GraphFst):
             self.integer
             | (self.integer + delete_space + insert_space + self.quantity)
             | (self.optional_integer + self.fractional + self.optional_quantity)
-        )
+        ) + delete_preserve_order
 
         self.numbers = graph
         delete_tokens = self.delete_tokens(graph)
