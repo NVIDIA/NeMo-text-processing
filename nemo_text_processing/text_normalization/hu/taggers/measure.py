@@ -19,9 +19,11 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NON_BREAKING_SPACE,
     GraphFst,
     convert_space,
+    delete_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
+from nemo_text_processing.text_normalization.hu.taggers.whitelist import load_inflected
 from pynini.lib import pynutil
 
 unit_singular = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
@@ -49,7 +51,8 @@ class MeasureFst(GraphFst):
         cardinal_graph = cardinal.graph
 
         graph_unit_singular = convert_space(unit_singular)
-        optional_graph_negative = pynini.closure("-", 0, 1)
+        graph_unit_singular = graph_unit_singular | load_inflected(get_abs_path("data/measures/measurements.tsv"), "lower_cased", False)
+        optional_graph_negative = pynini.closure(pynini.cross("-", 'negative: "true" '), 0, 1)
 
         graph_unit_denominator = (
             pynini.cross("/", "per") + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_singular
@@ -68,13 +71,15 @@ class MeasureFst(GraphFst):
         subgraph_decimal = decimal.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_singular_graph
 
         subgraph_cardinal = (
-            optional_graph_negative
-            + pynini.closure(NEMO_DIGIT) @ cardinal.fst
-            + insert_space
-            + pynini.closure(pynutil.delete(" "), 0, 1)
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal.graph
+            + delete_space
+            + pynutil.insert("\"")
+            + pynutil.insert(" } ")
             + unit_singular_graph
         )
-
         subgraph_fraction = (
             fraction.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_singular_graph
         )
