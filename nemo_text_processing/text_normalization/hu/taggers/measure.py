@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from nemo_text_processing.text_normalization.hu.taggers.whitelist import load_inflected
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
 unit_singular = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
@@ -51,7 +51,9 @@ class MeasureFst(GraphFst):
         cardinal_graph = cardinal.graph
 
         graph_unit_singular = convert_space(unit_singular)
-        graph_unit_singular = graph_unit_singular | load_inflected(get_abs_path("data/measures/measurements.tsv"), "lower_cased", False)
+        graph_unit_singular = graph_unit_singular | load_inflected(
+            get_abs_path("data/measures/measurements.tsv"), "lower_cased", False
+        )
         optional_graph_negative = pynini.closure(pynini.cross("-", 'negative: "true" '), 0, 1)
 
         graph_unit_denominator = (
