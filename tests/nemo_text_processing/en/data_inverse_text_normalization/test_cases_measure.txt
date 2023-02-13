@@ -211,6 +211,7 @@ Eight hundred twenty one point zero feet~821.0 ft
 Eight hundred two point eight nine kilometers~802.89 km
 Eight hundred volts~800 v
 Eight kilobits~8 kb
+Eight KiloBits~8 kb
 Eight kilograms~8 kg
 Eight million two hundred thousand feet~8200000 ft
 Eight point eight kilometers~8.8 km

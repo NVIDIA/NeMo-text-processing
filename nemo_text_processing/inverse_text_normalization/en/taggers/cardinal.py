@@ -80,32 +80,46 @@ class CardinalFst(GraphFst):
 
         # %%% International numeric format
         graph_thousands = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("thousand"),
+            graph_hundred_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("thousand") | pynutil.delete("Thousand")),
             pynutil.insert("000", weight=0.1),
         )
 
         graph_million = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("million"),
+            graph_hundred_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("million") | pynutil.delete("Million")),
             pynutil.insert("000", weight=0.1),
         )
         graph_billion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("billion"),
+            graph_hundred_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("billion") | pynutil.delete("Billion")),
             pynutil.insert("000", weight=0.1),
         )
         graph_trillion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("trillion"),
+            graph_hundred_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("trillion") | pynutil.delete("Trillion")),
             pynutil.insert("000", weight=0.1),
         )
         graph_quadrillion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("quadrillion"),
+            graph_hundred_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("quadrillion") | pynutil.delete("Quadrillion")),
             pynutil.insert("000", weight=0.1),
         )
         graph_quintillion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("quintillion"),
+            graph_hundred_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("quintillion") | pynutil.delete("Quintillion")),
             pynutil.insert("000", weight=0.1),
         )
         graph_sextillion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("sextillion"),
+            graph_hundred_component_at_least_one_none_zero_digit
+            + delete_space
+            + (pynutil.delete("sextillion") | pynutil.delete("Sextillion")),
             pynutil.insert("000", weight=0.1),
         )
         # %%%

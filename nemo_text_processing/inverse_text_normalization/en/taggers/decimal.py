@@ -17,14 +17,14 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
+    MINUS,
     NEMO_DIGIT,
     NEMO_SIGMA,
     TO_LOWER,
     GraphFst,
+    apply_graph_without_casing,
     delete_extra_space,
     delete_space,
-    MINUS,
-    apply_graph_without_casing
 )
 from pynini.lib import pynutil
 
@@ -42,7 +42,20 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
     numbers = cardinal_up_to_hundred @ (
         pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
     )
-    suffix = pynini.union("million", "billion", "trillion", "quadrillion", "quintillion", "sextillion")
+    suffix = pynini.union(
+        "million",
+        "billion",
+        "trillion",
+        "quadrillion",
+        "quintillion",
+        "sextillion",
+        "Million",
+        "Billion",
+        "Trillion",
+        "Quadrillion",
+        "Quintillion",
+        "Sextillion",
+    )
     res = (
         pynutil.insert("integer_part: \"")
         + numbers
@@ -52,7 +65,13 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
         + suffix
         + pynutil.insert("\"")
     )
-    res |= decimal + delete_extra_space + pynutil.insert("quantity: \"") + (suffix | "thousand") + pynutil.insert("\"")
+    res |= (
+        decimal
+        + delete_extra_space
+        + pynutil.insert("quantity: \"")
+        + (suffix | "thousand" | "Thousand")
+        + pynutil.insert("\"")
+    )
     return res
 
 
@@ -79,11 +98,7 @@ class DecimalFst(GraphFst):
         point = pynutil.delete("point")
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ")
-            + pynini.cross(MINUS, "\"true\"")
-            + delete_extra_space,
-            0,
-            1,
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
         )
 
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")

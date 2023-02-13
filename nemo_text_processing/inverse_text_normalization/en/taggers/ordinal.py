@@ -16,11 +16,11 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    apply_graph_without_casing,
     NEMO_CHAR,
     NEMO_SIGMA,
     TO_LOWER,
     GraphFst,
+    apply_graph_without_casing,
 )
 from pynini.lib import pynutil
 

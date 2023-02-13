@@ -79,6 +79,7 @@ One point seven two billion~1.72 billion
 One point two five billion~1.25 billion
 Thirteen billion~13 billion
 Thirty billion~30 billion
+Thirty Billion~30 Billion
 Two thousand eight hundred five point eight seven three billion~2805.873 billion
 Seventy trillion~70 trillion
 Thirteen million~13 million

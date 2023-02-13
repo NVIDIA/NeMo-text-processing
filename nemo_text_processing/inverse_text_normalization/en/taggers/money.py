@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
     GraphFst,
+    apply_graph_without_casing,
     convert_space,
     delete_extra_space,
     delete_space,
@@ -54,6 +55,7 @@ class MoneyFst(GraphFst):
         graph_decimal_final = decimal.final_graph_wo_negative
         unit = pynini.string_file(get_abs_path("data/currency.tsv"))
         unit_singular = pynini.invert(unit)
+        unit_singular = apply_graph_without_casing(unit_singular)
         unit_plural = get_singulars(unit_singular)
 
         graph_unit_singular = pynutil.insert("currency: \"") + convert_space(unit_singular) + pynutil.insert("\"")

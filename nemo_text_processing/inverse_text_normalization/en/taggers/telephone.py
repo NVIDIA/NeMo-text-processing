@@ -16,13 +16,13 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    apply_graph_without_casing,
     NEMO_ALNUM,
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
     TO_LOWER,
     GraphFst,
+    apply_graph_without_casing,
     delete_space,
     insert_space,
 )
@@ -63,7 +63,7 @@ class TelephoneFst(GraphFst):
             | pynini.cross("0", pynini.union("o", "oh", "zero")).optimize()
         )
 
-        str_to_digit = pynini.invert(digit_to_str)
+        str_to_digit = apply_graph_without_casing(pynini.invert(digit_to_str))
 
         double_digit = pynini.union(
             *[

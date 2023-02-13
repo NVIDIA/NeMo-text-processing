@@ -19,6 +19,7 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import 
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
+    apply_graph_without_casing,
     convert_space,
     delete_extra_space,
     delete_space,
@@ -46,6 +47,7 @@ class TimeFst(GraphFst):
         time_zone_graph = pynini.invert(pynini.string_file(get_abs_path("data/time/time_zone.tsv")))
         to_hour_graph = pynini.string_file(get_abs_path("data/time/to_hour.tsv"))
         minute_to_graph = pynini.string_file(get_abs_path("data/time/minute_to.tsv"))
+        minute_to_graph = apply_graph_without_casing(minute_to_graph)
 
         # only used for < 1000 thousand -> 0 weight
         cardinal = pynutil.add_weight(CardinalFst().graph_no_exception, weight=-0.7)
@@ -55,11 +57,31 @@ class TimeFst(GraphFst):
         labels_minute_double = [num_to_word(x) for x in range(10, 60)]
 
         graph_hour = pynini.union(*labels_hour) @ cardinal
+        graph_hour = apply_graph_without_casing(graph_hour)
 
-        graph_minute_single = pynini.union(*labels_minute_single) @ cardinal
-        graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
-        graph_minute_verbose = pynini.cross("half", "30") | pynini.cross("quarter", "15")
-        oclock = pynini.cross(pynini.union("o' clock", "o clock", "o'clock", "oclock", "hundred hours"), "")
+        graph_minute_single = apply_graph_without_casing(pynini.union(*labels_minute_single) @ cardinal)
+        graph_minute_double = apply_graph_without_casing(pynini.union(*labels_minute_double) @ cardinal)
+        graph_minute_verbose = (
+            pynini.cross("half", "30")
+            | pynini.cross("Half", "30")
+            | pynini.cross("Quarter", "15")
+            | pynini.cross("quarter", "15")
+        )
+        oclock = pynini.cross(
+            pynini.union(
+                "o' clock",
+                "o clock",
+                "o'clock",
+                "oclock",
+                "hundred hours",
+                "O' clock",
+                "O clock",
+                "O'clock",
+                "Oclock",
+                "Hundred hours",
+            ),
+            "",
+        )
 
         final_graph_hour = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
         graph_minute = (
@@ -99,7 +121,7 @@ class TimeFst(GraphFst):
 
         graph_quarter_time = (
             pynutil.insert("minutes: \"")
-            + pynini.cross("quarter", "45")
+            + (pynini.cross("quarter", "45") | pynini.cross("Quarter", "45"))
             + pynutil.insert("\"")
             + delete_space
             + pynutil.delete(pynini.union("to", "till"))

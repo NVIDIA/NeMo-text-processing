@@ -71,7 +71,7 @@ Four million yuan~4 million yuan
 One dollar~$1
 Fifteen thousand dollars~$15000
 One dollars~One dollars
-Twenty dollar~20 dollar
+Twenty dollar~$20
 Twenty point five o six dollars~$20.506
 Point five o six dollars~$.506
 Eighteen dollars~$18

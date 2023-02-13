@@ -20,8 +20,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     TO_LOWER,
     GraphFst,
+    apply_graph_without_casing,
     insert_space,
-    apply_graph_without_casing
 )
 from nemo_text_processing.text_normalization.en.utils import load_labels
 from pynini.lib import pynutil
@@ -47,6 +47,9 @@ class ElectronicFst(GraphFst):
         url_symbols = pynini.string_file(get_abs_path("data/electronic/url_symbols.tsv")).invert()
         accepted_username = alpha_num | url_symbols
         process_dot = pynini.cross("dot", ".")
+        alternative_dot = (
+            pynini.closure(delete_extra_space, 0, 1) + pynini.accep(".") + pynini.closure(delete_extra_space, 0, 1)
+        )
         username = (alpha_num + pynini.closure(delete_extra_space + accepted_username)) | pynutil.add_weight(
             pynini.closure(NEMO_ALPHA, 1), weight=0.0001
         )
@@ -67,9 +70,7 @@ class ElectronicFst(GraphFst):
         domain_graph = (
             pynutil.insert("domain: \"")
             + server
-            + delete_extra_space
-            + process_dot
-            + delete_extra_space
+            + ((delete_extra_space + process_dot + delete_extra_space) | alternative_dot)
             + domain
             + pynutil.insert("\"")
         )
@@ -77,6 +78,7 @@ class ElectronicFst(GraphFst):
 
         ############# url ###
         protocol_end = pynini.cross(pynini.union(*get_various_formats("www")), "www")
+
         protocol_start = pynini.cross(pynini.union(*get_various_formats("http")), "http") | pynini.cross(
             pynini.union(*get_various_formats("https")), "https"
         )
@@ -100,6 +102,10 @@ class ElectronicFst(GraphFst):
         ).optimize()
         protocol = (
             pynini.closure(protocol_start, 0, 1) + protocol_end + delete_extra_space + process_dot + protocol_default
+        ).optimize()
+
+        protocol |= (
+            pynini.closure(protocol_start, 0, 1) + protocol_end + alternative_dot + protocol_default
         ).optimize()
 
         protocol |= pynini.closure(protocol_end + delete_extra_space + process_dot, 0, 1) + protocol_default

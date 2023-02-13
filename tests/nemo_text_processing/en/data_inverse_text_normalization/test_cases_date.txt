@@ -40,7 +40,7 @@ The twenty fifth of july twenty twelve~25 july 2012
 The twenty fifth of july two thousand twelve~25 july 2012
 The twenty second of july twenty twelve~22 july 2012
 The fifteenth of january~15 january
-The fifteenth of January~15 january
+The fifteenth of January~15 January
 The seventeenth of may twenty ten~17 may 2010
 January first~January 1
 July twenty second two thousand eight~July 22 2008

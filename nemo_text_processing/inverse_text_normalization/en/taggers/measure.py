@@ -16,13 +16,14 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    MINUS,
     NEMO_SIGMA,
+    TO_LOWER,
     GraphFst,
     convert_space,
     delete_extra_space,
     delete_space,
     get_singulars,
-    MINUS
 )
 from pynini.lib import pynutil
 
@@ -42,16 +43,18 @@ class MeasureFst(GraphFst):
 
         cardinal_graph = cardinal.graph_no_exception
 
+        # accept capital letters in units
+        casing_graph = pynini.closure(TO_LOWER | NEMO_SIGMA).optimize()
+
         graph_unit = pynini.string_file(get_abs_path("data/measurements.tsv"))
         graph_unit_singular = pynini.invert(graph_unit)  # singular -> abbr
-        graph_unit_plural = get_singulars(graph_unit_singular)  # plural -> abbr
+        graph_unit_singular = pynini.compose(casing_graph, graph_unit_singular).optimize()
+
+        graph_unit_plural = get_singulars(graph_unit_singular).optimize()  # plural -> abbr
+        graph_unit_plural = pynini.compose(casing_graph, graph_unit_plural).optimize()
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ")
-            + pynini.cross(MINUS, "\"true\"")
-            + delete_extra_space,
-            0,
-            1,
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
         )
 
         unit_singular = convert_space(graph_unit_singular)
