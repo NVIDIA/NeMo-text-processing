@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     TO_LOWER,
     GraphFst,
-    apply_graph_without_casing,
+    capitalized_input_graph,
 )
 from pynini.lib import pynutil
 
@@ -46,7 +46,7 @@ class OrdinalFst(GraphFst):
 
         graph = pynini.compose(graph, cardinal_graph)
 
-        self.graph = apply_graph_without_casing(graph)
+        self.graph = capitalized_input_graph(graph)
 
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)

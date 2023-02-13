@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     TO_LOWER,
     GraphFst,
-    apply_graph_without_casing,
+    capitalized_input_graph,
     delete_extra_space,
     delete_space,
 )
@@ -122,6 +122,6 @@ class DecimalFst(GraphFst):
         )
         final_graph |= optional_graph_negative + quantity_graph
 
-        final_graph = apply_graph_without_casing(final_graph)
+        final_graph = capitalized_input_graph(final_graph)
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

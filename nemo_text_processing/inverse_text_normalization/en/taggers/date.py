@@ -19,7 +19,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     GraphFst,
-    apply_graph_without_casing,
+    capitalized_input_graph,
     delete_extra_space,
     delete_space,
 )
@@ -44,7 +44,7 @@ def _get_ties_graph():
     twenty three -> 23
     """
     graph = ties_graph + (delete_space + graph_digit | pynutil.insert("0"))
-    graph = apply_graph_without_casing(graph)
+    graph = capitalized_input_graph(graph)
     return graph
 
 
@@ -63,7 +63,7 @@ def _get_range_graph():
         + pynutil.insert("s")
     )
     graph @= pynini.union("1", "2") + NEMO_DIGIT + NEMO_DIGIT + NEMO_DIGIT + "s"
-    graph = apply_graph_without_casing(graph)
+    graph = capitalized_input_graph(graph)
     return graph
 
 
@@ -76,7 +76,7 @@ def _get_year_graph():
         zero = pynini.cross((pynini.accep("oh") | pynini.accep("o")), "0")
         graph = zero + delete_space + graph_digit
         graph.optimize()
-        graph = apply_graph_without_casing(graph)
+        graph = capitalized_input_graph(graph)
         return graph
 
     def _get_thousands_graph():
@@ -92,7 +92,7 @@ def _get_year_graph():
             + delete_space
             + (graph_teen | graph_ties | (optional_end + pynutil.insert("0") + graph_digit))
         )
-        graph = apply_graph_without_casing(graph)
+        graph = capitalized_input_graph(graph)
         return graph
 
     graph_ties = _get_ties_graph()
@@ -105,7 +105,7 @@ def _get_year_graph():
         | graph_thousands
     )
     year_graph.optimize()
-    year_graph = apply_graph_without_casing(year_graph)
+    year_graph = capitalized_input_graph(year_graph)
     return year_graph
 
 

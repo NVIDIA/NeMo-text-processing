@@ -76,7 +76,7 @@ MIN_POS_WEIGHT = 0.0001
 MINUS = pynini.union("minus", "Minus").optimize()
 
 
-def apply_graph_without_casing(graph: 'pynini.FstLike') -> 'pynini.FstLike':
+def capitalized_input_graph(graph: 'pynini.FstLike') -> 'pynini.FstLike':
     """
     Allow input to be cases (e.g. for ITN)
     """

@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     TO_LOWER,
     GraphFst,
-    apply_graph_without_casing,
+    capitalized_input_graph,
     delete_space,
     insert_space,
 )
@@ -63,7 +63,7 @@ class TelephoneFst(GraphFst):
             | pynini.cross("0", pynini.union("o", "oh", "zero")).optimize()
         )
 
-        str_to_digit = apply_graph_without_casing(pynini.invert(digit_to_str))
+        str_to_digit = capitalized_input_graph(pynini.invert(digit_to_str))
 
         double_digit = pynini.union(
             *[
@@ -166,7 +166,7 @@ class TelephoneFst(GraphFst):
 
         graph |= pynutil.insert("number_part: \"") + ip_graph.optimize() + pynutil.insert("\"")
 
-        graph = apply_graph_without_casing(graph)
+        graph = capitalized_input_graph(graph)
 
         # serial graph shouldn't apply TO_LOWER
         graph |= (

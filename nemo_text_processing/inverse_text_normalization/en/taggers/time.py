@@ -19,7 +19,7 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import 
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
-    apply_graph_without_casing,
+    capitalized_input_graph,
     convert_space,
     delete_extra_space,
     delete_space,
@@ -47,7 +47,7 @@ class TimeFst(GraphFst):
         time_zone_graph = pynini.invert(pynini.string_file(get_abs_path("data/time/time_zone.tsv")))
         to_hour_graph = pynini.string_file(get_abs_path("data/time/to_hour.tsv"))
         minute_to_graph = pynini.string_file(get_abs_path("data/time/minute_to.tsv"))
-        minute_to_graph = apply_graph_without_casing(minute_to_graph)
+        minute_to_graph = capitalized_input_graph(minute_to_graph)
 
         # only used for < 1000 thousand -> 0 weight
         cardinal = pynutil.add_weight(CardinalFst().graph_no_exception, weight=-0.7)
@@ -57,10 +57,10 @@ class TimeFst(GraphFst):
         labels_minute_double = [num_to_word(x) for x in range(10, 60)]
 
         graph_hour = pynini.union(*labels_hour) @ cardinal
-        graph_hour = apply_graph_without_casing(graph_hour)
+        graph_hour = capitalized_input_graph(graph_hour)
 
-        graph_minute_single = apply_graph_without_casing(pynini.union(*labels_minute_single) @ cardinal)
-        graph_minute_double = apply_graph_without_casing(pynini.union(*labels_minute_double) @ cardinal)
+        graph_minute_single = capitalized_input_graph(pynini.union(*labels_minute_single) @ cardinal)
+        graph_minute_double = capitalized_input_graph(pynini.union(*labels_minute_double) @ cardinal)
         graph_minute_verbose = (
             pynini.cross("half", "30")
             | pynini.cross("Half", "30")

@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     TO_LOWER,
     GraphFst,
-    apply_graph_without_casing,
+    capitalized_input_graph,
     insert_space,
 )
 from nemo_text_processing.text_normalization.en.utils import load_labels
@@ -113,7 +113,7 @@ class ElectronicFst(GraphFst):
         protocol = pynutil.insert("protocol: \"") + protocol.optimize() + pynutil.insert("\"")
         graph |= protocol
 
-        graph = apply_graph_without_casing(graph)
+        graph = capitalized_input_graph(graph)
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()
