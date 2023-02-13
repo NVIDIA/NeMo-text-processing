@@ -85,7 +85,7 @@ class TimeFst(GraphFst):
         perc_word = pynini.cross("p", "perc") | pynini.accep("perc")
         perc_forms = pynini.string_map(naive_inflector("p", "perc", True) + [("p", "perc")])
         perc_forms_both = perc_forms | pynini.project(perc_forms, "output")
-        masodperc_word = pynini.cross("mp", "másodperc") | pynini.accep("másodperc")
+        # masodperc_word = pynini.cross("mp", "másodperc") | pynini.accep("másodperc")
         masodperc_forms = pynini.string_map(naive_inflector("mp", "másodperc", True) + [("mp", "másodperc")])
         masodperc_forms_both = masodperc_forms | pynini.project(masodperc_forms, "output")
         final_forms = ora_forms_both | perc_forms_both | masodperc_forms_both
@@ -110,7 +110,7 @@ class TimeFst(GraphFst):
         minutes_to = pynini.string_map([(str(i), str(60 - i)) for i in range(1, 60)])
         minutes_inverse = pynini.invert(pynini.project(minutes_to, "input") @ cardinal.graph)
         self.minute_words_to_words = minutes_inverse @ minutes_to @ cardinal.graph
-        minute_words_to_words = pynutil.insert("minutes: \"") + self.minute_words_to_words + pynutil.insert("\"")
+        # minute_words_to_words = pynutil.insert("minutes: \"") + self.minute_words_to_words + pynutil.insert("\"")
 
         def hours_to_pairs():
             for x in range(1, 13):
@@ -130,7 +130,7 @@ class TimeFst(GraphFst):
         quarter_map = pynini.string_map([(p[1], str(p[0])) for p in QUARTERS.items()])
         quarter_map_graph = pynutil.insert("minutes: \"") + (quarter_map @ cardinal.graph) + pynutil.insert("\"")
         quarter_words = pynini.string_map(QUARTERS.values())
-        quarter_words_graph = pynutil.insert("minutes: \"") + quarter_words + pynutil.insert("\"")
+        # quarter_words_graph = pynutil.insert("minutes: \"") + quarter_words + pynutil.insert("\"")
         # {quarter} {hour_next}
         # negyed 2 -> minutes: "tizenöt" hours: "egy"
         self.quarter_prefixed_next_to_current = quarter_map_graph + NEMO_SPACE + hour_numbers_to_words
@@ -147,7 +147,7 @@ class TimeFst(GraphFst):
         graph_minute_single = pynini.union(*labels_minute_single)
         graph_minute_double = pynini.union(*labels_minute_double)
 
-        final_graph_hour_only = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
+        # final_graph_hour_only = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
         final_graph_hour = (
             pynutil.insert("hours: \"") + delete_leading_zero_to_double_digit @ graph_hour + pynutil.insert("\"")
         )
