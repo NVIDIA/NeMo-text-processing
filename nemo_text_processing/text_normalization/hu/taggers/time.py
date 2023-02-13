@@ -23,7 +23,12 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path, naive_inflector, inflect_abbreviation, load_labels
+from nemo_text_processing.text_normalization.hu.utils import (
+    get_abs_path,
+    inflect_abbreviation,
+    load_labels,
+    naive_inflector,
+)
 from pynini.lib import pynutil
 
 QUARTERS = {15: "negyed", 30: "fél", 45: "háromnegyed"}
@@ -175,11 +180,7 @@ class TimeFst(GraphFst):
         final_time_zone = (
             pynini.accep(" ") + pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
         )
-        final_time_zone_optional = pynini.closure(
-            final_time_zone,
-            0,
-            1,
-        )
+        final_time_zone_optional = pynini.closure(final_time_zone, 0, 1,)
 
         # This might be better as just the inflected forms
         hour_only_delimited = (
