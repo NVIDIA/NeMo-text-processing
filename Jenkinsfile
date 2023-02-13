@@ -192,7 +192,7 @@ pipeline {
         }
        // stage('L0: HU ITN grammars') {
        //   steps {
-       //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hu --text="hundra " --cache_dir ${HU_TN_CACHE}'
+       //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hu --text="száz " --cache_dir ${HU_TN_CACHE}'
        //   }
        // }
       }
