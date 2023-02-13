@@ -15,6 +15,7 @@ pipeline {
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-03-23-1'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
+    HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
@@ -173,6 +174,27 @@ pipeline {
           }
         }
 
+      }
+    }
+    stage('L0: Create HU TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: HU TN grammars') {
+         steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hu --text="100" --cache_dir ${HU_TN_CACHE}'
+          }
+        }
+       // stage('L0: HU ITN grammars') {
+       //   steps {
+       //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hu --text="hundra " --cache_dir ${HU_TN_CACHE}'
+       //   }
+       // }
       }
     }
     stage('L0: Create VI TN/ITN Grammars') {
