@@ -16,6 +16,8 @@ import logging
 import os
 
 import pynini
+from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.decimal import DecimalFst
@@ -27,25 +29,23 @@ from nemo_text_processing.inverse_text_normalization.sv.taggers.ordinal import O
 from nemo_text_processing.inverse_text_normalization.sv.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.whitelist import WhiteListFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst as TNCardinalTagger
-from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as TNOrdinalTagger
-from nemo_text_processing.text_normalization.sv.taggers.date import DateFst as TNDateTagger
-from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst as TNDecimalTagger
-from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst as TNElectronicTagger
-from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst as TNWhitelistTagger
-from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst as TNDateVerbalizer
-from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst as TNElectronicVerbalizer
-from nemo_text_processing.text_normalization.sv.verbalizers.fraction import FractionFst as TNFractionVerbalizer
-from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as TNOrdinalVerbalizer
-from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as TNTimeVerbalizer
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
     generator_main,
 )
+from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst as TNCardinalTagger
+from nemo_text_processing.text_normalization.sv.taggers.date import DateFst as TNDateTagger
+from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst as TNDecimalTagger
+from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst as TNElectronicTagger
+from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as TNOrdinalTagger
+from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst as TNWhitelistTagger
+from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst as TNDateVerbalizer
+from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst as TNElectronicVerbalizer
+from nemo_text_processing.text_normalization.sv.verbalizers.fraction import FractionFst as TNFractionVerbalizer
+from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as TNOrdinalVerbalizer
+from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as TNTimeVerbalizer
 from pynini.lib import pynutil
 
 

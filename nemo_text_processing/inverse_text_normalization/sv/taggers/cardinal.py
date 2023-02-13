@@ -35,9 +35,7 @@ class CardinalFst(GraphFst):
         graph = pynini.arcmap(tn_cardinal_tagger.graph, map_type="rmweight").invert().optimize()
 
         self.graph_hundred_component_at_least_one_none_zero_digit = (
-            (tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit)
-            .invert()
-            .optimize()
+            (tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit).invert().optimize()
         )
 
         self.graph_ties = (tn_cardinal_tagger.two_digit_non_zero).invert().optimize()
