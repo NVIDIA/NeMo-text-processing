@@ -225,7 +225,8 @@ Eight point five two percent~8.52 %
 Eight point four four percent~8.44 %
 one gigabit per second~1 gbps
 nine gigabits per second~9 gbps
-five degrees celsius~5 °c
-seventy two degrees fahrenheit~72 °f
-two hundred seventy three kelvin~273 k
+five degrees celsius~5 °C
+seventy two degrees fahrenheit~72 °F
+Seventy two Degrees Fahrenheit~72 °F
+two hundred seventy three kelvin~273 K
 Nine GigaBits per second~9 gbps
