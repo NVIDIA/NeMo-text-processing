@@ -165,7 +165,6 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
     for form in ends:
         forms.append((f"{abbr}-{tweak(form)}", f"{outword}{form}"))
     if not singular_only:
-        plural_key = key
         for plural_form in plural[key]:
             plural_key = plural_form
             if plural_form == "k":
