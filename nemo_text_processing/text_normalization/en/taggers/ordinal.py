@@ -37,24 +37,24 @@ class OrdinalFst(GraphFst):
         st_format = (
             pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1)
             + pynini.accep("1")
-            + pynutil.delete(pynini.union("st", "ST"))
+            + pynutil.delete(pynini.union("st", "ST", "ˢᵗ"))
         )
         nd_format = (
             pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1)
             + pynini.accep("2")
-            + pynutil.delete(pynini.union("nd", "ND"))
+            + pynutil.delete(pynini.union("nd", "ND", "ⁿᵈ"))
         )
         rd_format = (
             pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1)
             + pynini.accep("3")
-            + pynutil.delete(pynini.union("rd", "RD"))
+            + pynutil.delete(pynini.union("rd", "RD", "ʳᵈ"))
         )
         th_format = pynini.closure(
             (NEMO_DIGIT - "1" - "2" - "3")
             | (cardinal_format + "1" + NEMO_DIGIT)
             | (cardinal_format + (NEMO_DIGIT - "1") + (NEMO_DIGIT - "1" - "2" - "3")),
             1,
-        ) + pynutil.delete(pynini.union("th", "TH"))
+        ) + pynutil.delete(pynini.union("th", "TH", "ᵗʰ"))
         self.graph = (st_format | nd_format | rd_format | th_format) @ cardinal_graph
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
