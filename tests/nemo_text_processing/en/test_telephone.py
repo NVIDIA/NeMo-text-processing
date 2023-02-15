@@ -24,7 +24,9 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 class TestTelephone:
     inverse_normalizer_en = InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
-    inverse_normalizer_en_cased = InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
+    inverse_normalizer_en_cased = InverseNormalizer(
+        lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased"
+    )
 
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_telephone.txt'))
     @pytest.mark.run_only_on('CPU')
