@@ -21,8 +21,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_ALNUM,
     NEMO_ALPHA,
-    NEMO_LOWER_NOT_A,
     NEMO_DIGIT,
+    NEMO_LOWER_NOT_A,
     GraphFst,
     capitalized_input_graph,
     delete_space,
@@ -37,13 +37,21 @@ def get_serial_number(cardinal):
     excluding any numeric sequence preceded by 'a'
     """
     digit = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT)
-    two_digit = pynutil.add_weight(pynini.compose(cardinal.graph_two_digit, NEMO_DIGIT**2),0.002)
+    two_digit = pynutil.add_weight(pynini.compose(cardinal.graph_two_digit, NEMO_DIGIT ** 2), 0.002)
     character = digit | two_digit | NEMO_ALPHA
-    sequence = (NEMO_LOWER_NOT_A|digit) + pynini.closure(pynutil.delete(" ") + character, 2)
-    sequence |= character + pynini.closure(pynutil.delete(" ") + (digit|NEMO_ALPHA), 2)
-    sequence2 = NEMO_ALPHA + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA, 1) + pynini.closure(pynutil.delete(" ") + two_digit, 1)
+    sequence = (NEMO_LOWER_NOT_A | digit) + pynini.closure(pynutil.delete(" ") + character, 2)
+    sequence |= character + pynini.closure(pynutil.delete(" ") + (digit | NEMO_ALPHA), 2)
+    sequence2 = (
+        NEMO_ALPHA
+        + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA, 1)
+        + pynini.closure(pynutil.delete(" ") + two_digit, 1)
+    )
     sequence2 |= NEMO_LOWER_NOT_A + pynini.closure(pynutil.delete(" ") + two_digit, 1)
-    sequence2 |= two_digit + pynini.closure(pynutil.delete(" ") + two_digit, 1) + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA,1)
+    sequence2 |= (
+        two_digit
+        + pynini.closure(pynutil.delete(" ") + two_digit, 1)
+        + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA, 1)
+    )
     sequence = (sequence | sequence2) @ (pynini.closure(NEMO_ALNUM) + NEMO_DIGIT + pynini.closure(NEMO_ALNUM))
     return sequence.optimize()
 
@@ -76,7 +84,6 @@ class TelephoneFst(GraphFst):
         if input_case == INPUT_CASED:
             str_to_digit = capitalized_input_graph(str_to_digit)
 
-
         double_digit = pynini.union(
             *[
                 pynini.cross(
@@ -89,8 +96,6 @@ class TelephoneFst(GraphFst):
             ]
         )
         double_digit.invert()
-
-
 
         triple_digit = pynini.union(
             *[

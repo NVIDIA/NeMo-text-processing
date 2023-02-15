@@ -71,15 +71,14 @@ def _get_range_graph(input_case: str):
     graph = capitalized_input_graph(graph)
     return graph
 
+
 def _get_financial_period_graph():
     h_ordinals = pynini.cross('first', '1') | pynini.cross('second', '2')
     q_ordinals = h_ordinals | pynini.cross('third', '3') | pynini.cross('fourth', '4')
 
-    h_graph = h_ordinals + pynini.cross(' half', 'H')|pynini.cross(' h', 'H')
-    q_graph = q_ordinals + pynini.cross(' quarter', 'Q')|pynini.cross(' q', 'Q')
-    return  h_graph | q_graph
-
-
+    h_graph = h_ordinals + pynini.cross(' half', 'H') | pynini.cross(' h', 'H')
+    q_graph = q_ordinals + pynini.cross(' quarter', 'Q') | pynini.cross(' q', 'Q')
+    return h_graph | q_graph
 
 
 def _get_year_graph(input_case: str):
@@ -116,22 +115,31 @@ def _get_year_graph(input_case: str):
     graph_ties = _get_ties_graph(input_case=input_case)
     graph_digits = _get_digits_graph()
     graph_thousands = _get_thousands_graph()
-    graph_ad_bc = (pynini.cross(" a d", ' AD')|pynini.cross(" b c", ' BC')) \
-                  | (pynini.cross(" anno domini", ' AD') | pynini.cross(" before christ", ' BC')) \
-                  | (pynini.cross(" c e", ' CE') | pynini.cross(" b c e", ' BCE'))\
-                  | (pynini.cross(" common era", ' CE') | pynini.cross(" before common era", ' BCE'))
+    graph_ad_bc = (
+        (pynini.cross(" a d", ' AD') | pynini.cross(" b c", ' BC'))
+        | (pynini.cross(" anno domini", ' AD') | pynini.cross(" before christ", ' BC'))
+        | (pynini.cross(" c e", ' CE') | pynini.cross(" b c e", ' BCE'))
+        | (pynini.cross(" common era", ' CE') | pynini.cross(" before common era", ' BCE'))
+    )
     year_graph = (
         # 20 19, 40 12, 2012 - assuming no limit on the year
         (graph_teen + delete_space + (graph_ties | graph_digits | graph_teen))
         | (graph_ties + delete_space + (graph_ties | graph_digits | graph_teen))
         | graph_thousands
         | ((graph_digit + delete_space + (graph_ties | graph_digits | graph_teen)) + graph_ad_bc)
-        | ((graph_digit | graph_teen | graph_digits|graph_ties|graph_thousands) + delete_space + graph_ad_bc)
+        | ((graph_digit | graph_teen | graph_digits | graph_ties | graph_thousands) + delete_space + graph_ad_bc)
         | ((graph_ties + delete_space + (graph_ties | graph_digits | graph_teen)) + delete_space + graph_ad_bc)
-        | (((graph_teen|graph_digit) + delete_space
-            + pynutil.delete("hundred") + pynutil.insert("0")
-            + (graph_digit | pynutil.insert("0"))) + delete_space + graph_ad_bc)
-
+        | (
+            (
+                (graph_teen | graph_digit)
+                + delete_space
+                + pynutil.delete("hundred")
+                + pynutil.insert("0")
+                + (graph_digit | pynutil.insert("0"))
+            )
+            + delete_space
+            + graph_ad_bc
+        )
     )
     year_graph.optimize()
     if input_case == INPUT_CASED:
@@ -189,8 +197,12 @@ class DateFst(GraphFst):
         )
 
 
-        period_fy = pynutil.insert("period: \"") + _get_financial_period_graph() \
-                    + (pynini.cross(" ", "") | pynini.cross(" of ", "")) + pynutil.insert("\"")
+        period_fy = (
+            pynutil.insert("period: \"")
+            + _get_financial_period_graph()
+            + (pynini.cross(" ", "") | pynini.cross(" of ", ""))
+            + pynutil.insert("\"")
+        )
 
         graph_year = (
             pynutil.insert("year: \"") + (year_graph | _get_range_graph(input_case=input_case)) + pynutil.insert("\"")

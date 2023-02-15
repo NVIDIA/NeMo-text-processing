@@ -44,7 +44,31 @@ NEMO_GRAPH = pynini.union(NEMO_ALNUM, NEMO_PUNCT).optimize()
 
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 NEMO_LOWER_NOT_A = pynini.union(
-    "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
 ).optimize()
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))

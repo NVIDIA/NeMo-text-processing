@@ -53,7 +53,13 @@ class DateFst(GraphFst):
             + delete_space
             + pynutil.delete("\"")
         )
-        period = pynutil.delete("period:") + delete_space + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        period = (
+            pynutil.delete("period:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
         graph_fy = period + pynutil.insert("'") + pynini.closure(delete_space + year, 0, 1)
         # month (day) year
         graph_mdy = (
