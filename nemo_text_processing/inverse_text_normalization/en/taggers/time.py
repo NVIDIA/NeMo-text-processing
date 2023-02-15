@@ -57,7 +57,8 @@ class TimeFst(GraphFst):
         labels_minute_double = [num_to_word(x) for x in range(10, 60)]
 
         graph_hour = pynini.union(*labels_hour) @ cardinal
-        graph_hour = capitalized_input_graph(graph_hour)
+        if input_case == INPUT_CASED:
+            graph_hour = capitalized_input_graph(graph_hour)
 
         graph_minute_single = pynini.union(*labels_minute_single) @ cardinal
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
@@ -110,7 +111,7 @@ class TimeFst(GraphFst):
 
         graph_quarter_time = (
             pynutil.insert("minutes: \"")
-            + (pynini.cross("Quarter" if input_case == INPUT_CASED else "quarter", "45"))
+            + (pynini.cross(pynini.union("Quarter", "quarter"), "45"))
             + pynutil.insert("\"")
             + delete_space
             + pynutil.delete(pynini.union("to", "till"))
