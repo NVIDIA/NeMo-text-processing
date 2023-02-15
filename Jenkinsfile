@@ -10,6 +10,7 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: true)
   }
   environment {
+
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-18-23-0'
@@ -21,6 +22,7 @@ pipeline {
     SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
     ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+
   }
   stages {
 
