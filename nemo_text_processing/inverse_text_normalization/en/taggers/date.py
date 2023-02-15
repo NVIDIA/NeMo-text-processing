@@ -72,17 +72,7 @@ def _get_range_graph(input_case: str):
     return graph
 
 
-def _get_financial_period_graph():
-    h_ordinals = pynini.cross('first', '1') | pynini.cross('second', '2')
-    q_ordinals = h_ordinals | pynini.cross('third', '3') | pynini.cross('fourth', '4')
-
-    h_graph = h_ordinals + pynini.cross(' half', 'H') | pynini.cross(' h', 'H')
-    q_graph = q_ordinals + pynini.cross(' quarter', 'Q') | pynini.cross(' q', 'Q')
-    return h_graph | q_graph
-
-
 def _get_year_graph(input_case: str):
-
     """
     Transducer for year, e.g. twenty twenty -> 2020
     """
