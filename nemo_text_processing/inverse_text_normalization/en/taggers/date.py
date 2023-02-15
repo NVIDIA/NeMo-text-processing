@@ -82,6 +82,7 @@ def _get_financial_period_graph():
 
 
 def _get_year_graph(input_case: str):
+
     """
     Transducer for year, e.g. twenty twenty -> 2020
     """
@@ -115,12 +116,8 @@ def _get_year_graph(input_case: str):
     graph_ties = _get_ties_graph(input_case=input_case)
     graph_digits = _get_digits_graph()
     graph_thousands = _get_thousands_graph()
-    graph_ad_bc = (
-        (pynini.cross(" a d", ' AD') | pynini.cross(" b c", ' BC'))
-        | (pynini.cross(" anno domini", ' AD') | pynini.cross(" before christ", ' BC'))
-        | (pynini.cross(" c e", ' CE') | pynini.cross(" b c e", ' BCE'))
-        | (pynini.cross(" common era", ' CE') | pynini.cross(" before common era", ' BCE'))
-    )
+    graph_ad_bc = delete_space + pynini.string_file(get_abs_path("data/year_suffix.tsv")).invert()
+
     year_graph = (
         # 20 19, 40 12, 2012 - assuming no limit on the year
         (graph_teen + delete_space + (graph_ties | graph_digits | graph_teen))
@@ -196,10 +193,10 @@ class DateFst(GraphFst):
             + optional_graph_year
         )
 
-
+        financial_period_graph = pynini.string_file(get_abs_path("data/date_period.tsv")).invert()
         period_fy = (
             pynutil.insert("period: \"")
-            + _get_financial_period_graph()
+            + financial_period_graph
             + (pynini.cross(" ", "") | pynini.cross(" of ", ""))
             + pynutil.insert("\"")
         )
@@ -207,6 +204,7 @@ class DateFst(GraphFst):
         graph_year = (
             pynutil.insert("year: \"") + (year_graph | _get_range_graph(input_case=input_case)) + pynutil.insert("\"")
         )
+
 
         graph_fy = period_fy + pynutil.insert(" ") + graph_year
 

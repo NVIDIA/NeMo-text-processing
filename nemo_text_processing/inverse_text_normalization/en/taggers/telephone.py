@@ -34,8 +34,10 @@ from pynini.lib import pynutil
 def get_serial_number(cardinal):
     """
     any alphanumerical character sequence with at least one number with length greater equal to 3 and
-    excluding any numeric sequence preceded by 'a'
+    excluding any numeric sequence containing double digits (ties/teens) preceded by 'a'.
+    This avoids cases like "a thirty six" being converted to "a36"  in "a thirty six times increase"
     """
+
     digit = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT)
     two_digit = pynutil.add_weight(pynini.compose(cardinal.graph_two_digit, NEMO_DIGIT ** 2), 0.002)
     character = digit | two_digit | NEMO_ALPHA
