@@ -16,6 +16,7 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
@@ -38,9 +39,10 @@ class MoneyFst(GraphFst):
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, input_case: str):
         super().__init__(name="money", kind="classify")
         # quantity, integer_part, fractional_part, currency
 
@@ -55,7 +57,9 @@ class MoneyFst(GraphFst):
         graph_decimal_final = decimal.final_graph_wo_negative
         unit = pynini.string_file(get_abs_path("data/currency.tsv"))
         unit_singular = pynini.invert(unit)
-        unit_singular = capitalized_input_graph(unit_singular)
+
+        if input_case == INPUT_CASED:
+            unit_singular = capitalized_input_graph(unit_singular)
         unit_plural = get_singulars(unit_singular)
 
         graph_unit_singular = pynutil.insert("currency: \"") + convert_space(unit_singular) + pynutil.insert("\"")
@@ -65,7 +69,10 @@ class MoneyFst(GraphFst):
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
 
-        one_graph = pynini.union("one", "One").optimize()
+        if input_case == INPUT_CASED:
+            one_graph = pynini.union("one", "One").optimize()
+        else:
+            one_graph = pynini.accep("one").optimize()
         # twelve dollars (and) fifty cents, zero cents
         cents_standalone = (
             pynutil.insert("fractional_part: \"")

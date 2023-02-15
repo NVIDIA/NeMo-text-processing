@@ -16,9 +16,8 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
     NEMO_CHAR,
-    NEMO_SIGMA,
-    TO_LOWER,
     GraphFst,
     capitalized_input_graph,
 )
@@ -32,9 +31,10 @@ class OrdinalFst(GraphFst):
 
     Args:
         cardinal: CardinalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, input_case: str):
         super().__init__(name="ordinal", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
@@ -44,9 +44,10 @@ class OrdinalFst(GraphFst):
             graph_digit, graph_teens, pynini.cross("tieth", "ty"), pynini.cross("th", "")
         )
 
-        graph = pynini.compose(graph, cardinal_graph)
+        self.graph = pynini.compose(graph, cardinal_graph)
 
-        self.graph = capitalized_input_graph(graph)
+        if input_case == INPUT_CASED:
+            self.graph = capitalized_input_graph(self.graph)
 
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)

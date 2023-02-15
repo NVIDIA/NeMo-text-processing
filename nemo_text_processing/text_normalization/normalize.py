@@ -81,7 +81,8 @@ class Normalizer:
     Useful for TTS preprocessing.
 
     Args:
-        input_case: expected input capitalization
+        input_case: Input text capitalization, set to 'cased' if text contains capital letters.
+            This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.
         lang: language specifying the TN rules, by default: English
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files

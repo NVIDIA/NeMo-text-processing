@@ -16,6 +16,7 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
     MIN_NEG_WEIGHT,
     MINUS,
     NEMO_DIGIT,
@@ -29,7 +30,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 from pynini.lib import pynutil
 
 
-def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike') -> 'pynini.FstLike':
+def get_quantity(
+    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', input_case: str
+) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. one million -> integer_part: "1" quantity: "million"
@@ -38,24 +41,16 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
     Args: 
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
+        input_case: accepting either "lower_cased" or "cased" input.
     """
     numbers = cardinal_up_to_hundred @ (
         pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
     )
-    suffix = pynini.union(
-        "million",
-        "billion",
-        "trillion",
-        "quadrillion",
-        "quintillion",
-        "sextillion",
-        "Million",
-        "Billion",
-        "Trillion",
-        "Quadrillion",
-        "Quintillion",
-        "Sextillion",
-    )
+    suffix = pynini.union("million", "billion", "trillion", "quadrillion", "quintillion", "sextillion",)
+
+    if input_case == INPUT_CASED:
+        suffix |= pynini.union("Million", "Billion", "Trillion", "Quadrillion", "Quintillion", "Sextillion",)
+
     res = (
         pynutil.insert("integer_part: \"")
         + numbers
@@ -65,13 +60,10 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
         + suffix
         + pynutil.insert("\"")
     )
-    res |= (
-        decimal
-        + delete_extra_space
-        + pynutil.insert("quantity: \"")
-        + (suffix | "thousand" | "Thousand")
-        + pynutil.insert("\"")
-    )
+    res |= decimal + delete_extra_space + pynutil.insert("quantity: \"") + (suffix | "thousand") + pynutil.insert("\"")
+
+    if input_case == INPUT_CASED:
+        res |= decimal + delete_extra_space + pynutil.insert("quantity: \"") + "Thousand" + pynutil.insert("\"")
     return res
 
 
@@ -82,9 +74,10 @@ class DecimalFst(GraphFst):
         e.g. one billion -> decimal { integer_part: "1" quantity: "billion" }
     Args:
         cardinal: CardinalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, input_case: str):
         super().__init__(name="decimal", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
@@ -109,7 +102,7 @@ class DecimalFst(GraphFst):
         final_graph = optional_graph_negative + final_graph_wo_sign
 
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
+            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit, input_case=input_case
         )
 
         # accept semiotic spans that start with a capital letter
@@ -118,10 +111,11 @@ class DecimalFst(GraphFst):
         )
 
         quantity_graph = get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
+            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit, input_case=input_case
         )
         final_graph |= optional_graph_negative + quantity_graph
 
-        final_graph = capitalized_input_graph(final_graph)
+        if input_case == INPUT_CASED:
+            final_graph = capitalized_input_graph(final_graph)
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

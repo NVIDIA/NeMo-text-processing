@@ -72,7 +72,8 @@ TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_upperc
 TO_UPPER = pynini.invert(TO_LOWER)
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
-
+INPUT_CASED = "cased"
+INPUT_LOWER_CASED = "lower_cased"
 MINUS = pynini.union("minus", "Minus").optimize()
 
 
@@ -96,7 +97,7 @@ def capitalized_input_graph(
         capitalized_graph = pynutil.add_weight(capitalized_graph, weight=capitalized_graph_weight)
 
     graph |= capitalized_graph
-    return graph.optimize()
+    return graph
 
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):

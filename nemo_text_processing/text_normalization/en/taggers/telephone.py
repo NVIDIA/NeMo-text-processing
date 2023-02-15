@@ -18,7 +18,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
     GraphFst,
-    capitalized_input_graph,
     delete_extra_space,
     delete_space,
     insert_space,

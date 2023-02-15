@@ -16,10 +16,9 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, get_various_formats
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
     MIN_POS_WEIGHT,
     NEMO_ALPHA,
-    NEMO_SIGMA,
-    TO_LOWER,
     GraphFst,
     capitalized_input_graph,
     insert_space,
@@ -32,9 +31,12 @@ class ElectronicFst(GraphFst):
     """
     Finite state transducer for classifying electronic: as URLs, email addresses, etc.
         e.g. c d f one at a b c dot e d u -> tokens { electronic { username: "cdf1" domain: "abc.edu" } }
+
+    Args:
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self):
+    def __init__(self, input_case: str):
         super().__init__(name="electronic", kind="classify")
 
         delete_extra_space = pynutil.delete(" ")
@@ -42,7 +44,10 @@ class ElectronicFst(GraphFst):
         num = pynini.string_file(get_abs_path("data/numbers/digit.tsv")) | pynini.string_file(
             get_abs_path("data/numbers/zero.tsv")
         )
-        num |= pynini.compose(TO_LOWER + NEMO_SIGMA, num).optimize()
+
+        if input_case == INPUT_CASED:
+            num = capitalized_input_graph(num)
+
         alpha_num = (NEMO_ALPHA | num).optimize()
 
         url_symbols = pynini.string_file(get_abs_path("data/electronic/url_symbols.tsv")).invert()
@@ -62,13 +67,16 @@ class ElectronicFst(GraphFst):
             | pynini.closure(NEMO_ALPHA, 2)
         )
 
-        domain_labels = []
-        # get domain formats
-        for d in load_labels(get_abs_path("data/electronic/domain.tsv")):
-            domain_labels.extend(get_various_formats(d[0]))
-        domain_labels = pynini.string_map(domain_labels).optimize()
-        domain = single_alphanum | domain_labels | pynini.closure(NEMO_ALPHA, 2)
+        if input_case == INPUT_CASED:
+            domain = []
+            # get domain formats
+            for d in load_labels(get_abs_path("data/electronic/domain.tsv")):
+                domain.extend(get_various_formats(d[0]))
+            domain = pynini.string_map(domain).optimize()
+        else:
+            domain = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 
+        domain = single_alphanum | domain | pynini.closure(NEMO_ALPHA, 2)
         domain_graph = (
             pynutil.insert("domain: \"")
             + server
@@ -79,11 +87,15 @@ class ElectronicFst(GraphFst):
         graph = username + delete_extra_space + pynutil.delete("at") + insert_space + delete_extra_space + domain_graph
 
         ############# url ###
-        protocol_end = pynini.cross(pynini.union(*get_various_formats("www")), "www")
+        if input_case == INPUT_CASED:
+            protocol_end = pynini.cross(pynini.union(*get_various_formats("www")), "www")
 
-        protocol_start = pynini.cross(pynini.union(*get_various_formats("http")), "http") | pynini.cross(
-            pynini.union(*get_various_formats("https")), "https"
-        )
+            protocol_start = pynini.cross(pynini.union(*get_various_formats("http")), "http") | pynini.cross(
+                pynini.union(*get_various_formats("https")), "https"
+            )
+        else:
+            protocol_end = pynini.cross(pynini.union("w w w", "www"), "www")
+            protocol_start = pynini.cross("h t t p", "http") | pynini.cross("h t t p s", "https")
 
         protocol_start += pynini.cross(" colon slash slash ", "://")
 
@@ -106,17 +118,18 @@ class ElectronicFst(GraphFst):
             pynini.closure(protocol_start, 0, 1) + protocol_end + delete_extra_space + process_dot + protocol_default
         ).optimize()
 
-        protocol |= (
-            pynini.closure(protocol_start, 0, 1) + protocol_end + alternative_dot + protocol_default
-        ).optimize()
+        if input_case == INPUT_CASED:
+            protocol |= (
+                pynini.closure(protocol_start, 0, 1) + protocol_end + alternative_dot + protocol_default
+            ).optimize()
 
         protocol |= pynini.closure(protocol_end + delete_extra_space + process_dot, 0, 1) + protocol_default
 
         protocol = pynutil.insert("protocol: \"") + protocol.optimize() + pynutil.insert("\"")
         graph |= protocol
 
-        graph = capitalized_input_graph(graph, capitalized_graph_weight=MIN_POS_WEIGHT)
+        if input_case == INPUT_CASED:
+            graph = capitalized_input_graph(graph, capitalized_graph_weight=MIN_POS_WEIGHT)
 
-        # graph = capitalized_input_graph(graph) | pynutil.add_weight(graph, MIN_NEG_WEIGHT)
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

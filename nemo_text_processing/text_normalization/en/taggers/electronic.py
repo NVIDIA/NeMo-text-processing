@@ -22,7 +22,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_UPPER,
     TO_UPPER,
     GraphFst,
-    capitalized_input_graph,
     get_abs_path,
     insert_space,
 )
