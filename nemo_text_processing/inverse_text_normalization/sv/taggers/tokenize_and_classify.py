@@ -58,6 +58,7 @@ class ClassifyFst(GraphFst):
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
+        whitelist: path to a file with whitelist replacements
     """
 
     def __init__(
@@ -83,7 +84,7 @@ class ClassifyFst(GraphFst):
             tn_date_verbalizer = TNDateVerbalizer(deterministic=False)
             tn_electronic_tagger = TNElectronicTagger(deterministic=False)
             tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
-            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False)
+            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False, input_file=whitelist)
 
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger)
             cardinal_graph = cardinal.fst
