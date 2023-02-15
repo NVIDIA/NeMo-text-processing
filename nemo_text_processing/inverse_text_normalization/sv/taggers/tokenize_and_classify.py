@@ -60,7 +60,9 @@ class ClassifyFst(GraphFst):
         overwrite_cache: set to True to overwrite .far files
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, deterministic: bool = True):
+    def __init__(
+        self, cache_dir: str = None, overwrite_cache: bool = False, deterministic: bool = True, whitelist: str = None
+    ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
         far_file = None
