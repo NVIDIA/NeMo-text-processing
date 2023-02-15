@@ -35,9 +35,12 @@ def get_serial_number(cardinal):
     any alphanumerical character sequence with at least one number with length greater equal to 3
     """
     digit = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT)
-    character = digit | NEMO_ALPHA
+    two_digit = pynini.compose(cardinal.graph_two_digit, NEMO_DIGIT**2)
+    character = digit | two_digit | NEMO_ALPHA
     sequence = character + pynini.closure(pynutil.delete(" ") + character, 2)
-    sequence = sequence @ (pynini.closure(NEMO_ALNUM) + NEMO_DIGIT + pynini.closure(NEMO_ALNUM))
+    sequence2 = NEMO_ALPHA + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA) + pynini.closure(pynutil.delete(" ") + two_digit, 1)
+    sequence2 |= two_digit + pynini.closure(pynutil.delete(" ") + two_digit, 1) + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA,1)
+    sequence = (sequence | sequence2) @ (pynini.closure(NEMO_ALNUM) + NEMO_DIGIT + pynini.closure(NEMO_ALNUM))
     return sequence.optimize()
 
 
@@ -69,6 +72,7 @@ class TelephoneFst(GraphFst):
         if input_case == INPUT_CASED:
             str_to_digit = capitalized_input_graph(str_to_digit)
 
+
         double_digit = pynini.union(
             *[
                 pynini.cross(
@@ -81,6 +85,8 @@ class TelephoneFst(GraphFst):
             ]
         )
         double_digit.invert()
+
+
 
         triple_digit = pynini.union(
             *[
