@@ -33,9 +33,7 @@ class DecimalFst(GraphFst):
             pynutil.delete("negative: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"") + delete_space, 0, 1
         )
         optional_integer = pynini.closure(tn_decimal_verbalizer.integer, 0, 1)
-        optional_fractional = pynini.closure(
-            delete_space + pynutil.insert(",") + tn_decimal_verbalizer.graph, 0, 1
-        )
+        optional_fractional = pynini.closure(delete_space + pynutil.insert(",") + tn_decimal_verbalizer.graph, 0, 1)
         graph = (optional_integer + optional_fractional + tn_decimal_verbalizer.optional_quantity).optimize()
         self.numbers = optional_sign + graph
         graph = self.numbers + delete_preserve_order
