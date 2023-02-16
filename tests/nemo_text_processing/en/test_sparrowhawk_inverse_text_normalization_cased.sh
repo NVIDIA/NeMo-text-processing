@@ -21,69 +21,58 @@ runtest () {
 }
 
 testITNCardinal() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_cardinal
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_cardinal.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_cardinal_cased.txt
 }
 
 testITNDate() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_date
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_date.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_date_cased.txt
 }
 
 testITNDecimal() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_decimal
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_decimal.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_decimal_cased.txt
 }
 
 testITNElectronic() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_electronic
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_electronic.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_electronic_cased.txt
 }
 
 testITNOrdinal() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_ordinal
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_ordinal.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_ordinal_cased.txt
 }
 
 testITNTime() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_time
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_time.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_time_cased.txt
 }
 
 testITNMeasure() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_measure
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_measure.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_measure_cased.txt
 }
 
 testITNMoney() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_money
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_money.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_money_cased.txt
 }
 
 testITNWhitelist() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_whitelist
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_whitelist.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_whitelist_cased.txt
 }
 
 testITNTelephone() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_telephone
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_telephone.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_telephone_cased.txt
 }
 
 testITNWord() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_word
-  runtest $input.txt
-  runtest $input_cased.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_word.txt
+  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_word_cased.txt
 }
 
 # Load shUnit2
