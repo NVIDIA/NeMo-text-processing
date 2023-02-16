@@ -27,6 +27,7 @@ from typing import Dict, List, Optional, Union
 
 import pynini
 import regex
+import tqdm
 from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
@@ -79,7 +80,8 @@ class Normalizer:
     Useful for TTS preprocessing.
 
     Args:
-        input_case: expected input capitalization
+        input_case: Input text capitalization, set to 'cased' if text contains capital letters.
+            This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.
         lang: language specifying the TN rules, by default: English
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files

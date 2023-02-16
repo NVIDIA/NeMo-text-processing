@@ -16,10 +16,13 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
     GraphFst,
+    capitalized_input_graph,
     convert_space,
     delete_extra_space,
     delete_space,
@@ -37,9 +40,10 @@ class MoneyFst(GraphFst):
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="money", kind="classify")
         # quantity, integer_part, fractional_part, currency
 
@@ -54,6 +58,9 @@ class MoneyFst(GraphFst):
         graph_decimal_final = decimal.final_graph_wo_negative
         unit = pynini.string_file(get_abs_path("data/currency.tsv"))
         unit_singular = pynini.invert(unit)
+
+        if input_case == INPUT_CASED:
+            unit_singular = capitalized_input_graph(unit_singular)
         unit_plural = get_singulars(unit_singular)
 
         graph_unit_singular = pynutil.insert("currency: \"") + convert_space(unit_singular) + pynutil.insert("\"")
@@ -62,14 +69,27 @@ class MoneyFst(GraphFst):
         )
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
+
+        one_graph = pynini.accep("one").optimize()
+        if input_case == INPUT_CASED:
+            one_graph |= pynini.accep("One").optimize()
+
+        cent_graph = pynutil.delete("cent")
+        cents_graph = pynutil.delete("cents")
+
+        if input_case == INPUT_CASED:
+            cent_graph |= pynutil.delete("Cent")
+            cents_graph |= pynutil.delete("Cents")
+
         # twelve dollars (and) fifty cents, zero cents
         cents_standalone = (
             pynutil.insert("fractional_part: \"")
             + pynini.union(
-                pynutil.add_weight(((NEMO_SIGMA - "one") @ cardinal_graph), -0.7) @ add_leading_zero_to_double_digit
+                pynutil.add_weight(((NEMO_SIGMA - one_graph) @ cardinal_graph), -0.7)
+                @ add_leading_zero_to_double_digit
                 + delete_space
-                + pynutil.delete("cents"),
-                pynini.cross("one", "01") + delete_space + pynutil.delete("cent"),
+                + cents_graph,
+                pynini.cross(one_graph, "01") + delete_space + cent_graph,
             )
             + pynutil.insert("\"")
         )
@@ -94,7 +114,7 @@ class MoneyFst(GraphFst):
 
         graph_integer = (
             pynutil.insert("integer_part: \"")
-            + ((NEMO_SIGMA - "one") @ cardinal_graph)
+            + ((NEMO_SIGMA - one_graph) @ cardinal_graph)
             + pynutil.insert("\"")
             + delete_extra_space
             + graph_unit_plural
@@ -102,7 +122,7 @@ class MoneyFst(GraphFst):
         )
         graph_integer |= (
             pynutil.insert("integer_part: \"")
-            + pynini.cross("one", "1")
+            + pynini.cross(one_graph, "1")
             + pynutil.insert("\"")
             + delete_extra_space
             + graph_unit_singular

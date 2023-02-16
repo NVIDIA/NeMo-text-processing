@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import os
-from typing import Union
+from typing import List, Union
 
 import inflect
 
@@ -45,3 +45,18 @@ def get_abs_path(rel_path):
     Returns absolute path
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
+
+
+def get_various_formats(text: str) -> List[str]:
+    """
+    Return various formats for text, e.g., all caps, the first letter upper cased, space separated, etc.
+    """
+    result = []
+    if len(text) == 0:
+        return []
+
+    for t in [text, ' '.join(list(text))]:
+        result.append(t)
+        result.append(t.upper())
+        result.append(t.capitalize())
+    return result

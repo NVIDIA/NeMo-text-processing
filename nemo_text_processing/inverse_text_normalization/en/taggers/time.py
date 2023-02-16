@@ -18,7 +18,10 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
     GraphFst,
+    capitalized_input_graph,
     convert_space,
     delete_extra_space,
     delete_space,
@@ -38,28 +41,43 @@ class TimeFst(GraphFst):
         e.g. half past two -> time { hours: "2" minutes: "30" }
     """
 
-    def __init__(self):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="time", kind="classify")
         # hours, minutes, seconds, suffix, zone, style, speak_period
 
         suffix_graph = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
         time_zone_graph = pynini.invert(pynini.string_file(get_abs_path("data/time/time_zone.tsv")))
+
+        if input_case == INPUT_CASED:
+            suffix_graph |= pynini.string_file(get_abs_path("data/time/time_suffix_cased.tsv"))
+            time_zone_graph |= pynini.invert(pynini.string_file(get_abs_path("data/time/time_zone_cased.tsv")))
+
         to_hour_graph = pynini.string_file(get_abs_path("data/time/to_hour.tsv"))
         minute_to_graph = pynini.string_file(get_abs_path("data/time/minute_to.tsv"))
 
         # only used for < 1000 thousand -> 0 weight
-        cardinal = pynutil.add_weight(CardinalFst().graph_no_exception, weight=-0.7)
+        cardinal = pynutil.add_weight(CardinalFst(input_case=input_case).graph_no_exception, weight=-0.7)
 
         labels_hour = [num_to_word(x) for x in range(0, 24)]
         labels_minute_single = [num_to_word(x) for x in range(1, 10)]
         labels_minute_double = [num_to_word(x) for x in range(10, 60)]
 
         graph_hour = pynini.union(*labels_hour) @ cardinal
+        if input_case == INPUT_CASED:
+            graph_hour = capitalized_input_graph(graph_hour)
 
         graph_minute_single = pynini.union(*labels_minute_single) @ cardinal
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
+
         graph_minute_verbose = pynini.cross("half", "30") | pynini.cross("quarter", "15")
-        oclock = pynini.cross(pynini.union("o' clock", "o clock", "o'clock", "oclock", "hundred hours"), "")
+        oclock = pynini.cross(pynini.union("o' clock", "o clock", "o'clock", "oclock", "hundred hours",), "",)
+
+        if input_case == INPUT_CASED:
+            minute_to_graph = capitalized_input_graph(minute_to_graph)
+            graph_minute_single = capitalized_input_graph(graph_minute_single)
+            graph_minute_double = capitalized_input_graph(graph_minute_double)
+            graph_minute_verbose |= pynini.cross("Half", "30") | pynini.cross("Quarter", "15")
+            oclock |= pynini.cross(pynini.union("O' clock", "O clock", "O'clock", "Oclock", "Hundred hours",), "",)
 
         final_graph_hour = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
         graph_minute = (
@@ -97,9 +115,13 @@ class TimeFst(GraphFst):
             + final_graph_hour
         )
 
+        quarter_graph = pynini.accep("quarter")
+        if input_case == INPUT_CASED:
+            quarter_graph |= pynini.accep("Quarter")
+
         graph_quarter_time = (
             pynutil.insert("minutes: \"")
-            + pynini.cross("quarter", "45")
+            + (pynini.cross(quarter_graph, "45"))
             + pynutil.insert("\"")
             + delete_space
             + pynutil.delete(pynini.union("to", "till"))

@@ -29,6 +29,7 @@ from nemo_text_processing.inverse_text_normalization.ru.taggers.telephone import
 from nemo_text_processing.inverse_text_normalization.ru.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ru.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -48,15 +49,22 @@ class ClassifyFst(GraphFst):
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
         whitelist: path to a file with whitelist replacements
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, whitelist: str = None):
+    def __init__(
+        self,
+        cache_dir: str = None,
+        overwrite_cache: bool = False,
+        whitelist: str = None,
+        input_case: str = INPUT_LOWER_CASED,
+    ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, "_ru_itn.far")
+            far_file = os.path.join(cache_dir, f"ru_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")

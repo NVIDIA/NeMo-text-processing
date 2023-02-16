@@ -16,21 +16,30 @@
 
 MODE=${1:-"export"}
 LANGUAGE=${2:-"en"}
+INPUT_CASE=${3:-"lower_cased"}
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
 : ${CLASSIFY_DIR:="$SCRIPT_DIR/../$LANGUAGE/classify"}
 : ${VERBALIZE_DIR:="$SCRIPT_DIR/../$LANGUAGE/verbalize"}
-: ${CMD:=${3:-"/bin/bash"}}
+: ${CMD:=${4:-"/bin/bash"}}
 
 MOUNTS=""
 MOUNTS+=" -v $CLASSIFY_DIR:/workspace/sparrowhawk/documentation/grammars/en_toy/classify"
 MOUNTS+=" -v $VERBALIZE_DIR:/workspace/sparrowhawk/documentation/grammars/en_toy/verbalize"
 
 WORK_DIR="/workspace/sparrowhawk/documentation/grammars"
+
+# update test case script based on input case (for ITN English)
+if [[ $INPUT_CASE == "lower_cased" ]]; then
+  INPUT_CASE=".sh"
+else
+  INPUT_CASE="_cased.sh"
+fi
+
 if [[ $MODE == "test_tn_grammars" ]]; then
   CMD="bash test_sparrowhawk_normalization.sh"
   WORK_DIR="/workspace/tests/${LANGUAGE}"
 elif [[ $MODE == "test_itn_grammars" ]]; then
-  CMD="bash test_sparrowhawk_inverse_text_normalization.sh"
+  CMD="bash test_sparrowhawk_inverse_text_normalization${INPUT_CASE}"
   WORK_DIR="/workspace/tests/${LANGUAGE}"
 fi
 
