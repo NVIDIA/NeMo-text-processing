@@ -14,6 +14,8 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
     NEMO_CHAR,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
@@ -53,7 +55,7 @@ class WhiteListFst(GraphFst):
 
         def _get_whitelist_graph(input_case, file, keep_punct_add_end: bool = False):
             whitelist = load_labels(file)
-            if input_case == "lower_cased":
+            if input_case == INPUT_LOWER_CASED:
                 whitelist = [[x.lower(), y] for x, y in whitelist]
             else:
                 whitelist = [[x, y] for x, y in whitelist]
@@ -107,7 +109,7 @@ class WhiteListFst(GraphFst):
         states = load_labels(get_abs_path("data/address/state.tsv"))
         additional_options = []
         for x, y in states:
-            if input_case == "lower_cased":
+            if input_case == INPUT_LOWER_CASED:
                 x = x.lower()
             additional_options.append((x, f"{y[0]}.{y[1:]}"))
             if not deterministic:
@@ -129,14 +131,14 @@ class WhiteListFst(GraphFst):
         self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
 
 
-def get_formats(input_f, input_case="cased", is_default=True):
+def get_formats(input_f, input_case=INPUT_CASED, is_default=True):
     """
     Adds various abbreviation format options to the list of acceptable input forms
     """
     multiple_formats = load_labels(input_f)
     additional_options = []
     for x, y in multiple_formats:
-        if input_case == "lower_cased":
+        if input_case == INPUT_LOWER_CASED:
             x = x.lower()
         additional_options.append((f"{x}.", y))  # default "dr" -> doctor, this includes period "dr." -> doctor
         additional_options.append((f"{x[0].upper() + x[1:]}", f"{y[0].upper() + y[1:]}"))  # "Dr" -> Doctor
