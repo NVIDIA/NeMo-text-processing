@@ -46,6 +46,11 @@ class TimeFst(GraphFst):
 
         suffix_graph = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
         time_zone_graph = pynini.invert(pynini.string_file(get_abs_path("data/time/time_zone.tsv")))
+
+        if input_case == INPUT_CASED:
+            suffix_graph |= pynini.string_file(get_abs_path("data/time/time_suffix_cased.tsv"))
+            time_zone_graph |= pynini.invert(pynini.string_file(get_abs_path("data/time/time_zone_cased.tsv")))
+
         to_hour_graph = pynini.string_file(get_abs_path("data/time/to_hour.tsv"))
         minute_to_graph = pynini.string_file(get_abs_path("data/time/minute_to.tsv"))
 
@@ -109,9 +114,13 @@ class TimeFst(GraphFst):
             + final_graph_hour
         )
 
+        quarter_graph = pynini.accep("quarter")
+        if input_case == INPUT_CASED:
+            quarter_graph |= pynini.accep("Quarter")
+
         graph_quarter_time = (
             pynutil.insert("minutes: \"")
-            + (pynini.cross(pynini.union("Quarter", "quarter"), "45"))
+            + (pynini.cross(quarter_graph, "45"))
             + pynutil.insert("\"")
             + delete_space
             + pynutil.delete(pynini.union("to", "till"))

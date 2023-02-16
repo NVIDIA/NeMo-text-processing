@@ -69,10 +69,17 @@ class MoneyFst(GraphFst):
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
 
+        one_graph = pynini.accep("one").optimize()
         if input_case == INPUT_CASED:
-            one_graph = pynini.union("one", "One").optimize()
-        else:
-            one_graph = pynini.accep("one").optimize()
+            one_graph |= pynini.accep("One").optimize()
+
+        cent_graph = pynutil.delete("cent")
+        cents_graph = pynutil.delete("cents")
+
+        if input_case == INPUT_CASED:
+            cent_graph |= pynutil.delete("Cent")
+            cents_graph |= pynutil.delete("Cents")
+
         # twelve dollars (and) fifty cents, zero cents
         cents_standalone = (
             pynutil.insert("fractional_part: \"")
@@ -80,8 +87,8 @@ class MoneyFst(GraphFst):
                 pynutil.add_weight(((NEMO_SIGMA - one_graph) @ cardinal_graph), -0.7)
                 @ add_leading_zero_to_double_digit
                 + delete_space
-                + pynutil.delete("cents"),
-                pynini.cross(one_graph, "01") + delete_space + pynutil.delete("cent"),
+                + cents_graph,
+            pynini.cross(one_graph, "01") + delete_space + cent_graph,
             )
             + pynutil.insert("\"")
         )

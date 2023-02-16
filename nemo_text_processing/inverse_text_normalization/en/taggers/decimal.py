@@ -17,6 +17,7 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
+    INPUT_LOWER_CASED,
     MIN_NEG_WEIGHT,
     MINUS,
     NEMO_DIGIT,
@@ -27,11 +28,12 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
 )
+from nemo_text_processing.text_normalization.en.utils import load_labels
 from pynini.lib import pynutil
 
 
 def get_quantity(
-    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', input_case: str
+    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', input_case: str=INPUT_LOWER_CASED
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
@@ -46,10 +48,13 @@ def get_quantity(
     numbers = cardinal_up_to_hundred @ (
         pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
     )
-    suffix = pynini.union("million", "billion", "trillion", "quadrillion", "quintillion", "sextillion",)
+
+    suffix_labels = load_labels(get_abs_path("data/numbers/thousands.tsv"))
+    suffix_labels = [x[0] for x in suffix_labels if x[0] != "thousand"]
+    suffix = pynini.union(*suffix_labels).optimize()
 
     if input_case == INPUT_CASED:
-        suffix |= pynini.union("Million", "Billion", "Trillion", "Quadrillion", "Quintillion", "Sextillion",)
+        suffix |= pynini.union(*[x[0].upper() + x[1:] for x in suffix_labels]).optimize()
 
     res = (
         pynutil.insert("integer_part: \"")

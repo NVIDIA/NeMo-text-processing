@@ -24,7 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     capitalized_input_graph,
     delete_space,
-    insert_space,
+    insert_space
 )
 from pynini.lib import pynutil
 

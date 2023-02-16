@@ -50,3 +50,5 @@ One fifty five dollars~$155
 Fifteen hundred dollars~$1500
 Ninety nine hundred dollars~$9900
 Ninety nine hundred and fifteen dollars and one cent~$9915.01
+zero point two Million Dollars~$0.2 Million
+One Cent~$0.01

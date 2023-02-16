@@ -1,6 +1,8 @@
 Eight oclock g m t~08:00 gmt
 Seven a m e s t~07:00 a.m. est
 Two p m~02:00 p.m.
+Seven A M E S T~07:00 A.M. EST
+Two P M~02:00 P.M.
 Two thirty~02:30
 Three o'clock~03:00
 Quarter past one~01:15
@@ -27,3 +29,5 @@ Quarter to one~12:45
 Quarter to twelve~11:45
 Set alarm at ten to eleven pm~Set alarm at 10:50 p.m.
 One min to one am~12:59 a.m.
+eleven Forty six A M~11:46 A.M.
+eleven forty six AM~11:46 A.M.

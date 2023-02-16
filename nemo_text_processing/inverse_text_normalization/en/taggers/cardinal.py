@@ -17,6 +17,7 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
+    INPUT_LOWER_CASED,
     MINUS,
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -39,7 +40,7 @@ class CardinalFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str):
+    def __init__(self, input_case: str=INPUT_LOWER_CASED):
         super().__init__(name="cardinal", kind="classify")
         self.input_case = input_case
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))

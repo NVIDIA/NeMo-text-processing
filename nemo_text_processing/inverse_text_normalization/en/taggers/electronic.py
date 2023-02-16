@@ -17,6 +17,7 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, get_various_formats
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
+    INPUT_LOWER_CASED,
     MIN_POS_WEIGHT,
     NEMO_ALPHA,
     GraphFst,
@@ -36,7 +37,7 @@ class ElectronicFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str):
+    def __init__(self, input_case: str=INPUT_LOWER_CASED):
         super().__init__(name="electronic", kind="classify")
 
         delete_extra_space = pynutil.delete(" ")

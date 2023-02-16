@@ -17,6 +17,7 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
+    INPUT_LOWER_CASED,
     NEMO_ALPHA,
     NEMO_DIGIT,
     GraphFst,
@@ -31,7 +32,7 @@ graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimiz
 ties_graph = pynini.string_file(get_abs_path("data/numbers/ties.tsv")).optimize()
 
 
-def _get_month_graph(input_case: str):
+def _get_month_graph(input_case: str=INPUT_LOWER_CASED):
     """
     Transducer for month, e.g. march -> march
     """
@@ -151,8 +152,12 @@ class DateFst(GraphFst):
         graph_mdy = month_graph + (
             (delete_extra_space + day_graph) | graph_year | (delete_extra_space + day_graph + graph_year)
         )
+        the_graph = pynutil.delete("the")
+        if input_case == INPUT_CASED:
+            the_graph |= pynutil.delete("The").optimize()
+
         graph_dmy = (
-            (pynutil.delete("the") | (pynutil.delete("The")))
+            the_graph
             + delete_space
             + day_graph
             + delete_space

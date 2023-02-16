@@ -24,6 +24,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     get_singulars,
+    INPUT_LOWER_CASED,
+    INPUT_CASED
 )
 from pynini.lib import pynutil
 
@@ -36,9 +38,10 @@ class MeasureFst(GraphFst):
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, input_case:INPUT_LOWER_CASED):
         super().__init__(name="measure", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
@@ -60,7 +63,11 @@ class MeasureFst(GraphFst):
         unit_singular = convert_space(graph_unit_singular)
         unit_plural = convert_space(graph_unit_plural)
         unit_misc = pynutil.insert("/") + pynutil.delete("per") + delete_space + convert_space(graph_unit_singular)
-        one_graph = pynini.union("one", "One").optimize()
+
+        one_graph = pynini.accep("one").optimize()
+        if input_case == INPUT_CASED:
+            one_graph |= pynini.accep("One").optimize()
+
         unit_singular = (
             pynutil.insert("units: \"")
             + (unit_singular | unit_misc | pynutil.add_weight(unit_singular + delete_space + unit_misc, 0.01))
