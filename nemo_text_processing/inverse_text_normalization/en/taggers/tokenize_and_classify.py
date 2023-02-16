@@ -70,7 +70,11 @@ class ClassifyFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
+<<<<<<< HEAD
             logger.info(f"Creating ClassifyFst grammars.")
+=======
+            logging.info(f"Creating ClassifyFst grammars.")
+>>>>>>> efcdd12 (update ITN to work after Punctuation capitalization model (#22))
             cardinal = CardinalFst(input_case=input_case)
             cardinal_graph = cardinal.fst
 

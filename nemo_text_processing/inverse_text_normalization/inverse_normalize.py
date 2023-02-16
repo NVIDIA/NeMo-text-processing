@@ -183,6 +183,14 @@ def parse_args():
         type=str,
     )
     parser.add_argument(
+        "--input_case",
+        help="Input text capitalization, set to 'cased' if text contains capital letters."
+        "This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.",
+        choices=[INPUT_CASED, INPUT_LOWER_CASED],
+        default=INPUT_LOWER_CASED,
+        type=str,
+    )
+    parser.add_argument(
         "--whitelist",
         help="Path to a file with with whitelist replacements," "e.g., inverse_normalization/en/data/whitelist.tsv",
         default=None,

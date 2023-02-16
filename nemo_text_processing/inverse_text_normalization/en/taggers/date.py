@@ -183,6 +183,12 @@ class DateFst(GraphFst):
             + month_graph
             + optional_graph_year
         )
+<<<<<<< HEAD
+=======
+        graph_year = (
+            pynutil.insert("year: \"") + (year_graph | _get_range_graph(input_case=input_case)) + pynutil.insert("\"")
+        )
+>>>>>>> efcdd12 (update ITN to work after Punctuation capitalization model (#22))
 
         financial_period_graph = pynini.string_file(get_abs_path("data/date_period.tsv")).invert()
         period_fy = (
