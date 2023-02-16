@@ -88,7 +88,7 @@ class MoneyFst(GraphFst):
                 @ add_leading_zero_to_double_digit
                 + delete_space
                 + cents_graph,
-            pynini.cross(one_graph, "01") + delete_space + cent_graph,
+                pynini.cross(one_graph, "01") + delete_space + cent_graph,
             )
             + pynutil.insert("\"")
         )

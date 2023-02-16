@@ -40,7 +40,7 @@ class CardinalFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str=INPUT_LOWER_CASED):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="cardinal", kind="classify")
         self.input_case = input_case
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
