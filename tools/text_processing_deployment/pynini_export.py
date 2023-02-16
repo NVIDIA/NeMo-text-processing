@@ -29,7 +29,10 @@ def itn_grammars(**kwargs):
     d = {}
     d['classify'] = {
         'TOKENIZE_AND_CLASSIFY': ITNClassifyFst(
-            cache_dir=kwargs["cache_dir"], overwrite_cache=kwargs["overwrite_cache"], whitelist=kwargs["whitelist"]
+            cache_dir=kwargs["cache_dir"],
+            overwrite_cache=kwargs["overwrite_cache"],
+            whitelist=kwargs["whitelist"],
+            input_case=kwargs["input_case"],
         ).fst
     }
     d['verbalize'] = {'ALL': ITNVerbalizeFst().fst, 'REDUP': pynini.accep("REDUP")}
