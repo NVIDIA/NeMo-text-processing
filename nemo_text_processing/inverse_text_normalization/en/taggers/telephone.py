@@ -16,10 +16,14 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    MIN_NEG_WEIGHT,
     NEMO_ALNUM,
     NEMO_ALPHA,
     NEMO_DIGIT,
     GraphFst,
+    capitalized_input_graph,
     delete_space,
     insert_space,
 )
@@ -50,9 +54,10 @@ class TelephoneFst(GraphFst):
 
     Args:
         cardinal: CardinalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="telephone", kind="classify")
         # country code, number_part, extension
         digit_to_str = (
@@ -61,6 +66,8 @@ class TelephoneFst(GraphFst):
         )
 
         str_to_digit = pynini.invert(digit_to_str)
+        if input_case == INPUT_CASED:
+            str_to_digit = capitalized_input_graph(str_to_digit)
 
         double_digit = pynini.union(
             *[
@@ -161,7 +168,16 @@ class TelephoneFst(GraphFst):
 
         ip_graph = digit_or_double + (pynini.cross(" dot ", ".") + digit_or_double) ** 3
 
-        graph |= pynutil.insert("number_part: \"") + ip_graph.optimize() + pynutil.insert("\"")
+        graph |= (
+            pynutil.insert("number_part: \"")
+            + pynutil.add_weight(ip_graph.optimize(), MIN_NEG_WEIGHT)
+            + pynutil.insert("\"")
+        )
+
+        if input_case == INPUT_CASED:
+            graph = capitalized_input_graph(graph)
+
+        # serial graph shouldn't apply TO_LOWER
         graph |= (
             pynutil.insert("number_part: \"")
             + pynutil.add_weight(get_serial_number(cardinal=cardinal), weight=0.0001)
