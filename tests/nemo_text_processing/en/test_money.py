@@ -24,12 +24,24 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 class TestMoney:
     inverse_normalizer_en = InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
+    inverse_normalizer_en_cased = InverseNormalizer(
+        lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased"
+    )
 
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_money.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_en.inverse_normalize(test_input, verbose=False)
+        assert pred == expected, f"input: {test_input}"
+        pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
+        assert pred == expected, f"input: {test_input}"
+
+    @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_money_cased.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm(self, test_input, expected):
+        pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected, f"input: {test_input}"
 
     normalizer_en = Normalizer(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
