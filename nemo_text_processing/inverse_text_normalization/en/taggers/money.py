@@ -17,6 +17,7 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
+    INPUT_LOWER_CASED,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
@@ -42,7 +43,7 @@ class MoneyFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst, input_case: str):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="money", kind="classify")
         # quantity, integer_part, fractional_part, currency
 
@@ -88,7 +89,7 @@ class MoneyFst(GraphFst):
                 @ add_leading_zero_to_double_digit
                 + delete_space
                 + cents_graph,
-            pynini.cross(one_graph, "01") + delete_space + cent_graph,
+                pynini.cross(one_graph, "01") + delete_space + cent_graph,
             )
             + pynutil.insert("\"")
         )

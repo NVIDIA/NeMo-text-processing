@@ -37,7 +37,7 @@ class ElectronicFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str=INPUT_LOWER_CASED):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="electronic", kind="classify")
 
         delete_extra_space = pynutil.delete(" ")

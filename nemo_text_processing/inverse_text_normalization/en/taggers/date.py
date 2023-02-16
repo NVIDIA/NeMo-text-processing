@@ -32,7 +32,7 @@ graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimiz
 ties_graph = pynini.string_file(get_abs_path("data/numbers/ties.tsv")).optimize()
 
 
-def _get_month_graph(input_case: str=INPUT_LOWER_CASED):
+def _get_month_graph(input_case: str = INPUT_LOWER_CASED):
     """
     Transducer for month, e.g. march -> march
     """

@@ -17,6 +17,7 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
+    INPUT_LOWER_CASED,
     MIN_NEG_WEIGHT,
     NEMO_ALNUM,
     NEMO_ALPHA,
@@ -24,7 +25,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     capitalized_input_graph,
     delete_space,
-    insert_space
+    insert_space,
 )
 from pynini.lib import pynutil
 
@@ -56,7 +57,7 @@ class TelephoneFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, input_case: str):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="telephone", kind="classify")
         # country code, number_part, extension
         digit_to_str = (

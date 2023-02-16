@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, INPUT_LOWER_CASED
+from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, GraphFst
 
 
 class FractionFst(GraphFst):
@@ -24,6 +24,6 @@ class FractionFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str=INPUT_LOWER_CASED):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="fraction", kind="classify")
         # integer_part # numerator # denominator

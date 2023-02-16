@@ -19,6 +19,7 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import 
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
+    INPUT_LOWER_CASED,
     GraphFst,
     capitalized_input_graph,
     convert_space,
@@ -40,7 +41,7 @@ class TimeFst(GraphFst):
         e.g. half past two -> time { hours: "2" minutes: "30" }
     """
 
-    def __init__(self, input_case: str):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="time", kind="classify")
         # hours, minutes, seconds, suffix, zone, style, speak_period
 

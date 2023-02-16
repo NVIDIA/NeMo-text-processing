@@ -33,7 +33,7 @@ from pynini.lib import pynutil
 
 
 def get_quantity(
-    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', input_case: str=INPUT_LOWER_CASED
+    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', input_case: str = INPUT_LOWER_CASED
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
@@ -82,7 +82,7 @@ class DecimalFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, input_case: str):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="decimal", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception

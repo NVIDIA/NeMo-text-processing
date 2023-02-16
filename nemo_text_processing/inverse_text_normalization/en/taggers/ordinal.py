@@ -17,6 +17,7 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
+    INPUT_LOWER_CASED,
     NEMO_CHAR,
     GraphFst,
     capitalized_input_graph,
@@ -34,7 +35,7 @@ class OrdinalFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, input_case: str):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="ordinal", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception

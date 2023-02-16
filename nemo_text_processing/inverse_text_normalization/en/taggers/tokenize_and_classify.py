@@ -30,6 +30,7 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.time import Time
 from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -51,7 +52,13 @@ class ClassifyFst(GraphFst):
         whitelist: path to a file with whitelist replacements
     """
 
-    def __init__(self, input_case: str, cache_dir: str = None, overwrite_cache: bool = False, whitelist: str = None):
+    def __init__(
+        self,
+        input_case: str = INPUT_LOWER_CASED,
+        cache_dir: str = None,
+        overwrite_cache: bool = False,
+        whitelist: str = None,
+    ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
