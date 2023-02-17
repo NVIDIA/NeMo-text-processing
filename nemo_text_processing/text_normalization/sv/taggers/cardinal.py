@@ -103,7 +103,7 @@ class CardinalFst(GraphFst):
         digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
         teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
         ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
-        ett_to_en = pynini.string_map([("ett", "en")])
+        ett_to_en = pynini.cross("ett", "en")
         ties_alt_endings = pynini.string_map([("go", "gi"), ("tio", "ti")])
 
         # Any single digit
