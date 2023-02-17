@@ -328,16 +328,14 @@ class CardinalFst(GraphFst):
 
         self.graph |= zero
 
-        filtered_graph = filter_punctuation(self.graph).optimize()
-        self.graph_en = filtered_graph @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
-        self.graph_no_one = (pynini.project(filtered_graph, "input") - "1") @ self.graph
+        self.graph = filter_punctuation(self.graph).optimize()
+        self.graph_en = self.graph @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
+        self.graph_no_one = (pynini.project(self.graph, "input") - "1") @ self.graph
         self.graph_no_one_en = (pynini.project(self.graph_en, "input") - "1") @ self.graph_en
-        if not deterministic:
-            self.graph |= self.graph_en
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
-        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + filtered_graph + pynutil.insert("\"")
+        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         if not deterministic:
             final_graph |= pynutil.add_weight(
                 optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\""), -0.001
