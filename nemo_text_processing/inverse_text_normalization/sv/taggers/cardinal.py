@@ -40,17 +40,17 @@ class CardinalFst(GraphFst):
 
         self.graph_ties = (tn_cardinal_tagger.two_digit_non_zero).invert().optimize()
         # this is to make sure if there is an ambiguity with decimal, decimal is chosen, e.g. 1000000 vs. 1 million
-        graph = pynutil.add_weight(graph, weight=0.001)
+        # graph = pynutil.add_weight(graph, weight=0.001)
         self.graph_no_exception = graph
         self.digit = pynini.arcmap(tn_cardinal_tagger.digit, map_type="rmweight").invert().optimize()
         graph_exception = pynini.project(self.digit, 'input')
-        self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        #self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
 
         self.optional_minus_graph = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("minus ", "\"-\" "), 0, 1
         )
 
-        final_graph = self.optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        final_graph = self.optional_minus_graph + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
