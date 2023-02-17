@@ -33,6 +33,7 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
         graph = pynini.arcmap(tn_cardinal_tagger.graph, map_type="rmweight").invert().optimize()
+        graph = graph @ pynini.cdrewrite(pynini.cross(" ", ""), "", "", NEMO_SIGMA)
 
         self.graph_hundred_component_at_least_one_none_zero_digit = (
             (tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit).invert().optimize()
