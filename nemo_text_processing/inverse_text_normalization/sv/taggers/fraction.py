@@ -34,9 +34,9 @@ class FractionFst(GraphFst):
         tn_fraction_verbalizer: TN fraction verbalizer
     """
 
-    def __init__(self, itn_cardinal_tagger: GraphFst, tn_fraction_verbalizer: GraphFst, deterministic: bool = True):
+    def __init__(self, itn_cardinal_tagger: GraphFst, tn_fraction_tagger: GraphFst, deterministic: bool = True):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
-        tagger = tn_fraction_verbalizer.graph.invert().optimize()
+        tagger = tn_fraction_tagger.graph.invert().optimize()
 
         delete_optional_sign = pynini.closure(pynutil.delete("negative: ") + pynini.cross("\"true\" ", "-"), 0, 1)
         delete_integer_marker = (
@@ -50,7 +50,7 @@ class FractionFst(GraphFst):
         delete_denominator_marker = (
             pynutil.insert('/')
             + (pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\""))
-            @ itn_cardinal_tagger.graph_no_exception
+            @ tn_fraction_tagger.fractions
         )
 
         graph = (

@@ -39,6 +39,7 @@ from nemo_text_processing.text_normalization.sv.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst as TNDateTagger
 from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst as TNDecimalTagger
 from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst as TNElectronicTagger
+from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst as TNFractionTagger
 from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as TNOrdinalTagger
 from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst as TNWhitelistTagger
 from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst as TNDateVerbalizer
@@ -79,6 +80,7 @@ class ClassifyFst(GraphFst):
             tn_ordinal_tagger = TNOrdinalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
             tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=False)
             tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
+            tn_fraction_tagger = TNFractionTagger(cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=True)
             tn_fraction_verbalizer = TNFractionVerbalizer(deterministic=False)
             tn_time_verbalizer = TNTimeVerbalizer(deterministic=False)
             tn_date_verbalizer = TNDateVerbalizer(deterministic=False)
@@ -94,7 +96,7 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger)
             decimal_graph = decimal.fst
 
-            fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_verbalizer=tn_fraction_verbalizer)
+            fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_tagger=tn_fraction_tagger)
             fraction_graph = fraction.fst
 
             measure_graph = MeasureFst(
