@@ -109,12 +109,11 @@ class CardinalFst(GraphFst):
         # Any single digit
         graph_digit = digit
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
-        both_ones = pynini.cross("1", "en") | pynini.cross("1", "ett")
         if deterministic:
             final_digit = digit
         else:
-            final_digit = digits_no_one | both_ones
-            graph_digit = digit | both_ones
+            final_digit = digit | pynini.cross("1", "en")
+            graph_digit = final_digit
         self.digit = final_digit
 
         single_digits_graph = graph_digit | zero
@@ -142,7 +141,6 @@ class CardinalFst(GraphFst):
         hundreds |= pynini.cross("1", "hundra")
         if not deterministic:
             hundreds |= pynutil.add_weight(pynini.cross("1", "etthundra"), -0.001)
-            hundreds |= pynutil.add_weight(pynini.cross("1", "ett hundra"), -0.001)
             hundreds |= pynutil.add_weight(digit + pynutil.insert(NEMO_SPACE) + pynutil.insert("hundra"), -0.001)
 
         self.tens = graph_tens.optimize()
