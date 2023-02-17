@@ -46,9 +46,12 @@ def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: 
         for one in ["en", "ett"]:
             graph |= pynutil.add_weight(pynini.cross("001", f"{one} {number}"), -0.001)
             graph |= pynutil.add_weight(pynini.cross("001", f"{one} {old_orth}"), -0.001)
+            graph |= pynutil.add_weight(pynini.cross("001", f"{one}{number}"), -0.001)
+            graph |= pynutil.add_weight(pynini.cross("001", f"{one}{old_orth}"), -0.001)
     graph |= non_zero_no_one + pynutil.insert(f" {number}er")
     if not deterministic:
         graph |= pynutil.add_weight(non_zero_no_one + pynutil.insert(f" {old_orth}er"), -0.001)
+        graph |= pynutil.add_weight(non_zero_no_one + pynutil.insert(f"{old_orth}er"), -0.001)
     graph |= pynutil.delete("000")
     graph += insert_space
     return graph
@@ -328,6 +331,7 @@ class CardinalFst(GraphFst):
 
         self.graph |= zero
 
+        self.graph_unfiltered = self.graph
         self.graph = filter_punctuation(self.graph).optimize()
         self.graph_en = self.graph @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
         self.graph_no_one = (pynini.project(self.graph, "input") - "1") @ self.graph
