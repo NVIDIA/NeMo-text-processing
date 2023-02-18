@@ -18,7 +18,7 @@
 7G	seven g
 8K	eight k
 AAA	triple a
-ABC a b c
+ABC	a b c
 AC	a c
 ACL	a c l
 ADAS	a das
@@ -53,14 +53,14 @@ AstraZeneca	astra zeneca
 AstraZeneca	astrazeneca
 Audio2Face	audio to face
 Audio2Face	audio too face
-BBC b b c
+BBC	b b c
 BCP	b c p
 BEV	b e v
 BGA	b g a
 BGP	b g p
 BIOS	Bios
 BIOS	bios
-BIS b i s
+BIS	b i s
 BSP	b s p
 BasePOD	base pod
 BasePOD	basepod
@@ -73,7 +73,7 @@ CAT6	cat six
 CAT6A	cat six a
 CAT7	cat seven
 CAT8	cat eight
-CBC c b c
+CBC	c b c
 CCS	c c s
 CCTV	c c t v
 CCTV	c c tv
@@ -159,6 +159,7 @@ FTP	f t p
 FTPS	f t p s
 FX	f x
 G-SYNC	g sync
+GCC	g c c
 GCP	g c p
 GCS	g c s
 GFN	G f n
@@ -195,7 +196,7 @@ IEC	i e c
 IEEE	i triple e
 IGMP	i g m p
 IGX	i g x
-IISc i i s c
+IISc	i i s c
 IIT	i i t
 INT8	int eight
 IP	i p
@@ -410,7 +411,7 @@ iTPMS	i t p m s
 mr.	mister
 mrs.	misses
 on TikTok	on tick tock
-sFTP	sf t p
+sFTP	s f t p
 st.	saint
 x1	x one
 x2	x two
