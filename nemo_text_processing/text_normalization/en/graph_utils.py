@@ -202,19 +202,21 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
             if len(spoken) == (2 * len(spoken_no_space) - 1):
                 print(f"This is weight {weight}")
                 if len(weight) == 0:
-                    additional_labels.extend([
-                        [written, spoken_no_space],
-                        [written_capitalized, spoken_no_space.upper()]
-                    ])
+                    additional_labels.extend(
+                        [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]
+                    )
                 else:
-                    additional_labels.extend([
-                        [written, spoken_no_space, weight[0]],
-                        [written_capitalized, spoken_no_space.upper(), weight[0]]
-                    ])
+                    additional_labels.extend(
+                        [
+                            [written, spoken_no_space, weight[0]],
+                            [written_capitalized, spoken_no_space.upper(), weight[0]],
+                        ]
+                    )
         labels += additional_labels
 
     whitelist = pynini.string_map(labels).invert().optimize()
     return whitelist
+
 
 class GraphFst:
     """

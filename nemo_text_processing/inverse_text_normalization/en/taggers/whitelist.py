@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
     convert_space,
-    string_map_cased
+    string_map_cased,
 )
 from nemo_text_processing.text_normalization.en.utils import load_labels
 from pynini.lib import pynutil
@@ -44,8 +44,6 @@ class WhiteListFst(GraphFst):
 
     def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None):
         super().__init__(name="whitelist", kind="classify")
-
-
 
         if input_file is None:
             input_file = get_abs_path("data/whitelist.tsv")

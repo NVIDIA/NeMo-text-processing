@@ -195,7 +195,6 @@ class DateFst(GraphFst):
             pynutil.insert("year: \"") + (year_graph | _get_range_graph(input_case=input_case)) + pynutil.insert("\"")
         )
 
-
         graph_fy = period_fy + pynutil.insert(" ") + graph_year
 
         final_graph = graph_mdy | graph_dmy | graph_year | graph_fy
