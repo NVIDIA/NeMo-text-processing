@@ -57,6 +57,6 @@ class MeasureFst(GraphFst):
             + delete_space
             + pynutil.delete("}")
         )
-        graph = (graph_cardinal | graph_decimal) + delete_space + pynutil.insert(" ") + unit
+        graph = (graph_cardinal | graph_decimal) + delete_space + unit
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
