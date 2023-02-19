@@ -106,11 +106,27 @@ def _get_year_graph(input_case: str):
     graph_ties = _get_ties_graph(input_case=input_case)
     graph_digits = _get_digits_graph()
     graph_thousands = _get_thousands_graph()
+    graph_ad_bc = delete_space + pynini.string_file(get_abs_path("data/year_suffix.tsv")).invert()
+
     year_graph = (
         # 20 19, 40 12, 2012 - assuming no limit on the year
         (graph_teen + delete_space + (graph_ties | graph_digits | graph_teen))
         | (graph_ties + delete_space + (graph_ties | graph_digits | graph_teen))
         | graph_thousands
+        | ((graph_digit + delete_space + (graph_ties | graph_digits | graph_teen)) + graph_ad_bc)
+        | ((graph_digit | graph_teen | graph_digits | graph_ties | graph_thousands) + delete_space + graph_ad_bc)
+        | ((graph_ties + delete_space + (graph_ties | graph_digits | graph_teen)) + delete_space + graph_ad_bc)
+        | (
+            (
+                (graph_teen | graph_digit)
+                + delete_space
+                + pynutil.delete("hundred")
+                + pynutil.insert("0")
+                + (graph_digit | pynutil.insert("0"))
+            )
+            + delete_space
+            + graph_ad_bc
+        )
     )
     year_graph.optimize()
     if input_case == INPUT_CASED:
@@ -166,11 +182,22 @@ class DateFst(GraphFst):
             + month_graph
             + optional_graph_year
         )
+
+        financial_period_graph = pynini.string_file(get_abs_path("data/date_period.tsv")).invert()
+        period_fy = (
+            pynutil.insert("period: \"")
+            + financial_period_graph
+            + (pynini.cross(" ", "") | pynini.cross(" of ", ""))
+            + pynutil.insert("\"")
+        )
+
         graph_year = (
             pynutil.insert("year: \"") + (year_graph | _get_range_graph(input_case=input_case)) + pynutil.insert("\"")
         )
 
-        final_graph = graph_mdy | graph_dmy | graph_year
+        graph_fy = period_fy + pynutil.insert(" ") + graph_year
+
+        final_graph = graph_mdy | graph_dmy | graph_year | graph_fy
         final_graph += pynutil.insert(" preserve_order: true")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

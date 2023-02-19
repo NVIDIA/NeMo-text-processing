@@ -47,7 +47,7 @@ class CardinalFst(GraphFst):
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
-
+        self.graph_two_digit = graph_teen | ((graph_ties) + delete_space + (graph_digit | pynutil.insert("0")))
         graph_hundred = pynini.cross("hundred", "")
 
         graph_hundred_component = pynini.union(graph_digit + delete_space + graph_hundred, pynutil.insert("0"))

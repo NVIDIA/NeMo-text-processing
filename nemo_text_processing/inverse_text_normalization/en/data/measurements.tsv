@@ -14,8 +14,14 @@ km²	square kilometer
 ft	foot
 %	percent
 hz	hertz
-kw	kilowatt
+kW	kilowatt
+kW	kilo watt
+kWh	kilo watt hour
+kWh	kilowatt hour
+Wh	watt hour
+W	watt
 hp	horsepower
+hp	horse power
 mg	milligram
 kg	kilogram
 ghz	gigahertz
@@ -30,12 +36,12 @@ rpm	revolution per minute
 min	minute
 mA	milli ampere
 %	per cent
-kwh	kilo watt hour
 m³	cubic meter
 mph	mile per hour
-tw	tera watt
+tW	tera watt
 mv	milli volt
-mw	megawatt
+mW	megawatt
+mW	mega watt
 μm	micrometer
 "	inch
 cc	c c
@@ -86,6 +92,7 @@ kl	kilo liter
 tj	tera joule
 kv	kilo volt
 mv	mega volt
+kn	kilo newton
 kn	kilonewton
 mm	megameter
 au	astronomical unit
@@ -96,8 +103,12 @@ hs	hecto second
 mol	mole
 gpa	giga pascal
 ml	milliliter
-gw	gigawatt
-ma	mega ampere
+gW	gigawatt
+gW	gigaWatt
+A	ampere
+mA	mili ampere
+µA	micro ampere
+MA	mega ampere
 kt	knot
 kgf	kilogram force
 ng	nano gram
@@ -106,7 +117,7 @@ ms	mega siemens
 bar	bar
 gl	giga liter
 μs	microsecond
-da	deci ampere
+dA	deci ampere
 pa	pascal
 ds	deci second
 ms	milli second
@@ -126,7 +137,7 @@ tl	tera liter
 ms	mega second
 mpa	megapascal
 pm	peta meter
-gwh	giga watt hour
+gWh	giga watt hour
 kcal	kilo calory
 gy	gray
 sv	sievert
