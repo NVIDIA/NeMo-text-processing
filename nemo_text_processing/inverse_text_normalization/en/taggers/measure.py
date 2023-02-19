@@ -79,13 +79,14 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
+        # Let singular apply to values > 1 as they could be part of an adjective phrase (e.g. 14 foot tall building)
         subgraph_decimal = (
             pynutil.insert("decimal { ")
             + optional_graph_negative
             + decimal.final_graph_wo_negative
             + pynutil.insert(" }")
             + delete_extra_space
-            + unit_plural
+            + (unit_plural | unit_singular)
         )
         subgraph_cardinal = (
             pynutil.insert("cardinal { ")
@@ -95,7 +96,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + delete_extra_space
-            + unit_plural
+            + (unit_plural | unit_singular)
         )
         subgraph_cardinal |= (
             pynutil.insert("cardinal { ")
