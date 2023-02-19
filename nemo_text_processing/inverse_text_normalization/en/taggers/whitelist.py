@@ -17,17 +17,6 @@
 import os
 
 import pynini
-<<<<<<< HEAD
-=======
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
-    GraphFst,
-    convert_space,
-)
-from nemo_text_processing.text_normalization.en.utils import load_labels
->>>>>>> efcdd12 (update ITN to work after Punctuation capitalization model (#22))
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
@@ -57,48 +46,12 @@ class WhiteListFst(GraphFst):
     def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None):
         super().__init__(name="whitelist", kind="classify")
 
-<<<<<<< HEAD
-=======
-        def get_whitelist_graph(input_file: str):
-            labels = load_labels(input_file)
-
-            if input_case == INPUT_CASED:
-                additional_labels = []
-                for written, spoken in labels:
-                    written_capitalized = written[0].upper() + written[1:]
-                    additional_labels.extend(
-                        [
-                            [written_capitalized, spoken.capitalize()],  # first letter capitalized
-                            [
-                                written_capitalized,
-                                spoken.upper().replace(" AND ", " and "),
-                            ],  # # add pairs with the all letters capitalized
-                        ]
-                    )
-
-                    spoken_no_space = spoken.replace(" ", "")
-                    # add abbreviations without spaces (both lower and upper case), i.e. "BMW" not "B M W"
-                    if len(spoken) == (2 * len(spoken_no_space) - 1):
-                        additional_labels.extend(
-                            [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]
-                        )
-
-                labels += additional_labels
-
-            whitelist = pynini.string_map(labels).invert().optimize()
-            return whitelist
-
->>>>>>> efcdd12 (update ITN to work after Punctuation capitalization model (#22))
         if input_file is None:
             input_file = get_abs_path("data/whitelist.tsv")
 
         if not os.path.exists(input_file):
             raise ValueError(f"Whitelist file {input_file} not found")
 
-<<<<<<< HEAD
         whitelist = string_map_cased(input_file, input_case)
-=======
-        whitelist = get_whitelist_graph(input_file)
->>>>>>> efcdd12 (update ITN to work after Punctuation capitalization model (#22))
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
         self.fst = graph.optimize()

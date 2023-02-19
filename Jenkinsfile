@@ -11,6 +11,7 @@ pipeline {
   }
   environment {
 
+<<<<<<< HEAD
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-24-0'
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-04-24-0'
@@ -28,6 +29,20 @@ pipeline {
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-27-24-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
+=======
+    AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-18-23-1'
+    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-16-23-1'
+    PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+
+>>>>>>> 2fc9c68 (En names (#42))
   }
   stages {
 
