@@ -200,7 +200,6 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
             spoken_no_space = spoken.replace(" ", "")
             # add abbreviations without spaces (both lower and upper case), i.e. "BMW" not "B M W"
             if len(spoken) == (2 * len(spoken_no_space) - 1):
-                print(f"This is weight {weight}")
                 if len(weight) == 0:
                     additional_labels.extend(
                         [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]
