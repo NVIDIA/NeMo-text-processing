@@ -147,6 +147,9 @@ EMR	e m r
 EOL	e o l
 EV	e v
 Earth-2	earth two
+FAT12	fat twelve
+FAT16	fat sixteen
+FAT32	fat thirty two
 FIFO	fee foe
 FIFO	fifo
 FOMO	foe moe
@@ -162,6 +165,9 @@ GCC	g c c
 GCP	g c p
 GCS	g c s
 GFN	G f n
+GPL	G P L
+GPLv2	G P L two
+GPLv3	G P L three
 GPU	g p u
 GRPC	g r p c
 GRU	g r u
@@ -179,6 +185,8 @@ H.265	H two sixty five
 H100	H one hundred
 HDMI	h d m i
 HEVC	h e v c
+HFS	h f s
+HFS+	h f s plus
 HGX	h g x
 HMD	Hmd
 HPC	h p c
@@ -245,6 +253,7 @@ NLP	n l p
 NLU	n l u
 NMC	n m c
 NO	n o
+NTFS	n t f s
 NTP	n t p
 NVDec	n v dec
 NVDec	n v deck
@@ -256,9 +265,13 @@ Ni-CD	knee cad
 NiMH	n i m h
 NoSQL	no s q l
 NoSQL	no sql
+Nvidia A100	Nvidia a hundred
+Nvidia A100	Nvidia a one hundred
 Nvidia A100	nvidia a hundred
 Nvidia A100	nvidia a one hundred
+Nvidia A30	Nvidia a thirty
 Nvidia A30	nvidia a thirty
+Nvidia A40	Nvidia a forty
 Nvidia A40	nvidia a forty
 OCI	o c i
 OEM	o e m
@@ -354,12 +367,21 @@ TSMC	t s m c
 TTS 	t t s
 Telnet	tell net
 TensorRT	tensor r t
+The A100	The a hundred
+The A100	The a one hundred
+The A100	the a hundred
+The A100	the a one hundred
+The A30	The a thirty
+The A30	the a thirty
+The A40	The a forty
+The A40	the a forty
 Tick-Tock	tick tock
 TikTok app	tick tock app
 TikTok is	tick tock is
 UDP	u d p
 UEFI	u e f i
 UFI	u f i
+UFS	u f s
 UPS	u p s
 USB	u s b
 VAAPI	v a a p i
@@ -370,6 +392,7 @@ VDPAU	v d paw
 VDPAU	v d pow
 VFD	v f d
 VLAN	v lan
+VMFS	v m f s
 VP	v p
 VPN	v p n
 Vcc	v c c
@@ -382,9 +405,14 @@ Wi-Fi	wifi
 XFX	x f x
 XFX	x fx
 XML	x m l
+ZFS	z f s
 Zen 2	zen two
 Zen 3	zen three
 Zen 4	zen four
+b-tree	b t ree
+btrfs	b t r f s
+btrfs	b tree f s
+btrfs	butter f s
 c#	c sharp
 c++	c plus plus
 cuBLAS	cue blah
@@ -400,6 +428,8 @@ cuQuantum	q quantum
 dr.	doctor
 e.g.	for example
 es3	e s three
+exFAT	ex fat
+ext3	e x t three
 ext4	e x t four
 i3	i three
 i5	i five
@@ -413,5 +443,8 @@ on TikTok	on tick tock
 sFTP	s f t p
 st.	saint
 x1	x one
+x16	x sixteen
 x2	x two
+x4	x four
 x8	x eight
+xfs	x f s
