@@ -39,13 +39,13 @@ class MathFst(GraphFst):
 
     def __init__(self, cardinal: CardinalFst, decimal: DecimalFst, fraction:FractionFst, deterministic: bool = True):
         super().__init__(name="math", kind="classify", deterministic=deterministic)
-
+        delete_spaces=pynini.closure(pynutil.delete(" "),1)
         graph_var = pynutil.insert("name: \"") + NEMO_LOWER + pynutil.insert("\"")
         graph_terms = pynutil.add_weight(fraction.fst,-0.01)|decimal.fst|cardinal.fst|graph_var
         symbol_graph = pynutil.add_weight(pynini.string_file(get_abs_path("data/whitelist/math.tsv")),0.001)
         insert_token = pynutil.insert(" } ") + pynutil.insert("tokens { ")
-        graph_symbol =  pynutil.insert("name: \"") + symbol_graph + pynutil.insert("\"")
-        final_graph = graph_terms + pynini.closure(insert_token + delete_space + graph_symbol + insert_token + delete_space + graph_terms, 1)
+        graph_symbol =  pynutil.insert("name: \"") + delete_spaces + symbol_graph + delete_spaces + pynutil.insert("\"")
+        final_graph = graph_terms + pynini.closure(insert_token + delete_space + graph_symbol + insert_token + delete_space + graph_terms, 2)
 
 
         self.fst = final_graph.optimize()
