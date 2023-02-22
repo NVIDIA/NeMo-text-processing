@@ -30,8 +30,8 @@ from nemo_text_processing.text_normalization.en.taggers.date import DateFst
 from nemo_text_processing.text_normalization.en.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.en.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.en.taggers.fraction import FractionFst
-from nemo_text_processing.text_normalization.en.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.en.taggers.math import MathFst
+from nemo_text_processing.text_normalization.en.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.en.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.en.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
