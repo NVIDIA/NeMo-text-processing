@@ -13,25 +13,31 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.zh.taggers.cardinal import Cardinal
+#from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 
 
-class Measure(GraphFst):
+class MeasureFst(GraphFst):
     '''
         1kg  -> tokens { measure { cardinal { integer: "一" } units: "千克" } }
     '''
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="measure", kind="classify", deterministic=deterministic)
-
+    #def __init__(self, deterministic: bool = True, lm: bool = False):
+    #    super().__init__(name="measure", kind="classify", deterministic=deterministic)
+    def __init__(self, cardinal: GraphFst, deterministic: bool=True):
+        super().__init__(name="measure",kind="classify", deterministic=deterministic)
+    
+        cardinal = cardinal.just_cardinals
         units_en = pynini.string_file(get_abs_path("data/measure/units_en.tsv"))
         units_zh = pynini.string_file(get_abs_path("data/measure/units_zh.tsv"))
         graph = (
             pynutil.insert("cardinal { ")
             + pynutil.insert("integer: \"")
-            + Cardinal().graph_cardinal
+            #+ Cardinal().graph_cardinal
+            #+ CardinalFst().final_graph
+           # + CardinalFst().just_cardinals
+            + cardinal
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + insert_space
@@ -42,7 +48,10 @@ class Measure(GraphFst):
         percent_graph = (
             pynutil.insert("decimal { ")
             + pynutil.insert("integer_part: \"")
-            + Cardinal().graph_cardinal
+            #+ Cardinal().graph_cardinal
+            #+ CardinalFst().final_graph
+            #+ CardinalFst().just_cardinals
+            + cardinal
             + pynutil.delete("%")
             + pynutil.insert("\"")
             + pynutil.insert(" }")

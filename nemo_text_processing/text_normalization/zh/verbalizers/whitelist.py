@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
-class Whitelist(GraphFst):
-    '''
-        tokens { whitelist: "ATM" } -> A T M
-    '''
+class WhiteListFst(GraphFst):
+    """
+    Finite state transducer for verbalizing whitelist
+        e.g. tokens { name: "misses" } } -> misses
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
+    """
+
+    def __init__(self, deterministic: bool = True):
         super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)
-        remove_erhua = pynutil.delete("erhua: \"") + pynutil.delete("儿") + pynutil.delete("\"")
-        whitelist = pynutil.delete("name: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        graph = remove_erhua | whitelist
+        graph = (
+            pynutil.delete("name:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynutil.delete("\"")
+        )
+        graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
         self.fst = graph.optimize()

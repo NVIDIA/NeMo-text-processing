@@ -16,7 +16,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOT
 from pynini.lib import pynutil
 
 
-class Measure(GraphFst):
+class MeasureFst(GraphFst):
     '''
         tokens { measure { cardinal: "一" } units: "千克" } } ->  一千克
     '''

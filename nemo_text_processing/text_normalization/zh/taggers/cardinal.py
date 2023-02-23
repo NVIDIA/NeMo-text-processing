@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,97 +11,106 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pynini
+
+
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.zh.utils import UNIT_1e01, UNIT_1e02, UNIT_1e03, UNIT_1e04, get_abs_path
-from pynini.lib import pynutil
+
+try:
+    import pynini
+    from pynini.lib import pynutil
+
+    PYNINI_AVAILABLE = True
+except (ModuleNotFoundError, ImportError):
+    PYNINI_AVAILABLE = False
 
 
-class Cardinal(GraphFst):
-    '''
-        self.graph_cardinal:
-        5       -> 五
-        12      -> 十二
-        213     -> 二百一十三
-        3123    -> 三千一百二十三
-        51234   -> 五万一千二百三十四
-        51,234  -> 五万一千二百三十四
-        0.125   -> 零点一二五
-        self.fst:
-        123     -> cardinal{ integer: "一二三" }
-    '''
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
+
+class CardinalFst(GraphFst):
+    """
+    Finite state transducer for classifying cardinals, e.g.
+    '23' -> cardinal { integer: "二十三" }
+    -10000 -> cardinal { negative: "负" integer: "一万" }
+    +10000 -> cardinal { positive: "正" integer: "一万" }
+    """
+    
+    def __init__(self, deterministic: bool):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
-        # base cardinal from digit to chinese
-        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
-        graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
-        graph_teen = pynini.string_file(get_abs_path("data/number/digit_teen.tsv"))
-        graph_sign = pynini.string_file(get_abs_path("data/number/sign.tsv"))
 
-        graph_digit_with_zero = graph_digit | graph_zero  # from 0(read out) to 9
-        graph_no_zero = pynini.cross("0", "")  # cardinalzero,in some case we don't read it out
-        graph_digit_no_zero = graph_digit | graph_no_zero  # from 0(not read out) to 9
-        insert_zero = pynutil.insert('零')
-        delete_punct = pynutil.delete(",")  # to deal with 5,000,cardinalin english form
+        # imports
+        zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
+        digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
+        digit_tens =  pynini.string_file(get_abs_path("data/number/digit_tens.tsv"))
+        sign = pynini.string_file(get_abs_path("data/number/sign.tsv"))
 
-        # 15 in 215
-        graph_ten_u = (graph_digit + pynutil.insert(UNIT_1e01) + graph_digit_no_zero) | (graph_zero + graph_digit)
-        # 15 only
-        graph_ten = (graph_teen + pynutil.insert(UNIT_1e01) + graph_digit_no_zero) | (graph_zero + graph_digit)
-        # 215 or 200
-        graph_hundred = (graph_digit + pynutil.insert(UNIT_1e02) + graph_ten_u) | (
-            graph_digit + pynutil.insert(UNIT_1e02) + graph_no_zero ** 2
-        )
-        # 3000 or 3002 or 3012 or 3123
-        # both with 3,000 or 3,002 or 3,012 or 3,123
-        graph_thousand_sign = (
-            (graph_digit + pynutil.insert(UNIT_1e03) + delete_punct + graph_hundred)
-            | (
-                graph_digit
-                + pynutil.insert(UNIT_1e03)
-                + delete_punct.ques
-                + graph_zero
-                + graph_digit
-                + pynutil.insert(UNIT_1e01)
-                + graph_digit_no_zero
-            )
-            | (graph_digit + pynutil.insert(UNIT_1e03) + delete_punct.ques + graph_zero + graph_no_zero + graph_digit)
-            | (graph_digit + pynutil.insert(UNIT_1e03) + delete_punct.ques + graph_no_zero ** 3)
-        )
-        # 20001234 or 2001234 or 201234 or 21234 or 20234 or 20023 or 20002 or 20000
-        # 8 digits max supported,for 9 digits cardinal,often write with unit instead of read it in only cardinalform
-        graph_ten_thousand_sign = (
-            (graph_thousand_sign | graph_hundred | graph_ten | graph_digit_no_zero)
-            + pynutil.insert(UNIT_1e04)
-            + (
-                graph_thousand_sign
-                | (graph_no_zero + delete_punct.ques + insert_zero + graph_hundred)
-                | (
-                    graph_no_zero
-                    + delete_punct.ques
-                    + graph_no_zero
-                    + insert_zero
-                    + (graph_digit + pynutil.insert(UNIT_1e01) + graph_digit_no_zero)
-                )
-                | (graph_no_zero + delete_punct.ques + graph_no_zero ** 2 + insert_zero + graph_digit)
-                | (graph_no_zero ** 4)
-            )
-        )
+        # morphemes inserted + punctuation 
+        tens_digit = pynutil.insert('十')
+        hundred_digit = pynutil.insert('百')
+        thousand_digit = pynutil.insert('千')
+        tenthousand_digit = pynutil.insert('万')
+        hundredmillion_digit = pynutil.insert('亿')
+        delete_punct = pynini.closure(pynutil.delete(',') | pynutil.delete('，'))
 
-        # cardinalstring like 123 or 123.456,used in phone cardinal,ID cardinal,etc.
-        graph_numstring = pynini.closure(graph_digit_with_zero, 1) | (
-            pynini.closure(graph_digit_with_zero, 1)
-            + pynini.cross(".", "点")
-            + pynini.closure(graph_digit_with_zero, 1)
-        )
+        # 十几; 10-19
+        graph_teen = pynini.closure(delete_punct) + pynini.cross('1','十') + ((pynini.closure(delete_punct) + (pynini.closure(delete_punct) + digit)) | (pynini.closure(delete_punct) + pynini.cross('0', '')))
+        
+         # 十几; 10-19 but when not alone, but within a larger number, (e.g, 119)
+        graph_teen_alt = (pynini.closure(delete_punct) + (pynini.cross('1','一十') + pynini.closure(delete_punct) + digit)) | (pynini.closure(delete_punct) + pynini.cross('10', '一十')) | (pynini.closure(delete_punct) + (pynini.cross('1,0', '一十') | pynini.cross('1，0', '一十')) )  # when the teen is not by itself but with in a larger number
+        
+        # 几十; 20-99
+        graph_tens = (pynini.closure(delete_punct) + (digit_tens + tens_digit + pynini.closure(delete_punct) + ((pynini.closure(delete_punct) + digit)))) | (digit_tens + tens_digit + (pynini.closure(delete_punct) + (pynini.cross('0', '') | pynini.cross(',0', ''))))
+       
+        # 百; 100-999; hundreds
+        graph_hundred =  (digit + (pynutil.delete('00') | (pynutil.delete(',00') | pynutil.delete('，00')) | (pynutil.delete('0,0') | pynutil.delete('0，0'))) + hundred_digit) | (digit + hundred_digit + (graph_tens | graph_teen_alt)) | (digit + hundred_digit + ((pynini.cross(',0', '零') | pynini.cross('，0', '零'))| pynini.cross('0', '零') | (pynini.cross('0,', '零') | pynini.cross('0，', '零'))) + digit)
+        
+        # 千; 1000-9999; thousands 
+        #graph_thousand = ((digit| zero) + ((pynutil.delete(',000') | pynutil.delete('000') | pynutil.delete('0,00') | pynutil.delete('00,0')) | (pynutil.delete('，000') | pynutil.delete('000') | pynutil.delete('0，00') | pynutil.delete('00，0'))) + thousand_digit) | ((digit|zero) + pynini.closure(delete_punct) + thousand_digit + graph_hundred) | ((digit|zero) + thousand_digit + (pynini.cross('0', '零')| ((pynini.cross(',0', '零') | pynini.cross('，0','零')))) + (graph_tens | graph_teen_alt)) | ((digit|zero) + pynini.closure(delete_punct) + thousand_digit + (pynini.cross('00', '零') | (pynini.cross(',00', '零') | pynini.cross('，00','零')) | (pynini.cross('0,0','零') | pynini.cross('0，0', '零')) | (pynini.cross('00,', '零') | pynini.cross('00，', '零'))) + digit )
+        graph_thousand = (digit + ((pynutil.delete(',000') | pynutil.delete('000') | pynutil.delete('0,00') | pynutil.delete('00,0')) | (pynutil.delete('，000') | pynutil.delete('000') | pynutil.delete('0，00') | pynutil.delete('00，0'))) + thousand_digit) | (digit + pynini.closure(delete_punct) + thousand_digit + graph_hundred) | (digit + thousand_digit + (pynini.cross('0', '零')| ((pynini.cross(',0', '零') | pynini.cross('，0','零')))) + (graph_tens | graph_teen_alt)) | (digit + pynini.closure(delete_punct) + thousand_digit + (pynini.cross('00', '零') | (pynini.cross(',00', '零') | pynini.cross('，00','零')) | (pynini.cross('0,0','零') | pynini.cross('0，0', '零')) | (pynini.cross('00,', '零') | pynini.cross('00，', '零'))) + digit)
+        
+        # 万; 10000-99999; ten thousands
+        graph_tenthousand = (digit + (pynutil.delete('0000') | (pynutil.delete('0,000') | pynutil.delete('0，000')))  + tenthousand_digit) | (digit + tenthousand_digit + graph_thousand) | (digit + tenthousand_digit +  (pynini.cross('0', '零') | (pynini.cross('0,', '零') | pynini.cross('0，', '零'))) + graph_hundred) | (digit + tenthousand_digit +  (pynini.cross('00', '零') | (pynini.cross('0,0','零') | pynini.cross('0，0', '零'))) +  (graph_tens | graph_teen_alt)) | (digit + tenthousand_digit + (pynini.cross('000', '零') | (pynini.cross('0,00', '零') | pynini.cross('0，00', '零'))) + digit)
+        
+        # 十万; 100000-999999; hundred thousands
+        graph_hundredthousand = pynutil.add_weight(((graph_tens | graph_teen) + tenthousand_digit + (pynutil.delete('0000') | (pynutil.delete('0,000') | pynutil.delete('0，000')))), -0.1 )| ((graph_tens | graph_teen) + tenthousand_digit + graph_thousand) | ((graph_tens | graph_teen) + tenthousand_digit + (pynini.cross('0', '零') | (pynini.cross('0,', '零') | pynini.cross('0，', '零'))) + graph_hundred) | ((graph_tens | graph_teen) + tenthousand_digit + (pynini.cross('00', '零') | (pynini.cross('0,0','零' ) | pynini.cross('0，0','零'))) + (graph_tens | graph_teen_alt)) | ((graph_tens | graph_teen) + tenthousand_digit + (pynini.cross('000', '零') | (pynini.cross('0,00', '零') | pynini.cross('0，00', '零'))) + digit)
+       
+        # 百万; 1000000-9999999; millions
+        graph_million = pynutil.add_weight((graph_hundred + tenthousand_digit + (pynutil.delete('0000') | (pynutil.delete('0,000') | pynutil.delete('0，000')))), -1.0)| (graph_hundred + tenthousand_digit + graph_thousand) | (graph_hundred + tenthousand_digit + (pynini.cross('0','零') | (pynini.cross('0,', '零') | pynini.cross('0，', '零'))) + graph_hundred) | (graph_hundred + tenthousand_digit + (pynini.cross('00','零') | (pynini.cross('0,0', '零') | pynini.cross('0，0', '零'))) + (graph_tens | graph_teen_alt)) | (graph_hundred + tenthousand_digit + (pynini.cross('000','零') | (pynini.cross('0,00', '零') | pynini.cross('0，00', '零'))) + digit)
+        
+        # 千万; 10000000-99999999; ten millions
+        graph_tenmillion = pynutil.add_weight((graph_thousand + (pynutil.delete('0000') | (pynutil.delete('0,000') | pynutil.delete('0，000'))) + tenthousand_digit), -1.0) | (graph_thousand + tenthousand_digit + graph_thousand) | (graph_thousand + tenthousand_digit + (pynini.cross('0','零') | (pynini.cross('0,', '零') | pynini.cross('0，', '零'))) + graph_hundred) | (graph_thousand + tenthousand_digit + (pynini.cross('00','零') | (pynini.cross('0,0', '零') | pynini.cross('0，0', '零'))) + (graph_tens | graph_teen_alt)) | (graph_thousand + tenthousand_digit + (pynini.cross('000','零') | (pynini.cross('0,00', '零') | pynini.cross('0，00', '零'))) + digit)
+        
+        
+        
+        # 亿; 100000000-999999999; hundred millions
+        graph_hundredmillion = pynutil.add_weight((digit + (pynutil.delete('00000000') | (pynutil.delete('00,000,000') | pynutil.delete('00，000，000'))) + hundredmillion_digit), -2.0) | pynutil.add_weight((digit + hundredmillion_digit + graph_tenmillion), -1.9) | pynutil.add_weight((digit + hundredmillion_digit + pynutil.delete('0') + graph_million), -1.8) | pynutil.add_weight((digit + hundredmillion_digit + pynutil.delete('00') + pynutil.insert('零') + graph_hundredthousand),-1.7) | pynutil.add_weight((digit + hundredmillion_digit + (pynutil.delete('000') | (pynutil.delete('00,0') | pynutil.delete('00，0'))) + pynutil.insert('零') + graph_tenthousand), -1.6) | pynutil.add_weight((digit + hundredmillion_digit + (pynutil.delete('0000') | (pynutil.delete('00,00') | pynutil.delete('00，00'))) + pynutil.insert('零') + graph_thousand), -1.5) | pynutil.add_weight((digit + hundredmillion_digit + (pynutil.delete('00000') | (pynutil.delete('00,000,') | pynutil.delete('00，000，'))) + pynutil.insert('零') + graph_hundred), -1.4) | pynutil.add_weight((digit + hundredmillion_digit + (pynutil.delete('000000') | (pynutil.delete('00,000,0') | pynutil.delete('00，000，0'))) + pynutil.insert('零') + (graph_tens | graph_teen_alt)), -1.3) | pynutil.add_weight((digit + hundredmillion_digit + (pynutil.delete('0000000') | (pynutil.delete('00,000,00') | pynutil.delete('00，000，00'))) + pynutil.insert('零') + digit), -1.2)
+        
+        # 十亿; 1000000000-9999999999; billions
+        graph_billion = pynutil.add_weight(((graph_tens | graph_teen) + (pynutil.delete('00000000') | (pynutil.delete('00,000,000') | pynutil.delete('00，000，000'))) + hundredmillion_digit), -2.0) | pynutil.add_weight(((graph_tens | graph_teen) + hundredmillion_digit + graph_tenmillion), -1.9) | pynutil.add_weight(((graph_tens | graph_teen) + hundredmillion_digit + pynutil.delete('0') + graph_million), -1.8)| pynutil.add_weight(((graph_tens | graph_teen) + hundredmillion_digit + pynutil.delete('00') + pynutil.insert('零') + graph_hundredthousand),-1.7) | pynutil.add_weight(((graph_tens | graph_teen) + hundredmillion_digit + (pynutil.delete('000') | (pynutil.delete('00,0') | pynutil.delete('00，0'))) + pynutil.insert('零') + graph_tenthousand), -1.6) | pynutil.add_weight(((graph_tens | graph_teen) + hundredmillion_digit + (pynutil.delete('0000') | (pynutil.delete('00,00') | pynutil.delete('00，00'))) + pynutil.insert('零') + graph_thousand), -1.5) | pynutil.add_weight(((graph_tens | graph_teen) + hundredmillion_digit + (pynutil.delete('00000') | (pynutil.delete('00,000,') | pynutil.delete('00，000，'))) + pynutil.insert('零') + graph_hundred), -1.4) | pynutil.add_weight(((graph_tens | graph_teen) + hundredmillion_digit + (pynutil.delete('000000') | (pynutil.delete('00,000,0') | pynutil.delete('00，000，0'))) + pynutil.insert('零') + (graph_tens | graph_teen_alt)), -1.3) | pynutil.add_weight(((graph_tens | graph_teen) + hundredmillion_digit + (pynutil.delete('0000000') | (pynutil.delete('00,000,00') | pynutil.delete('00，000，00'))) + pynutil.insert('零') + digit), -1.2)
+        
+        # 百亿; 10000000000-99999999999; ten billions
+        graph_tenbillion = pynutil.add_weight((graph_hundred + (pynutil.delete('00000000') | (pynutil.delete('00,000,000') | pynutil.delete('00，000，000'))) + hundredmillion_digit), -2.0) | pynutil.add_weight((graph_hundred + hundredmillion_digit + graph_tenmillion), -1.9) | pynutil.add_weight((graph_hundred + hundredmillion_digit + pynutil.delete('0') + graph_million), -1.8) | pynutil.add_weight((graph_hundred + hundredmillion_digit + pynutil.delete('00') + pynutil.insert('零') + graph_hundredthousand),-1.7) | pynutil.add_weight((graph_hundred + hundredmillion_digit + (pynutil.delete('000') | (pynutil.delete('00,0') | pynutil.delete('00，0'))) + pynutil.insert('零') + graph_tenthousand), -1.6) | pynutil.add_weight((graph_hundred + hundredmillion_digit + (pynutil.delete('0000') | (pynutil.delete('00,00') | pynutil.delete('00，00'))) + pynutil.insert('零') + graph_thousand), -1.5) | pynutil.add_weight((graph_hundred + hundredmillion_digit + (pynutil.delete('00000') | (pynutil.delete('00,000,') | pynutil.delete('00，000，'))) + pynutil.insert('零') + graph_hundred), -1.4) | pynutil.add_weight((graph_hundred + hundredmillion_digit + (pynutil.delete('000000') | (pynutil.delete('00,000,0') | pynutil.delete('00，000，0'))) + pynutil.insert('零') + (graph_tens | graph_teen_alt)), -1.3) | pynutil.add_weight((graph_hundred + hundredmillion_digit + (pynutil.delete('0000000') | (pynutil.delete('00,000,00') | pynutil.delete('00，000，00'))) + pynutil.insert('零') + digit), -1.2)
+        
+        # 千亿; 100000000000-999999999999; hundred billions
+        graph_hundredbillion = pynutil.add_weight((graph_thousand + hundredmillion_digit + (pynutil.delete('00000000') | (pynutil.delete('00,000,000') | pynutil.delete('00，000，000')))), -2.0)| pynutil.add_weight((graph_thousand + hundredmillion_digit + graph_tenmillion), -1.9) | pynutil.add_weight((graph_thousand + hundredmillion_digit + pynutil.delete('0') + graph_million), -1.8) | pynutil.add_weight((graph_thousand + hundredmillion_digit + pynutil.delete('00') + pynutil.insert('零') + graph_hundredthousand), -1.7) | pynutil.add_weight((graph_thousand + hundredmillion_digit + (pynutil.delete('000') | (pynutil.delete('00,0') | pynutil.delete('00，0'))) + pynutil.insert('零') + graph_tenthousand), -1.6) | pynutil.add_weight((graph_thousand + hundredmillion_digit + (pynutil.delete('0000') | (pynutil.delete('00,00') | pynutil.delete('00，00'))) + pynutil.insert('零') + graph_thousand), -1.5) | pynutil.add_weight((graph_thousand + hundredmillion_digit + (pynutil.delete('00000') | (pynutil.delete('00,000,') | pynutil.delete('00，000，'))) + pynutil.insert('零') + graph_hundred), -1.4) | pynutil.add_weight((graph_thousand + hundredmillion_digit + (pynutil.delete('000000') | (pynutil.delete('00,000,0') | pynutil.delete('00，000，0'))) + pynutil.insert('零') + (graph_tens | graph_teen_alt)), -1.3) | pynutil.add_weight((graph_thousand + hundredmillion_digit + (pynutil.delete('0000000') | (pynutil.delete('00,000,00') | pynutil.delete('00，000，00'))) + pynutil.insert('零') + digit), -1.2)
 
-        graph = graph_hundred | graph_ten | graph_digit_with_zero | graph_thousand_sign | graph_ten_thousand_sign
-        # 456.123
-        graph_decimal = graph + pynini.cross('.', '点') + pynini.closure(graph_digit_with_zero, 1)
-        graph_cardinal = graph | graph_decimal
-        signed_cardinal = graph_sign + graph_cardinal
-        self.graph_cardinal = (graph_cardinal | signed_cardinal).optimize()
+        
+        
+        # combining all the graph above
+        graph = pynini.union(pynutil.add_weight(graph_hundredbillion, -2.0), pynutil.add_weight(graph_tenbillion, -1.9), pynutil.add_weight(graph_billion, -1.8), pynutil.add_weight(graph_hundredmillion, -1.7), pynutil.add_weight(graph_tenmillion, -1.6), pynutil.add_weight(graph_million, -1.5), pynutil.add_weight(graph_hundredthousand, -1.4), pynutil.add_weight(graph_tenthousand, -1.3), pynutil.add_weight(graph_thousand, -1.2), pynutil.add_weight(graph_hundred, -1.1), pynutil.add_weight(graph_tens, -1.0), graph_teen, digit, zero)
+        self.just_cardinals = graph # imprted when building other grammars
+        
+        # adding optional +(正)/-(负) signs
+        #graph_optional_sign = (pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"负\"")) + pynutil.insert(" ")) | (pynini.closure(pynutil.insert("positive: ") + pynini.cross("+", "\"正\"")) + pynutil.insert(" ")) | (pynutil.insert("positive: ") + pynutil.insert("\"") + pynini.accep('正') + pynutil.insert("\"") + pynutil.insert(' ')) | (pynutil.insert('negative: ') + pynutil.insert("\"") + (pynini.accep('负') | pynini.cross('負', '负')) + pynutil.insert("\"") + pynutil.insert(' '))
+        sign_symbol = (pynutil.insert("negative: \"") + sign + pynutil.insert("\"")) | (pynutil.insert("positive: \"") + sign + pynutil.insert("\""))  
+        sign_mandarin = (pynutil.insert("positive: \"") + pynini.accep('正') + pynutil.insert("\"")) | (pynutil.insert("negative: \"") + pynini.accep("负") + pynutil.insert("\"")) | (pynutil.insert("negative: \"") + pynini.cross("負", "负") + pynutil.insert("\""))
+        graph_sign = sign_symbol | sign_mandarin
+                                                                                                          
+        # final graph
+        final_graph_sign = graph_sign + pynutil.insert(" ") + pynutil.insert("integer: \"") + graph + pynutil.insert("\"") 
+        final_graph_numbers_only = pynutil.insert("integer: \"") + graph + pynutil.insert("\"") 
+        final_graph = final_graph_numbers_only | final_graph_sign
 
-        graph_numstring = self.add_tokens(pynutil.insert("integer: \"") + graph_numstring + pynutil.insert("\""))
-        self.fst = graph_numstring.optimize()
+        final_graph = self.add_tokens(final_graph)
+        self.fst = final_graph.optimize()
+

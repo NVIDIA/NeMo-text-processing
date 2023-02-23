@@ -16,7 +16,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOT
 from pynini.lib import pynutil
 
 
-class MathSymbol(GraphFst):
+class MathSymbolFst(GraphFst):
     '''
         tokens { sign: "加" }  -> 加
     '''

@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,19 +11,37 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst
-from pynini.lib import pynutil
 
 
-class Cardinal(GraphFst):
-    '''
-        tokens { cardinal { integer: "一二三" } } -> 一二三
-    '''
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path
+from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, GraphFst, NEMO_NOT_QUOTE
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
+try:
+    import pynini
+    from pynini.lib import pynutil
+
+    PYNINI_AVAILABLE = True
+except (ModuleNotFoundError, ImportError):
+    PYNINI_AVAILABLE = False
+
+
+class CardinalFst(GraphFst):
+    """
+    Finite state transducer for verbalizing cardinal, e.g.
+    cardinal { negative: "负" integer: "23" } -> 负二十三
+    cardinal { integer: "23" } -> 二十三
+    cardinal { positive: "正" integer: "23" } -> 正二十三
+    """
+    #def __init__(self):
+    #    super().__init__(name="cardinal", kind="verbalize")
+    def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
-        graph = pynutil.delete('integer: \"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('\"')
+        
+        delete_sign = pynini.cross("negative: \"负\"", "负") | pynini.cross("positive: \"正\"", "正")
+        delete_integer = pynutil.delete("integer: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + delete_space
+        graph_sign =  delete_sign + delete_space + delete_integer
+        final_graph = delete_integer | graph_sign
 
-        self.fst = self.delete_tokens(graph).optimize()
+        delete_tokens = self.delete_tokens(final_graph)
+        self.fst = delete_tokens.optimize()

@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,83 +11,99 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
-from nemo_text_processing.text_normalization.zh.utils import UNIT_1e01, get_abs_path
-from pynini.lib import pynutil
 
 
-class Time(GraphFst):
-    '''
-        tokens { time { h: "1" m: "02" s: "36" } } -> 一点零二分三十六秒
-        tokens { time { suffix "am"  hours: "1" minutes: "02" seconds: "36" } } -> 上午一点零二分三十六秒
-    '''
+from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, NEMO_CHAR, NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
+try:
+    import pynini
+    from pynini.lib import pynutil
+
+    PYNINI_AVAILABLE = True
+except (ModuleNotFoundError, ImportError):
+    PYNINI_AVAILABLE = False
+
+
+class TimeFst(GraphFst):
+    #def __init__(self):
+    #    super().__init__(name='time', kind="verbalize")
+    def __init__(self, deterministic: bool = True):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
-        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
-        graph_teen = pynini.string_file(get_abs_path("data/number/digit_teen.tsv"))
-        graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
-        graph_no_zero = pynini.cross("0", "")
 
-        graph_digit_no_zero = graph_digit | graph_no_zero
+        
+        # data imported to process am/pm into mandarin
+        morning = pynini.string_file(get_abs_path("data/time/morning.tsv"))
+        bfnoon = pynini.string_file(get_abs_path("data/time/before_noon.tsv"))
+        noon_am = pynini.string_file(get_abs_path("data/time/noon_am.tsv"))
+        noon_pm = pynini.string_file(get_abs_path("data/time/noon_pm.tsv"))
+        afnoon = pynini.string_file(get_abs_path("data/time/after_noon.tsv"))
+        night = pynini.string_file(get_abs_path("data/time/night.tsv"))
+        mid_night = pynini.string_file(get_abs_path("data/time/mid_night.tsv"))
+        late_night = pynini.string_file(get_abs_path("data/time/late_night.tsv"))
+        early_morning = pynini.string_file(get_abs_path("data/time/early_morning.tsv"))
+        
+        # fundamental components
+        hour_component = pynutil.delete("hour: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        minute_component = pynutil.delete("minute: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        second_component = pynutil.delete("second: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        graph_regular = hour_component | minute_component | second_component | (hour_component + delete_space + minute_component + delete_space + second_component) | (hour_component + delete_space + minute_component) | (hour_component + delete_space + second_component) | (minute_component + delete_space + second_component)
+        
+        # back count 三点差五分
+        delete_verb = pynutil.delete("verb: \"") + pynini.accep("差") + pynutil.delete("\"")
+        graph_back = (hour_component + delete_space + delete_verb + delete_space + minute_component) | (hour_component + delete_space + delete_verb + delete_space + second_component) | (hour_component + delete_space + delete_verb + delete_space + minute_component + delete_space + second_component)
+        
+        # with words 早上/晚上/etc.
+        word_component = pynutil.delete("affix: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        
+        # with am/pm 
+        graph_am = (pynini.accep('am') | pynini.accep('AM') | pynini.accep('a.m.') | pynini.accep('A.M.'))
+        graph_pm = (pynini.accep('pm') | pynini.accep('PM') | pynini.accep('p.m.') | pynini.accep('P.M.'))
+        
+        delete_morning = pynutil.delete("affix: \"") + pynini.cross(graph_am, '早上') + pynutil.delete("\"") 
+        graph_morning = delete_morning + delete_space + pynutil.delete("hour: \"") + morning + pynini.closure('点') + pynutil.delete("\"") 
+        
+        delete_bfnoon = pynutil.delete("affix: \"") + pynini.cross(graph_am, "上午") + pynutil.delete("\"")
+        graph_bfnoon = delete_bfnoon + delete_space + pynutil.delete("hour: \"") + bfnoon + pynini.closure('点') + pynutil.delete("\"") 
 
-        graph_2_digit_zero_none = pynini.cross("0", "") + pynini.cross("0", "")
-        graph_2_digit_zero = pynini.cross("00", "零")
+        delete_noonam = pynutil.delete("affix: \"") + pynini.cross(graph_am, "中午") + pynutil.delete("\"")
+        graph_noon_am = delete_noonam + delete_space + pynutil.delete("hour: \"") + noon_am + pynini.closure('点') + pynutil.delete("\"") 
 
-        graph_2_digit_time = (graph_teen + pynutil.insert(UNIT_1e01) + graph_digit_no_zero) | (
-            graph_zero + graph_digit
-        )
-        h = graph_2_digit_time | graph_2_digit_zero | graph_digit
-        m = graph_2_digit_time | graph_2_digit_zero
-        s = graph_2_digit_time | graph_2_digit_zero
+        delete_noonpm = pynutil.delete("affix: \"") + pynini.cross(graph_pm, "中午") + pynutil.delete("\"")
+        graph_noon_pm = delete_noonpm + delete_space + pynutil.delete("hour: \"") + noon_pm + pynini.closure('点') + pynutil.delete("\"") 
 
-        # 6:25
-        h_m = (
-            pynutil.delete("hours: \"")
-            + h
-            + pynutil.insert("点")
-            + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("minutes: \"")
-            + (graph_2_digit_time)
-            + pynutil.insert("分")
-            + pynutil.delete("\"")
-        )
+        delete_afnoon = pynutil.delete("affix: \"") + pynini.cross(graph_pm, "下午") + pynutil.delete("\"")
+        graph_afnoon = delete_afnoon + delete_space + pynutil.delete("hour: \"") + afnoon + pynini.closure('点') + pynutil.delete("\"") 
 
-        # 23:00
-        h_00 = (
-            pynutil.delete("hours: \"")
-            + h
-            + pynutil.insert("点")
-            + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("minutes: \"")
-            + (graph_2_digit_zero_none)
-            + pynutil.delete("\"")
-        )
+        delete_night = pynutil.delete("affix: \"") + pynini.cross(graph_pm, "晚上") + pynutil.delete("\"")
+        graph_night = delete_night + delete_space + pynutil.delete("hour: \"") + night + pynini.closure('点') + pynutil.delete("\"") 
 
-        # 9:12:52
-        h_m_s = (
-            pynutil.delete("hours: \"")
-            + h
-            + pynutil.insert("点")
-            + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("minutes: \"")
-            + m
-            + pynutil.insert("分")
-            + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("seconds: \"")
-            + s
-            + pynutil.insert("秒")
-            + pynutil.delete("\"")
-        )
+        delete_mnight = pynutil.delete("affix: \"") + pynini.cross(graph_am, "晚上") + pynutil.delete("\"")
+        graph_mnight = delete_mnight + delete_space + pynutil.delete("hour: \"") + mid_night + pynini.closure('点') + pynutil.delete("\"") 
 
-        graph = h_m | h_m_s | h_00
-        graph_suffix = (
-            pynutil.delete("suffix: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + delete_space + graph
-        )
-        graph |= graph_suffix
-        self.fst = self.delete_tokens(graph).optimize()
+        delete_lnight = pynutil.delete("affix: \"") + pynini.cross(graph_am, "深夜") + pynutil.delete("\"")
+        graph_lnight = delete_lnight + delete_space + pynutil.delete("hour: \"") + late_night + pynini.closure('点') + pynutil.delete("\"") 
+
+        delete_emorning = pynutil.delete("affix: \"") + pynini.cross(graph_am, "凌晨") + pynutil.delete("\"")
+        graph_emorning = delete_emorning + delete_space + pynutil.delete("hour: \"") + early_morning + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") 
+         
+        graph_to_morpheme = graph_morning | graph_bfnoon | graph_noon_am | graph_noon_pm | graph_afnoon | graph_lnight | graph_emorning | graph_mnight | graph_night
+        
+        graph_to_mandarin = graph_to_morpheme | (graph_to_morpheme + delete_space + minute_component + delete_space + second_component) | (graph_to_morpheme + delete_space + minute_component) | (graph_to_morpheme + delete_space + second_component) | (graph_to_morpheme + delete_space + minute_component + delete_space + second_component)
+        graph_mandarin_words = pynini.closure(word_component,0,1) + delete_space + (graph_regular | graph_back)
+        graph_back_count = (graph_to_morpheme + delete_space + delete_verb + delete_space + minute_component) | (graph_to_morpheme + delete_space + delete_verb + delete_space + minute_component + delete_space + second_component) | (graph_to_morpheme + delete_space + delete_verb + delete_space + second_component)
+        
+        graph =  graph_to_mandarin | graph_back_count | graph_mandarin_words 
+        
+        # range
+        symbols = pynini.accep("-") | pynini.accep("~") | pynini.accep("——") | pynini.accep("—")
+        ranges = pynini.accep("从") | pynini.cross((symbols), "到") | pynini.accep("到") | pynini.accep("至")
+        range_component = pynutil.delete("range: \"") + ranges + pynutil.delete("\"")
+        graph_range = range_component + delete_space + graph + delete_space + range_component + graph
+        graph_range2 = graph + delete_space + range_component + graph
+        graph_range_final = graph_range | graph_range2
+        
+        final_graph = graph | graph_range_final
+        
+        delete_tokens = self.delete_tokens(final_graph)
+        self.fst = delete_tokens.optimize()

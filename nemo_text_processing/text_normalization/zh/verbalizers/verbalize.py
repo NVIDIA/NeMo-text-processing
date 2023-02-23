@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,17 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pynini
+
+#from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
+from nemo_text_processing.text_normalization.zh.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
+from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
+from nemo_text_processing.text_normalization.zh.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
+from nemo_text_processing.text_normalization.zh.verbalizers.math_symbol import MathSymbolFst
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import Cardinal
-from nemo_text_processing.text_normalization.zh.verbalizers.char import Char
-from nemo_text_processing.text_normalization.zh.verbalizers.date import Date
-from nemo_text_processing.text_normalization.zh.verbalizers.fraction import Fraction
-from nemo_text_processing.text_normalization.zh.verbalizers.math_symbol import MathSymbol
-from nemo_text_processing.text_normalization.zh.verbalizers.measure import Measure
-from nemo_text_processing.text_normalization.zh.verbalizers.money import Money
-from nemo_text_processing.text_normalization.zh.verbalizers.time import Time
-from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import Whitelist
+from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import WhiteListFst
 
 
 class VerbalizeFst(GraphFst):
@@ -29,6 +31,7 @@ class VerbalizeFst(GraphFst):
     Composes other verbalizer grammars.
     For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
     More details to deployment at NeMo/tools/text_processing_deployment.
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple options (used for audio-based normalization)
@@ -37,26 +40,44 @@ class VerbalizeFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
 
-        date = Date(deterministic=deterministic)
-        cardinal = Cardinal(deterministic=deterministic)
-        char = Char(deterministic=deterministic)
-        fraction = Fraction(deterministic=deterministic)
-        math_symbol = MathSymbol(deterministic=deterministic)
-        money = Money(deterministic=deterministic)
-        measure = Measure(deterministic=deterministic)
-        time = Time(deterministic=deterministic)
-        whitelist = Whitelist(deterministic=deterministic)
+        cardinal = CardinalFst(deterministic=deterministic)
+        cardinal_graph = cardinal.fst
 
-        graph = pynini.union(
-            date.fst,
-            cardinal.fst,
-            fraction.fst,
-            char.fst,
-            math_symbol.fst,
-            money.fst,
-            measure.fst,
-            time.fst,
-            whitelist.fst,
+        ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal_graph = ordinal.fst
+
+        decimal = DecimalFst(deterministic=deterministic)
+        decimal_graph = decimal.fst
+
+        fraction = FractionFst(deterministic=deterministic)
+        fraction_graph = fraction.fst
+
+        date = DateFst(deterministic=deterministic)
+        date_graph = date.fst
+
+        measure = MeasureFst(deterministic=deterministic)
+        measure_graph = measure.fst
+
+        whitelist_graph = WhiteListFst(deterministic=deterministic).fst
+
+        money_graph = MoneyFst(decimal=decimal, deterministic=deterministic).fst
+        #money = MoneyFst(deterministic=deterministic)
+        #money_graph = money.fst
+
+        time_graph = TimeFst(deterministic=deterministic).fst
+
+        math_graph = MathSymbolFst(deterministic=deterministic).fst
+
+        graph = (
+            cardinal_graph
+            | measure_graph
+            | decimal_graph
+            | ordinal_graph
+            | date_graph
+            | money_graph
+            | fraction_graph
+            | whitelist_graph
+            | time_graph
+            | math_graph
         )
-
-        self.fst = graph.optimize()
+        self.fst = graph
