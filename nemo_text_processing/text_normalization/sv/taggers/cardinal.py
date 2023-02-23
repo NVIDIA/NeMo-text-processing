@@ -195,8 +195,8 @@ class CardinalFst(GraphFst):
         if not deterministic:
             tusen |= pynutil.add_weight(pynutil.insert(" tusen"), -0.001)
             etttusen = tusen
-            etttusen |= pynutil.add_weight(pynutil.insert("ettusen"), -0.001)
-            etttusen |= pynutil.add_weight(pynutil.insert(" ettusen"), -0.001)
+            etttusen |= pynutil.add_weight(pynutil.insert("etttusen"), -0.001)
+            etttusen |= pynutil.add_weight(pynutil.insert(" etttusen"), -0.001)
             etttusen |= pynutil.add_weight(pynutil.insert("ett tusen"), -0.001)
             etttusen |= pynutil.add_weight(pynutil.insert(" ett tusen"), -0.001)
 
