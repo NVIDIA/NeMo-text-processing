@@ -15,6 +15,7 @@ tusenett~1001
 tusen ett~1001
 tusentre~1003
 etttusentre~1003
+ett tusentre~1003
 ett tusen tre~1003
 tusenelva~1011
 tusen hundra ett~1101
