@@ -27,6 +27,7 @@ from typing import Dict, List, Optional, Union
 
 import pynini
 import regex
+import tqdm
 from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
@@ -79,7 +80,8 @@ class Normalizer:
     Useful for TTS preprocessing.
 
     Args:
-        input_case: expected input capitalization
+        input_case: Input text capitalization, set to 'cased' if text contains capital letters.
+            This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.
         lang: language specifying the TN rules, by default: English
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
@@ -133,6 +135,9 @@ class Normalizer:
         elif lang == 'es':
             from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.es.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'sv':
+            from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.sv.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'zh':
             from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
@@ -661,7 +666,9 @@ def parse_args():
         default="text",
     )
     parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
-    parser.add_argument("--language", help="language", choices=["en", "de", "es", "zh"], default="en", type=str)
+    parser.add_argument(
+        "--language", help="language", choices=["en", "de", "es", "sv", "zh", "ar"], default="en", type=str
+    )
     parser.add_argument(
         "--input_case",
         help="Input text capitalization, set to 'cased' if text contains capital letters."
