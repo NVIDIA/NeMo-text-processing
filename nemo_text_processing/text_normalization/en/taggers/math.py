@@ -13,12 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_LOWER,
-    GraphFst,
-    delete_space,
-    get_abs_path,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_LOWER, GraphFst, delete_space, get_abs_path
 from nemo_text_processing.text_normalization.en.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.en.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.en.taggers.fraction import FractionFst
