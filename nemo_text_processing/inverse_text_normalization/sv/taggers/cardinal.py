@@ -44,7 +44,7 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph
         self.digit = pynini.arcmap(tn_cardinal_tagger.digit, map_type="rmweight").invert().optimize()
         graph_exception = pynini.project(self.digit, 'input')
-        #self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        # self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
 
         self.optional_minus_graph = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("minus ", "\"-\" "), 0, 1

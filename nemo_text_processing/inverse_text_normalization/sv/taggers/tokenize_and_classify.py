@@ -80,7 +80,9 @@ class ClassifyFst(GraphFst):
             tn_ordinal_tagger = TNOrdinalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
             tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=False)
             tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
-            tn_fraction_tagger = TNFractionTagger(cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=True)
+            tn_fraction_tagger = TNFractionTagger(
+                cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=True
+            )
             tn_fraction_verbalizer = TNFractionVerbalizer(deterministic=False)
             tn_time_verbalizer = TNTimeVerbalizer(deterministic=False)
             tn_date_verbalizer = TNDateVerbalizer(deterministic=False)
