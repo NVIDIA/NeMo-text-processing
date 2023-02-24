@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ from nemo_text_processing.text_normalization.de.verbalizers.fraction import Frac
 from nemo_text_processing.text_normalization.de.verbalizers.ordinal import OrdinalFst as TNOrdinalVerbalizer
 from nemo_text_processing.text_normalization.de.verbalizers.time import TimeFst as TNTimeVerbalizer
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -57,15 +58,24 @@ class ClassifyFst(GraphFst):
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
+        whitelist: path to a file with whitelist replacements
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, deterministic: bool = True):
+    def __init__(
+        self,
+        cache_dir: str = None,
+        overwrite_cache: bool = False,
+        deterministic: bool = True,
+        whitelist: str = None,
+        input_case: str = INPUT_LOWER_CASED,
+    ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
         far_file = None
         if cache_dir is not None and cache_dir != 'None':
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, "_de_itn.far")
+            far_file = os.path.join(cache_dir, f"de_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -80,7 +90,7 @@ class ClassifyFst(GraphFst):
             tn_date_verbalizer = TNDateVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
             tn_electronic_tagger = TNElectronicTagger(deterministic=False)
             tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
-            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False)
+            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False, input_file=whitelist)
 
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger)
             cardinal_graph = cardinal.fst
