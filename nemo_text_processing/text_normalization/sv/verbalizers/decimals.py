@@ -54,6 +54,7 @@ class DecimalFst(GraphFst):
             + pynutil.delete("\"")
         )
         optional_quantity = pynini.closure(quantity, 0, 1)
+        self.optional_quantity = optional_quantity
 
         graph = optional_sign + pynini.union(
             (integer + quantity), (integer + delete_space + fractional + optional_quantity)
