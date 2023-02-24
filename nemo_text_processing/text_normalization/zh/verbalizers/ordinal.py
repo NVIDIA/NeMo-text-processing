@@ -13,15 +13,9 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_DIGIT,NEMO_SIGMA
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+import pynini
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):
@@ -30,14 +24,9 @@ class OrdinalFst(GraphFst):
         ordinal { integer: "第一千万" } -> 第一千万
     """
     
-    #def __init__(self):
-    #    super().__init__(name="ordinal", kind="verbalize")
     def __init__(self, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
-        
-        #graph_integer = (pynutil.delete("integer:") + delete_space + pynutil.delete("\"") + pynini.accep("第") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
-        
         symbol = pynini.union("-","~","——","—")
         dash = pynini.cross(symbol, "到")
         

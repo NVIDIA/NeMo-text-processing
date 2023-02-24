@@ -13,16 +13,9 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.zh.utils import get_abs_path
+import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, GraphFst, NEMO_NOT_QUOTE
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class CardinalFst(GraphFst):
@@ -32,11 +25,9 @@ class CardinalFst(GraphFst):
     cardinal { integer: "23" } -> 二十三
     cardinal { positive: "正" integer: "23" } -> 正二十三
     """
-    #def __init__(self):
-    #    super().__init__(name="cardinal", kind="verbalize")
+    
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
-
         
         delete_sign = pynini.cross("negative: \"负\"", "负") | pynini.cross("positive: \"正\"", "正")
         delete_integer = pynutil.delete("integer: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + delete_space

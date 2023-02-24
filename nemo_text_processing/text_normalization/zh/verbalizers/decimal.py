@@ -13,15 +13,9 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.zh.utils import get_abs_path
+import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, GraphFst, NEMO_NOT_QUOTE
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class DecimalFst(GraphFst):
@@ -32,12 +26,9 @@ class DecimalFst(GraphFst):
         decimal { positive: "正" integer_part: "零" fractional_part: "五" quantity: "万" } -> 正零点五万
     """
     
-    #def __init__(self):
-    #    super().__init__(name="decimal",kind="verbalize")
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        
         integer = (
             pynutil.delete("integer_part:")
             + delete_space

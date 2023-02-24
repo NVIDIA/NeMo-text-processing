@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.zh.verbalizers.decimal import DecimalFst
@@ -61,8 +60,6 @@ class VerbalizeFst(GraphFst):
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
         money_graph = MoneyFst(decimal=decimal, deterministic=deterministic).fst
-        #money = MoneyFst(deterministic=deterministic)
-        #money_graph = money.fst
 
         time_graph = TimeFst(deterministic=deterministic).fst
 

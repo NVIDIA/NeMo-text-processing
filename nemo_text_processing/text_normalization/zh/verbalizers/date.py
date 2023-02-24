@@ -13,8 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, NEMO_CHAR, NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst, insert_space
-
+from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, NEMO_NOT_QUOTE, GraphFst
 from pynini.lib import pynutil
 
 
@@ -30,7 +29,6 @@ class DateFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
 
-        
         year_component = pynutil.delete("year: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") +pynutil.insert("年")
         month_component = pynutil.delete("month: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") +pynutil.insert("月")
         day_component = pynutil.delete("day: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") +pynutil.insert("日")

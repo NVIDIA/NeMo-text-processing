@@ -13,24 +13,24 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, NEMO_CHAR, NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst, insert_space
+import pynini
+from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, NEMO_NOT_QUOTE, GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
-    #def __init__(self):
-    #    super().__init__(name='time', kind="verbalize")
+    """
+    Finite state transducer for verbalizing time e.g.
+        tokens { time { hour: "五点" } } -> 五点
+        tokens { time { minute: "三分" }' } -> 三分
+        tokens { time { hour: "五点" minute: "三分" } } -> 五点三分
+        tokens { time { affix: "am" hour: "五点" verb: "差" minute: "三分" }' } -> 早上五点差三分
+        tokens { time { affix: "am" hour: "一点" minute: "三分" } } -> 深夜一点三分
+    """
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
-
         
         # data imported to process am/pm into mandarin
         morning = pynini.string_file(get_abs_path("data/time/morning.tsv"))

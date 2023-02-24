@@ -13,20 +13,20 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.zh.utils import get_abs_path
+import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, GraphFst, NEMO_NOT_QUOTE
-#from nemo_text_processing.text_normalization.zh.verbalizers.decimal import DecimalFst
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path 
+from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
+    """
+    Finite state transducer for verbalizing fraction e.g.
+        tokens { money { integer: "二" currency: "$"} } -> 二美元
+        tokens { money { integer: "三" major_unit: "块"} } -> 三块
+        tokens { money { currency: "$" integer: "二" } } -> 二美元
+    """
+
     def __init__(self, decimal: GraphFst, deterministic: bool = True):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
         

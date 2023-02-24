@@ -13,15 +13,9 @@
 # limitations under the License.
 
 
+import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, GraphFst, NEMO_NOT_QUOTE
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -31,8 +25,6 @@ class FractionFst(GraphFst):
         e.g. tokens { fraction { integer_part: "一" denominator: "二" numerator: "一" } } -> 一又二分之一
     """
     
-    #def __init__(self):
-    #    super().__init__(name="fraction", kind="verbalize")
     def __init__(self, deterministic: bool = True):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
 
