@@ -18,6 +18,7 @@ from time import perf_counter
 from typing import List
 
 from nemo_text_processing.text_normalization.data_loader_utils import load_file, write_file
+from nemo_text_processing.text_normalization.en.graph_utils import INPUT_CASED, INPUT_LOWER_CASED
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.token_parser import TokenParser
 
@@ -28,6 +29,8 @@ class InverseNormalizer(Normalizer):
     Input is expected to have no punctuation outside of approstrophe (') and dash (-) and be lower cased.
 
     Args:
+        input_case: Input text capitalization, set to 'cased' if text contains capital letters.
+            This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.
         lang: language specifying the ITN
         whitelist: path to a file with whitelist replacements. (each line of the file: written_form\tspoken_form\n),
             e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
@@ -39,12 +42,15 @@ class InverseNormalizer(Normalizer):
 
     def __init__(
         self,
-        lang: str = 'en',
+        input_case: str = INPUT_LOWER_CASED,
+        lang: str = "en",
         whitelist: str = None,
         cache_dir: str = None,
         overwrite_cache: bool = False,
         max_number_of_permutations_per_split: int = 729,
     ):
+
+        assert input_case in ["lower_cased", "cased"]
 
         if lang == 'en':  # English
             from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
@@ -96,7 +102,9 @@ class InverseNormalizer(Normalizer):
                 VerbalizeFinalFst,
             )
 
-        self.tagger = ClassifyFst(cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache)
+        self.tagger = ClassifyFst(
+            cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case
+        )
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
         self.lang = lang
@@ -142,6 +150,14 @@ def parse_args():
         type=str,
     )
     parser.add_argument(
+        "--input_case",
+        help="Input text capitalization, set to 'cased' if text contains capital letters."
+        "This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.",
+        choices=[INPUT_CASED, INPUT_LOWER_CASED],
+        default=INPUT_LOWER_CASED,
+        type=str,
+    )
+    parser.add_argument(
         "--whitelist",
         help="Path to a file with with whitelist replacements," "e.g., inverse_normalization/en/data/whitelist.tsv",
         default=None,
@@ -164,7 +180,11 @@ if __name__ == "__main__":
     whitelist = os.path.abspath(args.whitelist) if args.whitelist else None
     start_time = perf_counter()
     inverse_normalizer = InverseNormalizer(
-        lang=args.language, cache_dir=args.cache_dir, overwrite_cache=args.overwrite_cache, whitelist=whitelist,
+        input_case=args.input_case,
+        lang=args.language,
+        cache_dir=args.cache_dir,
+        overwrite_cache=args.overwrite_cache,
+        whitelist=whitelist,
     )
     print(f'Time to generate graph: {round(perf_counter() - start_time, 2)} sec')
 

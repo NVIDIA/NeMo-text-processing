@@ -31,7 +31,7 @@
 #       bash export_grammars.sh --GRAMMARS=itn_grammars --LANGUAGE=en --MODE=test
 
 GRAMMARS="itn_grammars" # tn_grammars
-INPUT_CASE="cased" # lower_cased, only for tn_grammars
+INPUT_CASE="lower_cased" # cased
 LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi'} supports ITN only
 MODE="export"
 OVERWRITE_CACHE="True" # Set to False to re-use .far files
@@ -76,8 +76,8 @@ fi
 find . -name "Makefile" -type f -delete
 bash docker/build.sh $FORCE_REBUILD
 
-if [[ $MODE == "test" ]]; then
+if [[ ${MODE} == "test" ]]; then
   MODE=${MODE}_${GRAMMARS}
 fi
 
-bash docker/launch.sh $MODE $LANGUAGE
+bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE

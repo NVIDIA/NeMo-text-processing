@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
-from nemo_text_processing.text_normalization.en.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 from pynini import Far
 from pynini.examples import plurals
 from pynini.export import export
@@ -43,6 +43,33 @@ NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
 NEMO_GRAPH = pynini.union(NEMO_ALNUM, NEMO_PUNCT).optimize()
 
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
+NEMO_LOWER_NOT_A = pynini.union(
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+).optimize()
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
@@ -72,6 +99,32 @@ TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_upperc
 TO_UPPER = pynini.invert(TO_LOWER)
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
+INPUT_CASED = "cased"
+INPUT_LOWER_CASED = "lower_cased"
+MINUS = pynini.union("minus", "Minus").optimize()
+
+
+def capitalized_input_graph(
+    graph: 'pynini.FstLike', original_graph_weight: float = None, capitalized_graph_weight: float = None
+) -> 'pynini.FstLike':
+    """
+    Allow graph input to be capitalized, e.g. for ITN)
+
+    Args:
+        graph: FstGraph
+        original_graph_weight: weight to add to the original `graph`
+        capitalized_graph_weight: weight to add to the capitalized graph
+    """
+    capitalized_graph = pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
+
+    if original_graph_weight is not None:
+        graph = pynutil.add_weight(graph, weight=original_graph_weight)
+
+    if capitalized_graph_weight is not None:
+        capitalized_graph = pynutil.add_weight(capitalized_graph, weight=capitalized_graph_weight)
+
+    graph |= capitalized_graph
+    return graph
 
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
@@ -125,6 +178,44 @@ def convert_space(fst) -> 'pynini.FstLike':
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
+
+
+def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
+    labels = load_labels(input_file)
+
+    if input_case == INPUT_CASED:
+        additional_labels = []
+        for written, spoken, *weight in labels:
+            written_capitalized = written[0].upper() + written[1:]
+            additional_labels.extend(
+                [
+                    [written_capitalized, spoken.capitalize()],  # first letter capitalized
+                    [
+                        written_capitalized,
+                        spoken.upper().replace(" AND ", " and "),
+                    ],  # # add pairs with the all letters capitalized
+                ]
+            )
+
+            spoken_no_space = spoken.replace(" ", "")
+            # add abbreviations without spaces (both lower and upper case), i.e. "BMW" not "B M W"
+            if len(spoken) == (2 * len(spoken_no_space) - 1):
+                print(f"This is weight {weight}")
+                if len(weight) == 0:
+                    additional_labels.extend(
+                        [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]
+                    )
+                else:
+                    additional_labels.extend(
+                        [
+                            [written, spoken_no_space, weight[0]],
+                            [written_capitalized, spoken_no_space.upper(), weight[0]],
+                        ]
+                    )
+        labels += additional_labels
+
+    whitelist = pynini.string_map(labels).invert().optimize()
+    return whitelist
 
 
 class GraphFst:
