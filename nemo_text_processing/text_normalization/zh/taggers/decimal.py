@@ -19,11 +19,39 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 
 
-
 def get_quantity(decimal):
-    suffix = pynini.union("万","十万","百万","千万","亿","十亿","百亿","千亿", "萬","十萬", "百萬","千萬","億","十億","百億","千億", "拾萬", "佰萬", "仟萬","拾億","佰億","仟億","拾万","佰万","仟万","仟亿","佰亿","仟亿" )
+    suffix = pynini.union(
+        "万",
+        "十万",
+        "百万",
+        "千万",
+        "亿",
+        "十亿",
+        "百亿",
+        "千亿",
+        "萬",
+        "十萬",
+        "百萬",
+        "千萬",
+        "億",
+        "十億",
+        "百億",
+        "千億",
+        "拾萬",
+        "佰萬",
+        "仟萬",
+        "拾億",
+        "佰億",
+        "仟億",
+        "拾万",
+        "佰万",
+        "仟万",
+        "仟亿",
+        "佰亿",
+        "仟亿",
+    )
     res = decimal + pynutil.insert(" quantity: \"") + suffix + pynutil.insert("\"")
-  
+
     return res
 
 
@@ -37,30 +65,52 @@ class DecimalFst(GraphFst):
     Args:
         cardinal: CardinalFst
     """
-    
-    def __init__(self, cardinal: GraphFst, deterministic: bool=True):
-        super().__init__(name="decimal",kind="classify", deterministic=deterministic)
-        
+
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+
         cardinal_before_decimal = cardinal.just_cardinals
-        cardinal_after_decimal = pynini.string_file(get_abs_path("data/number/digit.tsv")) | pynini.closure(pynini.cross('0', '零'))
-    
+        cardinal_after_decimal = pynini.string_file(get_abs_path("data/number/digit.tsv")) | pynini.closure(
+            pynini.cross('0', '零')
+        )
+
         decimal_point = pynini.closure(pynutil.delete('.'), 0, 1)
-        graph_integer = pynutil.insert("integer_part: \"") + cardinal_before_decimal + pynutil.insert("\"") 
-        graph_fraction = pynutil.insert("fractional_part: \"") + pynini.closure(cardinal_after_decimal, 1) + pynutil.insert("\"")
+        graph_integer = pynutil.insert("integer_part: \"") + cardinal_before_decimal + pynutil.insert("\"")
+        graph_fraction = (
+            pynutil.insert("fractional_part: \"") + pynini.closure(cardinal_after_decimal, 1) + pynutil.insert("\"")
+        )
         graph_decimal = graph_integer + decimal_point + pynutil.insert(" ") + graph_fraction
-        
-        graph_sign = ((pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"负\"")) + pynutil.insert(" ")) | (pynini.closure(pynutil.insert("positive: ") + pynini.cross("+", "\"正\"")) + pynutil.insert(" "))) | ((pynutil.insert("positive: ") + pynutil.insert("\"") + pynini.accep('正') + pynutil.insert("\"") + pynutil.insert(' ')) | (pynutil.insert('negative: ') + pynutil.insert("\"")+ (pynini.accep('负') | pynini.cross('負', '负')) + pynutil.insert("\"")) + pynutil.insert(' '))
+
+        graph_sign = (
+            (pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"负\"")) + pynutil.insert(" "))
+            | (pynini.closure(pynutil.insert("positive: ") + pynini.cross("+", "\"正\"")) + pynutil.insert(" "))
+        ) | (
+            (
+                pynutil.insert("positive: ")
+                + pynutil.insert("\"")
+                + pynini.accep('正')
+                + pynutil.insert("\"")
+                + pynutil.insert(' ')
+            )
+            | (
+                pynutil.insert('negative: ')
+                + pynutil.insert("\"")
+                + (pynini.accep('负') | pynini.cross('負', '负'))
+                + pynutil.insert("\"")
+            )
+            + pynutil.insert(' ')
+        )
         graph_with_sign = graph_sign + graph_decimal
         graph_regular = graph_with_sign | graph_decimal
 
-        #graph_decimal_quantity = get_quantity(graph_decimal, cardinal.just_cardinals)
+        # graph_decimal_quantity = get_quantity(graph_decimal, cardinal.just_cardinals)
         graph_decimal_quantity = get_quantity(graph_decimal)
         graph_sign_quantity = graph_sign + graph_decimal_quantity
         graph_quantity = graph_decimal_quantity | graph_sign_quantity
-        
-        #final_graph = graph_decimal | graph_sign | graph_decimal_quantity | graph_sign_quantity
+
+        # final_graph = graph_decimal | graph_sign | graph_decimal_quantity | graph_sign_quantity
         final_graph = graph_regular | graph_quantity
         self.decimal = final_graph
-        
+
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

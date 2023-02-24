@@ -14,7 +14,7 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, GraphFst, NEMO_NOT_QUOTE
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -25,13 +25,19 @@ class CardinalFst(GraphFst):
     cardinal { integer: "23" } -> 二十三
     cardinal { positive: "正" integer: "23" } -> 正二十三
     """
-    
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
-        
+
         delete_sign = pynini.cross("negative: \"负\"", "负") | pynini.cross("positive: \"正\"", "正")
-        delete_integer = pynutil.delete("integer: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + delete_space
-        graph_sign =  delete_sign + delete_space + delete_integer
+        delete_integer = (
+            pynutil.delete("integer: ")
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+            + delete_space
+        )
+        graph_sign = delete_sign + delete_space + delete_integer
         final_graph = delete_integer | graph_sign
 
         delete_tokens = self.delete_tokens(final_graph)

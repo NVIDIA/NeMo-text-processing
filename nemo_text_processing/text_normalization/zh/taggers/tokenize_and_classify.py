@@ -16,19 +16,7 @@ import logging
 import os
 
 import pynini
-from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
-from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
-from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
-from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
-#from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbolFst
-#from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
-from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
-#from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreprocessorFst
-from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
-
+from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.zh.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -37,9 +25,23 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
+from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
+
+# from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreprocessorFst
+from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
+
+# from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbolFst
+# from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
+from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
 from pynini.lib import pynutil
-#from nemo.utils import logging
+
+# from nemo.utils import logging
 
 
 class ClassifyFst(GraphFst):
@@ -71,8 +73,9 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-               # cache_dir, f"_{input_case}_zh_tn_{deterministic}_deterministic{whitelist_file}.far"
-               cache_dir, f"_{input_case}_zh_tn_{deterministic}_deterministic_{whitelist_file}.far"
+                # cache_dir, f"_{input_case}_zh_tn_{deterministic}_deterministic{whitelist_file}.far"
+                cache_dir,
+                f"_{input_case}_zh_tn_{deterministic}_deterministic_{whitelist_file}.far",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -93,23 +96,23 @@ class ClassifyFst(GraphFst):
 
             self.fraction = FractionFst(cardinal=self.cardinal, deterministic=deterministic)
             fraction_graph = self.fraction.fst
-            
+
             self.date = DateFst(cardinal=self.cardinal, deterministic=deterministic)
             date_graph = self.date.fst
-            
+
             word_graph = WordFst(deterministic=deterministic).fst
-            
+
             self.time = TimeFst(deterministic=deterministic)
             time_graph = self.time.fst
-            
+
             self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
             money_graph = self.money.fst
 
-            #self.math = MathSymbolFst(cardinal=self.cardinal, deterministic=deterministic)
-            #math_graph = self.math.fst
+            # self.math = MathSymbolFst(cardinal=self.cardinal, deterministic=deterministic)
+            # math_graph = self.math.fst
 
-            #self.measure = MeasureFst(cardinal=self.cardinal, deterministic=deterministic)
-            #measure_graph = self.measure.fst
+            # self.measure = MeasureFst(cardinal=self.cardinal, deterministic=deterministic)
+            # measure_graph = self.measure.fst
 
             self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             whitelist_graph = self.whitelist.fst
@@ -124,8 +127,8 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, -1.1)
                 | pynutil.add_weight(money_graph, -1.1)
-               # | pynutil.add_weight(math_graph, 1.1)
-               # | pynutil.add_weight(measure_graph, 1.1)
+                # | pynutil.add_weight(math_graph, 1.1)
+                # | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(word_graph, 1.1)
             )
 
@@ -147,4 +150,3 @@ class ClassifyFst(GraphFst):
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
                 logging.info(f"ClassifyFst grammars are saved to {far_file}.")
-           

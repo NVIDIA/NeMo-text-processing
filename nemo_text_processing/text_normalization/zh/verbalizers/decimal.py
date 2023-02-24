@@ -14,7 +14,7 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, GraphFst, NEMO_NOT_QUOTE
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -25,7 +25,7 @@ class DecimalFst(GraphFst):
         decimal { integer_part: "零" fractional_part: "五" quantity: "万" } -> 零点五万
         decimal { positive: "正" integer_part: "零" fractional_part: "五" quantity: "万" } -> 正零点五万
     """
-    
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
@@ -36,7 +36,7 @@ class DecimalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        
+
         fractional = (
             pynutil.delete("fractional_part:")
             + delete_space
@@ -44,26 +44,43 @@ class DecimalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        
+
         quantity = (
             pynutil.delete("quantity:")
-            + delete_space + pynutil.delete("\"")
-            + pynini.closure(NEMO_NOT_QUOTE,1)
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        
-        sign = (pynini.closure(pynutil.delete("positive: ")+ delete_space + pynutil.delete("\"")+ pynini.accep("正")+ pynutil.delete("\""))) | (pynini.closure(pynutil.delete("negative: ") + delete_space + pynutil.delete("\"") + pynini.accep("负") + pynutil.delete("\"")))
-        
+
+        sign = (
+            pynini.closure(
+                pynutil.delete("positive: ")
+                + delete_space
+                + pynutil.delete("\"")
+                + pynini.accep("正")
+                + pynutil.delete("\"")
+            )
+        ) | (
+            pynini.closure(
+                pynutil.delete("negative: ")
+                + delete_space
+                + pynutil.delete("\"")
+                + pynini.accep("负")
+                + pynutil.delete("\"")
+            )
+        )
+
         graph = integer + delete_space + pynutil.insert("点") + fractional
         graph_quantity = graph + delete_space + quantity
         graph_regular = graph | graph_quantity
-                
+
         graph_sign = sign + delete_space + graph_regular
-        #graph_sign_quantity = graph_sign + delete_space + graph_quantity
-       # graph_quantity = graph_sign | graph_sign_quantity
-        
+        # graph_sign_quantity = graph_sign + delete_space + graph_quantity
+        # graph_quantity = graph_sign | graph_sign_quantity
+
         final_graph = graph_regular | graph_sign
-        self.decimal_component =  final_graph
-        
+        self.decimal_component = final_graph
+
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

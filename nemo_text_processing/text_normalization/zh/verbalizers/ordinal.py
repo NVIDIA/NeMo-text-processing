@@ -23,18 +23,35 @@ class OrdinalFst(GraphFst):
     Finite state transducer for verbalizing ordinal e.g.
         ordinal { integer: "第一千万" } -> 第一千万
     """
-    
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
-        symbol = pynini.union("-","~","——","—")
+        symbol = pynini.union("-", "~", "——", "—")
         dash = pynini.cross(symbol, "到")
-        
-        delete_morpheme = (pynutil.delete("range: \"") + (pynini.closure('从') | (pynini.closure('到') | dash)) + pynutil.delete("\""))
-        graph_integer = (pynutil.delete("integer:") + delete_space + pynutil.delete("\"") + pynini.closure("第", 0,1) + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
-        graph_range = pynini.closure(delete_morpheme, 0, 1) + pynini.closure(delete_space, 0, 1) + graph_integer + delete_space + delete_morpheme + delete_space + graph_integer
-        
+
+        delete_morpheme = (
+            pynutil.delete("range: \"") + (pynini.closure('从') | (pynini.closure('到') | dash)) + pynutil.delete("\"")
+        )
+        graph_integer = (
+            pynutil.delete("integer:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure("第", 0, 1)
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+        )
+        graph_range = (
+            pynini.closure(delete_morpheme, 0, 1)
+            + pynini.closure(delete_space, 0, 1)
+            + graph_integer
+            + delete_space
+            + delete_morpheme
+            + delete_space
+            + graph_integer
+        )
+
         final_graph = pynutil.add_weight(graph_integer, -2.0) | graph_range
-        
+
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

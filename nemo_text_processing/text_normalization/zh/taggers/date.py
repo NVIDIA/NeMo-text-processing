@@ -14,7 +14,7 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst 
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -38,7 +38,7 @@ class DateFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
-        
+
         cardinal = cardinal.just_cardinals
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
@@ -48,59 +48,83 @@ class DateFst(GraphFst):
 
         delete_sign = pynutil.delete('/') | pynutil.delete('-') | pynutil.delete('.') | pynutil.delete('·')
         delete_day = pynutil.delete('号') | pynutil.delete('號') | pynutil.delete('日')
-        #delete_day_alt = pynutil.delete('日')
-        
+        # delete_day_alt = pynutil.delete('日')
+
         # grammar for only year, month, or day
-        # atleast accep two digit to distinguish from year used for time 
+        # atleast accep two digit to distinguish from year used for time
         # don't accept 日 to distinguish from day used fro time
-        only_year = pynutil.insert("year: \"") + pynini.closure(graph_digit | graph_zero, 2) + pynutil.delete('年') + pynutil.insert("\"")
+        only_year = (
+            pynutil.insert("year: \"")
+            + pynini.closure(graph_digit | graph_zero, 2)
+            + pynutil.delete('年')
+            + pynutil.insert("\"")
+        )
         only_month = pynutil.insert("month: \"") + month + pynutil.delete('月') + pynutil.insert("\"")
         only_day = pynutil.insert("day: \"") + day + delete_day + pynutil.insert("\"")
-        graph_only_date = only_year | only_month | only_day # finalized for only year, month, and day
-        
+        graph_only_date = only_year | only_month | only_day  # finalized for only year, month, and day
+
         # combination part; year-month and month-year
         year_month = only_year + pynutil.insert(' ') + only_month
         month_day = only_month + pynutil.insert(' ') + only_day
         graph_all = only_year + pynutil.insert(' ') + only_month + pynutil.insert(' ') + only_day
-        graph_combination = year_month | month_day | graph_all # final for combinations
-        
+        graph_combination = year_month | month_day | graph_all  # final for combinations
+
         # dates with a sign
-        year_component = pynutil.insert("year: \"") + pynini.closure(graph_digit | graph_zero, 2, 4) + delete_sign + pynutil.insert("\"")
+        year_component = (
+            pynutil.insert("year: \"")
+            + pynini.closure(graph_digit | graph_zero, 2, 4)
+            + delete_sign
+            + pynutil.insert("\"")
+        )
         month_component = pynutil.insert("month: \"") + month + delete_sign + pynutil.insert("\"")
         day_component = pynutil.insert("day: \"") + day + pynutil.insert("\"")
         graph_sign = year_component + pynutil.insert(' ') + month_component + pynutil.insert(' ') + day_component
-        
+
         graph_all = graph_only_date | graph_sign | graph_combination
-        
+
         # dates with era: ad bc
-        prefix = pynini.accep('公元') | pynini.accep('西元') | pynini.accep('公元前') | pynini.accep('西元前') | pynini.accep('纪元') | pynini.accep('纪元前')         
+        prefix = (
+            pynini.accep('公元')
+            | pynini.accep('西元')
+            | pynini.accep('公元前')
+            | pynini.accep('西元前')
+            | pynini.accep('纪元')
+            | pynini.accep('纪元前')
+        )
         prefix_component = pynutil.insert("era: \"") + prefix + pynutil.insert("\"")
         graph_prefix = prefix_component + pynutil.insert(' ') + (pynutil.add_weight(graph_all, -2.0))
-        
+
         suffix_component = pynutil.insert("era: \"") + suffix + pynutil.insert("\"")
         graph_suffix = (pynutil.add_weight(graph_all, -2.0)) + pynutil.insert(' ') + suffix_component
-        
+
         graph_affix = graph_prefix | graph_suffix
-        
+
         # this part is only responsible for inputs like 2013BC or 2013AD
-        graph_suffix_year = pynutil.insert("year: \"") + pynini.closure((graph_digit | graph_zero),1) + pynutil.insert("\"")
+        graph_suffix_year = (
+            pynutil.insert("year: \"") + pynini.closure((graph_digit | graph_zero), 1) + pynutil.insert("\"")
+        )
         graph_suffix_year = graph_suffix_year + pynutil.insert(' ') + suffix_component
-        
+
         graph_with_era = graph_suffix_year | graph_affix
-                            
-        
+
         graph = graph_only_date | graph_combination | graph_sign | graph_with_era
-        
-        #range
+
+        # range
         symbol = pynini.accep("-") | pynini.accep("~") | pynini.accep("——") | pynini.accep("—")
         range_source = pynutil.insert("range: \"") + pynini.closure("从", 0, 1) + pynutil.insert("\"")
-        range_goal = pynutil.insert("range: \"") + (pynini.closure("到", 0, 1) | pynini.closure("至", 0, 1) | symbol) + pynutil.insert("\"")
-        graph_source = range_source + pynutil.insert(' ') + graph + pynutil.insert(' ') + range_goal + pynutil.insert(' ') + graph
+        range_goal = (
+            pynutil.insert("range: \"")
+            + (pynini.closure("到", 0, 1) | pynini.closure("至", 0, 1) | symbol)
+            + pynutil.insert("\"")
+        )
+        graph_source = (
+            range_source + pynutil.insert(' ') + graph + pynutil.insert(' ') + range_goal + pynutil.insert(' ') + graph
+        )
         graph_goal = graph + pynutil.insert(' ') + range_goal + pynutil.insert(' ') + graph
-        
+
         graph_range_final = graph_source | graph_goal
-        
+
         final_graph = pynutil.add_weight(graph, -2.0) | graph_range_final
-        
+
         self.final_graph = final_graph.optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()

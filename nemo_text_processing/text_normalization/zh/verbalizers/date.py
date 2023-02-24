@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -29,23 +29,60 @@ class DateFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
 
-        year_component = pynutil.delete("year: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") +pynutil.insert("年")
-        month_component = pynutil.delete("month: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") +pynutil.insert("月")
-        day_component = pynutil.delete("day: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") +pynutil.insert("日")
- 
-        optional_era = pynutil.delete("era: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        graph_date = pynini.closure(year_component) + pynini.closure(delete_space) + pynini.closure(month_component) + pynini.closure(delete_space) + pynini.closure(day_component)
+        year_component = (
+            pynutil.delete("year: ")
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+            + pynutil.insert("年")
+        )
+        month_component = (
+            pynutil.delete("month: ")
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+            + pynutil.insert("月")
+        )
+        day_component = (
+            pynutil.delete("day: ")
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+            + pynutil.insert("日")
+        )
+
+        optional_era = (
+            pynutil.delete("era: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        )
+        graph_date = (
+            pynini.closure(year_component)
+            + pynini.closure(delete_space)
+            + pynini.closure(month_component)
+            + pynini.closure(delete_space)
+            + pynini.closure(day_component)
+        )
         graph_date_era = optional_era + delete_space + graph_date
-        
+
         graph_date_all = graph_date | graph_date_era
-        
+
         # range
         symbol = pynini.accep("-") | pynini.accep("~") | pynini.accep("——") | pynini.accep("—")
-        ranges = pynutil.delete("range: \"") + delete_space + (pynini.closure(NEMO_NOT_QUOTE) | pynini.cross(symbol, "到")) + pynutil.delete("\"")
-        graph_range = pynini.closure((ranges + delete_space), 0, 1) + graph_date + delete_space + ranges + delete_space + graph_date
-        
-        
+        ranges = (
+            pynutil.delete("range: \"")
+            + delete_space
+            + (pynini.closure(NEMO_NOT_QUOTE) | pynini.cross(symbol, "到"))
+            + pynutil.delete("\"")
+        )
+        graph_range = (
+            pynini.closure((ranges + delete_space), 0, 1)
+            + graph_date
+            + delete_space
+            + ranges
+            + delete_space
+            + graph_date
+        )
+
         final_graph = graph_date_all | graph_range
-        
+
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

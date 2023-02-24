@@ -35,32 +35,105 @@ class FractionFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
-        
+
         graph_cardinals = cardinal.just_cardinals
-        
-        slash = pynutil.delete('/') 
-        morpheme = pynutil.delete ('分之')
-        suffix = pynini.union("百", "千", "万","十万","百万","千万","亿","十亿","百亿","千亿", "萬","十萬", "百萬","千萬","億","十億","百億","千億", "拾萬", "佰萬", "仟萬","拾億","佰億","仟億","拾万","佰万","仟万","仟亿","佰亿","仟亿") 
+
+        slash = pynutil.delete('/')
+        morpheme = pynutil.delete('分之')
+        suffix = pynini.union(
+            "百",
+            "千",
+            "万",
+            "十万",
+            "百万",
+            "千万",
+            "亿",
+            "十亿",
+            "百亿",
+            "千亿",
+            "萬",
+            "十萬",
+            "百萬",
+            "千萬",
+            "億",
+            "十億",
+            "百億",
+            "千億",
+            "拾萬",
+            "佰萬",
+            "仟萬",
+            "拾億",
+            "佰億",
+            "仟億",
+            "拾万",
+            "佰万",
+            "仟万",
+            "仟亿",
+            "佰亿",
+            "仟亿",
+        )
         percentage = pynutil.delete('%')
-        
+
         integer_component = pynutil.insert("integer_part: \"") + graph_cardinals + pynutil.insert("\"")
         denominator_component = pynutil.insert("denominator: \"") + graph_cardinals + pynutil.insert("\"")
         numerator_component = pynutil.insert("numerator: \"") + graph_cardinals + pynutil.insert("\"")
 
-        graph_with_integer = pynini.closure(integer_component + pynutil.delete('又'), 0, 1) + pynutil.insert(' ') + numerator_component + slash + pynutil.insert(' ') + denominator_component
+        graph_with_integer = (
+            pynini.closure(integer_component + pynutil.delete('又'), 0, 1)
+            + pynutil.insert(' ')
+            + numerator_component
+            + slash
+            + pynutil.insert(' ')
+            + denominator_component
+        )
         graph_only_slash = numerator_component + slash + pynutil.insert(' ') + denominator_component
-        
-        graph_morpheme = (denominator_component + morpheme + pynutil.insert(' ') + numerator_component) | (integer_component + pynutil.delete('又') + pynutil.insert(' ') + denominator_component + morpheme + pynutil.insert(' ') + numerator_component)
-        
-        graph_with_suffix = pynini.closure(pynutil.insert("denominator: \"") + suffix + pynutil.insert("\"") , 0, 1) + morpheme + pynutil.insert(' ') + numerator_component
-        
-        graph_percentage = numerator_component + percentage + pynutil.insert(' ') + pynutil.insert("denominator: \"百") + pynutil.insert("\"")
-        
-        graph_optional_sign = (pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"负\""))) | (pynini.closure(pynutil.insert("positive: ") + pynini.cross("+", "\"正\""))) | (pynutil.insert("positive: ") + pynutil.insert("\"") + pynini.accep('正') + pynutil.insert("\"")) | (pynutil.insert('negative: ') + pynutil.insert("\"") + (pynini.accep('负') | pynini.cross('負', '负')) + pynutil.insert("\""))
-        
+
+        graph_morpheme = (denominator_component + morpheme + pynutil.insert(' ') + numerator_component) | (
+            integer_component
+            + pynutil.delete('又')
+            + pynutil.insert(' ')
+            + denominator_component
+            + morpheme
+            + pynutil.insert(' ')
+            + numerator_component
+        )
+
+        graph_with_suffix = (
+            pynini.closure(pynutil.insert("denominator: \"") + suffix + pynutil.insert("\""), 0, 1)
+            + morpheme
+            + pynutil.insert(' ')
+            + numerator_component
+        )
+
+        graph_percentage = (
+            numerator_component
+            + percentage
+            + pynutil.insert(' ')
+            + pynutil.insert("denominator: \"百")
+            + pynutil.insert("\"")
+        )
+
+        graph_optional_sign = (
+            (pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"负\"")))
+            | (pynini.closure(pynutil.insert("positive: ") + pynini.cross("+", "\"正\"")))
+            | (pynutil.insert("positive: ") + pynutil.insert("\"") + pynini.accep('正') + pynutil.insert("\""))
+            | (
+                pynutil.insert('negative: ')
+                + pynutil.insert("\"")
+                + (pynini.accep('负') | pynini.cross('負', '负'))
+                + pynutil.insert("\"")
+            )
+        )
+
         graph = graph_with_integer | graph_only_slash | graph_morpheme | graph_with_suffix | graph_percentage
-        graph_with_sign = (graph_optional_sign + pynutil.insert(" ") + graph_with_integer) | (graph_optional_sign + pynutil.insert(" ") + graph_only_slash) | (graph_optional_sign + pynutil.insert(" ") + graph_morpheme) | (graph_optional_sign + pynutil.insert(" ") + graph_with_suffix) | (graph_optional_sign + pynutil.insert(" ") + graph_percentage)
+        graph_with_sign = (
+            (graph_optional_sign + pynutil.insert(" ") + graph_with_integer)
+            | (graph_optional_sign + pynutil.insert(" ") + graph_only_slash)
+            | (graph_optional_sign + pynutil.insert(" ") + graph_morpheme)
+            | (graph_optional_sign + pynutil.insert(" ") + graph_with_suffix)
+            | (graph_optional_sign + pynutil.insert(" ") + graph_percentage)
+        )
         final_graph = graph | graph_with_sign
-        
+
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

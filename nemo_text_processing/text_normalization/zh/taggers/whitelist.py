@@ -14,8 +14,8 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 

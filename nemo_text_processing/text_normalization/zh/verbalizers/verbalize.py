@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.zh.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.zh.verbalizers.math_symbol import MathSymbolFst
 from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.verbalizers.math_symbol import MathSymbolFst
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import WhiteListFst
 
 
