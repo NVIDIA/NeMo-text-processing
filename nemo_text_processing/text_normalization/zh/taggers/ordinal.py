@@ -13,16 +13,10 @@
 # limitations under the License.
 
 
+import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):
@@ -34,12 +28,9 @@ class OrdinalFst(GraphFst):
         cardinal: CardinalFst
     """
     
-    #def __init__(self, cardinal: GraphFst):
-    #    super().__init__(name="ordinal", kind="classify")
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
-        
         graph_cardinal = cardinal.just_cardinals
         morpheme = pynini.accep('第')
         graph_ordinal = morpheme + graph_cardinal
@@ -52,7 +43,7 @@ class OrdinalFst(GraphFst):
         graph_range_goal = pynutil.insert("integer: \"") + graph_ordinal + pynutil.insert("\"") + pynutil.insert(" range: \"") + range_goal + pynutil.insert("\" ") + pynutil.insert("integer: \"") + (graph_ordinal | graph_cardinal) + pynutil.insert("\"")
         graph_range_final = graph_range_source | graph_range_goal
         
-        final_graph = graph_ordinal_final #| graph_range_final
+        final_graph = graph_ordinal_final | graph_range_final
         
         graph_ordinal_final = self.add_tokens(final_graph)
         self.fst = graph_ordinal_final.optimize()

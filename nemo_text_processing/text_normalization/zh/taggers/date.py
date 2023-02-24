@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, NEMO_CHAR, NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst 
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
+
 
 class DateFst(GraphFst):
     """
@@ -44,7 +46,6 @@ class DateFst(GraphFst):
         day = pynini.string_file(get_abs_path("data/date/day.tsv"))
         suffix = pynini.string_file(get_abs_path("data/date/suffix.tsv"))
 
-        
         delete_sign = pynutil.delete('/') | pynutil.delete('-') | pynutil.delete('.') | pynutil.delete('·')
         delete_day = pynutil.delete('号') | pynutil.delete('號') | pynutil.delete('日')
         #delete_day_alt = pynutil.delete('日')
@@ -55,7 +56,6 @@ class DateFst(GraphFst):
         only_year = pynutil.insert("year: \"") + pynini.closure(graph_digit | graph_zero, 2) + pynutil.delete('年') + pynutil.insert("\"")
         only_month = pynutil.insert("month: \"") + month + pynutil.delete('月') + pynutil.insert("\"")
         only_day = pynutil.insert("day: \"") + day + delete_day + pynutil.insert("\"")
-        #only_day_alt = pynutil.insert("day: \"") + day + (delete_day | delete_day_alt) + pynutil.insert("\"")
         graph_only_date = only_year | only_month | only_day # finalized for only year, month, and day
         
         # combination part; year-month and month-year

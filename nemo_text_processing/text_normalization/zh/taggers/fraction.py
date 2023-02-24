@@ -13,14 +13,9 @@
 # limitations under the License.
 
 
+import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -38,8 +33,6 @@ class FractionFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    #def __init__(self, cardinal: GraphFst):
-    #    super().__init__(name="fraction", kind="classify")
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
         

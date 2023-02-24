@@ -13,16 +13,10 @@
 # limitations under the License.
 
 
+import pynini
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, NEMO_NOT_QUOTE
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):

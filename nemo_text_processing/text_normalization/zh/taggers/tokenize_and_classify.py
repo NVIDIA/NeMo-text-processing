@@ -23,8 +23,8 @@ from nemo_text_processing.text_normalization.zh.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbolFst
-from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
+#from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbolFst
+#from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
 #from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreprocessorFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
@@ -105,11 +105,11 @@ class ClassifyFst(GraphFst):
             self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
             money_graph = self.money.fst
 
-            self.math = MathSymbolFst(cardinal=self.cardinal, deterministic=deterministic)
-            math_graph = self.math.fst
+            #self.math = MathSymbolFst(cardinal=self.cardinal, deterministic=deterministic)
+            #math_graph = self.math.fst
 
-            self.measure = MeasureFst(cardinal=self.cardinal, deterministic=deterministic)
-            measure_graph = self.measure.fst
+            #self.measure = MeasureFst(cardinal=self.cardinal, deterministic=deterministic)
+            #measure_graph = self.measure.fst
 
             self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             whitelist_graph = self.whitelist.fst

@@ -23,8 +23,6 @@ class MeasureFst(GraphFst):
         1kg  -> tokens { measure { cardinal { integer: "一" } units: "千克" } }
     '''
 
-    #def __init__(self, deterministic: bool = True, lm: bool = False):
-    #    super().__init__(name="measure", kind="classify", deterministic=deterministic)
     def __init__(self, cardinal: GraphFst, deterministic: bool=True):
         super().__init__(name="measure",kind="classify", deterministic=deterministic)
     
@@ -36,7 +34,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert("integer: \"")
             #+ Cardinal().graph_cardinal
             #+ CardinalFst().final_graph
-           # + CardinalFst().just_cardinals
+            #+ CardinalFst().just_cardinals
             + cardinal
             + pynutil.insert("\"")
             + pynutil.insert(" }")

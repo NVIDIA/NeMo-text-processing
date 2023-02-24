@@ -13,16 +13,10 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.zh.graph_utils import delete_space, NEMO_CHAR, NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst, insert_space
+import pynini
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-
-try:
-    import pynini
-    from pynini.lib import pynutil
-
-    PYNINI_AVAILABLE = True
-except (ModuleNotFoundError, ImportError):
-    PYNINI_AVAILABLE = False
+from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -40,7 +34,6 @@ class TimeFst(GraphFst):
     def __init__(self, deterministic: bool=True):
         super().__init__(name="time",kind="classify")
     
-        
         # mappings imported
         hour = pynini.string_file(get_abs_path("data/time/hour.tsv"))
         minute = pynini.string_file(get_abs_path("data/time/minute.tsv"))
@@ -102,6 +95,5 @@ class TimeFst(GraphFst):
         ranges = pynini.accep("从") | pynini.accep("-") | pynini.accep("~") | pynini.accep("——") | pynini.accep("—") | pynini.accep("到") | pynini.accep("至")
         graph_range = pynini.closure((pynutil.insert("range: \"") + ranges + pynutil.insert("\"") + pynutil.insert(" ")),0,1) + graph + pynutil.insert(" ") + pynutil.insert("range: \"") + ranges + pynutil.insert("\"") + pynutil.insert(" ") + graph 
          
-        
         final_graph = self.add_tokens(graph | graph_range)
         self.fst = final_graph.optimize()

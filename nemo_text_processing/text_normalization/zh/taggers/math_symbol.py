@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 #from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
@@ -22,9 +24,6 @@ class MathSymbolFst(GraphFst):
     '''
         + -> tokens { sign: "加" }
     '''
-
-   # def __init__(self, cardinal: GraphFst, deterministic: bool = True, lm: bool = False):
-    #    super().__init__(name="sign", kind="classify", deterministic=deterministic)
 
     def __init__(self, cardinal: GraphFst, deterministic: bool=True):
         super().__init__(name="sign",kind="classify", deterministic=deterministic)
