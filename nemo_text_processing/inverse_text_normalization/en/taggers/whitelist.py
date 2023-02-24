@@ -13,11 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
+
+import os
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    GraphFst,
+    convert_space,
+    string_map_cased,
+)
+from nemo_text_processing.text_normalization.en.utils import load_labels
 from pynini.lib import pynutil
 
 
@@ -30,15 +38,19 @@ class WhiteListFst(GraphFst):
 
     Args:
         input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
-        e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
+            e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_file: str = None):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None):
         super().__init__(name="whitelist", kind="classify")
 
-        if input_file:
-            whitelist = pynini.string_file(input_file).invert()
-        else:
-            whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv")).invert()
+        if input_file is None:
+            input_file = get_abs_path("data/whitelist.tsv")
+
+        if not os.path.exists(input_file):
+            raise ValueError(f"Whitelist file {input_file} not found")
+
+        whitelist = string_map_cased(input_file, input_case)
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
         self.fst = graph.optimize()

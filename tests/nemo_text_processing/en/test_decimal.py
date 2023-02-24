@@ -23,12 +23,25 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 class TestDecimal:
     inverse_normalizer_en = InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
+    inverse_normalizer_en_cased = InverseNormalizer(
+        lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased"
+    )
 
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_decimal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_en.inverse_normalize(test_input, verbose=False)
+        assert pred == expected
+
+        pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
+        assert pred == expected
+
+    @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_decimal_cased.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm(self, test_input, expected):
+        pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
     normalizer_en = Normalizer(input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True)

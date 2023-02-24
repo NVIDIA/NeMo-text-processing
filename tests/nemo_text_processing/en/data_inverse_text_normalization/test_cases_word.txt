@@ -50,3 +50,6 @@ aamer's~aamer's
 aamina~aamina
 aaminah~aaminah
 aamjiwnaang~aamjiwnaang
+~
+, one~, one
+, one , two , three , four~, one , two , three , four
