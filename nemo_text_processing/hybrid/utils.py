@@ -30,7 +30,7 @@ from tqdm import tqdm
 
 DELIMITER = '~~'
 
-cardinal_graph = CardinalFst().graph_no_exception
+cardinal_graph = CardinalFst(input_case="cased").graph_no_exception
 cardinal_graph = (
     pynini.closure(pynini.union("In ", "in ")) + cardinal_graph + pynini.closure(pynini.accep(" ") + cardinal_graph)
 )
