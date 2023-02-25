@@ -68,12 +68,10 @@ class DateFst(GraphFst):
 
         # prefer cardinal over year
         year_first = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 1)) @ numbers
-        year_second = (
-            pynini.union(
-                ((NEMO_DIGIT - "0") + (NEMO_DIGIT - "0")) @ numbers,
-                pynini.cross("0", "hundra") + ((NEMO_DIGIT - "0") @ numbers),
-                ((NEMO_DIGIT - "0") + "0") @ numbers
-            )
+        year_second = pynini.union(
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT - "0")) @ numbers,
+            pynini.cross("0", "hundra") + ((NEMO_DIGIT - "0") @ numbers),
+            ((NEMO_DIGIT - "0") + "0") @ numbers,
         )
         year_hundra = year_first + pynutil.insert("hundra") + year_second
         year_hundra |= year_first + pynutil.insert(" hundra") + year_second
