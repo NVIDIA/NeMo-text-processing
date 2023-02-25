@@ -71,7 +71,7 @@ class DateFst(GraphFst):
         year_second = (
             pynini.union(
                 ((NEMO_DIGIT - "0") + (NEMO_DIGIT - "0")) @ numbers,
-                pynutil.delete("0") + ((NEMO_DIGIT - "0") @ numbers),
+                pynini.cross("0", "hundra") + ((NEMO_DIGIT - "0") @ numbers),
                 ((NEMO_DIGIT - "0") + "0") @ numbers
             )
         )
