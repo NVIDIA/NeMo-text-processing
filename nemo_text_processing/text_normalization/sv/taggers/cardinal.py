@@ -337,6 +337,13 @@ class CardinalFst(GraphFst):
         self.graph_no_one = (pynini.project(self.graph, "input") - "1") @ self.graph
         self.graph_no_one_en = (pynini.project(self.graph_en, "input") - "1") @ self.graph_en
 
+        joiner_chars = pynini.union("-", "–", "—")
+        joiner = pynini.cross(joiner_chars, " till ")
+        self.range = self.graph + joiner + self.graph
+        if not deterministic:
+            either_one = self.graph | self.graph_en
+            self.range = either_one + joiner + either_one
+
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
