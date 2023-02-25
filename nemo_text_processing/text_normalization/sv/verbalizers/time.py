@@ -105,5 +105,6 @@ class TimeFst(GraphFst):
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
         )
         # graph |= graph_hms
+        self.graph = graph
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

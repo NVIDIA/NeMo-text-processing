@@ -69,15 +69,29 @@ class DateFst(GraphFst):
         # prefer cardinal over year
         year_first = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 1)) @ numbers
         year_second = (
-            pynini.union((NEMO_DIGIT - "0") + (NEMO_DIGIT - "0"), "0" + (NEMO_DIGIT - "0"), (NEMO_DIGIT - "0") + "0")
-            @ numbers
+            pynini.union(
+                ((NEMO_DIGIT - "0") + (NEMO_DIGIT - "0")) @ numbers,
+                pynini.cross("0", "hundra") + ((NEMO_DIGIT - "0") @ numbers),
+                ((NEMO_DIGIT - "0") + "0") @ numbers
+            )
         )
+        year_hundra = year_first + pynutil.insert("hundra") + year_second
+        year_hundra |= year_first + pynutil.insert(" hundra") + year_second
+        year_hundra |= year_first + pynutil.insert(" hundra ") + year_second
+        year_hundra |= year_first + pynutil.insert("hundra ") + year_second
         year_second |= pynini.cross("00", "hundra")
         year_cardinal = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)) @ numbers
         year = pynini.union(year_first + year_second, year_first)  # 90, 990, 1990
         if not deterministic:
             year |= year_cardinal
+            year |= year_hundra
         self.year = year
+        self.year_cardinal = year_cardinal
+        sou_number = self.year + pynini.cross(":", " kolon ") + numbers
+        sou_word = pynini.accep("SOU")
+        if not deterministic:
+            sou_word |= pynini.cross("SOU", "statens offentliga utredningar")
+        self.sou = sou_word + NEMO_SPACE + sou_number
 
         year_second_decades = ((NEMO_DIGIT - "0") + "0") @ numbers
         year_second_decades |= pynini.cross("00", "hundra")
