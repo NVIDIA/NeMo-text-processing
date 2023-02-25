@@ -72,11 +72,16 @@ class DateFst(GraphFst):
             pynini.union((NEMO_DIGIT - "0") + (NEMO_DIGIT - "0"), "0" + (NEMO_DIGIT - "0"), (NEMO_DIGIT - "0") + "0")
             @ numbers
         )
+        year_hundra = year_first + pynutil.insert("hundra") + year_second
+        year_hundra |= year_first + pynutil.insert(" hundra") + year_second
+        year_hundra |= year_first + pynutil.insert(" hundra ") + year_second
+        year_hundra |= year_first + pynutil.insert("hundra") + year_second
         year_second |= pynini.cross("00", "hundra")
         year_cardinal = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)) @ numbers
         year = pynini.union(year_first + year_second, year_first)  # 90, 990, 1990
         if not deterministic:
             year |= year_cardinal
+            year |= year_hundra
         self.year = year
 
         year_second_decades = ((NEMO_DIGIT - "0") + "0") @ numbers
