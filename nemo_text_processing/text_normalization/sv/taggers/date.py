@@ -86,6 +86,7 @@ class DateFst(GraphFst):
             year |= year_cardinal
             year |= year_hundra
         self.year = year
+        self.year_cardinal = year_cardinal
 
         year_second_decades = ((NEMO_DIGIT - "0") + "0") @ numbers
         year_second_decades |= pynini.cross("00", "hundra")
