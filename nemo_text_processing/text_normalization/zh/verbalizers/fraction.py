@@ -20,9 +20,9 @@ from pynini.lib import pynutil
 
 class FractionFst(GraphFst):
     """
-    Finite state transducer for verbalizing fraction
-        e.g. tokens { fraction { denominator: "二" numerator: "一"} } -> 二分之一
-        e.g. tokens { fraction { integer_part: "一" denominator: "二" numerator: "一" } } -> 一又二分之一
+    Finite state transducer for verbalizing fraction e.g.
+        tokens { fraction { denominator: "二" numerator: "一"} } -> 二分之一
+        tokens { fraction { integer_part: "一" denominator: "二" numerator: "一" } } -> 一又二分之一
     """
 
     def __init__(self, deterministic: bool = True):

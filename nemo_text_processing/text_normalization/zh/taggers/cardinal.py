@@ -94,7 +94,6 @@ class CardinalFst(GraphFst):
         )
 
         # 千; 1000-9999; thousands
-        # graph_thousand = ((digit| zero) + ((pynutil.delete(',000') | pynutil.delete('000') | pynutil.delete('0,00') | pynutil.delete('00,0')) | (pynutil.delete('，000') | pynutil.delete('000') | pynutil.delete('0，00') | pynutil.delete('00，0'))) + thousand_digit) | ((digit|zero) + pynini.closure(delete_punct) + thousand_digit + graph_hundred) | ((digit|zero) + thousand_digit + (pynini.cross('0', '零')| ((pynini.cross(',0', '零') | pynini.cross('，0','零')))) + (graph_tens | graph_teen_alt)) | ((digit|zero) + pynini.closure(delete_punct) + thousand_digit + (pynini.cross('00', '零') | (pynini.cross(',00', '零') | pynini.cross('，00','零')) | (pynini.cross('0,0','零') | pynini.cross('0，0', '零')) | (pynini.cross('00,', '零') | pynini.cross('00，', '零'))) + digit )
         graph_thousand = (
             (
                 digit
@@ -563,7 +562,6 @@ class CardinalFst(GraphFst):
         self.just_cardinals = graph  # imprted when building other grammars
 
         # adding optional +(正)/-(负) signs
-        # graph_optional_sign = (pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"负\"")) + pynutil.insert(" ")) | (pynini.closure(pynutil.insert("positive: ") + pynini.cross("+", "\"正\"")) + pynutil.insert(" ")) | (pynutil.insert("positive: ") + pynutil.insert("\"") + pynini.accep('正') + pynutil.insert("\"") + pynutil.insert(' ')) | (pynutil.insert('negative: ') + pynutil.insert("\"") + (pynini.accep('负') | pynini.cross('負', '负')) + pynutil.insert("\"") + pynutil.insert(' '))
         sign_symbol = (pynutil.insert("negative: \"") + sign + pynutil.insert("\"")) | (
             pynutil.insert("positive: \"") + sign + pynutil.insert("\"")
         )
