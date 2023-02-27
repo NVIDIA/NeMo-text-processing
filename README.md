@@ -1,8 +1,6 @@
 **NeMo Text Processing**
 ==========================
 
-**This repository is under development, please refer to https://github.com/NVIDIA/NeMo/tree/main/nemo_text_processing for full functionality. See [documentation](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/nlp/text_normalization/wfst/wfst_text_normalization.html) for details.**
-
 Introduction
 ------------
 
