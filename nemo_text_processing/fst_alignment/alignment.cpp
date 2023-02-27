@@ -30,7 +30,7 @@ typedef StdArcLookAheadFst LookaheadFst;
 // Usage: 
 
 // g++ -std=gnu++11 -I<path to env>/include/ alignment.cpp -lfst -lthrax -ldl -L<path to env>/lib 
-// ./a.out <fst file> "tokenize_and_classify" "2615 Forest Av, 1 Aug 2016" 22 26
+// ./a.out <fst file> "TOKENIZE_AND_CLASSIFY" "2615 Forest Av, 1 Aug 2016" 22 26
 
 // Output:
 // inp string: |2615 Forest Av, 1 Aug 2016|
@@ -42,7 +42,7 @@ typedef StdArcLookAheadFst LookaheadFst;
 // Disclaimer: The heuristic algorithm relies on monotonous alignment and can fail in certain situations,
 // e.g. when word pieces are reordered by the fst, e.g. 
 
-// ./a.out <fst file> "tokenize_and_classify" "$1" 0 1
+// ./a.out <fst file> "TOKENIZE_AND_CLASSIFY" "$1" 0 1
 // inp string: |$1|
 // out string: |one dollar|
 // inp indices: [0:1] out indices: [0:3]
