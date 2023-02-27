@@ -21,9 +21,9 @@ from pynini.lib import pynutil
 class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal, e.g.
-    cardinal { negative: "负" integer: "23" } -> 负二十三
-    cardinal { integer: "23" } -> 二十三
-    cardinal { positive: "正" integer: "23" } -> 正二十三
+        cardinal { negative: "负" integer: "23" } -> 负二十三
+        cardinal { integer: "23" } -> 二十三
+        cardinal { positive: "正" integer: "23" } -> 正二十三
     """
 
     def __init__(self, deterministic: bool = True):

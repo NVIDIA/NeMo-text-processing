@@ -21,7 +21,7 @@ from pynini.lib import pynutil
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for verbalizing ordinal e.g.
-        ordinal { integer: "第一千万" } -> 第一千万
+        tokens { ordinal { integer: "第一千万" } } -> 第一千万
     """
 
     def __init__(self, deterministic: bool = True):
