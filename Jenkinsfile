@@ -68,7 +68,7 @@ pipeline {
  
         stage('L0: En TN alignment') {
           steps {
-            sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_norm/output_${TIME} && mkdir $NORM_OUTPUT_DIR && \
+            sh -c 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_norm/output_${TIME} && mkdir $NORM_OUTPUT_DIR && \
             cd nemo_text_processing/fst_alignment && python alignment.py --text="2615 Forest Av, 90501 CA, Santa Clara. 10kg, 12/16/2018, \$123.25" --grammar=tn --rule=tokenize_and_classify --fst=${EN_TN_CACHE}/en_tn_True_deterministic_cased__tokenize.far 2>&1 | tee $NORM_OUTPUT_DIR/pred.txt && \
             cmp --silent $NORM_OUTPUT_DIR/pred.txt /home/jenkinsci/TestData/text_norm/ci/alignment_gold.txt || exit 1 && \
             rm -rf $NORM_OUTPUT_DIR'
@@ -77,7 +77,7 @@ pipeline {
 
         stage('L0: Eng alignment ITN') {
           steps {
-            sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && mkdir $DENORM_OUTPUT_DIR && \
+            sh -c 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_denorm/output_${TIME} && mkdir $DENORM_OUTPUT_DIR && \
             cd nemo_text_processing/fst_alignment && python alignment.py --text="one million twenty three thousand two hundred eleven ten kilograms one hundred twenty three dollars and twenty five cents" --grammar=itn --rule=tokenize_and_classify --fst=${EN_TN_CACHE}/en_itn_lower_cased.far 2>&1 | tee $DENORM_OUTPUT_DIR/pred.txt && \
             cmp --silent $DENORM_OUTPUT_DIR/pred.txt /home/jenkinsci/TestData/text_denorm/ci/alignment_gold.txt || exit 1 && \
             rm -rf $DENORM_OUTPUT_DIR'
@@ -402,7 +402,7 @@ pipeline {
         stage('L2: Eng alignment TN') {
           steps {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkinsci/TestData/text_norm/output_${TIME} && mkdir $NORM_OUTPUT_DIR && \
-            cd nemo_text_processing/fst_alignment && python alignment.py --text="2615 Forest Av, 90501 CA, Santa Clara. 10kg, 12/16/2018, \$123.25" --grammar=tn --rule=tokenize_and_classify --fst=${EN_TN_CACHE}/en_tn_True_deterministic_cased__tokenize.far 2>&1 | tee $NORM_OUTPUT_DIR/pred.txt && \
+            cd nemo_text_processing/fst_alignment && python alignment.py --text="2615 Forest Av, 90501 CA, Santa Clara. 10kg, 12/16/2018, $123.25" --grammar=tn --rule=tokenize_and_classify --fst=${EN_TN_CACHE}/en_tn_True_deterministic_cased__tokenize.far 2>&1 | tee $NORM_OUTPUT_DIR/pred.txt && \
             cmp --silent $NORM_OUTPUT_DIR/pred.txt /home/jenkinsci/TestData/text_norm/ci/alignment_gold.txt || exit 1 && \
             rm -rf $NORM_OUTPUT_DIR'
           }
