@@ -14,6 +14,7 @@
 
 
 import logging
+import string
 from argparse import ArgumentParser
 from typing import List
 
@@ -99,6 +100,7 @@ EPS = "<eps>"
 WHITE_SPACE = "\u23B5"
 ITN_MODE = "itn"
 TN_MODE = "tn"
+tn_itn_symbols = list(string.ascii_letters + string.digits) + list("$\:+-=")
 
 
 def get_word_segments(text: str) -> List[List[int]]:
@@ -210,26 +212,27 @@ def indexed_map_to_output(alignment: List[tuple], start: int, end: int, mode: st
     aligned_end = _get_aligned_index(alignment, end - 1)  # inclusive
 
     logging.debug(f"0: |{list(map(remove, [x[0] for x in alignment[aligned_start:aligned_end+1]]))}|")
+    logging.debug(f"1: |{aligned_start}:{aligned_end+1}|")
 
     # extend aligned_start to left
 
     while (
         aligned_start - 1 > 0
         and alignment[aligned_start - 1][0] == EPS
-        and (alignment[aligned_start - 1][1].isalnum() or alignment[aligned_start - 1][1] == EPS)
+        and (alignment[aligned_start - 1][1] in tn_itn_symbols or alignment[aligned_start - 1][1] == EPS)
     ):
         aligned_start -= 1
 
     while (
         aligned_end + 1 < len(alignment)
         and alignment[aligned_end + 1][0] == EPS
-        and (alignment[aligned_end + 1][1].isalnum() or alignment[aligned_end + 1][1] == EPS)
+        and (alignment[aligned_end + 1][1] in tn_itn_symbols or alignment[aligned_end + 1][1] == EPS)
     ):
         aligned_end += 1
 
     if mode == TN_MODE:
         while (aligned_end + 1) < len(alignment) and (
-            alignment[aligned_end + 1][1].isalnum() or alignment[aligned_end + 1][1] == EPS
+            alignment[aligned_end + 1][1] in tn_itn_symbols or alignment[aligned_end + 1][1] == EPS
         ):
             aligned_end += 1
 

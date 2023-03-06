@@ -24,5 +24,6 @@ Add a one line overview of what this PR aims to accomplish.
 - [ ] New Feature
 - [ ] Bugfix
 - [ ] Documentation
+- [ ] Test
 
 If you haven't finished some of the above items you can still open "Draft" PR.
