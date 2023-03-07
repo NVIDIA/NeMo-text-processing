@@ -129,7 +129,7 @@ class TimeFst(GraphFst):
 
         quarter_map = pynini.string_map([(p[1], str(p[0])) for p in QUARTERS.items()])
         quarter_map_graph = pynutil.insert("minutes: \"") + (quarter_map @ cardinal.graph) + pynutil.insert("\"")
-        quarter_words = pynini.string_map(QUARTERS.values())
+        # quarter_words = pynini.string_map(QUARTERS.values())
         # quarter_words_graph = pynutil.insert("minutes: \"") + quarter_words + pynutil.insert("\"")
         # {quarter} {hour_next}
         # negyed 2 -> minutes: "tizenöt" hours: "egy"
