@@ -128,12 +128,8 @@ class OrdinalFst(GraphFst):
 
         # from here on, construct as though cardinals
         duhat = pynutil.insert("duhát")
-        if not deterministic:
-            duhat |= pynutil.insert("duhat")
         duhat_cross = pynini.cross("001", "duhát")
         if not deterministic:
-            duhat_cross |= pynini.cross("001", "duhat")
-            duhat_cross |= pynini.cross("001", "duhat ")
             duhat_cross |= pynini.cross("001", "duhát ")
 
         graph_thousands_component_at_least_one_non_zero_digit = pynini.union(

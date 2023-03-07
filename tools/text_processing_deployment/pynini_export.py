@@ -29,7 +29,10 @@ def itn_grammars(**kwargs):
     d = {}
     d['classify'] = {
         'TOKENIZE_AND_CLASSIFY': ITNClassifyFst(
-            cache_dir=kwargs["cache_dir"], overwrite_cache=kwargs["overwrite_cache"], whitelist=kwargs["whitelist"]
+            cache_dir=kwargs["cache_dir"],
+            overwrite_cache=kwargs["overwrite_cache"],
+            whitelist=kwargs["whitelist"],
+            input_case=kwargs["input_case"],
         ).fst
     }
     d['verbalize'] = {'ALL': ITNVerbalizeFst().fst, 'REDUP': pynini.accep("REDUP")}
@@ -92,7 +95,7 @@ def parse_args():
         "e.g., for English whitelist files are stored under inverse_normalization/en/data/whitelist. If None,"
         "the default file will be used.",
         default=None,
-        type=str,
+        type=lambda x: None if x == "None" else x,
     )
     parser.add_argument("--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true")
     parser.add_argument(

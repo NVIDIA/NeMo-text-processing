@@ -16,10 +16,15 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    MIN_NEG_WEIGHT,
     NEMO_ALNUM,
     NEMO_ALPHA,
     NEMO_DIGIT,
+    NEMO_LOWER_NOT_A,
     GraphFst,
+    capitalized_input_graph,
     delete_space,
     insert_space,
 )
@@ -28,12 +33,28 @@ from pynini.lib import pynutil
 
 def get_serial_number(cardinal):
     """
-    any alphanumerical character sequence with at least one number with length greater equal to 3
+    any alphanumerical character sequence with at least one number with length greater equal to 3 and
+    excluding any numeric sequence containing double digits (ties/teens) preceded by 'a'.
+    This avoids cases like "a thirty six" being converted to "a36"  in "a thirty six times increase"
     """
+
     digit = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT)
-    character = digit | NEMO_ALPHA
-    sequence = character + pynini.closure(pynutil.delete(" ") + character, 2)
-    sequence = sequence @ (pynini.closure(NEMO_ALNUM) + NEMO_DIGIT + pynini.closure(NEMO_ALNUM))
+    two_digit = pynutil.add_weight(pynini.compose(cardinal.graph_two_digit, NEMO_DIGIT ** 2), 0.002)
+    character = digit | two_digit | NEMO_ALPHA
+    sequence = (NEMO_LOWER_NOT_A | digit) + pynini.closure(pynutil.delete(" ") + character, 2)
+    sequence |= character + pynini.closure(pynutil.delete(" ") + (digit | NEMO_ALPHA), 2)
+    sequence2 = (
+        NEMO_ALPHA
+        + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA, 1)
+        + pynini.closure(pynutil.delete(" ") + two_digit, 1)
+    )
+    sequence2 |= NEMO_LOWER_NOT_A + pynini.closure(pynutil.delete(" ") + two_digit, 1)
+    sequence2 |= (
+        two_digit
+        + pynini.closure(pynutil.delete(" ") + two_digit, 1)
+        + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA, 1)
+    )
+    sequence = (sequence | sequence2) @ (pynini.closure(NEMO_ALNUM) + NEMO_DIGIT + pynini.closure(NEMO_ALNUM))
     return sequence.optimize()
 
 
@@ -50,9 +71,10 @@ class TelephoneFst(GraphFst):
 
     Args:
         cardinal: CardinalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="telephone", kind="classify")
         # country code, number_part, extension
         digit_to_str = (
@@ -61,6 +83,8 @@ class TelephoneFst(GraphFst):
         )
 
         str_to_digit = pynini.invert(digit_to_str)
+        if input_case == INPUT_CASED:
+            str_to_digit = capitalized_input_graph(str_to_digit)
 
         double_digit = pynini.union(
             *[
@@ -161,7 +185,16 @@ class TelephoneFst(GraphFst):
 
         ip_graph = digit_or_double + (pynini.cross(" dot ", ".") + digit_or_double) ** 3
 
-        graph |= pynutil.insert("number_part: \"") + ip_graph.optimize() + pynutil.insert("\"")
+        graph |= (
+            pynutil.insert("number_part: \"")
+            + pynutil.add_weight(ip_graph.optimize(), MIN_NEG_WEIGHT)
+            + pynutil.insert("\"")
+        )
+
+        if input_case == INPUT_CASED:
+            graph = capitalized_input_graph(graph)
+
+        # serial graph shouldn't apply TO_LOWER
         graph |= (
             pynutil.insert("number_part: \"")
             + pynutil.add_weight(get_serial_number(cardinal=cardinal), weight=0.0001)
