@@ -12,31 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pytest
-from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 from parameterized import parameterized
 
-from ..utils import CACHE_DIR, parse_test_case_file
+from ..utils import CACHE_DIR, get_test_cases_multiple
 
 
-class TestFraction:
-    normalizer = Normalizer(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
+class TestNormalizeWithAudio:
+    normalizer = NormalizerWithAudio(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
 
-    normalizer_with_audio = NormalizerWithAudio(
-        input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False
-    )
-
-    @parameterized.expand(parse_test_case_file('sv/data_text_normalization/test_cases_fraction.txt'))
+    @parameterized.expand(get_test_cases_multiple('sv/data_text_normalization/test_cases_normalize_with_audio.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
-        pred = self.normalizer.normalize(test_input, verbose=False)
-        assert pred == expected
-
-        if self.normalizer_with_audio:
-            pred_non_deterministic = self.normalizer_with_audio.normalize(
-                test_input, n_tagged=10, punct_post_process=False
-            )
-            assert expected in pred_non_deterministic
+        pred = self.normalizer.normalize(test_input, n_tagged=150, punct_post_process=False)
+        assert len(set(pred).intersection(set(expected))) == len(
+            expected
+        ), f'missing: {set(expected).difference(set(pred))}'

@@ -194,9 +194,13 @@ class OrdinalFst(GraphFst):
 
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
+        self.bare_ordinals = cleaned_graph
+        kapitlet_word = pynini.union("kapitlet", pynini.cross("kap", "kapitlet"))
+        kapitlet = cleaned_graph + NEMO_SPACE + kapitlet_word
+
         tok_graph = (
             pynutil.insert("integer: \"")
-            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words)
+            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | kapitlet)
             + pynutil.insert("\"")
         )
 
