@@ -46,6 +46,10 @@ class TestCardinal:
         else None
     )
 
+    normalizer_with_audio = NormalizerWithAudio(
+        input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False
+    )
+
     @parameterized.expand(parse_test_case_file('sv/data_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
