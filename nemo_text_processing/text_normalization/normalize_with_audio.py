@@ -418,7 +418,7 @@ def parse_args():
         "--input_case", help="input capitalization", choices=["lower_cased", "cased"], default="cased", type=str
     )
     parser.add_argument(
-        "--language", help="Select target language", choices=["en", "ru", "de", "es"], default="en", type=str
+        "--language", help="Select target language", choices=["en", "ru", "de", "es", "sv"], default="en", type=str
     )
     parser.add_argument("--manifest", default=None, help="path to .json manifest")
     parser.add_argument(

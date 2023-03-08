@@ -33,7 +33,7 @@ SV_ALNUM = pynini.union(byte.DIGIT, SV_ALPHA).optimize()
 bos_or_space = pynini.union("[BOS]", " ")
 eos_or_space = pynini.union("[EOS]", " ")
 
-ensure_space = pynini.closure(delete_space, 0, 1) + insert_space
+ensure_space = pynini.cross(pynini.closure(delete_space, 0, 1), " ")
 
 
 def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':

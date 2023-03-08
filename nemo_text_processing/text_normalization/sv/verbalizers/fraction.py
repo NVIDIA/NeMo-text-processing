@@ -43,19 +43,20 @@ class FractionFst(GraphFst):
         )
         self.denominators = denominators_sg | denominators_pl
 
-        either_one = pynini.union(pynini.accep("en"), pynini.cross("ett", "en"))
-        numerator_one = pynutil.delete("numerator: \"") + either_one + pynutil.delete("\" ")
-        numerator_one = numerator_one + insert_space + denominators_sg
+        either_one = pynini.union("en", "ett")
+        numerator_one = pynutil.delete("numerator: \"") + pynutil.delete(either_one) + pynutil.delete("\" ")
+        if not deterministic:
+            numerator_one |= pynutil.delete("numerator: \"") + either_one + pynutil.delete("\" ") + insert_space
         numerator_rest = (
             pynutil.delete("numerator: \"")
             + (
-                (pynini.closure(NEMO_NOT_QUOTE) - pynini.accep("en") - pynini.accep("ett"))
-                @ pynini.cdrewrite(pynini.cross("ett", "en"), "", "[EOS]", NEMO_SIGMA)
+                (pynini.closure(NEMO_NOT_QUOTE) - either_one)
+                @ pynini.cdrewrite(pynini.cross("ett", "en"), "[BOS]", "[EOS]", NEMO_SIGMA)
             )
             + pynutil.delete("\" ")
         )
 
-        graph_sg = numerator_one + insert_space + denominators_sg
+        graph_sg = numerator_one + denominators_sg
         graph_pl = numerator_rest + insert_space + denominators_pl
         graph = graph_sg | graph_pl
 
