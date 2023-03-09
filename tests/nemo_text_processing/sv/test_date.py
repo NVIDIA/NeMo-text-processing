@@ -46,10 +46,6 @@ class TestDate:
         else None
     )
 
-    normalizer_with_audio = NormalizerWithAudio(
-        input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False
-    )
-
     @parameterized.expand(parse_test_case_file('sv/data_text_normalization/test_cases_date.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
@@ -57,13 +53,8 @@ class TestDate:
         pred = self.normalizer_sv.normalize(test_input, verbose=False)
         assert pred == expected
 
-<<<<<<< HEAD
         if self.normalizer_sv_with_audio:
             pred_non_deterministic = self.normalizer_sv_with_audio.normalize(
-=======
-        if self.normalizer_with_audio:
-            pred_non_deterministic = self.normalizer_with_audio.normalize(
->>>>>>> 83331f9 (Audio-based TN for Swedish (#49))
                 test_input, n_tagged=150, punct_post_process=False
             )
             assert expected in pred_non_deterministic

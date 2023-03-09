@@ -15,10 +15,13 @@
 import pytest
 from parameterized import parameterized
 
+<<<<<<< HEAD
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
+=======
+>>>>>>> 2714c67 (fix sv tests (#52))
 from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 
@@ -46,8 +49,10 @@ class TestCardinal:
         else None
     )
 
-    normalizer_with_audio = NormalizerWithAudio(
-        input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False
+    normalizer_with_audio = (
+        NormalizerWithAudio(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
+        if RUN_AUDIO_BASED_TESTS
+        else None
     )
 
     @parameterized.expand(parse_test_case_file('sv/data_text_normalization/test_cases_cardinal.txt'))
