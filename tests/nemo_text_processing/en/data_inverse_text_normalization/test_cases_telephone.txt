@@ -16,3 +16,8 @@ seven nine nine~799
 a b nine~ab9
 a b c~a b c
 five w k r a three one~5wkra31
+x eighty six~x86
+x three eighty six~x386
+a thirty six~a 36
+a ten eighty p display~a 1080p display
+r t x forty fifty t i~RTX 4050ti
