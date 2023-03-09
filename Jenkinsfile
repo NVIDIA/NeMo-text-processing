@@ -20,7 +20,7 @@ pipeline {
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
-    SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
+    SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-16-23-0'
     ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
 
