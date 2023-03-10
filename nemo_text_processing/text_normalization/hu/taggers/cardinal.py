@@ -232,14 +232,16 @@ class CardinalFst(GraphFst):
         )
 
         def clean_spaces(graph):
-            return (graph 
+            return (
+                graph
                 @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
                 @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
                 @ pynini.cdrewrite(delete_extra_spaces, "", "", NEMO_SIGMA)
             )
 
         def clean_hyphens(graph):
-            return (graph 
+            return (
+                graph
                 @ pynini.cdrewrite(delete_hyphen, "[BOS]", "", NEMO_SIGMA)
                 @ pynini.cdrewrite(delete_hyphen, "", "[EOS]", NEMO_SIGMA)
                 @ pynini.cdrewrite(delete_extra_hyphens, "", "", NEMO_SIGMA)
@@ -254,9 +256,8 @@ class CardinalFst(GraphFst):
         noisy_graph = clean_spaces(noisy_graph)
         noisy_graph = clean_hyphens(noisy_graph)
         self.graph = noisy_graph @ pynini.cdrewrite(
-                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
-            )
-
+            pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
+        )
 
         zero_space = zero + insert_space
         self.zero_space = zero_space
