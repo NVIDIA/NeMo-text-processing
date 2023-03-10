@@ -231,34 +231,21 @@ class CardinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
-        def clean_spaces(graph):
-            return (
-                graph
-                @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
-                @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
-                @ pynini.cdrewrite(delete_extra_spaces, "", "", NEMO_SIGMA)
-            )
-
-        def clean_hyphens(graph):
-            return (
-                graph
-                @ pynini.cdrewrite(delete_hyphen, "[BOS]", "", NEMO_SIGMA)
-                @ pynini.cdrewrite(delete_hyphen, "", "[EOS]", NEMO_SIGMA)
-                @ pynini.cdrewrite(delete_extra_hyphens, "", "", NEMO_SIGMA)
-            )
-
-        noisy_graph = (
+        self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
             @ NEMO_DIGIT ** 24
             @ graph
+            @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_hyphen, "[BOS]", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_hyphen, "", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_extra_hyphens, "", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_extra_spaces, "", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(
+                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
+            )
         )
-        noisy_graph = clean_spaces(noisy_graph)
-        noisy_graph = clean_hyphens(noisy_graph)
-        self.graph = noisy_graph @ pynini.cdrewrite(
-            pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
-        )
-
         zero_space = zero + insert_space
         self.zero_space = zero_space
         self.two_digits_read = pynini.union(
