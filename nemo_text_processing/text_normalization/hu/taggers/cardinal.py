@@ -143,6 +143,10 @@ class CardinalFst(GraphFst):
                 pynini.cross("1", "egyszáz") + graph_tens,
                 pynini.cross("100", " egyszáz"),
                 pynini.cross("1", " egyszáz ") + graph_tens,
+                pynini.cross("100", "egy száz"),
+                pynini.cross("1", "egy száz") + graph_tens,
+                pynini.cross("100", " egy száz"),
+                pynini.cross("1", " egy száz ") + graph_tens,
                 pynini.cross("100", " száz"),
                 pynini.cross("1", " száz ") + graph_tens,
             )
