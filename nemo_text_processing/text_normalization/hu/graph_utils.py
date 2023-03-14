@@ -31,3 +31,6 @@ HU_ALNUM = pynini.union(byte.DIGIT, HU_ALPHA).optimize()
 HU_VOWELS = pynini.union(*[x for x in _VOWELS])
 
 ensure_space = pynini.closure(delete_space, 0, 1) + insert_space
+
+bos_or_space = pynini.union("[BOS]", " ")
+eos_or_space = pynini.union("[EOS]", " ")
