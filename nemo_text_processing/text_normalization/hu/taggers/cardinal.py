@@ -53,8 +53,8 @@ def make_million(word: str, hundreds: 'pynini.FstLike', deterministic=False):
         graph_million |= pynutil.add_weight(pynini.cross("001", " egy{word} "), -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", " egy {word} "), -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", " {word} "), -0.001)
-    graph_million |= pynutil.delete("000")
     graph_million += insert_hyphen
+    graph_million |= pynutil.delete("000")
     return graph_million
 
 
@@ -167,6 +167,7 @@ class CardinalFst(GraphFst):
         graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
             pynutil.delete("00") + digits_no_one
         )
+        self.hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one
 
         ezer = pynutil.insert("ezer")
         if not deterministic:
