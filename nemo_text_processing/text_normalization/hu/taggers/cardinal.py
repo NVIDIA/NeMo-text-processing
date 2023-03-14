@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA
+from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA, bos_or_space
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -238,6 +238,7 @@ class CardinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
+        should_be_impossible = pynutil.delete(pynini.union("nullatrilliárd-", "nullatrillió-"))
         self.graph = (
             ((NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT, 0)) - "0")
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
@@ -252,6 +253,7 @@ class CardinalFst(GraphFst):
             @ pynini.cdrewrite(
                 pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
             )
+            @ pynini.cdrewrite(should_be_impossible, bos_or_space, "", NEMO_SIGMA)
         )
         zero_space = zero + insert_space
         self.zero_space = zero_space
