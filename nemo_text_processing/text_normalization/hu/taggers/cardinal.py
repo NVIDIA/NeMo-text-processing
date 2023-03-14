@@ -128,6 +128,8 @@ class CardinalFst(GraphFst):
         if not deterministic:
             base_hundreds |= pynini.cross("1", "egyszáz")
             base_hundreds |= pynini.cross("1", " egyszáz")
+            base_hundreds |= pynini.cross("1", "egy száz")
+            base_hundreds |= pynini.cross("1", " egy száz")
             base_hundreds |= pynini.cross("1", " száz")
             digits_inline_no_one |= pynutil.insert(" száz")
 
