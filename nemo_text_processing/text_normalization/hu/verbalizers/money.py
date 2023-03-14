@@ -58,8 +58,8 @@ class MoneyFst(GraphFst):
         graph_integer_with_minor = integer_part + keep_space + maj + keep_space + minor_part + delete_preserve_order
 
         # *** komma *** currency_maj
-        graph_decimal = decimal.fst + keep_space + maj
-        graph_decimal |= decimal.fst + keep_space + maj + delete_preserve_order
+        graph_decimal = decimal.numbers + keep_space + maj
+        graph_decimal |= decimal.numbers + keep_space + maj + delete_preserve_order
 
         # *** current_min
         graph_minor = fractional_part + keep_space + min + delete_preserve_order
