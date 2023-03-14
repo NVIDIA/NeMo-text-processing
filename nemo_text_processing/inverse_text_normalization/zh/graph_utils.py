@@ -54,6 +54,7 @@ delete_preserve_order = pynini.closure(
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
 
+
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     """
     Exports graph as OpenFst finite state archive (FAR) file with given file name and rule name.
