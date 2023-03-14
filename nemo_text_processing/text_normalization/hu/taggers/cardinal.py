@@ -49,6 +49,10 @@ def make_million(word: str, hundreds: 'pynini.FstLike', deterministic=False):
         graph_million |= pynutil.add_weight(pynini.cross("001", "egy{word}"), -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", "egy{word} "), -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", "{word} "), -0.001)
+        graph_million |= pynutil.add_weight(pynini.cross("001", " egy{word}"), -0.001)
+        graph_million |= pynutil.add_weight(pynini.cross("001", " egy{word} "), -0.001)
+        graph_million |= pynutil.add_weight(pynini.cross("001", " egy {word} "), -0.001)
+        graph_million |= pynutil.add_weight(pynini.cross("001", " {word} "), -0.001)
     graph_million |= pynutil.delete("000")
     graph_million += insert_hyphen
     return graph_million
