@@ -15,8 +15,6 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
-from nemo_text_processing.text_normalization.hu.graph_utils import bos_or_space
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA
 from pynini.lib import pynutil
 
 fraction_symbols = pynini.string_file(get_abs_path("data/fractions/fraction_symbols.tsv"))
@@ -37,8 +35,7 @@ class FractionFst(GraphFst):
 
     def __init__(self, cardinal, ordinal, deterministic: bool = True):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
-        should_be_impossible = pynutil.delete(pynini.union("nullatrilliárd-", "nullatrillió-"))
-        cardinal_graph = cardinal.graph @ pynini.cdrewrite(should_be_impossible, bos_or_space, "", NEMO_SIGMA)
+        cardinal_graph = cardinal.graph
 
         self.optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1
