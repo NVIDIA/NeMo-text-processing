@@ -179,6 +179,8 @@ class CardinalFst(GraphFst):
         if not deterministic:
             ezer1 |= pynutil.insert("egyezer")
             ezer1 |= pynutil.insert(" egyezer")
+            ezer1 |= pynutil.insert("egy ezer")
+            ezer1 |= pynutil.insert(" egy ezer")
 
         graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
