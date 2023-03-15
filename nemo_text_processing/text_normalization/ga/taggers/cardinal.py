@@ -155,6 +155,8 @@ class CardinalFst(GraphFst):
         graph_hundreds = hundreds + pynini.union(
             pynutil.delete("00"), (insert_space + graph_tens), (pynini.cross("0", NEMO_SPACE) + graph_digit)
         )
+        if not deterministic:
+            graph_hundreds |= hundreds + pynutil.insert(" is") + pynini.cross("0", NEMO_SPACE) + graph_digit
 
         self.hundreds = graph_hundreds.optimize()
         self.up_to_three_digits = (self.hundreds | graph_tens | graph_digit)
