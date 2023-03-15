@@ -194,9 +194,12 @@ class CardinalFst(GraphFst):
             pynutil.delete("00") + digits_no_one
         )
 
+        # Bunuimhreacha (base numbers)
         thousands_two_digits = make_number_form("míle", deterministic=deterministic, conjunction=True)
         thousands_three_digits = graph_hundreds_component_at_least_one_non_zero_digit + insert_space + thousands_two_digits
-        self.thousands_three_digits = thousands_three_digits
+        self.thousands_three_digits_maol = thousands_three_digits
+
+        # Maoluimhreacha ("bare" numbers)
         graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
@@ -221,7 +224,7 @@ class CardinalFst(GraphFst):
         graph_million |= pynutil.delete("000")
         graph_million += insert_space
 
-        graph_billion = pynutil.add_weight(pynini.cross("000001", "un billón"), -0.001)
+        graph_billion = pynutil.add_weight(pynini.cross("000001", "billiún"), -0.001)
         graph_billion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" billones")
         graph_billion |= pynutil.delete("000000")
         graph_billion += insert_space
