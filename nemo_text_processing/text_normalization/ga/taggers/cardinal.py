@@ -78,7 +78,9 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         if not deterministic:
             output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
     else:
-        output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
+        output = pynutil.delete("0") + (output_no_one | pynutil.delete("1") + pynutil.insert(fst))
+        if not deterministic:
+            output |= pynini.cross("01", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
 
     if teens:
         deag = pynini.accep("déag")
@@ -201,7 +203,8 @@ class CardinalFst(GraphFst):
         )
 
         # Bunuimhreacha (base numbers)
-        thousands_two_digits = make_number_form("míle", deterministic=deterministic, conjunction=True)
+        thousands_two_digits = make_number_form("míle", deterministic=deterministic, conjunction=True, higher=True)
+        self.thousands_two_digits = thousands_two_digits
         thousands_three_digits = graph_hundreds_component_at_least_one_non_zero_digit + insert_space + thousands_two_digits
         self.thousands_three_digits_maol = thousands_three_digits
 
