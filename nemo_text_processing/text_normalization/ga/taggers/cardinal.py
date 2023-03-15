@@ -73,14 +73,12 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         numbers_len + insert_space + fst_len,
         numbers_ecl + insert_space + fst_ecl
     )
-    if not higher:
-        output = output_no_one | pynutil.delete("1") + pynutil.insert(fst)
-        if not deterministic:
-            output |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
-    else:
-        output = pynutil.delete("0") + (output_no_one | pynutil.delete("1") + pynutil.insert(fst))
-        if not deterministic:
-            output |= pynini.cross("01", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
+    single_digit = output_no_one | pynutil.delete("1") + pynutil.insert(fst)
+    if not deterministic:
+        single_digit |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
+    output = single_digit
+    if higher:
+        output = pynutil.delete("0") + single_digit
 
     if teens:
         deag = pynini.accep("déag")
@@ -95,7 +93,7 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
     if tens:
         tens_words = load_labels(get_abs_path("data/numbers/tens.tsv"))
         for numword, num in tens_words:
-            tmp_graph = pynutil.delete(num) + output + pynutil.insert(" is ") + pynutil.insert(numword)
+            tmp_graph = pynutil.delete(num) + single_digit + pynutil.insert(" is ") + pynutil.insert(numword)
             output |= tmp_graph
         output |= pynini.cross("11", "aon ") + fst_len + insert_space + pynutil.insert(deag)
         output |= pynini.cross("10", "deich ") + fst_ecl
