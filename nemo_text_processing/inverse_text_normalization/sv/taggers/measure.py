@@ -39,10 +39,7 @@ class MeasureFst(GraphFst):
     """
 
     def __init__(
-        self,
-        itn_cardinal_tagger: GraphFst,
-        itn_decimal_tagger: GraphFst,
-        itn_fraction_tagger: GraphFst,
+        self, itn_cardinal_tagger: GraphFst, itn_decimal_tagger: GraphFst, itn_fraction_tagger: GraphFst,
     ):
         super().__init__(name="measure", kind="classify")
 
