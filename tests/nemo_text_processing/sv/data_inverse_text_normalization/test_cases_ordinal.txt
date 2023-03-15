@@ -1,5 +1,7 @@
-första~1.
-andra~2.
+första~första
+andra~andra
+tjugoförsta=21.
+tjugoandra=22.
 tjugonde~20.
 tjugotredje~23.
 hundratjugotredje~123.
