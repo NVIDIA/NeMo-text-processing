@@ -24,7 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path, load_labels
-from nemo_text_processing.text_normalization.ga.graph_utils import LOWER_LENITION, LOWER_ECLIPSIS
+from nemo_text_processing.text_normalization.ga.graph_utils import LOWER_LENITION, LOWER_ECLIPSIS, GA_ALPHA, bos_or_space, eos_or_space
 from pynini.lib import pynutil
 
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
@@ -157,6 +157,8 @@ class CardinalFst(GraphFst):
         )
         if not deterministic:
             graph_hundreds |= hundreds + pynutil.insert(" is") + pynini.cross("0", NEMO_SPACE) + graph_digit
+            graph_hundreds |= hundreds + pynutil.insert(" is ") + graph_tens
+            graph_hundreds = graph_hundreds @ pynini.cdrewrite(pynini.cross("is is", "is"), eos_or_space, bos_or_space, NEMO_SIGMA)
 
         self.hundreds = graph_hundreds.optimize()
         self.up_to_three_digits = (self.hundreds | graph_tens | graph_digit)
@@ -184,18 +186,18 @@ class CardinalFst(GraphFst):
         graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
-            + pynutil.insert(" mil")
+            + pynutil.insert(" míle")
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-            pynini.cross("001", "mil")
+            pynini.cross("001", "míle")
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
-            + pynutil.insert(" mil")
+            + pynutil.insert(" míle")
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-            pynini.cross("001", "mil")
+            pynini.cross("001", "míle")
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
 
