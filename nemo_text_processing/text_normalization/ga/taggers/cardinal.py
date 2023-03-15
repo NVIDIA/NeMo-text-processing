@@ -208,6 +208,18 @@ class CardinalFst(GraphFst):
             pynini.cross("001", "míle")
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
+        if not deterministic:
+            graph_thousands_component_at_least_one_non_zero_digit |= (
+                pynini.cross("001", "aon míle")
+                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
+                graph_hundreds_component_at_least_one_non_zero_digit_no_one
+                + pynutil.insert(" míle is")
+                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
+                pynini.cross("001", "míle is")
+                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
+                pynini.cross("001", "aon míle is")
+                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
+            )
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
@@ -217,25 +229,58 @@ class CardinalFst(GraphFst):
             pynini.cross("001", "míle")
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
+        if not deterministic:
+            graph_thousands_component_at_least_one_non_zero_digit_no_one |= (
+                pynini.cross("001", "aon míle")
+                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
+                graph_hundreds_component_at_least_one_non_zero_digit_no_one
+                + pynutil.insert(" míle is")
+                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
+                pynini.cross("001", "míle is")
+                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
+                pynini.cross("001", "aon míle is")
+                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
+            )
 
+        # Bunuimhreacha (base numbers)
         million = make_number_form("milliún", deterministic=deterministic, conjunction=True)
+
+        # Maoluimhreacha ("bare" numbers)
         graph_million = pynutil.add_weight(pynini.cross("000001", "milliún"), -0.001)
         graph_million |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" milliún")
         graph_million |= pynutil.delete("000")
         graph_million += insert_space
 
         graph_billion = pynutil.add_weight(pynini.cross("000001", "billiún"), -0.001)
-        graph_billion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" billones")
-        graph_billion |= pynutil.delete("000000")
+        graph_billion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" billiún")
+        graph_billion |= pynutil.delete("000")
         graph_billion += insert_space
 
-        graph_trillion = pynutil.add_weight(pynini.cross("000001", "un trillón"), -0.001)
-        graph_trillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" trillones")
-        graph_trillion |= pynutil.delete("000000")
+        graph_trillion = pynutil.add_weight(pynini.cross("000001", "trilliún"), -0.001)
+        graph_trillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" trilliún")
+        graph_trillion |= pynutil.delete("000")
         graph_trillion += insert_space
 
+        graph_quadrillion = pynutil.add_weight(pynini.cross("000001", "cuaidrilliún"), -0.001)
+        graph_quadrillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" cuaidrilliún")
+        graph_quadrillion |= pynutil.delete("000")
+        graph_quadrillion += insert_space
+
+        graph_quintillion = pynutil.add_weight(pynini.cross("000001", "cuintilliún"), -0.001)
+        graph_quintillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" cuintilliún")
+        graph_quintillion |= pynutil.delete("000")
+        graph_quintillion += insert_space
+
+        graph_sextillion = pynutil.add_weight(pynini.cross("000001", "seisilliún"), -0.001)
+        graph_sextillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" seisilliún")
+        graph_sextillion |= pynutil.delete("000")
+        graph_sextillion += insert_space
+
         graph = (
-            graph_trillion
+            graph_sextillion
+            + graph_quintillion
+            + graph_quadrillion
+            + graph_trillion
             + graph_billion
             + graph_million
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
@@ -249,7 +294,7 @@ class CardinalFst(GraphFst):
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(
-                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), NEMO_ALPHA, NEMO_ALPHA, NEMO_SIGMA
+                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), GA_ALPHA, GA_ALPHA, NEMO_SIGMA
             )
         )
         self.graph |= zero
