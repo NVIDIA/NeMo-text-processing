@@ -111,7 +111,7 @@ class ClassifyFst(GraphFst):
                 itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, itn_fraction_tagger=fraction
             ).fst
             date_graph = DateFst(
-                itn_cardinal_tagger=cardinal, tn_date_verbalizer=tn_date_verbalizer, tn_date_tagger=tn_date_tagger
+                itn_cardinal_tagger=cardinal, itn_ordinal_tagger=ordinal, tn_date_verbalizer=tn_date_verbalizer, tn_date_tagger=tn_date_tagger
             ).fst
             word_graph = WordFst().fst
             time_graph = TimeFst(tn_cardinal_tagger=tn_cardinal_tagger, tn_time_verbalizer=tn_time_verbalizer).fst
@@ -125,7 +125,7 @@ class ClassifyFst(GraphFst):
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)
-                # | pynutil.add_weight(whitelist_graph, 1.0)
+                | pynutil.add_weight(whitelist_graph, 1.0)
                 # | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.1)
                 # | pynutil.add_weight(decimal_graph, 1.1)
