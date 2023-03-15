@@ -38,7 +38,11 @@ class DateFst(GraphFst):
     """
 
     def __init__(
-        self, itn_cardinal_tagger: GraphFst, itn_ordinal_tagger: GraphFst, tn_date_tagger: GraphFst, tn_date_verbalizer: GraphFst,
+        self,
+        itn_cardinal_tagger: GraphFst,
+        itn_ordinal_tagger: GraphFst,
+        tn_date_tagger: GraphFst,
+        tn_date_verbalizer: GraphFst,
     ):
         super().__init__(name="date", kind="classify")
 
