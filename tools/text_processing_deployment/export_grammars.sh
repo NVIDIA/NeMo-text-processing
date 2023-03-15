@@ -31,11 +31,12 @@
 #       bash export_grammars.sh --GRAMMARS=itn_grammars --LANGUAGE=en --MODE=test
 
 GRAMMARS="itn_grammars" # tn_grammars
-INPUT_CASE="cased" # lower_cased, only for tn_grammars
+INPUT_CASE="lower_cased" # cased
 LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi'} supports ITN only
 MODE="export"
 OVERWRITE_CACHE="True" # Set to False to re-use .far files
 FORCE_REBUILD="False" # Set to True to re-build docker file
+WHITELIST=None # Path to a whitelist file, if None the default will be used
 
 for ARG in "$@"
 do
@@ -57,11 +58,13 @@ echo "INPUT_CASE = $INPUT_CASE"
 echo "CACHE_DIR = $CACHE_DIR"
 echo "OVERWRITE_CACHE = $OVERWRITE_CACHE"
 echo "FORCE_REBUILD = $FORCE_REBUILD"
+echo "WHITELIST = $WHITELIST"
 
 
 if [[ ${OVERWRITE_CACHE,,} == "true" ]]; then
   OVERWRITE_CACHE="--overwrite_cache "
-  python3 pynini_export.py --output_dir=. --grammars=${GRAMMARS} --input_case=${INPUT_CASE} --language=${LANGUAGE} --cache_dir=${CACHE_DIR} ${OVERWRITE_CACHE}|| exit 1
+  python3 pynini_export.py --output_dir=. --grammars=${GRAMMARS} --input_case=${INPUT_CASE} \
+    --language=${LANGUAGE} --cache_dir=${CACHE_DIR} --whitelist=${WHITELIST} ${OVERWRITE_CACHE} || exit 1
   else OVERWRITE_CACHE=""
 fi
 
@@ -73,8 +76,8 @@ fi
 find . -name "Makefile" -type f -delete
 bash docker/build.sh $FORCE_REBUILD
 
-if [[ $MODE == "test" ]]; then
+if [[ ${MODE} == "test" ]]; then
   MODE=${MODE}_${GRAMMARS}
 fi
 
-bash docker/launch.sh $MODE $LANGUAGE
+bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE

@@ -3,9 +3,10 @@ inflect
 jiwer>2.3.0
 joblib
 pandas
+pynini==2.1.5
 regex
 sacremoses>=0.0.43
-setuptools==59.5.0
+setuptools==65.5.1
 tqdm>=4.41.0
 transformers
 wget
