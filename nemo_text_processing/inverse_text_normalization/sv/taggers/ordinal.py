@@ -23,7 +23,6 @@ class OrdinalFst(GraphFst):
         e.g. hundraandra -> tokens { name: "102." }
 
     Args:
-        itn_cardinal_tagger: ITN Cardinal Tagger
         tn_ordinal_verbalizer: TN Ordinal Verbalizer
     """
 
