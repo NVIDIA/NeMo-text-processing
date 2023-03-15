@@ -111,6 +111,7 @@ _PONC_LOWER = pynini.union(
 )
 
 GA_LOWER = pynini.union(TO_LOWER, _FADA_LOWER, _PONC_LOWER)
+GA_ALPHA = pynini.union(UPPER_ALL, LOWER_ALL)
 
 CHAR_NO_H = pynini.union(UPPER_NO_H, LOWER_NO_H).optimize()
 
@@ -138,3 +139,6 @@ _LOWERCASE_STARTS = pynini.union(
 )
 _DO_LOWER_STARTS = pynini.cdrewrite(_LOWERCASE_STARTS, "[BOS]", "", NEMO_SIGMA)
 TOLOWER = (_DO_LOWER_STARTS @ pynini.closure(GA_LOWER | LOWER_BASE | "'" | "-")).optimize()
+
+bos_or_space = pynini.union("[BOS]", " ")
+eos_or_space = pynini.union("[EOS]", " ")
