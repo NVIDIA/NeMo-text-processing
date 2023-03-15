@@ -29,8 +29,8 @@ class CardinalFst(GraphFst):
         tn_cardinal_tagger: TN cardinal tagger
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+    def __init__(self, tn_cardinal_tagger: GraphFst):
+        super().__init__(name="cardinal", kind="classify")
 
         graph = pynini.invert(pynini.arcmap(tn_cardinal_tagger.graph, map_type="rmweight")).optimize()
 

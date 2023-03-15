@@ -43,9 +43,8 @@ class MeasureFst(GraphFst):
         itn_cardinal_tagger: GraphFst,
         itn_decimal_tagger: GraphFst,
         itn_fraction_tagger: GraphFst,
-        deterministic: bool = True,
     ):
-        super().__init__(name="measure", kind="classify", deterministic=deterministic)
+        super().__init__(name="measure", kind="classify")
 
         cardinal_graph = (
             pynini.cdrewrite(pynini.cross(pynini.union("ein", "eine"), "eins"), "[BOS]", "[EOS]", NEMO_SIGMA)

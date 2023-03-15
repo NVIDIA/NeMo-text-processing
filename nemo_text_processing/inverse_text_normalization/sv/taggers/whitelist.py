@@ -26,8 +26,8 @@ class WhiteListFst(GraphFst):
         tn_whitelist_tagger: TN whitelist tagger
     """
 
-    def __init__(self, tn_whitelist_tagger: GraphFst, deterministic: bool = True):
-        super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
+    def __init__(self, tn_whitelist_tagger: GraphFst):
+        super().__init__(name="whitelist", kind="classify")
 
         whitelist = pynini.invert(tn_whitelist_tagger.graph)
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")

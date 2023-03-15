@@ -35,8 +35,8 @@ class TimeFst(GraphFst):
         tn_time_verbalizer: TN time verbalizer
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst, tn_time_verbalizer: GraphFst, deterministic: bool = True):
-        super().__init__(name="time", kind="classify", deterministic=deterministic)
+    def __init__(self, tn_cardinal_tagger: GraphFst, tn_time_verbalizer: GraphFst):
+        super().__init__(name="time", kind="classify")
 
         minutes_to = pynini.string_map([(str(i), str(60 - i)) for i in range(1, 60)])
         minutes_inverse = pynini.invert(pynini.project(minutes_to, "input") @ tn_cardinal_tagger.graph_en)
