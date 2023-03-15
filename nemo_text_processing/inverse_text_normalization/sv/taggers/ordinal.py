@@ -30,11 +30,10 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify")
 
         graph = pynini.arcmap(tn_ordinal.bare_ordinals, map_type="rmweight").invert().optimize()
-        forsta_andra = pynini.project(pynini.union("1", "2") @ tn_ordinal.bare_ordinals, 'input')
-        graph_minus_forsta_andra = ((pynini.project(graph, "input") - forsta_andra.arcsort()) @ graph) + pynutil.insert(".")
+        self.graph = graph + pynutil.insert(".")
 
-        final_graph = graph + pynutil.insert(".")
-        self.graph = final_graph
+        forsta_andra = pynini.project(pynini.union("1", "2") @ tn_ordinal.bare_ordinals, "output")
+        graph = ((pynini.project(graph, "input") - forsta_andra.arcsort()) @ graph) + pynutil.insert(".")
 
-        graph = pynutil.insert("name: \"") + graph_minus_forsta_andra + pynutil.insert("\"")
+        graph = pynutil.insert("name: \"") + graph + pynutil.insert("\"")
         self.fst = graph.optimize()
