@@ -33,10 +33,21 @@ teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teens_count.t
 ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 
-def make_number_form(word: str, deterministic = True, teens = False, tens = False, higher = False) -> 'pynini.FstLike':
+def make_number_form(word: str, deterministic = True, teens = False, tens = False, higher = False, conjunction = False) -> 'pynini.FstLike':
     fst = pynini.accep(word)
     fst_len = pynutil.insert(fst @ LOWER_LENITION)
     fst_ecl = pynutil.insert(fst @ LOWER_ECLIPSIS)
+    # The standard says to inflect "billiún", *but*
+    # the standard is of a written-only dialect:
+    # it's irrelevant to speech, where inflected forms
+    # of billiún clash with milliún
+    if word == "billiún":
+        if not deterministic:
+            fst_len |= fst
+            fst_ecl |= fst
+        else:
+            fst_len = fst
+            fst_ecl = fst
 
     if tens:
         teens = True
@@ -86,6 +97,9 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         output |= pynini.cross("11", "aon ") + fst_len + insert_space + pynutil.insert(deag)
         output |= pynini.cross("10", "deich ") + fst_ecl
         output |= teen_graph
+    
+    if conjunction and not deterministic:
+        output |= output + pynutil.insert(" is")
 
     return output
 
@@ -180,7 +194,7 @@ class CardinalFst(GraphFst):
             pynutil.delete("00") + digits_no_one
         )
 
-        thousands_two_digits = make_number_form("míle")
+        thousands_two_digits = make_number_form("míle", deterministic=deterministic, conjunction=True)
         thousands_three_digits = graph_hundreds_component_at_least_one_non_zero_digit + insert_space + thousands_two_digits
         self.thousands_three_digits = thousands_three_digits
         graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
@@ -201,9 +215,10 @@ class CardinalFst(GraphFst):
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
 
-        graph_million = pynutil.add_weight(pynini.cross("000001", "un millón"), -0.001)
-        graph_million |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" millones")
-        graph_million |= pynutil.delete("000000")
+        million = make_number_form("milliún", deterministic=deterministic, conjunction=True)
+        graph_million = pynutil.add_weight(pynini.cross("000001", "milliún"), -0.001)
+        graph_million |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" milliún")
+        graph_million |= pynutil.delete("000")
         graph_million += insert_space
 
         graph_billion = pynutil.add_weight(pynini.cross("000001", "un billón"), -0.001)
