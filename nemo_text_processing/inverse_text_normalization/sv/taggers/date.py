@@ -26,21 +26,19 @@ from pynini.lib import pynutil
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, in the form of (day) month (year) or year
-        e.g. vierundzwanzigster juli zwei tausend dreizehn -> tokens { name: "24. Jul. 2013" }
-        e.g. neunzehnachtzig -> tokens { name: "1980" }
-        e.g. vierzehnter januar -> tokens { name: "14. Jan." }
-        e.g. zweiter dritter -> tokens { name: "02.03." }
-        e.g. januar neunzehnachtzig -> tokens { name: "Jan. 1980" }
-        e.g. zwanzigzwanzig -> tokens { name: "2020" }
+        e.g. andra januari tjugohundraett -> tokens { name: "2001-01-02" }
+        e.g. tjugotredje januari -> tokens { name: "23. jan." }
+        e.g. tjugotjugo -> tokens { name: "2020" }
 
     Args:
         itn_cardinal_tagger: ITN cardinal tagger
+        itn_ordinal_tagger: ITN ordinal tagger
         tn_date_tagger: TN date tagger
         tn_date_verbalizer: TN date verbalizer
     """
 
     def __init__(
-        self, itn_cardinal_tagger: GraphFst, tn_date_tagger: GraphFst, tn_date_verbalizer: GraphFst,
+        self, itn_cardinal_tagger: GraphFst, itn_ordinal_tagger: GraphFst, tn_date_tagger: GraphFst, tn_date_verbalizer: GraphFst,
     ):
         super().__init__(name="date", kind="classify")
 
