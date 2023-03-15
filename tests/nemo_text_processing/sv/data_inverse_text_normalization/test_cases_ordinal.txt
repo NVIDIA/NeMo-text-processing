@@ -1,4 +1,5 @@
-1.~första
-2.~andra
-20.~tjugonde
-23.~tjugotredje
+första~1.
+andra~2.
+tjugonde~20.
+tjugotredje~23.
+hundratjugotredje~123.
