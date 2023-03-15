@@ -101,6 +101,15 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
     
     if conjunction and not deterministic:
         output |= output + pynutil.insert(" is")
+    
+    # hundred + 'is' + teens/digit/tens
+    # hundred + tens + 'is' + digit
+    if higher:
+        hundreds = make_number_form("céad")
+        output = hundreds + pynini.union(
+            pynutil.delete("0") + pynutil.insert(" is ") + single_digit,
+            pynutil.insert(" is ") + tens_words,
+        )
 
     return output
 
@@ -138,8 +147,8 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g.
-        "1000" ->  cardinal { integer: "mil" }
-        "2.000.000" -> cardinal { integer: "dos millones" }
+        "1000" ->  cardinal { integer: "míle" }
+        "2.000.000" -> cardinal { integer: "dhá mhilliún" }
 
     Args:
         deterministic: if True will provide a single transduction option,
