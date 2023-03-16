@@ -41,12 +41,21 @@ class DateFst(GraphFst):
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))
+        month_double_digits = (
+            (NEMO_DIGIT + NEMO_DIGIT) @ tn_date_tagger.number_to_month
+            | (pynutil.insert("0") + NEMO_DIGIT) @ (NEMO_DIGIT @ tn_date_tagger.number_to_month)
+        )
+        day_double_digits = (
+            (NEMO_DIGIT + NEMO_DIGIT) @ tn_date_tagger.digit_day
+            | (pynutil.insert("0") + NEMO_DIGIT) @ (NEMO_DIGIT @ tn_date_tagger.digit_day)
+        )
 
         year = tn_date_tagger.year.invert().optimize()
         decade = tn_date_tagger.decade.invert().optimize()
         era_suffix = tn_date_tagger.era_suffix.invert().optimize()
         day = tn_date_tagger.digit_day.invert().optimize()
-        day_double = ((NEMO_DIGIT + NEMO_DIGIT) @ tn_date_tagger.digit_day | (pynutil.insert("0") + NEMO_DIGIT) @ (NEMO_DIGIT @ tn_date_tagger.digit_day)).invert().optimize()
+        day_double = day_double_digits.invert().optimize()
+        month_double = month_double_digits.invert().optimize()
         month_abbr = tn_date_tagger.month_abbr.invert().optimize()
         month = tn_date_tagger.number_to_month.invert().optimize()
 
