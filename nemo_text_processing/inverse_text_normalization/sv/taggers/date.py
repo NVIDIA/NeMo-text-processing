@@ -70,5 +70,5 @@ class DateFst(GraphFst):
         graph_ydm = (ydm | ydm + graph_era) + preserve
         final_graph = year | graph_dmy | graph_dm | graph_ydm | graph_decade
 
-        graph = pynutil.insert("name: \"") + final_graph + pynutil.insert("\"")
+        graph = self.add_tokens(final_graph)
         self.fst = graph.optimize()
