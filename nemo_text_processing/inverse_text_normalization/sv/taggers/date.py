@@ -15,8 +15,8 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
-    NEMO_NOT_QUOTE,
     NEMO_SIGMA,
+    NEMO_SPACE,
     GraphFst,
     convert_space,
 )
@@ -63,6 +63,14 @@ class DateFst(GraphFst):
         graph_day_ord = pynutil.insert("day: \"") + day + pynutil.insert("\"")
         graph_era = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
         graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
+        preserve = pynutil.insert(" preserve_order: true")
+
+        graph_dm = graph_day_ord + NEMO_SPACE + graph_month_abbr
+        graph_dmy = graph_day + NEMO_SPACE + graph_month + NEMO_SPACE + graph_year
+        graph_dmy |= graph_dmy + NEMO_SPACE + graph_era
+        ydm = graph_year + NEMO_SPACE + graph_month + NEMO_SPACE + graph_day
+        graph_ydm = (ydm | ydm + graph_era) + preserve
+        final_graph = year | graph_dmy | graph_dm | graph_ydm | graph_decade
 
         graph = pynutil.insert("name: \"") + convert_space(final_graph) + pynutil.insert("\"")
         self.fst = graph.optimize()
