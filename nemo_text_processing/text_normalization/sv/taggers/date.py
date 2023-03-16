@@ -41,6 +41,7 @@ class DateFst(GraphFst):
 
         number_to_month = month_numbers.optimize()
         self.month_abbr = month_abbr.optimize()
+        self.era_suffix = era_suffix.optimize()
         month_graph = pynini.project(number_to_month, "output")
 
         numbers = cardinal.graph
@@ -102,6 +103,7 @@ class DateFst(GraphFst):
             decade_num |= ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 2) + "0") @ numbers
         decade = (decade_num + tal_hyphen + (decade_word | tals_word)).optimize()
         # decade_only = pynutil.insert("decade: \"") + decade + pynutil.insert("\"")
+        self.decade = decade
         decade_only = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
