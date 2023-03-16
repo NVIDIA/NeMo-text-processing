@@ -63,12 +63,12 @@ class DateFst(GraphFst):
         graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
         preserve = pynutil.insert(" preserve_order: true")
 
-        graph_dm = graph_day_ord + NEMO_SPACE + graph_month_abbr
+        graph_dm = graph_day_ord + NEMO_SPACE + graph_month_abbr + preserve
         graph_dmy = graph_day + NEMO_SPACE + graph_month + NEMO_SPACE + graph_year
         graph_dmy |= graph_dmy + NEMO_SPACE + graph_era
         ydm = graph_year + NEMO_SPACE + graph_month + NEMO_SPACE + graph_day
         graph_ydm = (ydm | ydm + graph_era) + preserve
         final_graph = year | graph_dmy | graph_dm | graph_ydm | graph_decade
 
-        graph = pynutil.insert("name: \"") + convert_space(final_graph) + pynutil.insert("\"")
+        graph = pynutil.insert("name: \"") + final_graph + pynutil.insert("\"")
         self.fst = graph.optimize()
