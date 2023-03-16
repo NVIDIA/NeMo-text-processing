@@ -59,7 +59,8 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        optional_era = pynini.closure(era, 0, 1)
+        optional_era = pynini.closure(NEMO_SPACE + era, 0, 1)
+        space_to_hyphen = pynini.cross(" ", "-")
 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
@@ -73,9 +74,9 @@ class DateFst(GraphFst):
 
         # day month
         graph_dm = day + NEMO_SPACE + month + delete_preserve_order
-        graph_ydm = year + NEMO_SPACE + month + NEMO_SPACE + day + optional_era + optional_preserve_order
+        graph_ydm = year + space_to_hyphen + month + space_to_hyphen + day + optional_era + optional_preserve_order
 
-        final_graph = graph_dm | year | graph_ydm
+        final_graph = graph_dm | (year + optional_era) | graph_ydm
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
