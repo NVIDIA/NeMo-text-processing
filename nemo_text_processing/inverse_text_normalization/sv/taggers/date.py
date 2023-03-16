@@ -39,9 +39,6 @@ class DateFst(GraphFst):
     ):
         super().__init__(name="date", kind="classify")
 
-        add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
-        optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))
-
         def force_double_digits(fst: GraphFst):
             double = (NEMO_DIGIT + NEMO_DIGIT) @ fst
             single = (pynutil.insert("0") + NEMO_DIGIT) @ (NEMO_DIGIT @ fst)
