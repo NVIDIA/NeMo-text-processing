@@ -35,8 +35,7 @@ class DateFst(GraphFst):
     """
 
     def __init__(
-        self,
-        tn_date_tagger: GraphFst,
+        self, tn_date_tagger: GraphFst,
     ):
         super().__init__(name="date", kind="classify")
 
@@ -54,7 +53,6 @@ class DateFst(GraphFst):
         graph_month = pynutil.insert("month: \"") + month + pynutil.insert("\"")
         graph_era = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
         graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
-
 
         graph = pynutil.insert("name: \"") + convert_space(final_graph) + pynutil.insert("\"")
         self.fst = graph.optimize()
