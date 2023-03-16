@@ -125,6 +125,7 @@ class CardinalFst(GraphFst):
             ties |= pynutil.add_weight(alt_ties, -0.001)
             ties |= pynutil.add_weight(pynini.cross("4", "förtio"), -0.001)
             ties |= pynutil.add_weight(pynini.cross("4", "förti"), -0.001)
+            ties |= pynutil.add_weight(pynini.cross("2", "tju"), -0.001)
 
         # Any double digit
         graph_tens = teen
