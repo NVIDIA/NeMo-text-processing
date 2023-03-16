@@ -41,10 +41,11 @@ class DateFst(GraphFst):
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))
+
         def force_double_digits(fst: GraphFst):
             double = (NEMO_DIGIT + NEMO_DIGIT) @ fst
             single = (pynutil.insert("0") + NEMO_DIGIT) @ (NEMO_DIGIT @ fst)
-            return (single | double)
+            return single | double
 
         year = tn_date_tagger.year.invert().optimize()
         decade = tn_date_tagger.decade.invert().optimize()
@@ -56,9 +57,10 @@ class DateFst(GraphFst):
         month = tn_date_tagger.number_to_month.invert().optimize()
 
         graph_year = pynutil.insert("year: \"") + year + pynutil.insert("\"")
-        graph_month = pynutil.insert("month: \"") + month + pynutil.insert("\"")
+        graph_month = pynutil.insert("month: \"") + month_double + pynutil.insert("\"")
         graph_month_abbr = pynutil.insert("month: \"") + month_abbr + pynutil.insert("\"")
         graph_day = pynutil.insert("day: \"") + day_double + pynutil.insert("\"")
+        graph_day_ord = pynutil.insert("day: \"") + day + pynutil.insert("\"")
         graph_era = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
         graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
 
