@@ -47,11 +47,14 @@ class DateFst(GraphFst):
         decade = tn_date_tagger.decade.invert().optimize()
         era_suffix = tn_date_tagger.era_suffix.invert().optimize()
         day = tn_date_tagger.digit_day.invert().optimize()
+        day_double = ((NEMO_DIGIT + NEMO_DIGIT) @ tn_date_tagger.digit_day | (pynutil.insert("0") + NEMO_DIGIT) @ (NEMO_DIGIT @ tn_date_tagger.digit_day)).invert().optimize()
         month_abbr = tn_date_tagger.month_abbr.invert().optimize()
         month = tn_date_tagger.number_to_month.invert().optimize()
 
         graph_year = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         graph_month = pynutil.insert("month: \"") + month + pynutil.insert("\"")
+        graph_month_abbr = pynutil.insert("month: \"") + month_abbr + pynutil.insert("\"")
+        graph_day = pynutil.insert("day: \"") + day_double + pynutil.insert("\"")
         graph_era = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
         graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
 
