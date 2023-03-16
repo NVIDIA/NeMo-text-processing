@@ -31,58 +31,30 @@ class DateFst(GraphFst):
         e.g. tjugotjugo -> tokens { name: "2020" }
 
     Args:
-        itn_cardinal_tagger: ITN cardinal tagger
-        itn_ordinal_tagger: ITN ordinal tagger
         tn_date_tagger: TN date tagger
-        tn_date_verbalizer: TN date verbalizer
     """
 
     def __init__(
         self,
-        itn_cardinal_tagger: GraphFst,
-        itn_ordinal_tagger: GraphFst,
         tn_date_tagger: GraphFst,
-        tn_date_verbalizer: GraphFst,
     ):
         super().__init__(name="date", kind="classify")
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))
-        tagger = tn_date_verbalizer.graph.invert().optimize()
 
-        delete_day_marker = (
-            pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        ) @ itn_cardinal_tagger.graph_no_exception
+        year = tn_date_tagger.year.invert().optimize()
+        decade = tn_date_tagger.decade.invert().optimize()
+        era_suffix = tn_date_tagger.era_suffix.invert().optimize()
+        day = tn_date_tagger.digit_day.invert().optimize()
+        month_abbr = tn_date_tagger.month_abbr.invert().optimize()
+        month = tn_date_tagger.number_to_month.invert().optimize()
 
-        month_as_number = pynutil.delete("month: \"") + itn_cardinal_tagger.graph_no_exception + pynutil.delete("\"")
-        month_as_string = pynutil.delete("month: \"") + tn_date_tagger.month_abbr.invert() + pynutil.delete("\"")
+        graph_year = pynutil.insert("year: \"") + year + pynutil.insert("\"")
+        graph_month = pynutil.insert("month: \"") + month + pynutil.insert("\"")
+        graph_era = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
+        graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
 
-        convert_year = (tn_date_tagger.year @ optional_delete_space).invert().optimize()
-        delete_year_marker = (
-            pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        ) @ convert_year
-
-        # day. month as string (year)
-        verbalizer = (
-            pynini.closure(delete_day_marker + pynutil.insert(".") + pynini.accep(" "), 0, 1)
-            + month_as_string
-            + pynini.closure(pynini.accep(" ") + delete_year_marker, 0, 1)
-        )
-
-        # day. month as number (year)
-        verbalizer |= (
-            delete_day_marker @ add_leading_zero_to_double_digit
-            + pynutil.insert(".")
-            + pynutil.delete(" ")
-            + month_as_number @ add_leading_zero_to_double_digit
-            + pynutil.insert(".")
-            + pynini.closure(pynutil.delete(" ") + delete_year_marker, 0, 1)
-        )
-
-        # year
-        verbalizer |= delete_year_marker
-
-        final_graph = tagger @ verbalizer
 
         graph = pynutil.insert("name: \"") + convert_space(final_graph) + pynutil.insert("\"")
         self.fst = graph.optimize()

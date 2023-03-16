@@ -110,12 +110,7 @@ class ClassifyFst(GraphFst):
             measure_graph = MeasureFst(
                 itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, itn_fraction_tagger=fraction
             ).fst
-            date_graph = DateFst(
-                itn_cardinal_tagger=cardinal,
-                itn_ordinal_tagger=ordinal,
-                tn_date_verbalizer=tn_date_verbalizer,
-                tn_date_tagger=tn_date_tagger,
-            ).fst
+            date_graph = DateFst(tn_date_tagger=tn_date_tagger).fst
             word_graph = WordFst().fst
             time_graph = TimeFst(tn_cardinal_tagger=tn_cardinal_tagger, tn_time_verbalizer=tn_time_verbalizer).fst
             money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal).fst
