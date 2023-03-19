@@ -13,22 +13,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
+
+import os
+
+from nemo_text_processing.inverse_text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
+    GraphFst,
+    convert_space,
+    string_map_cased,
+)
 from pynini.lib import pynutil
 
 
 class WhiteListFst(GraphFst):
     """
     Finite state transducer for classifying whitelisted tokens
-        e.g. misses -> tokens { name: "Mrs." }
+        e.g. misses -> tokens { name: "mrs." }
+    This class has highest priority among all classifier grammars.
+    Whitelisted tokens are defined and loaded from "data/whitelist.tsv" (unless input_file specified).
+
     Args:
-        tn_whitelist_tagger: TN whitelist tagger
+        input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
+            e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, tn_whitelist_tagger: GraphFst):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None):
         super().__init__(name="whitelist", kind="classify")
 
-        whitelist = pynini.invert(tn_whitelist_tagger.graph)
+        if input_file is None:
+            input_file = get_abs_path("data/whitelist.tsv")
+
+        if not os.path.exists(input_file):
+            raise ValueError(f"Whitelist file {input_file} not found")
+
+        whitelist = string_map_cased(input_file, input_case)
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
         self.fst = graph.optimize()
