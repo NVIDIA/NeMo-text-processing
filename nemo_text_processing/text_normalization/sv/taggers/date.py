@@ -55,10 +55,11 @@ class DateFst(GraphFst):
         # 01, 31, 1
         self.digit_day = pynini.union(*[str(x) for x in range(1, 32)]) @ ordinal.bare_ordinals
         digit_day = pynini.union(
-            pynutil.delete("0") + (NEMO_DIGIT @ self.digit_day),
-            ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ self.digit_day
+            pynutil.delete("0") + (NEMO_DIGIT @ self.digit_day), ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ self.digit_day
         )
-        self.digit_day_zero = (pynini.project(digit_day, "input") - pynini.project((NEMO_DIGIT @ self.digit_day), "input")) @ digit_day
+        self.digit_day_zero = (
+            pynini.project(digit_day, "input") - pynini.project((NEMO_DIGIT @ self.digit_day), "input")
+        ) @ digit_day
         digit_day |= NEMO_DIGIT @ self.digit_day
         digit_words = pynini.project(digit_day, "output")
         day_only = (pynutil.insert("day: \"") + digit_day + pynutil.insert("\"")).optimize()
@@ -130,12 +131,7 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_SPACE + year_opt_era, 0, 1)
         )
 
-        graph_my = (
-            (month_name | month_abbreviation)
-            + optional_comma
-            + NEMO_SPACE
-            + year_opt_era
-        )
+        graph_my = (month_name | month_abbreviation) + optional_comma + NEMO_SPACE + year_opt_era
 
         day_optional = pynini.closure(pynini.cross("-", NEMO_SPACE) + day, 0, 1)
         graph_ymd = year_only + pynini.cross("-", NEMO_SPACE) + month_number + day_optional
