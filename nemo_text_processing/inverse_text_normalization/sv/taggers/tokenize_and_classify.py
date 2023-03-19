@@ -93,7 +93,6 @@ class ClassifyFst(GraphFst):
             tn_time_verbalizer = TNTimeVerbalizer(deterministic=False)
             tn_electronic_tagger = TNElectronicTagger(deterministic=False)
             tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
-            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False, input_file=whitelist)
 
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger)
             cardinal_graph = cardinal.fst
@@ -113,7 +112,7 @@ class ClassifyFst(GraphFst):
             word_graph = WordFst().fst
             time_graph = TimeFst(tn_cardinal_tagger=tn_cardinal_tagger, tn_time_verbalizer=tn_time_verbalizer).fst
             money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal).fst
-            whitelist_graph = WhiteListFst(tn_whitelist_tagger=tn_whitelist_tagger).fst
+            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case).fst
             punct_graph = PunctuationFst().fst
             electronic_graph = ElectronicFst(
                 tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer
