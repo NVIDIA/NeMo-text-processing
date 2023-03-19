@@ -44,8 +44,8 @@ class DateFst(GraphFst):
         self.month_abbr = month_abbr.optimize()
         self.era_words = era_words
         era_norm = era_suffix @ era_words
-        month_graph = pynini.project(number_to_month, "output")
         era_names = pynini.project(era_words, "output")
+        month_graph = pynini.project(number_to_month, "output")
 
         numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
@@ -53,12 +53,18 @@ class DateFst(GraphFst):
         optional_comma = pynini.closure(pynutil.delete(","), 0, 1)
 
         # 01, 31, 1
-        digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ ordinal.graph
+        self.digit_day = pynini.union(*[str(x) for x in range(1, 32)]) @ ordinal.bare_ordinals
+        digit_day = pynini.union(
+            pynutil.delete("0") + (NEMO_DIGIT @ self.digit_day),
+            (NEMO_DIGIT + NEMO_DIGIT) @ self.digit_day
+        )
+        self.digit_day_zero = digit_day
+        digit_day |= NEMO_DIGIT @ self.digit_day
         digit_words = pynini.project(digit_day, "output")
+        day_only = (pynutil.insert("day: \"") + digit_day + pynutil.insert("\"")).optimize()
         day = (pynutil.insert("day: \"") + digit_day + optional_dot + pynutil.insert("\"")).optimize()
         day_sfx = (pynutil.insert("day: \"") + ordinal.suffixed_to_words + pynutil.insert("\"")).optimize()
         day_words = (pynutil.insert("day: \"") + digit_words + pynutil.insert("\"")).optimize()
-        self.digit_day = digit_day
 
         digit_month = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 13)])
         number_to_month = digit_month @ number_to_month
@@ -136,9 +142,9 @@ class DateFst(GraphFst):
 
         separators = [".", "-", "/"]
         for sep in separators:
-            day_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + day, 0, 1)
+            day_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + day_only, 0, 1)
             year_optional = pynini.closure(pynini.cross(sep, NEMO_SPACE) + year_only + optional_era)
-            new_graph = day + pynini.cross(sep, NEMO_SPACE) + month_number + year_optional
+            new_graph = day_only + pynini.cross(sep, NEMO_SPACE) + month_number + year_optional
             graph_dmy |= new_graph
             graph_ymd |= year_only + pynini.cross(sep, NEMO_SPACE) + month_number + day_optional
 
