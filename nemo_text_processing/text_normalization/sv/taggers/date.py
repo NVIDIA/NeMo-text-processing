@@ -42,7 +42,7 @@ class DateFst(GraphFst):
 
         number_to_month = month_numbers.optimize()
         self.month_abbr = month_abbr.optimize()
-        self.era_words = era_words
+        self.era_words = era_words.optimize()
         era_norm = era_suffix @ era_words
         era_names = pynini.project(era_words, "output")
         month_graph = pynini.project(number_to_month, "output")
@@ -56,9 +56,9 @@ class DateFst(GraphFst):
         self.digit_day = pynini.union(*[str(x) for x in range(1, 32)]) @ ordinal.bare_ordinals
         digit_day = pynini.union(
             pynutil.delete("0") + (NEMO_DIGIT @ self.digit_day),
-            (NEMO_DIGIT + NEMO_DIGIT) @ self.digit_day
+            ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ self.digit_day
         )
-        self.digit_day_zero = digit_day
+        self.digit_day_zero = (pynini.project(digit_day, "input") - pynini.project((NEMO_DIGIT @ self.digit_day), "input")) @ digit_day
         digit_day |= NEMO_DIGIT @ self.digit_day
         digit_words = pynini.project(digit_day, "output")
         day_only = (pynutil.insert("day: \"") + digit_day + pynutil.insert("\"")).optimize()
