@@ -14,7 +14,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE,
+    NEMO_SPACE,
     GraphFst,
     convert_space,
     delete_space,
@@ -36,32 +36,19 @@ class FractionFst(GraphFst):
 
     def __init__(self, itn_cardinal_tagger: GraphFst, tn_fraction_tagger: GraphFst):
         super().__init__(name="fraction", kind="classify")
-        tagger = tn_fraction_tagger.graph.invert().optimize()
+        cardinal = itn_cardinal_tagger.graph_no_exception
+        fractions = tn_fraction_tagger.fractions_any.invert().optimize()
 
-        delete_optional_sign = pynini.closure(pynutil.delete("negative: ") + pynini.cross("\"true\" ", "-"), 0, 1)
-        delete_integer_marker = (
-            pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        ) @ itn_cardinal_tagger.graph_no_exception
+        minus = pynini.cross("minus ", "-")
+        optional_minus = pynini.closure(minus, 0, 1)
+        no_numerator = pynini.cross("och ", "1/")
+        integer = optional_minus + cardinal
 
-        delete_numerator_marker = (
-            pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        ) @ itn_cardinal_tagger.graph_no_exception
-
-        delete_denominator_marker = (
-            pynutil.insert('/')
-            + (pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\""))
-            @ tn_fraction_tagger.fractions
+        self.graph = pynini.union(
+            integer + NEMO_SPACE + no_numerator + fractions,
+            integer + NEMO_SPACE + cardinal + pynini.cross(" ", "/") + fractions,
+            integer + pynini.cross(" och ", " ") + cardinal + pynini.cross(" ", "/") + fractions,
         )
-
-        graph = (
-            pynini.closure(delete_integer_marker + pynini.accep(" "), 0, 1)
-            + delete_numerator_marker
-            + delete_space
-            + delete_denominator_marker
-        ).optimize()
-        verbalizer = delete_optional_sign + graph
-
-        self.graph = tagger @ verbalizer
 
         graph = pynutil.insert("name: \"") + convert_space(self.graph) + pynutil.insert("\"")
         self.fst = graph.optimize()
