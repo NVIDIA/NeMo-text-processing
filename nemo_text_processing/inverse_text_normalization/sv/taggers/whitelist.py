@@ -29,7 +29,7 @@ from pynini.lib import pynutil
 class WhiteListFst(GraphFst):
     """
     Finite state transducer for classifying whitelisted tokens
-        e.g. misses -> tokens { name: "mrs." }
+        e.g. sankt -> tokens { name: "s:t" }
     This class has highest priority among all classifier grammars.
     Whitelisted tokens are defined and loaded from "data/whitelist.tsv" (unless input_file specified).
 
