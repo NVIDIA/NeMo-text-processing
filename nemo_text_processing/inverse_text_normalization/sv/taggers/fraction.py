@@ -49,7 +49,6 @@ class FractionFst(GraphFst):
             integer + NEMO_SPACE + no_numerator + fractions,
             integer + NEMO_SPACE + cardinal + pynini.cross(" ", "/") + fractions,
             integer + pynini.cross(" och ", " ") + cardinal + pynini.cross(" ", "/") + fractions,
-            pynutil.insert("1/") + fractions,
             cardinal + pynini.cross(" ", "/") + fractions,
         )
 
