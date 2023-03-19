@@ -47,7 +47,7 @@ class DateFst(GraphFst):
 
         year = tn_date_tagger.year.invert().optimize()
         decade = tn_date_tagger.decade.invert().optimize()
-        era_suffix = tn_date_tagger.era_suffix.invert().optimize()
+        era_words = tn_date_tagger.era_words.invert().optimize()
         day = tn_date_tagger.digit_day.invert().optimize()
         day_double = force_double_digits(tn_date_tagger.digit_day).invert().optimize()
         month_double = force_double_digits(tn_date_tagger.number_to_month).invert().optimize()
@@ -59,7 +59,7 @@ class DateFst(GraphFst):
         graph_month_abbr = pynutil.insert("month: \"") + month_abbr + pynutil.insert("\"")
         graph_day = pynutil.insert("day: \"") + day_double + pynutil.insert("\"")
         graph_day_ord = pynutil.insert("day: \"") + day + pynutil.insert("\"")
-        graph_era = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
+        graph_era = pynutil.insert("era: \"") + era_words + pynutil.insert("\"")
         graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
         preserve = pynutil.insert(" preserve_order: true")
 
@@ -67,7 +67,7 @@ class DateFst(GraphFst):
         graph_dmy = graph_day + NEMO_SPACE + graph_month + NEMO_SPACE + graph_year
         graph_dmy |= graph_dmy + NEMO_SPACE + graph_era
         ydm = graph_year + NEMO_SPACE + graph_month + NEMO_SPACE + graph_day
-        graph_ydm = (ydm | ydm + graph_era) + preserve
+        graph_ydm = (ydm | ydm + NEMO_SPACE + graph_era) + preserve
         final_graph = year | graph_dmy | graph_dm | graph_ydm | graph_decade
 
         graph = self.add_tokens(final_graph)
