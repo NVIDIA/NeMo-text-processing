@@ -22,6 +22,7 @@ delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))
 month_abbr = pynini.string_file(get_abs_path("data/dates/month_abbr.tsv"))
 era_suffix = pynini.string_file(get_abs_path("data/dates/era_suffix.tsv"))
+era_words = pynini.string_file(get_abs_path("data/dates/era_words.tsv"))
 
 
 class DateFst(GraphFst):
@@ -41,8 +42,10 @@ class DateFst(GraphFst):
 
         number_to_month = month_numbers.optimize()
         self.month_abbr = month_abbr.optimize()
-        self.era_suffix = era_suffix.optimize()
+        self.era_words = era_words
+        era_norm = era_suffix @ era_words
         month_graph = pynini.project(number_to_month, "output")
+        era_names = pynini.project(era_words, "output")
 
         numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
@@ -84,6 +87,7 @@ class DateFst(GraphFst):
         if not deterministic:
             year |= year_cardinal
             year |= year_hundra
+            year |= year_first + NEMO_SPACE + year_second
         self.year = year
         self.year_cardinal = year_cardinal
         sou_number = self.year + pynini.cross(":", " kolon ") + numbers
@@ -107,7 +111,7 @@ class DateFst(GraphFst):
         decade_only = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
-        era_only = pynutil.insert("era: \"") + era_suffix + pynutil.insert("\"")
+        era_only = pynutil.insert("era: \"") + (era_norm | era_names) + pynutil.insert("\"")
         optional_era = pynini.closure(NEMO_SPACE + era_only, 0, 1)
         year_era = year_only + NEMO_SPACE + era_only + pynutil.insert(" preserve_order: true")
         year_opt_era = year_only + optional_era
@@ -117,7 +121,14 @@ class DateFst(GraphFst):
             + NEMO_SPACE
             + (month_name | month_abbreviation)
             + optional_comma
-            + pynini.closure(NEMO_SPACE + year_opt_era, 0, 1)
+            + pynini.closure(NEMO_SPACE + year_era, 0, 1)
+        )
+
+        graph_my = (
+            (month_name | month_abbreviation)
+            + optional_comma
+            + NEMO_SPACE
+            + year_era
         )
 
         day_optional = pynini.closure(pynini.cross("-", NEMO_SPACE) + day, 0, 1)
@@ -132,6 +143,7 @@ class DateFst(GraphFst):
             graph_ymd |= year_only + pynini.cross(sep, NEMO_SPACE) + month_number + day_optional
 
         final_graph = graph_ymd | (graph_dmy + pynutil.insert(" preserve_order: true")) | year_era | decade_only
+        final_graph |= graph_my
 
         self.final_graph = final_graph.optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()
