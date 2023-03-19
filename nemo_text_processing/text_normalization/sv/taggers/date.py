@@ -142,7 +142,7 @@ class DateFst(GraphFst):
             graph_dmy |= new_graph
             graph_ymd |= year_only + pynini.cross(sep, NEMO_SPACE) + month_number + day_optional
 
-        final_graph = graph_ymd | (graph_dmy + pynutil.insert(" preserve_order: true")) | year_era | decade_only
+        final_graph = graph_ymd | graph_dmy | year_era | decade_only
         final_graph |= graph_my
 
         self.final_graph = final_graph.optimize()
