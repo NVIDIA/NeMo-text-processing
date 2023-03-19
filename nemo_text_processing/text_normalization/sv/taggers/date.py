@@ -114,21 +114,21 @@ class DateFst(GraphFst):
         era_only = pynutil.insert("era: \"") + (era_norm | era_names) + pynutil.insert("\"")
         optional_era = pynini.closure(NEMO_SPACE + era_only, 0, 1)
         year_era = year_only + NEMO_SPACE + era_only + pynutil.insert(" preserve_order: true")
-        year_opt_era = year_only + optional_era
+        year_opt_era = year_only + optional_era + pynutil.insert(" preserve_order: true")
 
         graph_dmy = (
             (day | day_sfx | day_words)
             + NEMO_SPACE
             + (month_name | month_abbreviation)
             + optional_comma
-            + pynini.closure(NEMO_SPACE + year_era, 0, 1)
+            + pynini.closure(NEMO_SPACE + year_opt_era, 0, 1)
         )
 
         graph_my = (
             (month_name | month_abbreviation)
             + optional_comma
             + NEMO_SPACE
-            + year_era
+            + year_opt_era
         )
 
         day_optional = pynini.closure(pynini.cross("-", NEMO_SPACE) + day, 0, 1)
