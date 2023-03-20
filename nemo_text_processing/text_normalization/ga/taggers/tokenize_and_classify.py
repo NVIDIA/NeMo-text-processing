@@ -25,7 +25,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
+from nemo_text_processing.text_normalization.ga.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.ga.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ga.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ga.taggers.decimal import DecimalFst
