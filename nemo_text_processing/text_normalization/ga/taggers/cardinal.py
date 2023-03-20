@@ -226,21 +226,7 @@ class CardinalFst(GraphFst):
             pynutil.delete("00")
             + thousands_single_digits
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-            pynini.cross("001", "míle")
-            + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
-        if not deterministic:
-            graph_thousands_component_at_least_one_non_zero_digit |= (
-                pynini.cross("001", "aon míle")
-                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-                graph_hundreds_component_at_least_one_non_zero_digit_no_one
-                + pynutil.insert(" míle is")
-                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-                pynini.cross("001", "míle is")
-                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-                pynini.cross("001", "aon míle is")
-                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-            )
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
