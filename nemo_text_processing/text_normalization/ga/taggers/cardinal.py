@@ -209,6 +209,8 @@ class CardinalFst(GraphFst):
             pynutil.delete("00") + digits_no_one
         )
 
+        # the different number forms only start to become different at 10,000
+        thousands_single_digits = make_number_form("míle", deterministic=deterministic, conjunction=True)
         # Bunuimhreacha (base numbers)
         thousands_two_digits = make_number_form("míle", deterministic=deterministic, conjunction=True, higher=True)
         self.thousands_two_digits = thousands_two_digits
