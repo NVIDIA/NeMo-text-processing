@@ -27,6 +27,7 @@ from nemo_text_processing.text_normalization.ga.graph_utils import LOWER_LENITIO
 from pynini.lib import pynutil
 
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
+zero_count = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero_count.tsv")))
 digit_count = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit_count.tsv")))
 teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teens_count.tsv")))
 teen_noncount = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teens_noncount.tsv")))
@@ -107,7 +108,7 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         hundreds = make_number_form("céad")
         output = hundreds + pynini.union(
             pynutil.delete("0") + pynutil.insert(" is ") + single_digit,
-            pynutil.insert(" is ") + tens_words,
+            pynutil.insert(" is ") + ties,
         )
 
     return output
@@ -315,8 +316,8 @@ class CardinalFst(GraphFst):
         self.graph |= zero
 
         self.graph = filter_punctuation(self.graph).optimize()
-        all_digits = graph_digit | zero
-        self.read_digits = all_digits + pynini.closure(NEMO_SPACE + all_digits)
+        self.digit = graph_digit | zero_count
+        self.read_digits = self.digit + pynini.closure(pynutil.insert(" ") + self.digit)
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
