@@ -43,7 +43,7 @@ class DecimalFst(GraphFst):
         )
 
         self.integer = integer
-        conjunction = pynutil.insert(" komma ")
+        conjunction = pynutil.insert(" ponc ")
         fractional = conjunction + fractional_default
 
         quantity = (
