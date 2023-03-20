@@ -211,6 +211,8 @@ class CardinalFst(GraphFst):
 
         # the different number forms only start to become different at 10,000
         thousands_single_digits = make_number_form("míle", deterministic=deterministic, conjunction=True)
+        thousands_single_digits_no_one = (NEMO_DIGIT - "1") @ thousands_single_digits
+        self.thousands_single_digits = thousands_single_digits
         # Bunuimhreacha (base numbers)
         thousands_two_digits = make_number_form("míle", deterministic=deterministic, conjunction=True, higher=True)
         self.thousands_two_digits = thousands_two_digits
@@ -233,21 +235,10 @@ class CardinalFst(GraphFst):
             graph_hundreds_component_at_least_one_non_zero_digit_no_one
             + pynutil.insert(" míle")
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-            pynini.cross("001", "míle")
+            pynutil.delete("00")
+            + thousands_single_digits
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
-        if not deterministic:
-            graph_thousands_component_at_least_one_non_zero_digit_no_one |= (
-                pynini.cross("001", "aon míle")
-                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-                graph_hundreds_component_at_least_one_non_zero_digit_no_one
-                + pynutil.insert(" míle is")
-                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-                pynini.cross("001", "míle is")
-                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-                pynini.cross("001", "aon míle is")
-                + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
-            )
 
         # Bunuimhreacha (base numbers)
         million = make_number_form("milliún", deterministic=deterministic, conjunction=True)
