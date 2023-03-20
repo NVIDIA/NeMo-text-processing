@@ -232,7 +232,7 @@ class CardinalFst(GraphFst):
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
-            graph_hundreds_component_at_least_one_non_zero_digit_no_one
+            graph_hundreds_component
             + pynutil.insert(" míle")
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
             pynutil.delete("00")
