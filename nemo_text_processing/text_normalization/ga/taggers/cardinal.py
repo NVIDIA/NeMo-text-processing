@@ -315,6 +315,8 @@ class CardinalFst(GraphFst):
         self.graph |= zero
 
         self.graph = filter_punctuation(self.graph).optimize()
+        all_digits = graph_digit | zero
+        self.read_digits = all_digits + pynini.closure(NEMO_SPACE + all_digits)
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
