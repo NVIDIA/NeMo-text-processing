@@ -19,8 +19,8 @@ from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
-month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))
-month_abbr = pynini.string_file(get_abs_path("data/dates/month_abbr.tsv"))
+month_numbers = pynini.string_file(get_abs_path("data/dates/numbers.tsv"))
+month_abbr = pynini.string_file(get_abs_path("data/dates/abbr.tsv"))
 era_suffix = pynini.string_file(get_abs_path("data/dates/era_suffix.tsv"))
 
 
