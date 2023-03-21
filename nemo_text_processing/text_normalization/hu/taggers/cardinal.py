@@ -251,7 +251,7 @@ class CardinalFst(GraphFst):
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
             @ NEMO_DIGIT ** 24
             @ graph
-            @ pynini.cdrewrite(delete_space, "[BOS]", "0", NEMO_SIGMA)
+            @ pynini.cdrewrite(pynutil.delete("0"), "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_hyphen, "[BOS]", "", NEMO_SIGMA)
