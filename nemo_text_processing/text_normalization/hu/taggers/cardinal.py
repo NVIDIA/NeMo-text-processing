@@ -72,6 +72,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     """
     exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
+    up_to_three_digits = up_to_three_digits - "000" - "00" - "0"
 
     cardinal_string = pynini.closure(
         NEMO_DIGIT, 1
@@ -245,10 +246,6 @@ class CardinalFst(GraphFst):
             + graph_million
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
-        self.graph_with_leading_zeros = graph.optimize()
-        clean_cardinal = pynutil.delete(pynini.closure("0")) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
-        delete_zeros = pynini.project(self.graph_with_leading_zeros, "input") @ clean_cardinal
-        self.graph_without_leading_zeros = delete_zeros.invert() @ delete_zeros
 
         clean_output = (
             pynini.cdrewrite(delete_space | delete_hyphen, "[BOS]", "", NEMO_SIGMA)
@@ -266,8 +263,6 @@ class CardinalFst(GraphFst):
             @ graph
             @ clean_output
         )
-        # Kludge #1: completely replace the above graph with one without zeros.
-        # self.graph = self.graph_without_leading_zeros @ clean_output
         zero_space = zero + insert_space
         self.zero_space = zero_space
         self.two_digits_read = pynini.union(
@@ -286,10 +281,6 @@ class CardinalFst(GraphFst):
         self.graph |= graph_zero
 
         self.graph = filter_punctuation(self.graph).optimize()
-
-        # Kludge #2: remove the phantom strings
-        why_oh_why = pynini.union("nullatrillió-", "nullatrilliárd-")
-        self.graph = self.graph @ pynini.cdrewrite(pynutil.delete(why_oh_why), bos_or_space, eos_or_space, NEMO_SIGMA)
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
