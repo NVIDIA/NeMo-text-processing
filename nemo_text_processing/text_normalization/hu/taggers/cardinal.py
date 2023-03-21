@@ -266,7 +266,8 @@ class CardinalFst(GraphFst):
             @ graph
             @ clean_output
         )
-        self.graph = self.graph_without_leading_zeros @ clean_output
+        # Kludge #1: completely replace the above graph with one without zeros.
+        # self.graph = self.graph_without_leading_zeros @ clean_output
         zero_space = zero + insert_space
         self.zero_space = zero_space
         self.two_digits_read = pynini.union(
@@ -286,6 +287,7 @@ class CardinalFst(GraphFst):
 
         self.graph = filter_punctuation(self.graph).optimize()
 
+        # Kludge #2: remove the phantom strings
         why_oh_why = pynini.union("nullatrillió-", "nullatrilliárd-")
         self.graph = self.graph @ pynini.cdrewrite(pynutil.delete(why_oh_why), bos_or_space, eos_or_space, NEMO_SIGMA)
 
