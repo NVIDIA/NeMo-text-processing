@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA, eos_or_space, bos_or_space
+from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -280,6 +280,7 @@ class CardinalFst(GraphFst):
 
         self.graph |= graph_zero
 
+        self.graph_unfiltered = self.graph
         self.graph = filter_punctuation(self.graph).optimize()
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
