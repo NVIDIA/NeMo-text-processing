@@ -246,6 +246,10 @@ class CardinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
         self.graph_with_leading_zeros = graph.optimize()
+        clean_cardinal = pynutil.delete(pynini.closure("0")) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
+        delete_zeros = pynini.project(self.graph_with_leading_zeros, "input") @ clean_cardinal
+        self.graph_without_leading_zeros = delete_zeros.invert() @ delete_zeros
+
         clean_output = (
             pynini.cdrewrite(delete_space | delete_hyphen, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space | delete_hyphen, "", "[EOS]", NEMO_SIGMA)
@@ -262,6 +266,7 @@ class CardinalFst(GraphFst):
             @ graph
             @ clean_output
         )
+        self.graph = self.graph_without_leading_zeros @ clean_output
         zero_space = zero + insert_space
         self.zero_space = zero_space
         self.two_digits_read = pynini.union(
