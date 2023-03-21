@@ -27,5 +27,5 @@ class TestMoney:
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
-        pred = self.normalizer.normalize(test_input, verbose=True)
-        assert pred == expected, f"{test_input}"
+        pred = self.normalizer.normalize(test_input, verbose=False)
+        assert pred == expected
