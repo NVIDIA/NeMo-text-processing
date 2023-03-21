@@ -255,14 +255,11 @@ class CardinalFst(GraphFst):
             )
         ).optimize()
 
-        clean_cardinal = pynutil.delete(pynini.closure("0")) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
-        clean_cardinal = clean_cardinal | "0"
-
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
             @ NEMO_DIGIT ** 24
-            @ (graph @ clean_cardinal)
+            @ graph
             @ clean_output
         )
         zero_space = zero + insert_space
