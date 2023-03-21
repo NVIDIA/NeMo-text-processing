@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA
+from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA, bos_or_space, eos_or_space
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -72,6 +72,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     """
     exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
+    up_to_three_digits = up_to_three_digits - "000" - "00" - "0"
 
     cardinal_string = pynini.closure(
         NEMO_DIGIT, 1
@@ -246,20 +247,21 @@ class CardinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
-        self.graph = (
-            ((NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT, 0)) - "0")
-            @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
-            @ graph
-            @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_hyphen, "[BOS]", "", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_hyphen, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_extra_hyphens, "", "", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_extra_spaces, "", "", NEMO_SIGMA)
+        clean_output = (
+            pynini.cdrewrite(delete_space | delete_hyphen, "[BOS]", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_space | delete_hyphen, "", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_extra_hyphens | delete_extra_spaces, "", "", NEMO_SIGMA)
             @ pynini.cdrewrite(
                 pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
             )
+        ).optimize()
+
+        self.graph = (
+            ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
+            @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
+            @ NEMO_DIGIT ** 24
+            @ graph
+            @ clean_output
         )
         zero_space = zero + insert_space
         self.zero_space = zero_space
