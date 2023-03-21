@@ -245,19 +245,22 @@ class CardinalFst(GraphFst):
             + graph_million
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
-        self.graph_with_leading_zeros = graph
+        self.graph_with_leading_zeros = graph.optimize()
+        clean_output = (
+            pynini.cdrewrite(delete_space | delete_hyphen, "[BOS]", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_space | delete_hyphen, "", "[EOS]", NEMO_SIGMA)
+            @ pynini.cdrewrite(delete_extra_hyphens | delete_extra_spaces, "", "", NEMO_SIGMA)
+            @ pynini.cdrewrite(
+                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
+            )
+        ).optimize()
 
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
             @ NEMO_DIGIT ** 24
             @ graph
-            @ pynini.cdrewrite(delete_space | delete_hyphen, "[BOS]", "", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_space | delete_hyphen, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_extra_hyphens | delete_extra_spaces, "", "", NEMO_SIGMA)
-            @ pynini.cdrewrite(
-                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), HU_ALPHA, HU_ALPHA, NEMO_SIGMA
-            )
+            @ clean_output
         )
         zero_space = zero + insert_space
         self.zero_space = zero_space
