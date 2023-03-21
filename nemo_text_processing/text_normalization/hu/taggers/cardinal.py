@@ -247,7 +247,7 @@ class CardinalFst(GraphFst):
         )
 
         self.graph = (
-            ((NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT, 0)) - "0")
+            ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
             @ NEMO_DIGIT ** 24
             @ graph
