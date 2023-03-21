@@ -16,10 +16,8 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
-    NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    convert_space,
 )
 from pynini.lib import pynutil
 
