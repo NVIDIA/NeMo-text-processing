@@ -245,6 +245,7 @@ class CardinalFst(GraphFst):
             + graph_million
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
+        self.graph_with_leading_zeros = graph
 
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
