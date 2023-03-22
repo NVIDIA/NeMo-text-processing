@@ -291,7 +291,7 @@ class Normalizer:
         return splits
 
     def normalize(
-        self, text: str, verbose: bool = True, punct_pre_process: bool = False, punct_post_process: bool = False
+        self, text: str, verbose: bool = False, punct_pre_process: bool = False, punct_post_process: bool = False
     ) -> str:
         """
         Main function. Normalizes tokens from written to spoken form
@@ -318,10 +318,7 @@ class Normalizer:
             if verbose:
                 print(text)
             return text
-        unescaped = text
         text = pynini.escape(text)
-        if verbose and text != unescaped:
-            print(unescaped, text)
         tagged_lattice = self.find_tags(text)
         tagged_text = Normalizer.select_tag(tagged_lattice)
         if verbose:
