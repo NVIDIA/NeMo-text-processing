@@ -26,16 +26,6 @@ from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
 
-zero = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
-digit = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
-digit_inline = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_inline.tsv")))
-tens = pynini.invert(pynini.string_file(get_abs_path("data/number/tens.tsv")))
-tens_inline = pynini.invert(pynini.string_file(get_abs_path("data/number/tens_inline.tsv")))
-delete_hyphen = pynutil.delete(pynini.closure("-"))
-delete_extra_hyphens = pynini.cross(pynini.closure("-", 1), "-")
-delete_extra_spaces = pynini.cross(pynini.closure(" ", 1), " ")
-cardinal_separator = pynini.string_map([".", NEMO_SPACE])
-
 
 def make_million(word: str, hundreds: 'pynini.FstLike', deterministic=False):
     insert_hyphen = pynutil.insert("-")
@@ -70,6 +60,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     Returns:
         fst: A pynini.FstLike object
     """
+    cardinal_separator = pynini.string_map([".", NEMO_SPACE])
     exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
     up_to_three_digits = up_to_three_digits - "000" - "00" - "0"
@@ -102,6 +93,15 @@ class CardinalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+
+        zero = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
+        digit = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
+        digit_inline = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_inline.tsv")))
+        tens = pynini.invert(pynini.string_file(get_abs_path("data/number/tens.tsv")))
+        tens_inline = pynini.invert(pynini.string_file(get_abs_path("data/number/tens_inline.tsv")))
+        delete_hyphen = pynutil.delete(pynini.closure("-"))
+        delete_extra_hyphens = pynini.cross(pynini.closure("-", 1), "-")
+        delete_extra_spaces = pynini.cross(pynini.closure(" ", 1), " ")
 
         # Any single digit
         graph_digit = digit
