@@ -59,6 +59,7 @@ class DateFst(GraphFst):
         graph_day = pynutil.insert("day: \"") + day_double + pynutil.insert("\"")
         graph_day_ord = pynutil.insert("day: \"") + day + pynutil.insert("\"")
         graph_era = pynutil.insert("era: \"") + era_words + pynutil.insert("\"")
+        optional_era = pynini.closure(NEMO_SPACE + graph_era, 0, 1)
         graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
         preserve = pynutil.insert(" preserve_order: true")
 
@@ -66,7 +67,7 @@ class DateFst(GraphFst):
         graph_dmy = graph_day + NEMO_SPACE + graph_month + NEMO_SPACE + graph_year
         graph_dmy |= graph_dmy + NEMO_SPACE + graph_era
         ydm = graph_year + NEMO_SPACE + graph_month + NEMO_SPACE + graph_day
-        graph_ydm = (ydm | ydm + NEMO_SPACE + graph_era) + preserve
+        graph_ydm = ydm + optional_era + preserve
         final_graph = year | graph_dmy | graph_dm | graph_ydm | graph_decade
 
         graph = self.add_tokens(final_graph)
