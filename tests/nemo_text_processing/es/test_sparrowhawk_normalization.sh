@@ -56,7 +56,7 @@ testTNOrdinal() {
 }
 
 testTNTelephone() {
-  input=$PROJECT_DIR/es/data_text_normalization/test_cases_ordinal.txt
+  input=$PROJECT_DIR/es/data_text_normalization/test_cases_telephone.txt
   runtest $input
 }
 
