@@ -119,7 +119,8 @@ class DateFst(GraphFst):
         decade_only = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
-        era_only = pynutil.insert("era: \"") + (era_norm | era_names) + pynutil.insert("\"")
+        era_piece = era_norm | era_names
+        era_only = pynutil.insert("era: \"") + era_piece + pynutil.insert("\"")
         optional_era = pynini.closure(plain_space + era_only, 0, 1)
         year_era = year_only + plain_space + era_only + pynutil.insert(" preserve_order: true")
         year_opt_era = year_only + optional_era + pynutil.insert(" preserve_order: true")
