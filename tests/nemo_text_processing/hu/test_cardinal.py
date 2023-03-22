@@ -28,3 +28,5 @@ class TestCardinal:
     def test_norm(self, test_input, expected):
         pred = self.normalizer_hu.normalize(test_input, verbose=False)
         assert pred == expected
+
+    del normalizer_hu
