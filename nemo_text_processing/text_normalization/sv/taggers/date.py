@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, insert_space, delete_space
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
@@ -46,6 +46,7 @@ class DateFst(GraphFst):
         era_norm = era_suffix @ era_words
         era_names = pynini.project(era_words, "output")
         month_graph = pynini.project(number_to_month, "output")
+        plain_space = delete_space + insert_space
 
         numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
@@ -94,14 +95,14 @@ class DateFst(GraphFst):
         if not deterministic:
             year |= year_cardinal
             year |= year_hundra
-            year |= year_first + NEMO_SPACE + year_second
+            year |= year_first + plain_space + year_second
         self.year = year
         self.year_cardinal = year_cardinal
         sou_number = self.year + pynini.cross(":", " kolon ") + numbers
         sou_word = pynini.accep("SOU")
         if not deterministic:
             sou_word |= pynini.cross("SOU", "statens offentliga utredningar")
-        self.sou = sou_word + NEMO_SPACE + sou_number
+        self.sou = sou_word + plain_space + sou_number
 
         year_second_decades = ((NEMO_DIGIT - "0") + "0") @ numbers
         year_second_decades |= pynini.cross("00", "hundra")
@@ -119,19 +120,19 @@ class DateFst(GraphFst):
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         era_only = pynutil.insert("era: \"") + (era_norm | era_names) + pynutil.insert("\"")
-        optional_era = pynini.closure(NEMO_SPACE + era_only, 0, 1)
-        year_era = year_only + NEMO_SPACE + era_only + pynutil.insert(" preserve_order: true")
+        optional_era = pynini.closure(plain_space + era_only, 0, 1)
+        year_era = year_only + plain_space + era_only + pynutil.insert(" preserve_order: true")
         year_opt_era = year_only + optional_era + pynutil.insert(" preserve_order: true")
 
         graph_dmy = (
             (day | day_sfx | day_words)
-            + NEMO_SPACE
+            + plain_space
             + (month_name | month_abbreviation)
             + optional_comma
-            + pynini.closure(NEMO_SPACE + year_opt_era, 0, 1)
+            + pynini.closure(plain_space + year_opt_era, 0, 1)
         )
 
-        graph_my = (month_name | month_abbreviation) + optional_comma + NEMO_SPACE + year_opt_era
+        graph_my = (month_name | month_abbreviation) + optional_comma + plain_space + year_opt_era
 
         day_optional = pynini.closure(pynini.cross("-", NEMO_SPACE) + day, 0, 1)
         graph_ymd = year_only + pynini.cross("-", NEMO_SPACE) + month_number + day_optional
