@@ -174,9 +174,7 @@ class CardinalFst(GraphFst):
         graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
             pynutil.delete("00") + digits_no_one
         )
-        self.hundreds_non_zero_no_one = (
-            graph_hundreds_component_at_least_one_non_zero_digit_no_one
-        )
+        self.hundreds_non_zero_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one
 
         ezer = pynutil.insert("ezer")
         if not deterministic:
@@ -218,24 +216,12 @@ class CardinalFst(GraphFst):
             graph_thousands_component_at_least_one_non_zero_digit_no_one
         )
 
-        graph_million = make_million(
-            "millió", self.hundreds_non_zero_no_one, deterministic
-        )
-        graph_milliard = make_million(
-            "milliárd", self.hundreds_non_zero_no_one, deterministic
-        )
-        graph_billion = make_million(
-            "billió", self.hundreds_non_zero_no_one, deterministic
-        )
-        graph_billiard = make_million(
-            "billiárd", self.hundreds_non_zero_no_one, deterministic
-        )
-        graph_trillion = make_million(
-            "trillió", self.hundreds_non_zero_no_one, deterministic
-        )
-        graph_trilliard = make_million(
-            "trilliárd", self.hundreds_non_zero_no_one, deterministic
-        )
+        graph_million = make_million("millió", self.hundreds_non_zero_no_one, deterministic)
+        graph_milliard = make_million("milliárd", self.hundreds_non_zero_no_one, deterministic)
+        graph_billion = make_million("billió", self.hundreds_non_zero_no_one, deterministic)
+        graph_billiard = make_million("billiárd", self.hundreds_non_zero_no_one, deterministic)
+        graph_trillion = make_million("trillió", self.hundreds_non_zero_no_one, deterministic)
+        graph_trilliard = make_million("trilliárd", self.hundreds_non_zero_no_one, deterministic)
 
         graph = (
             graph_trilliard
