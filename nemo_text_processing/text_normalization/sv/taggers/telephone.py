@@ -124,11 +124,18 @@ class TelephoneFst(GraphFst):
 
         # No need to be so exact here, but better for ITN to have it
         three_digit_area_code_digit_two = pynini.union("1", "2", "3", "4", "7")
-        three_digit_area_code = zero_space + ((three_digit_area_code_digit_two + NEMO_DIGIT) @ cardinal.two_digits_read)
+        three_digit_area_code_no_zero = ((three_digit_area_code_digit_two + NEMO_DIGIT) @ cardinal.two_digits_read)
+        three_digit_area_code = zero_space + three_digit_area_code_no_zero
         four_digit_area_code_digit_two = pynini.union("5", "6", "9")
-        four_digit_area_code = zero_space + ((four_digit_area_code_digit_two + NEMO_DIGIT) @ cardinal.three_digits_read)
+        four_digit_area_code_no_zero = ((four_digit_area_code_digit_two + NEMO_DIGIT) @ cardinal.three_digits_read)
+        four_digit_area_code = zero_space + four_digit_area_code_no_zero
         two_digit_area_code = "08" @ cardinal.two_digits_read
         self.area_codes = two_digit_area_code | three_digit_area_code | four_digit_area_code
+        self.area_codes_no_zero = three_digit_area_code_no_zero | four_digit_area_code_no_zero | pynini.cross("8", "åtta")
+        country_code_lead = pynini.cross("+", "plus") | pynini.cross("00", "noll noll")
+        raw_country_codes = pynini.string_file(get_abs_path("data/telephone/country_codes.tsv"))
+        self.country_code = country_code_lead + insert_space + (raw_country_codes @ cardinal.any_read_digit)
+        self.country_plus_area_code = self.country_code + NEMO_SPACE + self.area_codes_no_zero
 
         # ip
         ip_prompts = pynini.string_file(get_abs_path("data/telephone/ip_prompt.tsv"))
