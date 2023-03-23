@@ -73,7 +73,9 @@ class TelephoneFst(GraphFst):
         telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
         prompt_as_code = pynutil.insert("country_code: \"") + telephone_prompt + pynutil.insert("\"")
         prompt_as_code |= pynutil.insert("country_code: \"") + telephone_abbr + pynutil.insert("\"")
-        prompt_as_code |= pynutil.insert("country_code: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
+        prompt_as_code |= (
+            pynutil.insert("country_code: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
+        )
         prompt_inner = telephone_prompt | telephone_abbr
         prompt_inner |= telephone_prompt + NEMO_SPACE + telephone_abbr
 
