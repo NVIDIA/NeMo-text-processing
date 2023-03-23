@@ -329,6 +329,8 @@ class CardinalFst(GraphFst):
                 digit + insert_space + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, -0.001
             )
             self.two_digits_read |= pynutil.add_weight(digit + insert_space + digit, -0.001)
+            self.any_read_digit |= self.two_digits_read
+            self.any_read_digit |= self.three_digits_read
 
         self.graph |= zero
 
