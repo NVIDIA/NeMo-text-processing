@@ -68,8 +68,10 @@ class TelephoneFst(GraphFst):
         special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
         special_numbers @= cardinal.three_digits_read
 
+        passable = pynini.union(":", ": ", " ")
+        prompt_pass = pynini.closure(pynutil.delete(passable) + insert_space, 0, 1)
         telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
-        telephone_abbr = telephone_abbr + pynini.closure(pynutil.delete(":"), 0, 1)
+        telephone_abbr = telephone_abbr + prompt_pass
         telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
         prompt_as_code = pynutil.insert("country_code: \"") + telephone_prompt + pynutil.insert("\"")
         prompt_as_code |= pynutil.insert("country_code: \"") + telephone_abbr + pynutil.insert("\"")
@@ -112,22 +114,19 @@ class TelephoneFst(GraphFst):
         mellek = NEMO_SPACE + pynutil.delete("mellék")
         extension = pynutil.insert("extension: \"") + up_to_four_digits + pynutil.insert("\"")
         extension = pynini.closure(area_separators + extension + mellek, 0, 1)
-        passable = pynini.union(":", ": ", " ")
-        prompt_pass = pynutil.delete(passable) + insert_space
 
         special_numbers = pynutil.insert("number_part: \"") + special_numbers + pynutil.insert("\"")
-        prompt = prompt_as_code + prompt_pass
         graph = pynini.union(
             country_code + separators + number_part,
             country_code + separators + number_part + extension,
             number_part + extension,
             trunk_number_part,
             trunk_number_part + extension,
-            prompt + number_part,
-            prompt + trunk_number_part,
-            prompt + trunk_number_part + extension,
-            prompt + special_numbers,
-            prompt + number_part + extension,
+            country_code + number_part,
+            country_code + trunk_number_part,
+            country_code + trunk_number_part + extension,
+            country_code + special_numbers,
+            country_code + number_part + extension,
         )
         self.tel_graph = graph.optimize()
 
