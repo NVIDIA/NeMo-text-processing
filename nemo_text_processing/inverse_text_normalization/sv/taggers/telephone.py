@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space, NEMO_SPACE
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst, convert_space
 from pynini.lib import pynutil
 
 
