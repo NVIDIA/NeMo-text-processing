@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space, NEMO_SPACE
 from pynini.lib import pynutil
 
 
@@ -26,28 +26,23 @@ class TelephoneFst(GraphFst):
         tn_cardinal_tagger: TN Cardinal Tagger
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst):
+    def __init__(self, tn_cardinal_tagger: GraphFst, tn_telephone_tagger: GraphFst):
         super().__init__(name="telephone", kind="classify")
-        separator = pynini.accep(" ")  # between components
-        digit = pynini.union(*list(map(str, range(1, 10)))) @ tn_cardinal_tagger.two_digit_non_zero
-        zero = pynini.cross("0", "null")
+        country_plus_area_code = pynini.invert(tn_telephone_tagger.country_plus_area_code).optimize()
+        area_codes = pynini.invert(tn_telephone_tagger.area_codes).optimize()
+        lead = (country_plus_area_code | area_codes) + pynini.cross(" ", "-")
 
-        number_part = (
-            pynutil.delete("(")
-            + zero
-            + insert_space
-            + pynini.closure(digit + insert_space, 2, 2)
-            + digit
-            + pynutil.delete(")")
-            + separator
-            + pynini.closure(digit + insert_space, 3, 3)
-            + digit
-            + pynutil.delete("-")
-            + insert_space
-            + pynini.closure(digit + insert_space, 3, 3)
-            + digit
+        two_digits = pynini.invert(tn_cardinal_tagger.two_digits_read).optimize()
+        three_digits = pynini.invert(tn_cardinal_tagger.three_digits_read).optimize()
+
+        base_number_part = pynini.union(
+            three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + two_digits,
+            three_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
+            two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
+            three_digits + NEMO_SPACE + two_digits,
         )
-        graph = convert_space(pynini.invert(number_part))
+
+        graph = convert_space(lead + NEMO_SPACE + base_number_part)
         final_graph = pynutil.insert("name: \"") + graph + pynutil.insert("\"")
 
         self.fst = final_graph.optimize()
