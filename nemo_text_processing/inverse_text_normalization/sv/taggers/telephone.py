@@ -43,7 +43,7 @@ class TelephoneFst(GraphFst):
             three_digits + NEMO_SPACE + two_digits,
         )
 
-        graph = convert_space(lead + NEMO_SPACE + base_number_part)
+        graph = convert_space(lead + base_number_part)
         final_graph = pynutil.insert("name: \"") + graph + pynutil.insert("\"")
 
         self.fst = final_graph.optimize()
