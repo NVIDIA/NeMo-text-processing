@@ -15,6 +15,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
     NEMO_SPACE,
     GraphFst,
     delete_extra_space,
@@ -120,6 +121,14 @@ class TelephoneFst(GraphFst):
             country_code + number_part + ext_prompt + extension,
         )
         self.tel_graph = graph.optimize()
+
+        # No need to be so exact here, but better for ITN to have it
+        three_digit_area_code_digit_two = pynini.union("1", "2", "3", "4", "7")
+        three_digit_area_code = zero_space + ((three_digit_area_code_digit_two + NEMO_DIGIT) @ cardinal.two_digits_read)
+        four_digit_area_code_digit_two = pynini.union("5", "6", "9")
+        four_digit_area_code = zero_space + ((four_digit_area_code_digit_two + NEMO_DIGIT) @ cardinal.three_digits_read)
+        two_digit_area_code = "08" @ cardinal.two_digits_read
+        self.area_codes = two_digit_area_code | three_digit_area_code | four_digit_area_code
 
         # ip
         ip_prompts = pynini.string_file(get_abs_path("data/telephone/ip_prompt.tsv"))
