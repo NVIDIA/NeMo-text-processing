@@ -70,14 +70,23 @@ class TelephoneFst(GraphFst):
 
         special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
 
+        passable = pynini.union(":", ": ", " ")
+        prompt_pass = pynini.closure(pynutil.delete(passable) + insert_space, 0, 1)
         telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
+        telephone_abbr = telephone_abbr + prompt_pass
         telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
-        prompt = pynutil.insert("prompt: \"") + telephone_prompt + pynutil.insert("\"")
-        prompt |= pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
-        prompt |= pynutil.insert("prompt: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
+        prompt_as_code = pynutil.insert("country_code: \"") + telephone_prompt + pynutil.insert("\"")
+        prompt_as_code |= pynutil.insert("country_code: \"") + telephone_abbr + pynutil.insert("\"")
+        prompt_as_code |= (
+            pynutil.insert("country_code: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
+        )
+        prompt_inner = telephone_prompt | telephone_abbr
+        prompt_inner |= telephone_prompt + NEMO_SPACE + telephone_abbr
 
-        country_code = pynini.closure(pynini.cross("+", "plus "), 0, 1) + one_two_or_three_digits
-        country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
+        country = pynini.closure(pynini.cross("+", "plus "), 0, 1) + one_two_or_three_digits
+        country_code = pynutil.insert("country_code: \"") + country + pynutil.insert("\"")
+        country_code |= prompt_as_code
+        country_code |= pynutil.insert("country_code: \"") + prompt_inner + NEMO_SPACE + country + pynutil.insert("\"")
 
         opt_dash = pynini.closure(pynutil.delete("-"), 0, 1)
         area_part = zero_after_country_code + one_two_or_three_digits + opt_dash + add_separator
@@ -102,16 +111,13 @@ class TelephoneFst(GraphFst):
         prompt_pass = pynutil.delete(passable) + insert_space
 
         special_numbers = pynutil.insert("number_part: \"") + special_numbers + pynutil.insert("\"")
-        prompt = prompt + prompt_pass
         graph = pynini.union(
             country_code + ensure_space + number_part,
             country_code + ensure_space + number_part + ext_prompt + extension,
             number_part + ext_prompt + extension,
-            prompt + number_part,
-            prompt + special_numbers,
-            prompt + country_code + number_part,
-            prompt + country_code + number_part + ext_prompt + extension,
-            prompt + number_part + ext_prompt + extension,
+            country_code + number_part,
+            country_code + special_numbers,
+            country_code + number_part + ext_prompt + extension,
         )
         self.tel_graph = graph.optimize()
 
