@@ -28,9 +28,10 @@ class TelephoneFst(GraphFst):
 
     def __init__(self, tn_cardinal_tagger: GraphFst, tn_telephone_tagger: GraphFst):
         super().__init__(name="telephone", kind="classify")
-        country_plus_area_code = pynini.invert(tn_telephone_tagger.country_plus_area_code).optimize()
+        # country_plus_area_code = pynini.invert(tn_telephone_tagger.country_plus_area_code).optimize()
         area_codes = pynini.invert(tn_telephone_tagger.area_codes).optimize()
-        lead = (country_plus_area_code | area_codes) + pynini.cross(" ", "-")
+        # lead = (country_plus_area_code | area_codes) + pynini.cross(" ", "-")
+        lead = area_codes + pynini.cross(" ", "-")
 
         two_digits = pynini.invert(tn_cardinal_tagger.two_digits_read).optimize()
         three_digits = pynini.invert(tn_cardinal_tagger.three_digits_read).optimize()
