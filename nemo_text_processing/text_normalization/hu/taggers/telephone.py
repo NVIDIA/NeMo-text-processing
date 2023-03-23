@@ -20,7 +20,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hu.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.hu.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
@@ -72,9 +71,11 @@ class TelephoneFst(GraphFst):
         telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
         telephone_abbr = telephone_abbr + pynini.closure(pynutil.delete(":"), 0, 1)
         telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
-        prompt = pynutil.insert("prompt: \"") + telephone_prompt + pynutil.insert("\"")
-        prompt |= pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
-        prompt |= pynutil.insert("prompt: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
+        prompt_as_code = pynutil.insert("country_code: \"") + telephone_prompt + pynutil.insert("\"")
+        prompt_as_code |= pynutil.insert("country_code: \"") + telephone_abbr + pynutil.insert("\"")
+        prompt_as_code |= pynutil.insert("country_code: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
+        prompt_inner = telephone_prompt | telephone_abbr
+        prompt_inner |= telephone_prompt + NEMO_SPACE + telephone_abbr
 
         plus = pynini.cross("+", "plusz ")
         plus |= pynini.cross("00", "nulla nulla ")
@@ -83,6 +84,8 @@ class TelephoneFst(GraphFst):
         country = pynini.closure(pynutil.delete("("), 0, 1) + country_codes + pynini.closure(pynutil.delete(")"), 0, 1)
         country = plus + pynini.closure(pynutil.delete(" "), 0, 1) + country
         country_code = pynutil.insert("country_code: \"") + country + pynutil.insert("\"")
+        country_code |= prompt_as_code
+        country_code |= pynutil.insert("country_code: \"") + prompt_inner + NEMO_SPACE + country + pynutil.insert("\"")
 
         trunk = pynini.cross("06", "nulla hat")
         trunk |= pynutil.delete("(") + trunk + pynutil.delete(")")
@@ -111,7 +114,7 @@ class TelephoneFst(GraphFst):
         prompt_pass = pynutil.delete(passable) + insert_space
 
         special_numbers = pynutil.insert("number_part: \"") + special_numbers + pynutil.insert("\"")
-        prompt = prompt + prompt_pass
+        prompt = prompt_as_code + prompt_pass
         graph = pynini.union(
             country_code + separators + number_part,
             country_code + separators + number_part + extension,

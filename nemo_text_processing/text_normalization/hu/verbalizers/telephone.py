@@ -41,13 +41,6 @@ class TelephoneFst(GraphFst):
 
         optional_country_code = pynini.closure(country_code + delete_space + insert_space, 0, 1,)
 
-        prompt_part = (
-            pynutil.delete("prompt: \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynini.closure(pynutil.add_weight(pynutil.delete(" "), -0.0001), 0, 1)
-            + pynutil.delete("\"")
-        ) + NEMO_SPACE
-
         number_part = (
             pynutil.delete("number_part: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
@@ -66,7 +59,6 @@ class TelephoneFst(GraphFst):
         )
 
         graph = pynini.union(
-            prompt_part + optional_country_code + number_part + optional_extension,
             optional_country_code + number_part + optional_extension,
         )
         delete_tokens = self.delete_tokens(graph)
