@@ -125,8 +125,6 @@ class TelephoneFst(GraphFst):
             prompt + trunk_number_part,
             prompt + trunk_number_part + extension,
             prompt + special_numbers,
-            prompt + country_code + separators + number_part,
-            prompt + country_code + separators + number_part + extension,
             prompt + number_part + extension,
         )
         self.tel_graph = graph.optimize()
