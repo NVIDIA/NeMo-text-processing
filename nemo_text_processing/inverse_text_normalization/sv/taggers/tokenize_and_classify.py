@@ -42,6 +42,7 @@ from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFs
 from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst as TNElectronicTagger
 from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst as TNFractionTagger
 from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as TNOrdinalTagger
+from nemo_text_processing.text_normalization.sv.taggers.telephone import TelephoneFst as TNTelephoneTagger
 from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst as TNWhitelistTagger
 from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst as TNDateVerbalizer
 from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst as TNElectronicVerbalizer
@@ -93,6 +94,7 @@ class ClassifyFst(GraphFst):
             tn_time_verbalizer = TNTimeVerbalizer(deterministic=False)
             tn_electronic_tagger = TNElectronicTagger(deterministic=False)
             tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
+            tn_telephone_tagger = TNTelephoneTagger(deterministic=False)
 
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger)
             cardinal_graph = cardinal.fst
@@ -117,7 +119,7 @@ class ClassifyFst(GraphFst):
             electronic_graph = ElectronicFst(
                 tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer
             ).fst
-            telephone_graph = TelephoneFst(tn_cardinal_tagger=tn_cardinal_tagger).fst
+            telephone_graph = TelephoneFst(tn_cardinal_tagger=tn_cardinal_tagger, tn_telephone_tagger=tn_telephone_tagger).fst
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)
