@@ -311,7 +311,7 @@ class DateFst(GraphFst):
         else:
             final_graph += pynutil.insert(" preserve_order: true")
 
-        period_fy = pynutil.insert("period: \"") + _get_financial_period_graph() + pynutil.insert("\"")
+        period_fy = pynutil.insert("text: \"") + _get_financial_period_graph() + pynutil.insert("\"")
         graph_fy = period_fy + insert_space + two_digit_year
 
         final_graph |= graph_ymd | year_graph | graph_fy
