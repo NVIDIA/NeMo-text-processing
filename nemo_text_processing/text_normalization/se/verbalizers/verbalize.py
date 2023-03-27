@@ -13,16 +13,16 @@
 # limitations under the License.
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.sv.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst
-from nemo_text_processing.text_normalization.sv.verbalizers.decimals import DecimalFst
-from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst
-from nemo_text_processing.text_normalization.sv.verbalizers.fraction import FractionFst
-from nemo_text_processing.text_normalization.sv.verbalizers.measure import MeasureFst
-from nemo_text_processing.text_normalization.sv.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.sv.verbalizers.telephone import TelephoneFst
-from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst
+from nemo_text_processing.text_normalization.se.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.se.verbalizers.date import DateFst
+from nemo_text_processing.text_normalization.se.verbalizers.decimals import DecimalFst
+from nemo_text_processing.text_normalization.se.verbalizers.electronic import ElectronicFst
+from nemo_text_processing.text_normalization.se.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.se.verbalizers.measure import MeasureFst
+from nemo_text_processing.text_normalization.se.verbalizers.money import MoneyFst
+from nemo_text_processing.text_normalization.se.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.se.verbalizers.telephone import TelephoneFst
+from nemo_text_processing.text_normalization.se.verbalizers.time import TimeFst
 
 
 class VerbalizeFst(GraphFst):
