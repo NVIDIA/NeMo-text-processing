@@ -15,7 +15,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_UPPER
+from nemo_text_processing.text_normalization.se.graph_utils import SE_UPPER
 from pynini.lib import pynutil
 
 
@@ -35,11 +35,11 @@ class AbbreviationFst(GraphFst):
 
         dot = pynini.accep(".")
         # A.B.C. -> A. B. C.
-        graph = SV_UPPER + dot + pynini.closure(insert_space + SV_UPPER + dot, 1)
+        graph = SE_UPPER + dot + pynini.closure(insert_space + SE_UPPER + dot, 1)
         # A.B.C. -> A.B.C.
-        graph |= SV_UPPER + dot + pynini.closure(SV_UPPER + dot, 1)
+        graph |= SE_UPPER + dot + pynini.closure(SE_UPPER + dot, 1)
         # ABC -> A B C
-        graph |= SV_UPPER + pynini.closure(insert_space + SV_UPPER, 1)
+        graph |= SE_UPPER + pynini.closure(insert_space + SE_UPPER, 1)
 
         # exclude words that are included in the whitelist
         if whitelist is not None:
