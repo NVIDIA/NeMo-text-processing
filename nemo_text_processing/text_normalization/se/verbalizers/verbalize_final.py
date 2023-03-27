@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.sv.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.text_normalization.se.verbalizers.verbalize import VerbalizeFst
 from pynini.lib import pynutil
 
 
