@@ -60,11 +60,7 @@ class ElectronicFst(GraphFst):
 
         # url
         protocol_start = pynini.accep("https://") | pynini.accep("http://")
-        protocol_end = (
-            pynini.accep("www.")
-            if deterministic
-            else pynini.accep("www.") | pynini.cross("www.", "dubbel ve dubbel ve dubbel ve.")
-        )
+        protocol_end = pynini.cross("www.", "v v v")
         protocol = protocol_start | protocol_end | (protocol_start + protocol_end)
         protocol = pynutil.insert("protocol: \"") + protocol + pynutil.insert("\"")
         graph |= protocol + insert_space + (domain_graph | domain_common_graph)
