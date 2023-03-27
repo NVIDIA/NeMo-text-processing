@@ -118,7 +118,7 @@ class DateFst(GraphFst):
             graph_dmy |= new_graph
 
         final_graph = graph_dmy
-        final_graph |= year_only
+        # final_graph |= year_only
         final_graph |= graph_ymd
         final_graph |= graph_mdy
 
