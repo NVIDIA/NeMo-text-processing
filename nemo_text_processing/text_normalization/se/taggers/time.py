@@ -86,7 +86,7 @@ class TimeFst(GraphFst):
                 + pynutil.insert("\"")
             )
             final_graph_minute |= (
-                pynutil.insert("minutes: \"") + pynini.cross("00", "noll noll") + pynutil.insert("\"")
+                pynutil.insert("minutes: \"") + pynini.cross("00", "nolla nolla") + pynutil.insert("\"")
             )
         final_graph_second = (
             pynutil.insert("seconds: \"")
@@ -96,11 +96,11 @@ class TimeFst(GraphFst):
         if not deterministic:
             final_graph_second |= (
                 pynutil.insert("seconds: \"")
-                + (pynini.cross("0", "noll") + insert_space + graph_minute_single | graph_minute_double)
+                + (pynini.cross("0", "nolla") + insert_space + graph_minute_single | graph_minute_double)
                 + pynutil.insert("\"")
             )
             final_graph_second |= (
-                pynutil.insert("seconds: \"") + pynini.cross("00", "noll noll") + pynutil.insert("\"")
+                pynutil.insert("seconds: \"") + pynini.cross("00", "nolla nolla") + pynutil.insert("\"")
             )
         final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
         final_suffix_optional = pynini.closure(ensure_space + final_suffix, 0, 1)
@@ -111,14 +111,14 @@ class TimeFst(GraphFst):
         graph_hm_kl = (
             klockan_hour_graph
             + time_sep
-            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + (pynini.cross("00", " minutes: \"nolla\"") | insert_space + final_graph_minute)
             + final_suffix_optional
             + final_time_zone_optional
         )
         graph_hm_sfx = (
             final_graph_hour
             + time_sep
-            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + (pynini.cross("00", " minutes: \"nolla\"") | insert_space + final_graph_minute)
             + ensure_space
             + (final_suffix + final_time_zone_optional | final_time_zone)
         )
@@ -128,36 +128,36 @@ class TimeFst(GraphFst):
         graph_hms_sfx = (
             final_graph_hour
             + time_sep
-            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + (pynini.cross("00", " minutes: \"nolla\"") | insert_space + final_graph_minute)
             + time_sep
-            + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+            + (pynini.cross("00", " seconds: \"nolla\"") | insert_space + final_graph_second)
             + ensure_space
             + (final_suffix + final_time_zone_optional | final_time_zone)
         )
         graph_hms_sfx |= (
             final_graph_hour
             + pynutil.delete(".")
-            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + (pynini.cross("00", " minutes: \"nolla\"") | insert_space + final_graph_minute)
             + pynutil.delete(".")
-            + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+            + (pynini.cross("00", " seconds: \"nolla\"") | insert_space + final_graph_second)
             + ensure_space
             + (final_suffix + final_time_zone_optional | final_time_zone)
         )
         graph_hms_kl = (
             klockan_hour_graph
             + pynutil.delete(":")
-            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + (pynini.cross("00", " minutes: \"nolla\"") | insert_space + final_graph_minute)
             + pynutil.delete(":")
-            + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+            + (pynini.cross("00", " seconds: \"nolla\"") | insert_space + final_graph_second)
             + final_suffix_optional
             + final_time_zone_optional
         )
         graph_hms_kl |= (
             klockan_hour_graph
             + pynutil.delete(".")
-            + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+            + (pynini.cross("00", " minutes: \"nolla\"") | insert_space + final_graph_minute)
             + pynutil.delete(".")
-            + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+            + (pynini.cross("00", " seconds: \"nolla\"") | insert_space + final_graph_second)
             + final_suffix_optional
             + final_time_zone_optional
         )
@@ -166,21 +166,21 @@ class TimeFst(GraphFst):
             graph_hms |= (
                 final_graph_hour
                 + pynutil.delete(".")
-                + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+                + (pynini.cross("00", " minutes: \"nolla\"") | insert_space + final_graph_minute)
                 + pynutil.delete(".")
-                + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+                + (pynini.cross("00", " seconds: \"nolla\"") | insert_space + final_graph_second)
             )
             graph_hms |= (
                 final_graph_hour
                 + pynutil.delete(":")
-                + (pynini.cross("00", " minutes: \"noll\"") | insert_space + final_graph_minute)
+                + (pynini.cross("00", " minutes: \"nolla\"") | insert_space + final_graph_minute)
                 + pynutil.delete(":")
-                + (pynini.cross("00", " seconds: \"noll\"") | insert_space + final_graph_second)
+                + (pynini.cross("00", " seconds: \"nolla\"") | insert_space + final_graph_second)
             )
         self.graph_hms = graph_hms
         self.graph_hm = graph_hm
         # 2 pm est
-        ins_minutes = pynutil.insert(" minutes: \"noll\"")
+        ins_minutes = pynutil.insert(" minutes: \"nolla\"")
         graph_h = (
             final_graph_hour + ins_minutes + ensure_space + (final_suffix + final_time_zone_optional | final_time_zone)
         )
