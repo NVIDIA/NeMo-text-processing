@@ -25,19 +25,19 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
-from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst
-from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst
-from nemo_text_processing.text_normalization.sv.taggers.measure import MeasureFst
-from nemo_text_processing.text_normalization.sv.taggers.money import MoneyFst
-from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.sv.taggers.telephone import TelephoneFst
-from nemo_text_processing.text_normalization.sv.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.sv.taggers.word import WordFst
+from nemo_text_processing.text_normalization.se.taggers.abbreviation import AbbreviationFst
+from nemo_text_processing.text_normalization.se.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.se.taggers.date import DateFst
+from nemo_text_processing.text_normalization.se.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.se.taggers.electronic import ElectronicFst
+from nemo_text_processing.text_normalization.se.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.se.taggers.measure import MeasureFst
+from nemo_text_processing.text_normalization.se.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.se.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.se.taggers.telephone import TelephoneFst
+from nemo_text_processing.text_normalization.se.taggers.time import TimeFst
+from nemo_text_processing.text_normalization.se.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.se.taggers.word import WordFst
 from pynini.lib import pynutil
 
 
@@ -89,20 +89,20 @@ class ClassifyFst(GraphFst):
             ordinal_graph = ordinal.fst
             logging.debug(f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes")
 
-            start_time = time.time()
-            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
-            decimal_graph = decimal.fst
-            logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
+            # start_time = time.time()
+            # decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            # decimal_graph = decimal.fst
+            # logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
-            start_time = time.time()
-            fraction = FractionFst(deterministic=deterministic, ordinal=ordinal, cardinal=cardinal)
-            fraction_graph = fraction.fst
-            logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
+            # start_time = time.time()
+            # fraction = FractionFst(deterministic=deterministic, ordinal=ordinal, cardinal=cardinal)
+            # fraction_graph = fraction.fst
+            # logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
-            start_time = time.time()
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
-            measure_graph = measure.fst
-            logging.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
+            # start_time = time.time()
+            # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+            # measure_graph = measure.fst
+            # logging.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
 
             start_time = time.time()
             date_graph = DateFst(cardinal=cardinal, ordinal=ordinal, deterministic=deterministic).fst
@@ -120,9 +120,9 @@ class ClassifyFst(GraphFst):
             electonic_graph = ElectronicFst(deterministic=deterministic).fst
             logging.debug(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
 
-            start_time = time.time()
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic).fst
-            logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
+            # start_time = time.time()
+            # money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic).fst
+            # logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 
             start_time = time.time()
             whitelist_graph = WhiteListFst(
