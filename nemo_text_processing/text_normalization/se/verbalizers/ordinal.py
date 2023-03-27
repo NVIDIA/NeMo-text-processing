@@ -41,6 +41,7 @@ class OrdinalFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        self.graph = pynini.compose(graph, suffix)
+        # self.graph = pynini.compose(graph, suffix)
+        self.graph = graph
         delete_tokens = self.delete_tokens(self.graph)
         self.fst = delete_tokens.optimize()
