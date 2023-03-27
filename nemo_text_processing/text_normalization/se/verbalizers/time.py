@@ -39,14 +39,14 @@ class TimeFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
         ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
-        NOT_NOLL = pynini.difference(ANY_NOT_QUOTE, "noll")
+        NOT_NOLL = pynini.difference(ANY_NOT_QUOTE, "nolla")
         hour = pynutil.delete("hours:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         minute = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + NOT_NOLL + pynutil.delete("\"")
         minute |= (
             pynutil.delete("minutes:")
             + delete_space
             + pynutil.delete("\"")
-            + pynutil.delete("noll")
+            + pynutil.delete("nolla")
             + pynutil.delete("\"")
         )
         if not deterministic:
@@ -54,7 +54,7 @@ class TimeFst(GraphFst):
                 pynutil.delete("minutes:")
                 + delete_space
                 + pynutil.delete("\"")
-                + pynini.cross("noll", "noll noll")
+                + pynini.cross("nolla", "nolla nolla")
                 + pynutil.delete("\"")
             )
         suffix = pynutil.delete("suffix:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
