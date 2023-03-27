@@ -123,11 +123,7 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
         cardinal_graph = cardinal.graph
-        cardinal_graph_en = cardinal.graph_en
         cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
-        cardinal_graph_hundreds_one_non_zero_en = (
-            cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en
-        )
 
         self.graph = cardinal.two_or_three_digits_read_frac
 
@@ -140,7 +136,6 @@ class DecimalFst(GraphFst):
 
         self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
         self.graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        self.graph_integer_en = pynutil.insert("integer_part: \"") + cardinal_graph_en + pynutil.insert("\"")
         final_graph_wo_sign = (
             pynini.closure(self.graph_integer + pynutil.insert(" "), 0, 1)
             + point
@@ -148,32 +143,19 @@ class DecimalFst(GraphFst):
             + self.graph_fractional
         )
         self.final_graph_wo_sign = final_graph_wo_sign
-        final_graph_wo_sign_en = (
-            pynini.closure(self.graph_integer_en + pynutil.insert(" "), 0, 1)
-            + point
-            + pynutil.insert(" ")
-            + self.graph_fractional
-        )
-        self.final_graph_wo_sign_en = final_graph_wo_sign_en
 
         quantity_w_abbr = get_quantity(
-            final_graph_wo_sign_en,
             final_graph_wo_sign,
-            cardinal_graph_hundreds_one_non_zero_en,
             cardinal_graph_hundreds_one_non_zero,
             include_abbr=True,
         )
         quantity_wo_abbr = get_quantity(
-            final_graph_wo_sign_en,
             final_graph_wo_sign,
-            cardinal_graph_hundreds_one_non_zero_en,
             cardinal_graph_hundreds_one_non_zero,
             include_abbr=False,
         )
         self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
-        self.final_graph_wo_negative_w_abbr_en = final_graph_wo_sign_en | quantity_w_abbr
         self.final_graph_wo_negative = final_graph_wo_sign | quantity_wo_abbr
-        self.final_graph_wo_negative_en = final_graph_wo_sign_en | quantity_wo_abbr
 
         final_graph = optional_graph_negative + self.final_graph_wo_negative_w_abbr
 
