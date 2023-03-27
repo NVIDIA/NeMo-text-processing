@@ -185,7 +185,7 @@ class DateFst(GraphFst):
 
         financial_period_graph = pynini.string_file(get_abs_path("data/date_period.tsv")).invert()
         period_fy = (
-            pynutil.insert("period: \"")
+            pynutil.insert("text: \"")
             + financial_period_graph
             + (pynini.cross(" ", "") | pynini.cross(" of ", ""))
             + pynutil.insert("\"")

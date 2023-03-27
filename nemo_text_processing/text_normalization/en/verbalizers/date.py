@@ -48,7 +48,7 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
         day = day_cardinal @ ordinal.suffix
-        period = pynutil.delete("period:") + delete_space + pynutil.delete("\"") + phrase + pynutil.delete("\"")
+        period = pynutil.delete("text:") + delete_space + pynutil.delete("\"") + phrase + pynutil.delete("\"")
         month = pynutil.delete("month:") + delete_space + pynutil.delete("\"") + phrase + pynutil.delete("\"")
 
         year = (
