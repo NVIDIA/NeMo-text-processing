@@ -26,9 +26,6 @@ from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
 from pynini.lib import pynutil
 
-zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
-digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
-
 
 def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     """
@@ -72,6 +69,9 @@ class CardinalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+
+        zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
+        digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 
         # Any single digit
         graph_digit = digit
