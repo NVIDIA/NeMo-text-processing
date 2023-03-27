@@ -71,7 +71,7 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"sv_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far"
+                cache_dir, f"se_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far"
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
