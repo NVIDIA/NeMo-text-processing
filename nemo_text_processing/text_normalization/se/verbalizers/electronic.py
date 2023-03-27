@@ -19,8 +19,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_preserve_order,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import bos_or_space, eos_or_space
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
+from nemo_text_processing.text_normalization.sv.graph_utils import bos_or_space, eos_or_space
 from pynini.lib import pynutil
 
 digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
