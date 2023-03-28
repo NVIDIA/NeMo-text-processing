@@ -125,7 +125,7 @@ class DecimalFst(GraphFst):
         cardinal_graph = cardinal.graph
         cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
 
-#        self.graph = cardinal.two_or_three_digits_read_frac
+        #        self.graph = cardinal.two_or_three_digits_read_frac
 
         if not deterministic:
             self.graph |= cardinal.single_digits_graph.optimize()
@@ -144,16 +144,8 @@ class DecimalFst(GraphFst):
         )
         self.final_graph_wo_sign = final_graph_wo_sign
 
-        quantity_w_abbr = get_quantity(
-            final_graph_wo_sign,
-            cardinal_graph_hundreds_one_non_zero,
-            include_abbr=True,
-        )
-        quantity_wo_abbr = get_quantity(
-            final_graph_wo_sign,
-            cardinal_graph_hundreds_one_non_zero,
-            include_abbr=False,
-        )
+        quantity_w_abbr = get_quantity(final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero, include_abbr=True,)
+        quantity_wo_abbr = get_quantity(final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero, include_abbr=False,)
         self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
         self.final_graph_wo_negative = final_graph_wo_sign | quantity_wo_abbr
 

@@ -31,4 +31,3 @@ bos_or_space = pynini.union("[BOS]", " ")
 eos_or_space = pynini.union("[EOS]", " ")
 
 ensure_space = pynini.cross(pynini.closure(delete_space, 0, 1), " ")
-
