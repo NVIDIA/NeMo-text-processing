@@ -25,3 +25,9 @@ SE_LOWER = pynini.union(*_ALPHA_LOWER).optimize()
 SE_UPPER = pynini.union(*_ALPHA_UPPER).optimize()
 SE_ALPHA = pynini.union(SE_LOWER, SE_UPPER).optimize()
 SE_ALNUM = pynini.union(byte.DIGIT, SE_ALPHA).optimize()
+
+bos_or_space = pynini.union("[BOS]", " ")
+eos_or_space = pynini.union("[EOS]", " ")
+
+ensure_space = pynini.cross(pynini.closure(delete_space, 0, 1), " ")
+
