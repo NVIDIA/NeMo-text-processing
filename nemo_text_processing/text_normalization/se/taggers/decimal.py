@@ -15,7 +15,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.se.utils import get_abs_path
 from pynini.lib import pynutil
 
 quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
@@ -125,7 +125,7 @@ class DecimalFst(GraphFst):
         cardinal_graph = cardinal.graph
         cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
 
-        self.graph = cardinal.two_or_three_digits_read_frac
+#        self.graph = cardinal.two_or_three_digits_read_frac
 
         if not deterministic:
             self.graph |= cardinal.single_digits_graph.optimize()
