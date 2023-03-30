@@ -85,11 +85,12 @@ class DecimalFst(GraphFst):
                 pynutil.add_weight(graph_digit + pynini.closure(insert_space + zero), -0.00001),
                 pynutil.add_weight(cardinal.tens + pynini.closure(insert_space + zero), -0.00002),
                 pynutil.add_weight(cardinal.hundreds + pynini.closure(insert_space + zero), 0.00001),
-                cardinal.tens
-                + pynini.closure(insert_space + cardinal.tens, 1)
-                + pynini.closure(insert_space + zero, 0, 1)
-                + (
-                    pynini.closure(insert_space + graph_digit, 0, 1) | pynini.closure(insert_space + zero, 0)
+                pynutil.add_weight(
+                    cardinal.tens
+                    + pynini.closure(insert_space + cardinal.tens, 1)
+                    + pynini.closure(insert_space + zero, 0, 1)
+                    + (pynini.closure(insert_space + graph_digit, 0, 1) | pynini.closure(insert_space + zero, 0)),
+                    -0.00002,
                 ),  # Read out as tens and a possible trailing digit or zeroes
                 zero
                 + pynini.closure(insert_space + zero)
