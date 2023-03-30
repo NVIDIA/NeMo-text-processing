@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     delete_zero_or_one_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, TO_LOWER
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA, TO_LOWER
+from nemo_text_processing.text_normalization.se.utils import get_abs_path
 from pynini.lib import pynutil
 
 
@@ -44,31 +44,23 @@ class MeasureFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
-        cardinal_graph_ett = cardinal.graph
-        cardinal_graph_en = cardinal.graph_en
+        cardinal_graph = cardinal.graph
 
-        graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
-        graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
+        unit_simple = pynini.string_file(get_abs_path("data/measure/unit_simple.tsv"))
+        simple_endings = pynini.string_file(get_abs_path("data/inflection/simple.tsv"))
+        graph_simple = unit_simple | unit_simple + simple_endings
+
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
         greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
         greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
         greek = greek_lower | greek_upper
 
         graph_unit |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (SV_ALPHA | TO_LOWER) + pynini.closure(SV_ALPHA | TO_LOWER), graph_unit
-        ).optimize()
-        graph_unit_ett |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (SV_ALPHA | TO_LOWER) + pynini.closure(SV_ALPHA | TO_LOWER), graph_unit_ett
+            pynini.closure(TO_LOWER, 1) + (SE_ALPHA | TO_LOWER) + pynini.closure(SE_ALPHA | TO_LOWER), graph_unit
         ).optimize()
 
         graph_unit_plural = convert_space(graph_unit @ graph_plurals)
-        graph_unit_plural_ett = convert_space(graph_unit_ett @ graph_plurals)
         graph_unit = convert_space(graph_unit)
-        graph_unit_ett = convert_space(graph_unit_ett)
-        self.unit_plural_en = graph_unit_plural
-        self.unit_plural_ett = graph_unit_plural_ett
-        self.unit_en = graph_unit
-        self.unit_ett = graph_unit_ett
 
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
@@ -88,17 +80,9 @@ class MeasureFst(GraphFst):
             + (graph_unit_plural + optional_graph_unit2 | graph_unit2)
             + pynutil.insert("\"")
         )
-        unit_plural_ett = (
-            pynutil.insert("units: \"")
-            + (graph_unit_plural_ett + optional_graph_unit2 | graph_unit2)
-            + pynutil.insert("\"")
-        )
 
         unit_singular = (
             pynutil.insert("units: \"") + (graph_unit + optional_graph_unit2 | graph_unit2) + pynutil.insert("\"")
-        )
-        unit_singular_ett = (
-            pynutil.insert("units: \"") + (graph_unit_ett + optional_graph_unit2 | graph_unit2) + pynutil.insert("\"")
         )
 
         subgraph_decimal = (
@@ -108,14 +92,6 @@ class MeasureFst(GraphFst):
             + delete_space
             + pynutil.insert(" } ")
             + unit_plural
-        )
-        subgraph_decimal |= (
-            pynutil.insert("decimal { ")
-            + optional_graph_negative
-            + decimal.final_graph_wo_negative
-            + delete_space
-            + pynutil.insert(" } ")
-            + unit_plural_ett
         )
 
         # support radio FM/AM
@@ -133,41 +109,11 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + pynutil.insert("integer: \"")
-            + ((NEMO_SIGMA - "1") @ cardinal_graph_en)
+            + (NEMO_SIGMA @ cardinal_graph)
             + delete_space
             + pynutil.insert("\"")
             + pynutil.insert(" } ")
             + unit_plural
-        )
-        subgraph_cardinal |= (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + ((NEMO_SIGMA - "1") @ cardinal_graph_ett)
-            + delete_space
-            + pynutil.insert("\"")
-            + pynutil.insert(" } ")
-            + unit_plural_ett
-        )
-        subgraph_cardinal |= (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + pynini.cross("1", "ett")
-            + delete_space
-            + pynutil.insert("\"")
-            + pynutil.insert(" } ")
-            + unit_singular_ett
-        )
-        subgraph_cardinal |= (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + pynini.cross("1", "en")
-            + delete_space
-            + pynutil.insert("\"")
-            + pynutil.insert(" } ")
-            + unit_singular
         )
         self.subgraph_cardinal = subgraph_cardinal
 
