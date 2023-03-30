@@ -41,8 +41,10 @@ def parse_test_case_file(file_name: str):
     test_pairs = []
     with open(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + file_name, 'r') as f:
         for line in f:
-            spoken, written = line.split('~')
-            test_pairs.append((spoken, written.strip("\n")))
+            components = line.strip("\n").split("~")
+            spoken = components[0]
+            written = components[1] if len(components) == 2 else components[1:]
+            test_pairs.append((spoken, written))
     return test_pairs
 
 

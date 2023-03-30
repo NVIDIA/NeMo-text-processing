@@ -8,7 +8,11 @@ runtest () {
 
   # read test file
   while read testcase; do
-    IFS='~' read written spoken <<< $testcase
+    IFS='~' read -a testcase_tokenized <<< $testcase
+    written=${testcase_tokenized[0]}
+    # only tests against first possible option when there are multiple shortest paths
+    spoken=${testcase_tokenized[1]}
+
     # replace non breaking space with breaking space
     denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
