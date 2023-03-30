@@ -16,8 +16,8 @@ import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import delete_space
 from pynini.lib import byte
 
-_ALPHA_UPPER = "АÁBCČDĐEFGHIJKLMNŊOPRSŠTŦUVZŽ"
-_ALPHA_LOWER = "аábcčdđefghijklmnŋoprsštŧuvzž"
+_ALPHA_UPPER = "АÁBCČDĐEFGHIJKLMNŊOPRSŠTŦUVZŽÆØÅÄÖ"
+_ALPHA_LOWER = "аábcčdđefghijklmnŋoprsštŧuvzžæøåäö"
 
 TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(_ALPHA_UPPER, _ALPHA_LOWER)])
 TO_UPPER = pynini.invert(TO_LOWER)
