@@ -85,14 +85,6 @@ class CardinalFst(GraphFst):
 
         CASE_KEYS = ["ess", "com_pl", "com_sg", "gen_sg", "gen_pl", "ill_pl", "ill_sg", "loc_sg", "nom_pl"]
 
-        def caseify(items):
-            return {a: b for a, b in zip(CASE_KEYS, items)}
-
-        DIGIT_SUFFIX = caseify([":n", ":iguin", ":in", ":a", ":id", ":ide", ":i", ":s", ":t"])
-        CUODI_CASE = caseify(
-            ["čuođin", "čuđiiguin", "čuđiin", "čuođi", "čuđiid", "čuđiide", "čuohtái", "čuođis", "čuođit"]
-        )
-
         digits_cased = {}
         digits_cased_fst = {}
         digits_nom_to_cases = {}
