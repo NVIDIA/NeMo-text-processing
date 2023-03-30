@@ -75,6 +75,7 @@ class CardinalFst(GraphFst):
 
         # Any single digit
         graph_digit = digit
+        digit_inverse = pynini.invert(digit)
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
 
         graph_zero = zero
@@ -87,9 +88,13 @@ class CardinalFst(GraphFst):
             a: b for a, b in zip(CASE_KEYS, [":n", ":iguin", ":in", ":a", ":id", ":ide", ":i", ":s", ":t"])
         }
 
-        # digits_cased = {}
-        # for key in CASE_KEYS:
-        #     pass
+        digits_cased = {}
+        digits_cased_fst = {}
+        digits_nom_to_cases = {}
+        for key in CASE_KEYS:
+            digits_cased_fst[key] = pynini.invert(pynini.string_file(get_abs_path(f"data/numbers/digit_{key}.tsv")))
+            digits_nom_to_cases[key] = digit_inverse @ digits_cased_fst[key]
+        self.digits_nom_to_cases = digits_nom_to_cases
 
         teen = pynutil.delete("1") + digit + pynutil.insert("nuppelohkái")
         teen |= pynini.cross("10", "logi")
