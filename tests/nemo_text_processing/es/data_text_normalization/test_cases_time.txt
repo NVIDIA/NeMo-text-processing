@@ -30,3 +30,6 @@
 3:00 utc +1~tres u t c más uno
 2:00 pm gmt-4:30~dos de la tarde g m t menos cuatro treinta
 10 h utc+1:30~diez u t c más una treinta
+12:00:00 gmt~doce g m t
+12h02m00s~doce y dos
+15 h 10 min 40 seg~quince horas diez minutos y cuarenta segundos
