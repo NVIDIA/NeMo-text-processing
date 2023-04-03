@@ -68,7 +68,7 @@ class MeasureFst(GraphFst):
             pynini.cross("/", "per")
             + delete_zero_or_one_space
             + pynutil.insert(NEMO_NON_BREAKING_SPACE)
-            + (graph_unit | graph_unit_ett)
+            + graph_unit
         )
 
         optional_graph_unit2 = pynini.closure(
@@ -130,7 +130,7 @@ class MeasureFst(GraphFst):
             + decimal.final_graph_wo_negative
             + pynini.cross('-', '')
             + pynutil.insert(" } units: \"")
-            + pynini.closure(SV_ALPHA, 1)
+            + pynini.closure(SE_ALPHA, 1)
             + pynutil.insert("\"")
         )
 
@@ -138,13 +138,13 @@ class MeasureFst(GraphFst):
             pynutil.insert("decimal { ")
             + decimal.final_graph_wo_negative
             + pynutil.insert(" } units: \"")
-            + (pynini.cross(pynini.union('x', "X"), 'x') | pynini.cross(pynini.union('x', "X"), ' times'))
+            + (pynini.cross(pynini.union('x', "X"), 'x') | pynini.cross(pynini.union('x', "X"), ' geardde'))
             + pynutil.insert("\"")
         )
 
         alpha_dash_decimal = (
             pynutil.insert("units: \"")
-            + pynini.closure(SV_ALPHA, 1)
+            + pynini.closure(SE_ALPHA, 1)
             + pynini.accep('-')
             + pynutil.insert("\"")
             + pynutil.insert(" decimal { ")
@@ -159,32 +159,18 @@ class MeasureFst(GraphFst):
         math_operations = pynini.string_file(get_abs_path("data/math_operations.tsv"))
         delimiter = pynini.accep(" ") | pynutil.insert(" ")
 
-        equals = pynini.cross("=", "är")
-        if not deterministic:
-            equals |= pynini.cross("=", "är lika med")
+        equals = pynini.cross("=", "lea")
 
         math = (
-            (cardinal_graph_ett | SV_ALPHA | greek)
+            (cardinal_graph | SE_ALPHA | greek)
             + delimiter
             + math_operations
-            + (delimiter | SV_ALPHA)
-            + cardinal_graph_ett
+            + (delimiter | SE_ALPHA)
+            + cardinal_graph
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph_ett | SV_ALPHA | greek)
-        )
-
-        math |= (
-            (cardinal_graph_ett | SV_ALPHA | greek)
-            + delimiter
-            + equals
-            + delimiter
-            + (cardinal_graph_ett | SV_ALPHA)
-            + delimiter
-            + math_operations
-            + delimiter
-            + cardinal_graph_ett
+            + (cardinal_graph | SE_ALPHA | greek)
         )
 
         math = (
