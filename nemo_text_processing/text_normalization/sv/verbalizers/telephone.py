@@ -39,7 +39,11 @@ class TelephoneFst(GraphFst):
 
         country_code = pynutil.delete("country_code: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
-        optional_country_code = pynini.closure(country_code + delete_space + insert_space, 0, 1,)
+        optional_country_code = pynini.closure(
+            country_code + delete_space + insert_space,
+            0,
+            1,
+        )
 
         prompt_part = (
             pynutil.delete("prompt: \"")

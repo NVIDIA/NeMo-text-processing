@@ -54,7 +54,11 @@ class MeasureFst(GraphFst):
     """
 
     def __init__(
-        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True,
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        fraction: GraphFst,
+        deterministic: bool = True,
     ):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph
@@ -80,7 +84,9 @@ class MeasureFst(GraphFst):
         )
 
         optional_unit_denominator = pynini.closure(
-            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator, 0, 1,
+            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator,
+            0,
+            1,
         )
 
         complex_unit_singular_graph = (

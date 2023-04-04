@@ -206,7 +206,10 @@ class CardinalFst(GraphFst):
             + graph_in_thousands
         )
 
-        graph = pynini.union((graph_int | graph_ind) + delete_space + graph_hundreds, graph_zero,)
+        graph = pynini.union(
+            (graph_int | graph_ind) + delete_space + graph_hundreds,
+            graph_zero,
+        )
 
         graph = graph @ pynini.union(
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"
@@ -242,7 +245,7 @@ class CardinalFst(GraphFst):
         self.fst = final_graph.optimize()
 
     def delete_word(self, word: str):
-        """ Capitalizes word for `cased` input"""
+        """Capitalizes word for `cased` input"""
         delete_graph = pynutil.delete(word).optimize()
         if self.input_case == INPUT_CASED:
             if len(word) > 0:

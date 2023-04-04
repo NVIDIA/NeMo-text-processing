@@ -26,7 +26,6 @@ except (ImportError, ModuleNotFoundError):
 
 
 class TestRuNormalizeWithAudio:
-
     normalizer = NormalizerWithAudio(input_case='cased', lang='ru', cache_dir=CACHE_DIR) if PYNINI_AVAILABLE else None
     N_TAGGED = 100
 

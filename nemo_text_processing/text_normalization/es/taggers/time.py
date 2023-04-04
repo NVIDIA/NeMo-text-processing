@@ -114,7 +114,9 @@ class TimeFst(GraphFst):
         time_zone_graph = time_zones + pynini.closure(utc_or_gmt_diff, 0, 1)
 
         final_time_zone_optional = pynini.closure(
-            delete_space + insert_space + pynutil.insert("zone: \"") + time_zone_graph + pynutil.insert("\""), 0, 1,
+            delete_space + insert_space + pynutil.insert("zone: \"") + time_zone_graph + pynutil.insert("\""),
+            0,
+            1,
         )
 
         # 02.30 h

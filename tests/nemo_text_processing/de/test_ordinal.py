@@ -41,7 +41,6 @@ class TestOrdinal:
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, expected, test_input):
-
         if self.normalizer_with_audio:
             pred_non_deterministic = self.normalizer_with_audio.normalize(
                 test_input, n_tagged=1000, punct_post_process=False

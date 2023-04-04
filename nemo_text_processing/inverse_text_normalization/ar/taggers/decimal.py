@@ -35,7 +35,9 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify")
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("سالب", '"true"') + delete_extra_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("سالب", '"true"') + delete_extra_space,
+            0,
+            1,
         )
 
         graph_fractional_part = pynini.invert(tn_decimal.graph_fractional).optimize()

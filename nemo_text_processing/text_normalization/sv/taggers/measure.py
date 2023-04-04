@@ -29,7 +29,7 @@ from pynini.lib import pynutil
 
 class MeasureFst(GraphFst):
     """
-    Finite state transducer for classifying measure, suppletive aware, e.g. 
+    Finite state transducer for classifying measure, suppletive aware, e.g.
         -12kg -> measure { negative: "true" cardinal { integer: "tolv" } units: "kilogram" }
         1kg -> measure { cardinal { integer: "ett" } units: "kilogram" }
         ,5kg -> measure { decimal { fractional_part: "fem" } units: "kilogram" }
@@ -80,7 +80,9 @@ class MeasureFst(GraphFst):
         )
 
         optional_graph_unit2 = pynini.closure(
-            delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2, 0, 1,
+            delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2,
+            0,
+            1,
         )
 
         unit_plural = (

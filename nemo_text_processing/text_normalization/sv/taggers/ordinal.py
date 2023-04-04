@@ -38,7 +38,7 @@ card_digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.t
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal
-        	"21:a" -> ordinal { integer: "tjugoförsta" }
+                "21:a" -> ordinal { integer: "tjugoförsta" }
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -93,7 +93,10 @@ class OrdinalFst(GraphFst):
             hundreds |= pynini.cross("1", "ett hundra")
             hundreds |= digit + pynutil.insert(NEMO_SPACE) + pynutil.insert("hundra")
 
-        graph_hundreds = hundreds + pynini.union(graph_tens, (pynutil.delete("0") + graph_digit),)
+        graph_hundreds = hundreds + pynini.union(
+            graph_tens,
+            (pynutil.delete("0") + graph_digit),
+        )
         if not deterministic:
             graph_hundreds |= hundreds + pynini.union(
                 (graph_teens | pynutil.insert(NEMO_SPACE) + graph_teens), (pynini.cross("0", NEMO_SPACE) + graph_digit)
@@ -177,7 +180,7 @@ class OrdinalFst(GraphFst):
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
+            @ NEMO_DIGIT**24
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
