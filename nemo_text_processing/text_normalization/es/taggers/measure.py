@@ -14,7 +14,6 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
-    NEMO_DIGIT,
     NEMO_NON_BREAKING_SPACE,
     NEMO_SIGMA,
     NEMO_SPACE,
@@ -53,18 +52,17 @@ class MeasureFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True,
-    ):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph
-        optional_graph_negative = pynini.closure("-", 0, 1)
 
         unit_singular = unit
         unit_plural = unit_singular @ (unit_plural_fem | unit_plural_masc)
 
         graph_unit_singular = convert_space(unit_singular)
         graph_unit_plural = convert_space(unit_plural)
+
+        optional_graph_negative = pynini.closure("-", 0, 1)
 
         unit_plural = pynutil.insert('units: "') + graph_unit_plural + pynutil.insert('"')
 
@@ -98,7 +96,6 @@ class MeasureFst(GraphFst):
         subgraph_decimal = (
             decimal.fst + insert_space + pynini.closure(NEMO_SPACE, 0, 1) + (unit_plural | complex_unit_plural_graph)
         )
-
         subgraph_cardinal = (
             (optional_graph_negative + (NEMO_SIGMA - "1")) @ cardinal.fst
             + insert_space
@@ -110,67 +107,10 @@ class MeasureFst(GraphFst):
             (optional_graph_negative + pynini.accep("1")) @ cardinal.fst
             + insert_space
             + pynini.closure(delete_space, 0, 1)
-            + (unit_plural | complex_unit_singular_graph)
+            + (unit_singular_graph | complex_unit_singular_graph)
         )
 
-        """transform "1 1/2 km" ->  measure { cardinal { integer: "uno" } 
-                                    fraction { numerator: "un" denominator: "medio" morphosyntactic_features: "ordinal" } 
-                                    units: "kilómetro" } }
-        """
-        int_before_fraction = pynutil.add_weight(
-            (optional_graph_negative + pynini.accep("1")) @ cardinal.fst
-            + insert_space
-            + pynini.closure(delete_space, 0, 1),
-            -0.002,
-        )
-
-        subgraph_fraction = pynutil.add_weight(
-            pynini.closure(int_before_fraction, 0, 1)
-            + fraction.fst
-            + insert_space
-            + pynini.closure(delete_space, 0, 1)
-            + unit_singular_graph,
-            -0.002,
-        )
-
-        """transform "2 1/2 km" ->  measure { cardinal { integer: "dos" } 
-                                    fraction { numerator: "un" denominator: "medio" morphosyntactic_features: "ordinal" } 
-                                    units: "kilómetros" } }
-        """
-        ints_before_fraction = (
-            (optional_graph_negative + (NEMO_SIGMA - "1")) @ cardinal.fst
-            + insert_space
-            + pynini.closure(delete_space, 0, 1)
-        )
-
-        subgraph_fraction |= pynutil.add_weight(
-            ints_before_fraction + fraction.fst + insert_space + pynini.closure(delete_space, 0, 1) + unit_plural,
-            -0.002,
-        )
-
-        """transform "2 1/2 k/h" -> measure { fraction { integer_part: "dos" 
-                                                         numerator: "un" 
-                                                         denominator: "medio" 
-                                                         morphosyntactic_features: "ordinal" } 
-                                              units: "kilómetros" } }
-        """
-        proper_fraction = pynini.closure(NEMO_DIGIT) + pynini.accep("/") + pynini.closure(NEMO_DIGIT)
-        subgraph_complex_units = pynutil.add_weight(
-            (proper_fraction @ fraction.fst)
-            + insert_space
-            + pynini.closure(delete_space, 0, 1)
-            + complex_unit_singular_graph
-            + pynutil.insert(' preserve_order: true'),
-            -0.001,
-        )
-
-        subgraph_complex_units |= (
-            ((NEMO_SIGMA - proper_fraction) @ fraction.fst)
-            + insert_space
-            + pynini.closure(delete_space, 0, 1)
-            + complex_unit_plural_graph
-            + pynutil.insert(' preserve_order: true')
-        )
+        subgraph_fraction = fraction.fst + insert_space + pynini.closure(delete_space, 0, 1) + (unit_plural | complex_unit_singular_graph)
 
         decimal_times = (
             pynutil.insert("decimal { ")
@@ -203,7 +143,7 @@ class MeasureFst(GraphFst):
             + pynutil.delete("-")
             + pynutil.insert(' } units: "')
             + pynini.closure(NEMO_ALPHA, 1)
-            + pynutil.insert('"')
+            + pynutil.insert("\"")
         )
 
         alpha_dash_cardinal = (
@@ -255,7 +195,6 @@ class MeasureFst(GraphFst):
             subgraph_decimal
             | subgraph_cardinal
             | cardinal_dash_alpha
-            | subgraph_complex_units
             | alpha_dash_cardinal
             | decimal_dash_alpha
             | subgraph_fraction
