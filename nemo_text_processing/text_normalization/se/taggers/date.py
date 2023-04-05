@@ -30,7 +30,7 @@ delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, e.g. 
+    Finite state transducer for classifying date, e.g.
         "skábmamánu 8. b. 1956" -> date { month: "skábmamánnu" day: "gávccát" year: "duhátovccičuođivihttalogiguhtta" preserve_order: true }
         "8/11/1956" -> date { day: "gávccát" month: "skábmamánnu" year: "duhátovccičuođivihttalogiguhtta" }
         "8-11 1956" -> date { day: "gávccát" month: "skábmamánnu" year: "duhátovccičuođivihttalogiguhtta" }

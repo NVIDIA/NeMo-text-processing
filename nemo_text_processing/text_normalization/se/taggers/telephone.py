@@ -42,7 +42,7 @@ class TelephoneFst(GraphFst):
         0XX-XXX XX
         0XXX-XX XX XX
         0XXX-XXX XX
-    
+
     See:
         https://en.wikipedia.org/wiki/National_conventions_for_writing_telephone_numbers#Sweden
         https://codegolf.stackexchange.com/questions/195787/format-a-swedish-phone-number
