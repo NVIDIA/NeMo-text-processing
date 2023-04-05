@@ -98,10 +98,10 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         output |= pynini.cross("11", "aon ") + fst_len + insert_space + pynutil.insert(deag)
         output |= pynini.cross("10", "deich ") + fst_ecl
         output |= teen_graph
-    
+
     if conjunction and not deterministic:
         output |= output + pynutil.insert(" is")
-    
+
     # hundred + 'is' + teens/digit/tens
     # hundred + tens + 'is' + digit
     if higher:
