@@ -54,7 +54,7 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
         period = (
-            pynutil.delete("period:")
+            pynutil.delete("text:")
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
