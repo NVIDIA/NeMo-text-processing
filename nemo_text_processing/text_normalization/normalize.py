@@ -506,7 +506,7 @@ class Normalizer:
         text = re.sub(r" +", " ", text)
 
         # remove space in the middle of the lower case abbreviation to avoid splitting into separate sentences
-        matches = re.findall(r"[a-z" + lower_case_unicode + "]\.\s[a-z" + lower_case_unicode + "]\.", text)
+        matches = re.findall(rf"[a-z{lower_case_unicode}]\.\s[a-z{lower_case_unicode}]\.", text)
         for match in matches:
             text = text.replace(match, match.replace(". ", "."))
 
