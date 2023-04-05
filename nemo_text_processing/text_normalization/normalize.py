@@ -141,6 +141,9 @@ class Normalizer:
         elif lang == 'sv':
             from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.sv.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'hu':
+            from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.hu.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'zh':
             from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
@@ -670,7 +673,7 @@ def parse_args():
     )
     parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
     parser.add_argument(
-        "--language", help="language", choices=["en", "de", "es", "se", "sv", "zh", "ar"], default="en", type=str
+        "--language", help="language", choices=["en", "de", "es", "hu", "se", "sv", "zh", "ar"], default="en", type=str
     )
     parser.add_argument(
         "--input_case",
