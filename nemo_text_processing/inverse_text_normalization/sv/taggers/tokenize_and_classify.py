@@ -119,7 +119,9 @@ class ClassifyFst(GraphFst):
             electronic_graph = ElectronicFst(
                 tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer
             ).fst
-            telephone_graph = TelephoneFst(tn_cardinal_tagger=tn_cardinal_tagger, tn_telephone_tagger=tn_telephone_tagger).fst
+            telephone_graph = TelephoneFst(
+                tn_cardinal_tagger=tn_cardinal_tagger, tn_telephone_tagger=tn_telephone_tagger
+            ).fst
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)
