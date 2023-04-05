@@ -45,23 +45,23 @@ class TimeFst(GraphFst):
 
         delete_time_delimiter = pynutil.delete(pynini.union(".", ":"))
 
-        one = pynini.string_map([("un", "una"), ("ún", "una")])
-        change_one = pynini.cdrewrite(one, "", "", NEMO_SIGMA)
-        cardinal_graph = cardinal.graph @ change_one
+        fem_one = pynini.string_map([("un", "una"), ("ún", "una")])
+        change_one = pynini.cdrewrite(fem_one, "", "", NEMO_SIGMA)
+        cardinal_graph_fem = cardinal.graph @ change_one
+        cardinal_graph_masc = cardinal.graph
 
         day_suffix = pynutil.insert("suffix: \"") + suffix + pynutil.insert("\"")
         day_suffix = delete_space + insert_space + day_suffix
 
         delete_hora_suffix = delete_space + insert_space + pynutil.delete("h")
-        delete_minute_suffix = delete_space + insert_space + pynutil.delete("min")
-        delete_second_suffix = delete_space + insert_space + pynutil.delete("s")
+        delete_minute_suffix = delete_space + insert_space + (pynutil.delete("min") | pynutil.delete("m"))
+        delete_second_suffix = delete_space + insert_space + (pynutil.delete("seg") | pynutil.delete("s"))
 
         labels_hour_24 = [
             str(x) for x in range(0, 25)
         ]  # Can see both systems. Twelve hour requires am/pm for ambiguity resolution
         labels_hour_12 = [str(x) for x in range(1, 13)]
-        labels_minute_single = [str(x) for x in range(1, 10)]
-        labels_minute_double = [str(x) for x in range(10, 60)]
+        labels_minute_or_second = [str(x) for x in range(1, 60)]
 
         delete_leading_zero_to_double_digit = (
             pynini.closure(pynutil.delete("0") | (NEMO_DIGIT - "0"), 0, 1) + NEMO_DIGIT
@@ -73,14 +73,14 @@ class TimeFst(GraphFst):
         graph_12 = (
             pynini.closure(NEMO_DIGIT, 1, 2) @ delete_leading_zero_to_double_digit @ pynini.union(*labels_hour_12)
         )
-
-        graph_hour_24 = graph_24 @ cardinal_graph
-        graph_hour_12 = graph_12 @ cardinal_graph
-
-        graph_minute_single = (NEMO_DIGIT | pynutil.delete("0")) + NEMO_DIGIT @ pynini.union(*labels_minute_single)
-        graph_minute_double = pynini.union(*labels_minute_double)
-
-        graph_minute = pynini.union(graph_minute_single, graph_minute_double) @ cardinal_graph
+        graph_minute_or_second = (
+            pynini.closure(NEMO_DIGIT, 1, 2)
+            @ delete_leading_zero_to_double_digit
+            @ pynini.union(*labels_minute_or_second)
+        )
+        graph_hour_24 = graph_24 @ cardinal_graph_fem
+        graph_hour_12 = graph_12 @ cardinal_graph_fem
+        graph_minute_or_second @= cardinal_graph_masc
 
         final_graph_hour_only_24 = (
             pynutil.insert("hours: \"") + graph_hour_24 + pynutil.insert("\"") + delete_hora_suffix
@@ -90,8 +90,8 @@ class TimeFst(GraphFst):
         final_graph_hour_24 = pynutil.insert("hours: \"") + graph_hour_24 + pynutil.insert("\"")
         final_graph_hour_12 = pynutil.insert("hours: \"") + graph_hour_12 + pynutil.insert("\"")
 
-        final_graph_minute = pynutil.insert("minutes: \"") + graph_minute + pynutil.insert("\"")
-        final_graph_second = pynutil.insert("seconds: \"") + graph_minute + pynutil.insert("\"")
+        final_graph_minute = pynutil.insert("minutes: \"") + graph_minute_or_second + pynutil.insert("\"")
+        final_graph_second = pynutil.insert("seconds: \"") + graph_minute_or_second + pynutil.insert("\"")
 
         # handle suffixes like gmt or utc+1
         utc_one = pynini.string_map([("un", "uno"), ("ún", "uno")])
@@ -99,7 +99,7 @@ class TimeFst(GraphFst):
         utc_cardinal_graph = cardinal.graph @ change_utc_one
 
         utc_or_gmt_numbers = (NEMO_DIGIT @ utc_cardinal_graph) | (
-            graph_hour_24 + delete_time_delimiter + pynutil.insert(" ") + graph_minute
+            graph_hour_24 + delete_time_delimiter + pynutil.insert(" ") + graph_minute_or_second
         )
 
         utc_or_gmt_diff = (
@@ -123,10 +123,8 @@ class TimeFst(GraphFst):
             + delete_time_delimiter
             + (pynutil.delete("00") | (insert_space + final_graph_minute))
             + pynini.closure(
-                delete_time_delimiter + (pynini.cross("00", " seconds: \"0\"") | (insert_space + final_graph_second)),
-                0,
-                1,
-            )  # For seconds 2.30.35 h
+                (delete_time_delimiter + (pynutil.delete("00") | (insert_space + final_graph_second))), 0, 1
+            )
             + pynini.closure(delete_hora_suffix, 0, 1)  # 2.30 is valid if unambiguous
             + final_time_zone_optional
         )
@@ -139,12 +137,10 @@ class TimeFst(GraphFst):
             + (pynutil.delete("00") | (insert_space + final_graph_minute))
             + delete_minute_suffix
             + pynini.closure(
-                delete_space
-                + (pynini.cross("00", " seconds: \"0\"") | (insert_space + final_graph_second))
-                + delete_second_suffix,
+                (delete_space + (pynutil.delete("00") | (insert_space + final_graph_second)) + delete_second_suffix),
                 0,
                 1,
-            )  # For seconds
+            )
             + final_time_zone_optional
         )
 
@@ -154,10 +150,8 @@ class TimeFst(GraphFst):
             + delete_time_delimiter
             + (pynutil.delete("00") | (insert_space + final_graph_minute))
             + pynini.closure(
-                delete_time_delimiter + (pynini.cross("00", " seconds: \"0\"") | (insert_space + final_graph_second)),
-                0,
-                1,
-            )  # For seconds 2.30.35 a. m.
+                (delete_time_delimiter + (pynutil.delete("00") | (insert_space + final_graph_second))), 0, 1
+            )
             + day_suffix
             + final_time_zone_optional
         )
@@ -172,10 +166,10 @@ class TimeFst(GraphFst):
             hour_shift_12 = pynini.invert(pynini.string_file(get_abs_path("data/time/hour_to_12.tsv")))
             minute_shift = pynini.string_file(get_abs_path("data/time/minute_to.tsv"))
 
-            graph_hour_to_24 = graph_24 @ hour_shift_24 @ cardinal_graph
-            graph_hour_to_12 = graph_12 @ hour_shift_12 @ cardinal_graph
+            graph_hour_to_24 = graph_24 @ hour_shift_24 @ cardinal_graph_fem
+            graph_hour_to_12 = graph_12 @ hour_shift_12 @ cardinal_graph_fem
 
-            graph_minute_to = pynini.union(graph_minute_single, graph_minute_double) @ minute_shift @ cardinal_graph
+            graph_minute_to = minute_shift @ graph_minute_or_second
 
             final_graph_hour_to_24 = pynutil.insert("hours: \"") + graph_hour_to_24 + pynutil.insert("\"")
             final_graph_hour_to_12 = pynutil.insert("hours: \"") + graph_hour_to_12 + pynutil.insert("\"")
