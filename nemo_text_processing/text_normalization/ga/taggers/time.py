@@ -24,22 +24,22 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.ga.graph_utils import ensure_space
+from nemo_text_processing.text_normalization.ga.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
-        12:30 e.m. est -> time { hours: "tolv" minutes: "trettio" suffix: "eftermiddag" zone: "e s t" }
-        2.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "eftermiddag" }
-        02.30 e.m. -> time { hours: "två" minutes: "trettio" suffix: "eftermiddag" }
-        2.00 e.m. -> time { hours: "två" suffix: "eftermiddag" }
-        kl. 2 e.m. -> time { hours: "två" suffix: "eftermiddag" }
-        02:00 -> time { hours: "två" }
-        2:00 -> time { hours: "två" }
-        10:00:05 e.m. -> time { hours: "tio" minutes: "noll" seconds: "fem" suffix: "eftermiddag" }
+        12:30 r.n. est -> time { hours: "a dó dhéag" minutes: "leathuair" suffix: "roimh nóin" zone: "e s t" }
+        2.30 r.n. -> time { hours: "a dó" minutes: "leathuair" suffix: "roimh nóin" }
+        02.30 r.n. -> time { hours: "a dó" minutes: "leathuair" suffix: "roimh nóin" }
+        2.00 r.n. -> time { hours: "a dó" suffix: "roimh nóin" }
+        kl. 2 r.n. -> time { hours: "a dó" suffix: "roimh nóin" }
+        02:00 -> time { hours: "a dó" }
+        2:00 -> time { hours: "a dó" }
+        10:00:05 r.n. -> time { hours: "deich" minutes: "náid" seconds: "a cúig" suffix: "roimh nóin" }
 
     Args:
         cardinal: CardinalFst
