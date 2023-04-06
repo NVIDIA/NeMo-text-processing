@@ -13,14 +13,14 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.ga.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 
 class WhiteListFst(GraphFst):
     """
     Finite state transducer for classifying whitelist, e.g.
-        "s:t" -> tokens { name: "sankt" }
+        "gco." -> tokens { name: "gcontae" }
     This class has highest priority among all classifier grammars. Whitelisted tokens are defined and loaded from "data/whitelist.tsv".
 
     Args:
@@ -55,8 +55,6 @@ class WhiteListFst(GraphFst):
 
         if not deterministic:
             units_graph = _get_whitelist_graph(input_case, file=get_abs_path("data/measure/unit.tsv"))
-            units_graph |= _get_whitelist_graph(input_case, file=get_abs_path("data/measure/unit_neuter.tsv"))
-            units_graph |= _get_whitelist_graph(input_case, file=get_abs_path("data/abbreviations_nondet.tsv"))
             graph |= units_graph
 
         self.graph = graph
