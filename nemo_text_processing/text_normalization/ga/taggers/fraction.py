@@ -23,8 +23,7 @@ class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
     "23 4/5" ->
-    tokens { fraction { integer: "tjugotre" numerator: "fyra" denominator: "femtedel" } }
-    # en åttondel (1/8)
+    tokens { fraction { integer: "fiche a trí" numerator: "a ceathair" denominator: "a cúig" } }
 
     Args:
         cardinal: CardinalFst
