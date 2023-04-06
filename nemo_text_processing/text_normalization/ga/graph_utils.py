@@ -13,23 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from pynini import Far
-from pynini.export import export
-from pynini.examples import plurals
-from pynini.lib import byte, pynutil, utf8
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR,
-    NEMO_NOT_QUOTE,
-    NEMO_NOT_SPACE,
     NEMO_SIGMA,
-    NEMO_SPACE,
     NEMO_LOWER,
     NEMO_UPPER,
     TO_LOWER,
     GraphFst,
-    delete_space,
-    insert_space,
 )
 
 _UPPER_ECLIPSIS_LETTERS = pynini.union(
