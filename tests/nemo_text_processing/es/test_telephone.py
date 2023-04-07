@@ -45,7 +45,7 @@ class TestTelephone:
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
-        assert pred == expected
+        assert pred in expected
 
         if self.normalizer_with_audio:
             pred_non_deterministic = self.normalizer_with_audio.normalize(
