@@ -13,12 +13,12 @@
 1000 millones~mil millones
 1.000 millones~mil millones
 2,33302 millones~dos coma treinta y tres treinta dos millones
-1,5332~uno coma cincuenta y tres treinta y dos
+1,5332~una coma cincuenta y tres treinta y dos~uno coma cincuenta y tres treinta y dos
 1,53322 millones~uno coma cincuenta y tres treinta y dos dos millones
 1,53321 millones~uno coma cincuenta y tres treinta y dos un millones
 101,010101 millones~ciento uno coma cero uno cero uno cero un millones
 3,1415~tres coma catorce quince
 60,2400~sesenta coma veinticuatro cero cero
-1,002~uno coma cero cero dos
-1,25300~uno coma veinticinco treinta cero
+1,002~una coma cero cero dos~uno coma cero cero dos
+1,25300~una coma veinticinco treinta cero~uno coma veinticinco treinta cero
 1,253002~uno coma veinticinco treinta cero dos
