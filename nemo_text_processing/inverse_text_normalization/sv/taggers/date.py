@@ -58,12 +58,13 @@ class DateFst(GraphFst):
         optional_era = pynini.closure(NEMO_SPACE + graph_era, 0, 1)
         graph_decade = pynutil.insert("year: \"") + decade + pynutil.insert("\"")
         preserve = pynutil.insert(" preserve_order: true")
+        optional_preserve = pynini.closure(preserve, 0, 1)
 
         graph_dm = graph_day_ord + NEMO_SPACE + graph_month_abbr + preserve
-        graph_dmy = graph_day + NEMO_SPACE + graph_month + NEMO_SPACE + graph_year
-        graph_dmy |= graph_dmy + NEMO_SPACE + graph_era
+        dmy = graph_day + NEMO_SPACE + graph_month + NEMO_SPACE + graph_year
+        graph_dmy = dmy + optional_era
         ydm = graph_year + NEMO_SPACE + graph_month + NEMO_SPACE + graph_day
-        graph_ydm = ydm + optional_era + preserve
+        graph_ydm = ydm + optional_era + preserve + optional_preserve
         final_graph = year | graph_dmy | graph_dm | graph_ydm | graph_decade
 
         graph = self.add_tokens(final_graph)
