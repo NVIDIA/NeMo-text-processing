@@ -32,30 +32,22 @@ class DateFst(GraphFst):
     def __init__(self):
         super().__init__(name="date", kind="verbalize")
         year = (
-            pynutil.delete("year:")
-            + delete_space
-            + pynutil.delete("\"")
+            pynutil.delete("year: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
         month = (
-            pynutil.delete("month:")
-            + delete_space
-            + pynutil.delete("\"")
+            pynutil.delete("month: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
         day = (
-            pynutil.delete("day:")
-            + delete_space
-            + pynutil.delete("\"")
+            pynutil.delete("day: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
         era = (
-            pynutil.delete("era:")
-            + delete_space
-            + pynutil.delete("\"")
+            pynutil.delete("era: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
