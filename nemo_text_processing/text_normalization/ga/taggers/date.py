@@ -27,8 +27,8 @@ era_suffix = pynini.string_file(get_abs_path("data/dates/era_suffix.tsv"))
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g.
-        "2:a januari, 2020" -> date { day: "andra" month: "januari" year: "tjugotjugotvå" }
-        "2022.01.02" -> date { year: "tjugotjugotvå" month: "januari" day: "andra" }
+        "3ú feabhra, 2020" -> date { day: "tríú" month: "feabhra" year: "dhá mhíle fiche" }
+        "02/01/2020" -> date { day: "dara" month: "eanáir" year: "dhá mhíle fiche" }
 
     Args:
         cardinal: cardinal GraphFst
