@@ -1,0 +1,6 @@
+tre komma femton~3,15
+tre komma hundrafemton~3,115
+tre komma ett ett ett fem~3,1115
+tre komma fem~3,5
+en miljon~1 miljon
+en komma fem miljoner~1,5 miljoner
