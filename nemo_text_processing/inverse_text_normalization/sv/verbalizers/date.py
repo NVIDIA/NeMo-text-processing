@@ -39,13 +39,12 @@ class DateFst(GraphFst):
         space_to_hyphen = pynini.cross(" ", "-")
 
         optional_preserve_order = pynini.closure(
-            pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
-            | pynutil.delete("field_order:")
+            pynutil.delete(" preserve_order:") + delete_space + pynutil.delete("true") + delete_space
+            | pynutil.delete(" field_order:")
             + delete_space
             + pynutil.delete("\"")
             + NEMO_NOT_QUOTE
             + pynutil.delete("\"")
-            + delete_space
         )
 
         # day month
