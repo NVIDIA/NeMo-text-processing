@@ -193,13 +193,13 @@ class CardinalFst(GraphFst):
 
         tusen = pynutil.insert("tusen")
         etttusen = pynini.cross("001", "tusen")
-        # if not deterministic:
-        #     tusen |= pynutil.add_weight(pynutil.insert(" tusen"), -0.001)
-        #     etttusen |= pynutil.add_weight(pynini.cross("001", " tusen"), -0.001)
-        #     etttusen |= pynutil.add_weight(pynini.cross("001", "etttusen"), -0.001)
-        #     etttusen |= pynutil.add_weight(pynini.cross("001", " etttusen"), -0.001)
-        #     etttusen |= pynutil.add_weight(pynini.cross("001", "ett tusen"), -0.001)
-        #     etttusen |= pynutil.add_weight(pynini.cross("001", " ett tusen"), -0.001)
+        if not deterministic:
+            tusen |= pynutil.add_weight(pynutil.insert(" tusen"), -0.001)
+            etttusen |= pynutil.add_weight(pynini.cross("001", " tusen"), -0.001)
+            etttusen |= pynutil.add_weight(pynini.cross("001", "etttusen"), -0.001)
+            etttusen |= pynutil.add_weight(pynini.cross("001", " etttusen"), -0.001)
+            etttusen |= pynutil.add_weight(pynini.cross("001", "ett tusen"), -0.001)
+            etttusen |= pynutil.add_weight(pynini.cross("001", " ett tusen"), -0.001)
 
         following_hundred = insert_space + graph_hundreds_component_at_least_one_non_zero_digit
         if not deterministic:
