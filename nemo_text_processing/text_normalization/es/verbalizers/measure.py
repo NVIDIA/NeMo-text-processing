@@ -72,42 +72,12 @@ class MeasureFst(GraphFst):
         unit_fem = pynutil.delete("units: \"") + (pynini.closure(NEMO_NOT_QUOTE) @ unit_fem) + pynutil.delete("\"")
 
         graph_masc = (graph_cardinal_masc | graph_decimal_masc) + NEMO_WHITE_SPACE + unit_masc
-        graph_masc |= pynutil.add_weight(
-            graph_cardinal_masc
-            + NEMO_WHITE_SPACE
-            + unit_masc
-            + NEMO_WHITE_SPACE
-            + pynutil.insert("y ")
-            + pynutil.delete(" ")
-            + graph_fraction_masc,
-            -0.002,
-        )  # "dos metros y medio" not "dos y medio metro"
         graph_masc |= graph_fraction_masc + NEMO_WHITE_SPACE + pynutil.insert("de ") + unit_masc
         graph_masc |= pynutil.add_weight(
             graph_fraction_masc @ (NEMO_SIGMA + pynini.union("medio", "medios")) + NEMO_WHITE_SPACE + unit_masc, -0.001
         )  # "medio litro" not "medio de litro"
 
         graph_fem = (graph_cardinal_fem | graph_decimal_fem) + NEMO_WHITE_SPACE + unit_fem
-        graph_fem |= pynutil.add_weight(
-            graph_cardinal_fem
-            + NEMO_WHITE_SPACE
-            + unit_fem
-            + NEMO_WHITE_SPACE
-            + pynutil.insert("y ")
-            + pynutil.delete(" ")
-            + graph_fraction_fem,
-            -0.002,
-        )
-        graph_fem |= pynutil.add_weight(
-            graph_cardinal_fem
-            + NEMO_WHITE_SPACE
-            + unit_fem
-            + NEMO_WHITE_SPACE
-            + pynutil.insert("y ")
-            + pynutil.delete(" ")
-            + graph_fraction_fem @ (NEMO_SIGMA + pynini.accep("media")),
-            -0.003,
-        )
         graph_fem |= graph_fraction_fem + NEMO_WHITE_SPACE + pynutil.insert("de ") + unit_fem
         graph_fem |= pynutil.add_weight(
             graph_fraction_fem @ (NEMO_SIGMA + pynini.union("media", "medias")) + NEMO_WHITE_SPACE + unit_fem, -0.001
