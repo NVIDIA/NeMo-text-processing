@@ -48,10 +48,11 @@ class DateFst(GraphFst):
         )
 
         # day month
+        year_era = year + optional_era + optional_preserve_order
         graph_dm = day + NEMO_SPACE + month + delete_preserve_order
         graph_ydm = year + space_to_hyphen + month + space_to_hyphen + day + optional_era + optional_preserve_order
 
-        final_graph = graph_dm | (year + optional_era) | graph_ydm
+        final_graph = graph_dm | graph_ydm | year_era
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
