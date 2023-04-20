@@ -24,12 +24,6 @@ from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
-delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
-month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))
-month_abbr = pynini.string_file(get_abs_path("data/dates/month_abbr.tsv"))
-era_suffix = pynini.string_file(get_abs_path("data/dates/era_suffix.tsv"))
-era_words = pynini.string_file(get_abs_path("data/dates/era_words.tsv"))
-
 
 class DateFst(GraphFst):
     """
@@ -45,6 +39,12 @@ class DateFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
+
+        delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
+        month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))
+        month_abbr = pynini.string_file(get_abs_path("data/dates/month_abbr.tsv"))
+        era_suffix = pynini.string_file(get_abs_path("data/dates/era_suffix.tsv"))
+        era_words = pynini.string_file(get_abs_path("data/dates/era_words.tsv"))
 
         number_to_month = month_numbers.optimize()
         self.month_abbr = month_abbr.optimize()

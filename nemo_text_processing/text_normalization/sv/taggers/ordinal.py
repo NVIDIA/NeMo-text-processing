@@ -40,6 +40,7 @@ class OrdinalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify")
+
         digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
         teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv")))
         ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/ties.tsv")))
