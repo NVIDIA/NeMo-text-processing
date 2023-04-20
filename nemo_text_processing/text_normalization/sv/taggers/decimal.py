@@ -18,15 +18,14 @@ from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
-quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
-quantities_abbr = pynini.string_file(get_abs_path("data/numbers/millions_abbr.tsv"))
-
 
 def get_quantity(
     decimal: 'pynini.FstLike',
     decimal_ett: 'pynini.FstLike',
     cardinal_up_to_thousand: 'pynini.FstLike',
     cardinal_up_to_thousand_ett: 'pynini.FstLike',
+    quantities: 'pynini.FstLike',
+    quantities_abbr: 'pynini.FstLike',
     include_abbr: bool,
 ) -> 'pynini.FstLike':
     """
@@ -122,6 +121,9 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
+        quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
+        quantities_abbr = pynini.string_file(get_abs_path("data/numbers/millions_abbr.tsv"))
+
         cardinal_graph = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
         cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
@@ -161,6 +163,8 @@ class DecimalFst(GraphFst):
             final_graph_wo_sign,
             cardinal_graph_hundreds_one_non_zero_en,
             cardinal_graph_hundreds_one_non_zero,
+            quantities,
+            quantities_abbr,
             include_abbr=True,
         )
         quantity_wo_abbr = get_quantity(
@@ -168,6 +172,8 @@ class DecimalFst(GraphFst):
             final_graph_wo_sign,
             cardinal_graph_hundreds_one_non_zero_en,
             cardinal_graph_hundreds_one_non_zero,
+            quantities,
+            quantities_abbr,
             include_abbr=False,
         )
         self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
