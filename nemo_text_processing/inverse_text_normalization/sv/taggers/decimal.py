@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.de.taggers.decimal import get_quantity, quantities
+from nemo_text_processing.text_normalization.sv.taggers.decimal import get_quantity, quantities
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 from pynini.lib import pynutil
 
@@ -35,8 +35,6 @@ class DecimalFst(GraphFst):
 
         delete_point = pynutil.delete(" komma")
 
-        allow_spelling = pynini.cdrewrite(pynini.cross("eine ", "eins ") + quantities, "[BOS]", "[EOS]", NEMO_SIGMA)
-
         graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
         graph_integer = (
             pynutil.insert("integer_part: \"") + itn_cardinal_tagger.graph_no_exception + pynutil.insert("\"")
@@ -44,14 +42,17 @@ class DecimalFst(GraphFst):
         final_graph_wo_sign = graph_integer + delete_point + pynini.accep(" ") + graph_fractional
 
         self.final_graph_wo_negative = (
-            allow_spelling
-            @ (
-                final_graph_wo_sign
-                | get_quantity(
-                    final_graph_wo_sign, itn_cardinal_tagger.graph_hundred_component_at_least_one_none_zero_digit
-                )
-            ).optimize()
-        )
+            final_graph_wo_sign
+            | get_quantity(
+                final_graph_wo_sign,
+                None,
+                itn_cardinal_tagger.graph_hundred_component_at_least_one_none_zero_digit,
+                None,
+                False,
+                True
+            )
+        ).optimize()
+
 
         final_graph = itn_cardinal_tagger.optional_minus_graph + self.final_graph_wo_negative
         final_graph += pynutil.insert(" preserve_order: true")
