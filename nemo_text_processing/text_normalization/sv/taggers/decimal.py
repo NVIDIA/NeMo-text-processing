@@ -128,6 +128,8 @@ class DecimalFst(GraphFst):
         cardinal_graph_hundreds_one_non_zero_en = (
             cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en
         )
+        self.cardinal_graph_hundreds_one_non_zero_en = cardinal_graph_hundreds_one_non_zero_en
+        self.cardinal_graph_hundreds_one_non_zero = cardinal_graph_hundreds_one_non_zero
 
         self.graph = cardinal.two_or_three_digits_read_frac
 
