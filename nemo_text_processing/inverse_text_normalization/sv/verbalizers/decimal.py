@@ -20,7 +20,7 @@ from pynini.lib import pynutil
 class DecimalFst(GraphFst):
     """
     Finite state transducer for verbalizing decimal, e.g.
-        decimal { negative: "true" integer_part: "12"  fractional_part: "5006" quantity: "biljon" } -> -12.5006 biljon
+        decimal { negative: "true" integer_part: "12"  fractional_part: "5006" quantity: "biljon" } -> -12,5006 biljon
 
     Args:
         tn_decimal_verbalizer: TN decimal verbalizer
