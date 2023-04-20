@@ -28,6 +28,7 @@ def get_quantity(
     cardinal_up_to_thousand: 'pynini.FstLike',
     cardinal_up_to_thousand_ett: 'pynini.FstLike',
     include_abbr: bool,
+    itn: bool = False
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
@@ -57,24 +58,25 @@ def get_quantity(
         + quantities_pl
         + pynutil.insert("\"")
     )
-    res |= (
-        pynutil.insert("integer_part: \"")
-        + cardinal_up_to_thousand_ett
-        + pynutil.insert("\"")
-        + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert(" quantity: \"")
-        + "tusen"
-        + pynutil.insert("\"")
-    )
-    res |= (
-        pynutil.insert("integer_part: \"")
-        + pynini.cross("1", "ett")
-        + pynutil.insert("\"")
-        + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert(" quantity: \"")
-        + "tusen"
-        + pynutil.insert("\"")
-    )
+    if not itn:
+        res |= (
+            pynutil.insert("integer_part: \"")
+            + cardinal_up_to_thousand_ett
+            + pynutil.insert("\"")
+            + pynini.closure(pynutil.delete(" "), 0, 1)
+            + pynutil.insert(" quantity: \"")
+            + "tusen"
+            + pynutil.insert("\"")
+        )
+        res |= (
+            pynutil.insert("integer_part: \"")
+            + pynini.cross("1", "ett")
+            + pynutil.insert("\"")
+            + pynini.closure(pynutil.delete(" "), 0, 1)
+            + pynutil.insert(" quantity: \"")
+            + "tusen"
+            + pynutil.insert("\"")
+        )
     res |= (
         pynutil.insert("integer_part: \"")
         + pynini.cross("1", "en")
@@ -100,13 +102,14 @@ def get_quantity(
         + quantities_pl
         + pynutil.insert("\"")
     )
-    res |= (
-        decimal_ett
-        + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert(" quantity: \"")
-        + "tusen"
-        + pynutil.insert("\"")
-    )
+    if not itn:
+        res |= (
+            decimal_ett
+            + pynini.closure(pynutil.delete(" "), 0, 1)
+            + pynutil.insert(" quantity: \"")
+            + "tusen"
+            + pynutil.insert("\"")
+        )
     return res
 
 
