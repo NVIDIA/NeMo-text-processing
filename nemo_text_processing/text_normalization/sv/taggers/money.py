@@ -55,9 +55,9 @@ class MoneyFst(GraphFst):
 
         min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
         min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
-        maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")))
-        maj_singular_nt = pynini.string_file((get_abs_path("data/money/currency_major_nt.tsv")))
-        maj_plural = pynini.string_file((get_abs_path("data/money/currency_plurals.tsv")))
+        maj_singular = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))
+        maj_singular_nt = pynini.string_file(get_abs_path("data/money/currency_major_nt.tsv"))
+        maj_plural = pynini.string_file(get_abs_path("data/money/currency_plurals.tsv"))
 
         maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
         maj_singular_labels_nt = load_labels(get_abs_path("data/money/currency_major_nt.tsv"))
