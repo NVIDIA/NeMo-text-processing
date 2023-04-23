@@ -53,15 +53,14 @@ def get_all_to_or_from_fst(cardinal: GraphFst):
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time
-        e.g. acht uhr e s t-> time { hours: "8" zone: "e s t" }
-        e.g. dreizehn uhr -> time { hours: "13" }
-        e.g. dreizehn uhr zehn -> time { hours: "13" minutes: "10" }
-        e.g. viertel vor zwölf -> time { minutes: "45" hours: "11" }
-        e.g. viertel nach zwölf -> time { minutes: "15" hours: "12" }
+        e.g. klockan åtta e s t -> time { hours: "8" zone: "e s t" }
+        e.g. klockan tretton -> time { hours: "13" }
+        e.g. klockan tretton tio -> time { hours: "13" minutes: "10" }
+        e.g. kvart i tolv -> time { minutes: "45" hours: "11" }
+        e.g. kvart över tolv -> time { minutes: "15" hours: "12" }
         e.g. halb zwölf -> time { minutes: "30" hours: "11" }
-        e.g. drei vor zwölf -> time { minutes: "57" hours: "11" }
-        e.g. drei nach zwölf -> time { minutes: "3" hours: "12" }
-        e.g. drei uhr zehn minuten zehn sekunden -> time { hours: "3" hours: "10" sekunden: "10"}
+        e.g. tre i tolv -> time { minutes: "57" hours: "11" }
+        e.g. tre över tolv -> time { minutes: "3" hours: "12" }
     
     Args:
         tn_time_verbalizer: TN time verbalizer
