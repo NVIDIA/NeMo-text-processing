@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.sv.taggers.decimal import get_quantity, quantities
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.sv.taggers.decimal import get_quantity, quantities
 from pynini.lib import pynutil
 
 
@@ -49,10 +49,9 @@ class DecimalFst(GraphFst):
                 itn_cardinal_tagger.graph_hundred_component_at_least_one_none_zero_digit,
                 None,
                 False,
-                True
+                True,
             )
         ).optimize()
-
 
         final_graph = itn_cardinal_tagger.optional_minus_graph + self.final_graph_wo_negative
         final_graph += pynutil.insert(" preserve_order: true")
