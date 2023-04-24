@@ -21,8 +21,8 @@ class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time, e.g.
         time { hours: "8" minutes: "30" zone: "e s t" } -> 08:30 est
-        time { hours: "8" } -> 8 Uhr
-        time { hours: "8" minutes: "30" seconds: "10" } -> 08:30:10 Uhr 
+        time { hours: "8" } -> kl. 8
+        time { hours: "8" minutes: "30" seconds: "10" } -> 08:30:10
     """
 
     def __init__(self, deterministic: bool = True):
