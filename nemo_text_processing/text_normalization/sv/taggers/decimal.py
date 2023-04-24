@@ -28,7 +28,7 @@ def get_quantity(
     cardinal_up_to_thousand: 'pynini.FstLike',
     cardinal_up_to_thousand_ett: 'pynini.FstLike',
     include_abbr: bool,
-    itn: bool = False
+    itn: bool = False,
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
