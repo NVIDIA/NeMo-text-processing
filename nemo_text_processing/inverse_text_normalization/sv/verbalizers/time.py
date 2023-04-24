@@ -30,7 +30,9 @@ class TimeFst(GraphFst):
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         hour = pynutil.delete("hours: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
-        kl_hour = pynutil.delete("hours: \"") + pynini.accep("kl. ") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
+        kl_hour = (
+            pynutil.delete("hours: \"") + pynini.accep("kl. ") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
+        )
         minute = pynutil.delete("minutes: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
         lead_hour = (hour @ add_leading_zero_to_double_digit) | kl_hour
         lead_minute = minute @ add_leading_zero_to_double_digit
