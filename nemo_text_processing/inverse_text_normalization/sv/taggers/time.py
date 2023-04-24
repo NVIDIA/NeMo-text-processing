@@ -60,6 +60,8 @@ class TimeFst(GraphFst):
         e.g. kvart över tolv -> time { minutes: "15" hours: "12" }
         e.g. halv tolv -> time { minutes: "30" hours: "11" }
         e.g. tre i tolv -> time { minutes: "57" hours: "11" }
+        e.g. tre i kvart i tolv -> time { minutes: "42" hours: "11" }
+        e.g. tre över kvart i tolv -> time { minutes: "48" hours: "11" }
         e.g. tre över tolv -> time { minutes: "3" hours: "12" }
     
     Args:
@@ -99,8 +101,5 @@ class TimeFst(GraphFst):
         prefix_minutes_graph = pynutil.insert("minutes: \"") + prefix_minutes + pynutil.insert("\"")
         graph_prefixed = prefix_minutes_graph + hours_to_graph
 
-        # lazy way to make sure compounds work
-        optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))
-        graph = (tn_time_verbalizer.graph @ optional_delete_space).invert().optimize()
-        graph |= graph_prefixed
+        graph = graph_prefixed
         self.fst = self.add_tokens(graph).optimize()
