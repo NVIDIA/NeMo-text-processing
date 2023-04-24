@@ -53,9 +53,9 @@ def get_all_to_or_from_fst(cardinal: GraphFst):
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time
-        e.g. klockan åtta e s t -> time { hours: "8" zone: "e s t" }
-        e.g. klockan tretton -> time { hours: "13" }
-        e.g. klockan tretton tio -> time { hours: "13" minutes: "10" }
+        e.g. klockan åtta e s t -> time { hours: "kl. 8" zone: "e s t" }
+        e.g. klockan tretton -> time { hours: "kl. 13" }
+        e.g. klockan tretton tio -> time { hours: "kl. 13" minutes: "10" }
         e.g. kvart i tolv -> time { minutes: "45" hours: "11" }
         e.g. kvart över tolv -> time { minutes: "15" hours: "12" }
         e.g. halv tolv -> time { minutes: "30" hours: "11" }
@@ -68,7 +68,7 @@ class TimeFst(GraphFst):
         tn_time_verbalizer: TN time verbalizer
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst, tn_time_verbalizer: GraphFst):
+    def __init__(self, tn_cardinal_tagger: GraphFst):
         super().__init__(name="time", kind="classify")
 
         klockan = pynini.union(pynini.cross("klockan", "kl."), pynini.cross("klockan är", "kl."))

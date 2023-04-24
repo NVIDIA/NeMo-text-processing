@@ -112,7 +112,7 @@ class ClassifyFst(GraphFst):
             ).fst
             date_graph = DateFst(tn_date_tagger=tn_date_tagger).fst
             word_graph = WordFst().fst
-            time_graph = TimeFst(tn_cardinal_tagger=tn_cardinal_tagger, tn_time_verbalizer=tn_time_verbalizer).fst
+            time_graph = TimeFst(tn_cardinal_tagger=tn_cardinal_tagger).fst
             money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal).fst
             whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case).fst
             punct_graph = PunctuationFst().fst
@@ -126,7 +126,7 @@ class ClassifyFst(GraphFst):
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(whitelist_graph, 1.0)
-                # | pynutil.add_weight(time_graph, 1.1)
+                | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.1)
                 # | pynutil.add_weight(decimal_graph, 1.1)
                 # | pynutil.add_weight(measure_graph, 1.1)
