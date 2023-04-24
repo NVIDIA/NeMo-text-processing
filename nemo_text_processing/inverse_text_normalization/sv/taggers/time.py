@@ -78,6 +78,10 @@ class TimeFst(GraphFst):
         minute_words_to_words = minutes_inverse @ minutes_to @ tn_cardinal_tagger.graph_en
         minute_words_to_words = pynutil.insert("minutes: \"") + minute_words_to_words + pynutil.insert("\"")
 
+        labels_hour = [str(x) for x in range(0, 24)]
+        hours = pynini.union(*labels_hour) @ tn_cardinal_tagger.graph
+        hours_graph = pynutil.insert("hours: \"") + hours + pynutil.insert("\"")
+
         def hours_to_pairs():
             for x in range(1, 13):
                 if x == 12:
@@ -90,18 +94,28 @@ class TimeFst(GraphFst):
         hours_to = pynini.invert(hours_to @ tn_cardinal_tagger.graph)
         self.hours_to = hours_to
         hours_to_graph = pynutil.insert("hours: \"") + hours_to + pynutil.insert("\"")
-        bare_quarters = pynini.string_map([(x[1], str(x[0])) for x in QUARTERS.items()])
-        bare_quarters_graph = pynutil.insert("minutes: \"") + bare_quarters + pynutil.insert("\"")
-        prefix_minutes = bare_quarters
+        # fix here
+        bare_quarters_to = pynini.string_map([(x[1], str(x[0])) for x in QUARTERS.items() if not "över" in x[1]])
+        bare_quarters_from = pynini.cross("kvart över", "15")
+        bare_quarters_to_graph = pynutil.insert("minutes: \"") + bare_quarters_to + pynutil.insert("\"")
+        bare_quarters_from_graph = pynutil.insert("minutes: \"") + bare_quarters_from + pynutil.insert("\"")
+        prefix_minutes_to = bare_quarters_to
+        prefix_minutes_from = bare_quarters_from
 
         from_to_output = get_all_to_or_from_fst(tn_cardinal_tagger)
 
         for _, word in QUARTERS.items():
             for when in ["över", "i"]:
                 num_part = pynini.invert(from_to_output[word][when])
-                prefix_minutes |= num_part + pynutil.insert(f" {when} {word}")
-        prefix_minutes_graph = pynutil.insert("minutes: \"") + prefix_minutes + pynutil.insert("\"")
-        graph_prefixed = prefix_minutes_graph + NEMO_SPACE + hours_to_graph
+                num_part_end = num_part + pynutil.insert(f" {when} {word}")
+                if when == "över":
+                    prefix_minutes_from |= num_part_end
+                else:
+                    prefix_minutes_to |= num_part_end
+        prefix_minutes_to_graph = pynutil.insert("minutes: \"") + prefix_minutes_to + pynutil.insert("\"")
+        graph_to_prefixed = prefix_minutes_to_graph + NEMO_SPACE + hours_to_graph
+        prefix_minutes_from_graph = pynutil.insert("minutes: \"") + prefix_minutes_from + pynutil.insert("\"")
+        graph_from_prefixed = prefix_minutes_from_graph + NEMO_SPACE + hours_graph
 
-        graph = graph_prefixed
+        graph = graph_to_prefixed | graph_from_prefixed
         self.fst = self.add_tokens(graph).optimize()
