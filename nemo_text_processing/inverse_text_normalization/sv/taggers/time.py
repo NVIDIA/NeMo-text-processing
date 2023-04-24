@@ -34,8 +34,8 @@ def get_all_to_or_from_numbers():
             else:
                 current_past.append((str(i), str(i - num)))
         output[word] = {}
-        output[word]["past"] = current_past
-        output[word]["to"] = current_to
+        output[word]["över"] = current_past
+        output[word]["i"] = current_to
     return output
 
 
@@ -43,8 +43,8 @@ def get_all_to_or_from_fst(cardinal: GraphFst):
     numbers = get_all_to_or_from_numbers()
     output = {}
     for key in numbers:
-        for when in ["past", "to"]:
-            output[key] = {}
+        output[key] = {}
+        for when in ["över", "i"]:
             map = pynini.string_map(numbers[key][when])
             output[key][when] = pynini.project(map, "input") @ map @ cardinal.graph
     return output
@@ -69,6 +69,8 @@ class TimeFst(GraphFst):
     def __init__(self, tn_cardinal_tagger: GraphFst, tn_time_verbalizer: GraphFst):
         super().__init__(name="time", kind="classify")
 
+        klockan = pynini.union(pynini.cross("klockan", "kl."), pynini.cross("klockan är", "kl."))
+        klockan_graph_piece = pynutil.insert("hours: \"") + klockan
         minutes_to = pynini.string_map([(str(i), str(60 - i)) for i in range(1, 60)])
         minutes_inverse = pynini.invert(pynini.project(minutes_to, "input") @ tn_cardinal_tagger.graph_en)
         minute_words_to_words = minutes_inverse @ minutes_to @ tn_cardinal_tagger.graph_en
