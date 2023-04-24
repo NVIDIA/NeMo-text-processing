@@ -79,7 +79,8 @@ class TimeFst(GraphFst):
         minute_words_to_words = pynutil.insert("minutes: \"") + minute_words_to_words + pynutil.insert("\"")
 
         labels_hour = [str(x) for x in range(0, 24)]
-        hours = pynini.union(*labels_hour) @ tn_cardinal_tagger.graph
+        hours = pynini.invert(pynini.union(*labels_hour) @ tn_cardinal_tagger.graph)
+        self.hours = hours
         hours_graph = pynutil.insert("hours: \"") + hours + pynutil.insert("\"")
 
         def hours_to_pairs():
@@ -97,8 +98,8 @@ class TimeFst(GraphFst):
 
         bare_quarters_to = pynini.string_map([(x[1], str(x[0])) for x in QUARTERS.items() if not "över" in x[1]])
         bare_quarters_from = pynini.cross("kvart över", "15")
-        bare_quarters_to_graph = pynutil.insert("minutes: \"") + bare_quarters_to + pynutil.insert("\"")
-        bare_quarters_from_graph = pynutil.insert("minutes: \"") + bare_quarters_from + pynutil.insert("\"")
+        self.quarters_to = bare_quarters_to
+        self.quarters_from = bare_quarters_from
         prefix_minutes_to = bare_quarters_to
         prefix_minutes_from = bare_quarters_from
 
@@ -108,7 +109,7 @@ class TimeFst(GraphFst):
             for when in ["över", "i"]:
                 num_part = pynini.invert(from_to_output[word][when])
                 num_part_end = num_part + pynutil.delete(f" {when} {word}")
-                if when == "över":
+                if word == "kvart över":
                     prefix_minutes_from |= num_part_end
                 else:
                     prefix_minutes_to |= num_part_end
