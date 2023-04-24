@@ -87,6 +87,8 @@ class TimeFst(GraphFst):
                 yield x, y
 
         hours_to = pynini.string_map([(str(x[0]), str(x[1])) for x in hours_to_pairs()])
+        hours_to = pynini.invert(hours_to @ tn_cardinal_tagger.graph)
+        self.hours_to = hours_to
         hours_to_graph = pynutil.insert("hours: \"") + hours_to + pynutil.insert("\"")
         bare_quarters = pynini.string_map([(x[1], str(x[0])) for x in QUARTERS.items()])
         bare_quarters_graph = pynutil.insert("minutes: \"") + bare_quarters + pynutil.insert("\"")
