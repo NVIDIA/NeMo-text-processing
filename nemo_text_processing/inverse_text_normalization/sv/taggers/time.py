@@ -65,7 +65,7 @@ class TimeFst(GraphFst):
         e.g. tre över tolv -> time { minutes: "3" hours: "12" }
     
     Args:
-        tn_time_verbalizer: TN time verbalizer
+        tn_cardinal_tagger: TN cardinal verbalizer
     """
 
     def __init__(self, tn_cardinal_tagger: GraphFst):
