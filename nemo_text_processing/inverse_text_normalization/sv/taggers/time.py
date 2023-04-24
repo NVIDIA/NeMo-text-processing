@@ -15,7 +15,7 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 from pynini.lib import pynutil
 
 QUARTERS = {15: "kvart över", 30: "halv", 45: "kvart i"}
@@ -87,7 +87,7 @@ class TimeFst(GraphFst):
                 yield x, y
 
         hours_to = pynini.string_map([(str(x[0]), str(x[1])) for x in hours_to_pairs()])
-        hours_to_graph = pynutil.insert(" hours: \"") + hours_to + pynutil.insert("\"")
+        hours_to_graph = pynutil.insert("hours: \"") + hours_to + pynutil.insert("\"")
         bare_quarters = pynini.string_map([(x[1], str(x[0])) for x in QUARTERS.items()])
         bare_quarters_graph = pynutil.insert("minutes: \"") + bare_quarters + pynutil.insert("\"")
         prefix_minutes = bare_quarters
@@ -99,7 +99,7 @@ class TimeFst(GraphFst):
                 num_part = pynini.invert(from_to_output[word][when])
                 prefix_minutes |= num_part + pynutil.insert(f" {when} {word}")
         prefix_minutes_graph = pynutil.insert("minutes: \"") + prefix_minutes + pynutil.insert("\"")
-        graph_prefixed = prefix_minutes_graph + hours_to_graph
+        graph_prefixed = prefix_minutes_graph + NEMO_SPACE + hours_to_graph
 
         graph = graph_prefixed
         self.fst = self.add_tokens(graph).optimize()
