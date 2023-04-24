@@ -10,3 +10,5 @@ tolv eftermiddag~12 e.m.
 tolv eftermiddag e s t~12 e.m. est
 kvart i tolv~11:45
 kvart över tolv~12:15
+tre i kvart i tolv~11:42
+tre över kvart i tolv~11:48
