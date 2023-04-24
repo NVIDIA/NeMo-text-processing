@@ -20,7 +20,7 @@ from pynini.lib import pynutil
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time, e.g.
-        time { hours: "8" minutes: "30" zone: "e s t" } -> 08:30 Uhr est
+        time { hours: "8" minutes: "30" zone: "e s t" } -> 08:30 est
         time { hours: "8" } -> 8 Uhr
         time { hours: "8" minutes: "30" seconds: "10" } -> 08:30:10 Uhr 
     """
@@ -47,7 +47,7 @@ class TimeFst(GraphFst):
             + pynini.closure(delete_space + pynutil.insert(":") + (second @ add_leading_zero_to_double_digit), 0, 1)
             + optional_zone
         )
-        graph_h = (hour | kl_hour) + optional_zone
+        graph_h = (pynutil.insert("kl. ") + hour | kl_hour) + optional_zone
         graph_hm = lead_hour + graph
         graph_hms = lead_hour + graph
         final_graph = graph_hm | graph_hms | graph_h
