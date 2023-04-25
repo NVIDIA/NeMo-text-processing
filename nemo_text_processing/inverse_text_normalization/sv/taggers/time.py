@@ -16,6 +16,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 QUARTERS = {15: "kvart över", 30: "halv", 45: "kvart i"}
@@ -70,6 +71,8 @@ class TimeFst(GraphFst):
 
     def __init__(self, tn_cardinal_tagger: GraphFst):
         super().__init__(name="time", kind="classify")
+
+        suffix_graph = pynini.invert(pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv"))))
 
         klockan = pynini.union(pynini.cross("klockan", "kl."), pynini.cross("klockan är", "kl."))
         klockan_graph_piece = pynutil.insert("hours: \"") + klockan
