@@ -90,7 +90,9 @@ class TimeFst(GraphFst):
         final_suffix_optional = pynini.closure(NEMO_SPACE + final_suffix, 0, 1)
         final_time_zone = pynutil.insert("zone: \"") + time_zone_graph + pynutil.insert("\"")
         final_time_zone_optional = pynini.closure(NEMO_SPACE + final_time_zone, 0, 1)
-        both_optionals = final_suffix_optional + final_time_zone_optional
+        both_optional_suffixes = final_suffix_optional + final_time_zone_optional
+        one_optional_suffix = NEMO_SPACE + final_suffix + final_time_zone_optional
+        one_optional_suffix |= final_suffix_optional + NEMO_SPACE + final_time_zone
 
         labels_hour = [str(x) for x in range(0, 24)]
         hours = pynini.invert(pynini.union(*labels_hour) @ tn_cardinal_tagger.graph)
@@ -98,6 +100,8 @@ class TimeFst(GraphFst):
         hours_graph = pynutil.insert("hours: \"") + hours + pynutil.insert("\"")
         klockan_hour = klockan_graph_piece + NEMO_SPACE + hours + pynutil.insert("\"")
         hours_graph |= klockan_hour
+
+        hour_sfx = hours_graph + one_optional_suffix
 
         def hours_to_pairs():
             for x in range(1, 13):
@@ -135,6 +139,13 @@ class TimeFst(GraphFst):
         graph_to_prefixed = prefix_minutes_to_graph + NEMO_SPACE + hours_to_graph
         prefix_minutes_from_graph = pynutil.insert("minutes: \"") + prefix_minutes_from + pynutil.insert("\"")
         graph_from_prefixed = prefix_minutes_from_graph + NEMO_SPACE + hours_graph
+        minutes_graph = pynutil.insert("minutes: \"") + minutes + pynutil.insert("\"")
+        seconds_graph = pynutil.insert("seconds: \"") + minutes + pynutil.insert("\"")
 
-        graph = graph_to_prefixed | graph_from_prefixed | klockan_hour + both_optionals
+        hm_sfx = hours_graph + NEMO_SPACE + minutes_graph + one_optional_suffix
+        hms_sfx = hours_graph + NEMO_SPACE + minutes_graph + NEMO_SPACE + seconds_graph + one_optional_suffix
+
+        graph = graph_to_prefixed | graph_from_prefixed | klockan_hour + both_optional_suffixes | hour_sfx
+        graph |= hm_sfx
+        graph |= hms_sfx
         self.fst = self.add_tokens(graph).optimize()
