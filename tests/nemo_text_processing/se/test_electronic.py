@@ -20,11 +20,11 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestElectronic:
-    normalizer = Normalizer(input_case='cased', lang='se', cache_dir=CACHE_DIR, overwrite_cache=False)
+    se_normalizer = Normalizer(input_case='cased', lang='se', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('se/data_text_normalization/test_cases_electronic.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
-        pred = self.normalizer.normalize(test_input, verbose=False)
+        pred = self.se_normalizer.normalize(test_input, verbose=False)
         assert pred == expected
