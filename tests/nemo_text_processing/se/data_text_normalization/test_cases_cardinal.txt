@@ -41,9 +41,9 @@
 1.000~duhát
 1010~duhátlogi
 1020~duhátguoktelogi
-1100~oktanuppelohčuođi
-1110~oktanuppelohčuohlogi
-1111~oktanuppelohčuohoktanuppelohkái
+1100~duhátčuođi
+1110~duhátčuođilogi
+1111~duhátčuođioktanuppelohkái
 2000~guokteduhát
 2002~guokteduhátguokte
 2010~guokteduhátlogi
