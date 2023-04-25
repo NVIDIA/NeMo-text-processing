@@ -75,6 +75,7 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify")
 
         suffixes = pynini.invert(pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv"))))
+        self.suffixes = suffixes
 
         klockan = pynini.union(pynini.cross("klockan", "kl."), pynini.cross("klockan är", "kl."))
         klockan_graph_piece = pynutil.insert("hours: \"") + klockan
