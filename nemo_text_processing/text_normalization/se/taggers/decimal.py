@@ -19,7 +19,7 @@ from nemo_text_processing.text_normalization.se.utils import get_abs_path
 from pynini.lib import pynutil
 
 quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
-#quantities_abbr = pynini.string_file(get_abs_path("data/numbers/millions_abbr.tsv"))
+# quantities_abbr = pynini.string_file(get_abs_path("data/numbers/millions_abbr.tsv"))
 
 
 def get_quantity(
@@ -41,8 +41,8 @@ def get_quantity(
     quantities_pl = quantities + "er"
 
     if include_abbr:
-        quantity = quantities #| quantities_abbr
-#        quantities_pl |= quantities_abbr + pynutil.insert("er")
+        quantity = quantities  # | quantities_abbr
+    #        quantities_pl |= quantities_abbr + pynutil.insert("er")
     else:
         quantity = quantities
 

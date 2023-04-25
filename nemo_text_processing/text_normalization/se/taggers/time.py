@@ -49,7 +49,7 @@ class TimeFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
-#        suffix_graph = pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv")))
+        #        suffix_graph = pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv")))
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
 
         # only used for < 1000 thousand -> 0 weight
@@ -184,9 +184,11 @@ class TimeFst(GraphFst):
         # 2 pm est
         ins_minutes = pynutil.insert(" minutes: \"nolla\"")
         graph_h = (
-            final_graph_hour + ins_minutes + ensure_space #+ (final_suffix + final_time_zone_optional | final_time_zone)
+            final_graph_hour
+            + ins_minutes
+            + ensure_space  # + (final_suffix + final_time_zone_optional | final_time_zone)
         )
-        graph_h |= klockan_hour_graph + ins_minutes #+ final_suffix_optional + final_time_zone_optional
+        graph_h |= klockan_hour_graph + ins_minutes  # + final_suffix_optional + final_time_zone_optional
         self.graph_h = graph_h
 
         final_graph = (graph_hm | graph_h | graph_hms).optimize() @ pynini.cdrewrite(
