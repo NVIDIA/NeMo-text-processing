@@ -17,6 +17,7 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.inverse_text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path as get_tn_abs_path
 from nemo_text_processing.text_normalization.sv.utils import load_labels
 from pynini.lib import pynutil
 
@@ -73,7 +74,7 @@ class TimeFst(GraphFst):
     def __init__(self, tn_cardinal_tagger: GraphFst):
         super().__init__(name="time", kind="classify")
 
-        suffix_graph = pynini.invert(pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv"))))
+        suffixes = pynini.invert(pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv"))))
 
         klockan = pynini.union(pynini.cross("klockan", "kl."), pynini.cross("klockan är", "kl."))
         klockan_graph_piece = pynutil.insert("hours: \"") + klockan
@@ -83,6 +84,13 @@ class TimeFst(GraphFst):
         minutes = pynini.invert(pynini.project(minutes, "input") @ tn_cardinal_tagger.graph_en)
         minute_words_to_words = minutes_inverse @ minutes_to @ tn_cardinal_tagger.graph_en
         minute_words_to_words = pynutil.insert("minutes: \"") + minute_words_to_words + pynutil.insert("\"")
+
+        time_zone_graph = pynini.invert(pynini.string_file(get_tn_abs_path("data/time/time_zone.tsv")))
+        final_suffix = pynutil.insert("suffix: \"") + suffixes + pynutil.insert("\"")
+        final_suffix_optional = pynini.closure(NEMO_SPACE + final_suffix, 0, 1)
+        final_time_zone = pynutil.insert("zone: \"") + time_zone_graph + pynutil.insert("\"")
+        final_time_zone_optional = pynini.closure(NEMO_SPACE + final_time_zone, 0, 1)
+        both_optionals = final_suffix_optional + final_time_zone_optional
 
         labels_hour = [str(x) for x in range(0, 24)]
         hours = pynini.invert(pynini.union(*labels_hour) @ tn_cardinal_tagger.graph)
@@ -128,5 +136,5 @@ class TimeFst(GraphFst):
         prefix_minutes_from_graph = pynutil.insert("minutes: \"") + prefix_minutes_from + pynutil.insert("\"")
         graph_from_prefixed = prefix_minutes_from_graph + NEMO_SPACE + hours_graph
 
-        graph = graph_to_prefixed | graph_from_prefixed | klockan_hour
+        graph = graph_to_prefixed | graph_from_prefixed | klockan_hour + both_optionals
         self.fst = self.add_tokens(graph).optimize()
