@@ -13,7 +13,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_NOT_QUOTE,
+    NEMO_SPACE,
+    GraphFst,
+    delete_space,
+)
 from pynini.lib import pynutil
 
 
@@ -43,9 +49,7 @@ class TimeFst(GraphFst):
         ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
         final_suffix = pynutil.delete("suffix: \"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         optional_suffix = pynini.closure(NEMO_SPACE + final_suffix, 0, 1)
-        zone = (
-            pynutil.delete("zone: \"") + ANY_NOT_QUOTE + pynutil.delete("\"")
-        )
+        zone = pynutil.delete("zone: \"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         optional_zone = pynini.closure(NEMO_SPACE + zone, 0, 1)
         one_optional_suffix = NEMO_SPACE + final_suffix + optional_zone
         one_optional_suffix |= optional_suffix + NEMO_SPACE + zone
