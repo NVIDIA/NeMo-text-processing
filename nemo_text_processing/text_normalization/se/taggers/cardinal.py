@@ -112,6 +112,8 @@ class CardinalFst(GraphFst):
         # Three digit strings
         hundreds = digits_no_one + pynutil.insert("čuođi")
         hundreds |= pynini.cross("1", "čuođi")
+        if not deterministic:
+            hundreds |= pynini.cross("1", "oktačuođi")
 
         final_hundreds = hundreds + pynini.union(two_digit_non_zero, pynutil.delete("00"))
         graph_hundreds = pynini.union(final_hundreds, graph_two_digit_non_zero)
