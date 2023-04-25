@@ -33,9 +33,9 @@
 80~gávccilogi
 90~ovccilogi
 100~čuođi
-102~oktačuohguokte
-120~oktačuohguoktelogi
-130~oktačuohgolbmalogi
+102~čuođiguokte
+120~čuođiguoktelogi
+130~čuođigolbmalogi
 1000~duhát
 1 000~duhát
 1.000~duhát
