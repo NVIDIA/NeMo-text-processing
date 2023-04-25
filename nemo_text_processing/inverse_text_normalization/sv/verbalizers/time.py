@@ -42,7 +42,7 @@ class TimeFst(GraphFst):
             pynutil.delete("zone: \"") + pynini.closure(NEMO_ALPHA + delete_space) + NEMO_ALPHA + pynutil.delete("\"")
         )
         optional_zone = pynini.closure(pynini.accep(" ") + zone, 0, 1)
-        final_suffix = pynutil.insert("suffix: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
+        final_suffix = pynutil.delete("suffix: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
         optional_suffix = pynini.closure(pynini.accep(" ") + final_suffix, 0, 1)
         graph = (
             delete_space
