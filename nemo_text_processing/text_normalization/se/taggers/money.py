@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, ensure_space
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.se.graph_utils import SV_ALPHA, ensure_space
+from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
