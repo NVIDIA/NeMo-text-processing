@@ -20,15 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
-from nemo_text_processing.text_normalization.sv.graph_utils import bos_or_space, eos_or_space
 from pynini.lib import pynutil
-
-digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
-zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
-
-graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv"))
-server_common = pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
-domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 
 
 class ElectronicFst(GraphFst):
@@ -45,6 +37,12 @@ class ElectronicFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
+        digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
+        zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
+
+        graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv"))
+        server_common = pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
+        domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 
         graph_digit = digit_no_zero | zero
 
