@@ -32,7 +32,7 @@
 70~čiežalogi
 80~gávccilogi
 90~ovccilogi
-100~oktačuođi
+100~čuođi
 102~oktačuohguokte
 120~oktačuohguoktelogi
 130~oktačuohgolbmalogi
