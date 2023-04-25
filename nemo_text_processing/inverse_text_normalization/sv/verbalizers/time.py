@@ -39,23 +39,25 @@ class TimeFst(GraphFst):
         lead_minute = minute @ add_leading_zero_to_double_digit
 
         second = pynutil.delete("seconds: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
+        lead_second = second @ add_leading_zero_to_double_digit
+        ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
+        final_suffix = pynutil.delete("suffix: \"") + ANY_NOT_QUOTE + pynutil.delete("\"")
+        optional_suffix = pynini.closure(NEMO_SPACE + final_suffix, 0, 1)
         zone = (
-            pynutil.delete("zone: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
+            pynutil.delete("zone: \"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         )
         optional_zone = pynini.closure(NEMO_SPACE + zone, 0, 1)
-        final_suffix = pynutil.delete("suffix: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
-        optional_suffix = pynini.closure(NEMO_SPACE + final_suffix, 0, 1)
         one_optional_suffix = NEMO_SPACE + final_suffix + optional_zone
         one_optional_suffix |= optional_suffix + NEMO_SPACE + zone
         graph = (
             delete_space
             + pynutil.insert(":")
             + lead_minute
-            + pynini.closure(delete_space + pynutil.insert(":") + (second @ add_leading_zero_to_double_digit), 0, 1)
+            + pynini.closure(delete_space + pynutil.insert(":") + lead_second, 0, 1)
             + optional_suffix
             + optional_zone
         )
-        graph_h = (pynutil.insert("kl. ") + hour | kl_hour) + one_optional_suffix
+        graph_h = (pynutil.insert("kl. ") + hour + one_optional_suffix | kl_hour + optional_suffix + optional_zone)
         graph_hm = lead_hour + graph
         final_graph = graph_hm | graph_h
         self.fst = self.delete_tokens(final_graph).optimize()
