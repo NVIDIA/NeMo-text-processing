@@ -15,6 +15,25 @@
 import os
 from typing import List, Union
 
+import inflect
+
+_inflect = inflect.engine()
+
+
+def num_to_word(x: Union[str, int]):
+    """
+    converts integer to spoken representation
+
+    Args
+        x: integer
+
+    Returns: spoken representation 
+    """
+    if isinstance(x, int):
+        x = str(x)
+        x = _inflect.number_to_words(str(x)).replace("-", " ").replace(",", "")
+    return x
+
 
 def get_abs_path(rel_path):
     """
@@ -26,3 +45,18 @@ def get_abs_path(rel_path):
     Returns absolute path
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
+
+
+def get_various_formats(text: str) -> List[str]:
+    """
+    Return various formats for text, e.g., all caps, the first letter upper cased, space separated, etc.
+    """
+    result = []
+    if len(text) == 0:
+        return []
+
+    for t in [text, ' '.join(list(text))]:
+        result.append(t)
+        result.append(t.upper())
+        result.append(t.capitalize())
+    return result
