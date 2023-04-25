@@ -57,7 +57,8 @@ class TimeFst(GraphFst):
             + optional_suffix
             + optional_zone
         )
-        graph_h = (pynutil.insert("kl. ") + hour + one_optional_suffix | kl_hour + optional_suffix + optional_zone)
+        graph_h = hour + one_optional_suffix
+        graph_klh = kl_hour + optional_suffix + optional_zone
         graph_hm = lead_hour + graph
-        final_graph = graph_hm | graph_h
+        final_graph = graph_hm | graph_h | graph_klh
         self.fst = self.delete_tokens(final_graph).optimize()
