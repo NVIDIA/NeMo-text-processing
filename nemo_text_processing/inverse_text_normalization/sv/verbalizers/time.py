@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -42,14 +42,17 @@ class TimeFst(GraphFst):
             pynutil.delete("zone: \"") + pynini.closure(NEMO_ALPHA + delete_space) + NEMO_ALPHA + pynutil.delete("\"")
         )
         optional_zone = pynini.closure(pynini.accep(" ") + zone, 0, 1)
+        final_suffix = pynutil.insert("suffix: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
+        optional_suffix = pynini.closure(pynini.accep(" ") + final_suffix, 0, 1)
         graph = (
             delete_space
             + pynutil.insert(":")
             + lead_minute
             + pynini.closure(delete_space + pynutil.insert(":") + (second @ add_leading_zero_to_double_digit), 0, 1)
+            + optional_suffix
             + optional_zone
         )
-        graph_h = (pynutil.insert("kl. ") + hour | kl_hour) + optional_zone
+        graph_h = (pynutil.insert("kl. ") + hour | kl_hour) + optional_suffix + optional_zone
         graph_hm = lead_hour + graph
         graph_hms = lead_hour + graph
         final_graph = graph_hm | graph_hms | graph_h
