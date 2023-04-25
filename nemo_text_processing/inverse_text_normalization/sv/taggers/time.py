@@ -74,7 +74,9 @@ class TimeFst(GraphFst):
         klockan = pynini.union(pynini.cross("klockan", "kl."), pynini.cross("klockan är", "kl."))
         klockan_graph_piece = pynutil.insert("hours: \"") + klockan
         minutes_to = pynini.string_map([(str(i), str(60 - i)) for i in range(1, 60)])
+        minutes = pynini.string_map([str(i) for i in range(1, 60)])
         minutes_inverse = pynini.invert(pynini.project(minutes_to, "input") @ tn_cardinal_tagger.graph_en)
+        minutes = pynini.invert(pynini.project(minutes, "input") @ tn_cardinal_tagger.graph_en)
         minute_words_to_words = minutes_inverse @ minutes_to @ tn_cardinal_tagger.graph_en
         minute_words_to_words = pynutil.insert("minutes: \"") + minute_words_to_words + pynutil.insert("\"")
 
@@ -82,6 +84,8 @@ class TimeFst(GraphFst):
         hours = pynini.invert(pynini.union(*labels_hour) @ tn_cardinal_tagger.graph)
         self.hours = hours
         hours_graph = pynutil.insert("hours: \"") + hours + pynutil.insert("\"")
+        klockan_hour = klockan_graph_piece + NEMO_SPACE + hours + pynutil.insert("\"")
+        hours_graph |= klockan_hour
 
         def hours_to_pairs():
             for x in range(1, 13):
@@ -113,10 +117,12 @@ class TimeFst(GraphFst):
                     prefix_minutes_from |= num_part_end
                 else:
                     prefix_minutes_to |= num_part_end
+        prefix_minutes_to |= minutes_inverse + pynutil.delete(" i")
+        prefix_minutes_from |= minutes + pynutil.delete(" över")
         prefix_minutes_to_graph = pynutil.insert("minutes: \"") + prefix_minutes_to + pynutil.insert("\"")
         graph_to_prefixed = prefix_minutes_to_graph + NEMO_SPACE + hours_to_graph
         prefix_minutes_from_graph = pynutil.insert("minutes: \"") + prefix_minutes_from + pynutil.insert("\"")
         graph_from_prefixed = prefix_minutes_from_graph + NEMO_SPACE + hours_graph
 
-        graph = graph_to_prefixed | graph_from_prefixed
+        graph = graph_to_prefixed | graph_from_prefixed | klockan_hour
         self.fst = self.add_tokens(graph).optimize()
