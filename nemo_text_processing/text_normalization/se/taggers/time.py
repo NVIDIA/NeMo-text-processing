@@ -135,6 +135,7 @@ class TimeFst(GraphFst):
             + (pynini.cross("00", " seconds: \"nolla\"") | insert_space + final_graph_second)
             + ensure_space
             # + (final_suffix + final_time_zone_optional | final_time_zone)
+            + final_time_zone
         )
         graph_hms_sfx |= (
             final_graph_hour
@@ -144,6 +145,7 @@ class TimeFst(GraphFst):
             + (pynini.cross("00", " seconds: \"nolla\"") | insert_space + final_graph_second)
             + ensure_space
             # + (final_suffix + final_time_zone_optional | final_time_zone)
+            + final_time_zone
         )
         graph_hms_kl = (
             klockan_hour_graph
