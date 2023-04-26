@@ -1,4 +1,5 @@
 # Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, Jim O'Regan for Språkbanken Tal
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +16,8 @@
 import csv
 import logging
 import os
+
+CASE_KEYS = ["ess", "com_pl", "com_sg", "gen_sg", "gen_pl", "ill_pl", "ill_sg", "loc_sg", "nom_pl"]
 
 
 def get_abs_path(rel_path):
@@ -35,13 +38,31 @@ def get_abs_path(rel_path):
 
 def load_labels(abs_path):
     """
-    loads relative path file as dictionary
+    loads relative path file as list of lists
 
     Args:
         abs_path: absolute path
 
-    Returns dictionary of mappings
+    Returns list of mappings
     """
     label_tsv = open(abs_path, encoding="utf-8")
     labels = list(csv.reader(label_tsv, delimiter="\t"))
     return labels
+
+
+def load_case_forms(abs_path):
+    """
+    loads relative path file as dictionary, keyed on case/number
+
+    Args:
+        abs_path: absolute path of file
+
+    Returns dictionary of case forms
+    """
+    label_tsv = open(abs_path, encoding="utf-8")
+    labels = list(csv.reader(label_tsv, delimiter="\t"))
+    ret = {}
+    for label in labels:
+        if label[0] in CASE_KEYS:
+            ret[label[0]] = label[1]
+    return ret
