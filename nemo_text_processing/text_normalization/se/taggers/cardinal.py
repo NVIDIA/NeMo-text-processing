@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA
-from nemo_text_processing.text_normalization.se.utils import get_abs_path
+from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels, CASE_KEYS, load_case_forms
 from pynini.lib import pynutil
 
 
@@ -56,6 +56,32 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     return cardinal_string @ fst
 
 
+def load_cased_digits():
+    digits_cased = {}
+    for key in CASE_KEYS:
+        digits_cased[key] = {}
+        for label in load_labels(get_abs_path(f"data/numbers/digit_{key}.tsv")):
+            digits_cased[key][label[1]] = label[0]
+    return digits_cased
+
+
+def build_cased_fsts(deterministic=True):
+    digits_cased = load_cased_digits()
+    cuodi_cased = load_case_forms(get_abs_path("data/numbers/case_cuodi.tsv"))
+    logi_cased = load_case_forms(get_abs_path("data/numbers/case_logi.tsv"))
+    duhat_cased = load_case_forms(get_abs_path("data/numbers/case_duhat.tsv"))
+    endings_cased = load_case_forms(get_abs_path("data/numbers/digit_case_abbr_suffix.tsv"))
+
+    digits_cased_fst = {}
+    for k in digits_cased:
+        digits_cased_fst[k] = pynini.string_map((k, v) for k, v in digits_cased[k].items())
+    teens_cased_fst = {}
+    for k in digits_cased_fst:
+        teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
+        if not deterministic:
+            teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + pynutil.insert(f"nuppelogin")
+
+
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g.
@@ -82,16 +108,6 @@ class CardinalFst(GraphFst):
         if not deterministic:
             graph_zero |= pynini.cross("0", "nulla")
             graph_digit |= pynini.cross("1", "akta")
-
-        CASE_KEYS = ["ess", "com_pl", "com_sg", "gen_sg", "gen_pl", "ill_pl", "ill_sg", "loc_sg", "nom_pl"]
-
-        digits_cased = {}
-        digits_cased_fst = {}
-        digits_nom_to_cases = {}
-        for key in CASE_KEYS:
-            digits_cased_fst[key] = pynini.invert(pynini.string_file(get_abs_path(f"data/numbers/digit_{key}.tsv")))
-            digits_nom_to_cases[key] = digit_inverse @ digits_cased_fst[key]
-        self.digits_nom_to_cases = digits_nom_to_cases
 
         teen = pynutil.delete("1") + digit + pynutil.insert("nuppelohkái")
         teen |= pynini.cross("10", "logi")
