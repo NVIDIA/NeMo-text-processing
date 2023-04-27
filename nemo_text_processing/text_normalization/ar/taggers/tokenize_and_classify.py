@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ from nemo_text_processing.text_normalization.ar.taggers.decimal import DecimalFs
 from nemo_text_processing.text_normalization.ar.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ar.taggers.word import WordFst
+from nemo_text_processing.text_normalization.ar.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from pynini.lib import pynutil
 
@@ -80,6 +81,8 @@ class ClassifyFst(GraphFst):
             fraction_graph = self.fraction.fst
             self.money = MoneyFst(cardinal=self.cardinal)
             money_graph = self.money.fst
+            self.measure = MeasureFst(cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic)
+            measure_graph = self.measure.fst
             word_graph = WordFst(deterministic=deterministic).fst
             punct_graph = PunctuationFst(deterministic=deterministic).fst
 
@@ -88,6 +91,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.0)
                 | pynutil.add_weight(money_graph, 1.0)
+                | pynutil.add_weight(measure_graph, 1.0)
             )
 
             classify |= pynutil.add_weight(word_graph, 100)
