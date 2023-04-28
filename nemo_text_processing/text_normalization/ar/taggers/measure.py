@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -23,9 +22,11 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     convert_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 from pynini.lib import pynutil
 
 unit_singular = pynini.string_file(get_abs_path("data/measure/measurements.tsv"))
+
 
 class MeasureFst(GraphFst):
     """
@@ -47,8 +48,10 @@ class MeasureFst(GraphFst):
         graph_unit_singular = convert_space(graph_unit)
         optional_graph_negative = pynini.closure("-", 0, 1)
 
-        graph_unit_denominator = (
-            pynini.cross("/", "في") + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_singular | graph_unit_singular + pynutil.insert(NEMO_NON_BREAKING_SPACE) + pynini.cross("/", "في")
+        graph_unit_denominator = pynini.cross("/", "في") + pynutil.insert(
+            NEMO_NON_BREAKING_SPACE
+        ) + graph_unit_singular | graph_unit_singular + pynutil.insert(NEMO_NON_BREAKING_SPACE) + pynini.cross(
+            "/", "في"
         )
 
         optional_unit_denominator = pynini.closure(
@@ -56,7 +59,9 @@ class MeasureFst(GraphFst):
         )
 
         unit_plural = (
-            pynutil.insert("units: \"") + (graph_unit_singular + (optional_unit_denominator) | graph_unit_denominator) + pynutil.insert("\"")
+            pynutil.insert("units: \"")
+            + (graph_unit_singular + (optional_unit_denominator) | graph_unit_denominator)
+            + pynutil.insert("\"")
         )
 
         unit_singular_graph = (
@@ -65,18 +70,24 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        subgraph_decimal = decimal.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_plural | unit_plural + pynini.closure(pynutil.delete(" "), 0, 1) + insert_space + decimal.fst 
+        subgraph_decimal = (
+            decimal.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_plural
+            | unit_plural + pynini.closure(pynutil.delete(" "), 0, 1) + insert_space + decimal.fst
+        )
 
         subgraph_cardinal = (
             (optional_graph_negative + (pynini.closure(NEMO_DIGIT) - "1")) @ cardinal.fst
             + insert_space
             + pynini.closure(pynutil.delete(" "), 0, 1)
-            + unit_plural | unit_plural + pynini.closure(pynutil.delete(" "), 0, 1) + insert_space + (optional_graph_negative + (pynini.closure(NEMO_DIGIT) - "1")) @ cardinal.fst
+            + unit_plural
+            | unit_plural
+            + pynini.closure(pynutil.delete(" "), 0, 1)
+            + insert_space
+            + (optional_graph_negative + (pynini.closure(NEMO_DIGIT) - "1")) @ cardinal.fst
         )
 
         subgraph_cardinal |= (
-            (optional_graph_negative + pynini.accep("1"))
-            @ cardinal.fst
+            (optional_graph_negative + pynini.accep("1")) @ cardinal.fst
             # @ pynini.cdrewrite(pynini.cross("واحد", ""), "", "", NEMO_SIGMA)
             + insert_space
             + pynini.closure(pynutil.delete(" "), 0, 1)
@@ -84,7 +95,7 @@ class MeasureFst(GraphFst):
         )
 
         subgraph_fraction = fraction.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_plural
-        subgraph_fraction |= unit_plural +  pynini.closure(pynutil.delete(" "), 0, 1) + insert_space + fraction.fst
+        subgraph_fraction |= unit_plural + pynini.closure(pynutil.delete(" "), 0, 1) + insert_space + fraction.fst
 
         cardinal_dash_alpha = (
             pynutil.insert("cardinal { integer: \"")

@@ -17,9 +17,9 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_extra_space,
-    delete_space,
     delete_preserve_order,
-    delete_zero_or_one_space
+    delete_space,
+    delete_zero_or_one_space,
 )
 from pynini.lib import pynutil
 
@@ -47,9 +47,9 @@ class MeasureFst(GraphFst):
 
         graph = (graph_cardinal | graph_decimal | graph_fraction) + pynini.accep(" ") + unit
 
-        graph |= (graph_cardinal | graph_decimal | graph_fraction) + delete_extra_space + unit 
+        graph |= (graph_cardinal | graph_decimal | graph_fraction) + delete_extra_space + unit
 
-        #graph |= unit + delete_extra_space + (graph_cardinal | graph_decimal)
+        # graph |= unit + delete_extra_space + (graph_cardinal | graph_decimal)
 
         graph += delete_preserve_order
 

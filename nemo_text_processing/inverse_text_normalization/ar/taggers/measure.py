@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.ar.taggers.measure import unit_singular
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_SIGMA,
     GraphFst,
@@ -21,6 +20,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     delete_extra_space,
     delete_space,
 )
+from nemo_text_processing.text_normalization.ar.taggers.measure import unit_singular
 from pynini.lib import pynutil
 
 
@@ -46,7 +46,7 @@ class MeasureFst(GraphFst):
 
         cardinal_graph = itn_cardinal_tagger.graph
 
-        graph_unit_singular = pynini.invert(unit_singular) 
+        graph_unit_singular = pynini.invert(unit_singular)
         unit = convert_space(graph_unit_singular)
         graph_unit_singular = convert_space(graph_unit_singular)
 
@@ -54,11 +54,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("negative: ") + pynini.cross("سالب", "\"true\"") + delete_extra_space, 0, 1
         )
 
-        unit = (
-            pynutil.insert("units: \"")
-            + (unit)
-            + pynutil.insert("\"")
-        )
+        unit = pynutil.insert("units: \"") + (unit) + pynutil.insert("\"")
 
         subgraph_decimal = (
             pynutil.insert("decimal { ")

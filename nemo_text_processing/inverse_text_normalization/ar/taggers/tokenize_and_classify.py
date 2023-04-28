@@ -19,8 +19,8 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.ar.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.fraction import FractionFst
-from nemo_text_processing.inverse_text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.word import WordFst
 from nemo_text_processing.text_normalization.ar.graph_utils import (
@@ -77,7 +77,12 @@ class ClassifyFst(GraphFst):
             fraction_graph = fraction.fst
             money = MoneyFst(itn_cardinal_tagger=cardinal)
             money_graph = money.fst
-            measure = MeasureFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, itn_fraction_tagger= fraction,deterministic= True)
+            measure = MeasureFst(
+                itn_cardinal_tagger=cardinal,
+                itn_decimal_tagger=decimal,
+                itn_fraction_tagger=fraction,
+                deterministic=True,
+            )
             measure_graph = measure.fst
             word_graph = WordFst().fst
             punct_graph = PunctuationFst().fst
