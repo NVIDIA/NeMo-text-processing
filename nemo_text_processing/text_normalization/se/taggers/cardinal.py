@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA
+from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA, make_spacer
 from nemo_text_processing.text_normalization.se.utils import CASE_KEYS, get_abs_path, load_case_forms, load_labels
 from pynini.lib import pynutil
 
@@ -77,9 +77,7 @@ def build_cased_fsts(deterministic=True):
     logi_cased = load_case_forms(get_abs_path("data/numbers/case_logi.tsv"))
     duhat_cased = load_case_forms(get_abs_path("data/numbers/case_duhat.tsv"))
     endings_cased = load_case_forms(get_abs_path("data/numbers/digit_case_abbr_suffix.tsv"))
-    spacer = pynini.accep("")
-    if not deterministic:
-        spacer |= pynutil.insert(" ")
+    spacer = make_spacer(deterministic)
 
     digits_cased_fst = {}
     for k in digits_cased:
@@ -106,9 +104,7 @@ def build_cased_fsts(deterministic=True):
 
 
 def make_million(initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True) -> 'pynini.FstLike':
-    spacer = pynini.accep("")
-    if not deterministic:
-        spacer |= pynutil.insert(" ")
+    spacer = make_spacer(deterministic)
 
     graph_million = pynutil.add_weight(pynini.cross("001", f"{initial}iljon") + spacer, -0.001)
     graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}iljovnna") + spacer
@@ -122,9 +118,7 @@ def make_million(initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLi
 
 
 def make_milliard(initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True) -> 'pynini.FstLike':
-    spacer = pynini.accep("")
-    if not deterministic:
-        spacer |= pynutil.insert(" ")
+    spacer = make_spacer(deterministic)
 
     graph_milliard = pynutil.add_weight(pynini.cross("001", f"{initial}iljárda"), -0.001) + spacer
     graph_milliard |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}iljárdda") + spacer

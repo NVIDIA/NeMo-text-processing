@@ -14,7 +14,7 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import delete_space
-from pynini.lib import byte
+from pynini.lib import byte, pynutil
 
 _ALPHA_UPPER = "АÁBCČDĐEFGHIJKLMNŊOPRSŠTŦUVZŽÆØÅÄÖ"
 _ALPHA_LOWER = "аábcčdđefghijklmnŋoprsštŧuvzžæøåäö"
@@ -31,3 +31,10 @@ bos_or_space = pynini.union("[BOS]", " ")
 eos_or_space = pynini.union("[EOS]", " ")
 
 ensure_space = pynini.cross(pynini.closure(delete_space, 0, 1), " ")
+
+
+def make_spacer(deterministic=True):
+    spacer = pynini.accep("")
+    if not deterministic:
+        spacer |= pynutil.insert(" ")
+    return spacer
