@@ -66,7 +66,12 @@ def load_cased_digits():
 
 
 def build_cased_fsts(deterministic=True):
+    """
+    Builds case/number forms (other than nominative singular) for numerals
+    See: https://oahpa.no/sme/gramm/logut.eng.html
+    """
     digits_cased = load_cased_digits()
+    digits_nom = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
     cuodi_cased = load_case_forms(get_abs_path("data/numbers/case_cuodi.tsv"))
     logi_cased = load_case_forms(get_abs_path("data/numbers/case_logi.tsv"))
     duhat_cased = load_case_forms(get_abs_path("data/numbers/case_duhat.tsv"))
@@ -80,6 +85,18 @@ def build_cased_fsts(deterministic=True):
         teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
         if not deterministic:
             teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + pynutil.insert(f"nuppelogin")
+    tens_cased_fst = {}
+    # com.sg/loc.pl is different for 'logi'
+    for k in digits_cased_fst:
+        logi = "logi"
+        if k == 'com_sg':
+            logi = "logiin"
+            ten = digits_cased_fst[k]
+        else:
+            ten = digits_nom
+        # 23 -> guokte/logi/golbma
+        tens_cased_fst[k] = digits_cased_fst[k] + pynini.cross("0", logi_cased[k])
+        tens_cased_fst[k] |= ten + pynutil.insert(logi) + digits_cased_fst[k]
 
 
 class CardinalFst(GraphFst):
