@@ -111,14 +111,25 @@ def make_million(initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLi
         spacer |= pynutil.insert(" ")
 
     graph_million = pynutil.add_weight(pynini.cross("001", f"{initial}iljon") + spacer, -0.001)
-    graph_million |= at_least_one_non_zero_digit_no_one + pynutil.insert(f"{initial}iljovnna") + spacer
+    graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}iljovnna") + spacer
     if not deterministic:
         graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}iljun") + spacer, -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}iljovdna") + spacer, -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}illiuvdna") + spacer, -0.001)
-        graph_million |= at_least_one_non_zero_digit_no_one + pynutil.insert(f"{initial}illiuvnna") + spacer
+        graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}illiuvnna") + spacer
     graph_million |= pynutil.delete("000")
     return graph_million
+
+
+def make_milliard(initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True) -> 'pynini.FstLike':
+    spacer = pynini.accep("")
+    if not deterministic:
+        spacer |= pynutil.insert(" ")
+
+    graph_milliard = pynutil.add_weight(pynini.cross("001", f"{initial}iljárda"), -0.001) + spacer
+    graph_milliard |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}iljárdda") + spacer
+    graph_milliard |= pynutil.delete("000")
+    return graph_milliard
 
 
 class CardinalFst(GraphFst):
@@ -217,37 +228,15 @@ class CardinalFst(GraphFst):
 
         graph_million = make_million("m", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
 
-        graph_milliard = pynutil.add_weight(pynini.cross("001", "miljárda"), -0.001)
-        graph_milliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("miljárdda")
-        if not deterministic:
-            graph_milliard |= pynutil.add_weight(pynini.cross("001", "miljárda "), -0.001)
-            graph_milliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-                "miljárdda "
-            )
-        graph_milliard |= pynutil.delete("000")
+        graph_milliard = make_milliard("m", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
 
         graph_billion = make_million("b", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
 
-        graph_billiard = pynutil.add_weight(pynini.cross("001", "biljárda"), -0.001)
-        graph_billiard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("biljárdda")
-        if not deterministic:
-            graph_milliard |= pynutil.add_weight(pynini.cross("001", "biljárda "), -0.001)
-            graph_milliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-                "biljárdda "
-            )
-        graph_billiard |= pynutil.delete("000")
+        graph_billiard = make_milliard("b", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
 
         graph_trillion = make_million("tr", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
 
-
-        graph_trilliard = pynutil.add_weight(pynini.cross("001", "triljárda"), -0.001)
-        graph_trilliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert("triljárdda")
-        if not deterministic:
-            graph_milliard |= pynutil.add_weight(pynini.cross("001", "triljárda "), -0.001)
-            graph_milliard |= graph_hundreds_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-                "triljárdda "
-            )
-        graph_trilliard |= pynutil.delete("000")
+        graph_trilliard = make_milliard("tr", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
 
         self.graph_higher = (
             graph_trilliard + graph_trillion + graph_billiard + graph_billion + graph_milliard + graph_million
