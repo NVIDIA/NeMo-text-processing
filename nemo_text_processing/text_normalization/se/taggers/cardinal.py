@@ -94,8 +94,9 @@ def build_cased_fsts(deterministic=True):
             ten = digits_cased_fst[k]
         else:
             ten = digits_nom
-        # 23 -> guokte/logi/golbma
+        # 20 -> guvttiin/logiin
         tens_cased_fst[k] = digits_cased_fst[k] + pynini.cross("0", logi_cased[k])
+        # 23 -> guvttiin/logiin/golmmain
         tens_cased_fst[k] |= ten + pynutil.insert(logi) + digits_cased_fst[k]
 
 
