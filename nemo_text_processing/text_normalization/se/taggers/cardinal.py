@@ -72,6 +72,7 @@ def build_cased_fsts(deterministic=True):
     """
     digits_cased = load_cased_digits()
     digits_nom = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
+    digits_nom_no_one = (NEMO_DIGIT - "1") @ digits_nom
     cuodi_cased = load_case_forms(get_abs_path("data/numbers/case_cuodi.tsv"))
     logi_cased = load_case_forms(get_abs_path("data/numbers/case_logi.tsv"))
     duhat_cased = load_case_forms(get_abs_path("data/numbers/case_duhat.tsv"))
@@ -89,13 +90,14 @@ def build_cased_fsts(deterministic=True):
     # com.sg/loc.pl is different for 'logi'
     for k in digits_cased_fst:
         logi = "logi"
+        digit_cased_no_one = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
         if k == 'com_sg':
             logi = "logiin"
-            ten = digits_cased_fst[k]
+            ten = digit_cased_no_one
         else:
-            ten = digits_nom
+            ten = digits_nom_no_one
         # 20 -> guvttiin/logiin
-        tens_cased_fst[k] = digits_cased_fst[k] + pynini.cross("0", logi_cased[k])
+        tens_cased_fst[k] = digit_cased_no_one + pynini.cross("0", logi_cased[k])
         # 23 -> guvttiin/logiin/golmmain
         tens_cased_fst[k] |= ten + pynutil.insert(logi) + digits_cased_fst[k]
 
