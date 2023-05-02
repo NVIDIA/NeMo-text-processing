@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA
-from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels, CASE_KEYS, load_case_forms
+from nemo_text_processing.text_normalization.se.utils import CASE_KEYS, get_abs_path, load_case_forms, load_labels
 from pynini.lib import pynutil
 
 
