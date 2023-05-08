@@ -19,7 +19,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_LOWER,
     NEMO_UPPER,
     TO_LOWER,
-    GraphFst,
+    delete_space,
 )
 
 _UPPER_ECLIPSIS_LETTERS = pynini.union(
