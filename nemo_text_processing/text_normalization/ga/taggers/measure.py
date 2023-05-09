@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     delete_zero_or_one_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, TO_LOWER
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.ga.graph_utils import GA_ALPHA, TO_LOWER
+from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
 
@@ -55,10 +55,10 @@ class MeasureFst(GraphFst):
         greek = greek_lower | greek_upper
 
         graph_unit |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (SV_ALPHA | TO_LOWER) + pynini.closure(SV_ALPHA | TO_LOWER), graph_unit
+            pynini.closure(TO_LOWER, 1) + (GA_ALPHA | TO_LOWER) + pynini.closure(GA_ALPHA | TO_LOWER), graph_unit
         ).optimize()
         graph_unit_ett |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (SV_ALPHA | TO_LOWER) + pynini.closure(SV_ALPHA | TO_LOWER), graph_unit_ett
+            pynini.closure(TO_LOWER, 1) + (GA_ALPHA | TO_LOWER) + pynini.closure(GA_ALPHA | TO_LOWER), graph_unit_ett
         ).optimize()
 
         graph_unit_plural = convert_space(graph_unit @ graph_plurals)
@@ -184,7 +184,7 @@ class MeasureFst(GraphFst):
             + decimal.final_graph_wo_negative
             + pynini.cross('-', '')
             + pynutil.insert(" } units: \"")
-            + pynini.closure(SV_ALPHA, 1)
+            + pynini.closure(GA_ALPHA, 1)
             + pynutil.insert("\"")
         )
 
@@ -198,7 +198,7 @@ class MeasureFst(GraphFst):
 
         alpha_dash_decimal = (
             pynutil.insert("units: \"")
-            + pynini.closure(SV_ALPHA, 1)
+            + pynini.closure(GA_ALPHA, 1)
             + pynini.accep('-')
             + pynutil.insert("\"")
             + pynutil.insert(" decimal { ")
@@ -218,23 +218,23 @@ class MeasureFst(GraphFst):
             equals |= pynini.cross("=", "är lika med")
 
         math = (
-            (cardinal_graph_ett | SV_ALPHA | greek)
+            (cardinal_graph_ett | GA_ALPHA | greek)
             + delimiter
             + math_operations
-            + (delimiter | SV_ALPHA)
+            + (delimiter | GA_ALPHA)
             + cardinal_graph_ett
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph_ett | SV_ALPHA | greek)
+            + (cardinal_graph_ett | GA_ALPHA | greek)
         )
 
         math |= (
-            (cardinal_graph_ett | SV_ALPHA | greek)
+            (cardinal_graph_ett | GA_ALPHA | greek)
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph_ett | SV_ALPHA)
+            + (cardinal_graph_ett | GA_ALPHA)
             + delimiter
             + math_operations
             + delimiter

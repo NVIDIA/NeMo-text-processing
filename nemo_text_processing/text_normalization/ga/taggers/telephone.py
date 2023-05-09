@@ -21,16 +21,16 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.ga.graph_utils import ensure_space
+from nemo_text_processing.text_normalization.ga.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
 
 class TelephoneFst(GraphFst):
     """
     Finite state transducer for classifying telephone numbers, e.g.
-        123-123-5678 -> { number_part: "ett två tre ett två tre fyra sex sju åtta" }.
+        123-123-5678 -> { number_part: "a haon a dó a trí a haon a dó a trí a cúig a sé a seacht a hocht" }.
 
     Args:
 		deterministic: if True will provide a single transduction option,
