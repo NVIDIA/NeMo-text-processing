@@ -71,7 +71,7 @@ class MoneyFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        maj_masc = maj_plural_masc | maj_singular_masc  
+        maj_masc = maj_plural_masc | maj_singular_masc
         maj_fem = maj_plural_fem | maj_singular_fem
 
         min_singular_masc = (
@@ -118,7 +118,7 @@ class MoneyFst(GraphFst):
                 optional_add_and + strip_cardinal_apocope(fractional_part),
                 (optional_add_and + fractional_part + NEMO_SPACE + min_masc),
                 (optional_add_and + shift_cardinal_gender(fractional_part) + NEMO_SPACE + min_fem),
-            )  
+            )
             + delete_preserve_order
         )
 
@@ -129,7 +129,7 @@ class MoneyFst(GraphFst):
                 optional_add_and + shift_cardinal_gender(fractional_part),
                 (optional_add_and + fractional_part + NEMO_SPACE + min_masc),
                 (optional_add_and + shift_cardinal_gender(fractional_part) + NEMO_SPACE + min_fem),
-            )  
+            )
             + delete_preserve_order
         )
 
@@ -146,7 +146,7 @@ class MoneyFst(GraphFst):
                 pynutil.insert(" di"), "quantity: \"" + pynini.closure(NEMO_NOT_QUOTE, 1), "\"", NEMO_SIGMA
             )
             @ graph_decimal
-        )  
+        )
 
         graph_minor_masc = fractional_part + NEMO_SPACE + min_masc + delete_preserve_order
         graph_minor_fem = shift_cardinal_gender(fractional_part) + NEMO_SPACE + min_fem + delete_preserve_order
