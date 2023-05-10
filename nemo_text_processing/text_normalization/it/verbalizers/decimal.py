@@ -13,17 +13,6 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.it.taggers.decimals import quantities
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    delete_preserve_order,
-    insert_space,
-)
-
-import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
@@ -32,6 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.it import LOCALIZATION
+from nemo_text_processing.text_normalization.it.taggers.decimals import quantities
 from pynini.lib import pynutil
 
 
@@ -81,7 +71,7 @@ class DecimalFst(GraphFst):
         )
 
         self.graph = (graph + delete_preserve_order).optimize()
-        
+
         graph += delete_preserve_order
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

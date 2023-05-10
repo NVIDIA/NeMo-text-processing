@@ -14,9 +14,8 @@
 
 import logging
 import os
-import pynini
-from pynini.lib import pynutil
 
+import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
@@ -24,16 +23,16 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     generator_main,
 )
-
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-
 from nemo_text_processing.text_normalization.it.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.it.taggers.word import WordFst
-from nemo_text_processing.text_normalization.it.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.it.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.it.taggers.decimals import DecimalFst
+from nemo_text_processing.text_normalization.it.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.it.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.it.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.it.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.it.taggers.word import WordFst
+from pynini.lib import pynutil
+
 
 class ClassifyFst(GraphFst):
     """
@@ -96,13 +95,12 @@ class ClassifyFst(GraphFst):
             classify = (
                 pynutil.add_weight(whitelist_graph, 1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
-                | pynutil.add_weight(decimal_graph, 1.1) 
+                | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(electronic_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
-
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             punct = pynini.closure(

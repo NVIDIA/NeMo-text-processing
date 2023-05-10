@@ -13,18 +13,13 @@
 # limitations under the License.
 
 import pynini
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.it.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.it.utils import load_labels, get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_ALPHA,
-    GraphFst,
-    insert_space
-)
 
 common_domains = [x[0] for x in load_labels(get_abs_path("data/electronic/domain.tsv"))]
 symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
+
 
 class ElectronicFst(GraphFst):
     """
@@ -36,6 +31,7 @@ class ElectronicFst(GraphFst):
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
@@ -71,12 +67,9 @@ class ElectronicFst(GraphFst):
 
         graph = (username + domain_graph) | domain_common_graph
 
-        
         protocol_start = pynini.accep("https://") | pynini.accep("http://")
         protocol_end = (
-            pynini.accep("www.")
-            if deterministic
-            else pynini.accep("www.") | pynini.cross("www.", "vu vu vu.")
+            pynini.accep("www.") if deterministic else pynini.accep("www.") | pynini.cross("www.", "vu vu vu.")
         )
         protocol = protocol_start | protocol_end | (protocol_start + protocol_end)
         protocol = pynutil.insert("protocol: \"") + protocol + pynutil.insert("\"")
