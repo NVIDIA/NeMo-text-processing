@@ -20,7 +20,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.it import LOCALIZATION
 from nemo_text_processing.text_normalization.it.taggers.decimals import quantities
 from pynini.lib import pynutil
 
@@ -49,7 +48,7 @@ class DecimalFst(GraphFst):
             pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         )
 
-        conjunction = pynutil.insert(" punto ") if LOCALIZATION == "am" else pynutil.insert(" virgola ")
+        conjunction = pynutil.insert(" virgola ")
         fractional = conjunction + fractional_default
 
         quantity = (
