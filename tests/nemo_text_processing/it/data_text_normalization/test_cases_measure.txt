@@ -1,0 +1,6 @@
+1 m~un metro
+3 m~tre metri
+4,3 m~quattro virgola tre metri
+5 km/s~cinque chilometri per secondo
+15 A~quindici ampere
+155 d~cento cinquantacinque giorni
