@@ -13,10 +13,6 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil
-from pynini.examples import plurals
-
-from nemo_text_processing.text_normalization.it.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -26,18 +22,20 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.it.utils import get_abs_path
+from pynini.examples import plurals
+from pynini.lib import pynutil
 
 unit_singular = pynini.string_file(get_abs_path("data/measure/measurements.tsv"))
 suppletive = pynini.string_file(get_abs_path("data/measure/suppletive.tsv"))
+
 
 def singular_to_plural():
     _o = NEMO_SIGMA + pynini.cross("o", "") + pynutil.insert("i")
     _a = NEMO_SIGMA + pynini.cross("a", "") + pynutil.insert("e")
     _e = NEMO_SIGMA + pynini.cross("e", "") + pynutil.insert("i")
 
-    graph_plural = plurals._priority_union(
-        suppletive, pynini.union(_o, _a, _e), NEMO_SIGMA
-    ).optimize()
+    graph_plural = plurals._priority_union(suppletive, pynini.union(_o, _a, _e), NEMO_SIGMA).optimize()
 
     return graph_plural
 
@@ -53,6 +51,7 @@ class MeasureFst(GraphFst):
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
+
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
 
@@ -165,7 +164,7 @@ class MeasureFst(GraphFst):
             | alpha_dash_decimal
             | cardinal_times
         )
-        #final_graph += pynutil.insert(" preserve_order: true")
+        # final_graph += pynutil.insert(" preserve_order: true")
         final_graph = self.add_tokens(final_graph)
 
         self.fst = final_graph.optimize()

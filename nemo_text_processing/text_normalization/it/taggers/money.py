@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil
-
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -24,10 +22,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-
 from nemo_text_processing.text_normalization.es.graph_utils import decimal_separator
-
 from nemo_text_processing.text_normalization.it.utils import get_abs_path, load_labels
+from pynini.lib import pynutil
 
 maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")))
@@ -70,16 +67,12 @@ class MoneyFst(GraphFst):
         graph_decimal_plural = pynini.union(
             graph_maj_plural + pynini.closure(delete_space, 0, 1) + insert_space + graph_decimal_final,  # $1,05
             graph_decimal_final + pynini.closure(delete_space, 0, 1) + insert_space + graph_maj_plural,  # 1,05 $
-            
         )
-        graph_decimal_plural = (
-            (NEMO_SIGMA - "1") + decimal_separator + NEMO_SIGMA
-        ) @ graph_decimal_plural
+        graph_decimal_plural = ((NEMO_SIGMA - "1") + decimal_separator + NEMO_SIGMA) @ graph_decimal_plural
 
         graph_decimal_singular = pynini.union(
             graph_maj_singular + pynini.closure(delete_space, 0, 1) + insert_space + graph_decimal_final,  # $1,05
             graph_decimal_final + pynini.closure(delete_space, 0, 1) + insert_space + graph_maj_singular,  # 1,05 $
-            
         )
         graph_decimal_singular = (pynini.accep("1") + decimal_separator + NEMO_SIGMA) @ graph_decimal_singular
 

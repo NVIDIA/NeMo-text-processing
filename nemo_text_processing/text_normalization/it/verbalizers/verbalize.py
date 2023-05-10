@@ -15,10 +15,11 @@
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.it.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.it.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.it.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.it.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.it.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.it.verbalizers.money import MoneyFst
+
 
 class VerbalizeFst(GraphFst):
     """
@@ -44,14 +45,6 @@ class VerbalizeFst(GraphFst):
         money = MoneyFst(decimal=decimal, deterministic=deterministic)
         money_graph = money.fst
 
-        graph = (
-            cardinal_graph
-            | decimal_graph
-            | electronic_graph
-            | whitelist_graph
-            | measure_graph
-            | money_graph
-        )
+        graph = cardinal_graph | decimal_graph | electronic_graph | whitelist_graph | measure_graph | money_graph
 
         self.fst = graph
-
