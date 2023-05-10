@@ -79,7 +79,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar'],
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it'],
         type=str,
         default='en',
     )
@@ -199,6 +199,11 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
+    elif args.language == 'it':
+        from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.it.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     output_dir = os.path.join(args.output_dir, args.language)
     export_grammars(
         output_dir=output_dir,
