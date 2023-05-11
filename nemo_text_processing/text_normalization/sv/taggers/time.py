@@ -40,7 +40,7 @@ class TimeFst(GraphFst):
         02:00 -> time { hours: "två" }
         2:00 -> time { hours: "två" }
         10:00:05 e.m. -> time { hours: "tio" minutes: "noll" seconds: "fem" suffix: "eftermiddag" }
-    
+
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,

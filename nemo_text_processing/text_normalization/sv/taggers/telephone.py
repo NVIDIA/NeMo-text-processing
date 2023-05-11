@@ -15,6 +15,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
     NEMO_SPACE,
     GraphFst,
     delete_extra_space,
@@ -42,7 +43,7 @@ class TelephoneFst(GraphFst):
         0XX-XXX XX
         0XXX-XX XX XX
         0XXX-XXX XX
-    
+
     See:
         https://en.wikipedia.org/wiki/National_conventions_for_writing_telephone_numbers#Sweden
         https://codegolf.stackexchange.com/questions/195787/format-a-swedish-phone-number
@@ -70,14 +71,23 @@ class TelephoneFst(GraphFst):
 
         special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
 
+        passable = pynini.union(":", ": ", " ")
+        prompt_pass = pynini.closure(pynutil.delete(passable) + insert_space, 0, 1)
         telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
+        telephone_abbr = telephone_abbr + prompt_pass
         telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
-        prompt = pynutil.insert("prompt: \"") + telephone_prompt + pynutil.insert("\"")
-        prompt |= pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
-        prompt |= pynutil.insert("prompt: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
+        prompt_as_code = pynutil.insert("country_code: \"") + telephone_prompt + pynutil.insert("\"")
+        prompt_as_code |= pynutil.insert("country_code: \"") + telephone_abbr + pynutil.insert("\"")
+        prompt_as_code |= (
+            pynutil.insert("country_code: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
+        )
+        prompt_inner = telephone_prompt | telephone_abbr
+        prompt_inner |= telephone_prompt + NEMO_SPACE + telephone_abbr
 
-        country_code = pynini.closure(pynini.cross("+", "plus "), 0, 1) + one_two_or_three_digits
-        country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
+        country = pynini.closure(pynini.cross("+", "plus "), 0, 1) + one_two_or_three_digits
+        country_code = pynutil.insert("country_code: \"") + country + pynutil.insert("\"")
+        country_code |= prompt_as_code
+        country_code |= pynutil.insert("country_code: \"") + prompt_inner + NEMO_SPACE + country + pynutil.insert("\"")
 
         opt_dash = pynini.closure(pynutil.delete("-"), 0, 1)
         area_part = zero_after_country_code + one_two_or_three_digits + opt_dash + add_separator
@@ -102,18 +112,32 @@ class TelephoneFst(GraphFst):
         prompt_pass = pynutil.delete(passable) + insert_space
 
         special_numbers = pynutil.insert("number_part: \"") + special_numbers + pynutil.insert("\"")
-        prompt = prompt + prompt_pass
         graph = pynini.union(
             country_code + ensure_space + number_part,
             country_code + ensure_space + number_part + ext_prompt + extension,
             number_part + ext_prompt + extension,
-            prompt + number_part,
-            prompt + special_numbers,
-            prompt + country_code + number_part,
-            prompt + country_code + number_part + ext_prompt + extension,
-            prompt + number_part + ext_prompt + extension,
+            country_code + number_part,
+            country_code + special_numbers,
+            country_code + number_part + ext_prompt + extension,
         )
         self.tel_graph = graph.optimize()
+
+        # No need to be so exact here, but better for ITN to have it
+        three_digit_area_code_digit_two = pynini.union("1", "2", "3", "4", "7")
+        three_digit_area_code_no_zero = (three_digit_area_code_digit_two + NEMO_DIGIT) @ cardinal.two_digits_read
+        three_digit_area_code = zero_space + three_digit_area_code_no_zero
+        four_digit_area_code_digit_two = pynini.union("5", "6", "9")
+        four_digit_area_code_no_zero = (four_digit_area_code_digit_two + NEMO_DIGIT) @ cardinal.three_digits_read
+        four_digit_area_code = zero_space + four_digit_area_code_no_zero
+        two_digit_area_code = "08" @ cardinal.two_digits_read
+        self.area_codes = two_digit_area_code | three_digit_area_code | four_digit_area_code
+        self.area_codes_no_zero = (
+            three_digit_area_code_no_zero | four_digit_area_code_no_zero | pynini.cross("8", "åtta")
+        )
+        country_code_lead = pynini.cross("+", "plus") | pynini.cross("00", "noll noll")
+        raw_country_codes = pynini.string_file(get_abs_path("data/telephone/country_codes.tsv"))
+        self.country_code = country_code_lead + insert_space + (raw_country_codes @ cardinal.any_read_digit)
+        self.country_plus_area_code = self.country_code + NEMO_SPACE + self.area_codes_no_zero
 
         # ip
         ip_prompts = pynini.string_file(get_abs_path("data/telephone/ip_prompt.tsv"))

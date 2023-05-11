@@ -34,7 +34,7 @@ def get_quantity(
     e.g. 1 miljon -> integer_part: "en" quantity: "miljon"
     e.g. 1,5 miljoner -> integer_part: "en" fractional_part: "fem" quantity: "miljoner"
 
-    Args: 
+    Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
@@ -112,7 +112,7 @@ def get_quantity(
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g. 
+    Finite state transducer for classifying decimal, e.g.
         -12,5006 biljon -> decimal { negative: "true" integer_part: "tolv"  fractional_part: "fem noll noll sex" quantity: "biljon" }
         1 biljon -> decimal { integer_part: "en" quantity: "biljon" }
 
