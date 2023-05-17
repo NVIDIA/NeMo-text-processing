@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 import string
 from pathlib import Path
@@ -79,7 +80,7 @@ def generator_main(file_name: str, graphs: Dict[str, pynini.FstLike]):
     for rule, graph in graphs.items():
         exporter[rule] = graph.optimize()
     exporter.close()
-    print(f'Created {file_name}')
+    logging.info(f'Created {file_name}')
 
 
 def get_plurals(fst):
@@ -110,7 +111,7 @@ def convert_space(fst) -> 'pynini.FstLike':
     """
     Converts space to nonbreaking space.
     Used only in tagger grammars for transducing token values within quotes, e.g. name: "hello kitty"
-    This is making transducer significantly slower, so only use when there could be potential spaces within quotes, otherwise leave it. 
+    This is making transducer significantly slower, so only use when there could be potential spaces within quotes, otherwise leave it.
 
     Args:
         fst: input fst
@@ -159,9 +160,9 @@ class GraphFst:
         """
         Wraps class name around to given fst
 
-        Args: 
+        Args:
             fst: input fst
-        
+
         Returns:
             Fst: fst
         """

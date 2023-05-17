@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 import string
 from pathlib import Path
@@ -139,7 +140,7 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     for rule, graph in graphs.items():
         exporter[rule] = graph.optimize()
     exporter.close()
-    print(f'Created {file_name}')
+    logging.info(f'Created {file_name}')
 
 
 def get_plurals(fst):
@@ -200,7 +201,7 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
             spoken_no_space = spoken.replace(" ", "")
             # add abbreviations without spaces (both lower and upper case), i.e. "BMW" not "B M W"
             if len(spoken) == (2 * len(spoken_no_space) - 1):
-                print(f"This is weight {weight}")
+                logging.debug(f"This is weight {weight}")
                 if len(weight) == 0:
                     additional_labels.extend(
                         [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]
