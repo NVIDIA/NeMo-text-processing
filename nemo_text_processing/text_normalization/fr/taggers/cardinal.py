@@ -73,7 +73,7 @@ class CardinalFst(GraphFst):
         all_hundreds = one_hundreds | multiple_hundreds
 
         # Thousands
-        delete_separator = pynini.closure(pynutil.delete(","), 0, 1)
+        delete_separator = pynini.closure(pynutil.delete(" "), 0, 1)
         one_thousand = pynini.cross("1", "mille") + delete_separator
         other_thousands = (
             (digits_no_one | all_double_digits | all_hundreds)
