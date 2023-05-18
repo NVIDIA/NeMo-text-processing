@@ -23,7 +23,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     generator_main,
 )
-# MAKE SURE ALL IMPORTS FROM A LANGUAGE OTHER THAN ENGLISH ARE IN THE CORRECT LANGUAGE
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.fr.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.fr.taggers.date import DateFst
@@ -40,13 +39,11 @@ from nemo_text_processing.text_normalization.fr.taggers.word import WordFst
 from pynini.lib import pynutil
 
 
-
 class ClassifyFst(GraphFst):
-    # MAKE SURE ANY COMMENTS APPLY TO YOUR LANGUAGE
     """
     Final class that composes all other classification grammars. This class can process an entire sentence, that is lower cased.
     For deployment, this grammar will be compiled and exported to OpenFst Finate State aRchive (FAR) File.
-    More details to deployment at NeMo/tools/text_processing_deployment.
+    More details to deployment at NeMo-text-processing/tools/text_processing_deployment.
 
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
@@ -71,7 +68,7 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"_{input_case}_es_tn_{deterministic}_deterministic{whitelist_file}.far"
+                cache_dir, f"_{input_case}_fr_tn_{deterministic}_deterministic{whitelist_file}.far"
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]

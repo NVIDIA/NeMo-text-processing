@@ -12,15 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space
 from pynini.lib import pynutil
 
 
 class CardinalFst(GraphFst):
-    # MAKE SURE ANY COMMENTS APPLY TO YOUR LANGUAGE
     """
 	Finite state transducer for verbalizing cardinals
-		e.g. cardinal { integer: "dos" } -> "dos"
+		e.g. cardinal { negative: "true" integer: "un milliard et un" } -> "moins un milliard et un"
 
 	Args:
 		deterministic: if True will provide a single transduction option,
@@ -30,8 +29,8 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
-        # DELETE THIS LINE WHEN YOU ADD YOUR GRAMMAR, MAKING SURE THAT YOUR GRAMMAR CONTAINS
-        # A VARIABLE CALLED final_graph WITH AN FST COMPRISED OF ALL THE RULES
-        final_graph = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", "moins") + insert_space, 0, 1)
+        number = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        final_graph = optional_sign + number
 
         self.fst = self.delete_tokens(final_graph).optimize()

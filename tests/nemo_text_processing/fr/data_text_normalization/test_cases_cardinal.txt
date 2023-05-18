@@ -1,1 +1,14 @@
-2~deux
+0~zéro
+6~six
+11~onze
+20~vingt
+71~soixante et onze
+83~quatre-vingt-trois
+94~quatre-vingt-quatorze
+100~cent
+181~cent quatre-vingt-un
+415,297~quatre cent quinze mille deux cent quatre-vingt-dix-sept
+1000000~un million
+6,492,000~six millions quatre cent quatre-vingt-douze mille
+1593072962~un milliard cinq cent quatre-vingt-treize millions soixante-douze mille neuf cent soixante-deux
+-60~moins soixante
