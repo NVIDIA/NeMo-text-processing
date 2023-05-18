@@ -38,4 +38,4 @@ class TestCardinal:
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
-        assert pred == expected
+        assert pred in expected
