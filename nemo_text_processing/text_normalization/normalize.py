@@ -153,8 +153,9 @@ class Normalizer:
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
+        self.input_case = input_case
         self.tagger = ClassifyFst(
-            input_case=input_case,
+            input_case=self.input_case,
             deterministic=deterministic,
             cache_dir=cache_dir,
             overwrite_cache=overwrite_cache,
