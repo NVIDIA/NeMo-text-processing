@@ -148,7 +148,7 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g.
         "1000" ->  cardinal { integer: "míle" }
-        "2.000.000" -> cardinal { integer: "dhá mhilliún" }
+        "2,000,000" -> cardinal { integer: "dhá mhilliún" }
 
     Args:
         deterministic: if True will provide a single transduction option,
