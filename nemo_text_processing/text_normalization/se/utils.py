@@ -45,9 +45,9 @@ def load_labels(abs_path):
 
     Returns list of mappings
     """
-    label_tsv = open(abs_path, encoding="utf-8")
-    labels = list(csv.reader(label_tsv, delimiter="\t"))
-    return labels
+    with open(abs_path, encoding="utf-8") as label_tsv:
+        labels = list(csv.reader(label_tsv, delimiter="\t"))
+        return labels
 
 
 def load_case_forms(abs_path):
@@ -59,10 +59,10 @@ def load_case_forms(abs_path):
 
     Returns dictionary of case forms
     """
-    label_tsv = open(abs_path, encoding="utf-8")
-    labels = list(csv.reader(label_tsv, delimiter="\t"))
-    ret = {}
-    for label in labels:
-        if label[0] in CASE_KEYS:
-            ret[label[0]] = label[1]
-    return ret
+    with open(abs_path, encoding="utf-8") as label_tsv:
+        labels = list(csv.reader(label_tsv, delimiter="\t"))
+        ret = {}
+        for label in labels:
+            if label[0] in CASE_KEYS:
+                ret[label[0]] = label[1]
+        return ret
