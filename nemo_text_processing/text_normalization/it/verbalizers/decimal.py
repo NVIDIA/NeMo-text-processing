@@ -20,7 +20,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.it.taggers.decimals import quantities
 from pynini.lib import pynutil
 
 
