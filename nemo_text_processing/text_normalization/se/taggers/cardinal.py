@@ -103,7 +103,9 @@ def build_cased_fsts(deterministic=True):
         tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_cased_fst[k]
 
 
-def make_million(initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True) -> 'pynini.FstLike':
+def make_million(
+    initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True
+) -> 'pynini.FstLike':
     spacer = make_spacer(deterministic)
 
     graph_million = pynutil.add_weight(pynini.cross("001", f"{initial}iljon") + spacer, -0.001)
@@ -117,7 +119,9 @@ def make_million(initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLi
     return graph_million
 
 
-def make_milliard(initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True) -> 'pynini.FstLike':
+def make_milliard(
+    initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True
+) -> 'pynini.FstLike':
     spacer = make_spacer(deterministic)
 
     graph_milliard = pynutil.add_weight(pynini.cross("001", f"{initial}iljárda"), -0.001) + spacer
@@ -230,7 +234,9 @@ class CardinalFst(GraphFst):
 
         graph_trillion = make_million("tr", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
 
-        graph_trilliard = make_milliard("tr", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic)
+        graph_trilliard = make_milliard(
+            "tr", graph_hundreds_component_at_least_one_non_zero_digit_no_one, deterministic
+        )
 
         self.graph_higher = (
             graph_trilliard + graph_trillion + graph_billiard + graph_billion + graph_milliard + graph_million
