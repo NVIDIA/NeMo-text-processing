@@ -78,6 +78,18 @@ _LOWER_LENITION_LETTERS = pynini.union(
 )
 LOWER_LENITION = pynini.cdrewrite(_LOWER_LENITION_LETTERS, "[BOS]", "", NEMO_SIGMA)
 
+_LOWER_LENITION_NO_F = pynini.union(
+    pynini.cross("b", "bh"),
+    pynini.cross("c", "ch"),
+    pynini.cross("d", "dh"),
+    pynini.cross("g", "gh"),
+    pynini.cross("m", "mh"),
+    pynini.cross("p", "ph"),
+    pynini.cross("s", "sh"),
+    pynini.cross("t", "th"),
+)
+LOWER_LENITION_NO_F = pynini.cdrewrite(_LOWER_LENITION_NO_F, "[BOS]", "", NEMO_SIGMA)
+
 UPPER_VOWELS = pynini.union("A", "E", "I", "O", "U", "Á", "É", "Í", "Ó", "Ú").optimize()
 LOWER_VOWELS = pynini.union("a", "e", "i", "o", "u", "á", "é", "í", "ó", "ú").optimize()
 _UPPER_PONC = pynini.union("Ḃ", "Ċ", "Ḋ", "Ḟ", "Ġ", "Ṁ", "Ṗ", "Ṡ", "Ṫ").optimize()
