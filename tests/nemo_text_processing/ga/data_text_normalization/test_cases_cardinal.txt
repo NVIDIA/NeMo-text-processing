@@ -3,3 +3,6 @@
 11~a haon déag
 21~fiche a haon
 30~tríocha
+100~céad
+101~céad a haon
+2013~dhá mhíle a trí déag
