@@ -141,6 +141,9 @@ class Normalizer:
         elif lang == 'hu':
             from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.hu.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'ga':
+            from nemo_text_processing.text_normalization.ga.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.ga.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'zh':
             from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
