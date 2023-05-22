@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ga.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
@@ -35,55 +35,19 @@ class FractionFst(GraphFst):
     def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph
-        ordinal_graph = ordinal.graph
-        numerator_graph = cardinal.graph_en
-
-        fractional_endings = pynini.string_map(
-            [
-                ("ljarte", "ljarddel"),
-                ("tionde", "tiondel"),
-                ("tonde", "tondel"),
-                ("ljonte", "ljondel"),
-                ("lliarte", "lliarddel"),
-                ("llionte", "lliondel"),
-                ("tusende", "tusendel"),
-                ("te", "tedel"),
-                ("de", "dedel"),
-                ("je", "jedel"),
-                ("drade", "dradel"),
-                ("a", "adel"),
-            ]
-        )
-        alt_fractional_endings = pynini.string_map([("tondel", "tondedel"), ("tiondel", "tiondedel")])
-        lexicalised = pynini.string_map([("andradel", "halv"), ("fjärdedel", "kvart")])
-        alt_lexicalised = pynini.string_map([("halv", "andradel"), ("kvart", "fjärdedel"), ("kvart", "kvarts")])
-
-        fractions = (
-            ordinal_graph
-            @ pynini.cdrewrite(fractional_endings, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(lexicalised, "[BOS]", "[EOS]", NEMO_SIGMA)
-        )
-        fractions_alt = (
-            fractions
-            @ pynini.cdrewrite(alt_fractional_endings, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(alt_lexicalised, "[BOS]", "[EOS]", NEMO_SIGMA)
-        )
-        if not deterministic:
-            fractions |= fractions_alt
-
-        self.fractions = fractions
-
-        fractional_pl_endings = pynini.string_map([("kvart", "kvartar"), ("halv", "halva"), ("del", "delar")])
-        fractions_pl = fractions @ pynini.cdrewrite(fractional_pl_endings, "", "[EOS]", NEMO_SIGMA)
-        self.fractional_plural_endings = fractional_pl_endings
-        self.fractions_plural = fractions_pl
+        digit_sg = pynini.string_file(get_abs_path("data/fractions/digit_sg.tsv"))
+        digit_pl = pynini.string_file(get_abs_path("data/fractions/digit_pl.tsv"))
+        tens_sg = pynini.string_file(get_abs_path("data/fractions/tens_sg.tsv"))
+        tens_pl = pynini.string_file(get_abs_path("data/fractions/tens_pl.tsv"))
+        teen_sg = pynini.string_file(get_abs_path("data/fractions/teen_sg.tsv"))
+        teen_pl = pynini.string_file(get_abs_path("data/fractions/teen_pl.tsv"))
 
         integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         numerator = (
-            pynutil.insert("numerator: \"") + numerator_graph + (pynini.cross("/", "\" ") | pynini.cross(" / ", "\" "))
+            pynutil.insert("numerator: \"") + cardinal_graph + (pynini.cross("/", "\" ") | pynini.cross(" / ", "\" "))
         )
 
-        denominator = pynutil.insert("denominator: \"") + fractions + pynutil.insert("\"")
+        denominator = pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
 
         graph = pynini.closure(integer + pynini.accep(" "), 0, 1) + (numerator + denominator)
         graph |= pynini.closure(integer + ensure_space, 0, 1) + pynini.compose(
