@@ -65,6 +65,14 @@ LOWER_ECLIPSIS = pynini.cdrewrite(_LOWER_ECLIPSIS_LETTERS, "[BOS]", "", NEMO_SIG
 
 ECLIPSIS = pynini.union(UPPER_ECLIPSIS, LOWER_ECLIPSIS)
 
+_S_FIXES = = pynini.union(
+    pynini.cross("shc", "sc"),
+    pynini.cross("shf", "sf"),
+    pynini.cross("shm", "sm"),
+    pynini.cross("shp", "sp"),
+    pynini.cross("sht", "st"),
+)
+S_FIXES = pynini.cdrewrite(_S_FIXES, "[BOS]", "", NEMO_SIGMA)
 _LOWER_LENITION_LETTERS = pynini.union(
     pynini.cross("b", "bh"),
     pynini.cross("c", "ch"),
@@ -76,7 +84,8 @@ _LOWER_LENITION_LETTERS = pynini.union(
     pynini.cross("s", "sh"),
     pynini.cross("t", "th"),
 )
-LOWER_LENITION = pynini.cdrewrite(_LOWER_LENITION_LETTERS, "[BOS]", "", NEMO_SIGMA)
+_LOWER_LENITION = pynini.cdrewrite(_LOWER_LENITION_LETTERS, "[BOS]", "", NEMO_SIGMA)
+LOWER_LENITION = _LOWER_LENITION @ S_FIXES
 
 _LOWER_LENITION_NO_F = pynini.union(
     pynini.cross("b", "bh"),
