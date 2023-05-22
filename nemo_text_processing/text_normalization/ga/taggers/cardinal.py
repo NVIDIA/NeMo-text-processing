@@ -22,8 +22,14 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.ga.graph_utils import (
+    GA_ALPHA,
+    LOWER_ECLIPSIS,
+    LOWER_LENITION,
+    bos_or_space,
+    eos_or_space,
+)
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path, load_labels
-from nemo_text_processing.text_normalization.ga.graph_utils import LOWER_LENITION, LOWER_ECLIPSIS, GA_ALPHA, bos_or_space, eos_or_space
 from pynini.lib import pynutil
 
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
@@ -34,7 +40,9 @@ teen_noncount = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen
 ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 
-def make_number_form(word: str, deterministic = True, teens = False, tens = False, higher = False, conjunction = False) -> 'pynini.FstLike':
+def make_number_form(
+    word: str, deterministic=True, teens=False, tens=False, higher=False, conjunction=False
+) -> 'pynini.FstLike':
     fst = pynini.accep(word)
     fst_len = pynutil.insert(fst @ LOWER_LENITION)
     fst_ecl = pynutil.insert(fst @ LOWER_ECLIPSIS)
@@ -57,22 +65,9 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
         tens = True
         teens = True
 
-    numbers_len = pynini.string_map([
-        ("2", "dhá"),
-        ("3", "trí"),
-        ("4", "ceithre"),
-        ("5", "cúig"),
-        ("6", "sé"),
-    ])
-    numbers_ecl = pynini.string_map([
-        ("7", "seacht"),
-        ("8", "ocht"),
-        ("9", "naoi"),
-    ])
-    output_no_one = pynini.union(
-        numbers_len + insert_space + fst_len,
-        numbers_ecl + insert_space + fst_ecl
-    )
+    numbers_len = pynini.string_map([("2", "dhá"), ("3", "trí"), ("4", "ceithre"), ("5", "cúig"), ("6", "sé"),])
+    numbers_ecl = pynini.string_map([("7", "seacht"), ("8", "ocht"), ("9", "naoi"),])
+    output_no_one = pynini.union(numbers_len + insert_space + fst_len, numbers_ecl + insert_space + fst_ecl)
     single_digit = output_no_one | pynutil.delete("1") + pynutil.insert(fst)
     if not deterministic:
         single_digit |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
@@ -107,8 +102,7 @@ def make_number_form(word: str, deterministic = True, teens = False, tens = Fals
     if higher:
         hundreds = make_number_form("céad")
         output = hundreds + pynini.union(
-            pynutil.delete("0") + pynutil.insert(" is ") + single_digit,
-            pynutil.insert(" is ") + ties,
+            pynutil.delete("0") + pynutil.insert(" is ") + single_digit, pynutil.insert(" is ") + ties,
         )
 
     return output
@@ -187,16 +181,18 @@ class CardinalFst(GraphFst):
         if not deterministic:
             graph_hundreds |= hundreds + pynutil.insert(" is") + pynini.cross("0", NEMO_SPACE) + graph_digit
             graph_hundreds |= hundreds + pynutil.insert(" is ") + base_tens
-            graph_hundreds = graph_hundreds @ pynini.cdrewrite(pynini.cross("is is", "is"), eos_or_space, bos_or_space, NEMO_SIGMA)
+            graph_hundreds = graph_hundreds @ pynini.cdrewrite(
+                pynini.cross("is is", "is"), eos_or_space, bos_or_space, NEMO_SIGMA
+            )
 
         self.hundreds = graph_hundreds.optimize()
-        self.up_to_three_digits = (self.hundreds | base_tens | graph_digit)
+        self.up_to_three_digits = self.hundreds | base_tens | graph_digit
         self.three_digit_non_zero = pynini.union(
             graph_digit,
             self.hundreds,
             base_tens,
             (pynini.cross("0", NEMO_SPACE) + base_tens),
-            (pynini.cross("00", NEMO_SPACE) + graph_digit)
+            (pynini.cross("00", NEMO_SPACE) + graph_digit),
         ).optimize()
 
         # For all three digit strings with leading zeroes (graph appends '0's to manage place in string)
@@ -216,7 +212,9 @@ class CardinalFst(GraphFst):
         # Bunuimhreacha (base numbers)
         thousands_two_digits = make_number_form("míle", deterministic=deterministic, conjunction=True, higher=True)
         self.thousands_two_digits = thousands_two_digits
-        thousands_three_digits = graph_hundreds_component_at_least_one_non_zero_digit + insert_space + thousands_two_digits
+        thousands_three_digits = (
+            graph_hundreds_component_at_least_one_non_zero_digit + insert_space + thousands_two_digits
+        )
         self.thousands_three_digits_maol = thousands_three_digits
 
         # Maoluimhreacha ("bare" numbers)
@@ -260,17 +258,23 @@ class CardinalFst(GraphFst):
         graph_trillion += insert_space
 
         graph_quadrillion = pynutil.add_weight(pynini.cross("001", "cuaidrilliún"), -0.001)
-        graph_quadrillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" cuaidrilliún")
+        graph_quadrillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
+            " cuaidrilliún"
+        )
         graph_quadrillion |= pynutil.delete("000")
         graph_quadrillion += insert_space
 
         graph_quintillion = pynutil.add_weight(pynini.cross("001", "cuintilliún"), -0.001)
-        graph_quintillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" cuintilliún")
+        graph_quintillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
+            " cuintilliún"
+        )
         graph_quintillion |= pynutil.delete("000")
         graph_quintillion += insert_space
 
         graph_sextillion = pynutil.add_weight(pynini.cross("001", "seisilliún"), -0.001)
-        graph_sextillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" seisilliún")
+        graph_sextillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
+            " seisilliún"
+        )
         graph_sextillion |= pynutil.delete("000")
         graph_sextillion += insert_space
 
