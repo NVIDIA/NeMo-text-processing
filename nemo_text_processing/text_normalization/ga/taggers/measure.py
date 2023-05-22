@@ -1,5 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright (c) 2023, Jim O'Regan for Språkbanken Tal
+# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,176 +14,95 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA,
     NEMO_NON_BREAKING_SPACE,
-    NEMO_SIGMA,
     GraphFst,
     convert_space,
     delete_space,
-    delete_zero_or_one_space,
+    insert_space,
 )
-from nemo_text_processing.text_normalization.ga.graph_utils import GA_ALPHA, TO_LOWER
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
+
+unit_singular = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
 
 
 class MeasureFst(GraphFst):
     """
-    Finite state transducer for classifying measure, suppletive aware, e.g.
-        -12kg -> measure { negative: "true" cardinal { integer: "tolv" } units: "kilogram" }
-        1kg -> measure { cardinal { integer: "ett" } units: "kilogram" }
-        ,5kg -> measure { decimal { fractional_part: "fem" } units: "kilogram" }
+    Finite state transducer for classifying measure,  e.g.
+        "2.4 oz" -> measure { cardinal { integer_part: "dhá" fractional_part: "a ceathair" units: "unsa" preserve_order: true } }
+        "1 oz" -> measure { cardinal { integer: "aon" units: "unsa" preserve_order: true } }
+        "1 milliún oz" -> measure { cardinal { integer: "eins" quantity: "milliún" units: "unsa" preserve_order: true } }
 
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
-        fraction: FractionFst
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
-        cardinal_graph_ett = cardinal.graph
-        cardinal_graph_en = cardinal.graph_en
+        cardinal_graph = cardinal.graph
 
-        graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
-        graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
-        graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
-        greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
-        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
-        greek = greek_lower | greek_upper
+        graph_unit_singular = convert_space(unit_singular)
+        optional_graph_negative = pynini.closure(pynini.cross("-", 'negative: "true" '), 0, 1)
 
-        graph_unit |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (GA_ALPHA | TO_LOWER) + pynini.closure(GA_ALPHA | TO_LOWER), graph_unit
-        ).optimize()
-        graph_unit_ett |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (GA_ALPHA | TO_LOWER) + pynini.closure(GA_ALPHA | TO_LOWER), graph_unit_ett
-        ).optimize()
-
-        graph_unit_plural = convert_space(graph_unit @ graph_plurals)
-        graph_unit_plural_ett = convert_space(graph_unit_ett @ graph_plurals)
-        graph_unit = convert_space(graph_unit)
-        graph_unit_ett = convert_space(graph_unit_ett)
-        self.unit_plural_en = graph_unit_plural
-        self.unit_plural_ett = graph_unit_plural_ett
-        self.unit_en = graph_unit
-        self.unit_ett = graph_unit_ett
-
-        optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
-
-        graph_unit2 = (
-            pynini.cross("/", "per")
-            + delete_zero_or_one_space
-            + pynutil.insert(NEMO_NON_BREAKING_SPACE)
-            + (graph_unit | graph_unit_ett)
+        graph_unit_denominator = (
+            pynini.cross("/", "per") + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_singular
         )
 
-        optional_graph_unit2 = pynini.closure(
-            delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2, 0, 1,
+        optional_unit_denominator = pynini.closure(
+            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator, 0, 1,
         )
 
-        unit_plural = (
+        unit_singular_graph = (
             pynutil.insert("units: \"")
-            + (graph_unit_plural + optional_graph_unit2 | graph_unit2)
-            + pynutil.insert("\"")
-        )
-        unit_plural_ett = (
-            pynutil.insert("units: \"")
-            + (graph_unit_plural_ett + optional_graph_unit2 | graph_unit2)
+            + ((graph_unit_singular + optional_unit_denominator) | graph_unit_denominator)
             + pynutil.insert("\"")
         )
 
-        unit_singular = (
-            pynutil.insert("units: \"") + (graph_unit + optional_graph_unit2 | graph_unit2) + pynutil.insert("\"")
-        )
-        unit_singular_ett = (
-            pynutil.insert("units: \"") + (graph_unit_ett + optional_graph_unit2 | graph_unit2) + pynutil.insert("\"")
-        )
-
-        subgraph_decimal = (
-            pynutil.insert("decimal { ")
-            + optional_graph_negative
-            + decimal.final_graph_wo_negative_en
-            + delete_space
-            + pynutil.insert(" } ")
-            + unit_plural
-        )
-        subgraph_decimal |= (
-            pynutil.insert("decimal { ")
-            + optional_graph_negative
-            + decimal.final_graph_wo_negative
-            + delete_space
-            + pynutil.insert(" } ")
-            + unit_plural_ett
-        )
-
-        # support radio FM/AM
-        subgraph_decimal |= (
-            pynutil.insert("decimal { ")
-            + decimal.final_graph_wo_negative
-            + delete_space
-            + pynutil.insert(" } ")
-            + pynutil.insert("units: \"")
-            + pynini.union("AM", "FM")
-            + pynutil.insert("\"")
-        )
+        subgraph_decimal = decimal.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_singular_graph
 
         subgraph_cardinal = (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + pynutil.insert("integer: \"")
-            + ((NEMO_SIGMA - "1") @ cardinal_graph_en)
+            + cardinal.graph
             + delete_space
             + pynutil.insert("\"")
             + pynutil.insert(" } ")
-            + unit_plural
+            + unit_singular_graph
         )
-        subgraph_cardinal |= (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + ((NEMO_SIGMA - "1") @ cardinal_graph_ett)
-            + delete_space
-            + pynutil.insert("\"")
-            + pynutil.insert(" } ")
-            + unit_plural_ett
+        subgraph_fraction = (
+            fraction.fst + insert_space + pynini.closure(pynutil.delete(" "), 0, 1) + unit_singular_graph
         )
-        subgraph_cardinal |= (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + pynini.cross("1", "ett")
-            + delete_space
-            + pynutil.insert("\"")
-            + pynutil.insert(" } ")
-            + unit_singular_ett
-        )
-        subgraph_cardinal |= (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + pynini.cross("1", "en")
-            + delete_space
-            + pynutil.insert("\"")
-            + pynutil.insert(" } ")
-            + unit_singular
-        )
-        self.subgraph_cardinal = subgraph_cardinal
 
-        unit_graph = (
-            pynutil.insert("cardinal { integer: \"-\" } units: \"")
-            + ((pynini.cross("/", "per") + delete_zero_or_one_space) | (pynini.accep("per") + pynutil.delete(" ")))
-            + pynutil.insert(NEMO_NON_BREAKING_SPACE)
-            + graph_unit
-            + pynutil.insert("\" preserve_order: true")
+        cardinal_dash_alpha = (
+            pynutil.insert("cardinal { integer: \"")
+            + cardinal_graph
+            + pynutil.delete('-')
+            + pynutil.insert("\" } units: \"")
+            + pynini.closure(NEMO_ALPHA, 1)
+            + pynutil.insert("\"")
+        )
+
+        alpha_dash_cardinal = (
+            pynutil.insert("units: \"")
+            + pynini.closure(NEMO_ALPHA, 1)
+            + pynutil.delete('-')
+            + pynutil.insert("\"")
+            + pynutil.insert(" cardinal { integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\" }")
         )
 
         decimal_dash_alpha = (
             pynutil.insert("decimal { ")
             + decimal.final_graph_wo_negative
-            + pynini.cross('-', '')
+            + pynutil.delete('-')
             + pynutil.insert(" } units: \"")
-            + pynini.closure(GA_ALPHA, 1)
+            + pynini.closure(NEMO_ALPHA, 1)
             + pynutil.insert("\"")
         )
 
@@ -192,86 +110,40 @@ class MeasureFst(GraphFst):
             pynutil.insert("decimal { ")
             + decimal.final_graph_wo_negative
             + pynutil.insert(" } units: \"")
-            + (pynini.cross(pynini.union('x', "X"), 'x') | pynini.cross(pynini.union('x', "X"), ' times'))
+            + pynini.union('x', 'X')
+            + pynutil.insert("\"")
+        )
+
+        cardinal_times = (
+            pynutil.insert("cardinal { integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\" } units: \"")
+            + pynini.union('x', 'X')
             + pynutil.insert("\"")
         )
 
         alpha_dash_decimal = (
             pynutil.insert("units: \"")
-            + pynini.closure(GA_ALPHA, 1)
-            + pynini.accep('-')
+            + pynini.closure(NEMO_ALPHA, 1)
+            + pynutil.delete('-')
             + pynutil.insert("\"")
             + pynutil.insert(" decimal { ")
             + decimal.final_graph_wo_negative
-            + pynutil.insert(" } preserve_order: true")
+            + pynutil.insert(" }")
         )
 
-        subgraph_fraction = (
-            pynutil.insert("fraction { ") + fraction.graph + delete_space + pynutil.insert(" } ") + unit_plural
-        )
-
-        math_operations = pynini.string_file(get_abs_path("data/math_operations.tsv"))
-        delimiter = pynini.accep(" ") | pynutil.insert(" ")
-
-        equals = pynini.cross("=", "är")
-        if not deterministic:
-            equals |= pynini.cross("=", "är lika med")
-
-        math = (
-            (cardinal_graph_ett | GA_ALPHA | greek)
-            + delimiter
-            + math_operations
-            + (delimiter | GA_ALPHA)
-            + cardinal_graph_ett
-            + delimiter
-            + equals
-            + delimiter
-            + (cardinal_graph_ett | GA_ALPHA | greek)
-        )
-
-        math |= (
-            (cardinal_graph_ett | GA_ALPHA | greek)
-            + delimiter
-            + equals
-            + delimiter
-            + (cardinal_graph_ett | GA_ALPHA)
-            + delimiter
-            + math_operations
-            + delimiter
-            + cardinal_graph_ett
-        )
-
-        math = (
-            pynutil.insert("units: \"math\" cardinal { integer: \"")
-            + math
-            + pynutil.insert("\" } preserve_order: true")
-        )
         final_graph = (
             subgraph_decimal
             | subgraph_cardinal
-            | unit_graph
+            | cardinal_dash_alpha
+            | alpha_dash_cardinal
             | decimal_dash_alpha
             | decimal_times
             | alpha_dash_decimal
             | subgraph_fraction
-            | math
+            | cardinal_times
         )
-
+        final_graph += pynutil.insert(" preserve_order: true")
         final_graph = self.add_tokens(final_graph)
+
         self.fst = final_graph.optimize()
-
-    def get_range(self, cardinal: GraphFst):
-        """
-        Returns range forms for measure tagger, e.g. 2-3, 2x3, 2*2
-
-        Args:
-            cardinal: cardinal GraphFst
-        """
-        range_graph = cardinal + pynini.cross(pynini.union("-", " - "), " till ") + cardinal
-
-        for x in [" x ", "x"]:
-            range_graph |= cardinal + pynini.cross(x, " gånger ") + cardinal
-
-        for x in ["*", " * "]:
-            range_graph |= cardinal + pynini.cross(x, " gånger ") + cardinal
-        return range_graph.optimize()
