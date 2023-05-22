@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, insert_space, GraphFst
 from nemo_text_processing.text_normalization.ga import DIALECT
 from nemo_text_processing.text_normalization.ga.graph_utils import GA_ALPHA
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
@@ -76,7 +76,7 @@ class DateFst(GraphFst):
             pynutil.delete("00"),
         )
         year_cardinal = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)) @ numbers
-        year_parts = pynini.union(year_first + year_second, year_first)  # 90, 990, 1990
+        year_parts = pynini.union(year_first + insert_space + year_second, year_first)  # 90, 990, 1990
         if DIALECT == "co":
             year = year_cardinal
             if not deterministic:
