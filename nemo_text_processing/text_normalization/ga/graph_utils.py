@@ -65,7 +65,7 @@ LOWER_ECLIPSIS = pynini.cdrewrite(_LOWER_ECLIPSIS_LETTERS, "[BOS]", "", NEMO_SIG
 
 ECLIPSIS = pynini.union(UPPER_ECLIPSIS, LOWER_ECLIPSIS)
 
-_S_FIXES = = pynini.union(
+_S_FIXES = pynini.union(
     pynini.cross("shc", "sc"),
     pynini.cross("shf", "sf"),
     pynini.cross("shm", "sm"),
