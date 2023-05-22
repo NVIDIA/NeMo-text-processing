@@ -14,6 +14,7 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.ga import DIALECT
 from nemo_text_processing.text_normalization.ga.graph_utils import GA_ALPHA
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
@@ -70,22 +71,23 @@ class DateFst(GraphFst):
         year_first = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 1)) @ numbers
         year_second = pynini.union(
             ((NEMO_DIGIT - "0") + (NEMO_DIGIT - "0")) @ numbers,
-            pynini.cross("0", "hundra") + ((NEMO_DIGIT - "0") @ numbers),
+            pynutil.delete("0") + ((NEMO_DIGIT - "0") @ numbers),
             ((NEMO_DIGIT - "0") + "0") @ numbers,
+            pynutil.delete("00"),
         )
-        year_hundra = year_first + pynutil.insert("hundra") + year_second
-        year_hundra |= year_first + pynutil.insert(" hundra") + year_second
-        year_hundra |= year_first + pynutil.insert(" hundra ") + year_second
-        year_hundra |= year_first + pynutil.insert("hundra ") + year_second
-        year_second |= pynini.cross("00", "hundra")
         year_cardinal = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)) @ numbers
-        year = pynini.union(year_first + year_second, year_first)  # 90, 990, 1990
-        if not deterministic:
-            year |= year_cardinal
-            year |= year_hundra
-        self.year = year
+        year_parts = pynini.union(year_first + year_second, year_first)  # 90, 990, 1990
+        if DIALECT == "co":
+            year = year_cardinal
+            if not deterministic:
+                year |= year_parts
+        else:
+            year = year_parts
+            if not deterministic:
+                year |= year_cardinal
+        self.year = year_parts
         self.year_cardinal = year_cardinal
-
+    
         year_second_decades = ((NEMO_DIGIT - "0") + "0") @ numbers
         year_second_decades |= pynini.cross("00", "hundra")
         decade_num = pynini.union(year_first + year_second_decades, year_second_decades)
