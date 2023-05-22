@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_SIGMA,
     NEMO_LOWER,
+    NEMO_SIGMA,
     NEMO_UPPER,
     TO_LOWER,
     delete_space,
@@ -39,7 +38,7 @@ _UPPER_ECLIPSIS_LETTERS = pynini.union(
     pynini.cross("É", "nÉ"),
     pynini.cross("Í", "nÍ"),
     pynini.cross("Ó", "nÓ"),
-    pynini.cross("Ú", "nÚ")
+    pynini.cross("Ú", "nÚ"),
 )
 UPPER_ECLIPSIS = pynini.cdrewrite(_UPPER_ECLIPSIS_LETTERS, "[BOS]", "", NEMO_SIGMA)
 
@@ -60,7 +59,7 @@ _LOWER_ECLIPSIS_LETTERS = pynini.union(
     pynini.cross("é", "n-é"),
     pynini.cross("í", "n-í"),
     pynini.cross("ó", "n-ó"),
-    pynini.cross("ú", "n-ú")
+    pynini.cross("ú", "n-ú"),
 )
 LOWER_ECLIPSIS = pynini.cdrewrite(_LOWER_ECLIPSIS_LETTERS, "[BOS]", "", NEMO_SIGMA)
 
@@ -90,14 +89,12 @@ LOWER_ALL = pynini.union(LOWER_BASE, _LOWER_PONC).optimize()
 UPPER_NO_H = (UPPER_BASE - "H").optimize()
 LOWER_NO_H = (LOWER_BASE - "h").optimize()
 
-_FADA_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(
-    ["Á", "É", "Í", "Ó", "Ú"], ["á", "é", "í", "ó", "ú"])]
-)
+_FADA_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(["Á", "É", "Í", "Ó", "Ú"], ["á", "é", "í", "ó", "ú"])])
 _PONC_LOWER = pynini.union(
-    *[pynini.cross(x, y) for x, y in zip(
-        ["Ḃ", "Ċ", "Ḋ", "Ḟ", "Ġ", "Ṁ", "Ṗ", "Ṡ", "Ṫ"],
-        ["ḃ", "ċ", "ḋ", "ḟ", "ġ", "ṁ", "ṗ", "ṡ", "ṫ"]
-    )]
+    *[
+        pynini.cross(x, y)
+        for x, y in zip(["Ḃ", "Ċ", "Ḋ", "Ḟ", "Ġ", "Ṁ", "Ṗ", "Ṡ", "Ṫ"], ["ḃ", "ċ", "ḋ", "ḟ", "ġ", "ṁ", "ṗ", "ṡ", "ṫ"])
+    ]
 )
 
 GA_LOWER = pynini.union(TO_LOWER, _FADA_LOWER, _PONC_LOWER)
@@ -125,7 +122,7 @@ _LOWERCASE_STARTS = pynini.union(
     pynini.cross("tÉ", "t-é"),
     pynini.cross("tÍ", "t-í"),
     pynini.cross("tÓ", "t-ó"),
-    pynini.cross("tÚ", "t-ú")
+    pynini.cross("tÚ", "t-ú"),
 )
 _DO_LOWER_STARTS = pynini.cdrewrite(_LOWERCASE_STARTS, "[BOS]", "", NEMO_SIGMA)
 TOLOWER = (_DO_LOWER_STARTS @ pynini.closure(GA_LOWER | LOWER_BASE | "'" | "-")).optimize()

@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_UPPER, GraphFst, insert_space
+from pynini.lib import pynutil
 
 
 class AbbreviationFst(GraphFst):
