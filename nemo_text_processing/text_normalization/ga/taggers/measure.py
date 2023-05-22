@@ -24,15 +24,13 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
-unit_singular = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
-
 
 class MeasureFst(GraphFst):
     """
     Finite state transducer for classifying measure,  e.g.
-        "2.4 oz" -> measure { cardinal { integer_part: "dhá" fractional_part: "a ceathair" units: "unsa" preserve_order: true } }
+        "2.4 oz" -> measure { cardinal { integer_part: "a dó" fractional_part: "a ceathair" units: "unsa" preserve_order: true } }
         "1 oz" -> measure { cardinal { integer: "aon" units: "unsa" preserve_order: true } }
-        "1 milliún oz" -> measure { cardinal { integer: "eins" quantity: "milliún" units: "unsa" preserve_order: true } }
+        "1 milliún oz" -> measure { cardinal { integer: "aon" quantity: "milliún" units: "unsa" preserve_order: true } }
 
     Args:
         cardinal: CardinalFst
@@ -44,12 +42,13 @@ class MeasureFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph
+        unit_singular = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
 
         graph_unit_singular = convert_space(unit_singular)
         optional_graph_negative = pynini.closure(pynini.cross("-", 'negative: "true" '), 0, 1)
 
         graph_unit_denominator = (
-            pynini.cross("/", "per") + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_singular
+            pynini.cross("/", "in aghaidh") + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_singular
         )
 
         optional_unit_denominator = pynini.closure(
