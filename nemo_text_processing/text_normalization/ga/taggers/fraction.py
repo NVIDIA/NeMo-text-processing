@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.ga.graph_utils import ensure_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, NEMO_DIGIT
+from nemo_text_processing.text_normalization.ga.graph_utils import ensure_space, LOWER_LENITION_NO_F_NO_S
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -41,11 +41,28 @@ class FractionFst(GraphFst):
         tens_pl = pynini.string_file(get_abs_path("data/fractions/tens_pl.tsv"))
         teen_sg = pynini.string_file(get_abs_path("data/fractions/teen_sg.tsv"))
         teen_pl = pynini.string_file(get_abs_path("data/fractions/teen_pl.tsv"))
+        graph_tens_sg = pynini.union(
+            "0" + digit_sg,
+            tens_sg,
+            teen_sg,
+        )
+        graph_tens_sg_len = graph_tens_sg @ LOWER_LENITION_NO_F_NO_S
+        self.graph_tens_sg_len = graph_tens_sg_len
 
         integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         numerator = (
             pynutil.insert("numerator: \"") + cardinal_graph + (pynini.cross("/", "\" ") | pynini.cross(" / ", "\" "))
         )
+
+        numerator_2to10 = pynini.union(
+            "0" + (NEMO_DIGIT - "0" - "1"),
+            "10",
+        )
+        denominator_2to19 = pynini.union(
+            "0" + (NEMO_DIGIT - "0" - "1"),
+            "1" + NEMO_DIGIT,
+        )
+        self.denominator_2to19_len = denominator_2to19 @ graph_tens_sg_len
 
         denominator = pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
 
