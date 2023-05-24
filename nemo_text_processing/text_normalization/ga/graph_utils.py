@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     TO_LOWER,
     delete_space,
 )
+from pynini.lib import pynutil
 
 _UPPER_ECLIPSIS_LETTERS = pynini.union(
     pynini.cross("B", "mB"),
@@ -100,6 +101,7 @@ LOWER_LENITION_NO_F_NO_S = pynini.cdrewrite(_LOWER_LENITION_NO_F_NO_S, "[BOS]", 
 
 UPPER_VOWELS = pynini.union("A", "E", "I", "O", "U", "Á", "É", "Í", "Ó", "Ú").optimize()
 LOWER_VOWELS = pynini.union("a", "e", "i", "o", "u", "á", "é", "í", "ó", "ú").optimize()
+EITHER_VOWELS = UPPER_VOWELS | LOWER_VOWELS
 _UPPER_PONC = pynini.union("Ḃ", "Ċ", "Ḋ", "Ḟ", "Ġ", "Ṁ", "Ṗ", "Ṡ", "Ṫ").optimize()
 _LOWER_PONC = pynini.union("ḃ", "ċ", "ḋ", "ḟ", "ġ", "ṁ", "ṗ", "ṡ", "ṫ").optimize()
 UPPER_BASE = pynini.union(NEMO_UPPER, UPPER_VOWELS).optimize()
@@ -146,6 +148,16 @@ _LOWERCASE_STARTS = pynini.union(
 )
 _DO_LOWER_STARTS = pynini.cdrewrite(_LOWERCASE_STARTS, "[BOS]", "", NEMO_SIGMA)
 TOLOWER = (_DO_LOWER_STARTS @ pynini.closure(GA_LOWER | LOWER_BASE | "'" | "-")).optimize()
+
+PREFIX_H = pynini.cdrewrite(pynutil.insert("h"), "[BOS]", EITHER_VOWELS, NEMO_SIGMA)
+PREFIX_N = (
+    pynini.cdrewrite(pynutil.insert("n"), "[BOS]", UPPER_VOWELS, NEMO_SIGMA)
+    @ pynini.cdrewrite(pynutil.insert("n-"), "[BOS]", LOWER_VOWELS, NEMO_SIGMA)
+)
+PREFIX_T = (
+    pynini.cdrewrite(pynutil.insert("t"), "[BOS]", UPPER_VOWELS, NEMO_SIGMA)
+    @ pynini.cdrewrite(pynutil.insert("t-"), "[BOS]", LOWER_VOWELS, NEMO_SIGMA)
+)
 
 bos_or_space = pynini.union("[BOS]", " ")
 eos_or_space = pynini.union("[EOS]", " ")
