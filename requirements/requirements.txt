@@ -1,6 +1,6 @@
 cdifflib
+editdistance
 inflect
-jiwer>2.3.0
 joblib
 pandas
 pynini==2.1.5
