@@ -406,7 +406,7 @@ def calculate_cer(normalized_texts: List[str], pred_text: str, remove_punct=Fals
             for punct in "!?:;,.-()*+-/<=>@^_":
                 text_clean = text_clean.replace(punct, " ").replace("  ", " ")
 
-        cer = editdistance.eval(pred_text, text_clean) * 100. / len(pred_text)
+        cer = editdistance.eval(pred_text, text_clean) * 100.0 / len(pred_text)
         normalized_options.append((text, cer, i))
     return normalized_options
 
