@@ -299,7 +299,7 @@ class CardinalFst(GraphFst):
                 pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), GA_ALPHA, GA_ALPHA, NEMO_SIGMA
             )
         )
-        self.graph |= zero
+        self.graph |= zero_count
 
         self.graph = filter_punctuation(self.graph).optimize()
         self.digit = graph_digit | zero_count
