@@ -72,9 +72,9 @@ class CardinalFst(GraphFst):
         optional_sign = pynini.closure(
             pynutil.delete("negative: ")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.accep("-")
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + delete_space
         )
 
@@ -82,10 +82,10 @@ class CardinalFst(GraphFst):
         graph = (
             pynutil.delete("integer:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT, 0, 1)
             + pynini.closure(NEMO_SIGMA)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         graph = graph @ group_by_threes
 
