@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     TO_LOWER,
     delete_space,
 )
+from nemo_text_processing.text_normalization.ga.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 _UPPER_ECLIPSIS_LETTERS = pynini.union(
@@ -163,3 +164,43 @@ bos_or_space = pynini.union("[BOS]", " ")
 eos_or_space = pynini.union("[EOS]", " ")
 
 ensure_space = pynini.cross(pynini.closure(delete_space, 0, 1), " ")
+
+
+def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':
+    """
+    Alters given fst to convert Roman integers (lower and upper cased) into Arabic numerals. Valid for values up to 1000.
+    e.g.
+        "V" -> "5"
+        "i" -> "1"
+
+    Args:
+        fst: Any fst. Composes fst onto Roman conversion outputs.
+    """
+
+    def _load_roman(file: str):
+        roman = load_labels(get_abs_path(file))
+        roman_numerals = [(x, y) for x, y in roman] + [(x.upper(), y) for x, y in roman]
+        return pynini.string_map(roman_numerals)
+
+    digit = _load_roman("data/roman/digit.tsv")
+    ties = _load_roman("data/roman/ties.tsv")
+    hundreds = _load_roman("data/roman/hundreds.tsv")
+    thousands = _load_roman("data/roman/thousands.tsv")
+
+    graph = (
+        digit
+        | ties + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
+        | (
+            hundreds
+            + (ties | pynutil.add_weight(pynutil.insert("0"), 0.01))
+            + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
+        )
+        | (
+            thousands
+            + (hundreds | pynutil.add_weight(pynutil.insert("0"), 0.01))
+            + (ties | pynutil.add_weight(pynutil.insert("0"), 0.01))
+            + (digit | pynutil.add_weight(pynutil.insert("0"), 0.01))
+        )
+    ).optimize()
+
+    return graph @ fst
