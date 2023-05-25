@@ -28,11 +28,11 @@ class OrdinalFst(GraphFst):
         graph_integer = (
             pynutil.delete("integer:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.accep("第")
             + pynini.closure(NEMO_DIGIT)
             + pynini.closure(NEMO_SIGMA)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
 
         delete_tokens = self.delete_tokens(graph_integer)
