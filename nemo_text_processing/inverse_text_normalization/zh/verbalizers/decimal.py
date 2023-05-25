@@ -45,9 +45,9 @@ class DecimalFst(GraphFst):
         optional_sign = pynini.closure(
             pynutil.delete("negative: ")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.accep("-")
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + delete_space
         )
 
@@ -55,9 +55,9 @@ class DecimalFst(GraphFst):
         integer = (
             pynutil.delete("integer_part:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         integer = integer @ group_by_threes
         optional_integer = pynini.closure(integer + delete_space, 0, 1)
@@ -67,20 +67,19 @@ class DecimalFst(GraphFst):
             pynutil.insert(".")
             + pynutil.delete("fractional_part:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
-        fractional = fractional @ group_by_threes
         optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
 
         # removing tokenization, 'quantity:'
         quantity = (
             pynutil.delete("quantity:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         optional_quantity = pynini.closure(quantity + delete_space)
 
