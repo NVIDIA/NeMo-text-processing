@@ -21,7 +21,7 @@ from pynini.lib import pynutil
 class CardinalFst(GraphFst):
     def __init__(self):
         """
-        Fitite state transducer for classifying cardinals (e.g., 负五十 -> cardinal { negative: "-"integer: "50" })
+        Fitite state transducer for classifying cardinals (e.g., 负五十 -> cardinal { negative: "-" integer: "50" })
         This class converts cardinals up to hundred millions (i.e., (10**10))
         Single unit digits are not converted (e.g., 五 -> 五)
         Numbers less than 20 are not converted. 
@@ -31,7 +31,6 @@ class CardinalFst(GraphFst):
 
         # number of digits to be processed
         delete_hundreds = pynutil.delete("百") | pynutil.delete("佰")
-        closure_thousands = pynini.accep("千") | pynini.accep("仟")
         delete_thousands = pynutil.delete("千") | pynutil.delete("仟")
         closure_ten_thousands = pynini.accep("萬") | pynini.accep("万")
         delete_ten_thousands = pynutil.delete("萬") | pynutil.delete("万")
@@ -39,26 +38,21 @@ class CardinalFst(GraphFst):
         delete_hundred_millions = pynutil.delete("亿") | pynutil.delete("億")
 
         # data imported
-        zero = pynini.string_file(get_abs_path("data/numbers/zero-nano.tsv"))
+        zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         digits = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))
-        tens = pynini.string_file(get_abs_path("data/numbers/tens-nano.tsv"))
+        ties = pynini.string_file(get_abs_path("data/numbers/ties-nano.tsv"))
 
         # grammar for digits
         graph_digits = digits | pynutil.insert("0")
 
         # grammar for teens
-        ten = pynini.string_map([("十", "1"), ("拾", "1")])
+        ten = pynini.string_map([("十", "1"), ("拾", "1"), ("壹拾", "1"), ("壹拾", "1")])
         graph_teens = ten + graph_digits
         graph_teens = graph_teens | pynutil.insert("0")
 
         # grammar for tens, not the output for Cardinal grammar but for pure Arabic digits (used in other grammars)
-        graph_tens = (tens + graph_digits) | (pynini.cross(pynini.accep("零"), "0") + graph_digits)
+        graph_tens = (ties + graph_digits) | (pynini.cross(pynini.accep("零"), "0") + graph_digits)
         graph_all = graph_tens | pynutil.insert("00")
-
-        # grammar for tens from 20 - 90 which only convert the ones with 3 Mandarin characters
-        tens_re = pynini.string_file(get_abs_path("data/numbers/tens_re-nano.tsv"))
-        digits_re = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))
-        graph_all_re = tens_re + digits_re
 
         # grammar for hundreds 百
         graph_hundreds_complex = (graph_digits + delete_hundreds + graph_all) | (
@@ -68,14 +62,12 @@ class CardinalFst(GraphFst):
         graph_hundreds = graph_hundreds | pynutil.insert("000")
 
         # grammar for thousands 千
-        graph_thousands_simple = graph_digits + closure_thousands
         graph_thousands_complex = (
             (graph_digits + delete_thousands + graph_hundreds_complex)
             | (graph_digits + delete_thousands + pynini.cross(pynini.closure("零"), "0") + graph_all)
             | (graph_digits + delete_thousands + pynini.cross(pynini.closure("零"), "00") + graph_digits)
         )
-        graph_thousands = graph_thousands_simple | graph_thousands_complex
-        graph_thousands = graph_thousands | pynutil.insert("000")
+        graph_thousands = graph_thousands_complex | pynutil.insert("000")
 
         # grammar for ten thousands 万
         graph_ten_thousands_simple = graph_digits + closure_ten_thousands
@@ -322,7 +314,10 @@ class CardinalFst(GraphFst):
             graph_ten_thousands,
             graph_thousands,
             graph_hundreds,
-            graph_all_re,
+            graph_all,
+            graph_teens,
+            graph_digits,
+            zero,
         )
 
         # combining grammar; output consists only arabic numbers
@@ -361,9 +356,9 @@ class CardinalFst(GraphFst):
         self.just_cardinals = graph_just_cardinals  # used for other grammars
 
         # final grammar for cardinal output; tokenization
-        optional_minus_graph = (pynini.closure(pynutil.insert("negative: ") + pynini.cross("负", "\"-\""))) | (
-            pynini.closure(pynutil.insert("negative: ") + pynini.cross("負", "\"-\""))
+        optional_minus_graph = (pynini.closure(pynutil.insert("negative: ") + pynini.cross("负", '"-"'))) | (
+            pynini.closure(pynutil.insert("negative: ") + pynini.cross("負", '"-"'))
         )
-        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
+        final_graph = optional_minus_graph + pynutil.insert('integer: "') + graph + pynutil.insert('"')
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
