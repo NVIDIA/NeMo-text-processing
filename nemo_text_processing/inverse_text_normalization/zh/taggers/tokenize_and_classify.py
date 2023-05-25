@@ -17,6 +17,7 @@ import os
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
+    INPUT_LOWER_CASED,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -36,8 +37,7 @@ from nemo_text_processing.inverse_text_normalization.zh.taggers.punctuation impo
 
 # from nemo_text_processing.inverse_text_normalization.zh.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.time import TimeFst
-
-# from nemo_text_processing.inverse_text_normalization.zh.taggers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.word import WordFst
 from pynini.lib import pynutil
 
@@ -53,7 +53,13 @@ class ClassifyFst(GraphFst):
         overwrite_cache: set to True to overwrite .far files
     """
 
-    def __init__(self, cache_dir: str = None, whitelist: str = None, overwrite_cache: bool = False):
+    def __init__(
+        self,
+        input_case: INPUT_LOWER_CASED,
+        cache_dir: str = None,
+        whitelist: str = None,
+        overwrite_cache: bool = False,
+    ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
@@ -81,16 +87,18 @@ class ClassifyFst(GraphFst):
             fraction = FractionFst(cardinal)
             fraction_graph = fraction.fst
             punct_graph = PunctuationFst().fst
+            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case).fst
 
             classify = (
                 pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.09)
                 | pynutil.add_weight(decimal_graph, 1.2)
-                | pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(cardinal_graph, 1.09)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
+                | pynutil.add_weight(whitelist_graph, 1.01)
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
