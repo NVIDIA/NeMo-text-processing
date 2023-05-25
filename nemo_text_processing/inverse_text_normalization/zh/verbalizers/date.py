@@ -32,30 +32,30 @@ class DateFst(GraphFst):
         year = (
             pynutil.delete("year:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         month = (
             pynutil.delete("month:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         day = (
             pynutil.delete("day:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         era = pynutil.delete("era:")
-        bc = era + delete_space + pynutil.delete("\"") + pynini.cross("A.D.", "公元") + pynutil.delete("\"")
-        ad = era + delete_space + pynutil.delete("\"") + pynini.cross("B.C.", "公元前") + pynutil.delete("\"")
+        bc = era + delete_space + pynutil.delete('"') + pynini.cross("A.D.", "公元") + pynutil.delete('"')
+        ad = era + delete_space + pynutil.delete('"') + pynini.cross("B.C.", "公元前") + pynutil.delete('"')
 
         # combining above 3 for variations
         graph_ymd = (
