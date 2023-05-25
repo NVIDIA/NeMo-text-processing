@@ -25,6 +25,6 @@ class OrdinalFst(GraphFst):
         graph_cardinals = cardinal.for_ordinals
         mandarin_morpheme = pynini.accep("第")
         graph_ordinal = mandarin_morpheme + graph_cardinals
-        graph_ordinal_final = pynutil.insert("integer: \"") + graph_ordinal + pynutil.insert("\"")
+        graph_ordinal_final = pynutil.insert('integer: "') + graph_ordinal + pynutil.insert('"')
         graph_ordinal_final = self.add_tokens(graph_ordinal_final)
         self.fst = graph_ordinal_final.optimize()
