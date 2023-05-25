@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# from nemo_text_processing.inverse_text_normalization.zh.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.date import DateFst
@@ -27,6 +26,7 @@ from nemo_text_processing.inverse_text_normalization.zh.verbalizers.ordinal impo
 
 # from nemo_text_processing.inverse_text_normalization.zh.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.zh.verbalizers.whitelist import WhiteListFst
 
 
 class VerbalizeFst(GraphFst):
@@ -49,6 +49,16 @@ class VerbalizeFst(GraphFst):
         money_graph = money.fst
         time_graph = TimeFst().fst
         date_graph = DateFst().fst
+        whitelist_graph = WhiteListFst().fst
 
-        graph = time_graph | date_graph | money_graph | fraction_graph | ordinal_graph | decimal_graph | cardinal_graph
+        graph = (
+            time_graph
+            | date_graph
+            | money_graph
+            | fraction_graph
+            | ordinal_graph
+            | decimal_graph
+            | cardinal_graph
+            | whitelist_graph
+        )
         self.fst = graph
