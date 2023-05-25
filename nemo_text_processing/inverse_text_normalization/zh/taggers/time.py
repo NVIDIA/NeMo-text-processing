@@ -22,130 +22,84 @@ from pynini.lib import pynutil
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time
-    e.g., 五d点 -> time { hours: "5" minutes: "00" }
-    e.g., 正午 -> time { hours: "12" minutes: "00" }
-    e.g., 两点一刻 -> time { hours: "2" minutes: "15" }
-    e.g., 上午九点 -> time { hours: "2"  minutes: "00" affix: "a.m." }
-    e.g., 五点差五分 -> time { hours: "4" minutes: "55"}
+    e.g., 五点十分 -> time { hours: "05" minutes: "10" }
+    e.g., 五时十五分 -> time { hours: "05" minutes: "15" }
+    e.g., 十五点十分 -> time { hours: "15" minutes: "10" }
+    e.g., 十五点十分二十秒 -> time { hours: "15" minutes: "10" seconds: "20 }
+    e.g., 两点一刻 -> time { hours: "2" minutes: "1刻" }
+    e.g., 五点 -> time { hours: "5点" }
+    e.g., 五小时 -> time { hours: "5小时" }
+    e.g., 五分 -> time { minutess: "5分" }
+    e.g., 五分钟 -> time { seconds: "5分钟" }
+    e.g., 五秒 -> time { seconds: "5秒" }
+    e.g., 五秒钟 -> time { seconds: "5秒钟" }
     """
 
     def __init__(self):
         super().__init__(name="time", kind="classify")
 
-        # data imported
-        hours = pynini.string_file(get_abs_path("data/time/time_hours-nano.tsv"))  # hours from 1 to 24
-        minutes = pynini.string_file(get_abs_path("data/time/time_minutes-nano.tsv"))  # minutes from 1 to 60
-        hours_to = pynini.string_file(get_abs_path("data/time/hours_to-nano.tsv"))  # used for back counting, see below
-        minutes_to = pynini.string_file(
-            get_abs_path("data/time/minutes_to-nano.tsv")
-        )  # used for back counting, see below
+        hours = pynini.string_file(get_abs_path("data/time/time_hours.tsv"))
+        minutes = pynini.string_file(get_abs_path("data/time/time_minutes.tsv"))
+        seconds = pynini.string_file(get_abs_path("data/time/time_seconds.tsv"))
+        quarters = pynini.string_file(get_abs_path("data/time/time_quarters.tsv"))
+        for_mandarin = pynini.string_file(get_abs_path("data/time/time_mandarin.tsv"))
 
-        # graph for one quarter (e.g., 10:15)
-        graph_quarter = pynini.accep("一刻") | pynini.accep("壹刻") | pynini.accep("幺刻")
-        graph_quarter = pynini.cross(graph_quarter, "15")
-
-        # grammar for two quarters or half (e.g., 10:30)
-        graph_half = pynini.accep("半").ques
-        graph_half = pynini.cross(graph_half, "30")
-        graph_half_alt = pynini.accep("二刻") | pynini.accep("貳刻") | pynini.accep("两刻") | pynini.accep("兩刻")
-        graph_half_alt = pynini.cross(graph_half_alt, "30")
-        graph_half = graph_half | graph_half_alt
-
-        # grammar for three quarters (e.g., 10:45)
-        graph_three_quarter = pynini.accep("三刻", "45") | pynini.accep("叁刻", "45")
-        graph_three_quarter = pynini.cross(graph_three_quarter, "45")
-
-        # combining grammars quarter, two quater, and three quarter
-        graph_fractions = graph_quarter | graph_half | graph_three_quarter
-
-        # graph for "Noon-12PM"
-        graph_noon = pynini.cross("中午", "12") | pynini.cross("正午", "12") | pynini.cross("午间", "12")
-        graph_midnight = pynini.cross("午夜", "0") | pynini.cross("半夜", "0") | pynini.cross("子夜", "0")
-
-        # graph for hour
-        graph_delete_hours = (
-            pynutil.delete("点") | pynutil.delete("點") | pynutil.delete("时") | pynutil.delete("時")
-        )  # "点": Mandarin for "hour | o'clock" (e.g.,十点=ten o' clock)
+        graph_delete_hours = pynutil.delete("点") | pynutil.delete("點") | pynutil.delete("时") | pynutil.delete("時")
         graph_hours = hours + graph_delete_hours
+        graph_hours_component = pynutil.insert('hours: "') + graph_hours + pynutil.insert('"')
 
-        # graph for minutes
-        graph_minutes = pynutil.delete('分')
+        graph_minutes = pynutil.delete("分")
         graph_minutes = minutes + graph_minutes
+        graph_minutes_component = pynutil.insert('minutes: "') + graph_minutes + pynutil.insert('"')
 
-        # add tokenization for hours position component
-        graph_hours_component = pynini.union(graph_hours, graph_noon, graph_midnight)  # what to put at hours-position
-        graph_hours_component = pynutil.insert("hours: \"") + graph_hours_component + pynutil.insert("\"")
+        graph_seconds = pynutil.delete("秒")
+        graph_seconds = seconds + graph_seconds
+        graph_seconds_component = pynutil.insert('seconds: "') + graph_seconds + pynutil.insert('"')
 
-        # add tokenization for minutes position component
-        graph_minutes_component = pynini.union(graph_minutes, graph_fractions) | pynutil.insert(
-            "00"
-        )  # what to put at minutes-position
-        graph_minutes_component = pynutil.insert(" minutes: \"") + graph_minutes_component + pynutil.insert("\"")
-        graph_minutes_component = delete_space + graph_minutes_component
-
-        # combine two above to process digit + "hours" + digit " minutes/null" (e.g., 十点五十分/十点五十-> hours: "10" minutes: "50")
-        graph_time_standard = graph_hours_component + graph_minutes_component
-
-        # combined hours and minutes but with prefix
-        graph_time_standard_affix = (
-            (
-                (pynutil.delete("上午") | pynutil.delete("早上"))
-                + graph_time_standard
-                + pynutil.insert(" affix: \"")
-                + pynutil.insert("a.m.")
-                + pynutil.insert("\"")
-            )
-        ) | (
-            (
-                (pynutil.delete("下午") | pynutil.delete("晚上"))
-                + graph_time_standard
-                + pynutil.insert(" affix: \"")
-                + pynutil.insert("p.m.")
-                + pynutil.insert("\"")
-            )
+        graph_time_standard = (graph_hours_component + pynutil.insert(" ") + graph_minutes_component) | (
+            graph_hours_component
+            + pynutil.insert(" ")
+            + graph_minutes_component
+            + pynutil.insert(" ")
+            + graph_seconds_component
         )
 
-        # combined hours and minutes (上午十點五十-> hours: "10" minutes: "50" affix: "a.m.")
-        graph_time_standard = graph_time_standard | graph_time_standard_affix
-
-        # grammar for back-counting
-        # converting hours back
-        graph_hours_to_component = graph_hours | graph_noon | graph_midnight  # | graph_hours_count
-        graph_hours_to_component @= hours_to  # hours_to is the string_file data
-        graph_hours_to_component = pynutil.insert("hours: \"") + graph_hours_to_component + pynutil.insert("\"")
-
-        # converting minutes back
-        graph_minutes_to_component = minutes | graph_half | graph_quarter | graph_three_quarter | graph_half_alt
-        graph_minutes_to_component @= minutes_to  # minutes_to is the string_file data
-        graph_minutes_to_component = pynutil.insert(" minutes: \"") + graph_minutes_to_component + pynutil.insert("\"")
-
-        graph_delete_back_counting = pynutil.delete("差") | pynutil.delete("还有") | pynutil.delete("還有")
-        graph_delete_minutes = pynutil.delete("分") | pynutil.delete("分钟") | pynutil.delete("分鐘")
-
-        # adding a.m. and p.m.
-        graph_time_to = (
-            graph_hours_to_component + graph_delete_back_counting + graph_minutes_to_component + graph_delete_minutes
+        quarter_mandarin = (
+            quarters + pynini.accep("刻") | pynini.cross("刻鈡", "刻钟") | pynini.accep("刻钟") | pynini.accep("半")
         )
-        graph_time_to_affix = (
-            (
-                (pynutil.delete("上午") | pynutil.delete("早上"))
-                + graph_time_to
-                + pynutil.insert(" affix: \"")
-                + pynutil.insert("a.m.")
-                + pynutil.insert("\"")
-            )
-        ) | (
-            (
-                (pynutil.delete("下午") | pynutil.delete("晚上"))
-                + graph_time_to
-                + pynutil.insert(" prefix: \"")
-                + pynutil.insert("p.m.")
-                + pynutil.insert("\"")
-            )
+        hour_mandarin = (
+            pynini.accep("点")
+            | pynini.accep("时")
+            | pynini.cross("點", "点")
+            | pynini.cross("時", "时")
+            | pynini.accep("小时")
+            | pynini.cross("小時", "小时")
+            | pynini.cross("個點", "个点")
+            | pynini.accep("个点")
+            | pynini.accep("个钟头")
+            | pynini.cross("個鐘頭", "个钟头")
+            | pynini.accep("个小时")
+            | pynini.cross("個小時", "个小时")
         )
-        graph_time_to = graph_time_to | graph_time_to_affix
+        minute_mandarin = pynini.accep("分") | pynini.cross("分鐘", "分钟") | pynini.accep("分钟")
+        second_mandarin = pynini.accep("秒") | pynini.cross("秒鐘", "秒钟")
 
-        # final grammar
-        final_graph = graph_time_standard | graph_time_to
+        hours_only = for_mandarin + hour_mandarin
+        minutes_only = for_mandarin + minute_mandarin
+        seconds_only = for_mandarin + second_mandarin
+
+        graph_mandarin_hour = pynutil.insert('hours: "') + hours_only + pynutil.insert('"')
+        graph_mandarin_minute = pynutil.insert('minutes: "') + minutes_only + pynutil.insert('"')
+        graph_mandarin_second = pynutil.insert('seconds: "') + seconds_only + pynutil.insert('"')
+        graph_mandarin_quarter = pynutil.insert('minutes: "') + quarter_mandarin + pynutil.insert('"')
+        graph_mandarins = (
+            graph_mandarin_hour
+            | graph_mandarin_minute
+            | graph_mandarin_second
+            | graph_mandarin_quarter
+            | (graph_mandarin_hour + pynutil.insert(" ") + graph_mandarin_quarter)
+        )
+
+        final_graph = graph_time_standard | graph_mandarins
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
