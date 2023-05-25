@@ -21,22 +21,18 @@ class MoneyFst(GraphFst):
     def __init__(self):
         super().__init__(name="money", kind="verbalize")
 
-        currency_unit = pynutil.delete("currency: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        number_unit = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        fraction_unit = (
-            pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        )
-        cent_unit = pynutil.delete("cent_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        tencent_unit = pynutil.delete("tencent_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        currency_unit = pynutil.delete('currency: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        number_unit = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        fraction_unit = pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         decimal_unit = (
             pynutil.insert(".")
-            + pynutil.delete("fractional_part: \"")
+            + pynutil.delete('fractional_part: "')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + delete_space
-            + pynutil.delete("quantity: \"")
+            + pynutil.delete('quantity: "')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
 
         # regular money part
@@ -49,21 +45,20 @@ class MoneyFst(GraphFst):
 
         graph_regular = graph_money_regular | graph_only_major_regular | graph_only_minor_regular | graph_large_money
 
-        # yuan part
-        graph_money_yuan = (
-            currency_unit
-            + delete_space
-            + number_unit
-            + delete_space
-            + pynutil.insert(".")
-            + ((pynutil.insert("0") + cent_unit) | (tencent_unit) | (tencent_unit + delete_space + cent_unit))
-        )
-        graph_yuan_minors = (
-            currency_unit + delete_space + pynutil.insert("0.") + tencent_unit + delete_space + cent_unit
-        )
-        graph_yuan = graph_money_yuan | graph_yuan_minors
+        major_symbol = pynini.accep("块")
+        minor_symbol = pynini.accep("毛") | pynini.accep("角")
+        lesser_symbol = pynini.accep("分")
+        major_currency = pynutil.delete('currency_major: "') + major_symbol + pynutil.delete('"')
+        minor_currency = pynutil.delete('currency: "') + minor_symbol + pynutil.delete('"')
+        lesser_currency = pynutil.delete('currency_minor: "') + lesser_symbol + pynutil.delete('"')
 
-        graph_verbalizer = graph_regular | graph_yuan
+        graph_kuai = number_unit + delete_space + major_currency
+        graph_mao = (
+            number_unit + delete_space + major_currency + delete_space + number_unit + delete_space + minor_currency
+        )
+        # | (number_unit + delete_space + major_currency + delete_space + number_unit + delete_space + minor_currency + delete_space + number_unit + delete_space + lesser_currency)
+
+        graph_verbalizer = graph_regular | pynutil.add_weight(graph_mao, -2.0)
 
         delete_tokens = self.delete_tokens(graph_verbalizer)
         self.fst = delete_tokens.optimize()
