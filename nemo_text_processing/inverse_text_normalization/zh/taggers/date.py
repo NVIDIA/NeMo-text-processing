@@ -29,8 +29,8 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="classify")
 
         digits = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))  # imported for year-component
-        months = pynini.string_file(get_abs_path("data/date/month-nano.tsv"))  # imported for month-component
-        days = pynini.string_file(get_abs_path("data/date/day-nano.tsv"))  # imported for day-component
+        months = pynini.string_file(get_abs_path("data/date/months.tsv"))  # imported for month-component
+        days = pynini.string_file(get_abs_path("data/date/day.tsv"))  # imported for day-component
 
         # grammar for year
         graph_year = (
@@ -40,15 +40,15 @@ class DateFst(GraphFst):
             + pynini.closure(pynini.cross("零", "0"))
             + pynutil.delete("年")
         )
-        graph_year = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"")
+        graph_year = pynutil.insert('year: "') + graph_year + pynutil.insert('"')
 
         # grammar for month
-        graph_month = pynutil.insert("month: \"") + months + pynutil.delete("月") + pynutil.insert("\"")
+        graph_month = pynutil.insert('month: "') + months + pynutil.delete("月") + pynutil.insert('"')
 
         # grammar for day
         graph_day_suffix = pynini.accep("日") | pynini.accep("号") | pynini.accep("號")
         graph_delete_day_suffix = pynutil.delete(graph_day_suffix)
-        graph_day = pynutil.insert("day: \"") + days + graph_delete_day_suffix + pynutil.insert("\"")
+        graph_day = pynutil.insert('day: "') + days + graph_delete_day_suffix + pynutil.insert('"')
 
         # grammar for combinations of year+month, month+day, and year+month+day
         graph_ymd = graph_year + pynutil.insert(" ") + graph_month + pynutil.insert(" ") + graph_day
@@ -72,10 +72,10 @@ class DateFst(GraphFst):
         graph_ad = pynutil.delete(graph_ad_prefix)
 
         graph_suffix_bc = (
-            graph_bc + graph_date + pynutil.insert(" era: \"") + pynutil.insert("B.C.") + pynutil.insert("\"")
+            graph_bc + graph_date + pynutil.insert(' era: "') + pynutil.insert("B.C.") + pynutil.insert('"')
         )
         graph_suffix_ad = (
-            graph_ad + graph_date + pynutil.insert(" era: \"") + pynutil.insert("A.D.") + pynutil.insert("\"")
+            graph_ad + graph_date + pynutil.insert(' era: "') + pynutil.insert("A.D.") + pynutil.insert('"')
         )
 
         graph_era = graph_suffix_bc | graph_suffix_ad
