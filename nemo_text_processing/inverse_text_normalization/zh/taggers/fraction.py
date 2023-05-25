@@ -31,11 +31,11 @@ class FractionFst(GraphFst):
         super().__init__(name="fraction", kind="classify")
 
         graph_cardinal = cardinal.just_cardinals
-        integer_component = pynutil.insert("integer_part: \"") + graph_cardinal + pynutil.insert("\"")
+        integer_component = pynutil.insert('integer_part: "') + graph_cardinal + pynutil.insert('"')
         denominator_component = (
-            pynutil.insert("denominator: \"") + graph_cardinal + pynutil.delete("分之") + pynutil.insert("\"")
+            pynutil.insert('denominator: "') + graph_cardinal + pynutil.delete("分之") + pynutil.insert('"')
         )
-        numerator_component = pynutil.insert("numerator: \"") + graph_cardinal + pynutil.insert("\"")
+        numerator_component = pynutil.insert('numerator: "') + graph_cardinal + pynutil.insert('"')
 
         graph_only_fraction = denominator_component + pynutil.insert(" ") + numerator_component
         graph_fraction_with_int = integer_component + pynutil.delete("又") + pynutil.insert(" ") + graph_only_fraction
