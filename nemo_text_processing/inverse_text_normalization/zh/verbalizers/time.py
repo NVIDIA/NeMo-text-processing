@@ -21,61 +21,97 @@ class TimeFst(GraphFst):
     """
     Finite state transcucer for verbalizing time, e.g.,
     time { hours: "12" minutes: "30" } -> 12:30
-    time { hours: "1" minutes: "30" } -> 01:30
-    time { hours: "1" minutes: "30" affix: "a.m." } -> 01:30 a.m.
+    time { hours: "01" minutes: "30" } -> 01:30
+    time { hours: "1" minutes: "30" seconds: "05" } -> 01:30:05
+    time { hours: "1" minutes: "1刻" } -> 1点1刻
+    time { hours: "一点" } -> 1点
+    time { hours: "一小时" } -> 1小时
+    time { hours: "一个钟头" } -> 1个钟头
+    time { minutes: "一分" } -> 1分
+    time { minutes: "一分钟" } -> 1分钟
+    time { seconds: "一秒" } -> 1秒
+    time { seconds: "一秒钟" } -> 1秒钟
+    time { hours: "五点" minutes: "一刻" } -> 5点1刻
     """
 
     def __init__(self):
         super().__init__(name="time", kind="verbalize")
-        add_leading_zero = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
+        # add_leading_zero = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         token_hour = (
             pynutil.delete("hours:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT, 1, 2)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         token_minute = (
             pynutil.delete("minutes:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT, 1, 2)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
+        )
+        token_second = (
+            pynutil.delete("seconds:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(NEMO_DIGIT, 1, 2)
+            + pynutil.delete('"')
         )
 
-        affix_am = (
-            delete_space
-            + pynutil.delete("affix:")
-            + delete_space
-            + pynutil.delete("\"")
-            + pynini.accep("a.m.")
-            + pynutil.delete("\"")
+        add_colon = pynutil.insert(":")
+        graph_regular_time = (token_hour + delete_space + add_colon + token_minute) | (
+            token_hour + delete_space + add_colon + token_minute + delete_space + add_colon + token_second
         )
-        affix_am = pynutil.insert(" ") + pynini.closure(affix_am, 0, 1)
-        graph_am = token_hour @ add_leading_zero + delete_space + pynutil.insert(":") + token_minute
-        graph_am_affix = token_hour @ add_leading_zero + delete_space + pynutil.insert(":") + token_minute + affix_am
-        graph_am = graph_am | graph_am_affix
 
-        # 5:00 p.m. -> 17:00 or keep 17:00 as 17:00
-        affix_pm = (
-            delete_space
-            + pynutil.delete("affix:")
-            + delete_space
-            + pynutil.delete("\"")
-            + pynini.accep("p.m.")
-            + pynutil.delete("\"")
+        hours = (
+            pynini.accep("点")
+            | pynini.accep("小时")
+            | pynini.accep("时")
+            | pynini.accep("个钟头")
+            | pynini.accep("个点")
+            | pynini.accep("半")
         )
-        graph_pm = token_hour @ add_leading_zero + delete_space + pynutil.insert(":") + token_minute
-        graph_pm_affix = (
-            token_hour @ add_leading_zero
+        hour_mandarin = (
+            pynutil.delete("hours:")
             + delete_space
-            + pynutil.insert(":")
-            + token_minute
-            + pynutil.insert(" ")
-            + affix_pm
+            + pynutil.delete('"')
+            + (pynini.closure(NEMO_DIGIT) + pynini.closure(hours, 1))
+            + pynutil.delete('"')
         )
-        graph_pm = graph_pm | graph_pm_affix
+        minutes = pynini.accep("分") | pynini.accep("分钟")
+        minute_mandarin = (
+            pynutil.delete("minutes:")
+            + delete_space
+            + pynutil.delete('"')
+            + (pynini.closure(NEMO_DIGIT) + pynini.closure(minutes, 1))
+            + pynutil.delete('"')
+        )
+        seconds = pynini.accep("秒") | pynini.accep("秒钟")
+        second_mandarin = (
+            pynutil.delete("seconds:")
+            + delete_space
+            + pynutil.delete('"')
+            + (pynini.closure(NEMO_DIGIT) + pynini.closure(seconds, 1))
+            + pynutil.delete('"')
+        )
+        quarters = pynini.accep("刻") | pynini.accep("刻钟")
+        quarter_mandarin = (
+            pynutil.delete("minutes:")
+            + delete_space
+            + pynutil.delete('"')
+            + (pynini.closure(NEMO_DIGIT) + pynini.closure(quarters, 1))
+            + pynutil.delete('"')
+        )
 
-        final_graph = graph_am | graph_pm
+        graph_mandarin_time = (
+            hour_mandarin
+            | minute_mandarin
+            | second_mandarin
+            | quarter_mandarin
+            | (hour_mandarin + delete_space + quarter_mandarin)
+        )
+
+        final_graph = graph_regular_time | graph_mandarin_time
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
