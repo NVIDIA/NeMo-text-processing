@@ -23,12 +23,12 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="classify")
 
         # imports
-        minor_currency_cent = pynini.string_file(get_abs_path("data/money/currency_rmb_minor_cent-nano.tsv"))
-        minor_currency_tencent = pynini.string_file(get_abs_path("data/money/currency_rmb_minor_tencent-nano.tsv"))
+        minor_currency_cent = pynini.string_file(get_abs_path("data/money/currency_rmb_minor_cent.tsv"))
+        minor_currency_tencent = pynini.string_file(get_abs_path("data/money/currency_rmb_minor_tencent.tsv"))
         minor_digit = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))
-        zero = pynini.string_file(get_abs_path("data/numbers/zero-nano.tsv"))
-        major_currency = pynini.string_file(get_abs_path("data/money/currency_major-nano.tsv"))  #
-        minor_currency = pynini.string_file(get_abs_path("data/money/currency_minor-nano.tsv"))  #
+        zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        major_currency = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))  #
+        minor_currency = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))  #
         graph_cardinal = cardinal.for_ordinals
         graph_decimal = decimal.final_graph_wo_negative  #
         fraction_integer = minor_digit | zero
@@ -38,24 +38,21 @@ class MoneyFst(GraphFst):
         graph_fractional_values = graph_cardinal @ add_leading_zero_to_double_digit  #
 
         # regular number and yuan part
-        graph_integer_component = pynutil.insert("integer_part: \"") + graph_cardinal + pynutil.insert("\"")
+        graph_integer_component = pynutil.insert('integer_part: "') + graph_cardinal + pynutil.insert('"')
         graph_fractional_component = (
-            pynutil.insert("fractional_part: \"")
-            + graph_fractional_values
-            + pynutil.insert("\"")
-            + pynutil.delete(minor_currency)
+            pynutil.insert('fractional_part: "') + graph_fractional_values + pynutil.insert('"')
         )
-        graph_fractional_component_ex = (
-            pynutil.insert("fractional_part: \"") + graph_fractional_values + pynutil.insert("\"")
-        )
+        # graph_fractional_component_ex = (
+        #    pynutil.insert("fractional_part: \"") + graph_fractional_values + pynutil.insert("\"")
+        # )
 
         # regular symbol part
-        graph_major_currency = pynutil.insert("currency: \"") + major_currency + pynutil.insert("\"")
-        graph_minor_currency = pynutil.insert("currency: \"") + minor_currency + pynutil.insert("\"")
+        graph_major_currency = pynutil.insert('currency: "') + major_currency + pynutil.insert('"')
+        graph_minor_currency = pynutil.insert('currency: "') + minor_currency + pynutil.insert('"')
 
         # regular combine number and symbol part
         graph_only_major = graph_integer_component + pynutil.insert(" ") + graph_major_currency
-        graph_only_minor = graph_fractional_component_ex + pynutil.insert(" ") + graph_minor_currency
+        graph_only_minor = graph_fractional_component + pynutil.insert(" ") + graph_minor_currency
         graph_money = graph_only_major + pynutil.insert(" ") + graph_fractional_component
 
         # regular large money with decimals
@@ -64,63 +61,40 @@ class MoneyFst(GraphFst):
         # final graph for regular currency
         graph_regular_money = graph_only_major | graph_only_minor | graph_money | graph_large_money
 
-        # yuan number part
-        graph_cent_fractional_comp = pynutil.insert("cent_part: \"") + fraction_integer + pynutil.insert("\"")
-        graph_tencent_fractional_comp = pynutil.insert("tencent_part: \"") + fraction_integer + pynutil.insert("\"")
-
-        # yuan symbol part
-        graph_currency_minor_cent = pynutil.insert("currency: \"") + minor_currency_cent + pynutil.insert("\"")
-        graph_currency_minor_tencent = pynutil.insert("currency: \"") + minor_currency_tencent + pynutil.insert("\"")
-
-        # yuan combine number and symbol part
-        graph_only_cent = graph_cent_fractional_comp + pynutil.insert(" ") + graph_currency_minor_cent
-        graph_only_tencent = graph_tencent_fractional_comp + pynutil.insert(" ") + graph_currency_minor_tencent
-
         # yuan major plus minor
-        symbols = pynini.union('元', '毛', '角', '分')
-        delete_symbols = pynutil.delete(symbols)
-        graph_major_cent = (
+        major_symbol = pynini.accep("块") | pynini.cross("塊", "块")
+        tencent = pynini.accep("毛") | pynini.accep("角",)
+        cent = pynini.accep("分")
+        graph_kuai = (
             graph_integer_component
-            + delete_symbols
             + pynutil.insert(" ")
-            + graph_cent_fractional_comp
-            + pynutil.insert(" ")
-            + graph_currency_minor_cent
+            + pynutil.insert('currency_major: "')
+            + pynini.closure(major_symbol, 1, 1)
+            + pynutil.insert('"')
         )
-        graph_major_tencent = (
+        graph_mao = (
             graph_integer_component
-            + delete_symbols
             + pynutil.insert(" ")
-            + graph_tencent_fractional_comp
-            + pynutil.insert(" ")
-            + graph_currency_minor_tencent
+            + pynutil.insert('currency: "')
+            + pynini.closure(tencent, 1, 1)
+            + pynutil.insert('"')
         )
-        graph_tencent_cent = (
-            graph_tencent_fractional_comp
-            + delete_symbols
-            + pynutil.insert(" ")
-            + graph_cent_fractional_comp
-            + pynutil.insert(" ")
-            + graph_currency_minor_cent
-        )
-        graph_major_minor = (
+        graph_fen = (
             graph_integer_component
-            + delete_symbols
             + pynutil.insert(" ")
-            + graph_tencent_fractional_comp
-            + pynutil.insert(" ")
-            + delete_symbols
-            + graph_cent_fractional_comp
-            + pynutil.insert(" ")
-            + graph_currency_minor_cent
+            + pynutil.insert('currency_minor: "')
+            + pynini.closure(cent, 1, 1)
+            + pynutil.insert('"')
         )
-
-        # final graph for yuan
-        graph_yuan_only = graph_only_cent | graph_only_tencent
-        graph_yuan_comb = graph_major_cent | graph_major_tencent | graph_tencent_cent | graph_major_minor
+        graph_kuaimao = graph_kuai + pynutil.insert(" ") + graph_mao
+        graph_kuaifen = graph_kuai + pynutil.insert(" ") + graph_fen
+        graph_maofen = graph_mao + pynutil.insert(" ") + graph_fen
+        graph_kuaimaofen = graph_kuai + pynutil.insert(" ") + graph_mao + pynutil.insert(" ") + graph_fen
+        graph_mandarin = (
+            graph_kuai | graph_mao | graph_fen | graph_kuaimao | graph_kuaifen | graph_maofen | graph_kuaimaofen
+        )
 
         # combing both
-        graph_yuan = graph_yuan_only | graph_yuan_comb
-        graph_final = graph_regular_money | graph_yuan
+        graph_final = graph_regular_money | graph_mandarin
         final = self.add_tokens(graph_final)
         self.fst = final.optimize()
