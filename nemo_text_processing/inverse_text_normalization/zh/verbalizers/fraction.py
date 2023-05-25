@@ -30,25 +30,25 @@ class FractionFst(GraphFst):
         integer_part = (
             pynutil.delete("integer_part:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT)
             + pynutil.insert("又")
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         denominator_part = (
             pynutil.delete("denominator:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         numerator_part = (
             pynutil.delete("numerator:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT)
             + pynutil.insert("/")
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
 
         graph_with_integer = integer_part + delete_space + numerator_part + delete_space + denominator_part
