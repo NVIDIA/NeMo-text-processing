@@ -52,14 +52,14 @@ def get_quantity(decimal, cardinal):
     )
     numbers = cardinal
     res = (
-        pynutil.insert("integer_part: \"")
+        pynutil.insert('integer_part: "')
         + numbers
-        + pynutil.insert("\"")
-        + pynutil.insert(" quantity: \"")
+        + pynutil.insert('"')
+        + pynutil.insert(' quantity: "')
         + suffix
-        + pynutil.insert("\"")
+        + pynutil.insert('"')
     )
-    res = res | decimal + pynutil.insert(" quantity: \"") + suffix + pynutil.insert("\"")
+    res = res | decimal + pynutil.insert(' quantity: "') + suffix + pynutil.insert('"')
 
     return res
 
@@ -77,11 +77,11 @@ class DecimalFst(GraphFst):
 
         # grammar for integer part
         graph_integer = (
-            pynutil.insert("integer_part: \"")
+            pynutil.insert('integer_part: "')
             + (cardinal_before_decimal | (pynini.closure(pynini.cross("零", "0"), 0, 1)))
-            + pynutil.insert("\" ")
+            + pynutil.insert('" ')
         )  # tokenization on just numbers
-        graph_integer_or_none = graph_integer | pynutil.insert("integer_part: \"0\" ", weight=0.01)  # integer or zero
+        graph_integer_or_none = graph_integer | pynutil.insert('integer_part: "0" ', weight=0.01)  # integer or zero
 
         # grammar for fractional part
         delete_zero = pynini.closure(pynini.cross("零", "0"))
@@ -89,7 +89,7 @@ class DecimalFst(GraphFst):
         graph_string_of_cardinals = (
             pynini.closure(graph_string_of_cardinals) + delete_zero + pynini.closure(graph_string_of_cardinals)
         )
-        graph_fractional = pynutil.insert("fractional_part: \"") + graph_string_of_cardinals + pynutil.insert("\"")
+        graph_fractional = pynutil.insert('fractional_part: "') + graph_string_of_cardinals + pynutil.insert('"')
 
         # grammar for decimal: integer+delete character+part after decimal point
         graph_decimal_no_sign = graph_integer_or_none + delete_decimal + graph_fractional
@@ -99,7 +99,7 @@ class DecimalFst(GraphFst):
             graph_decimal_no_sign, cardinal.just_cardinals
         )
 
-        graph_negative = pynini.cross("负", "negative: \"-\" ") | pynini.cross("負", "negative: \"-\" ")
+        graph_negative = pynini.cross("负", 'negative: "-" ') | pynini.cross("負", 'negative: "-" ')
         graph_negative = pynini.closure(graph_negative, 0, 1)  # captures only one "负"
 
         graph_decimal = graph_negative + graph_decimal_no_sign
