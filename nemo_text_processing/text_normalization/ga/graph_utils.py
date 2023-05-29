@@ -152,13 +152,11 @@ _DO_LOWER_STARTS = pynini.cdrewrite(_LOWERCASE_STARTS, "[BOS]", "", NEMO_SIGMA)
 TOLOWER = (_DO_LOWER_STARTS @ pynini.closure(GA_LOWER | LOWER_BASE | "'" | "-")).optimize()
 
 PREFIX_H = pynini.cdrewrite(pynutil.insert("h"), "[BOS]", EITHER_VOWELS, NEMO_SIGMA)
-PREFIX_N = (
-    pynini.cdrewrite(pynutil.insert("n"), "[BOS]", UPPER_VOWELS, NEMO_SIGMA)
-    @ pynini.cdrewrite(pynutil.insert("n-"), "[BOS]", LOWER_VOWELS, NEMO_SIGMA)
+PREFIX_N = pynini.cdrewrite(pynutil.insert("n"), "[BOS]", UPPER_VOWELS, NEMO_SIGMA) @ pynini.cdrewrite(
+    pynutil.insert("n-"), "[BOS]", LOWER_VOWELS, NEMO_SIGMA
 )
-PREFIX_T = (
-    pynini.cdrewrite(pynutil.insert("t"), "[BOS]", UPPER_VOWELS, NEMO_SIGMA)
-    @ pynini.cdrewrite(pynutil.insert("t-"), "[BOS]", LOWER_VOWELS, NEMO_SIGMA)
+PREFIX_T = pynini.cdrewrite(pynutil.insert("t"), "[BOS]", UPPER_VOWELS, NEMO_SIGMA) @ pynini.cdrewrite(
+    pynutil.insert("t-"), "[BOS]", LOWER_VOWELS, NEMO_SIGMA
 )
 
 bos_or_space = pynini.union("[BOS]", " ")

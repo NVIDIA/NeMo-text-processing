@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DIALECT = "co" # "gm", "gc", "gu" for Munster, Connaught, and Ulster, respectively
+DIALECT = "co"  # "gm", "gc", "gu" for Munster, Connaught, and Ulster, respectively

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, insert_space, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.ga import DIALECT
 from nemo_text_processing.text_normalization.ga.graph_utils import GA_ALPHA
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
@@ -87,7 +87,7 @@ class DateFst(GraphFst):
                 year |= year_cardinal
         self.year = year_parts
         self.year_cardinal = year_cardinal
-    
+
         year_second_decades = ((NEMO_DIGIT - "0") + "0") @ numbers
         year_second_decades |= pynini.cross("00", "hundra")
         decade_num = pynini.union(year_first + year_second_decades, year_second_decades)
