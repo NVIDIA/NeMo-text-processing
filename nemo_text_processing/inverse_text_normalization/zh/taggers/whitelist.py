@@ -14,8 +14,6 @@
 # limitations under the License.
 
 
-import os
-
 import pynini
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
     INPUT_CASED,
