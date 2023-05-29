@@ -27,13 +27,6 @@ from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_p
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
-digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
-teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv")))
-ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/ties.tsv")))
-zero = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/zero.tsv")))
-card_ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
-card_digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
-
 
 class OrdinalFst(GraphFst):
     """
@@ -47,8 +40,11 @@ class OrdinalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify")
+        digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
+        ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/tens.tsv")))
+        zero = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/zero.tsv")))
+
         graph_digit = digit.optimize()
-        graph_teens = teens.optimize()
         graph_ties = ties.optimize()
         graph_card_ties = card_ties.optimize()
         graph_card_digit = card_digit.optimize()
@@ -80,11 +76,6 @@ class OrdinalFst(GraphFst):
         self.suffixed_ordinal = suffixed_ordinal.optimize()
 
         bare_hundreds = digits_no_one + pynini.cross("00", "hundrade")
-        bare_hundreds |= pynini.cross("100", "hundrade")
-        if not deterministic:
-            bare_hundreds |= pynini.cross("100", "etthundrade")
-            bare_hundreds |= pynini.cross("100", "ett hundrade")
-            bare_hundreds |= digit + pynutil.insert(NEMO_SPACE) + pynini.cross("00", "hundrade")
 
         hundreds = digits_no_one + pynutil.insert("hundra")
         hundreds |= pynini.cross("1", "hundra")
