@@ -46,6 +46,13 @@ class FractionFst(GraphFst):
             tens_sg,
             teen_sg,
         )
+        graph_tens_pl = pynini.union(
+            "0" + digit_pl,
+            tens_pl,
+            teen_pl,
+        )
+        self.graph_tens_sg = graph_tens_sg
+        self.graph_tens_pl = graph_tens_pl
         graph_tens_sg_len = graph_tens_sg @ LOWER_LENITION_NO_F_NO_S
         self.graph_tens_sg_len = graph_tens_sg_len
 
