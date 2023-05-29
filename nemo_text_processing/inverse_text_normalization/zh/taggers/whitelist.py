@@ -16,11 +16,8 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
-    INPUT_CASED,
     INPUT_LOWER_CASED,
     GraphFst,
-    convert_space,
-    string_map_cased,
 )
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
