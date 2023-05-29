@@ -23,15 +23,10 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="classify")
 
         # imports
-        minor_currency_cent = pynini.string_file(get_abs_path("data/money/currency_rmb_minor_cent.tsv"))
-        minor_currency_tencent = pynini.string_file(get_abs_path("data/money/currency_rmb_minor_tencent.tsv"))
-        minor_digit = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))
-        zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         major_currency = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))  #
         minor_currency = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))  #
         graph_cardinal = cardinal.for_ordinals
         graph_decimal = decimal.final_graph_wo_negative  #
-        fraction_integer = minor_digit | zero
 
         # add leding zero to the number: 1 -> 01
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)  #
@@ -42,9 +37,6 @@ class MoneyFst(GraphFst):
         graph_fractional_component = (
             pynutil.insert('fractional_part: "') + graph_fractional_values + pynutil.insert('"')
         )
-        # graph_fractional_component_ex = (
-        #    pynutil.insert("fractional_part: \"") + graph_fractional_values + pynutil.insert("\"")
-        # )
 
         # regular symbol part
         graph_major_currency = pynutil.insert('currency: "') + major_currency + pynutil.insert('"')
