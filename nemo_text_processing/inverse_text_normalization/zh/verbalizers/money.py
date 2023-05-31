@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_DIGIT
 from pynini.lib import pynutil
 
 
@@ -48,17 +48,25 @@ class MoneyFst(GraphFst):
         major_symbol = pynini.accep("块")
         minor_symbol = pynini.accep("毛") | pynini.accep("角")
         lesser_symbol = pynini.accep("分")
+
         major_currency = pynutil.delete('currency_major: "') + major_symbol + pynutil.delete('"')
-        minor_currency = pynutil.delete('currency: "') + minor_symbol + pynutil.delete('"')
-        lesser_currency = pynutil.delete('currency_minor: "') + lesser_symbol + pynutil.delete('"')
+        minor_currency = pynutil.delete('currency_minor: "')  + minor_symbol + pynutil.delete('"')
+        lesser_currency = pynutil.delete('currency_min:"') + lesser_symbol + pynutil.delete('"')
 
         graph_kuai = number_unit + delete_space + major_currency
-        graph_mao = (
-            number_unit + delete_space + major_currency + delete_space + number_unit + delete_space + minor_currency
-        )
-        # | (number_unit + delete_space + major_currency + delete_space + number_unit + delete_space + minor_currency + delete_space + number_unit + delete_space + lesser_currency)
+        graph_mao = number_unit + delete_space + minor_currency
+        graph_mao = number_unit + delete_space + minor_currency
+        graph_fen = number_unit + delete_space + lesser_currency
+    
+        graph_kuaimao = graph_kuai + delete_space + fraction_unit + delete_space + minor_currency
+        graph_kuaifen = graph_kuai + delete_space + fraction_unit + delete_space + lesser_currency
+        graph_maofen = pynutil.delete('fractional_part: "') + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete('"') + delete_space + pynutil.delete('currency_minor: "')  + minor_symbol + pynutil.delete('"') + delete_space + pynutil.delete('fraction_part: "') + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete('"') + delete_space + pynutil.delete('currency_min: "')  + lesser_symbol + pynutil.delete('"')
 
-        graph_verbalizer = graph_regular | pynutil.add_weight(graph_mao, -2.0)
+        graph_all = graph_kuai + delete_space + graph_maofen
+        
+        graph_mandarin = (graph_kuai | graph_mao | graph_fen) | graph_kuaimao | graph_kuaifen | graph_maofen | graph_all
+
+        graph_verbalizer = graph_regular | pynutil.add_weight(graph_mandarin, -2.0)
 
         delete_tokens = self.delete_tokens(graph_verbalizer)
         self.fst = delete_tokens.optimize()
