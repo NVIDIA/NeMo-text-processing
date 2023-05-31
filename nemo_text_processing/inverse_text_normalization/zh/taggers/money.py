@@ -23,9 +23,9 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="classify")
 
         # imports
-        major_currency = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))  
-        minor_currency = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))  
-        digits = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv")) 
+        major_currency = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))
+        minor_currency = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))
+        digits = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))
         graph_cardinal = cardinal.for_ordinals
         graph_decimal = decimal.final_graph_wo_negative  #
 
@@ -81,14 +81,64 @@ class MoneyFst(GraphFst):
         )
 
         ###
-        #graph_kuaimao = graph_kuai + pynutil.insert(" ") + graph_mao
+        # graph_kuaimao = graph_kuai + pynutil.insert(" ") + graph_mao
         graph_digits = pynutil.insert('fractional_part: "') + digits + pynutil.insert('"')
-        graph_kuaimao = graph_kuai + pynutil.insert(" ") + graph_digits + pynutil.insert(" ") + pynutil.insert('currency_minor: "') + pynini.closure(tencent, 1, 1) + pynutil.insert('"') 
-        graph_kuaifen = graph_kuai + pynutil.insert(" ") + graph_digits + pynutil.insert(" ") + pynutil.insert('currency_minor: "') + pynini.closure(cent, 1, 1) + pynutil.insert('"') 
-        graph_maofen = pynutil.insert('fractional_part: "') + digits + pynutil.insert('"') + pynutil.insert(" ") + pynutil.insert('currency_minor: "') + pynini.closure(tencent, 1, 1) + pynutil.insert('"') + pynutil.insert(" ") + pynutil.insert('fraction_part: "') + digits + pynutil.insert('"') + pynutil.insert(" ") + pynutil.insert('currency_min: "') + pynini.closure(cent, 1, 1) + pynutil.insert('"') 
-        
-        graph_kuaimaofen = graph_kuai + pynutil.insert(" ") + pynutil.insert('fractional_part: "') + digits + pynutil.insert('"') + pynutil.insert(" ") + pynutil.insert('currency_minor: "') + pynini.closure(tencent, 1, 1) + pynutil.insert('"') + pynutil.insert(" ") + pynutil.insert('fraction_part: "') + digits + pynutil.insert('"') + pynutil.insert(" ") + pynutil.insert('currency_min: "') + pynini.closure(cent, 1, 1) + pynutil.insert('"') 
-        
+        graph_kuaimao = (
+            graph_kuai
+            + pynutil.insert(" ")
+            + graph_digits
+            + pynutil.insert(" ")
+            + pynutil.insert('currency_minor: "')
+            + pynini.closure(tencent, 1, 1)
+            + pynutil.insert('"')
+        )
+        graph_kuaifen = (
+            graph_kuai
+            + pynutil.insert(" ")
+            + graph_digits
+            + pynutil.insert(" ")
+            + pynutil.insert('currency_minor: "')
+            + pynini.closure(cent, 1, 1)
+            + pynutil.insert('"')
+        )
+        graph_maofen = (
+            pynutil.insert('fractional_part: "')
+            + digits
+            + pynutil.insert('"')
+            + pynutil.insert(" ")
+            + pynutil.insert('currency_minor: "')
+            + pynini.closure(tencent, 1, 1)
+            + pynutil.insert('"')
+            + pynutil.insert(" ")
+            + pynutil.insert('fraction_part: "')
+            + digits
+            + pynutil.insert('"')
+            + pynutil.insert(" ")
+            + pynutil.insert('currency_min: "')
+            + pynini.closure(cent, 1, 1)
+            + pynutil.insert('"')
+        )
+
+        graph_kuaimaofen = (
+            graph_kuai
+            + pynutil.insert(" ")
+            + pynutil.insert('fractional_part: "')
+            + digits
+            + pynutil.insert('"')
+            + pynutil.insert(" ")
+            + pynutil.insert('currency_minor: "')
+            + pynini.closure(tencent, 1, 1)
+            + pynutil.insert('"')
+            + pynutil.insert(" ")
+            + pynutil.insert('fraction_part: "')
+            + digits
+            + pynutil.insert('"')
+            + pynutil.insert(" ")
+            + pynutil.insert('currency_min: "')
+            + pynini.closure(cent, 1, 1)
+            + pynutil.insert('"')
+        )
+
         graph_mandarin = (
             graph_kuai | graph_mao | graph_fen | graph_kuaimao | graph_kuaifen | graph_maofen | graph_kuaimaofen
         )
