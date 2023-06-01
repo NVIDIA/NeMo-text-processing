@@ -42,7 +42,6 @@ class MeasureFst(GraphFst):
 
         graph_unit_singular = pynini.invert(unit_singular)
         unit = convert_space(graph_unit_singular)
-        graph_unit_singular = convert_space(graph_unit_singular)
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("سالب", "\"true\"") + delete_extra_space, 0, 1
