@@ -101,22 +101,22 @@ def build_cased_fsts(deterministic=True):
         tens_cased_fst[k] = digit_cased_no_one + spacer + pynini.cross("0", logi_cased[k])
         # 23 -> guvttiin/logiin/golmmain
         tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_cased_fst[k]
-    all_fst = {}
-    all_fst_sfx = {}
+    two_digit_cased_fsts = {}
+    two_digit_cased_fsts_sfx = {}
     two_digits_fst = None
     for k in digits_cased_fst:
-        all_fst[k] = tens_cased_fst[k] | teens_cased_fst[k] | (pynutil.delete("0") + digits_cased_fst[k])
-        all_fst_sfx[k] = all_fst[k] + pynutil.delete(endings_cased[k])
+        two_digit_cased_fsts[k] = tens_cased_fst[k] | teens_cased_fst[k] | (pynutil.delete("0") + digits_cased_fst[k])
+        two_digit_cased_fsts_sfx[k] = two_digit_cased_fsts[k] + pynutil.delete(endings_cased[k])
         if two_digits_fst is None:
-            two_digits_fst = all_fst_sfx[k]
+            two_digits_fst = two_digit_cased_fsts_sfx[k]
         else:
-            two_digits_fst |= all_fst_sfx[k]
+            two_digits_fst |= two_digit_cased_fsts_sfx[k]
     return {
         "tens": tens_cased_fst,
         "teens": teens_cased_fst,
         "digits": digits_cased_fst,
-        "all": all_fst,
-        "all_sfx": all_fst_sfx,
+        "two_digit_cased_fsts": two_digit_cased_fsts,
+        "two_digit_cased_fsts_sfx": two_digit_cased_fsts_sfx,
         "two_digit_fst": two_digits_fst,
     }
 
