@@ -26,7 +26,7 @@ from pynini.lib import pynutil
 class DecimalFst(GraphFst):
     """
 	Finite state transducer for classifying decimal, e.g.
-		decimal { negative: "true" integer_part: "venti"  fractional_part: "trentaquattro" quantity: "billones" } -> 
+		decimal { negative: "true" integer_part: "venti"  fractional_part: "trentaquattro" quantity: "miliardi" } -> 
             meno venti virgola trentaquattro
 		decimal { integer_part: "un milione" fractional_part: "zero zero zero" quantity: "milioni" preserve_order: true } -->
             un milione virgola zero zero zero

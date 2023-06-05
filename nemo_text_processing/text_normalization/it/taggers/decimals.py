@@ -73,21 +73,23 @@ class DecimalFst(GraphFst):
             graph += pynini.closure(insert_space + graph)
 
         else:
-            # General pattern is 1-3 digits: map as cardinal, default to tens followed by digits otherwise \
+
             graph = pynini.union(
-                graph_digit + pynini.closure(insert_space + zero),
-                cardinal.tens + pynini.closure(insert_space + zero),
-                cardinal.hundreds + pynini.closure(insert_space + zero),
-                cardinal.tens
-                + pynini.closure(insert_space + cardinal.tens, 1)
-                + pynini.closure(insert_space + zero, 0, 1)
-                + (
-                    pynini.closure(insert_space + graph_digit, 0, 1) | pynini.closure(insert_space + zero, 0)
+                pynutil.add_weight(graph_digit + pynini.closure(insert_space + zero), -0.00001),
+                pynutil.add_weight(cardinal.tens + pynini.closure(insert_space + zero), -0.00002),
+                pynutil.add_weight(cardinal.hundreds + pynini.closure(insert_space + zero), 0.00001),
+                pynutil.add_weight(
+                    cardinal.tens
+                    + pynini.closure(insert_space + cardinal.tens, 1)
+                    + pynini.closure(insert_space + zero, 0, 1)
+                    + (pynini.closure(insert_space + graph_digit, 0, 1) | pynini.closure(insert_space + zero, 0)),
+                    -0.00002,
                 ),  # Read out as tens and a possible trailing digit or zeroes
                 zero
                 + pynini.closure(insert_space + zero)
                 + pynini.closure(insert_space + graph_digit),  # For cases such as "1,010"
             )
+            
 
         # Technically decimals should be space delineated groups of three, e.g. (1,333 333). This removes any possible spaces
         strip_formatting = pynini.cdrewrite(delete_space, "", "", NEMO_SIGMA)
