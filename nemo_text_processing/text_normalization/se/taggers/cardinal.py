@@ -101,6 +101,11 @@ def build_cased_fsts(deterministic=True):
         tens_cased_fst[k] = digit_cased_no_one + spacer + pynini.cross("0", logi_cased[k])
         # 23 -> guvttiin/logiin/golmmain
         tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_cased_fst[k]
+    return {
+        "tens": tens_cased_fst,
+        "teens": teens_cased_fst,
+        "digits": digits_cased_fst
+    }
 
 
 def make_million(
