@@ -17,8 +17,9 @@ from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import Card
 from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.zh.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
-from nemo_text_processing.text_normalization.zh.verbalizers.math_symbol import MathSymbolFst
-from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
+
+# from nemo_text_processing.text_normalization.zh.verbalizers.math_symbol import MathSymbolFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
@@ -54,8 +55,8 @@ class VerbalizeFst(GraphFst):
         date = DateFst(deterministic=deterministic)
         date_graph = date.fst
 
-        measure = MeasureFst(deterministic=deterministic)
-        measure_graph = measure.fst
+        # measure = MeasureFst(deterministic=deterministic)
+        # measure_graph = measure.fst
 
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
@@ -63,11 +64,11 @@ class VerbalizeFst(GraphFst):
 
         time_graph = TimeFst(deterministic=deterministic).fst
 
-        math_graph = MathSymbolFst(deterministic=deterministic).fst
+        # math_graph = MathSymbolFst(deterministic=deterministic).fst
 
         graph = (
             cardinal_graph
-            | measure_graph
+            # | measure_graph
             | decimal_graph
             | ordinal_graph
             | date_graph
@@ -75,6 +76,6 @@ class VerbalizeFst(GraphFst):
             | fraction_graph
             | whitelist_graph
             | time_graph
-            | math_graph
+            # | math_graph
         )
         self.fst = graph
