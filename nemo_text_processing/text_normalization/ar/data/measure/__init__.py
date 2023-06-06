@@ -11,32 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import csv
-import os
-
-
-def get_abs_path(rel_path):
-    """
-    Get absolute path
-
-    Args:
-        rel_path: relative path to this file
-
-    Returns absolute path
-    """
-    return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
-
-
-def load_labels(abs_path):
-    """
-    loads relative path file as dictionary
-
-    Args:
-        abs_path: absolute path
-
-    Returns dictionary of mappings
-    """
-    with open(abs_path, encoding="utf-8") as label_tsv:
-        labels = list(csv.reader(label_tsv, delimiter="\t"))
-        return labels
