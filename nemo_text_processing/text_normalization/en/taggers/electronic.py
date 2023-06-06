@@ -24,6 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     get_abs_path,
     insert_space,
+    NEMO_SIGMA
 )
 from pynini.lib import pynutil
 
@@ -98,7 +99,7 @@ class ElectronicFst(GraphFst):
 
         protocol = pynutil.insert("protocol: \"") + pynutil.add_weight(protocol, MIN_NEG_WEIGHT) + pynutil.insert("\"")
         # email
-        graph = username + domain_graph_with_class_tags
+        graph = pynini.compose(NEMO_SIGMA + pynini.accep("@") + NEMO_SIGMA + pynini.accep(".") + NEMO_SIGMA, username + domain_graph_with_class_tags)
 
         # abc.com, abc.com/123-sm
         # when only domain, make sure it starts and end with NEMO_ALPHA

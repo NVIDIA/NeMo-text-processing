@@ -13,7 +13,7 @@ pipeline {
 
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-15-23-0'
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-27-23-1'
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/05-06-23-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-05-23-0'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-16-23-1'
     HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/02-09-23-1'
