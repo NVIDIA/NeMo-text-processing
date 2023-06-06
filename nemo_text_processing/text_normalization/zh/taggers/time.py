@@ -26,9 +26,7 @@ class TimeFst(GraphFst):
         1:02am -> tokens { time { hours: "一" minutes: "二" suffix: "am" } }
         1:02:03 -> tokens { time { hours: "一" minutes: "二" second: "三" } }
         1点5分19秒 -> tokens { time { hours: "一" minutes: "五" second: "秒" } }
-        早上1点5分19秒 -> tokens { time { prefix: "am" hours: "一" minutes: "五" second: "秒" } }
-        1点1刻 -> tokens { time { hours: "一" minutes: "十五" } }
-        
+        1点1刻 -> tokens { time { hours: "一" minutes: "一刻" } }
     """
 
     def __init__(self, deterministic: bool = True):
@@ -38,8 +36,8 @@ class TimeFst(GraphFst):
         hour = pynini.string_file(get_abs_path("data/time/hour.tsv"))
         minute = pynini.string_file(get_abs_path("data/time/minute.tsv"))
         second = pynini.string_file(get_abs_path("data/time/second.tsv"))
-        word_am = pynini.string_file(get_abs_path("data/time/word_am.tsv"))
-        word_pm = pynini.string_file(get_abs_path("data/time/word_pm.tsv"))
+        # word_am = pynini.string_file(get_abs_path("data/time/word_am.tsv"))
+        # word_pm = pynini.string_file(get_abs_path("data/time/word_pm.tsv"))
         alphabet_am = pynini.string_file(get_abs_path("data/time/suffix_am.tsv"))
         alphabet_pm = pynini.string_file(get_abs_path("data/time/suffix_pm.tsv"))
 
@@ -63,7 +61,6 @@ class TimeFst(GraphFst):
 
         # gramamr for time as clock, with morphems, 点， 分， 秒
         hour_clock = pynini.accep("点") | pynini.cross("點", "点")
-        quarter = pynini.union('一', '二', '三', '四')
         minute_clock = pynini.accep("分") | pynini.accep('刻')
         second_clock = pynini.accep('秒')
         # grammar for time, as period of time 小时，分钟，秒
@@ -104,12 +101,30 @@ class TimeFst(GraphFst):
         # gramamr for time, back count; 五点差n分n秒
         backcount = pynutil.insert("verb: \"") + pynini.accep('差') + pynutil.insert("\"")
         graph_hour = (
-            (hour_component + pynutil.insert(' ') + backcount + pynutil.insert(' ') + minute_component)
-            | (hour_component + pynutil.insert(' ') + backcount + pynutil.insert(' ') + second_component)
-            | (
-                hour_component
+            (
+                pynini.closure(backcount)
                 + pynutil.insert(' ')
-                + backcount
+                + hour_component
+                + pynutil.insert(' ')
+                + pynini.closure(backcount)
+                + pynutil.insert(' ')
+                + minute_component
+            )
+            | (
+                pynini.closure(backcount)
+                + pynutil.insert(' ')
+                + hour_component
+                + pynutil.insert(' ')
+                + pynini.closure(backcount)
+                + pynutil.insert(' ')
+                + second_component
+            )
+            | (
+                pynini.closure(backcount)
+                + pynutil.insert(' ')
+                + hour_component
+                + pynutil.insert(' ')
+                + pynini.closure(backcount)
                 + pynutil.insert(' ')
                 + minute_component
                 + pynutil.insert(' ')
@@ -120,25 +135,17 @@ class TimeFst(GraphFst):
         graph_backcount = graph_hour | graph_minute
 
         # grammar for time, with am, pr, or Mandarin words as prefiex/suffix 早上5点 05：04：04am
-        prefix_am = pynini.closure(word_am, 0, 1)
-        prefix_pm = pynini.closure(word_pm, 0, 1)
         suffix_am = pynini.closure(alphabet_am, 0, 1)
         suffix_pm = pynini.closure(alphabet_pm, 0, 1)
 
-        am_component = (pynutil.insert("affix: \"") + prefix_am + pynutil.insert("\"")) | (
-            pynutil.insert("affix: \"") + suffix_am + pynutil.insert("\"")
-        )
-        pm_component = (pynutil.insert("affix: \"") + prefix_pm + pynutil.insert("\"")) | (
-            pynutil.insert("affix: \"") + suffix_pm + pynutil.insert("\"")
-        )
+        am_component = pynutil.insert("suffix: \"") + suffix_am + pynutil.insert("\"")
+        pm_component = pynutil.insert("suffix: \"") + suffix_pm + pynutil.insert("\"")
 
-        graph_affix = (
-            (am_component | pm_component) + pynutil.insert(' ') + (graph_colon | graph_clock_period | graph_backcount)
-        ) | (
+        graph_suffix = (
             (graph_clock_period | graph_colon | graph_backcount) + pynutil.insert(' ') + (am_component | pm_component)
         )
 
-        graph = graph_colon | graph_clock_period | graph_backcount | graph_affix
+        graph = graph_colon | graph_clock_period | graph_backcount | graph_suffix
 
         # range
         ranges = (

@@ -27,7 +27,7 @@ class CardinalFst(GraphFst):
     +10000 -> cardinal { positive: "正" integer: "一万" }
     """
 
-    def __init__(self, deterministic: bool):
+    def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
         # imports
