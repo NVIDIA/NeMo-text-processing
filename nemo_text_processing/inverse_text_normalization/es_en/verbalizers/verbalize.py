@@ -34,7 +34,7 @@ from nemo_text_processing.inverse_text_normalization.en.verbalizers.telephone im
 from nemo_text_processing.inverse_text_normalization.en.verbalizers.time import TimeFst as EnTimeFst
 from nemo_text_processing.inverse_text_normalization.en.verbalizers.whitelist import WhiteListFst as EnWhiteListFst
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-
+from pynini.lib import pynutil
 
 class VerbalizeFst(GraphFst):
     """
@@ -78,25 +78,25 @@ class VerbalizeFst(GraphFst):
 
         graph = (
             time_graph
-            | en_time_graph
+            | pynutil.add_weight(en_time_graph, 1.1)
             | date_graph
-            | en_date_graph
+            | pynutil.add_weight(en_date_graph, 1.1)
             | money_graph
-            | en_money_graph
+            | pynutil.add_weight(en_money_graph, 1.1)
             | fraction_graph
             | measure_graph
-            | en_measure_graph
+            | pynutil.add_weight(en_measure_graph, 1.1)
             | ordinal_graph
-            | en_ordinal_graph
+            | pynutil.add_weight(en_ordinal_graph, 1.1)
             | decimal_graph
-            | en_decimal_graph
+            | pynutil.add_weight(en_decimal_graph, 1.1)
             | cardinal_graph
-            | en_cardinal_graph
+            | pynutil.add_weight(en_cardinal_graph, 1.1)
             | whitelist_graph
-            | en_whitelist_graph
+            | pynutil.add_weight(en_whitelist_graph, 1.1)
             | telephone_graph
-            | en_telephone_graph
+            | pynutil.add_weight(en_telephone_graph, 1.1)
             | electronic_graph
-            | en_electronic_graph
+            | pynutil.add_weight(en_electronic_graph, 1.1)
         )
         self.fst = graph

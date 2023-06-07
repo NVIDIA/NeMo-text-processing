@@ -16,6 +16,7 @@ import logging
 import os
 
 import pynini
+from nemo_text_processing.inverse_text_normalization.es_en.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.es.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.decimal import DecimalFst
@@ -41,7 +42,6 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import
 from nemo_text_processing.inverse_text_normalization.en.taggers.time import TimeFst as EnTimeFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import WhiteListFst as EnWhiteListFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst as EnWordFst
-
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
@@ -74,11 +74,15 @@ class ClassifyFst(GraphFst):
         input_case: str = INPUT_LOWER_CASED,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
-
+        
         far_file = None
+        if whitelist is None:
+            whitelist = get_abs_path("data/es_whitelist.tsv")
+        if en_whitelist is None:
+            en_whitelist = get_abs_path("data/en_whitelist.tsv")
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"es_itn_{input_case}.far")
+            far_file = os.path.join(cache_dir, f"es_en_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
