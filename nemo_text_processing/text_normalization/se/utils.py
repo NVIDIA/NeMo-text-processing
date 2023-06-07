@@ -63,6 +63,6 @@ def load_case_forms(abs_path):
         labels = list(csv.reader(label_tsv, delimiter="\t"))
         ret = {}
         for label in labels:
-            if label[0] in CASE_KEYS:
+            if label and label[0] in CASE_KEYS:
                 ret[label[0]] = label[1]
         return ret
