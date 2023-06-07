@@ -60,7 +60,6 @@ class MoneyFst(GraphFst):
 
         graph_kuai = number_unit + delete_space + major_currency
         graph_mao = number_unit + delete_space + minor_currency
-        graph_mao = number_unit + delete_space + minor_currency
         graph_fen = number_unit + delete_space + lesser_currency
 
         graph_kuaimao = graph_kuai + delete_space + fraction_unit + delete_space + minor_currency
