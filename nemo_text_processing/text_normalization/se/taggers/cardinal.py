@@ -62,6 +62,9 @@ def load_cased_digits():
         digits_cased[key] = {}
         for label in load_labels(get_abs_path(f"data/numbers/digit_{key}.tsv")):
             digits_cased[key][label[1]] = label[0]
+    digits_cased["nom_sg"] = {}
+    for label in load_labels(get_abs_path(f"data/numbers/digit.tsv")):
+        digits_cased["nom_sg"][label[1]] = label[0]
     return digits_cased
 
 
@@ -73,17 +76,24 @@ def build_cased_fsts(deterministic=True):
     digits_cased = load_cased_digits()
     digits_nom = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
     digits_nom_no_one = (NEMO_DIGIT - "1") @ digits_nom
-    cuodi_cased = load_case_forms(get_abs_path("data/numbers/case_cuodi.tsv"))
-    logi_cased = load_case_forms(get_abs_path("data/numbers/case_logi.tsv"))
-    duhat_cased = load_case_forms(get_abs_path("data/numbers/case_duhat.tsv"))
+    cuodi_cased = load_case_forms(get_abs_path("data/numbers/case_cuodi.tsv"), True)
+    logi_cased = load_case_forms(get_abs_path("data/numbers/case_logi.tsv"), True)
+    duhat_cased = load_case_forms(get_abs_path("data/numbers/case_duhat.tsv"), True)
     endings_cased = load_case_forms(get_abs_path("data/numbers/digit_case_abbr_suffix.tsv"))
     spacer = make_spacer(deterministic)
+
+    if not deterministic:
+        digits_nom |= pynini.cross("1", "akta")
 
     digits_cased_fst = {}
     for k in digits_cased:
         digits_cased_fst[k] = pynini.string_map((k, v) for k, v in digits_cased[k].items())
+        if k == "nom_sg" and not deterministic:
+            digits_cased_fst["nom_sg"] |= pynini.cross("1", "akta")
     teens_cased_fst = {}
     for k in digits_cased_fst:
+        assert "nom_sg" in digits_cased_fst
+        assert "nom_sg" in logi_cased
         teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
         if not deterministic:
             teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + pynutil.insert(f"nuppelogin")
@@ -106,11 +116,12 @@ def build_cased_fsts(deterministic=True):
     two_digits_fst = None
     for k in digits_cased_fst:
         two_digit_cased_fsts[k] = tens_cased_fst[k] | teens_cased_fst[k] | (pynutil.delete("0") + digits_cased_fst[k])
-        two_digit_cased_fsts_sfx[k] = two_digit_cased_fsts[k] + pynutil.delete(endings_cased[k])
-        if two_digits_fst is None:
-            two_digits_fst = two_digit_cased_fsts_sfx[k]
-        else:
-            two_digits_fst |= two_digit_cased_fsts_sfx[k]
+        if k != "nom_sg":
+            two_digit_cased_fsts_sfx[k] = two_digit_cased_fsts[k] + pynutil.delete(endings_cased[k])
+            if two_digits_fst is None:
+                two_digits_fst = two_digit_cased_fsts_sfx[k]
+            else:
+                two_digits_fst |= two_digit_cased_fsts_sfx[k]
     return {
         "tens": tens_cased_fst,
         "teens": teens_cased_fst,
@@ -196,6 +207,7 @@ class CardinalFst(GraphFst):
         hundreds |= pynini.cross("1", "čuođi")
         if not deterministic:
             hundreds |= pynini.cross("1", "oktačuođi")
+            hundreds |= pynini.cross("1", "aktačuođi")
 
         final_hundreds = hundreds + pynini.union(two_digit_non_zero, pynutil.delete("00"))
         graph_hundreds = pynini.union(final_hundreds, graph_two_digit_non_zero)
