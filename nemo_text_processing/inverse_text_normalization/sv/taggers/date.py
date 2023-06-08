@@ -66,7 +66,7 @@ class DateFst(GraphFst):
         graph_dmy = dmy + optional_era
         ydm = graph_year + NEMO_SPACE + graph_month + NEMO_SPACE + graph_day
         graph_ydm = ydm + optional_era + preserve + optional_preserve
-        final_graph = year | year_era | graph_dmy | graph_dm | graph_ydm | graph_decade
+        final_graph = year_era | graph_dmy | graph_dm | graph_ydm | graph_decade
 
         graph = self.add_tokens(final_graph)
         self.fst = graph.optimize()
