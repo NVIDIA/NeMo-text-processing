@@ -23,8 +23,6 @@ from nemo_text_processing.inverse_text_normalization.sv.taggers.date import Date
 from nemo_text_processing.inverse_text_normalization.sv.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.electronic import ElectronicFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.fraction import FractionFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.measure import MeasureFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.time import TimeFst
@@ -43,12 +41,7 @@ from nemo_text_processing.text_normalization.sv.taggers.electronic import Electr
 from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst as TNFractionTagger
 from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as TNOrdinalTagger
 from nemo_text_processing.text_normalization.sv.taggers.telephone import TelephoneFst as TNTelephoneTagger
-from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst as TNWhitelistTagger
-from nemo_text_processing.text_normalization.sv.verbalizers.date import DateFst as TNDateVerbalizer
 from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst as TNElectronicVerbalizer
-from nemo_text_processing.text_normalization.sv.verbalizers.fraction import FractionFst as TNFractionVerbalizer
-from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as TNOrdinalVerbalizer
-from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as TNTimeVerbalizer
 from pynini.lib import pynutil
 
 
@@ -90,8 +83,6 @@ class ClassifyFst(GraphFst):
             tn_fraction_tagger = TNFractionTagger(
                 cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=True
             )
-            tn_fraction_verbalizer = TNFractionVerbalizer(deterministic=False)
-            tn_time_verbalizer = TNTimeVerbalizer(deterministic=False)
             tn_electronic_tagger = TNElectronicTagger(deterministic=False)
             tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
             tn_telephone_tagger = TNTelephoneTagger(deterministic=False)
@@ -107,13 +98,9 @@ class ClassifyFst(GraphFst):
             fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_tagger=tn_fraction_tagger)
             fraction_graph = fraction.fst
 
-            measure_graph = MeasureFst(
-                itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, itn_fraction_tagger=fraction
-            ).fst
             date_graph = DateFst(tn_date_tagger=tn_date_tagger).fst
             word_graph = WordFst().fst
             time_graph = TimeFst(tn_cardinal_tagger=tn_cardinal_tagger).fst
-            money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal).fst
             whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case).fst
             punct_graph = PunctuationFst().fst
             electronic_graph = ElectronicFst(
@@ -128,11 +115,9 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(whitelist_graph, 1.0)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.1)
-                # | pynutil.add_weight(decimal_graph, 1.1)
-                # | pynutil.add_weight(measure_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
-                | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(electronic_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
