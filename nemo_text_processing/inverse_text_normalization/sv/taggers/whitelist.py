@@ -35,7 +35,7 @@ class WhiteListFst(GraphFst):
 
     Args:
         input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
-            e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
+            e.g. nemo_text_processing/inverse_text_normalization/sv/data/whitelist.tsv
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
