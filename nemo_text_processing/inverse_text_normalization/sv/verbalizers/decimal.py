@@ -36,7 +36,7 @@ class DecimalFst(GraphFst):
         )
         optional_integer = pynini.closure(integer + delete_space, 0, 1)
         fractional = (
-            + pynutil.delete("fractional_part:")
+            pynutil.delete("fractional_part:")
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
