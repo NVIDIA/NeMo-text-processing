@@ -64,6 +64,8 @@ class CardinalFst(GraphFst):
         all_double_digits = ten | teens | ties_simple | seventies | eighties | nineties
         one_to_all_tens = digits | all_double_digits
 
+        self.one_to_all_tens = one_to_all_tens.optimize()
+
         # Hundreds
         hundreds_parts = (pynutil.delete("0") + insert_space + digits) | (insert_space + all_double_digits)
         one_hundreds = pynini.cross("1", "cent") + (pynutil.delete("00") | hundreds_parts)
@@ -128,6 +130,8 @@ class CardinalFst(GraphFst):
             final_graph_masc @ (pynini.closure(NEMO_SIGMA) + pynini.cross("un", "une"))
         )
         final_graph = final_graph_fem | final_graph_masc
+
+        self.all_nums_no_tokens = final_graph
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
