@@ -57,6 +57,7 @@ class ClassifyFst(GraphFst):
         whitelist: path to a file with whitelist replacements
         input_case: accepting either "lower_cased" or "cased" input.
     """
+
     def __init__(
         self,
         cache_dir: str = None,
