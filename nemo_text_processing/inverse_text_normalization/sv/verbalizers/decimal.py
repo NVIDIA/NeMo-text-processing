@@ -21,20 +21,37 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for verbalizing decimal, e.g.
         decimal { negative: "true" integer_part: "12"  fractional_part: "5006" quantity: "biljon" } -> -12,5006 biljon
-
-    Args:
-        tn_decimal_verbalizer: TN decimal verbalizer
     """
 
-    def __init__(self, tn_decimal_verbalizer: GraphFst, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
         delete_space = pynutil.delete(" ")
-        optional_sign = pynini.closure(
-            pynutil.delete("negative: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"") + delete_space, 0, 1
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)
+        integer = (
+            pynutil.delete("integer_part:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
         )
-        optional_integer = pynini.closure(tn_decimal_verbalizer.integer, 0, 1)
-        optional_fractional = pynini.closure(delete_space + pynutil.insert(",") + tn_decimal_verbalizer.graph, 0, 1)
-        graph = (optional_integer + optional_fractional + tn_decimal_verbalizer.optional_quantity).optimize()
+        optional_integer = pynini.closure(integer + delete_space, 0, 1)
+        fractional = (
+            + pynutil.delete("fractional_part:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
+        optional_fractional = pynini.closure(delete_space + pynutil.insert(",") + fractional, 0, 1)
+        quantity = (
+            pynutil.delete("quantity:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
+        optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
+        graph = (optional_integer + optional_fractional + optional_quantity).optimize()
         self.numbers = optional_sign + graph
         graph = self.numbers + delete_preserve_order
         delete_tokens = self.delete_tokens(graph)

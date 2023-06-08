@@ -36,7 +36,7 @@ class VerbalizeFst(GraphFst):
         cardinal = CardinalFst(tn_cardinal_verbalizer=tn_cardinal_verbalizer)
         cardinal_graph = cardinal.fst
         date_graph = DateFst().fst
-        decimal = DecimalFst(tn_decimal_verbalizer=tn_decimal_verbalizer)
+        decimal = DecimalFst()
         decimal_graph = decimal.fst
         time_graph = TimeFst().fst
         graph = time_graph | decimal_graph | cardinal_graph | date_graph
