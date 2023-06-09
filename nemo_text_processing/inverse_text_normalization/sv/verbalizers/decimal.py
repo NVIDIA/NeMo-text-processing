@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_preserve_order
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_preserve_order, NEMO_SPACE
 from pynini.lib import pynutil
 
 
@@ -25,6 +25,9 @@ class DecimalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
+        plural_quantities_to_singular = pynini.string_map([
+            (f"{pfx}{ending}er", f"{pfx}{ending}") for pfx in ["m", "b", "tr"] for ending in ["iljon", "iljard"]
+        ])
         delete_space = pynutil.delete(" ")
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)
         integer = (
@@ -52,7 +55,10 @@ class DecimalFst(GraphFst):
         )
         optional_quantity = pynini.closure(pynini.accep(" ") + quantity, 0, 1)
         graph = (optional_integer + optional_fractional + optional_quantity).optimize()
+        optional_sign = pynini.closure("-", 0, 1)
+        fix_singular = optional_sign + pynini.accep("1") + NEMO_SPACE + plural_quantities_to_singular
         self.numbers = optional_sign + graph
+        self.numbers = self.numbers @ fix_singular
         graph = self.numbers + delete_preserve_order
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
