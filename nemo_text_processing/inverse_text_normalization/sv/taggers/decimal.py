@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, NEMO_SIGMA
 from nemo_text_processing.text_normalization.sv.taggers.decimal import get_quantity
 from pynini.lib import pynutil
 
@@ -32,6 +32,7 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify")
 
         self.graph = tn_decimal_tagger.graph.invert().optimize()
+        self.graph = self.graph @ pynini.cdrewrite(pynini.cross(" ", ""), "", "", NEMO_SIGMA)
 
         delete_point = pynutil.delete(" komma")
 
