@@ -36,29 +36,23 @@ class DecimalFst(GraphFst):
         delete_space = pynutil.delete(" ")
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)
         integer = (
-            pynutil.delete("integer_part:")
-            + delete_space
-            + pynutil.delete("\"")
+            pynutil.delete("integer_part: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        optional_integer = pynini.closure(integer, 0, 1)
+        optional_integer = pynini.closure(integer + delete_space, 0, 1)
         fractional = (
-            pynutil.delete("fractional_part:")
-            + delete_space
-            + pynutil.delete("\"")
+            pynutil.delete("fractional_part: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        optional_fractional = pynini.closure(delete_space + pynutil.insert(",") + fractional, 0, 1)
+        optional_fractional = pynini.closure(pynutil.insert(",") + fractional, 0, 1)
         quantity = (
-            pynutil.delete("quantity:")
-            + delete_space
-            + pynutil.delete("\"")
+            pynutil.delete("quantity: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        optional_quantity = pynini.closure(pynini.accep(" ") + quantity, 0, 1)
+        optional_quantity = pynini.closure(NEMO_SPACE + quantity, 0, 1)
         graph = (optional_integer + optional_fractional + optional_quantity).optimize()
         optional_sign = pynini.closure("-", 0, 1)
         fix_singular = optional_sign + pynini.accep("1") + NEMO_SPACE + plural_quantities_to_singular
