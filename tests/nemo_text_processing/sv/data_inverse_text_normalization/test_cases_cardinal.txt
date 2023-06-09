@@ -4,6 +4,8 @@ tjugo en~21
 tjugo ett~21
 tjugo tre~23
 tjugi tre~23
+en~en
+ett~ett
 trehundranittiofyra miljarder trehundrafemtiosju miljoner åttahundratrettiofyratusen femhundranittiotvå~394 357 834 592
 tre hundra nittio fyra miljarder tre hundra femtio sju miljoner åtta hundra trettio fyra tusen fem hundra nittio två~394 357 834 592
 trehundranittiofyra miljarder trehundrafemtiosju miljoner åttahundratrettiofyratusen femhundranittiotre~394 357 834 593

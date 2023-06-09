@@ -34,6 +34,9 @@ class CardinalFst(GraphFst):
 
         graph = pynini.invert(pynini.arcmap(tn_cardinal_tagger.graph, map_type="rmweight")).optimize()
         self.graph = graph
+        no_ones = (pynini.project(graph, "input") - "en" - "ett")
+        graph = no_ones @ graph
+        self.graph_no_ones = graph
 
         self.graph_hundred_component_at_least_one_non_zero_digit = (
             (tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit).invert().optimize()
