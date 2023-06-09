@@ -21,8 +21,8 @@ from pynini.lib import pynutil
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal
-        e.g. minus elf komma zwei null null sechs billionen -> decimal { negative: "true" integer_part: "11"  fractional_part: "2006" quantity: "billionen" }
-        e.g. eine billion -> decimal { integer_part: "1" quantity: "billion" }
+        e.g. minus elva komma två nulla nulla sex biljoner -> decimal { negative: "true" integer_part: "11"  fractional_part: "2006" quantity: "biljoner" }
+        e.g. en biljon -> decimal { integer_part: "1" quantity: "biljon" }
     Args:
         itn_cardinal_tagger: ITN Cardinal tagger
         tn_decimal_tagger: TN decimal tagger
