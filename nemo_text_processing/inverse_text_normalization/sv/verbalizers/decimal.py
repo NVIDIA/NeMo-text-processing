@@ -20,7 +20,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_preserve_order,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import bos_or_space, eos_or_space
 from pynini.lib import pynutil
 
 
@@ -59,7 +58,7 @@ class DecimalFst(GraphFst):
         optional_sign = pynini.closure("-", 0, 1)
         fix_singular = optional_sign + pynini.accep("1") + NEMO_SPACE + plural_quantities_to_singular
         self.numbers = optional_sign + graph
-        self.numbers = self.numbers @ pynini.cdrewrite(fix_singular, bos_or_space, eos_or_space, NEMO_SIGMA)
+        self.numbers = self.numbers @ pynini.cdrewrite(fix_singular, "[BOS]", "[EOS]", NEMO_SIGMA)
         graph = self.numbers + delete_preserve_order
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
