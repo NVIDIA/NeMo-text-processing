@@ -36,9 +36,7 @@ class DecimalFst(GraphFst):
         delete_point = pynutil.delete(" komma")
 
         graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
-        graph_integer = (
-            pynutil.insert("integer_part: \"") + itn_cardinal_tagger.graph + pynutil.insert("\"")
-        )
+        graph_integer = pynutil.insert("integer_part: \"") + itn_cardinal_tagger.graph + pynutil.insert("\"")
         self.graph_integer = graph_integer
         final_graph_wo_sign = graph_integer + delete_point + pynini.accep(" ") + graph_fractional
 
