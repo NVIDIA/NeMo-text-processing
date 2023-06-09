@@ -45,7 +45,7 @@ class DecimalFst(GraphFst):
             | get_quantity(
                 final_graph_wo_sign,
                 None,
-                itn_cardinal_tagger.graph_hundred_component_at_least_one_none_zero_digit,
+                itn_cardinal_tagger.graph_hundred_component_at_least_one_non_zero_digit,
                 None,
                 False,
                 True,
