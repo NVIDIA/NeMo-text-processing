@@ -6,3 +6,4 @@ en miljon~1 miljon
 tre miljoner~3 miljoner
 tre miljon~3 miljoner
 en komma fem miljoner~1,5 miljoner
+tre komma fem miljoner~3,5 miljoner
