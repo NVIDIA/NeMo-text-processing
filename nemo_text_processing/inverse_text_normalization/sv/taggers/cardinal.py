@@ -41,6 +41,10 @@ class CardinalFst(GraphFst):
         self.graph_hundred_component_at_least_one_non_zero_digit = (
             pynini.invert(pynini.arcmap(tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit, map_type="rmweight")).optimize()
         )
+        self.graph_hundred_component_at_least_one_non_zero_digit_no_one = (
+            (pynini.project(self.graph_hundred_component_at_least_one_non_zero_digit, "input") - "en" - "ett")
+            @ self.graph_hundred_component_at_least_one_non_zero_digit
+        )
 
         self.graph_ties = (tn_cardinal_tagger.two_digit_non_zero).invert().optimize()
         # this is to make sure if there is an ambiguity with decimal, decimal is chosen, e.g. 1000000 vs. 1 million
