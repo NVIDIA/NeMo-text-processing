@@ -52,7 +52,7 @@ def get_quantity(
         quantities_pl |= quantities_abbr + pynutil.insert("er")
     else:
         quantity = quantities
-    
+
     one_en = pynini.cross("1", "en")
     one_ett = pynini.cross("1", "ett")
     if itn:

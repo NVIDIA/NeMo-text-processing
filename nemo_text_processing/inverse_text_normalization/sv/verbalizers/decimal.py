@@ -17,7 +17,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_preserve_order,
-    delete_space
+    delete_space,
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
 from pynini.lib import pynutil
@@ -39,7 +39,7 @@ class DecimalFst(GraphFst):
         number = pynini.union(
             optional_sign + integer,
             optional_sign + integer + pynini.cross(" ", ",") + fractional,
-            pynutil.insert(",") + fractional
+            pynutil.insert(",") + fractional,
         )
         number_quantity = number + ensure_space + quantity
         optional_delete_preserve_order = pynini.closure(delete_preserve_order, 0, 1)
