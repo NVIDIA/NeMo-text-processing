@@ -56,8 +56,10 @@ def get_quantity(
     one_en = pynini.cross("1", "en")
     one_ett = pynini.cross("1", "ett")
     if itn:
+        # accept both here, even if wrong
         one_en = pynini.cross("en", "1")
-        one_ett = pynini.cross("ett", "1")
+        one_en |= pynini.cross("ett", "1")
+        one_ett = one_en
 
     res = (
         pynutil.insert("integer_part: \"")
