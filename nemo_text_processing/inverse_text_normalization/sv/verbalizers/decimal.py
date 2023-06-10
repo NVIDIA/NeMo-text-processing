@@ -15,11 +15,11 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
-    NEMO_SIGMA,
-    NEMO_SPACE,
     GraphFst,
     delete_preserve_order,
+    delete_space
 )
+from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
 from pynini.lib import pynutil
 
 
@@ -31,22 +31,21 @@ class DecimalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
-        plural_quantities_to_singular = pynini.string_map(
-            [(f"{pfx}{ending}er", f"{pfx}{ending}") for pfx in ["m", "b", "tr"] for ending in ["iljon", "iljard"]]
-        )
-        delete_space = pynutil.delete(" ")
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        optional_integer = pynini.closure(integer + delete_space, 0, 1)
         fractional = pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        optional_fractional = pynini.closure(pynutil.insert(",") + fractional, 0, 1)
         quantity = pynutil.delete("quantity: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        optional_quantity = pynini.closure(NEMO_SPACE + quantity, 0, 1)
-        graph = (optional_integer + optional_fractional + optional_quantity).optimize()
-        optional_sign = pynini.closure("-", 0, 1)
-        fix_singular = optional_sign + pynini.accep("1") + NEMO_SPACE + plural_quantities_to_singular
-        self.numbers = optional_sign + graph
-        self.numbers = self.numbers @ pynini.cdrewrite(fix_singular, "[BOS]", "[EOS]", NEMO_SIGMA)
-        graph = self.numbers + delete_preserve_order
+
+        number = pynini.union(
+            optional_sign + integer,
+            optional_sign + integer + pynini.cross(" ", ",") + fractional,
+            pynutil.insert(",") + fractional
+        )
+        number_quantity = number + ensure_space + quantity
+        optional_delete_preserve_order = pynini.closure(delete_preserve_order, 0, 1)
+
+        graph = (number | number_quantity | quantity).optimize()
+        self.graph = graph
+        graph = self.graph + optional_delete_preserve_order
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
