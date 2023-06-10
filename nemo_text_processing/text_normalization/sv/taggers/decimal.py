@@ -52,6 +52,12 @@ def get_quantity(
         quantities_pl |= quantities_abbr + pynutil.insert("er")
     else:
         quantity = quantities
+    
+    one_en = pynini.cross("1", "en")
+    one_ett = pynini.cross("1", "ett")
+    if itn:
+        one_en = pynini.cross("en", "1")
+        one_ett = pynini.cross("ett", "1")
 
     res = (
         pynutil.insert("integer_part: \"")
@@ -74,7 +80,7 @@ def get_quantity(
         )
         res |= (
             pynutil.insert("integer_part: \"")
-            + pynini.cross("1", "ett")
+            + one_ett
             + pynutil.insert("\"")
             + pynini.closure(pynutil.delete(" "), 0, 1)
             + pynutil.insert(" quantity: \"")
@@ -83,7 +89,7 @@ def get_quantity(
         )
     res |= (
         pynutil.insert("integer_part: \"")
-        + pynini.cross("1", "en")
+        + one_en
         + pynutil.insert("\"")
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
@@ -92,7 +98,7 @@ def get_quantity(
     )
     res |= (
         pynutil.insert("integer_part: \"")
-        + pynini.cross("1", "en")
+        + one_en
         + pynutil.insert("\"")
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
