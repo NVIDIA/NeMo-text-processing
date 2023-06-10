@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, NEMO_SIGMA
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -42,7 +42,7 @@ def get_quantity(
     quantities_pl = quantities + "er"
     if not itn:
         # This is odd, but it's so we can accept miljard for miljarder
-        quantities_pl |= quantities + pynutil.insert("er")
+        quantities_pl |= quantities @ pynini.cdrewrite(pynini.cross("", "er"), "", "[EOS]", NEMO_SIGMA)
     else:
         quantities_pl |= pynini.cross(quantities, quantities + "er")
         include_abbr = False
