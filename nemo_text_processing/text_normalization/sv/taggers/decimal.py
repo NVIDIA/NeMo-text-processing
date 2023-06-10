@@ -42,9 +42,10 @@ def get_quantity(
     quantities_pl = quantities + "er"
     if not itn:
         # This is odd, but it's so we can accept miljard for miljarder
-        quantities_pl |= quantities @ pynini.cdrewrite(pynini.cross("", "er"), "", "[EOS]", NEMO_SIGMA)
+        quantities_pl |= quantities + pynutil.insert("er")
     else:
-        quantities_pl |= pynini.cross(quantities, quantities + "er")
+        quantities_pl = pynini.project(quantities_pl, "output")
+        quantities_pl |= quantities @ pynini.cdrewrite(pynini.cross("", "er"), "", "[EOS]", NEMO_SIGMA)
         include_abbr = False
 
     if include_abbr:
