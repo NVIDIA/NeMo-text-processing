@@ -44,7 +44,7 @@ def get_quantity(
         # This is odd, but it's so we can accept miljard for miljarder
         quantities_pl |= quantities + pynutil.insert("er")
     else:
-        quantities_pl = pynini.project(quantities_pl, "output")
+        quantities_pl |= pynini.cross(quantities, quantities + "er")
         include_abbr = False
 
     if include_abbr:
