@@ -51,7 +51,10 @@ class DecimalFst(GraphFst):
             final_graph_wo_sign | get_quantity(final_graph_wo_sign, None, hundreds_no_one, None, False, True,)
         ).optimize()
 
-        final_graph = itn_cardinal_tagger.optional_minus_graph + self.final_graph_wo_negative
+        optional_minus_graph = pynini.closure(
+            pynini.cross("minus ", "negative: \"-\" "), 0, 1
+        )
+        final_graph = optional_minus_graph + self.final_graph_wo_negative
         final_graph += pynutil.insert(" preserve_order: true")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
