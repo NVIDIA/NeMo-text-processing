@@ -94,15 +94,6 @@ def get_quantity(
         + pynutil.insert("\"")
     )
     res |= (
-        pynutil.insert("integer_part: \"")
-        + one_en
-        + pynutil.insert("\"")
-        + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert(" quantity: \"")
-        + quantity
-        + pynutil.insert("\"")
-    )
-    res |= (
         decimal
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
