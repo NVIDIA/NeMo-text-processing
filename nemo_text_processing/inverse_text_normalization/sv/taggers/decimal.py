@@ -31,7 +31,7 @@ class DecimalFst(GraphFst):
     def __init__(self, itn_cardinal_tagger: GraphFst, tn_decimal_tagger: GraphFst):
         super().__init__(name="decimal", kind="classify")
 
-        self.graph = tn_decimal_tagger.graph.invert().optimize()
+        self.graph = tn_decimal_tagger.graph_itn.invert().optimize()
         self.graph = self.graph @ pynini.cdrewrite(pynini.cross(" ", ""), "", "", NEMO_SIGMA)
 
         delete_point = pynutil.delete(" komma")
