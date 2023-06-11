@@ -22,7 +22,7 @@ from pynini.lib import pynutil
 class VerbalizeFinalFst(GraphFst):
     """
     Finite state transducer that verbalizes an entire sentence, e.g. 
-    tokens { name: "jetzt" } tokens { name: "ist" } tokens { time { hours: "12" minutes: "30" } } -> jetzt ist 12:30 Uhr
+    tokens { name: "klockan" } tokens { name: "är" } tokens { time { hours: "12" minutes: "30" } } -> klockan är 12:30
     """
 
     def __init__(self, deterministic: bool = True):
