@@ -31,7 +31,6 @@ class VerbalizeFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
         tn_cardinal_verbalizer = TNCardinalVerbalizer(deterministic=False)
-        tn_decimal_verbalizer = TNDecimalVerbalizer(deterministic=False)
 
         cardinal = CardinalFst(tn_cardinal_verbalizer=tn_cardinal_verbalizer)
         cardinal_graph = cardinal.fst
