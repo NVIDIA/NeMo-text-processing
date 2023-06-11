@@ -13,7 +13,7 @@ runtest () {
 
     # trim white space
     written="$(echo -e "${written}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/\xC2\xA0/ /g')"
 
     # input expected actual
     assertEquals "$spoken" "$written" "$denorm_pred"
