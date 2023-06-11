@@ -18,7 +18,6 @@ from nemo_text_processing.inverse_text_normalization.sv.verbalizers.decimal impo
 from nemo_text_processing.inverse_text_normalization.sv.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.sv.verbalizers.cardinal import CardinalFst as TNCardinalVerbalizer
-from nemo_text_processing.text_normalization.sv.verbalizers.decimals import DecimalFst as TNDecimalVerbalizer
 
 
 class VerbalizeFst(GraphFst):
