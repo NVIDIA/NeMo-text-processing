@@ -52,7 +52,7 @@ class CardinalFst(GraphFst):
         self.digit = pynini.arcmap(tn_cardinal_tagger.digit, map_type="rmweight").invert().optimize()
 
         self.optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("minus ", "\"-\" "), 0, 1
+            pynini.cross("minus ", "negative: \"-\" "), 0, 1
         )
 
         final_graph = self.optional_minus_graph + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
