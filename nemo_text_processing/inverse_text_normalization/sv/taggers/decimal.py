@@ -52,7 +52,7 @@ class DecimalFst(GraphFst):
         ).optimize()
 
         optional_minus_graph = pynini.closure(
-            pynini.cross("minus ", "negative: \"-\" "), 0, 1
+            pynini.cross("minus ", "negative: \"true\" "), 0, 1
         )
         final_graph = optional_minus_graph + self.final_graph_wo_negative
         final_graph += pynutil.insert(" preserve_order: true")
