@@ -40,7 +40,6 @@ def get_quantity(
         cardinal_up_to_hundred: cardinal FST
     """
     quantities_pl = quantities + "er"
-    quantities_pl = pynini.project(quantities_pl, "output")
     quantities_pl |= quantities @ pynini.cdrewrite(pynini.cross("", "er"), "", "[EOS]", NEMO_SIGMA)
 
     if include_abbr or not itn:
