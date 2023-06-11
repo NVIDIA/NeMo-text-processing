@@ -18,9 +18,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, G
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
-quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
-quantities_abbr = pynini.string_file(get_abs_path("data/numbers/millions_abbr.tsv"))
-
 
 def get_quantity(
     decimal: 'pynini.FstLike',
@@ -39,6 +36,9 @@ def get_quantity(
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
+    quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
+    quantities_abbr = pynini.string_file(get_abs_path("data/numbers/millions_abbr.tsv"))
+
     quantities_pl = quantities + "er"
     quantities_pl |= quantities @ pynini.cdrewrite(pynini.cross("", "er"), "", "[EOS]", NEMO_SIGMA)
 
