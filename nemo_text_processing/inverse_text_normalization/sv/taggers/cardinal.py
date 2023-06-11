@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 from pynini.lib import pynutil
 
 
@@ -33,6 +33,7 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="classify")
 
         graph = pynini.invert(pynini.arcmap(tn_cardinal_tagger.graph, map_type="rmweight")).optimize()
+        graph = graph @ pynini.cdrewrite(pynini.cross(" ", ""), "", "", NEMO_SIGMA)
         self.graph = graph
         no_ones = pynini.project(graph, "input") - "en" - "ett"
         graph = no_ones @ graph
