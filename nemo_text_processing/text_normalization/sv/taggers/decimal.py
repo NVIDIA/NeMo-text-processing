@@ -134,8 +134,7 @@ class DecimalFst(GraphFst):
 
         self.graph = cardinal.two_or_three_digits_read_frac
 
-        self.graph_itn = cardinal.two_or_three_digits_read_frac
-        self.graph_itn |= cardinal.two_or_three_digits_read_frac_en
+        self.graph_itn = pynini.invert(cardinal.two_or_three_digits_read_frac_both).optimize()
 
         if not deterministic:
             self.graph |= cardinal.single_digits_graph.optimize()
