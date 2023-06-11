@@ -134,7 +134,7 @@ class DecimalFst(GraphFst):
 
         self.graph = cardinal.two_or_three_digits_read_frac
 
-        self.graph_itn = self.graph
+        self.graph_itn = cardinal.two_or_three_digits_read_frac
         self.graph_itn |= cardinal.two_or_three_digits_read_frac_en
 
         if not deterministic:
