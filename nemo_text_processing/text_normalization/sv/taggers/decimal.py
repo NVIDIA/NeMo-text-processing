@@ -40,15 +40,10 @@ def get_quantity(
         cardinal_up_to_hundred: cardinal FST
     """
     quantities_pl = quantities + "er"
-    if not itn:
-        # This is odd, but it's so we can accept miljard for miljarder
-        quantities_pl |= quantities + pynutil.insert("er")
-    else:
-        quantities_pl = pynini.project(quantities_pl, "output")
-        quantities_pl |= quantities @ pynini.cdrewrite(pynini.cross("", "er"), "", "[EOS]", NEMO_SIGMA)
-        include_abbr = False
+    quantities_pl = pynini.project(quantities_pl, "output")
+    quantities_pl |= quantities @ pynini.cdrewrite(pynini.cross("", "er"), "", "[EOS]", NEMO_SIGMA)
 
-    if include_abbr:
+    if include_abbr or not itn:
         quantity = quantities | quantities_abbr
         quantities_pl |= quantities_abbr + pynutil.insert("er")
     else:
