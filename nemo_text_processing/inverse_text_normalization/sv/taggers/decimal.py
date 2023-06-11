@@ -39,6 +39,9 @@ class DecimalFst(GraphFst):
         graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
         hundreds = itn_cardinal_tagger.graph_hundred_component_at_least_one_non_zero_digit
         hundreds = (pynini.project(hundreds, "input") - "en" - "ett") @ hundreds
+        hundreds_no_one = hundreds
+        hundreds |= pynini.cross("en", "1")
+        hundreds |= pynini.cross("ett", "1")
         graph_integer = pynutil.insert("integer_part: \"") + hundreds + pynutil.insert("\"")
         self.graph_integer = graph_integer
         final_graph_wo_sign = graph_integer + delete_point + pynini.accep(" ") + graph_fractional
@@ -49,7 +52,7 @@ class DecimalFst(GraphFst):
             | get_quantity(
                 final_graph_wo_sign,
                 None,
-                itn_cardinal_tagger.graph_hundred_component_at_least_one_non_zero_digit,
+                hundreds_no_one,
                 None,
                 False,
                 True,
