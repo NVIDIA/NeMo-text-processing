@@ -48,15 +48,7 @@ class DecimalFst(GraphFst):
         self.final_graph_wo_sign = final_graph_wo_sign
 
         self.final_graph_wo_negative = (
-            final_graph_wo_sign
-            | get_quantity(
-                final_graph_wo_sign,
-                None,
-                hundreds_no_one,
-                None,
-                False,
-                True,
-            )
+            final_graph_wo_sign | get_quantity(final_graph_wo_sign, None, hundreds_no_one, None, False, True,)
         ).optimize()
 
         final_graph = itn_cardinal_tagger.optional_minus_graph + self.final_graph_wo_negative
