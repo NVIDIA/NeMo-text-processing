@@ -40,6 +40,11 @@ testITNOrdinal() {
   runtest $input
 }
 
+testITNTelephone() {
+  input=$PROJECT_DIR/sv/data_inverse_text_normalization/test_cases_telephone.txt
+  runtest $input
+}
+
 testITNTime() {
   input=$PROJECT_DIR/sv/data_inverse_text_normalization/test_cases_time.txt
   runtest $input
@@ -57,6 +62,11 @@ testITNTime() {
 
 testITNWhitelist() {
   input=$PROJECT_DIR/sv/data_inverse_text_normalization/test_cases_whitelist.txt
+  runtest $input
+}
+
+testITNWord() {
+  input=$PROJECT_DIR/sv/data_inverse_text_normalization/test_cases_word.txt
   runtest $input
 }
 
