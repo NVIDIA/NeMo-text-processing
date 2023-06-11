@@ -7,3 +7,5 @@ tre miljoner~3 miljoner
 tre miljon~3 miljoner
 en komma fem miljoner~1,5 miljoner
 tre komma fem miljoner~3,5 miljoner
+tre komma fem miljon~3,5 miljoner
+tre komma ett ett ett fem miljoner~3,1115 miljoner
