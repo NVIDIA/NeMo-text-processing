@@ -43,6 +43,7 @@ class ElectronicFst(GraphFst):
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv"))
         server_common = pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
+        self.symbols = graph_symbols
 
         graph_digit = digit_no_zero | zero
 
