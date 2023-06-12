@@ -19,8 +19,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_preserve_order,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import bos_or_space, eos_or_space
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.se.utils import get_abs_path
 from pynini.lib import pynutil
 
 digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
@@ -34,10 +33,9 @@ domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 class ElectronicFst(GraphFst):
     """
     Finite state transducer for verbalizing electronic
-        e.g. electronic { username: "abc" domain: "hotmail.com" } -> "a b c snabel-a hotmail punkt com"
-                                                           -> "a b c snabel-a h o t m a i l punkt c o m"
-                                                           -> "a b c snabel-a hotmail punkt c o m"
-                                                           -> "a b c at h o t m a i l punkt com"
+        e.g. electronic { username: "abc" domain: "hotmail.com" } -> "a b c smarfe a hotmail čuokkis com"
+                                                           -> "a b c smarfe a h o t m a i l čuokkis c o m"
+                                                           -> "a b c smarfe a hotmail čuokkis c o m"
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
@@ -67,11 +65,9 @@ class ElectronicFst(GraphFst):
             pynutil.delete("protocol: \"")
             + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + pynutil.delete("\"")
-        ) @ pynini.cdrewrite(
-            pynini.cross("snedstreck snedstreck", "dubbla snedstreck"), bos_or_space, eos_or_space, NEMO_SIGMA
         )
         self.graph = (pynini.closure(protocol + pynini.accep(" "), 0, 1) + domain) | (
-            user_name + pynini.accep(" ") + pynutil.insert("snabel-a ") + domain
+            user_name + pynini.accep(" ") + pynutil.insert("smarfe a ") + domain
         )
         delete_tokens = self.delete_tokens(self.graph + delete_preserve_order)
         self.fst = delete_tokens.optimize()
