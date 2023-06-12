@@ -111,6 +111,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
 
     return cardinal_string @ fst
 
+
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g.
