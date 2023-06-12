@@ -34,8 +34,6 @@ class ElectronicFst(GraphFst):
 
         common_domains = [x[0] for x in load_labels(get_abs_path("data/electronic/domain.tsv"))]
         symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
-        self.symbols = symbols
-        self.domains = common_domains
 
         dot = pynini.accep(".")
         accepted_common_domains = pynini.union(*common_domains)
