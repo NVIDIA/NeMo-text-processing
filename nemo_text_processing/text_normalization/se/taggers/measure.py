@@ -52,7 +52,7 @@ class MeasureFst(GraphFst):
 
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
         greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
-        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
+        greek_upper = pynutil.insert("stuorra ") + pynini.string_file(get_abs_path("data/measure/greek_upper.tsv"))
         greek = greek_lower | greek_upper
 
         graph_unit |= pynini.compose(
@@ -61,11 +61,13 @@ class MeasureFst(GraphFst):
 
         graph_unit_plural = convert_space(graph_unit @ graph_plurals)
         graph_unit = convert_space(graph_unit)
+        # placeholder: probably needs to be a file
+        graph_unit_gen = graph_unit
 
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         graph_unit2 = (
-            pynini.cross("/", "per") + delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit
+            pynutil.delete("/") + delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_gen + pynutil.insert(" mielde")
         )
 
         optional_graph_unit2 = pynini.closure(
