@@ -30,9 +30,9 @@ from pynini.lib import pynutil
 class MeasureFst(GraphFst):
     """
     Finite state transducer for classifying measure, suppletive aware, e.g.
-        -12kg -> measure { negative: "true" cardinal { integer: "tolv" } units: "kilogram" }
-        1kg -> measure { cardinal { integer: "ett" } units: "kilogram" }
-        ,5kg -> measure { decimal { fractional_part: "fem" } units: "kilogram" }
+        -12kg -> measure { negative: "true" cardinal { integer: "guoktenuppelohkái" } units: "kilográmma" }
+        1kg -> measure { cardinal { integer: "okta" } units: "kilográmma" }
+        ,5kg -> measure { decimal { fractional_part: "guhtta" } units: "kilográmma" }
 
     Args:
         cardinal: CardinalFst
