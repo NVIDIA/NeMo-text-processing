@@ -14,37 +14,31 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
 from pynini.lib import pynutil
 
 quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
-# quantities_abbr = pynini.string_file(get_abs_path("data/numbers/millions_abbr.tsv"))
 
 
 def get_quantity(
     decimal: 'pynini.FstLike',
-    decimal_ett: 'pynini.FstLike',
     cardinal_up_to_thousand: 'pynini.FstLike',
-    cardinal_up_to_thousand_ett: 'pynini.FstLike',
-    include_abbr: bool,
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
-    e.g. 1 miljon -> integer_part: "en" quantity: "miljon"
-    e.g. 1,5 miljoner -> integer_part: "en" fractional_part: "fem" quantity: "miljoner"
+    e.g. 1 miljárda -> integer_part: "okta" quantity: "miljárda"
+    e.g. 1,5 miljárdda -> integer_part: "okta" fractional_part: "vihtta" quantity: "miljárdda"
 
     Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
-    quantities_pl = quantities + "er"
-
-    if include_abbr:
-        quantity = quantities  # | quantities_abbr
-    #        quantities_pl |= quantities_abbr + pynutil.insert("er")
-    else:
-        quantity = quantities
+    nom_to_gen_endings = pynini.string_map(
+        ("on", "ovnna"),
+        ("árda", "árdda",)
+    )
+    quantities_gen = quantities @ pynini.cdrewrite(nom_to_gen_endings, "", "[EOS]", NEMO_SIGMA)
 
     res = (
         pynutil.insert("integer_part: \"")
@@ -52,57 +46,23 @@ def get_quantity(
         + pynutil.insert("\"")
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
-        + quantities_pl
+        + quantities_gen
         + pynutil.insert("\"")
     )
     res |= (
         pynutil.insert("integer_part: \"")
-        + cardinal_up_to_thousand_ett
+        + pynini.cross("1", "okta")
         + pynutil.insert("\"")
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
-        + "tusen"
-        + pynutil.insert("\"")
-    )
-    res |= (
-        pynutil.insert("integer_part: \"")
-        + pynini.cross("1", "ett")
-        + pynutil.insert("\"")
-        + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert(" quantity: \"")
-        + "tusen"
-        + pynutil.insert("\"")
-    )
-    res |= (
-        pynutil.insert("integer_part: \"")
-        + pynini.cross("1", "en")
-        + pynutil.insert("\"")
-        + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert(" quantity: \"")
-        + quantity
-        + pynutil.insert("\"")
-    )
-    res |= (
-        pynutil.insert("integer_part: \"")
-        + pynini.cross("1", "en")
-        + pynutil.insert("\"")
-        + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert(" quantity: \"")
-        + quantity
+        + quantities
         + pynutil.insert("\"")
     )
     res |= (
         decimal
         + pynini.closure(pynutil.delete(" "), 0, 1)
         + pynutil.insert(" quantity: \"")
-        + quantities_pl
-        + pynutil.insert("\"")
-    )
-    res |= (
-        decimal_ett
-        + pynini.closure(pynutil.delete(" "), 0, 1)
-        + pynutil.insert(" quantity: \"")
-        + "tusen"
+        + quantities_gen
         + pynutil.insert("\"")
     )
     return res
@@ -111,8 +71,8 @@ def get_quantity(
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal, e.g.
-        -12,5006 biljon -> decimal { negative: "true" integer_part: "tolv"  fractional_part: "fem noll noll sex" quantity: "biljon" }
-        1 biljon -> decimal { integer_part: "en" quantity: "biljon" }
+        -12,5006 biljovnna -> decimal { negative: "true" integer_part: "guoktenuppelohkái"  fractional_part: "vihtta nolla nolla guhtta" quantity: "biljovnna" }
+        1 biljon -> decimal { integer_part: "okta" quantity: "biljon" }
 
     cardinal: CardinalFst
     """
@@ -123,7 +83,7 @@ class DecimalFst(GraphFst):
         cardinal_graph = cardinal.graph
         cardinal_graph_hundreds_one_non_zero = cardinal.graph_hundreds_component_at_least_one_non_zero_digit_no_one
 
-        #        self.graph = cardinal.two_or_three_digits_read_frac
+        self.graph = cardinal.two_or_three_digits_read_frac
 
         if not deterministic:
             self.graph |= cardinal.single_digits_graph.optimize()
@@ -142,12 +102,10 @@ class DecimalFst(GraphFst):
         )
         self.final_graph_wo_sign = final_graph_wo_sign
 
-        quantity_w_abbr = get_quantity(final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero, include_abbr=True,)
-        quantity_wo_abbr = get_quantity(final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero, include_abbr=False,)
-        self.final_graph_wo_negative_w_abbr = final_graph_wo_sign | quantity_w_abbr
-        self.final_graph_wo_negative = final_graph_wo_sign | quantity_wo_abbr
+        quantity_w_abbr = get_quantity(final_graph_wo_sign, cardinal_graph_hundreds_one_non_zero)
+        self.final_graph_wo_negative = final_graph_wo_sign | quantity_w_abbr
 
-        final_graph = optional_graph_negative + self.final_graph_wo_negative_w_abbr
+        final_graph = optional_graph_negative + self.final_graph_wo_negative
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
