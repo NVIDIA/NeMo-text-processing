@@ -67,7 +67,11 @@ class MeasureFst(GraphFst):
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         graph_unit2 = (
-            pynutil.delete("/") + delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_gen + pynutil.insert(" mielde")
+            pynutil.delete("/")
+            + delete_zero_or_one_space
+            + pynutil.insert(NEMO_NON_BREAKING_SPACE)
+            + graph_unit_gen
+            + pynutil.insert(" mielde")
         )
 
         optional_graph_unit2 = pynini.closure(
