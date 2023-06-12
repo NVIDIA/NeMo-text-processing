@@ -38,12 +38,12 @@ class ElectronicFst(GraphFst):
         accepted_common_domains = pynini.union(*common_domains)
         accepted_symbols = pynini.union(*symbols) - dot
         accepted_characters = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols)
-        acceepted_characters_with_dot = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | dot)
+        accepted_characters_with_dot = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | dot)
 
         # email
         username = (
             pynutil.insert("username: \"")
-            + acceepted_characters_with_dot
+            + accepted_characters_with_dot
             + pynutil.insert("\"")
             + pynini.cross('@', ' ')
         )
