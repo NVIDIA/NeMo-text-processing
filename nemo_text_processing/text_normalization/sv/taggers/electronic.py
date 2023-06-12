@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA
 from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
@@ -39,8 +40,8 @@ class ElectronicFst(GraphFst):
         dot = pynini.accep(".")
         accepted_common_domains = pynini.union(*common_domains)
         accepted_symbols = pynini.union(*symbols) - dot
-        accepted_characters = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols)
-        accepted_characters_with_dot = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | dot)
+        accepted_characters = pynini.closure(SE_ALPHA | NEMO_DIGIT | accepted_symbols)
+        accepted_characters_with_dot = pynini.closure(SE_ALPHA | NEMO_DIGIT | accepted_symbols | dot)
 
         # email
         username = (
@@ -62,11 +63,7 @@ class ElectronicFst(GraphFst):
 
         # url
         protocol_start = pynini.accep("https://") | pynini.accep("http://")
-        protocol_end = (
-            pynini.accep("www.")
-            if deterministic
-            else pynini.accep("www.") | pynini.cross("www.", "dubbel ve dubbel ve dubbel ve.")
-        )
+        protocol_end = pynini.cross("www.", "v v v")
         protocol = protocol_start | protocol_end | (protocol_start + protocol_end)
         protocol = pynutil.insert("protocol: \"") + protocol + pynutil.insert("\"")
         graph |= protocol + insert_space + (domain_graph | domain_common_graph)
