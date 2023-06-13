@@ -68,7 +68,7 @@ def make_number_form(
         tens = True
         teens = True
 
-    # See, e.g.: https://www.lexiconista.com/pdf/Uimhreacha.pdf
+    #  See, e.g.: https://www.lexiconista.com/pdf/Uimhreacha.pdf
     plural_words = load_labels_dict(get_abs_path("data/numbers/plural_nouns.tsv"))
     real_plural = False
     if word in plural_words:
