@@ -153,14 +153,14 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(electronic_graph, 1.6)
                 | pynutil.add_weight(en_electronic_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
-                | pynutil.add_weight(en_word_graph, 100)
+                | pynutil.add_weight(en_word_graph, 120)
             )
 
-            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1)|pynutil.add_weight(en_punct_graph, weight=1.2)  + pynutil.insert(" }")
-            en_punct = pynutil.insert("tokens { ") + pynutil.add_weight(en_punct_graph, weight=1.1) + pynutil.insert(" }")
+            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
+            en_punct = pynutil.insert("tokens { ") + pynutil.add_weight(en_punct_graph, weight=1.3) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct|en_punct)
             )
 
             graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)

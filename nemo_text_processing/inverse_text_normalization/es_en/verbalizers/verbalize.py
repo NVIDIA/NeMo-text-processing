@@ -78,7 +78,6 @@ class VerbalizeFst(GraphFst):
 
         graph = (
             time_graph
-            | pynutil.add_weight(en_time_graph, 1.1)
             | date_graph
             | pynutil.add_weight(en_date_graph, 1.1)
             | money_graph
