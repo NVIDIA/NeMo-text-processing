@@ -42,24 +42,28 @@ ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 
 def make_number_form(
-    word: str, deterministic=True, teens=False, tens=False, higher=False, conjunction=False
+    word: str, deterministic=True, teens=False, tens=False, higher=False, conjunction=False, numeric=True,
 ) -> 'pynini.FstLike':
     fst = pynini.accep(word)
-    # FIXME: why is this insert?
-    fst_len = pynutil.insert(fst @ LOWER_LENITION)
+    fst_len = fst @ LOWER_LENITION
     fst_len_real = fst_len
-    fst_ecl = pynutil.insert(fst @ LOWER_ECLIPSIS)
+    fst_ecl = fst @ LOWER_ECLIPSIS
+    # If this is a number, make it an insertion
+    # Otherwise, we want to word to be retained
+    if numeric:
+        fst_len = pynutil.insert(fst_len)
+        fst_ecl = pynutil.insert(fst_ecl)
     # The standard says to inflect "billiún", *but*
     # the standard is of a written-only dialect:
     # it's irrelevant to speech, where inflected forms
     # of billiún clash with milliún
     if word == "billiún":
         if not deterministic:
-            fst_len |= fst
-            fst_ecl |= fst
+            fst_len |= pynini.insert(fst)
+            fst_ecl |= pynini.insert(fst)
         else:
-            fst_len = fst
-            fst_ecl = fst
+            fst_len = pynini.insert(fst)
+            fst_ecl = pynini.insert(fst)
 
     if tens:
         teens = True
