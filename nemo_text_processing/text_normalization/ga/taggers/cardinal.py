@@ -108,6 +108,14 @@ def make_number_form(
     return output
 
 
+def make_million(word: str, thousands_at_least_one_non_zero_digit_no_one: 'pynini.FstLike') -> 'pynini.FstLike':
+    million_like = pynutil.add_weight(pynini.cross("001", word), -0.001)
+    million_like |= thousands_at_least_one_non_zero_digit_no_one + pynutil.insert(f" {word}")
+    million_like |= pynutil.delete("000")
+    million_like += insert_space
+    return million_like
+
+
 def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     """
     Helper function for parsing number strings. Converts common cardinal strings (groups of three digits delineated by 'cardinal_separator' - see graph_utils)
@@ -242,41 +250,12 @@ class CardinalFst(GraphFst):
         million = make_number_form("milliún", deterministic=deterministic, conjunction=True)
 
         # Maoluimhreacha ("bare" numbers)
-        graph_million = pynutil.add_weight(pynini.cross("001", "milliún"), -0.001)
-        graph_million |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" milliún")
-        graph_million |= pynutil.delete("000")
-        graph_million += insert_space
-
-        graph_billion = pynutil.add_weight(pynini.cross("001", "billiún"), -0.001)
-        graph_billion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" billiún")
-        graph_billion |= pynutil.delete("000")
-        graph_billion += insert_space
-
-        graph_trillion = pynutil.add_weight(pynini.cross("001", "trilliún"), -0.001)
-        graph_trillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(" trilliún")
-        graph_trillion |= pynutil.delete("000")
-        graph_trillion += insert_space
-
-        graph_quadrillion = pynutil.add_weight(pynini.cross("001", "cuaidrilliún"), -0.001)
-        graph_quadrillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-            " cuaidrilliún"
-        )
-        graph_quadrillion |= pynutil.delete("000")
-        graph_quadrillion += insert_space
-
-        graph_quintillion = pynutil.add_weight(pynini.cross("001", "cuintilliún"), -0.001)
-        graph_quintillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-            " cuintilliún"
-        )
-        graph_quintillion |= pynutil.delete("000")
-        graph_quintillion += insert_space
-
-        graph_sextillion = pynutil.add_weight(pynini.cross("001", "seisilliún"), -0.001)
-        graph_sextillion |= graph_thousands_component_at_least_one_non_zero_digit_no_one + pynutil.insert(
-            " seisilliún"
-        )
-        graph_sextillion |= pynutil.delete("000")
-        graph_sextillion += insert_space
+        graph_million = make_million("milliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_billion = make_million("billiún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_trillion = make_million("trilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_quadrillion = make_million("cuaidrilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_quintillion = make_million("cuintilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_sextillion = make_million("seisilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
 
         graph = (
             graph_sextillion
