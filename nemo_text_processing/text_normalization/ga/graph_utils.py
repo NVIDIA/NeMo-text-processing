@@ -90,6 +90,24 @@ _LOWER_LENITION_LETTERS = pynini.union(
 _LOWER_LENITION = pynini.cdrewrite(_LOWER_LENITION_LETTERS, "[BOS]", "", NEMO_SIGMA)
 LOWER_LENITION = _LOWER_LENITION @ S_FIXES
 
+_DENTALS_LOWER_LENITION_LETTERS = pynini.union(
+    pynini.cross("b", "bh"),
+    pynini.cross("c", "ch"),
+    pynini.cross("f", "fh"),
+    pynini.cross("g", "gh"),
+    pynini.cross("m", "mh"),
+    pynini.cross("p", "ph"),
+)
+DENTALS_LOWER_LENITION = pynini.cdrewrite(_DENTALS_LOWER_LENITION_LETTERS, "[BOS]", "", NEMO_SIGMA)
+
+
+def get_lenition(previous_word: str) -> 'pynini.FstLike':
+    if previous_word.lower()[-1] in "dntls":
+        return DENTALS_LOWER_LENITION
+    else:
+        return LOWER_LENITION
+
+
 _LOWER_LENITION_NO_F_NO_S = pynini.union(
     pynini.cross("b", "bh"),
     pynini.cross("c", "ch"),
