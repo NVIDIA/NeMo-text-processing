@@ -48,6 +48,7 @@ class DateFst(GraphFst):
         month_double = force_double_digits(tn_date_tagger.number_to_month).invert().optimize()
         month_abbr = tn_date_tagger.month_abbr.invert().optimize()
         month = tn_date_tagger.number_to_month.invert().optimize()
+        self.month_to_number = month
 
         graph_year = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         graph_month = pynutil.insert("month: \"") + month_double + pynutil.insert("\"")
