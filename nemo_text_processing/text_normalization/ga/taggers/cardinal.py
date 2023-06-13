@@ -47,6 +47,7 @@ def make_number_form(
     fst = pynini.accep(word)
     # FIXME: why is this insert?
     fst_len = pynutil.insert(fst @ LOWER_LENITION)
+    fst_len_real = fst_len
     fst_ecl = pynutil.insert(fst @ LOWER_ECLIPSIS)
     # The standard says to inflect "billiún", *but*
     # the standard is of a written-only dialect:
@@ -69,10 +70,12 @@ def make_number_form(
 
     # See, e.g.: https://www.lexiconista.com/pdf/Uimhreacha.pdf
     plural_words = load_labels_dict(get_abs_path("data/numbers/plural_nouns.tsv"))
+    real_plural = False
     if word in plural_words:
         fst_pl = pynini.accep(plural_words[word])
         fst_len = pynutil.insert(fst_pl @ PREFIX_H)
         fst_ecl = pynutil.insert(fst_pl @ LOWER_ECLIPSIS)
+        real_plural = True
 
     numbers_len = pynini.string_map([("2", "dhá"), ("3", "trí"), ("4", "ceithre"), ("5", "cúig"), ("6", "sé"),])
     numbers_ecl = pynini.string_map([("7", "seacht"), ("8", "ocht"), ("9", "naoi"),])
@@ -90,7 +93,7 @@ def make_number_form(
             deag = deag @ LOWER_LENITION
         teen_graph = pynutil.delete("1") + output_no_one + insert_space + pynutil.insert(deag)
         if not tens:
-            output |= pynini.cross("11", "aon ") + fst_len + insert_space + pynutil.insert(deag)
+            output |= pynini.cross("11", "aon ") + fst_len_real + insert_space + pynutil.insert(deag)
             output |= pynini.cross("10", "deich ") + fst_ecl
             output |= teen_graph
 
