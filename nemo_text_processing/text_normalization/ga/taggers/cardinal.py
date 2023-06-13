@@ -26,10 +26,11 @@ from nemo_text_processing.text_normalization.ga.graph_utils import (
     GA_ALPHA,
     LOWER_ECLIPSIS,
     LOWER_LENITION,
+    PREFIX_H,
     bos_or_space,
     eos_or_space,
 )
-from nemo_text_processing.text_normalization.ga.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.ga.utils import get_abs_path, load_labels, load_labels_dict
 from pynini.lib import pynutil
 
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
@@ -44,6 +45,7 @@ def make_number_form(
     word: str, deterministic=True, teens=False, tens=False, higher=False, conjunction=False
 ) -> 'pynini.FstLike':
     fst = pynini.accep(word)
+    # FIXME: why is this insert?
     fst_len = pynutil.insert(fst @ LOWER_LENITION)
     fst_ecl = pynutil.insert(fst @ LOWER_ECLIPSIS)
     # The standard says to inflect "billiún", *but*
@@ -64,6 +66,13 @@ def make_number_form(
     if higher:
         tens = True
         teens = True
+
+    # See, e.g.: https://www.lexiconista.com/pdf/Uimhreacha.pdf
+    plural_words = load_labels_dict(get_abs_path("data/numbers/plural_nouns.tsv"))
+    if word in plural_words:
+        fst_pl = pynini.accep(plural_words[word])
+        fst_len = pynutil.insert(fst_pl @ PREFIX_H)
+        fst_ecl = pynutil.insert(fst_pl @ LOWER_ECLIPSIS)
 
     numbers_len = pynini.string_map([("2", "dhá"), ("3", "trí"), ("4", "ceithre"), ("5", "cúig"), ("6", "sé"),])
     numbers_ecl = pynini.string_map([("7", "seacht"), ("8", "ocht"), ("9", "naoi"),])
