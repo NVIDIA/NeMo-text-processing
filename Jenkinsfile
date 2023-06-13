@@ -15,6 +15,7 @@ pipeline {
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
+    ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-13-23-0'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
@@ -126,6 +127,25 @@ pipeline {
         stage('L0: ES ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=es --text="ciento uno " --cache_dir ${ES_TN_CACHE}'
+          }
+        }
+
+      }
+    }
+
+    stage('L0: Create Codeswitched ES/EN TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+
+        stage('L0: ES/EN ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=es_en --text="ciento uno " --cache_dir ${ES_EN_TN_CACHE}'
           }
         }
 
@@ -330,6 +350,11 @@ pipeline {
         stage('L1: Run all ES TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/es/ -m "not pleasefixme" --cpu --tn_cache_dir ${ES_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all Codeswitched ES/EN TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/es_en/ -m "not pleasefixme" --cpu --tn_cache_dir ${ES_EN_TN_CACHE}'
           }
         }
         stage('L1: Run all AR TN/ITN tests (restore grammars from cache)') {
