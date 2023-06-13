@@ -102,6 +102,10 @@ DENTALS_LOWER_LENITION = pynini.cdrewrite(_DENTALS_LOWER_LENITION_LETTERS, "[BOS
 
 
 def get_lenition(previous_word: str) -> 'pynini.FstLike':
+    """
+    Implements the "dentals/dots" rule: if the previous word ends in
+    d n t l or s, then words beginning with d t or s are not lenited
+    """
     if previous_word.lower()[-1] in "dntls":
         return DENTALS_LOWER_LENITION
     else:
