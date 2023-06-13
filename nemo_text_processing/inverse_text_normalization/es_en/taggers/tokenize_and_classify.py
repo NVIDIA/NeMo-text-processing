@@ -16,7 +16,18 @@ import logging
 import os
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.es_en.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst as EnCardinalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.date import DateFst as EnDateFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.decimal import DecimalFst as EnDecimalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.electronic import ElectronicFst as EnElectronicFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.measure import MeasureFst as EnMeasureFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.money import MoneyFst as EnMoneyFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.ordinal import OrdinalFst as EnOrdinalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst as EnPunctuationFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import TelephoneFst as EnTelephoneFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.time import TimeFst as EnTimeFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import WhiteListFst as EnWhiteListFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst as EnWordFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.decimal import DecimalFst
@@ -30,18 +41,7 @@ from nemo_text_processing.inverse_text_normalization.es.taggers.telephone import
 from nemo_text_processing.inverse_text_normalization.es.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.es.taggers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst as EnCardinalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.date import DateFst as EnDateFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.decimal import DecimalFst as EnDecimalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.electronic import ElectronicFst as EnElectronicFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.measure import MeasureFst as EnMeasureFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.money import MoneyFst as EnMoneyFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.ordinal import OrdinalFst as EnOrdinalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst as EnPunctuationFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import TelephoneFst as EnTelephoneFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.time import TimeFst as EnTimeFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import WhiteListFst as EnWhiteListFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst as EnWordFst
+from nemo_text_processing.inverse_text_normalization.es_en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
@@ -74,7 +74,7 @@ class ClassifyFst(GraphFst):
         input_case: str = INPUT_LOWER_CASED,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
-        
+
         far_file = None
         if whitelist is None:
             whitelist = get_abs_path("data/es_whitelist.tsv")
@@ -157,10 +157,14 @@ class ClassifyFst(GraphFst):
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
-            en_punct = pynutil.insert("tokens { ") + pynutil.add_weight(en_punct_graph, weight=1.3) + pynutil.insert(" }")
+            en_punct = (
+                pynutil.insert("tokens { ") + pynutil.add_weight(en_punct_graph, weight=1.3) + pynutil.insert(" }")
+            )
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct|en_punct)
+                pynini.closure(punct + pynutil.insert(" "))
+                + token
+                + pynini.closure(pynutil.insert(" ") + punct | en_punct)
             )
 
             graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)

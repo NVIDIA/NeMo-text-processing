@@ -29,4 +29,3 @@ class TestMoney:
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
-

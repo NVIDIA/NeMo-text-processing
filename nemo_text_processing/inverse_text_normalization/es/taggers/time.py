@@ -112,9 +112,7 @@ class TimeFst(GraphFst):
         graph_time_zones = pynini.accep(" ") + time_zones + graph_offset
         time_zones_optional = pynini.closure(graph_time_zones, 0, 1)
 
-        final_suffix = (
-            pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
-        )
+        final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
         final_suffix_optional = pynini.closure(delete_space + insert_space + final_suffix, 0, 1)
 
         final_time_zone_optional = pynini.closure(

@@ -31,4 +31,3 @@ class TestMeasure:
     def test_denorm_es(self, test_input, expected):
         pred = self.inverse_normalizer_es.inverse_normalize(test_input, verbose=False)
         assert pred == expected
-

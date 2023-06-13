@@ -14,7 +14,6 @@
 
 import pytest
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
-
 from parameterized import parameterized
 
 from ..utils import CACHE_DIR, parse_test_case_file
@@ -29,4 +28,3 @@ class TestDecimal:
     def test_denorm_es(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
-
