@@ -9,7 +9,7 @@ runtest () {
   # read test file
   while read testcase; do
     IFS='~' read spoken written <<< $testcase
-    denorm_pred=$(echo $spoken | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1)
+    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
     # trim white space
     written="$(echo -e "${written}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
@@ -18,6 +18,11 @@ runtest () {
     # input expected actual
     assertEquals "$spoken" "$written" "$denorm_pred"
   done < "$input"
+}
+
+testITNDecimal() {
+  input=$PROJECT_DIR/es_en/data_inverse_text_normalization/test_cases_decimal.txt
+  runtest $input
 }
 
 testITNCardinal() {
@@ -30,10 +35,7 @@ testITNDate() {
   runtest $input
 }
 
-testITNDecimal() {
-  input=$PROJECT_DIR/es_en/data_inverse_text_normalization/test_cases_decimal.txt
-  runtest $input
-}
+
 
 testITNOrdinal() {
   input=$PROJECT_DIR/es_en/data_inverse_text_normalization/test_cases_ordinal.txt
