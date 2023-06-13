@@ -46,13 +46,15 @@ def make_number_form(
 ) -> 'pynini.FstLike':
     fst = pynini.accep(word)
     fst_len = fst @ LOWER_LENITION
-    fst_len_real = fst_len
     fst_ecl = fst @ LOWER_ECLIPSIS
     # If this is a number, make it an insertion
     # Otherwise, we want to word to be retained
+    spacer = NEMO_SPACE
     if numeric:
         fst_len = pynutil.insert(fst_len)
         fst_ecl = pynutil.insert(fst_ecl)
+        spacer = insert_space
+    fst_len_real = fst_len
     # The standard says to inflect "billiún", *but*
     # the standard is of a written-only dialect:
     # it's irrelevant to speech, where inflected forms
@@ -77,16 +79,21 @@ def make_number_form(
     real_plural = False
     if word in plural_words:
         fst_pl = pynini.accep(plural_words[word])
-        fst_len = pynutil.insert(fst_pl @ PREFIX_H)
-        fst_ecl = pynutil.insert(fst_pl @ LOWER_ECLIPSIS)
+        fst_len = fst_pl @ PREFIX_H
+        fst_ecl = fst_pl @ LOWER_ECLIPSIS
         real_plural = True
+
+    if real_plural:
+        fst_len |= pynini.cross(fst, fst_len)
+        fst_ecl |= pynini.cross(fst, fst_ecl)
 
     numbers_len = pynini.string_map([("2", "dhá"), ("3", "trí"), ("4", "ceithre"), ("5", "cúig"), ("6", "sé"),])
     numbers_ecl = pynini.string_map([("7", "seacht"), ("8", "ocht"), ("9", "naoi"),])
-    output_no_one = pynini.union(numbers_len + insert_space + fst_len, numbers_ecl + insert_space + fst_ecl)
+    output_no_one = pynini.union(numbers_len + spacer + fst_len, numbers_ecl + spacer + fst_ecl)
     single_digit = output_no_one | pynutil.delete("1") + pynutil.insert(fst)
     if not deterministic:
-        single_digit |= pynini.cross("1", "aon") + insert_space + pynutil.insert(fst @ LOWER_LENITION)
+        lower_len = pynutil.insert(fst @ LOWER_LENITION) if numeric else (fst @ LOWER_LENITION)
+        single_digit |= pynini.cross("1", "aon") + spacer + lower_len
     output = single_digit
     if higher:
         output = pynutil.delete("0") + single_digit
