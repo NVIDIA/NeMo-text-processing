@@ -36,11 +36,23 @@ def load_labels(abs_path):
     Args:
         abs_path: absolute path
 
-    Returns dictionary of mappings
+    Returns list of mappings
     """
     label_tsv = open(abs_path)
     labels = list(csv.reader(label_tsv, delimiter="\t"))
     return labels
+
+
+def load_labels_dict(abs_path):
+    """
+    loads relative path file as dictionary
+
+    Args:
+        abs_path: absolute path
+
+    Returns dictionary of mappings
+    """
+    return {x[0]: x[1] for x in load_labels(abs_path)}
 
 
 def extend_list_with_mutations(input):
