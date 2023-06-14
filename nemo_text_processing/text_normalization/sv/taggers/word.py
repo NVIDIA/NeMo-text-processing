@@ -28,8 +28,5 @@ class WordFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="classify")
-        fillers = pynini.union("eh", "ah")
-        match_inner = pynini.closure(NEMO_NOT_SPACE, 1)
-        
         word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
         self.fst = word.optimize()
