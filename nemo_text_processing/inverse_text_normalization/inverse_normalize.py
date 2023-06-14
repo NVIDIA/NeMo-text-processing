@@ -96,6 +96,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'es_en':  # Arabic
+            from nemo_text_processing.inverse_text_normalization.es_en.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.es_en.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
 
         self.tagger = ClassifyFst(
             cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case
@@ -138,7 +143,11 @@ def parse_args():
     input.add_argument("--input_file", dest="input_file", help="input file path", type=str)
     parser.add_argument('--output_file', dest="output_file", help="output file path", type=str)
     parser.add_argument(
-        "--language", help="language", choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar'], default="en", type=str
+        "--language",
+        help="language",
+        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar', 'es_en'],
+        default="en",
+        type=str,
     )
     parser.add_argument(
         "--input_case",
