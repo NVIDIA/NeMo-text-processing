@@ -76,6 +76,10 @@ fi
 find . -name "Makefile" -type f -delete
 bash docker/build.sh $FORCE_REBUILD
 
+if [[ ${MODE} == "notest" ]]; then
+  exit 0
+fi
+
 if [[ ${MODE} == "test" ]]; then
   MODE=${MODE}_${GRAMMARS}
 fi
