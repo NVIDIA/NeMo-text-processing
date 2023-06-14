@@ -22,10 +22,11 @@ FROM conda/miniconda3
 WORKDIR /workspace
 
 # install dependencies
+RUN echo "deb http://archive.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list
 RUN conda install conda-build -y
-RUN apt-get update &&     apt-get install -y --reinstall build-essential &&     apt-get upgrade -y &&     apt-get install -y git &&     apt-get install make
-RUN git clone https://github.com/google/re2
-RUN cd re2 && make && make install
+RUN apt-get update &&     apt-get install -y --reinstall build-essential pkg-config &&     apt-get upgrade -y &&     apt-get install -y git &&     apt-get install make
+RUN git clone https://github.com/google/re2 
+RUN cd re2 && git checkout tags/2022-02-01 && make && make install
 RUN apt-get install build-essential -y && apt-get install wget -y
 RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
 RUN tar xzvf protobuf-2.5.0.tar.gz
