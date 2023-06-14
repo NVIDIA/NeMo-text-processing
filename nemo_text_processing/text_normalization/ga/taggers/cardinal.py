@@ -60,12 +60,15 @@ def make_number_form(
     # it's irrelevant to speech, where inflected forms
     # of billiún clash with milliún
     if word == "billiún":
+        billion_fst = pynini.insert(fst)
+        if not numeric:
+            billion_fst = fst
         if not deterministic:
-            fst_len |= pynini.insert(fst)
-            fst_ecl |= pynini.insert(fst)
+            fst_len |= billion_fst
+            fst_ecl |= billion_fst
         else:
-            fst_len = pynini.insert(fst)
-            fst_ecl = pynini.insert(fst)
+            fst_len = billion_fst
+            fst_ecl = billion_fst
 
     if tens:
         teens = True
@@ -132,9 +135,12 @@ def make_number_form(
     # hundred + tens + 'is' + digit
     if higher:
         hundreds = make_number_form("céad")
-        output = hundreds + pynini.union(
-            pynutil.delete("0") + pynutil.insert(" is ") + single_digit, pynutil.insert(" is ") + ties,
+        hundreds_output = hundreds + pynini.union(
+            pynutil.delete("0") + pynutil.insert(" is ") + single_digit,
+            pynutil.insert(" is ") + ties + pynutil.delete("0"),
+            pynutil.insert(" is ") + output
         )
+        output = hundreds_output | (pynutil.delete("0") + output)
 
     return output
 
@@ -278,7 +284,7 @@ class CardinalFst(GraphFst):
         )
 
         # Bunuimhreacha (base numbers)
-        million = make_number_form("milliún", deterministic=deterministic, conjunction=True)
+        self.million = make_number_form("milliún", deterministic=deterministic, conjunction=True)
 
         # Maoluimhreacha ("bare" numbers)
         graph_million = make_million("milliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
