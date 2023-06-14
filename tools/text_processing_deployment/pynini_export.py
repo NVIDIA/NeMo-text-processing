@@ -199,6 +199,9 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
+        from nemo_text_processing.text_normalization.ar.verbalizers.verbalize import (
+            VerbalizeFst as TNVerbalizeFst,
+        )
     elif args.language == 'es_en':
         from nemo_text_processing.inverse_text_normalization.es_en.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,

@@ -63,7 +63,7 @@ class TestMeasure:
     )
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_norm(self, expected, test_input):
+    def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
 
