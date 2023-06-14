@@ -56,7 +56,7 @@ class TimeFst(GraphFst):
             + pynutil.delete("suffix:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(NEMO_CHAR)
+            + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
         )
         optional_suffix = pynini.closure(suffix, 0, 1)
