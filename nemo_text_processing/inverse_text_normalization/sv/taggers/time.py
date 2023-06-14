@@ -84,7 +84,9 @@ class TimeFst(GraphFst):
         minutes_inverse = pynini.invert(pynini.project(minutes_to, "input") @ tn_cardinal_tagger.graph_en)
         minutes = pynini.invert(pynini.project(minutes, "input") @ tn_cardinal_tagger.graph_en)
         self.minute_words_to_words = minutes_inverse @ minutes_to @ tn_cardinal_tagger.graph_en
-        self.minute_words_to_words_graph = pynutil.insert("minutes: \"") + self.minute_words_to_words + pynutil.insert("\"")
+        self.minute_words_to_words_graph = (
+            pynutil.insert("minutes: \"") + self.minute_words_to_words + pynutil.insert("\"")
+        )
 
         time_zone_graph = pynini.invert(pynini.string_file(get_tn_abs_path("data/time/time_zone.tsv")))
         final_suffix = pynutil.insert("suffix: \"") + suffixes + pynutil.insert("\"")
