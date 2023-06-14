@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -71,7 +71,6 @@ class VerbalizeFst(GraphFst):
         en_decimal_graph = en_decimal.fst
         en_measure_graph = EnMeasureFst(decimal=en_decimal, cardinal=en_cardinal).fst
         en_money_graph = EnMoneyFst(decimal=en_decimal).fst
-        en_time_graph = EnTimeFst().fst
         en_date_graph = EnDateFst().fst
         en_whitelist_graph = EnWhiteListFst().fst
         en_telephone_graph = EnTelephoneFst().fst
