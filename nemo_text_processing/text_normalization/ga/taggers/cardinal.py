@@ -60,7 +60,7 @@ def make_number_form(
     # it's irrelevant to speech, where inflected forms
     # of billiún clash with milliún
     if word == "billiún":
-        billion_fst = pynini.insert(fst)
+        billion_fst = pynutil.insert(fst)
         if not numeric:
             billion_fst = fst
         if not deterministic:
