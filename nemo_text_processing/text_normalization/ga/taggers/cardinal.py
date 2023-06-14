@@ -48,7 +48,7 @@ def make_number_form(
     fst_len = fst @ LOWER_LENITION
     fst_ecl = fst @ LOWER_ECLIPSIS
     # If this is a number, make it an insertion
-    # Otherwise, we want to word to be retained
+    # Otherwise, we want the word to be retained
     spacer = NEMO_SPACE
     if numeric:
         fst_len = pynutil.insert(fst_len)
@@ -97,7 +97,7 @@ def make_number_form(
         one_form = pynini.cross("1", "aon") + spacer + fst_len_real
         numbers_len_list = numbers_len_list[1:]
     numbers_len = pynini.string_map(numbers_len_list)
-    numbers_ecl = pynini.string_map([("7", "seacht"), ("8", "ocht"), ("9", "naoi"),])
+    numbers_ecl = pynini.string_map([("7", "seacht"), ("8", "ocht"), ("9", "naoi")])
     output_no_one = pynini.union(numbers_len + spacer + fst_len, numbers_ecl + spacer + fst_ecl)
     single_digit = output_no_one | one_form
     if real_plural:
@@ -151,6 +151,24 @@ def make_million(word: str, thousands_at_least_one_non_zero_digit_no_one: 'pynin
     million_like |= pynutil.delete("000")
     million_like += insert_space
     return million_like
+
+
+def make_number_graph(graph: 'pynini.FstLike', zero: 'pynini.FstLike') -> 'pynini.FstLike':
+    inner_graph = (
+        ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
+        @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
+        @ NEMO_DIGIT ** 24
+        @ graph
+        @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
+        @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
+        @ pynini.cdrewrite(
+            pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), GA_ALPHA, GA_ALPHA, NEMO_SIGMA
+        )
+    )
+    inner_graph |= zero
+
+    inner_graph = filter_punctuation(inner_graph).optimize()
+    return inner_graph
 
 
 def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
@@ -284,7 +302,7 @@ class CardinalFst(GraphFst):
         )
 
         # Bunuimhreacha (base numbers)
-        self.million = make_number_form("milliún", deterministic=deterministic, conjunction=True)
+        self.million = make_number_form("milliún", deterministic=deterministic, higher=True, numeric=True)
 
         # Maoluimhreacha ("bare" numbers)
         graph_million = make_million("milliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
@@ -304,20 +322,8 @@ class CardinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
-        self.graph = (
-            ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
-            @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
-            @ graph
-            @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(
-                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), GA_ALPHA, GA_ALPHA, NEMO_SIGMA
-            )
-        )
-        self.graph |= zero_count
+        self.graph = make_number_graph(graph, zero_count)
 
-        self.graph = filter_punctuation(self.graph).optimize()
         self.digit = graph_digit | zero_count
         self.read_digits = self.digit + pynini.closure(pynutil.insert(" ") + self.digit)
 
