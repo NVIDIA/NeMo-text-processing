@@ -112,10 +112,18 @@ class TimeFst(GraphFst):
         graph_time_zones = pynini.accep(" ") + time_zones + graph_offset
         time_zones_optional = pynini.closure(graph_time_zones, 0, 1)
 
-        final_suffix = (
-            pynutil.insert("suffix: \"") + convert_space(suffix_graph) + time_zones_optional + pynutil.insert("\"")
-        )
+        final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
         final_suffix_optional = pynini.closure(delete_space + insert_space + final_suffix, 0, 1)
+
+        final_time_zone_optional = pynini.closure(
+            delete_space
+            + insert_space
+            + pynutil.insert("zone: \"")
+            + convert_space(time_zones_optional)
+            + pynutil.insert("\""),
+            0,
+            1,
+        )
 
         # las nueve a eme (only convert on-the-hour times if they are followed by a suffix)
         graph_1oclock_with_suffix = pynini.closure(pynini.accep("la "), 0, 1) + pynini.cross("una", "1")
@@ -132,6 +140,7 @@ class TimeFst(GraphFst):
             + pynutil.insert("minutes: \"00\"")
             + insert_space
             + final_suffix
+            + final_time_zone_optional
         )
 
         # las nueve y veinticinco
