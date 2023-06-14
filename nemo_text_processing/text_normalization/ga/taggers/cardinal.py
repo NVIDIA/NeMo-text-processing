@@ -87,10 +87,18 @@ def make_number_form(
         fst_len |= pynini.cross(fst, fst_len)
         fst_ecl |= pynini.cross(fst, fst_ecl)
 
-    numbers_len = pynini.string_map([("2", "dhá"), ("3", "trí"), ("4", "ceithre"), ("5", "cúig"), ("6", "sé"),])
+    numbers_len_list = [("2", "dhá"), ("3", "trí"), ("4", "ceithre"), ("5", "cúig"), ("6", "sé")]
+    one_form = pynutil.delete("1") + pynutil.insert(fst)
+    if real_plural:
+        two = pynini.string_map([numbers_len_list[0]]) + spacer + fst_len_real
+        one_form = pynini.cross("1", "aon") + spacer + fst_len_real
+        numbers_len_list = numbers_len_list[1:]
+    numbers_len = pynini.string_map(numbers_len_list)
     numbers_ecl = pynini.string_map([("7", "seacht"), ("8", "ocht"), ("9", "naoi"),])
     output_no_one = pynini.union(numbers_len + spacer + fst_len, numbers_ecl + spacer + fst_ecl)
-    single_digit = output_no_one | pynutil.delete("1") + pynutil.insert(fst)
+    single_digit = output_no_one | one_form
+    if real_plural:
+        single_digit |= two
     if not deterministic:
         lower_len = pynutil.insert(fst @ LOWER_LENITION) if numeric else (fst @ LOWER_LENITION)
         single_digit |= pynini.cross("1", "aon") + spacer + lower_len
