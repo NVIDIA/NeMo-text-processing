@@ -138,7 +138,7 @@ def make_number_form(
         hundreds_output = hundreds + pynini.union(
             pynutil.delete("0") + pynutil.insert(" is ") + single_digit,
             pynutil.insert(" is ") + ties + pynutil.delete("0"),
-            pynutil.insert(" is ") + output
+            pynutil.insert(" is ") + output,
         )
         output = hundreds_output | (pynutil.delete("0") + output)
 
