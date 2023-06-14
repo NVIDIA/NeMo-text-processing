@@ -96,9 +96,9 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
-        elif lang == 'zh':  # Mandarin
-            from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize_final import (
+        elif lang == 'es_en':  # Arabic
+            from nemo_text_processing.inverse_text_normalization.es_en.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.es_en.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
@@ -145,7 +145,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar', 'zh'],
+        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar', 'es_en'],
         default="en",
         type=str,
     )

@@ -138,6 +138,9 @@ class Normalizer:
         elif lang == 'sv':
             from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.sv.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'hu':
+            from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.hu.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'zh':
             from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
@@ -147,8 +150,9 @@ class Normalizer:
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
+        self.input_case = input_case
         self.tagger = ClassifyFst(
-            input_case=input_case,
+            input_case=self.input_case,
             deterministic=deterministic,
             cache_dir=cache_dir,
             overwrite_cache=overwrite_cache,
@@ -506,7 +510,7 @@ class Normalizer:
         text = re.sub(r" +", " ", text)
 
         # remove space in the middle of the lower case abbreviation to avoid splitting into separate sentences
-        matches = re.findall(r"[a-z" + lower_case_unicode + "]\.\s[a-z" + lower_case_unicode + "]\.", text)
+        matches = re.findall(rf"[a-z{lower_case_unicode}]\.\s[a-z{lower_case_unicode}]\.", text)
         for match in matches:
             text = text.replace(match, match.replace(". ", "."))
 
@@ -667,7 +671,7 @@ def parse_args():
     )
     parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
     parser.add_argument(
-        "--language", help="language", choices=["en", "de", "es", "sv", "zh", "ar"], default="en", type=str
+        "--language", help="language", choices=["en", "de", "es", "hu", "sv", "zh", "ar"], default="en", type=str
     )
     parser.add_argument(
         "--input_case",

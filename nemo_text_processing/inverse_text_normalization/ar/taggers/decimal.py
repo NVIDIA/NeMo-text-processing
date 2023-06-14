@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class DecimalFst(GraphFst):
         self.final_graph_wo_sign = (
             graph_integer + pynini.accep(NEMO_SPACE) + graph_fractional + optional_graph_quantity
         )
-        final_graph = optional_graph_negative + self.final_graph_wo_sign
+        self.final_graph_wo_negative = optional_graph_negative + self.final_graph_wo_sign
 
-        final_graph = self.add_tokens(final_graph)
+        final_graph = self.add_tokens(self.final_graph_wo_negative)
         self.fst = final_graph.optimize()
