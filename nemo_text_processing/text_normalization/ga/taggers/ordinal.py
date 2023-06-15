@@ -141,7 +141,7 @@ def wrap_word(
             )
 
     if article:
-        graph = the_article + (graph @ PREFIX_T)
+        graph = the_article + (graph @ PREFIX_T @ pynini.cdrewrite(pynini.cross("céad", "chéad"), "[BOS]", "", NEMO_SIGMA))
 
     return graph.optimize()
 
