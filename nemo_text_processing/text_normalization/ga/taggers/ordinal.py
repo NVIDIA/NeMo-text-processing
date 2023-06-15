@@ -41,10 +41,9 @@ def load_digits(deterministic_itn = True, endings = True):
     Everything aside from 'céad' (first) ends with a vowel (or vowel sound)
     so the noun, if it begins with a vowel, needs to have 'h' prefixed, so
     the vowels don't merge.
-    TODO:
-    The standard equates 1ú and 2ú to céad and dara respectively; in real
-    use, 1d and 2a are used instead. For audio-based normalisation, they
-    ought to be accepted.
+    TODO: The standard equates 1ú and 2ú to céad and dara respectively; in
+    real use, 1d and 2a are used instead. For audio-based normalisation,
+    they ought to be accepted.
     """
     digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
     digit1d_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1dnondet.tsv")))
@@ -77,7 +76,7 @@ def load_digits(deterministic_itn = True, endings = True):
     }
 
 
-def wrap_word(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
+def wrap_word(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False, endings = True) -> 'pynini.FstLike':
     if insert_article and accept_article:
         raise ValueError("insert_article and accept_article are mutually exclusive")
     article = False
@@ -89,7 +88,11 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     if accept_article:
         the_article = pynini.accep("an ")
 
-    ordinals = load_digits(not deterministic, True)
+    delete_u = pynutil.delete("ú")
+    if not endings:
+        pynini.accep("")
+
+    ordinals = load_digits(not deterministic, endings)
     digit_h_single = ordinals["digit_h_single"]
     digit_d = ordinals["digit_d"]
     digit_h = ordinals["digit_h"]
@@ -103,13 +106,13 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
         tens_card |= pynini.cross("4", "ceathracha")
     if is_date:
         tens = pynini.union("2", "3") @ tens
-    tens_graph = tens + pynutil.delete("0ú")
+    tens_graph = tens + pynutil.delete("0") + delete_u
 
     word_h = word @ PREFIX_H
     word_h = NEMO_SPACE + word_h
     word_fst = NEMO_SPACE + word
     if insert_word:
-        word_h = insert_space + pynutil.insert(word_h)
+        word_h = insert_space + pynutil.insert(word @ PREFIX_H)
         word_fst = insert_space + pynutil.insert(word)
     word_inner = word_fst + insert_space
     word_h_inner = word_h + insert_space
@@ -124,7 +127,7 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
         graph |= pynutil.delete("2") + digit_h + word_h_inner + pynutil.insert("is fiche")
         graph |= pynutil.delete("3") + digit_d + word_inner + pynutil.insert("is tríocha")
     else:
-        for deich in range(2,10):
+        for deich in range(2, 10):
             deich = str(deich)
             deich_word = deich @ tens_card
             graph |= pynutil.delete(deich) + digit_d + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
