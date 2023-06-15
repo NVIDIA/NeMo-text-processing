@@ -23,21 +23,13 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.ga.graph_utils import PREFIX_H, PREFIX_T, bos_or_space, eos_or_space
 from nemo_text_processing.text_normalization.ga.taggers.cardinal import filter_punctuation, make_million
+from nemo_text_processing.text_normalization.ga.graph_utils import PREFIX_H, PREFIX_T, bos_or_space, eos_or_space
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
 
-def wrap_word(
-    word: str,
-    deterministic=True,
-    insert_article=False,
-    accept_article=False,
-    insert_word=False,
-    is_date=False,
-    zero_pad=False,
-) -> 'pynini.FstLike':
+def wrap_word(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
     if insert_article and accept_article:
         raise ValueError("insert_article and accept_article are mutually exclusive")
     article = False
@@ -48,7 +40,7 @@ def wrap_word(
         the_article = pynutil.insert("an ")
     if accept_article:
         the_article = pynini.accep("an ")
-
+    
     digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
     digit12_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit12nondet.tsv")))
     digit12_no_endings = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit12.tsv")))
@@ -94,16 +86,14 @@ def wrap_word(
         graph |= pynutil.delete("2") + digit_piece + word_inner + pynutil.insert("is fiche")
         graph |= pynutil.delete("3") + cead + word_inner + pynutil.insert("is tríocha")
     else:
-        for deich in range(2, 10):
+        for deich in range(2,10):
             deich = str(deich)
             deich_word = deich @ tens_card
-            graph |= (
-                pynutil.delete(deich) + digit_piece + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
-            )
+            graph |= pynutil.delete(deich) + digit_piece + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
 
     if article:
         graph = the_article + (graph @ PREFIX_T)
-
+    
     return (graph @ fixup).optimize()
 
 
