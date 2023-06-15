@@ -36,6 +36,38 @@ def cead_fixup(word):
     return fixup.optimize()
 
 
+def load_pieces(deterministic_itn = True, endings = True):
+    digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
+    digit1d_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1dnondet.tsv")))
+    digit1u_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1unondet.tsv")))
+    digit2_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit2nondet.tsv")))
+    digit1d_ending = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1dending.tsv")))
+    digit1u_ending = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1uending.tsv")))
+    digit2_ending = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit2ending.tsv")))
+    if endings:
+        digit_h = digit + pynutil.delete("ú") | digit1u_ending | digit2_ending
+        digit_d = digit1d_ending
+
+        if not deterministic_itn:
+            digit_h |= digit + pynutil.delete("adh")
+            digit_h |= pynini.cross("1adh", "aonú")
+            digit_h |= pynini.cross("2adh", "dóú")
+            digit_h |= digit1u_nondet
+            digit_h |= digit2_nondet
+            digit_d |= digit1d_nondet
+        digit_h_single = digit_h
+    else:
+        digit_h_single = digit | pynini.cross("2", "dara")
+        digit_h = digit | pynini.cross("2", "dóú") | pynini.cross("1", "aonú")
+        digit_d = pynini.cross("1", "céad")
+
+    return {
+        "digit_h": digit_h,
+        "digit_h_single": digit_h_single,
+        "digit_d": digit_d
+    }
+
+
 def wrap_word(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
     if insert_article and accept_article:
         raise ValueError("insert_article and accept_article are mutually exclusive")
@@ -47,20 +79,14 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
         the_article = pynutil.insert("an ")
     if accept_article:
         the_article = pynini.accep("an ")
-    
-    digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
-    digit12_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit12nondet.tsv")))
-    digit12_no_endings = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit12.tsv")))
-    digit12 = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit12ending.tsv")))
-    digit_piece = digit + pynutil.delete("ú")
-    digit_piece |= digit12
-    if not deterministic:
-        digit_piece |= digit12_nondet
-        digit_piece |= digit12_no_endings + pynutil.delete("ú")
+
+    ordinals = load_pieces(not deterministic, True)
+    digit_h_single = ordinals["digit_h_single"]
+    digit_d = ordinals["digit_d"]
+    digit_h = ordinals["digit_h"]
     if zero_pad:
-        digit_graph = pynutil.delete("0") + digit_piece
-    else:
-        digit_graph = digit_piece
+        digit_h_single = pynutil.delete("0") + digit_h_single
+        digit_d = pynutil.delete("0") + digit_d
 
     tens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/tens.tsv")))
     tens_card = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
@@ -71,25 +97,29 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     tens_graph = tens + pynutil.delete("0ú")
 
     word_h = word @ PREFIX_H
-    word_fst = NEMO_SPACE + word_h
+    word_h = NEMO_SPACE + word_h
+    word_fst = NEMO_SPACE + word
     if insert_word:
+        word_h = insert_space + pynutil.insert(word_h)
         word_fst = insert_space + pynutil.insert(word)
     word_inner = word_fst + insert_space
+    word_h_inner = word_h + insert_space
 
-    cead = pynini.string_map([("1d", "céad"), ("1ú", "aonú")])
-    dara = pynini.string_map([("2a", "dara"), ("2ú", "dóú")])
-
-    graph = (digit_graph | tens_graph) + word_fst
-    graph |= pynutil.delete("1") + digit_piece + word_inner + pynutil.insert("déag")
+    graph = (digit_h_single | tens_graph) + word_h
+    graph |= digit_d + word_fst
+    graph |= pynutil.delete("1") + digit_h + word_h_inner + pynutil.insert("déag")
+    graph |= pynutil.delete("1") + digit_d + word_inner + pynutil.insert("déag")
 
     if is_date:
-        graph |= pynutil.delete("2") + digit_piece + word_inner + pynutil.insert("is fiche")
-        graph |= pynutil.delete("3") + cead + word_inner + pynutil.insert("is tríocha")
+        graph |= pynutil.delete("2") + digit_d + word_inner + pynutil.insert("is fiche")
+        graph |= pynutil.delete("2") + digit_h + word_h_inner + pynutil.insert("is fiche")
+        graph |= pynutil.delete("3") + digit_d + word_inner + pynutil.insert("is tríocha")
     else:
         for deich in range(2,10):
             deich = str(deich)
             deich_word = deich @ tens_card
-            graph |= pynutil.delete(deich) + digit_piece + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
+            graph |= pynutil.delete(deich) + digit_d + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
+            graph |= pynutil.delete(deich) + digit_h + word_h_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
 
     if article:
         graph = the_article + (graph @ PREFIX_T)
