@@ -29,13 +29,6 @@ from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
 
-def cead_fixup(word):
-    word_h = word @ PREFIX_H
-    fixup_piece = pynini.cross(word_h, word)
-    fixup = pynini.cdrewrite(fixup_piece, "céad" + NEMO_SPACE, "", NEMO_SIGMA)
-    return fixup.optimize()
-
-
 def load_digits(deterministic_itn=True, endings=True):
     """
     Everything aside from 'céad' (first) ends with a vowel (or vowel sound)
@@ -124,6 +117,7 @@ def wrap_word(
 
     graph = (digit_h_single | tens_graph) + word_h
     graph |= digit_d + word_fst
+    graph |= pynini.cross("10", "deichiú") + delete_u + word_h
     graph |= pynutil.delete("1") + digit_h + word_h_inner + pynutil.insert("déag")
     if not endings:
         graph |= pynutil.delete("1") + digit_d + word_inner + pynutil.insert("déag")
@@ -145,9 +139,7 @@ def wrap_word(
     if article:
         graph = the_article + (graph @ PREFIX_T)
 
-    graph_opt = graph.optimize()
-
-    return (graph_opt @ cead_fixup(word)).optimize()
+    return graph
 
 
 class OrdinalFst(GraphFst):
