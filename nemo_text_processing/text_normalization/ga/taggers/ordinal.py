@@ -68,6 +68,7 @@ def load_digits(deterministic_itn=True, endings=True):
 def wrap_word(
     word: str,
     deterministic=True,
+    deterministic_itn=False,
     insert_article=False,
     accept_article=False,
     insert_word=False,
@@ -87,16 +88,15 @@ def wrap_word(
         the_article = pynini.accep("an ")
 
     delete_u = pynutil.delete("ú")
+    if not deterministic_itn:
+        delete_u |= pynutil.delete("adh")
     if not endings:
-        pynini.accep("")
+        delete_u = pynini.accep("")
 
-    ordinals = load_digits(not deterministic, endings)
+    ordinals = load_digits(deterministic_itn, endings)
     digit_h_single = ordinals["digit_h_single"]
     digit_d = ordinals["digit_d"]
     digit_h = ordinals["digit_h"]
-    if zero_pad:
-        digit_h_single = pynutil.delete("0") + digit_h_single
-        digit_d = pynutil.delete("0") + digit_d
 
     tens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/tens.tsv")))
     tens_card = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
@@ -115,8 +115,12 @@ def wrap_word(
     word_inner = word_fst + insert_space
     word_h_inner = word_h + insert_space
 
-    graph = (digit_h_single | tens_graph) + word_h
-    graph |= digit_d + word_fst
+    if zero_pad:
+        graph = (pynutil.delete("0") + digit_h_single | tens_graph) + word_h
+        graph |= pynutil.delete("0") + digit_d + word_fst
+    else:
+        graph = (digit_h_single | tens_graph) + word_h
+        graph |= digit_d + word_fst
     graph |= pynini.cross("10", "deichiú") + delete_u + word_h
     graph |= pynutil.delete("1") + digit_h + word_h_inner + pynutil.insert("déag")
     if not endings:
@@ -125,6 +129,7 @@ def wrap_word(
     if is_date:
         if not endings:
             graph |= pynutil.delete("2") + digit_d + word_inner + pynutil.insert("is fiche")
+            graph |= pynutil.delete("3") + digit_d + word_inner + pynutil.insert("is tríocha")
         graph |= pynutil.delete("2") + digit_h + word_h_inner + pynutil.insert("is fiche")
         graph |= pynutil.delete("3") + pynini.cross("1", "aonú") + word_h_inner + pynutil.insert("is tríocha")
     else:
