@@ -36,7 +36,7 @@ def cead_fixup(word):
     return fixup.optimize()
 
 
-def load_pieces(deterministic_itn = True, endings = True):
+def load_digits(deterministic_itn = True, endings = True):
     digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
     digit1d_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1dnondet.tsv")))
     digit1u_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1unondet.tsv")))
@@ -80,7 +80,7 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     if accept_article:
         the_article = pynini.accep("an ")
 
-    ordinals = load_pieces(not deterministic, True)
+    ordinals = load_digits(not deterministic, True)
     digit_h_single = ordinals["digit_h_single"]
     digit_d = ordinals["digit_d"]
     digit_h = ordinals["digit_h"]
