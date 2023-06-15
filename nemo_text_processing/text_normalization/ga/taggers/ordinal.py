@@ -29,6 +29,13 @@ from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
 
+def cead_fixup(word):
+    word_h = word @ PREFIX_H
+    fixup_piece = pynini.cross(word_h, word)
+    fixup = pynini.cdrewrite(fixup_piece, "céad" + NEMO_SPACE, "", NEMO_SIGMA)
+    return fixup.optimize()
+
+
 def wrap_word(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
     if insert_article and accept_article:
         raise ValueError("insert_article and accept_article are mutually exclusive")
@@ -64,8 +71,6 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     tens_graph = tens + pynutil.delete("0ú")
 
     word_h = word @ PREFIX_H
-    fixup_piece = "céad " + pynini.cross(word_h, word)
-    fixup = pynini.cdrewrite(fixup_piece, "", "", NEMO_SIGMA)
     word_fst = NEMO_SPACE + word_h
     if insert_word:
         word_fst = insert_space + pynutil.insert(word)
@@ -89,20 +94,13 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     if article:
         graph = the_article + (graph @ PREFIX_T)
 
-    return graph
-
-
-def cead_fixup(word):
-    word_h = word @ PREFIX_H
-    fixup_piece = pynini.cross(word_h, word)
-    fixup = pynini.cdrewrite(fixup_piece, "céad" + NEMO_SPACE, "", NEMO_SIGMA)
-    return fixup.optimize()
+    return graph @ cead_fixup(word)
 
 
 def wrap_word_wrapper(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
     graph = wrap_word(word, deterministic, insert_article, accept_article, insert_word, is_date, zero_pad)
     fixup = cead_fixup(word)
-    return (graph @ fixup @ fixup) @ fixup
+    return pynini.compose(graph, fixup)
 
 
 class OrdinalFst(GraphFst):
