@@ -23,8 +23,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.ga.taggers.cardinal import filter_punctuation, make_million
 from nemo_text_processing.text_normalization.ga.graph_utils import PREFIX_H, PREFIX_T
+from nemo_text_processing.text_normalization.ga.taggers.cardinal import filter_punctuation, make_million
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -36,7 +36,7 @@ def cead_fixup(word):
     return fixup.optimize()
 
 
-def load_digits(deterministic_itn = True, endings = True):
+def load_digits(deterministic_itn=True, endings=True):
     """
     Everything aside from 'céad' (first) ends with a vowel (or vowel sound)
     so the noun, if it begins with a vowel, needs to have 'h' prefixed, so
@@ -69,14 +69,19 @@ def load_digits(deterministic_itn = True, endings = True):
         digit_h = digit | pynini.cross("2", "dóú") | pynini.cross("1", "aonú")
         digit_d = pynini.cross("1", "céad")
 
-    return {
-        "digit_h": digit_h,
-        "digit_h_single": digit_h_single,
-        "digit_d": digit_d
-    }
+    return {"digit_h": digit_h, "digit_h_single": digit_h_single, "digit_d": digit_d}
 
 
-def wrap_word(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False, endings = True) -> 'pynini.FstLike':
+def wrap_word(
+    word: str,
+    deterministic=True,
+    insert_article=False,
+    accept_article=False,
+    insert_word=False,
+    is_date=False,
+    zero_pad=False,
+    endings=True,
+) -> 'pynini.FstLike':
     if insert_article and accept_article:
         raise ValueError("insert_article and accept_article are mutually exclusive")
     article = False
@@ -133,11 +138,13 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
             deich = str(deich)
             deich_word = deich @ tens_card
             graph |= pynutil.delete(deich) + digit_d + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
-            graph |= pynutil.delete(deich) + digit_h + word_h_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
+            graph |= (
+                pynutil.delete(deich) + digit_h + word_h_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
+            )
 
     if article:
         graph = the_article + (graph @ PREFIX_T)
-    
+
     graph_opt = graph.optimize()
 
     return (graph_opt @ cead_fixup(word)).optimize()
