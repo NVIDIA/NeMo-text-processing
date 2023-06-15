@@ -51,8 +51,6 @@ def load_digits(deterministic_itn=True, endings=True):
 
         if not deterministic_itn:
             digit_h |= digit + pynutil.delete("adh")
-            digit_h |= pynini.cross("1adh", "aonú")
-            digit_h |= pynini.cross("2adh", "dóú")
             digit_h |= digit1u_nondet
             digit_h |= digit2_nondet
             digit_d |= digit1d_nondet
@@ -123,11 +121,11 @@ def wrap_word(
         graph |= digit_d + word_fst
     graph |= pynini.cross("10", "deichiú") + delete_u + word_h
     graph |= pynutil.delete("1") + digit_h + word_h_inner + pynutil.insert("déag")
-    if not endings:
+    if endings:
         graph |= pynutil.delete("1") + digit_d + word_inner + pynutil.insert("déag")
 
     if is_date:
-        if not endings:
+        if endings:
             graph |= pynutil.delete("2") + digit_d + word_inner + pynutil.insert("is fiche")
             graph |= pynutil.delete("3") + digit_d + word_inner + pynutil.insert("is tríocha")
         graph |= pynutil.delete("2") + digit_h + word_h_inner + pynutil.insert("is fiche")
@@ -136,7 +134,8 @@ def wrap_word(
         for deich in range(2, 10):
             deich = str(deich)
             deich_word = deich @ tens_card
-            graph |= pynutil.delete(deich) + digit_d + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
+            if endings:
+                graph |= pynutil.delete(deich) + digit_d + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
             graph |= (
                 pynutil.delete(deich) + digit_h + word_h_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
             )
@@ -144,7 +143,7 @@ def wrap_word(
     if article:
         graph = the_article + (graph @ PREFIX_T)
 
-    return graph
+    return graph.optimize()
 
 
 class OrdinalFst(GraphFst):
