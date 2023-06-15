@@ -92,11 +92,11 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
             graph |= pynutil.delete(deich) + digit_piece + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
 
     if article:
-        graph = (the_article + (graph @ PREFIX_T)) @ cead_fixup(word)
-    else:
-        graph = graph @ cead_fixup(word)
+        graph = the_article + (graph @ PREFIX_T)
     
-    return graph.optimize()
+    graph_opt = graph.optimize()
+
+    return (graph_opt @ cead_fixup(word)).optimize()
 
 
 class OrdinalFst(GraphFst):
