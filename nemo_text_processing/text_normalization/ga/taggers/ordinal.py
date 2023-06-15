@@ -89,10 +89,7 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     if article:
         graph = the_article + (graph @ PREFIX_T)
 
-    def wtf(gr, fix):
-        return (gr @ fix)
-
-    return wtf(graph, fixup)
+    return graph
 
 
 def wrap_word_wrapper(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
@@ -100,7 +97,7 @@ def wrap_word_wrapper(word: str, deterministic = True, insert_article = False, a
     word_h = word @ PREFIX_H
     fixup_piece = "céad " + pynini.cross(word_h, word)
     fixup = pynini.cdrewrite(fixup_piece, "", "", NEMO_SIGMA)
-    return graph @ fixup
+    return (graph @ fixup).optimize()
 
 
 class OrdinalFst(GraphFst):
