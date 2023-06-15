@@ -135,7 +135,9 @@ def wrap_word(
             deich = str(deich)
             deich_word = deich @ tens_card
             if endings:
-                graph |= pynutil.delete(deich) + digit_d + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
+                graph |= (
+                    pynutil.delete(deich) + digit_d + word_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
+                )
             graph |= (
                 pynutil.delete(deich) + digit_h + word_h_inner + pynutil.insert("is ") + pynutil.insert(deich_word)
             )
