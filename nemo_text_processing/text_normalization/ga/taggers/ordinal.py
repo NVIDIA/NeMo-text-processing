@@ -94,7 +94,8 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     if article:
         graph = the_article + (graph @ PREFIX_T)
     
-    graph_opt = pynini.invert(pynini.invert(graph))
+    graph_save = graph.write_to_string()
+    graph_opt = graph.read_from_string(graph_save)
 
     return (graph_opt @ cead_fixup(word)).optimize()
 
