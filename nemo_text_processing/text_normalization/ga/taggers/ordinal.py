@@ -24,7 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.ga.taggers.cardinal import filter_punctuation, make_million
-from nemo_text_processing.text_normalization.ga.graph_utils import PREFIX_T
+from nemo_text_processing.text_normalization.ga.graph_utils import PREFIX_H, PREFIX_T, bos_or_space, eos_or_space
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -63,7 +63,10 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
         tens = pynini.union("2", "3") @ tens
     tens_graph = tens + pynutil.delete("0ú")
 
-    word_fst = NEMO_SPACE + pynini.accep(word)
+    word_h = pynini.accep(word) @ PREFIX_H
+    fixup_piece = pynini.accep("céad ") + pynini.cross(word_h, pynini.accep(word))
+    fixup = pynini.cdrewrite(fixup_piece, "", "", NEMO_SIGMA)
+    word_fst = NEMO_SPACE + word_h
     if insert_word:
         word_fst = insert_space + pynutil.insert(word)
     word_inner = word_fst + insert_space
@@ -85,6 +88,8 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
 
     if article:
         graph = the_article + (graph @ PREFIX_T)
+    
+    graph = (graph @ fixup)
 
     return graph
 
