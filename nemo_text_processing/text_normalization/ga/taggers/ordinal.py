@@ -88,8 +88,11 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
 
     if article:
         graph = the_article + (graph @ PREFIX_T)
-    
-    return (graph @ fixup)
+
+    def wtf(gr, fix):
+        return (gr @ fix)
+
+    return wtf(graph, fixup)
 
 
 class OrdinalFst(GraphFst):
