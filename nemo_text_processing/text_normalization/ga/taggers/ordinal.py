@@ -102,7 +102,7 @@ def cead_fixup(word):
 def wrap_word_wrapper(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
     graph = wrap_word(word, deterministic, insert_article, accept_article, insert_word, is_date, zero_pad)
     fixup = cead_fixup(word)
-    return (graph @ fixup)
+    return (graph @ fixup @ fixup) @ fixup
 
 
 class OrdinalFst(GraphFst):
