@@ -120,12 +120,14 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     graph = (digit_h_single | tens_graph) + word_h
     graph |= digit_d + word_fst
     graph |= pynutil.delete("1") + digit_h + word_h_inner + pynutil.insert("déag")
-    graph |= pynutil.delete("1") + digit_d + word_inner + pynutil.insert("déag")
+    if not endings:
+        graph |= pynutil.delete("1") + digit_d + word_inner + pynutil.insert("déag")
 
     if is_date:
-        graph |= pynutil.delete("2") + digit_d + word_inner + pynutil.insert("is fiche")
+        if not endings:
+            graph |= pynutil.delete("2") + digit_d + word_inner + pynutil.insert("is fiche")
         graph |= pynutil.delete("2") + digit_h + word_h_inner + pynutil.insert("is fiche")
-        graph |= pynutil.delete("3") + digit_d + word_inner + pynutil.insert("is tríocha")
+        graph |= pynutil.delete("3") + pynini.cross("1", "aonú") + word_h_inner + pynutil.insert("is tríocha")
     else:
         for deich in range(2, 10):
             deich = str(deich)
