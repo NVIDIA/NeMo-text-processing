@@ -63,8 +63,8 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
         tens = pynini.union("2", "3") @ tens
     tens_graph = tens + pynutil.delete("0ú")
 
-    word_h = pynini.accep(word) @ PREFIX_H
-    fixup_piece = pynini.accep("céad ") + pynini.cross(word_h, pynini.accep(word))
+    word_h = word @ PREFIX_H
+    fixup_piece = "céad " + pynini.cross(word_h, word)
     fixup = pynini.cdrewrite(fixup_piece, "", "", NEMO_SIGMA)
     word_fst = NEMO_SPACE + word_h
     if insert_word:
@@ -89,9 +89,7 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     if article:
         graph = the_article + (graph @ PREFIX_T)
     
-    graph = (graph @ fixup)
-
-    return graph
+    return (graph @ fixup)
 
 
 class OrdinalFst(GraphFst):
