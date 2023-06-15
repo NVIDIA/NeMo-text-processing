@@ -37,6 +37,15 @@ def cead_fixup(word):
 
 
 def load_digits(deterministic_itn = True, endings = True):
+    """
+    Everything aside from 'céad' (first) ends with a vowel (or vowel sound)
+    so the noun, if it begins with a vowel, needs to have 'h' prefixed, so
+    the vowels don't merge.
+    TODO:
+    The standard equates 1ú and 2ú to céad and dara respectively; in real
+    use, 1d and 2a are used instead. For audio-based normalisation, they
+    ought to be accepted.
+    """
     digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
     digit1d_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1dnondet.tsv")))
     digit1u_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit1unondet.tsv")))
