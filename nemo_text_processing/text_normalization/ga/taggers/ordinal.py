@@ -97,12 +97,6 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
     return (graph.optimize() @ cead_fixup(word).optimize()).optimize() @ cead_fixup(word).optimize()
 
 
-def wrap_word_wrapper(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
-    graph = wrap_word(word, deterministic, insert_article, accept_article, insert_word, is_date, zero_pad)
-    fixup = cead_fixup(word)
-    return pynini.compose(graph, fixup)
-
-
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal
