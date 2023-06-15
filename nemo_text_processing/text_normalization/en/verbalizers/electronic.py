@@ -87,10 +87,10 @@ class ElectronicFst(GraphFst):
 
         # this will be used for a safe fallback
         domain_all = pynini.compose(
-                default_chars_symbols,
-                pynini.closure(TO_LOWER | NEMO_LOWER | NEMO_SPACE | pynutil.add_weight(dict_words, MIN_NEG_WEIGHT)),
-            )
-        
+            default_chars_symbols,
+            pynini.closure(TO_LOWER | NEMO_LOWER | NEMO_SPACE | pynutil.add_weight(dict_words, MIN_NEG_WEIGHT)),
+        )
+
         domain = (
             domain_all
             + insert_space
@@ -117,6 +117,5 @@ class ElectronicFst(GraphFst):
             + delete_space
         ).optimize() @ pynini.cdrewrite(delete_extra_space, "", "", NEMO_SIGMA)
 
-        
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
