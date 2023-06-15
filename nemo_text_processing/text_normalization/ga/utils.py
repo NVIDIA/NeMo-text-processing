@@ -73,3 +73,10 @@ def extend_list_with_mutations(input):
             out.append(f"t-{word}")
 
     return out
+
+
+def prefix_h(the_word: str) -> str:
+    if the_word.lower()[0] in "aáeéiíoóuú":
+        return f"h{the_word}"
+    else:
+        return the_word
