@@ -63,14 +63,14 @@ def wrap_word(word: str, deterministic = True, insert_article = False, accept_ar
         tens = pynini.union("2", "3") @ tens
     tens_graph = tens + pynutil.delete("0ú")
 
-    def prefix_h(word):
-        if word.lower()[0] in "aáeéiíoóuú":
-            return f"h{word}"
+    def prefix_h(the_word: str) -> str:
+        if the_word.lower()[0] in "aáeéiíoóuú":
+            return f"h{the_word}"
         else:
-            return word
+            return the_word
 
     word_h = prefix_h(word)
-    fixup = pynini.cdrewrite(pynini.cross(f"céad {word_h}", f"céad {word}"), "", "", NEMO_SIGMA)
+    fixup = pynini.cdrewrite(pynini.cross(word_h, word), "céad ", "", NEMO_SIGMA)
     word_fst = NEMO_SPACE + word_h
     if insert_word:
         word_fst = insert_space + pynutil.insert(word)
