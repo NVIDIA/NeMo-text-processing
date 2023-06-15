@@ -23,9 +23,66 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.ga.taggers.cardinal import filter_punctuation, make_million
+from nemo_text_processing.text_normalization.ga.graph_utils import PREFIX_T
+from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
+
+
+def wrap_word(word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False) -> 'pynini.FstLike':
+    if insert_article and accept_article:
+        raise ValueError("insert_article and accept_article are mutually exclusive")
+    article = False
+    if insert_article or accept_article:
+        article = True
+    the_article = pynini.accep("")
+    if insert_article:
+        the_article = pynutil.insert("an ")
+    if accept_article:
+        the_article = pynini.accep("an ")
+    
+    digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
+    digit12_nondet = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit12nondet.tsv")))
+    digit12_no_endings = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit12.tsv")))
+    digit12 = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit12ending.tsv")))
+    digit_graph = pynutil.delete("0") + digit + pynutil.delete("ú")
+    digit_graph |= pynutil.delete("0") + digit12
+    if not deterministic:
+        digit_graph |= pynutil.delete("0") + digit12_nondet
+        digit_graph |= pynutil.delete("0") + digit12_no_endings + pynutil.delete("ú")
+
+    tens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/tens.tsv")))
+    tens_card = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
+    if not deterministic:
+        tens_card |= pynini.cross("4", "ceathracha")
+    if is_date:
+        tens = pynini.union("2", "3") @ tens
+    tens_graph = tens + pynutil.delete("0ú")
+
+    word_fst = NEMO_SPACE + pynini.accep(word)
+    if insert_word:
+        word_fst = insert_space + pynutil.insert(word)
+    word_inner = word_fst + insert_space
+
+    cead = pynini.string_map([("1d", "céad"), ("1ú", "aonú")])
+    dara = pynini.string_map([("2a", "dara"), ("2ú", "dóú")])
+
+    graph = digit_graph + word_fst
+    graph |= pynutil.delete("1") + digit_graph + word_inner + pynutil.insert("déag")
+
+    if is_date:
+        graph |= pynutil.delete("2") + digit_graph + word_inner + pynutil.insert("is fiche")
+        graph |= pynutil.delete("3") + cead + word_inner + pynutil.insert("is tríocha")
+    else:
+        for deich in range(2,10):
+            deich = str(deich)
+            deich_word = deich @ tens_card
+            graph |= pynutil.delete(deich) + digit_graph + word_inner + pynutil.insert("is ") + deich_word
+
+    if article:
+        graph = the_article + (graph @ PREFIX_T)
+
+    return graph
 
 
 class OrdinalFst(GraphFst):
@@ -43,16 +100,13 @@ class OrdinalFst(GraphFst):
         digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
         ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/tens.tsv")))
         zero = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/zero.tsv")))
+        digit_higher = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit_higher.tsv")))
 
         graph_digit = digit.optimize()
         graph_ties = ties.optimize()
-        graph_card_ties = card_ties.optimize()
-        graph_card_digit = card_digit.optimize()
+        graph_card_ties = cardinal.ties.optimize()
+        graph_card_digit = cardinal.digit.optimize()
         digits_no_one = (NEMO_DIGIT - "1") @ graph_card_digit
-
-        if not deterministic:
-            graph_ties |= pynini.cross("4", "förtionde")
-            graph_teens |= pynini.cross("18", "adertonde")
 
         graph_tens_component = graph_teens | graph_card_ties + graph_digit | graph_ties + pynutil.delete('0')
         self.graph_tens_component = graph_tens_component
@@ -79,16 +133,8 @@ class OrdinalFst(GraphFst):
 
         hundreds = digits_no_one + pynutil.insert("hundra")
         hundreds |= pynini.cross("1", "hundra")
-        if not deterministic:
-            hundreds |= pynini.cross("1", "etthundra")
-            hundreds |= pynini.cross("1", "ett hundra")
-            hundreds |= digit + pynutil.insert(NEMO_SPACE) + pynutil.insert("hundra")
 
         graph_hundreds = hundreds + pynini.union(graph_tens, (pynutil.delete("0") + graph_digit),)
-        if not deterministic:
-            graph_hundreds |= hundreds + pynini.union(
-                (graph_teens | pynutil.insert(NEMO_SPACE) + graph_teens), (pynini.cross("0", NEMO_SPACE) + graph_digit)
-            )
         graph_hundreds |= bare_hundreds
 
         graph_hundreds_component = pynini.union(graph_hundreds, pynutil.delete("0") + graph_tens)
@@ -102,12 +148,6 @@ class OrdinalFst(GraphFst):
         self.hundreds = graph_hundreds.optimize()
 
         tusen = pynutil.insert("tusen")
-        if not deterministic:
-            tusen |= pynutil.insert(" tusen")
-            tusen |= pynutil.insert("ettusen")
-            tusen |= pynutil.insert(" ettusen")
-            tusen |= pynutil.insert("ett tusen")
-            tusen |= pynutil.insert(" ett tusen")
 
         graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
@@ -151,20 +191,6 @@ class OrdinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
-        ordinal_endings = pynini.string_map(
-            [
-                ("ljon", "ljonte"),
-                ("ljoner", "ljonte"),
-                ("llion", "llionte"),
-                ("llioner", "llionte"),
-                ("ljard", "ljarte"),
-                ("ljarder", "ljarte"),
-                ("lliard", "lliarte"),
-                ("lliarder", "lliarte"),
-                ("tusen", "tusende"),
-            ]
-        )
-
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
@@ -172,7 +198,6 @@ class OrdinalFst(GraphFst):
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(ordinal_endings, "", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(
                 pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), NEMO_ALPHA, NEMO_ALPHA, NEMO_SIGMA
             )
@@ -186,12 +211,10 @@ class OrdinalFst(GraphFst):
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
         self.bare_ordinals = cleaned_graph
-        kapitlet_word = pynini.union("kapitlet", pynini.cross("kap", "kapitlet"))
-        kapitlet = cleaned_graph + NEMO_SPACE + kapitlet_word
 
         tok_graph = (
             pynutil.insert("integer: \"")
-            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | kapitlet)
+            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words)
             + pynutil.insert("\"")
         )
 
