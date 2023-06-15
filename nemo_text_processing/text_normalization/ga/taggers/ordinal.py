@@ -118,9 +118,10 @@ class OrdinalFst(GraphFst):
 
         graph_digit = digit.optimize()
         graph_ties = ties.optimize()
-        graph_card_ties = cardinal.ties.optimize()
+        graph_card_ties = cardinal.tens.optimize()
         graph_card_digit = cardinal.digit.optimize()
         digits_no_one = (NEMO_DIGIT - "1") @ graph_card_digit
+        graph_teens = graph_digit
 
         graph_tens_component = graph_teens | graph_card_ties + graph_digit | graph_ties + pynutil.delete('0')
         self.graph_tens_component = graph_tens_component
@@ -234,3 +235,6 @@ class OrdinalFst(GraphFst):
 
         final_graph = self.add_tokens(tok_graph)
         self.fst = final_graph.optimize()
+
+    def wrap_word(self, word: str, deterministic = True, insert_article = False, accept_article = False, insert_word = False, is_date = False, zero_pad = False) -> 'pynini.FstLike':
+        return wrap_word(word, deterministic, insert_article, accept_article, insert_word, is_date, zero_pad) @ cead_fixup(word)
