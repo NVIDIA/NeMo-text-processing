@@ -154,7 +154,7 @@ def make_million_maol_cnm(word: str, thousands_at_least_one_non_zero_digit_no_on
 
 
 def make_million_maol_cnmb(word: str, deterministic=True) -> 'pynini.FstLike':
-    million = make_number_form(word, deterministic=deterministic, higher=True, numeric=True)
+    million = make_number_form(word, deterministic=deterministic, higher=True, numeric=True, conjunction=True)
     million |= pynutil.delete("000")
     million += insert_space
     return million
@@ -165,7 +165,7 @@ def make_millions_maol(thousands_at_least_one_non_zero_digit_no_one, at_least_on
 
     graph = pynini.accep("")
 
-    for million in millions:
+    for million in millions[::-1]:
         if base or not deterministic:
             # Maoluimhreacha, Córas na mBunuimhreacha (9.2.3)
             tmp = make_million_maol_cnmb(million, deterministic=deterministic)
@@ -319,6 +319,7 @@ class CardinalFst(GraphFst):
             + thousands_single_digits
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
+        self.graph_thousands_component_at_least_one_non_zero_digit = graph_thousands_component_at_least_one_non_zero_digit
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
@@ -329,6 +330,7 @@ class CardinalFst(GraphFst):
             + thousands_single_digits
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
+        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = graph_thousands_component_at_least_one_non_zero_digit_no_one
 
         # Maoluimhreacha, Córas na mBunuimhreacha (9.2.3)
         self.million = make_number_form("milliún", deterministic=deterministic, higher=True, numeric=True)
