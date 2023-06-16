@@ -32,6 +32,19 @@ class TelephoneFst(GraphFst):
     Finite state transducer for classifying telephone numbers, e.g.
         123-123-5678 -> { number_part: "a haon a dó a trí a haon a dó a trí a cúig a sé a seacht a hocht" }.
 
+        https://en.wikipedia.org/wiki/Telephone_numbers_in_the_Republic_of_Ireland        
+        01 XXX XXXX – Dublin area
+        0XX XXX XXXX – All other 7-digit areas
+        0XX XXX XXX – 6-digit areas
+        0XX XXXXX – 5-digit areas
+        0X0X XXXXX – 5-digit areas
+        Non-geographic:
+        1800 XXX XXX – Freephone/Toll Free
+        0818 XXX XXX – Standard Rate
+        Mobile:
+        08X XXX XXXX
+        Mobile M2M (Machine to Machine):
+        088 XXXXX XXXXX
     Args:
 		deterministic: if True will provide a single transduction option,
 			for False multiple transduction are generated (used for audio-based normalization)
