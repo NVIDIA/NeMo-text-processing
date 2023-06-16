@@ -145,12 +145,41 @@ def make_number_form(
     return output
 
 
-def make_million(word: str, thousands_at_least_one_non_zero_digit_no_one: 'pynini.FstLike') -> 'pynini.FstLike':
+def make_million_maol_cnm(word: str, thousands_at_least_one_non_zero_digit_no_one: 'pynini.FstLike') -> 'pynini.FstLike':
     million_like = pynutil.add_weight(pynini.cross("001", word), -0.001)
     million_like |= thousands_at_least_one_non_zero_digit_no_one + pynutil.insert(f" {word}")
     million_like |= pynutil.delete("000")
     million_like += insert_space
     return million_like
+
+
+def make_million_maol_cnmb(word: str, deterministic=True) -> 'pynini.FstLike':
+    million = make_number_form(word, deterministic=deterministic, higher=True, numeric=True)
+    million |= pynutil.delete("000")
+    million += insert_space
+    return million
+
+
+def make_millions_maol(thousands_at_least_one_non_zero_digit_no_one, at_least_one_non_zero_digit, deterministic = True, base = True):
+    millions = ["milliún", "billiún", "trilliún", "cuaidrilliún", "cuintilliún", "seisilliún"]
+
+    graph = pynini.accep("")
+
+    for million in millions:
+        if base or not deterministic:
+            # Maoluimhreacha, Córas na mBunuimhreacha (9.2.3)
+            tmp = make_million_maol_cnmb(million, deterministic=deterministic)
+
+        if not deterministic:
+            # Maoluimhreacha, Córas na Maoluimhreacha (9.2.3)
+            tmp |= make_million_maol_cnm(million, thousands_at_least_one_non_zero_digit_no_one)
+        elif not base:
+            tmp = make_million_maol_cnm(million, thousands_at_least_one_non_zero_digit_no_one)
+
+        graph += tmp
+
+    graph += (at_least_one_non_zero_digit | pynutil.delete("000000"))
+    return graph
 
 
 def make_number_graph(graph: 'pynini.FstLike', zero: 'pynini.FstLike') -> 'pynini.FstLike':
@@ -301,16 +330,16 @@ class CardinalFst(GraphFst):
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
 
-        # Bunuimhreacha (base numbers)
+        # Maoluimhreacha, Córas na mBunuimhreacha (9.2.3)
         self.million = make_number_form("milliún", deterministic=deterministic, higher=True, numeric=True)
 
-        # Maoluimhreacha ("bare" numbers)
-        graph_million = make_million("milliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_billion = make_million("billiún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_trillion = make_million("trilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_quadrillion = make_million("cuaidrilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_quintillion = make_million("cuintilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_sextillion = make_million("seisilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        # Maoluimhreacha, Córas na Maoluimhreacha (9.2.3)
+        graph_million = make_million_maol_cnm("milliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_billion = make_million_maol_cnm("billiún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_trillion = make_million_maol_cnm("trilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_quadrillion = make_million_maol_cnm("cuaidrilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_quintillion = make_million_maol_cnm("cuintilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_sextillion = make_million_maol_cnm("seisilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
 
         graph = (
             graph_sextillion

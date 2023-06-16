@@ -24,7 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.ga.graph_utils import PREFIX_H, PREFIX_T
-from nemo_text_processing.text_normalization.ga.taggers.cardinal import filter_punctuation, make_million
+from nemo_text_processing.text_normalization.ga.taggers.cardinal import filter_punctuation, make_million_maol_cnm
 from nemo_text_processing.text_normalization.ga.utils import get_abs_path
 from pynini.lib import pynutil
 
