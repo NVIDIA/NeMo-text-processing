@@ -160,6 +160,9 @@ def make_million_maol_cnmb(word: str, deterministic=True) -> 'pynini.FstLike':
     return million
 
 
+# FIXME: make_million_maol_cnmb is completely wrong
+# FIXME: make_million_maol_cnm fails in a large number of cases
+# FIXME: at_least_one_non_zero_digit incorrect for cnmb
 def make_millions_maol(thousands_at_least_one_non_zero_digit_no_one, at_least_one_non_zero_digit, deterministic = True, base = True):
     millions = ["milliún", "billiún", "trilliún", "cuaidrilliún", "cuintilliún", "seisilliún"]
 
@@ -176,9 +179,9 @@ def make_millions_maol(thousands_at_least_one_non_zero_digit_no_one, at_least_on
         elif not base:
             tmp = make_million_maol_cnm(million, thousands_at_least_one_non_zero_digit_no_one)
 
-        graph += tmp
+        graph = graph + tmp
 
-    graph += (at_least_one_non_zero_digit | pynutil.delete("000000"))
+    graph = graph + (at_least_one_non_zero_digit | pynutil.delete("000000"))
     return graph
 
 
