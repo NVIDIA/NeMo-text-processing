@@ -42,7 +42,7 @@ ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 
 def make_number_form(
-    word: str, deterministic=True, teens=False, tens=False, higher=False, conjunction=False, numeric=True,
+    word: str, deterministic=True, teens=False, tens=False, higher=False, conjunction=False, numeric=True, tens_post=True,
 ) -> 'pynini.FstLike':
     fst = pynini.accep(word)
     fst_len = fst @ LOWER_LENITION
@@ -105,6 +105,8 @@ def make_number_form(
     if not deterministic:
         lower_len = pynutil.insert(fst @ LOWER_LENITION) if numeric else (fst @ LOWER_LENITION)
         single_digit |= pynini.cross("1", "aon") + spacer + lower_len
+        single_digit |= pynini.cross("1", "aon") + spacer + lower_len + pynutil.insert(" amháin")
+        single_digit |= word + pynutil.insert(" amháin")
     output = single_digit
     if higher:
         output = pynutil.delete("0") + single_digit
