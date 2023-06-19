@@ -42,7 +42,14 @@ ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 
 
 def make_number_form(
-    word: str, deterministic=True, teens=False, tens=False, higher=False, conjunction=False, numeric=True, tens_post=True,
+    word: str,
+    deterministic=True,
+    teens=False,
+    tens=False,
+    higher=False,
+    conjunction=False,
+    numeric=True,
+    tens_post=True,
 ) -> 'pynini.FstLike':
     fst = pynini.accep(word)
     fst_len = fst @ LOWER_LENITION
@@ -147,7 +154,9 @@ def make_number_form(
     return output
 
 
-def make_million_maol_cnm(word: str, thousands_at_least_one_non_zero_digit_no_one: 'pynini.FstLike') -> 'pynini.FstLike':
+def make_million_maol_cnm(
+    word: str, thousands_at_least_one_non_zero_digit_no_one: 'pynini.FstLike'
+) -> 'pynini.FstLike':
     million_like = pynutil.add_weight(pynini.cross("001", word), -0.001)
     million_like |= thousands_at_least_one_non_zero_digit_no_one + pynutil.insert(f" {word}")
     million_like |= pynutil.delete("000")
@@ -165,7 +174,9 @@ def make_million_maol_cnmb(word: str, deterministic=True) -> 'pynini.FstLike':
 # FIXME: make_million_maol_cnmb is completely wrong
 # FIXME: make_million_maol_cnm fails in a large number of cases
 # FIXME: at_least_one_non_zero_digit incorrect for cnmb
-def make_millions_maol(thousands_at_least_one_non_zero_digit_no_one, at_least_one_non_zero_digit, deterministic = True, base = True):
+def make_millions_maol(
+    thousands_at_least_one_non_zero_digit_no_one, at_least_one_non_zero_digit, deterministic=True, base=True
+):
     millions = ["milliún", "billiún", "trilliún", "cuaidrilliún", "cuintilliún", "seisilliún"]
 
     graph = pynini.accep("")
@@ -324,7 +335,9 @@ class CardinalFst(GraphFst):
             + thousands_single_digits
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
-        self.graph_thousands_component_at_least_one_non_zero_digit = graph_thousands_component_at_least_one_non_zero_digit
+        self.graph_thousands_component_at_least_one_non_zero_digit = (
+            graph_thousands_component_at_least_one_non_zero_digit
+        )
 
         graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
             pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
@@ -335,7 +348,9 @@ class CardinalFst(GraphFst):
             + thousands_single_digits
             + ((insert_space + graph_hundreds_component_at_least_one_non_zero_digit) | pynutil.delete("000")),
         )
-        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = graph_thousands_component_at_least_one_non_zero_digit_no_one
+        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = (
+            graph_thousands_component_at_least_one_non_zero_digit_no_one
+        )
 
         # Maoluimhreacha, Córas na mBunuimhreacha (9.2.3)
         self.million = make_number_form("milliún", deterministic=deterministic, higher=True, numeric=True)
@@ -343,10 +358,18 @@ class CardinalFst(GraphFst):
         # Maoluimhreacha, Córas na Maoluimhreacha (9.2.3)
         graph_million = make_million_maol_cnm("milliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
         graph_billion = make_million_maol_cnm("billiún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_trillion = make_million_maol_cnm("trilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_quadrillion = make_million_maol_cnm("cuaidrilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_quintillion = make_million_maol_cnm("cuintilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
-        graph_sextillion = make_million_maol_cnm("seisilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one)
+        graph_trillion = make_million_maol_cnm(
+            "trilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one
+        )
+        graph_quadrillion = make_million_maol_cnm(
+            "cuaidrilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one
+        )
+        graph_quintillion = make_million_maol_cnm(
+            "cuintilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one
+        )
+        graph_sextillion = make_million_maol_cnm(
+            "seisilliún", graph_thousands_component_at_least_one_non_zero_digit_no_one
+        )
 
         graph = (
             graph_sextillion
