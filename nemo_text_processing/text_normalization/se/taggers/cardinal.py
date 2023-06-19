@@ -72,6 +72,8 @@ def build_cased_fsts(deterministic=True):
     """
     Builds case/number forms (other than nominative singular) for numerals
     See: https://oahpa.no/sme/gramm/logut.eng.html
+    for teens and tens; for longer numbers Nickel and Sammallahti (2011) say
+    'i lengre tallord bøyes bare enere' ('in longer number words only ones are inflected')
     """
     digits_cased = load_cased_digits()
     digits_nom = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
