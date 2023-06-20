@@ -68,7 +68,7 @@ def load_cased_digits():
     return digits_cased
 
 
-def build_cased_fsts(deterministic=True):
+def build_cased_number_fsts(deterministic=True):
     """
     Builds case/number forms (other than nominative singular) for numerals
     See: https://oahpa.no/sme/gramm/logut.eng.html
@@ -98,7 +98,7 @@ def build_cased_fsts(deterministic=True):
         assert "nom_sg" in logi_cased
         teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
         if not deterministic:
-            teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + pynutil.insert(f"nuppelogin")
+            teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + pynutil.insert("nuppelogin")
     tens_cased_fst = {}
     # com.sg/loc.pl is different for 'logi'
     for k in digits_cased_fst:
