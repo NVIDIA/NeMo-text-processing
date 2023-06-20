@@ -96,7 +96,10 @@ def build_cased_number_fsts(deterministic=True):
     for k in digits_cased_fst:
         assert "nom_sg" in digits_cased_fst
         assert "nom_sg" in logi_cased
-        teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
+        if k == "nom_sg":
+            teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert("nuppelohkái")
+        else:
+            teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
         if not deterministic:
             teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + pynutil.insert("nuppelogin")
     tens_cased_fst = {}
