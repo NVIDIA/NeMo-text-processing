@@ -139,11 +139,11 @@ def make_million(
 ) -> 'pynini.FstLike':
     spacer = make_spacer(deterministic)
 
-    graph_million = pynutil.add_weight(pynini.cross("001", f"{initial}iljon") + spacer, -0.001)
+    graph_million = pynutil.add_weight(pynini.cross("001", f"{initial}iljovdna") + spacer, -0.001)
     graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}iljovnna") + spacer
     if not deterministic:
+        graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}iljon") + spacer, -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}iljun") + spacer, -0.001)
-        graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}iljovdna") + spacer, -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}illiuvdna") + spacer, -0.001)
         graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}illiuvnna") + spacer
     graph_million |= pynutil.delete("000")

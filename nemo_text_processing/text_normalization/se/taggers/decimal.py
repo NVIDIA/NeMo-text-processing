@@ -66,7 +66,7 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal, e.g.
         -12,5006 biljovnna -> decimal { negative: "true" integer_part: "guoktenuppelohkái" fractional_part: "vihtta nolla nolla guhtta" quantity: "biljovnna" }
-        1 biljon -> decimal { integer_part: "okta" quantity: "biljon" }
+        1 miljovdna -> decimal { integer_part: "okta" quantity: "miljovdna" }
 
     cardinal: CardinalFst
     """
