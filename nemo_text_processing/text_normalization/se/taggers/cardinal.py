@@ -88,16 +88,19 @@ def build_cased_number_fsts(deterministic=True):
     if not deterministic:
         digits_nom |= pynini.cross("1", "akta")
 
+    # digits
     digits_cased_fst = {}
     for k in digits_cased:
         digits_cased_fst[k] = pynini.string_map((k, v) for k, v in digits_cased[k].items())
         if k == "nom_sg" and not deterministic:
             digits_cased_fst["nom_sg"] |= pynini.cross("1", "akta")
 
+    # zero
     nolla_cased_fst = {}
     for k in nolla_cased:
         nolla_cased_fst[k] = pynini.cross("0", nolla_cased[k])
 
+    # teens
     teens_cased_fst = {}
     for k in digits_cased_fst:
         assert "nom_sg" in digits_cased_fst
@@ -108,6 +111,8 @@ def build_cased_number_fsts(deterministic=True):
             teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
         if not deterministic:
             teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + pynutil.insert("nuppelogin")
+
+    # tens
     tens_cased_fst = {}
     # com.sg/loc.pl is different for 'logi'
     for k in digits_cased_fst:
@@ -122,6 +127,8 @@ def build_cased_number_fsts(deterministic=True):
         tens_cased_fst[k] = digit_cased_no_one + spacer + pynini.cross("0", logi_cased[k])
         # 23 -> guvttiin/logiin/golmmain
         tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_cased_fst[k]
+
+    # two digits
     two_digit_cased_fsts = {}
     two_digit_cased_fsts_sfx = {}
     two_digits_fst = None
@@ -133,6 +140,7 @@ def build_cased_number_fsts(deterministic=True):
                 two_digits_fst = two_digit_cased_fsts_sfx[k]
             else:
                 two_digits_fst |= two_digit_cased_fsts_sfx[k]
+
     return {
         "tens": tens_cased_fst,
         "teens": teens_cased_fst,
