@@ -61,7 +61,7 @@ class VerbalizeFst(GraphFst):
             cardinal_graph
             # | measure_graph
             # | decimal_graph
-            # | ordinal_graph
+            | ordinal_graph
             # | date_graph
             # | electronic_graph
             # | money_graph
