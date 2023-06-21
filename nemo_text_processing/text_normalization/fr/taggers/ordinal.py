@@ -13,22 +13,20 @@
 # limitations under the License.
 
 
-# MAKE SURE ALL IMPORTS FROM A LANGUAGE OTHER THAN ENGLISH ARE IN THE CORRECT LANGUAGE
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.fr.utils import get_abs_path
 from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):
-    # MAKE SURE ANY COMMENTS APPLY TO YOUR LANGUAGE
     """
     Finite state transducer for classifying ordinal
-        	"21.º" -> ordinal { integer: "vigésimo primero" morphosyntactic_features: "gender_masc" }
-    This class converts ordinal up to the millionth (millonésimo) order (exclusive).
+        	"2e" -> ordinal { integer: "deux" morphosyntactic_features: "ième" }
 
-    This FST also records the ending of the ordinal (called "morphosyntactic_features"):
-    either as gender_masc, gender_fem, or apocope. Also introduces plural feature for non-deterministic graphs.
+    This grammar covers from single digits to hundreds of billions ("milliardième" in French).
+
+    This FST also records the ending of the ordinal (called "morphosyntactic_features").
 
     Args:
         cardinal: CardinalFst
@@ -39,9 +37,13 @@ class OrdinalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify")
 
-        # DELETE THIS LINE WHEN YOU ADD YOUR GRAMMAR, MAKING SURE THAT YOUR GRAMMAR CONTAINS
-        # A VARIABLE CALLED final_graph WITH AN FST COMPRISED OF ALL THE RULES
-        final_graph = pynutil.insert("integer: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
+        numbers = cardinal.all_nums_no_tokens
+        numbers_graph = pynutil.insert("integer: \"") + numbers + pynutil.insert("\"")
+
+        suffixes = pynini.string_file(get_abs_path("data/ordinals/suffixes.tsv"))
+        suffixes_graph = pynutil.insert("morphosyntactic_features: \"") + suffixes + pynutil.insert("\"")
+
+        final_graph = numbers_graph + pynutil.insert(NEMO_SPACE) + suffixes_graph
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
