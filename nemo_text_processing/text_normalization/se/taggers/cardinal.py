@@ -81,6 +81,7 @@ def build_cased_number_fsts(deterministic=True):
     cuodi_cased = load_case_forms(get_abs_path("data/numbers/case_cuodi.tsv"), True)
     logi_cased = load_case_forms(get_abs_path("data/numbers/case_logi.tsv"), True)
     duhat_cased = load_case_forms(get_abs_path("data/numbers/case_duhat.tsv"), True)
+    nolla_cased = load_case_forms(get_abs_path("data/numbers/case_nolla.tsv"), True)
     endings_cased = load_case_forms(get_abs_path("data/numbers/digit_case_abbr_suffix.tsv"))
     spacer = make_spacer(deterministic)
 
@@ -92,6 +93,11 @@ def build_cased_number_fsts(deterministic=True):
         digits_cased_fst[k] = pynini.string_map((k, v) for k, v in digits_cased[k].items())
         if k == "nom_sg" and not deterministic:
             digits_cased_fst["nom_sg"] |= pynini.cross("1", "akta")
+
+    nolla_cased_fst = {}
+    for k in nolla_cased:
+        nolla_cased_fst[k] = pynini.cross("0", nolla_cased[k])
+
     teens_cased_fst = {}
     for k in digits_cased_fst:
         assert "nom_sg" in digits_cased_fst
@@ -131,6 +137,7 @@ def build_cased_number_fsts(deterministic=True):
         "tens": tens_cased_fst,
         "teens": teens_cased_fst,
         "digits": digits_cased_fst,
+        "zero": nolla_cased_fst,
         "two_digit_cased_fsts": two_digit_cased_fsts,
         "two_digit_cased_fsts_sfx": two_digit_cased_fsts_sfx,
         "two_digit_fst": two_digits_fst,
