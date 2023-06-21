@@ -13,34 +13,58 @@
 # limitations under the License.
 
 
-# MAKE SURE ALL IMPORTS FROM A LANGUAGE OTHER THAN ENGLISH ARE IN THE CORRECT LANGUAGE
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, GraphFst
-from nemo_text_processing.text_normalization.fr.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst
 from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
-    # MAKE SURE ANY COMMENTS APPLY TO YOUR LANGUAGE
     """
     Finite state transducer for classifying fraction
-    "23 4/5" ->
-    tokens { fraction { integer: "veintitrés" numerator: "cuatro" denominator: "quinto" mophosyntactic_features: "ordinal" } }
+    "-4 1/3" ->
+    tokens { fraction { negative: "true" integer_part: "quatre" numerator: "un" denominator: "trois" morphosyntactic_features: "ième" } }
 
     Args:
         cardinal: CardinalFst
         ordinal: OrdinalFst
         deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
+            for False multiple transduction will be generated (used for audio-based normalization) - TBD
     """
 
     def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
 
-        # DELETE THIS LINE WHEN YOU ADD YOUR GRAMMAR, MAKING SURE THAT YOUR GRAMMAR CONTAINS
-        # A VARIABLE CALLED final_graph WITH AN FST COMPRISED OF ALL THE RULES
-        final_graph = pynutil.insert("integer_part: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
+        cardinals = cardinal.all_nums_no_tokens
+        sing_numerator = pynini.accep("1") @ cardinals
+        pl_numerators = (pynini.closure(NEMO_DIGIT) - "1") @ cardinals
+
+        add_denom_suffix = pynini.closure(NEMO_DIGIT) + pynutil.insert("e")
+        denominators = add_denom_suffix @ ordinal.graph
+        change_denom_label = pynini.cross("integer", "denominator")
+        pluralize_denom = pynini.closure(NEMO_SIGMA) + pynini.cross("\"ième\"", "\"ièmes\"")
+
+        sing_fraction_graph = (
+            pynutil.insert("numerator: \"")
+            + sing_numerator
+            + pynutil.insert("\" ")
+            + pynutil.delete("/")
+            + (denominators @ (change_denom_label + pynini.closure(NEMO_SIGMA)))
+        )
+
+        pl_fraction_graph = (
+            pynutil.insert("numerator: \"")
+            + pl_numerators
+            + pynutil.insert("\" ")
+            + pynutil.delete("/")
+            + (denominators @ (change_denom_label + pluralize_denom))
+        )
+
+        integer_part = pynutil.insert("integer_part: \"") + cardinals + pynutil.insert("\"")
+        optional_integer_part = pynini.closure(integer_part + pynini.accep(" "), 0, 1)
+
+        optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
+
+        final_graph = optional_minus_graph + optional_integer_part + (sing_fraction_graph | pl_fraction_graph)
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-
