@@ -95,6 +95,19 @@ def build_cased_number_fsts(deterministic=True):
         if k == "nom_sg" and not deterministic:
             digits_cased_fst["nom_sg"] |= pynini.cross("1", "akta")
 
+    # for hundreds, thousands, etc.
+    digits_nom_prefix = (NEMO_DIGIT - 1) @ digits_nom
+    digits_nom_prefix |= pynutil.delete("1")
+    if not deterministic:
+        digits_nom_prefix |= pynini.cross("1", "okta")
+        digits_nom_prefix |= pynini.cross("1", "akta")
+
+    digits_cased_fst_pfx = {}
+    digits_cased_fst_pfx["nom_sg"] = digits_nom_prefix
+    for k in digits_cased_fst:
+        if k not in digits_cased_fst_pfx:
+            digits_cased_fst_pfx[k] = digits_cased_fst[k]
+
     # zero
     nolla_cased_fst = {}
     for k in nolla_cased:
