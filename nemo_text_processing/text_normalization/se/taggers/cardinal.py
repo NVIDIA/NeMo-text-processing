@@ -134,6 +134,7 @@ def build_cased_number_fsts(deterministic=True):
     for k in digits_cased_fst:
         logi = "logi"
         digit_cased_no_one = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
+        digit_nom_no_one = (NEMO_DIGIT - "1") @ digits_cased_fst["nom_sg"]
         if k == 'com_sg':
             logi = "logiin"
             ten = digit_cased_no_one
@@ -141,6 +142,17 @@ def build_cased_number_fsts(deterministic=True):
             ten = digits_nom_no_one
         # 20 -> guvttiin/logiin
         tens_cased_fst[k] = digit_cased_no_one + spacer + pynini.cross("0", logi_cased[k])
+        # e.g.: https://gtweb.uit.no/cgi-bin/smi/smi.cgi?text=vihttalogi&pos=Any&mode=full&lang=sme&plang=eng&action=paradigm
+        if not deterministic:
+            if k in ["nom_pl", "gen_pl", "loc_pl", "ess"]:
+                tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", logi_cased[k])
+            if k == "ess":
+                tens_cased_fst[k] |= ((NEMO_DIGIT - "1") @ digits_cased_fst["nom_pl"]) + spacer + pynini.cross("0", "login")
+                tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", "login")
+            if k == "nom_sg":
+                tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", "lohki")
+            if k == "com_pl":
+                tens_cased_fst[k] |= ((NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]) + spacer + pynini.cross("0", logi_cased[k])
         # 23 -> guvttiin/logiin/golmmain
         tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_cased_fst[k]
 
@@ -156,6 +168,9 @@ def build_cased_number_fsts(deterministic=True):
                 two_digits_fst = two_digit_cased_fsts_sfx[k]
             else:
                 two_digits_fst |= two_digit_cased_fsts_sfx[k]
+
+    # bare hundreds
+
 
     return {
         "tens": tens_cased_fst,
