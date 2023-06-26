@@ -92,8 +92,11 @@ def build_cased_number_fsts(deterministic=True):
     digits_cased_fst = {}
     for k in digits_cased:
         digits_cased_fst[k] = pynini.string_map((k, v) for k, v in digits_cased[k].items())
-        if k == "nom_sg" and not deterministic:
-            digits_cased_fst["nom_sg"] |= pynini.cross("1", "akta")
+        if not deterministic:
+            if k == "nom_sg":
+                digits_cased_fst[k] |= pynini.cross("1", "akta")
+            elif k == "gen_sg":
+                digits_cased_fst[k] |= pynini.cross("2", "guovtti")
 
     # for hundreds, thousands, etc.
     digits_nom_prefix = (NEMO_DIGIT - 1) @ digits_nom
