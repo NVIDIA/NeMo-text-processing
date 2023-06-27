@@ -153,16 +153,15 @@ def build_cased_number_fsts(deterministic=True):
             if k in ["nom_pl", "gen_pl", "loc_pl", "ess"]:
                 tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", logi_cased[k])
             if k == "ess":
-                tens_cased_fst[k] |= (
-                    ((NEMO_DIGIT - "1") @ digits_cased_fst["nom_pl"]) + spacer + pynini.cross("0", "login")
-                )
+                digit_nom_pl = (NEMO_DIGIT - "1") @ digits_cased_fst["nom_pl"]
+                tens_cased_fst[k] |= digit_nom_pl + spacer + pynini.cross("0", "login")
+
                 tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", "login")
             if k == "nom_sg":
                 tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", "lohki")
             if k == "com_pl":
-                tens_cased_fst[k] |= (
-                    ((NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]) + spacer + pynini.cross("0", logi_cased[k])
-                )
+                digit_gen_pl = (NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]
+                tens_cased_fst[k] |= digit_gen_pl + spacer + pynini.cross("0", logi_cased[k])
         # 23 -> guvttiin/logiin/golmmain
         tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_bare_cased_fst[k]
 
