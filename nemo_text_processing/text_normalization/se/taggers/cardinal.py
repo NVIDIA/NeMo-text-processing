@@ -58,11 +58,15 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     return cardinal_string @ fst
 
 
-def load_cased_digits():
+def load_cased_digits(bare=True):
     digits_cased = {}
     for key in CASE_KEYS:
+        if bare:
+            fkey = f"bare_{key}"
+        else:
+            fkey = key
         digits_cased[key] = {}
-        for label in load_labels(get_abs_path(f"data/numbers/digit_{key}.tsv")):
+        for label in load_labels(get_abs_path(f"data/numbers/digit_{fkey}.tsv")):
             digits_cased[key][label[1]] = label[0]
     digits_cased["nom_sg"] = {}
     for label in load_labels(get_abs_path(f"data/numbers/digit.tsv")):
@@ -77,7 +81,6 @@ def build_cased_number_fsts(deterministic=True):
     for teens and tens; for longer numbers Nickel and Sammallahti (2011) say
     'i lengre tallord bøyes bare enere' ('in longer number words only ones are inflected')
     """
-    digits_cased = load_cased_digits()
     digits_nom = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
     digits_nom_no_one = (NEMO_DIGIT - "1") @ digits_nom
     cuodi_cased = load_case_forms(get_abs_path("data/numbers/case_cuodi.tsv"), True)
@@ -91,20 +94,21 @@ def build_cased_number_fsts(deterministic=True):
         digits_nom |= pynini.cross("1", "akta")
 
     # digits
-    digits_cased_fst = {}
-    for k in digits_cased:
-        digits_cased_fst[k] = pynini.string_map((k, v) for k, v in digits_cased[k].items())
-        if not deterministic:
-            if k == "nom_sg":
-                digits_cased_fst[k] |= pynini.cross("1", "akta")
-            elif k == "gen_sg":
-                digits_cased_fst[k] |= pynini.cross("2", "guovtti")
-    digits_bare_cased_fst = copy.deepcopy(digits_cased_fst)
-    digits_cased_fst["loc_sg"] = digits_bare_cased_fst["gen_sg"]
-    digits_cased_fst["ill_pl"] = digits_bare_cased_fst["nom_sg"]
-    digits_cased_fst["ill_sg"] = digits_bare_cased_fst["gen_sg"]
-    digits_cased_fst["com_pl"] = digits_bare_cased_fst["nom_sg"]
-    digits_cased_fst["ess"] = digits_bare_cased_fst["nom_sg"]
+    def get_digit_cased_fst(bare=True, deterministic=deterministic):
+        digits_cased = load_cased_digits(bare)
+
+        digits_cased_fst = {}
+        for k in digits_cased:
+            digits_cased_fst[k] = pynini.string_map((k, v) for k, v in digits_cased[k].items())
+            if not deterministic:
+                if k == "nom_sg":
+                    digits_cased_fst[k] |= pynini.cross("1", "akta")
+                elif k == "gen_sg" and bare:
+                    digits_cased_fst[k] |= pynini.cross("2", "guovtti")
+        return digits_cased_fst
+
+    digits_bare_cased_fst = get_digit_cased_fst(bare=True)
+    digits_cased_fst = get_digit_cased_fst(bare=False)
 
     # for hundreds, thousands, etc.
     digits_nom_prefix = (NEMO_DIGIT - "1") @ digits_nom
