@@ -16,15 +16,9 @@ from nemo_text_processing.inverse_text_normalization.zh.graph_utils import Graph
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.decimal import DecimalFst
-
-# from nemo_text_processing.inverse_text_normalization.zh.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.fraction import FractionFst
-
-# from nemo_text_processing.inverse_text_normalization.zh.verbalizers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.ordinal import OrdinalFst
-
-# from nemo_text_processing.inverse_text_normalization.zh.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.whitelist import WhiteListFst
 
