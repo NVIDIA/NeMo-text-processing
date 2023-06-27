@@ -18,7 +18,7 @@ import string
 from pathlib import Path
 from typing import Dict
 
-import pynini
+#import pynini
 from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
