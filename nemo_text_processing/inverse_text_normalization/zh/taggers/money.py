@@ -80,8 +80,6 @@ class MoneyFst(GraphFst):
             + pynutil.insert('"')
         )
 
-        ###
-        # graph_kuaimao = graph_kuai + pynutil.insert(" ") + graph_mao
         graph_digits = pynutil.insert('fractional_part: "') + digits + pynutil.insert('"')
         graph_kuaimao = (
             graph_kuai
