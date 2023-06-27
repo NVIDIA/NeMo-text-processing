@@ -60,18 +60,22 @@ To normalize text in .json manifest:
         --batch_size=300 \
         --manifest_text_field="text" \
         --whitelist=<PATH TO YOUR WHITELIST>
+    
+    For a complete list of optional arguments, run:
+    >>> python normalize.py --help
 
 
 To integrate Normalizer in your script:
     >>> from nemo_text_processing.text_normalization.normalize import Normalizer
     # see the script for args details
-    >>> normalizer_en = (Normalizer(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True)
+    >>> normalizer_en = Normalizer(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True)
     >>> normalizer_en.normalize("<INPUT_TEXT>")
     # normalize list of entries
     >>> normalizer_en.normalize_list(["<INPUT_TEXT1>", <INPUT_TEXT2>"])
     # normalize .json manifest entries
-    >>> normalizer.normalize_manifest(manifest=<PATH TO INPUT .JSON MANIFEST>, n_jobs=-1, batch_size=300, output_filename=<PATH TO OUTPUT .JSON MANIFEST>, text_field="text"
-"""
+    >>> normalizer_en.normalize_manifest(manifest=<PATH TO INPUT .JSON MANIFEST>, n_jobs=-1, batch_size=300, 
+                                        output_filename=<PATH TO OUTPUT .JSON MANIFEST>, text_field="text",
+                                        punct_pre_process=False, punct_post_process=False)
 
 
 class Normalizer:
