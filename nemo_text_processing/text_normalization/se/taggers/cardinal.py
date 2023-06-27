@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import copy
+
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
@@ -152,12 +153,16 @@ def build_cased_number_fsts(deterministic=True):
             if k in ["nom_pl", "gen_pl", "loc_pl", "ess"]:
                 tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", logi_cased[k])
             if k == "ess":
-                tens_cased_fst[k] |= ((NEMO_DIGIT - "1") @ digits_cased_fst["nom_pl"]) + spacer + pynini.cross("0", "login")
+                tens_cased_fst[k] |= (
+                    ((NEMO_DIGIT - "1") @ digits_cased_fst["nom_pl"]) + spacer + pynini.cross("0", "login")
+                )
                 tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", "login")
             if k == "nom_sg":
                 tens_cased_fst[k] |= digit_nom_no_one + spacer + pynini.cross("0", "lohki")
             if k == "com_pl":
-                tens_cased_fst[k] |= ((NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]) + spacer + pynini.cross("0", logi_cased[k])
+                tens_cased_fst[k] |= (
+                    ((NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]) + spacer + pynini.cross("0", logi_cased[k])
+                )
         # 23 -> guvttiin/logiin/golmmain
         tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_bare_cased_fst[k]
 
@@ -166,7 +171,9 @@ def build_cased_number_fsts(deterministic=True):
     two_digit_cased_fsts_sfx = {}
     two_digits_fst = None
     for k in digits_cased_fst:
-        two_digit_cased_fsts[k] = tens_cased_fst[k] | teens_cased_fst[k] | (pynutil.delete("0") + digits_bare_cased_fst[k])
+        two_digit_cased_fsts[k] = (
+            tens_cased_fst[k] | teens_cased_fst[k] | (pynutil.delete("0") + digits_bare_cased_fst[k])
+        )
         if k != "nom_sg":
             two_digit_cased_fsts_sfx[k] = two_digit_cased_fsts[k] + pynutil.delete(endings_cased[k])
             if two_digits_fst is None:
@@ -186,7 +193,7 @@ def build_cased_number_fsts(deterministic=True):
             prefix_digit |= pynutil.delete("1")
         if not deterministic:
             if k == "com_pl":
-                prefix_digit |= ((NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"])
+                prefix_digit |= (NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]
             elif k == "ess":
                 bare_hundred |= pynini.cross("00", "čuohtin")
             elif k == "nom_sg":
@@ -203,10 +210,14 @@ def build_cased_number_fsts(deterministic=True):
             hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
             if not deterministic:
                 hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_bare_cased_fst[k]
-                hundreds_fst[k] |= prefix_hundreds + spacer + (((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased_fst[k])
+                hundreds_fst[k] |= (
+                    prefix_hundreds + spacer + (((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased_fst[k])
+                )
         else:
             hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_bare_cased_fst[k]
-            hundreds_fst[k] |= prefix_hundreds + spacer + (((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased_fst[k])
+            hundreds_fst[k] |= (
+                prefix_hundreds + spacer + (((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased_fst[k])
+            )
             if not deterministic:
                 hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
 
