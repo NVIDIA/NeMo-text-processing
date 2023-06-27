@@ -138,10 +138,11 @@ def build_cased_number_fsts(deterministic=True):
         else:
             teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
         if not deterministic:
-            # nom_pl, gen_pl, acc_pl, loc_pl, ess(?)
-            teens_cased_fst[k] = pynutil.delete("1") + digits_bare_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
+            if k in ["nom_pl", "gen_pl", "acc_pl", "loc_pl"]:
+                teens_cased_fst[k] = pynutil.delete("1") + digits_bare_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
             if k == "ess":
                 teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + pynutil.insert("nuppelogin")
+                teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["nom_pl"] + pynutil.insert("nuppelogin")
 
     # tens
     tens_cased_fst = {}
