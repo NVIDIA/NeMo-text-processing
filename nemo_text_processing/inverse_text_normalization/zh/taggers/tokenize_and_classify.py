@@ -26,16 +26,10 @@ from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
 from nemo_text_processing.inverse_text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.decimal import DecimalFst
-
-# from nemo_text_processing.inverse_text_normalization.zh.taggers.electronic import ElectronicFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.fraction import FractionFst
-
-# from nemo_text_processing.inverse_text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.punctuation import PunctuationFst
-
-# from nemo_text_processing.inverse_text_normalization.zh.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.word import WordFst
@@ -55,7 +49,7 @@ class ClassifyFst(GraphFst):
 
     def __init__(
         self,
-        input_case: INPUT_LOWER_CASED,
+        input_case: str,
         cache_dir: str = None,
         whitelist: str = None,
         overwrite_cache: bool = False,
