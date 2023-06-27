@@ -209,6 +209,10 @@ def build_cased_number_fsts(deterministic=True):
             elif k == "nom_sg":
                 bare_hundred |= pynini.cross("00", "čuohti")
         bare_hundreds_fst[k] = prefix_digit + spacer + bare_hundred
+
+    def select_tens(tens_cased):
+        return ((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased
+
     # 3 digit
     prefix_hundreds = digits_nom_prefix + pynutil.insert("čuođi")
     just_tens_nom = ((NEMO_DIGIT - "1" - "0") + pynutil.insert("0")) @ tens_cased_fst['nom_sg']
@@ -221,15 +225,19 @@ def build_cased_number_fsts(deterministic=True):
             if not deterministic:
                 hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_bare_cased_fst[k]
                 hundreds_fst[k] |= (
-                    prefix_hundreds + spacer + (((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased_fst[k])
+                    prefix_hundreds + spacer + select_tens(tens_cased_fst[k])
                 )
         else:
             hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_bare_cased_fst[k]
             hundreds_fst[k] |= (
-                prefix_hundreds + spacer + (((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased_fst[k])
+                prefix_hundreds + spacer + select_tens(tens_cased_fst[k])
             )
             if not deterministic:
                 hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
+
+    # thousands
+    bare_thousands = {}
+    thousands = {}
 
     return {
         "tens": tens_cased_fst,
