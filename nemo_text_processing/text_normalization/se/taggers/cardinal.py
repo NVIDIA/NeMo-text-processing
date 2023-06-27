@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
@@ -97,6 +98,9 @@ def build_cased_number_fsts(deterministic=True):
                 digits_cased_fst[k] |= pynini.cross("1", "akta")
             elif k == "gen_sg":
                 digits_cased_fst[k] |= pynini.cross("2", "guovtti")
+    digits_bare_cased_fst = copy.deepcopy(digits_cased_fst)
+    digits_cased_fst["loc_sg"] = (NEMO_DIGIT - "3") @ digits_bare_cased_fst["log_sg"]
+    digits_cased_fst["loc_sg"] |= pynini.cross("3", "golmma")
 
     # for hundreds, thousands, etc.
     digits_nom_prefix = (NEMO_DIGIT - "1") @ digits_nom
@@ -133,8 +137,8 @@ def build_cased_number_fsts(deterministic=True):
     # com.sg/loc.pl is different for 'logi'
     for k in digits_cased_fst:
         logi = "logi"
-        digit_cased_no_one = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
-        digit_nom_no_one = (NEMO_DIGIT - "1") @ digits_cased_fst["nom_sg"]
+        digit_cased_no_one = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
+        digit_nom_no_one = (NEMO_DIGIT - "1") @ digits_bare_cased_fst["nom_sg"]
         if k == 'com_sg':
             logi = "logiin"
             ten = digit_cased_no_one
@@ -155,14 +159,14 @@ def build_cased_number_fsts(deterministic=True):
             if k == "com_pl":
                 tens_cased_fst[k] |= ((NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]) + spacer + pynini.cross("0", logi_cased[k])
         # 23 -> guvttiin/logiin/golmmain
-        tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_cased_fst[k]
+        tens_cased_fst[k] |= ten + spacer + pynutil.insert(logi) + spacer + digits_bare_cased_fst[k]
 
     # two digits
     two_digit_cased_fsts = {}
     two_digit_cased_fsts_sfx = {}
     two_digits_fst = None
     for k in digits_cased_fst:
-        two_digit_cased_fsts[k] = tens_cased_fst[k] | teens_cased_fst[k] | (pynutil.delete("0") + digits_cased_fst[k])
+        two_digit_cased_fsts[k] = tens_cased_fst[k] | teens_cased_fst[k] | (pynutil.delete("0") + digits_bare_cased_fst[k])
         if k != "nom_sg":
             two_digit_cased_fsts_sfx[k] = two_digit_cased_fsts[k] + pynutil.delete(endings_cased[k])
             if two_digits_fst is None:
@@ -193,15 +197,15 @@ def build_cased_number_fsts(deterministic=True):
     just_tens_nom = ((NEMO_DIGIT - "1" - "0") + pynutil.insert("0")) @ tens_cased_fst['nom_sg']
     hundreds_fst = {}
     for k in digits_cased_fst:
-        hundreds_fst[k] = prefix_hundreds + pynutil.delete("0") + spacer + digits_cased_fst[k]
+        hundreds_fst[k] = prefix_hundreds + pynutil.delete("0") + spacer + digits_bare_cased_fst[k]
+        hundreds_fst[k] |= prefix_hundreds + spacer + teens_cased_fst[k]
         if k in ["loc_pl", "com_sg"]:
             hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
             if not deterministic:
-                hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_cased_fst[k]
+                hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_bare_cased_fst[k]
                 hundreds_fst[k] |= prefix_hundreds + spacer + (((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased_fst[k])
         else:
-            # fixme
-            hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_cased_fst[k]
+            hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_bare_cased_fst[k]
             hundreds_fst[k] |= prefix_hundreds + spacer + (((NEMO_DIGIT - "0") + pynini.accep("0")) @ tens_cased_fst[k])
             if not deterministic:
                 hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
@@ -209,7 +213,7 @@ def build_cased_number_fsts(deterministic=True):
     return {
         "tens": tens_cased_fst,
         "teens": teens_cased_fst,
-        "digits": digits_cased_fst,
+        "digits": digits_bare_cased_fst,
         "zero": nolla_cased_fst,
         "two_digit_cased_fsts": two_digit_cased_fsts,
         "two_digit_cased_fsts_sfx": two_digit_cased_fsts_sfx,
