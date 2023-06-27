@@ -71,12 +71,13 @@ To integrate Normalizer in your script:
     >>> normalizer_en = Normalizer(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True)
     >>> normalizer_en.normalize("<INPUT_TEXT>")
     # normalize list of entries
-    >>> normalizer_en.normalize_list(["<INPUT_TEXT1>", <INPUT_TEXT2>"])
+    >>> normalizer_en.normalize_list(["<INPUT_TEXT1>", "<INPUT_TEXT2>"])
     # normalize .json manifest entries
     >>> normalizer_en.normalize_manifest(manifest=<PATH TO INPUT .JSON MANIFEST>, n_jobs=-1, batch_size=300, 
                                         output_filename=<PATH TO OUTPUT .JSON MANIFEST>, text_field="text",
                                         punct_pre_process=False, punct_post_process=False)
 
+"""
 
 class Normalizer:
     """
@@ -400,7 +401,7 @@ class Normalizer:
         **kwargs,
     ):
         """
-        Normalizes "text_filed" from .json manifest.
+        Normalizes "text_field" from .json manifest.
 
         Args:
             manifest: path to .json manifest file
@@ -409,7 +410,7 @@ class Normalizer:
                 (n_cpus + 1 + n_jobs) are used. Thus for n_jobs = -2, all CPUs but one are used.
             punct_pre_process: set to True to do punctuation pre-processing
             punct_post_process: set to True to do punctuation post-processing
-            batch_size: int,
+            batch_size: number of samples to process per iteration (int)
             output_filename: path to .json file to save normalized text
             text_field: name of the field in the manifest to normalize
             **kwargs are need for audio-based normalization that requires extra args
@@ -663,15 +664,21 @@ def parse_args():
         "--input_file",
         dest="input_file",
         help="input file path. "
-        "The input file could be either a .txt file containing once example for normalziation per line or "
-        ".json manifest file. Field to normalized in .json manifest is specifie with `--text_field` arg.",
+        "The input file can be either a .txt file containing one example for normalization per line or "
+        "a .json manifest file. Field to normalize in .json manifest is specified with `--manifest_text_field` arg.",
         type=str,
     )
     parser.add_argument(
         '--manifest_text_field',
-        help="A field in .json manifest to normalize (applicable only when input_file is a .json manifest)",
+        help="The field in a .json manifest to normalize (applicable only when input_file is a .json manifest)",
         type=str,
         default="text",
+    )
+    parser.add_argument(
+        "--output_field",
+        help="Name of the field in a .json manifest in which to save normalized text (applicable only when input_file is a .json manifest)",
+        type=str,
+        default="normalized",
     )
     parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
     parser.add_argument(
@@ -680,7 +687,7 @@ def parse_args():
     parser.add_argument(
         "--input_case",
         help="Input text capitalization, set to 'cased' if text contains capital letters."
-        "This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.",
+        "This argument affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.",
         choices=["lower_cased", "cased"],
         default="cased",
         type=str,
@@ -688,19 +695,19 @@ def parse_args():
     parser.add_argument("--verbose", help="print info for debugging", action='store_true')
     parser.add_argument(
         "--punct_post_process",
-        help="set to True to enable punctuation post processing to match input.",
+        help="Add this flag to enable punctuation post processing to match input.",
         action="store_true",
     )
     parser.add_argument(
         "--punct_pre_process",
-        help="Set to True to add spaces around square brackets, otherwise text between square brackets won't be normalized",
+        help="Add this flag to add spaces around square brackets, otherwise text between square brackets won't be normalized",
         action="store_true",
     )
-    parser.add_argument("--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true")
+    parser.add_argument("--overwrite_cache", help="Add this flag to re-create .far grammar files", action="store_true")
     parser.add_argument(
         "--whitelist",
         help="Path to a file with with whitelist replacement,"
-        "e.g., for English whitelist files are stored under text_normalization/en/data/whitelist",
+        "e.g., for English, whitelist files are stored under text_normalization/en/data/whitelist",
         default=None,
         type=str,
     )
@@ -755,6 +762,7 @@ if __name__ == "__main__":
                 punct_post_process=args.punct_post_process,
                 batch_size=args.batch_size,
                 text_field=args.manifest_text_field,
+                output_field=args.output_field,
                 output_filename=args.output_file,
             )
 
