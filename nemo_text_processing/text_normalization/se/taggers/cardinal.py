@@ -226,14 +226,10 @@ def build_cased_number_fsts(deterministic=True):
             hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
             if not deterministic:
                 hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_bare_cased_fst[k]
-                hundreds_fst[k] |= (
-                    prefix_hundreds + spacer + select_tens(tens_cased_fst[k])
-                )
+                hundreds_fst[k] |= prefix_hundreds + spacer + select_tens(tens_cased_fst[k])
         else:
             hundreds_fst[k] |= prefix_hundreds + spacer + just_tens_nom + spacer + digits_bare_cased_fst[k]
-            hundreds_fst[k] |= (
-                prefix_hundreds + spacer + select_tens(tens_cased_fst[k])
-            )
+            hundreds_fst[k] |= prefix_hundreds + spacer + select_tens(tens_cased_fst[k])
             if not deterministic:
                 hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
 
