@@ -17,7 +17,6 @@ from nemo_text_processing.inverse_text_normalization.zh.graph_utils import Graph
 from pynini.lib import pynutil
 
 
-# A third way, seems to work fine but might have potential issues?
 class OrdinalFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="ordinal", kind="classify")
