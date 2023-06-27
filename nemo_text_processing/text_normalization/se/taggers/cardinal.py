@@ -100,16 +100,11 @@ def build_cased_number_fsts(deterministic=True):
             elif k == "gen_sg":
                 digits_cased_fst[k] |= pynini.cross("2", "guovtti")
     digits_bare_cased_fst = copy.deepcopy(digits_cased_fst)
-    digits_cased_fst["loc_sg"] = (NEMO_DIGIT - "3") @ digits_bare_cased_fst["loc_sg"]
-    digits_cased_fst["loc_sg"] |= pynini.cross("3", "golmma")
-    digits_cased_fst["ill_pl"] = (NEMO_DIGIT - "3") @ digits_bare_cased_fst["ill_pl"]
-    digits_cased_fst["ill_pl"] |= pynini.cross("3", "golbma")
-    digits_cased_fst["ill_sg"] = (NEMO_DIGIT - "3") @ digits_bare_cased_fst["ill_sg"]
-    digits_cased_fst["ill_sg"] |= pynini.cross("3", "golmma")
-    digits_cased_fst["com_pl"] = (NEMO_DIGIT - "3") @ digits_bare_cased_fst["com_pl"]
-    digits_cased_fst["com_pl"] |= pynini.cross("3", "golbma")
-    digits_cased_fst["ess"] = (NEMO_DIGIT - "3") @ digits_bare_cased_fst["ess"]
-    digits_cased_fst["ess"] |= pynini.cross("3", "golbma")
+    digits_cased_fst["loc_sg"] = digits_bare_cased_fst["gen_sg"]
+    digits_cased_fst["ill_pl"] = digits_bare_cased_fst["nom_sg"]
+    digits_cased_fst["ill_sg"] = digits_bare_cased_fst["gen_sg"]
+    digits_cased_fst["com_pl"] = digits_bare_cased_fst["nom_sg"]
+    digits_cased_fst["ess"] = digits_bare_cased_fst["nom_sg"]
 
     # for hundreds, thousands, etc.
     digits_nom_prefix = (NEMO_DIGIT - "1") @ digits_nom
