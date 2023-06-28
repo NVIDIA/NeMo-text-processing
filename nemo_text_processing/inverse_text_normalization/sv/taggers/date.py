@@ -44,7 +44,6 @@ class DateFst(GraphFst):
         era_words = tn_date_tagger.era_words.invert().optimize()
         day = tn_date_tagger.digit_day.invert().optimize()
         day_double = tn_date_tagger.digit_day_zero.invert().optimize()
-        # day_double = force_double_digits(tn_date_tagger.digit_day).invert().optimize()
         month_double = force_double_digits(tn_date_tagger.number_to_month).invert().optimize()
         month_abbr = tn_date_tagger.month_abbr.invert().optimize()
         self.month_to_number = tn_date_tagger.number_to_month.invert().optimize()
