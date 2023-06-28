@@ -193,21 +193,29 @@ def build_cased_number_fsts(deterministic=True):
             else:
                 two_digits_fst |= two_digit_cased_fsts_sfx[k]
 
+    digits_prefix_cased_fst = {}
+    for k in digits_cased_fst:
+        if k in ["ess", "ill_pl", "nom_pl", "gen_pl", "com_pl"]:
+            digits_prefix_cased_fst[k] = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
+        else:
+            digits_prefix_cased_fst[k] = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
+        if not deterministic:
+            digits_prefix_cased_fst[k] |= "1" @ digits_cased_fst[k]
+            if k == "com_pl":
+                digits_prefix_cased_fst[k] |= (NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]
+            if k == "nom_sg":
+                digits_prefix_cased_fst[k] |= pynini.cross("1", "akta")
+
     # bare hundreds
     bare_hundreds_fst = {}
     for k in digits_cased_fst:
         bare_hundred = pynini.cross("00", cuodi_cased[k])
-        prefix_digit = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
+        if k == "gen_sg":
+            bare_hundred = pynini.cross("00", "čuođi")
+        prefix_digit = (NEMO_DIGIT - "1") @ digits_prefix_cased_fst[k]
         prefix_digit |= pynutil.delete("1")
-        if not deterministic:
-            if k == "com_pl":
-                prefix_digit |= (NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]
-            elif k == "ess":
-                bare_hundred |= pynini.cross("00", "čuohtin")
-            elif k == "nom_sg":
-                bare_hundred |= pynini.cross("00", "čuohti")
-                prefix_digit |= pynini.cross("1", "okta")
-                prefix_digit |= pynini.cross("1", "akta")
+        if not deterministic and k == "ess":
+            bare_hundred |= pynini.cross("00", "čuohtin")
         bare_hundreds_fst[k] = prefix_digit + spacer + bare_hundred
 
     def select_tens(tens_cased):
@@ -235,16 +243,10 @@ def build_cased_number_fsts(deterministic=True):
     bare_thousands_fst = {}
     for k in digits_cased_fst:
         bare_thousand = pynini.cross("000", duhat_cased[k])
-        prefix_digit = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
+        prefix_digit = (NEMO_DIGIT - "1") @ digits_prefix_cased_fst[k]
         prefix_digit |= pynutil.delete("1")
-        if not deterministic:
-            if k == "sg_gen":
-                bare_thousand |= pynini.cross("000", "duhát")
-            elif k == "com_pl":
-                prefix_digit |= (NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]
-            elif k == "nom_sg":
-                prefix_digit |= pynini.cross("1", "okta")
-                prefix_digit |= pynini.cross("1", "akta")
+        if not deterministic and k == "sg_gen":
+            bare_thousand |= pynini.cross("000", "duhát")
         bare_thousands_fst[k] = prefix_digit + spacer + bare_thousand
     thousands = {}
 
