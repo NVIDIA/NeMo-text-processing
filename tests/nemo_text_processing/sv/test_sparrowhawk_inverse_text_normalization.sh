@@ -50,16 +50,6 @@ testITNTime() {
   runtest $input
 }
 
-# testITNMeasure() {
-#   input=$PROJECT_DIR/sv/data_inverse_text_normalization/test_cases_measure.txt
-#   runtest $input
-# }
-
-# testITNMoney() {
-#   input=$PROJECT_DIR/sv/data_inverse_text_normalization/test_cases_money.txt
-#   runtest $input
-# }
-
 testITNWhitelist() {
   input=$PROJECT_DIR/sv/data_inverse_text_normalization/test_cases_whitelist.txt
   runtest $input
