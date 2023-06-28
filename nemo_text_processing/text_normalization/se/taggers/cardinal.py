@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import copy
-
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
@@ -22,7 +20,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_space,
-    insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA, make_spacer
 from nemo_text_processing.text_normalization.se.utils import CASE_KEYS, get_abs_path, load_case_forms, load_labels
