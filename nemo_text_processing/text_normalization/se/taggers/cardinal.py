@@ -307,7 +307,7 @@ class CardinalFst(GraphFst):
 
         # Any single digit
         graph_digit = digit
-        digit_inverse = pynini.invert(digit)
+        self.digit_inverse = pynini.invert(digit)
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
 
         graph_zero = zero
