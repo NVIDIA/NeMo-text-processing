@@ -22,7 +22,7 @@ class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
         e.g. halv -> tokens { name: "1/2" }
-        e.g. ett och halv -> tokens { name: "1 1/2" }
+        e.g. ett och en halv -> tokens { name: "1 1/2" }
         e.g. tre och fyra femtedelar -> tokens { name: "3 4/5" }
     
     Args:
@@ -44,6 +44,7 @@ class FractionFst(GraphFst):
             integer + NEMO_SPACE + no_numerator + fractions,
             integer + NEMO_SPACE + cardinal + pynini.cross(" ", "/") + fractions,
             integer + pynini.cross(" och ", " ") + cardinal + pynini.cross(" ", "/") + fractions,
+            integer + pynini.cross(" och ", " ") + pynini.cross("en halv", "1/2"),
             cardinal + pynini.cross(" ", "/") + fractions,
         )
 
