@@ -79,6 +79,7 @@ To integrate Normalizer in your script:
 
 """
 
+
 class Normalizer:
     """
     Normalizer class that converts text from written to spoken form.
