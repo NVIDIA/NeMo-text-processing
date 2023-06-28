@@ -16,7 +16,7 @@
 
 import os
 
-from nemo_text_processing.inverse_text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.se.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,

@@ -19,7 +19,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_preserve_order,
     delete_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
+from nemo_text_processing.text_normalization.se.graph_utils import ensure_space
 from pynini.lib import pynutil
 
 

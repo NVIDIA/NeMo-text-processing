@@ -18,15 +18,15 @@ import os
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.date import DateFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.electronic import ElectronicFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.fraction import FractionFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.telephone import TelephoneFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.electronic import ElectronicFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.telephone import TelephoneFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.se.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
@@ -34,14 +34,14 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst as TNCardinalTagger
-from nemo_text_processing.text_normalization.sv.taggers.date import DateFst as TNDateTagger
-from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst as TNDecimalTagger
-from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst as TNElectronicTagger
-from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst as TNFractionTagger
-from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as TNOrdinalTagger
-from nemo_text_processing.text_normalization.sv.taggers.telephone import TelephoneFst as TNTelephoneTagger
-from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst as TNElectronicVerbalizer
+from nemo_text_processing.text_normalization.se.taggers.cardinal import CardinalFst as TNCardinalTagger
+from nemo_text_processing.text_normalization.se.taggers.date import DateFst as TNDateTagger
+from nemo_text_processing.text_normalization.se.taggers.decimal import DecimalFst as TNDecimalTagger
+from nemo_text_processing.text_normalization.se.taggers.electronic import ElectronicFst as TNElectronicTagger
+from nemo_text_processing.text_normalization.se.taggers.fraction import FractionFst as TNFractionTagger
+from nemo_text_processing.text_normalization.se.taggers.ordinal import OrdinalFst as TNOrdinalTagger
+from nemo_text_processing.text_normalization.se.taggers.telephone import TelephoneFst as TNTelephoneTagger
+from nemo_text_processing.text_normalization.se.verbalizers.electronic import ElectronicFst as TNElectronicVerbalizer
 from pynini.lib import pynutil
 
 
@@ -70,7 +70,7 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != 'None':
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"sv_itn_{input_case}.far")
+            far_file = os.path.join(cache_dir, f"se_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
