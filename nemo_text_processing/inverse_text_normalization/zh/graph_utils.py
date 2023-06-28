@@ -19,7 +19,6 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
-from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
@@ -133,7 +132,7 @@ class GraphFst:
 
         self.far_path = Path(os.path.dirname(__file__) + "/grammars/" + kind + "/" + name + ".far")
         if self.far_exist():
-            self._fst = Far(self.far_path, mode="r", arc_type="standard", far_type="default").get_fst()
+            self._fst = pynini.Far(self.far_path, mode="r", arc_type="standard", far_type="default").get_fst()
 
     def far_exist(self) -> bool:
         """
