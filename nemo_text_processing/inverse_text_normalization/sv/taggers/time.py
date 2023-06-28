@@ -61,11 +61,6 @@ class TimeFst(GraphFst):
         e.g. klockan tretton tio -> time { hours: "kl. 13" minutes: "10" }
         e.g. kvart i tolv -> time { minutes: "45" hours: "11" }
         e.g. kvart över tolv -> time { minutes: "15" hours: "12" }
-        e.g. halv tolv -> time { minutes: "30" hours: "11" }
-        e.g. tre i tolv -> time { minutes: "57" hours: "11" }
-        e.g. tre i kvart i tolv -> time { minutes: "42" hours: "11" }
-        e.g. tre över kvart i tolv -> time { minutes: "48" hours: "11" }
-        e.g. tre över tolv -> time { minutes: "3" hours: "12" }
     
     Args:
         tn_cardinal_tagger: TN cardinal verbalizer
