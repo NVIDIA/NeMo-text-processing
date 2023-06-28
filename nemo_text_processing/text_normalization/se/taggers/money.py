@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA, ensure_space
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
@@ -90,7 +90,7 @@ class MoneyFst(GraphFst):
             + (NEMO_DIGIT - "0")
             + pynini.closure(pynutil.delete("0"))
         )
-        decimal_with_quantity = NEMO_SIGMA + SV_ALPHA
+        decimal_with_quantity = NEMO_SIGMA + SE_ALPHA
 
         decimal_part = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
         decimal_part_ett = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final_ett
@@ -129,8 +129,7 @@ class MoneyFst(GraphFst):
         graph_min_singular = pynutil.insert(" currency_min: \"") + min_singular + pynutil.insert("\"")
         graph_min_plural = pynutil.insert(" currency_min: \"") + min_plural + pynutil.insert("\"")
 
-        maj_singular_labels_all = [(x[0], "en") for x in maj_singular_labels]
-        maj_singular_labels_all += [(x[0], "ett") for x in maj_singular_labels_nt]
+        maj_singular_labels_all = [(x[0], "okta") for x in maj_singular_labels]
         # format ** dollars ** cent
         decimal_graph_with_minor = None
         integer_graph_reordered = None
