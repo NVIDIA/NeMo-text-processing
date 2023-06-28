@@ -197,10 +197,7 @@ def build_cased_number_fsts(deterministic=True):
     bare_hundreds_fst = {}
     for k in digits_cased_fst:
         bare_hundred = pynini.cross("00", cuodi_cased[k])
-        if k == "ess":
-            prefix_digit = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
-        else:
-            prefix_digit = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
+        prefix_digit = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
         prefix_digit |= pynutil.delete("1")
         if not deterministic:
             if k == "com_pl":
@@ -238,10 +235,7 @@ def build_cased_number_fsts(deterministic=True):
     bare_thousands_fst = {}
     for k in digits_cased_fst:
         bare_thousand = pynini.cross("000", duhat_cased[k])
-        if k == "ess":
-            prefix_digit = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
-        else:
-            prefix_digit = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
+        prefix_digit = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
         prefix_digit |= pynutil.delete("1")
         if not deterministic:
             if k == "sg_gen":
