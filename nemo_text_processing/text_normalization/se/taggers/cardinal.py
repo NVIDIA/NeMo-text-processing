@@ -197,12 +197,8 @@ def build_cased_number_fsts(deterministic=True):
     bare_hundreds_fst = {}
     for k in digits_cased_fst:
         bare_hundred = pynini.cross("00", cuodi_cased[k])
-        if k in ["ill_sg", "loc_sg"]:
-            prefix_digit = (NEMO_DIGIT - "1") @ digits_cased_fst["gen_sg"]
-            prefix_digit |= pynutil.delete("1")
-        else:
-            prefix_digit = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
-            prefix_digit |= pynutil.delete("1")
+        prefix_digit = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
+        prefix_digit |= pynutil.delete("1")
         if not deterministic:
             if k == "com_pl":
                 prefix_digit |= (NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]
@@ -210,6 +206,8 @@ def build_cased_number_fsts(deterministic=True):
                 bare_hundred |= pynini.cross("00", "čuohtin")
             elif k == "nom_sg":
                 bare_hundred |= pynini.cross("00", "čuohti")
+                prefix_digit |= pynini.cross("1", "okta")
+                prefix_digit |= pynini.cross("1", "akta")
         bare_hundreds_fst[k] = prefix_digit + spacer + bare_hundred
 
     def select_tens(tens_cased):
@@ -234,7 +232,20 @@ def build_cased_number_fsts(deterministic=True):
                 hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
 
     # thousands
-    bare_thousands = {}
+    bare_thousands_fst = {}
+    for k in digits_cased_fst:
+        bare_thousand = pynini.cross("000", duhat_cased[k])
+        prefix_digit = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
+        prefix_digit |= pynutil.delete("1")
+        if not deterministic:
+            if k == "sg_gen":
+                bare_thousand |= pynini.cross("000", "duhát")
+            elif k == "com_pl":
+                prefix_digit |= (NEMO_DIGIT - "1") @ digits_cased_fst["gen_pl"]
+            elif k == "nom_sg":
+                prefix_digit |= pynini.cross("1", "okta")
+                prefix_digit |= pynini.cross("1", "akta")
+        bare_thousands_fst[k] = prefix_digit + spacer + bare_thousand
     thousands = {}
 
     return {
@@ -247,6 +258,7 @@ def build_cased_number_fsts(deterministic=True):
         "two_digit_fst": two_digits_fst,
         "bare_hundreds": bare_hundreds_fst,
         "hundreds": hundreds_fst,
+        "bare_thousands": bare_thousands_fst,
     }
 
 
