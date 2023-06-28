@@ -24,7 +24,6 @@ from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
-
 NEMO_DIGIT = byte.DIGIT
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = "\u00A0"
