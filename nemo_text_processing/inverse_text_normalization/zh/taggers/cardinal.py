@@ -46,18 +46,18 @@ class CardinalFst(GraphFst):
         graph_digits = digits | pynutil.insert("0")
 
         # grammar for teens
-        ten = pynini.string_map([("十", "1"), ("拾", "1"), ("壹拾", "1"), ("壹拾", "1")])
+        ten = pynini.string_map([("十", "1"), ("拾", "1"), ("壹拾", "1"), ("一十", "1")])
         graph_teens = ten + graph_digits
-        graph_teens = graph_teens | pynutil.insert("0")
+        graph_teens = graph_teens #| pynutil.insert("00")
 
         # grammar for tens, not the output for Cardinal grammar but for pure Arabic digits (used in other grammars)
         graph_tens = (ties + graph_digits) | (pynini.cross(pynini.accep("零"), "0") + graph_digits)
-        graph_all = graph_tens | pynutil.insert("00")
+        graph_all = graph_tens | graph_teens | pynutil.insert("00")
 
         # grammar for hundreds 百
         graph_hundreds_complex = (graph_digits + delete_hundreds + graph_all) | (
             graph_digits + delete_hundreds + pynini.cross(pynini.closure("零"), "0") + graph_digits
-        )
+        ) | (graph_digits + delete_hundreds + graph_teens)
         graph_hundreds = graph_hundreds_complex
         graph_hundreds = graph_hundreds | pynutil.insert("000")
 
@@ -82,10 +82,10 @@ class CardinalFst(GraphFst):
         # grammmar for hundred thousands 十万
         graph_hundred_thousands_simple = graph_all + closure_ten_thousands
         graph_hundred_thousands_complex = (
-            (graph_tens + delete_ten_thousands + graph_thousands_complex)
-            | (graph_tens + delete_ten_thousands + pynini.cross(pynini.closure("零"), "0") + graph_hundreds_complex)
-            | (graph_tens + delete_ten_thousands + pynini.cross(pynini.closure("零"), "00") + graph_all)
-            | (graph_tens + delete_ten_thousands + pynini.cross(pynini.closure("零"), "000") + graph_digits)
+            (graph_all + delete_ten_thousands + graph_thousands_complex)
+            | (graph_all + delete_ten_thousands + pynini.cross(pynini.closure("零"), "0") + graph_hundreds_complex)
+            | (graph_all + delete_ten_thousands + pynini.cross(pynini.closure("零"), "00") + graph_all)
+            | (graph_all + delete_ten_thousands + pynini.cross(pynini.closure("零"), "000") + graph_digits)
         )
         graph_hundred_thousands = (graph_hundred_thousands_simple | graph_hundred_thousands_complex) | pynutil.insert(
             "000000"
