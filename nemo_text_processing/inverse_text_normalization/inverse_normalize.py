@@ -86,6 +86,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'sv':  # Swedish (Svenska)
+            from nemo_text_processing.inverse_text_normalization.sv.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.sv.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
         elif lang == 'vi':  # Vietnamese (Tiếng Việt)
             from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.vi.verbalizers.verbalize_final import (
@@ -145,7 +150,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar', 'es_en'],
+        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en'],
         default="en",
         type=str,
     )

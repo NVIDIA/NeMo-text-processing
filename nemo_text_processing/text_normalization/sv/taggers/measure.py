@@ -51,7 +51,7 @@ class MeasureFst(GraphFst):
         graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
         greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
-        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
+        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_upper.tsv"))
         greek = greek_lower | greek_upper
 
         graph_unit |= pynini.compose(
