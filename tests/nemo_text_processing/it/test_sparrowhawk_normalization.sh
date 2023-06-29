@@ -9,6 +9,7 @@ runtest () {
   # read test file
   while read testcase; do
     IFS='~' read written spoken <<< $testcase
+    # replace non breaking space with breaking space
     denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1)
 
     # trim white space

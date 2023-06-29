@@ -56,7 +56,7 @@ class ElectronicFst(GraphFst):
         user_name = pynutil.delete("username: \"") + add_space_after_char() + pynutil.delete("\"")
         user_name @= verbalize_characters
 
-        convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | domain_common | server_common
+        convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | server_common | domain_common
         domain = convert_defaults + pynini.closure(insert_space + convert_defaults)
         domain @= verbalize_characters
 
