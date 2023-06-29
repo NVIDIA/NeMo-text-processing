@@ -62,7 +62,7 @@ class TimeFst(GraphFst):
             + graph_minutes_component
             + pynutil.insert(" ")
             + graph_seconds_component
-        )
+        ) 
 
         quarter_mandarin = (
             quarters + pynini.accep("刻") | pynini.cross("刻鈡", "刻钟") | pynini.accep("刻钟") | pynini.accep("半")
@@ -82,7 +82,7 @@ class TimeFst(GraphFst):
             | pynini.cross("個小時", "个小时")
         )
         minute_mandarin = pynini.accep("分") | pynini.cross("分鐘", "分钟") | pynini.accep("分钟")
-        second_mandarin = pynini.accep("秒") | pynini.cross("秒鐘", "秒钟")
+        second_mandarin = pynini.accep("秒") | pynini.cross("秒鐘", "秒钟") | pynini.accep("秒钟")
 
         hours_only = for_mandarin + hour_mandarin
         minutes_only = for_mandarin + minute_mandarin
