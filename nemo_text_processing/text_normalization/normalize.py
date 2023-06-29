@@ -156,6 +156,9 @@ class Normalizer:
         elif lang == 'ar':
             from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.ar.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'it':
+            from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.it.verbalizers.verbalize_final import VerbalizeFinalFst
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
@@ -686,7 +689,7 @@ def parse_args():
     )
     parser.add_argument('--output_file', dest="output_file", help="Output file path", type=str)
     parser.add_argument(
-        "--language", help="language", choices=["en", "de", "es", "fr", "sv", "zh", "ar"], default="en", type=str
+        "--language", help="language", choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it"], default="en", type=str
     )
     parser.add_argument(
         "--input_case",
