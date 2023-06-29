@@ -86,10 +86,12 @@ class DecimalFst(GraphFst):
         # grammar for fractional part
         delete_zero = pynini.closure(pynini.cross("零", "0"))
         graph_string_of_cardinals = cardinal_after_decimal
-        graph_string_of_cardinals = pynini.closure((
-            pynini.closure(graph_string_of_cardinals) + delete_zero + pynini.closure(graph_string_of_cardinals)
-        ), 1)
-        graph_fractional = pynini.closure(pynutil.insert('fractional_part: "') + graph_string_of_cardinals + pynutil.insert('"'),1)
+        graph_string_of_cardinals = pynini.closure(
+            (pynini.closure(graph_string_of_cardinals) + delete_zero + pynini.closure(graph_string_of_cardinals)), 1
+        )
+        graph_fractional = pynini.closure(
+            pynutil.insert('fractional_part: "') + graph_string_of_cardinals + pynutil.insert('"'), 1
+        )
 
         # grammar for decimal: integer+delete character+part after decimal point
         graph_decimal_no_sign = pynini.closure((graph_integer_or_none + delete_decimal + graph_fractional), 1)

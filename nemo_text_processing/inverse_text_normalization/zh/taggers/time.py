@@ -62,7 +62,7 @@ class TimeFst(GraphFst):
             + graph_minutes_component
             + pynutil.insert(" ")
             + graph_seconds_component
-        ) 
+        )
 
         quarter_mandarin = (
             quarters + pynini.accep("刻") | pynini.cross("刻鈡", "刻钟") | pynini.accep("刻钟") | pynini.accep("半")
