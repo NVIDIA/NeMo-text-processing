@@ -31,7 +31,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_thousand: 'pynini.Fst
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
-    nom_to_gen_endings = pynini.string_map(("on", "ovnna"), ("árda", "árdda",))
+    nom_to_gen_endings = pynini.string_map(("on", "ovnna"), ("ovdna", "ovnna"), ("árda", "árdda",))
     quantities_gen = quantities @ pynini.cdrewrite(nom_to_gen_endings, "", "[EOS]", NEMO_SIGMA)
 
     res = (
