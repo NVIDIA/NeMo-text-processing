@@ -22,7 +22,7 @@ class CardinalFst(GraphFst):
     Finite state transducer for classifying cardinals. Numbers below ten are not converted. 
     Allows both compound numeral strings or separated by whitespace.
 
-        e.g. minus tjugoen -> cardinal { negative: "-" integer: "21" } }
+        e.g. minus duhat -> cardinal { negative: "-" integer: "21" } }
         e.g. minus tjugoett -> cardinal { negative: "-" integer: "21" } }
 
     Args:
@@ -35,16 +35,10 @@ class CardinalFst(GraphFst):
         graph = pynini.invert(pynini.arcmap(tn_cardinal_tagger.graph, map_type="rmweight")).optimize()
         graph = graph @ pynini.cdrewrite(pynini.cross(" ", ""), "", "", NEMO_SIGMA)
         self.graph = graph
-        no_ones = pynini.project(graph, "input") - "en" - "ett"
-        graph = no_ones @ graph
-        self.graph_no_ones = graph
 
         self.graph_hundred_component_at_least_one_non_zero_digit = pynini.invert(
             pynini.arcmap(tn_cardinal_tagger.graph_hundreds_component_at_least_one_non_zero_digit, map_type="rmweight")
         ).optimize()
-        self.graph_hundred_component_at_least_one_non_zero_digit_no_one = (
-            pynini.project(self.graph_hundred_component_at_least_one_non_zero_digit, "input") - "en" - "ett"
-        ) @ self.graph_hundred_component_at_least_one_non_zero_digit
 
         self.graph_ties = (tn_cardinal_tagger.two_digit_non_zero).invert().optimize()
         # this is to make sure if there is an ambiguity with decimal, decimal is chosen, e.g. 1000000 vs. 1 million
