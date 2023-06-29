@@ -70,7 +70,7 @@ class TimeFst(GraphFst):
             | pynini.accep("时")
             | pynini.accep("个钟头")
             | pynini.accep("个点")
-            | pynini.accep("半")
+            | pynini.accep("个小时")
         )
         hour_mandarin = (
             pynutil.delete("hours:")
@@ -79,12 +79,12 @@ class TimeFst(GraphFst):
             + (pynini.closure(NEMO_DIGIT) + pynini.closure(hours, 1))
             + pynutil.delete('"')
         )
-        minutes = pynini.accep("分") | pynini.accep("分钟")
+        minutes = pynini.accep("分") | pynini.accep("分钟") | pynini.accep("半")
         minute_mandarin = (
             pynutil.delete("minutes:")
             + delete_space
             + pynutil.delete('"')
-            + (pynini.closure(NEMO_DIGIT) + pynini.closure(minutes, 1))
+            + (((pynini.closure(NEMO_DIGIT) + pynini.closure(minutes, 1))) | pynini.closure(minutes, 1))
             + pynutil.delete('"')
         )
         seconds = pynini.accep("秒") | pynini.accep("秒钟")
@@ -109,7 +109,10 @@ class TimeFst(GraphFst):
             | minute_mandarin
             | second_mandarin
             | quarter_mandarin
-            | (hour_mandarin + delete_space + quarter_mandarin)
+            | (hour_mandarin + delete_space + quarter_mandarin) 
+            | (hour_mandarin + delete_space + minute_mandarin)
+            | (hour_mandarin + delete_space + minute_mandarin + delete_space + second_mandarin)
+            | (minute_mandarin + delete_space + second_mandarin)
         )
 
         final_graph = graph_regular_time | graph_mandarin_time
