@@ -109,7 +109,7 @@ class TimeFst(GraphFst):
             | minute_mandarin
             | second_mandarin
             | quarter_mandarin
-            | (hour_mandarin + delete_space + quarter_mandarin) 
+            | (hour_mandarin + delete_space + quarter_mandarin)
             | (hour_mandarin + delete_space + minute_mandarin)
             | (hour_mandarin + delete_space + minute_mandarin + delete_space + second_mandarin)
             | (minute_mandarin + delete_space + second_mandarin)
