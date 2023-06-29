@@ -44,8 +44,8 @@ class DateFst(GraphFst):
     def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
 
-        month_abbr_graph = load_labels(get_abs_path("data/months/months_abbr.tsv"))
-        number_to_month = pynini.string_file(get_abs_path("data/months/numbers.tsv")).optimize()
+        month_abbr_graph = load_labels(get_abs_path("data/dates/months_abbr.tsv"))
+        number_to_month = pynini.string_file(get_abs_path("data/dates/numbers.tsv")).optimize()
         if not deterministic:
             number_to_month |= pynini.cross("1", "ođđajagemánnu")
 
