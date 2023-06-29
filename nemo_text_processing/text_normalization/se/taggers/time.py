@@ -28,6 +28,37 @@ from nemo_text_processing.text_normalization.se.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
+QUARTERS = {15: "kvárta badjel", 30: "beal", 45: "kvárta váile"}
+
+
+def get_all_to_or_from_numbers():
+    output = {}
+    for num, word in QUARTERS.items():
+        current_past = []
+        current_to = []
+        for i in range(1, 60):
+            if i == num:
+                continue
+            elif i < num:
+                current_to.append((str(i), str(num - i)))
+            else:
+                current_past.append((str(i), str(i - num)))
+        output[word] = {}
+        output[word]["past"] = current_past
+        output[word]["to"] = current_to
+    return output
+
+
+def get_all_to_or_from_fst(cardinal: GraphFst):
+    numbers = get_all_to_or_from_numbers()
+    output = {}
+    for key in numbers:
+        for when in ["past", "to"]:
+            output[key] = {}
+            map = pynini.string_map(numbers[key][when])
+            output[key][when] = pynini.project(map, "input") @ map @ cardinal.graph
+    return output
+
 
 class TimeFst(GraphFst):
     """
