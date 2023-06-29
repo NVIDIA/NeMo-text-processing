@@ -1,67 +1,63 @@
-%	per cento
-m	metro
-mm	millimetro
-cm	centimetro
-km	chilometro
-dm	decimetro
-m²	metro quadrato
-mm²	millimetro quadrato
-cm²	centimetro quadrato
-km²	chilometro quadrato
-m³	metro cubo
-mm³	millimetro cubo
-cm³	centimetro cubo
-km³	chilometro cubo
-m2	metro quadro
-mm2	millimetro quadrato
-cm2	centimetro quadrato
-km2	chilometro quadrato
-m3	metro cubo
-mm3	millimetro cubo
-cm3	centimetro cubo
-km3	chilometro cubo
-μm	micrometro
-nm	nanometro
-pm	picometro
-g	grammo
-kg	chilogrammo
-mg	milligrammo
-hg	ettogrammo
-µg	micro grammo
-g²	grammo quadrato
-kg²	chilogrammo quadrato
-g³	grammo cubo
-kg³	chilogrammo cubo
-l	litro
-ml	millilitro
-cl	centilitro
-dl	decilitro
-l²	litro quadrato
-cl²	centilitro quadrato
-ml²	millilitro quadrato
-dl²	decilitro quadrato
-l³	litro cubo
-ml³	millilitro cubo
-cl³	centilitro cubo
-dl³	decilitro cubo
-A	ampere
-K	kelvin
-mol	mole
-Hz	hertz
-N	newton
-Pa	pascal
-J	joule
-W	watt
-V	volt
-ω	ohm
-db	decibel
-min	minuto
-s	secondo
-h	ora
 d	giorno
-rad	radianti
-bar	bar
-cal	calorie
-kcal	chilo calorie
+f	fahrenheit
+c	celsius
 °C	grado celsius
 °F	grado fahrenheit
+K	kelvin
+km	chilometro
+m	metro
+cm	centimetro
+mm	millimetro
+μm	micrometro
+nm	nanometro
+dm	decimetro
+pm	picometro
+hm	ettometro
+ha	ettaro
+mi	miglio
+m²	metro quadrato	-0.0001
+km²	chilometro quadrato	-0.0001
+m2	metro quadrato
+km2	chilometro quadrato
+m3	metro cubo
+ft	foot
+g	grammo
+µg	microgrammo
+mg	milligrammo
+kg	chilogrammo
+lb	libbra
+h	ora
+s	secondo
+min	minuto
+ms	millisecondo
+μs	microsecondo
+hz	hertz
+kw	kilowatt
+ghz	gigahertz
+khz	kilohertz
+mhz	megahertz
+v	volt
+mc	megacoulomb
+mA	milliampere
+A	ampere
+tw	terawatt
+mv	millivolt
+mw	megawatt
+gw	gigawatt
+ω	ohm
+db	decibel
+gb	gigabyte
+kb	kilobit
+pb	petabit
+mb	megabyte
+kb	kilobyte
+tb	terabyte
+kv	kilovolt
+mv	megavolt
+kn	kilonewton
+ml	millilitro
+l	litro
+dl	decilitro
+bar	bar
+kcal	chilocaloria
+cal	caloria
