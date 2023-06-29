@@ -236,6 +236,10 @@ def build_cased_number_fsts(deterministic=True):
             if not deterministic:
                 hundreds_fst[k] |= prefix_hundreds + spacer + tens_cased_fst[k]
 
+    three_digit_cased_fsts = {}
+    for k in two_digit_cased_fsts:
+        three_digit_cased_fsts[k] = (pynutil.delete("0") + two_digit_cased_fsts[k]) | hundreds_fst[k]
+
     # thousands
     bare_thousands_fst = {}
     for k in digits_cased_fst:
@@ -257,6 +261,7 @@ def build_cased_number_fsts(deterministic=True):
         "two_digit_fst": two_digits_fst,
         "bare_hundreds": bare_hundreds_fst,
         "hundreds": hundreds_fst,
+        "three_digit_cased_fsts": three_digit_cased_fsts,
         "bare_thousands": bare_thousands_fst,
     }
 
