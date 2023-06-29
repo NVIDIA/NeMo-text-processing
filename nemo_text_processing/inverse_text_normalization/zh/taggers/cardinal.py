@@ -48,7 +48,6 @@ class CardinalFst(GraphFst):
         # grammar for teens
         ten = pynini.string_map([("十", "1"), ("拾", "1"), ("壹拾", "1"), ("一十", "1")])
         graph_teens = ten + graph_digits
-        graph_teens = graph_teens  # | pynutil.insert("00")
 
         # grammar for tens, not the output for Cardinal grammar but for pure Arabic digits (used in other grammars)
         graph_tens = (ties + graph_digits) | (pynini.cross(pynini.accep("零"), "0") + graph_digits)
