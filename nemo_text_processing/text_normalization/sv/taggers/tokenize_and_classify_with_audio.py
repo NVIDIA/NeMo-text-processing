@@ -59,11 +59,7 @@ from nemo_text_processing.utils.logging import logger
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence including punctuation.
-<<<<<<< HEAD
     For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
-=======
-    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archive (FAR) File.
->>>>>>> 2f316f5 (Swedish telephone fix (#60))
     More details to deployment at NeMo/tools/text_processing_deployment.
 
     Args:
