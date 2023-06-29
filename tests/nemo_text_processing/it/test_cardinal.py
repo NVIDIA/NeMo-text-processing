@@ -13,9 +13,14 @@
 # limitations under the License.
 
 import pytest
+<<<<<<< HEAD
 from parameterized import parameterized
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
+=======
+from nemo_text_processing.text_normalization.normalize import Normalizer
+from parameterized import parameterized
+>>>>>>> 7a1e21e (Italian_TN (#67))
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
