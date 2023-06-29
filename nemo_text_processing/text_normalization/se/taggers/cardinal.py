@@ -73,7 +73,7 @@ def load_cased_digits(bare=True):
 
 def build_cased_number_fsts(deterministic=True):
     """
-    Builds case/number forms (other than nominative singular) for numerals
+    Builds case/number forms for numerals
     See: https://oahpa.no/sme/gramm/logut.eng.html
     for teens and tens; for longer numbers Nickel and Sammallahti (2011) say
     'i lengre tallord bøyes bare enere' ('in longer number words only ones are inflected')
