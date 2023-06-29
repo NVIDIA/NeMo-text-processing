@@ -78,6 +78,7 @@ class FractionFst(GraphFst):
         fractions_pl = fractions @ pynini.cdrewrite(fractional_pl_endings, "", "[EOS]", NEMO_SIGMA)
         self.fractional_plural_endings = fractional_pl_endings
         self.fractions_plural = fractions_pl
+        self.fractions_any = self.fractions | self.fractions_plural
 
         integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         numerator = (
