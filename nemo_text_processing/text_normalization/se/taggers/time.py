@@ -50,6 +50,7 @@ class TimeFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
+        klockan = pynini.string_file(get_abs_path("data/time/prefix.tsv"))
 
         # only used for < 1000 thousand -> 0 weight
         cardinal = cardinal.graph
@@ -63,9 +64,6 @@ class TimeFst(GraphFst):
         )
 
         time_sep = pynutil.delete(pynini.union(":", "."))
-        klockan = pynini.union(
-            pynini.cross("kl.", "klokken"), pynini.cross("dii.", "diibmu"), "klokken", "klokka", "diibmu"
-        )
         klockan_graph_piece = pynutil.insert("hours: \"") + klockan
 
         graph_hour = delete_leading_zero_to_double_digit @ pynini.union(*labels_hour) @ cardinal
