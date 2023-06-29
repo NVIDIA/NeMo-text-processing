@@ -70,3 +70,30 @@ def load_case_forms(abs_path, extended=False):
             if label and (label[0] in KEYS):
                 ret[label[0]] = label[1]
         return ret
+
+
+def simple_inflect(word, plural=True, acc_is_gen=True):
+    if acc_is_gen:
+        acc_sg = f"{word}a"
+    else:
+        acc_sg = word
+    singular = {
+        "nom_sg": f"{word}",
+        "gen_sg": f"{word}a",
+        "acc_sg": acc_sg,
+        "ill_sg": f"{word}ii",
+        "loc_sg": f"{word}is",
+        "com_sg": f"{word}iin",
+        "ess": f"{word}in"
+    }
+    plural = {
+        "nom_pl": f"{word}at",
+        "gen_pl": f"{word}iid",
+        "acc_pl": f"{word}iid",
+        "ill_pl": f"{word}iidda",
+        "loc_pl": f"{word}iin",
+        "com_pl": f"{word}iiguin",
+    }
+    if not plural:
+        return singular
+    return {**singular, **plural}
