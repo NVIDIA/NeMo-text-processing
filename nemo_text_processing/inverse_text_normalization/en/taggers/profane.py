@@ -44,7 +44,9 @@ class ProfaneFst(GraphFst):
         # Profane Grammar
         profane_graph = pynini.string_file(get_abs_path("data/swear_sequences.tsv"))
 
-        bowdlerize = ((NEMO_ALPHA | NEMO_DIGIT) + pynini.closure(pynini.cross(NEMO_SPACE | NEMO_ALPHA | NEMO_DIGIT, "*"), 1)).optimize()
+        bowdlerize = (
+            (NEMO_ALPHA | NEMO_DIGIT) + pynini.closure(pynini.cross(NEMO_SPACE | NEMO_ALPHA | NEMO_DIGIT, "*"), 1)
+        ).optimize()
 
         profane_graph = (profane_graph @ bowdlerize).optimize()
 
