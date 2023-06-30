@@ -18,6 +18,9 @@ from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_pat
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_SPACE,
     GraphFst,
     capitalized_input_graph,
 )
@@ -40,6 +43,10 @@ class ProfaneFst(GraphFst):
         self.input_case = input_case
         # Profane Grammar
         profane_graph = pynini.string_file(get_abs_path("data/swear_sequences.tsv"))
+
+        bowdlerize = ((NEMO_ALPHA | NEMO_DIGIT) + pynini.closure(pynini.cross(NEMO_SPACE | NEMO_ALPHA | NEMO_DIGIT, "*"), 1)).optimize()
+
+        profane_graph = (profane_graph @ bowdlerize).optimize()
 
         if self.input_case == INPUT_CASED:
             profane_graph = capitalized_input_graph(profane_graph)
