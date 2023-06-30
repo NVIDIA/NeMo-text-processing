@@ -65,7 +65,7 @@ class ClassifyFst(GraphFst):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
-        
+
         if filter_profanity:
             fst_name = "tokenize_and_classify_with_profane_filtering"
         else:
