@@ -14,25 +14,15 @@
 
 import pytest
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
-from nemo_text_processing.text_normalization.normalize import Normalizer
 from parameterized import parameterized
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
-class TestMoney:
-    normalizer_zh = Normalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
-
-    @parameterized.expand(parse_test_case_file('zh/data_text_normalization/test_cases_money.txt'))
-    @pytest.mark.run_only_on('CPU')
-    @pytest.mark.unit
-    def test_norm_money(self, test_input, expected):
-        preds = self.normalizer_zh.normalize(test_input)
-        assert expected == preds
-
+class TestDecimal:
     inverse_normalizer = InverseNormalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False)
 
-    @parameterized.expand(parse_test_case_file('zh/data_inverse_text_normalization/test_cases_money.txt'))
+    @parameterized.expand(parse_test_case_file('zh/data_inverse_text_normalization/test_cases_decimal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
