@@ -65,11 +65,17 @@ class ClassifyFst(GraphFst):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
+        
+        if filter_profanity:
+            fst_name = "tokenize_and_classify_with_profane_filtering"
+        else:
+            fst_name = "tokenize_and_classify_without_profane_filtering"
+
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             far_file = os.path.join(cache_dir, f"en_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
-            self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
+            self.fst = pynini.Far(far_file, mode="r")[fst_name]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logging.info(f"Creating ClassifyFst grammars.")
@@ -122,5 +128,5 @@ class ClassifyFst(GraphFst):
             self.fst = graph.optimize()
 
             if far_file:
-                generator_main(far_file, {"tokenize_and_classify": self.fst})
+                generator_main(far_file, {fst_name: self.fst})
                 logging.info(f"ClassifyFst grammars are saved to {far_file}.")
