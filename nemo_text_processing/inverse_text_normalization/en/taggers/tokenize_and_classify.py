@@ -23,8 +23,8 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.decimal import D
 from nemo_text_processing.inverse_text_normalization.en.taggers.electronic import ElectronicFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.money import MoneyFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.profane import ProfaneFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.profane import ProfaneFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.time import TimeFst
@@ -109,7 +109,6 @@ class ClassifyFst(GraphFst):
             # Attempts to filter profane words only if `filter_profanity` field is set to True
             if filter_profanity:
                 classify = (pynutil.add_weight(profane_graph, 0.0001) | classify).optimize()
-                
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")

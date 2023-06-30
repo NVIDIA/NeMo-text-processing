@@ -14,14 +14,14 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
     GraphFst,
-    capitalized_input_graph
+    capitalized_input_graph,
 )
+from pynini.lib import pynutil
 
 
 class ProfaneFst(GraphFst):
@@ -36,9 +36,7 @@ class ProfaneFst(GraphFst):
     """
 
     def __init__(self, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(
-            name="profane", kind="classify"
-        )
+        super().__init__(name="profane", kind="classify")
         self.input_case = input_case
         # Profane Grammar
         profane_graph = pynini.string_file(get_abs_path("data/swear_sequences.tsv"))
