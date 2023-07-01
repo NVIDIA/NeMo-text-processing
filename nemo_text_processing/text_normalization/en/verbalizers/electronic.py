@@ -85,22 +85,26 @@ class ElectronicFst(GraphFst):
 
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 
+        # this will be used for a safe fallback
+        domain_all = pynini.compose(
+            default_chars_symbols,
+            pynini.closure(TO_LOWER | NEMO_LOWER | NEMO_SPACE | pynutil.add_weight(dict_words, MIN_NEG_WEIGHT)),
+        )
+
         domain = (
-            pynini.compose(
-                default_chars_symbols,
-                pynini.closure(TO_LOWER | NEMO_LOWER | NEMO_SPACE | pynutil.add_weight(dict_words, MIN_NEG_WEIGHT)),
-            )
+            domain_all
             + insert_space
             + plurals._priority_union(
                 domain_common, pynutil.add_weight(pynini.cross(".", "dot"), weight=0.0001), NEMO_SIGMA
             )
             + pynini.closure(insert_space + default_chars_symbols, 0, 1)
         )
+
         domain = (
             pynutil.delete("domain:")
             + delete_space
             + pynutil.delete("\"")
-            + domain
+            + (domain | pynutil.add_weight(domain_all, weight=100)).optimize()
             + delete_space
             + pynutil.delete("\"")
         ).optimize()
