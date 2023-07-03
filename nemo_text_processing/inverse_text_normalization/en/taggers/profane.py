@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import os
+
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
@@ -46,10 +47,10 @@ class ProfaneFst(GraphFst):
         # Profane Grammar
         if input_file is None:
             input_file = get_abs_path("data/swear_sequences.tsv")
-        
+
         if not os.path.exists(input_file):
             raise ValueError(f"Profane words file {input_file} not found")
-        
+
         profane_graph = pynini.string_file(get_abs_path("data/swear_sequences.tsv"))
 
         bowdlerize = (
