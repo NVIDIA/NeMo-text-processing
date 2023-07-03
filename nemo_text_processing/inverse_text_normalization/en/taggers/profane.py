@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import pynini
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
@@ -36,12 +37,19 @@ class ProfaneFst(GraphFst):
 
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
+        input_file: path to a file with profane words to be redacted with "*" symbol. (each line of the file: spoken_form\n)
+            e.g. nemo_text_processing/inverse_text_normalization/en/data/swear_sequences.tsv
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None):
         super().__init__(name="profane", kind="classify")
-        self.input_case = input_case
         # Profane Grammar
+        if input_file is None:
+            input_file = get_abs_path("data/swear_sequences.tsv")
+        
+        if not os.path.exists(input_file):
+            raise ValueError(f"Profane words file {input_file} not found")
+        
         profane_graph = pynini.string_file(get_abs_path("data/swear_sequences.tsv"))
 
         bowdlerize = (
@@ -50,7 +58,7 @@ class ProfaneFst(GraphFst):
 
         profane_graph = (profane_graph @ bowdlerize).optimize()
 
-        if self.input_case == INPUT_CASED:
+        if input_case == INPUT_CASED:
             profane_graph = capitalized_input_graph(profane_graph)
 
         # Token insertion
