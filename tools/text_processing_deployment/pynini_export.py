@@ -195,6 +195,12 @@ if __name__ == '__main__':
             VerbalizeFst as ITNVerbalizeFst,
         )
     elif args.language == 'zh':
+        from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
         from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
