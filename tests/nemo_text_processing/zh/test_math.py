@@ -18,8 +18,7 @@ from parameterized import parameterized
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
-
-#class TestMath:
+# class TestMath:
 #    normalizer_zh = Normalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
 #
 #    @parameterized.expand(parse_test_case_file('zh/data_text_normalization/test_cases_math.txt'))
