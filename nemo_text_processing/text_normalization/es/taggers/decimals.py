@@ -37,8 +37,7 @@ def get_quantity(decimal_graph: "pynini.FstLike", cardinal_graph: "pynini.FstLik
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. 2 millones -> integer_part: "dos" quantity: "millones"
-    e.g. 2,4 millones -> integer_part: "dos" fractional_part: "quatro" quantity: "millones"
-    e.g. 2,400 millones -> integer_part: "dos mil cuatrocientos" fractional_part: "quatro" quantity: "millones"
+    e.g. 2,4 millones -> integer_part: "dos" fractional_part: "cuatro" quantity: "millones"
 
     Args:
         decimal_graph: DecimalFST
