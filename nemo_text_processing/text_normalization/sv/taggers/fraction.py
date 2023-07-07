@@ -14,6 +14,7 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -77,6 +78,7 @@ class FractionFst(GraphFst):
         fractions_pl = fractions @ pynini.cdrewrite(fractional_pl_endings, "", "[EOS]", NEMO_SIGMA)
         self.fractional_plural_endings = fractional_pl_endings
         self.fractions_plural = fractions_pl
+        self.fractions_any = self.fractions | self.fractions_plural
 
         integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         numerator = (
@@ -86,7 +88,7 @@ class FractionFst(GraphFst):
         denominator = pynutil.insert("denominator: \"") + fractions + pynutil.insert("\"")
 
         graph = pynini.closure(integer + pynini.accep(" "), 0, 1) + (numerator + denominator)
-        graph |= pynini.closure(integer + (pynini.accep(" ") | pynutil.insert(" ")), 0, 1) + pynini.compose(
+        graph |= pynini.closure(integer + ensure_space, 0, 1) + pynini.compose(
             pynini.string_file(get_abs_path("data/numbers/fraction.tsv")), (numerator + denominator)
         )
 

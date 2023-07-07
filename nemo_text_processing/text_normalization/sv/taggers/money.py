@@ -26,16 +26,10 @@ from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, ens
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
-min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
-min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
-maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")))
-maj_singular_nt = pynini.string_file((get_abs_path("data/money/currency_major_nt.tsv")))
-maj_plural = pynini.string_file((get_abs_path("data/money/currency_plurals.tsv")))
-
 
 class MoneyFst(GraphFst):
     """
-    Finite state transducer for classifying money, suppletive aware, e.g. 
+    Finite state transducer for classifying money, suppletive aware, e.g.
         $12,05 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
         $12,0500 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
         $1 -> money { currency_maj: "dollar" integer_part: "en" }
@@ -58,6 +52,12 @@ class MoneyFst(GraphFst):
         cardinal_graph_ett = cardinal.graph_no_one
         graph_decimal_final = decimal.final_graph_wo_negative_w_abbr_en
         graph_decimal_final_ett = decimal.final_graph_wo_negative_w_abbr
+
+        min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
+        min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
+        maj_singular = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))
+        maj_singular_nt = pynini.string_file(get_abs_path("data/money/currency_major_nt.tsv"))
+        maj_plural = pynini.string_file(get_abs_path("data/money/currency_plurals.tsv"))
 
         maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
         maj_singular_labels_nt = load_labels(get_abs_path("data/money/currency_major_nt.tsv"))

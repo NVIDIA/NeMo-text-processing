@@ -86,6 +86,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'sv':  # Swedish (Svenska)
+            from nemo_text_processing.inverse_text_normalization.sv.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.sv.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
         elif lang == 'vi':  # Vietnamese (Tiếng Việt)
             from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.vi.verbalizers.verbalize_final import (
@@ -94,6 +99,16 @@ class InverseNormalizer(Normalizer):
         elif lang == 'ar':  # Arabic
             from nemo_text_processing.inverse_text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
+        elif lang == 'es_en':  # Arabic
+            from nemo_text_processing.inverse_text_normalization.es_en.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.es_en.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
+        elif lang == 'zh':  # Mandarin
+            from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
 
@@ -138,7 +153,11 @@ def parse_args():
     input.add_argument("--input_file", dest="input_file", help="input file path", type=str)
     parser.add_argument('--output_file', dest="output_file", help="output file path", type=str)
     parser.add_argument(
-        "--language", help="language", choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar'], default="en", type=str
+        "--language",
+        help="language",
+        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar', 'es_en', 'zh'],
+        default="en",
+        type=str,
     )
     parser.add_argument(
         "--input_case",

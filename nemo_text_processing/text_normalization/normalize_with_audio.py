@@ -18,7 +18,7 @@ from argparse import ArgumentParser
 from time import perf_counter
 from typing import List, Optional, Tuple
 
-import jiwer
+import editdistance
 import pynini
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
@@ -406,7 +406,7 @@ def calculate_cer(normalized_texts: List[str], pred_text: str, remove_punct=Fals
             for punct in "!?:;,.-()*+-/<=>@^_":
                 text_clean = text_clean.replace(punct, " ").replace("  ", " ")
 
-        cer = jiwer.cer(pred_text, text_clean) * 100
+        cer = editdistance.eval(pred_text, text_clean) * 100.0 / len(pred_text)
         normalized_options.append((text, cer, i))
     return normalized_options
 
@@ -418,7 +418,7 @@ def parse_args():
         "--input_case", help="input capitalization", choices=["lower_cased", "cased"], default="cased", type=str
     )
     parser.add_argument(
-        "--language", help="Select target language", choices=["en", "ru", "de", "es"], default="en", type=str
+        "--language", help="Select target language", choices=["en", "ru", "de", "es", "sv"], default="en", type=str
     )
     parser.add_argument("--manifest", default=None, help="path to .json manifest")
     parser.add_argument(

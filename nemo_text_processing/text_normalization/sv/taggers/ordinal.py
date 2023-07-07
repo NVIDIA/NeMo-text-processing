@@ -27,13 +27,6 @@ from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_p
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 from pynini.lib import pynutil
 
-digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
-teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv")))
-ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/ties.tsv")))
-zero = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/zero.tsv")))
-card_ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
-card_digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
-
 
 class OrdinalFst(GraphFst):
     """
@@ -47,6 +40,14 @@ class OrdinalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify")
+
+        digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
+        teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv")))
+        ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/ties.tsv")))
+        zero = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/zero.tsv")))
+        card_ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
+        card_digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
+
         graph_digit = digit.optimize()
         graph_teens = teens.optimize()
         graph_ties = ties.optimize()
@@ -194,9 +195,13 @@ class OrdinalFst(GraphFst):
 
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
+        self.bare_ordinals = cleaned_graph
+        kapitlet_word = pynini.union("kapitlet", pynini.cross("kap", "kapitlet"))
+        kapitlet = cleaned_graph + NEMO_SPACE + kapitlet_word
+
         tok_graph = (
             pynutil.insert("integer: \"")
-            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words)
+            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | kapitlet)
             + pynutil.insert("\"")
         )
 

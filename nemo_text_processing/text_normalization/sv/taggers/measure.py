@@ -29,7 +29,7 @@ from pynini.lib import pynutil
 
 class MeasureFst(GraphFst):
     """
-    Finite state transducer for classifying measure, suppletive aware, e.g. 
+    Finite state transducer for classifying measure, suppletive aware, e.g.
         -12kg -> measure { negative: "true" cardinal { integer: "tolv" } units: "kilogram" }
         1kg -> measure { cardinal { integer: "ett" } units: "kilogram" }
         ,5kg -> measure { decimal { fractional_part: "fem" } units: "kilogram" }
@@ -51,7 +51,7 @@ class MeasureFst(GraphFst):
         graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
         greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
-        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
+        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_upper.tsv"))
         greek = greek_lower | greek_upper
 
         graph_unit |= pynini.compose(
