@@ -12,16 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    delete_preserve_order,
+    delete_space,
+    insert_space,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+)
 from pynini.lib import pynutil
 
 
 class DecimalFst(GraphFst):
-    # MAKE SURE ANY COMMENTS APPLY TO YOUR LANGUAGE
     """
 	Finite state transducer for classifying decimal, e.g.
-		decimal { negative: "true" integer_part: "dos"  fractional_part: "cuatro cero" quantity: "billones" } -> menos dos coma quatro cero billones
-		decimal { integer_part: "un" quantity: "billón" } -> un billón
+		decimal { negative: "true" integer_part: "onze" fractional_part: "quatre cent six" quantity: "millions" preserve_order: true } -> moins onze virgule quatre cent six millions
+		decimal { integer_part: "cent quatorze" quantity: "billions" preserve_order: true } -> cent quatorze billions
 
     Args:
 		deterministic: if True will provide a single transduction option,
@@ -31,8 +36,33 @@ class DecimalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-        # DELETE THIS LINE WHEN YOU ADD YOUR GRAMMAR, MAKING SURE THAT YOUR GRAMMAR CONTAINS
-        # A VARIABLE CALLED final_graph WITH AN FST COMPRISED OF ALL THE RULES
-        final_graph = pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "moins ") + delete_space, 0, 1)
+        integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        fractional_default = (
+            pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        )
 
-        self.fst = self.delete_tokens(final_graph).optimize()
+        conjunction = pynutil.insert(" virgule ")
+        fractional = conjunction + fractional_default
+
+        quantity = (
+            delete_space
+            + insert_space
+            + pynutil.delete("quantity: \"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
+        optional_quantity = pynini.closure(quantity, 0, 1)
+
+        graph = optional_sign + pynini.union(
+            (integer + quantity), (integer + delete_space + fractional + optional_quantity)
+        )
+
+        self.numbers_only_quantity = (
+            optional_sign
+            + pynini.union((integer + quantity), (integer + delete_space + fractional + quantity)).optimize()
+        )
+
+        graph += delete_preserve_order
+        delete_tokens = self.delete_tokens(graph)
+        self.fst = delete_tokens.optimize()

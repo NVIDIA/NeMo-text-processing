@@ -62,8 +62,9 @@ class CardinalFst(GraphFst):
         nineties = ninety + (pynini.cross("0", "-dix") | nineties_unit)  # 90 to 99
 
         all_double_digits = ten | teens | ties_simple | seventies | eighties | nineties
-        one_to_all_tens = digits | all_double_digits
+        self.all_double_digits = all_double_digits
 
+        one_to_all_tens = digits | all_double_digits
         self.one_to_all_tens = one_to_all_tens.optimize()
 
         # Hundreds
@@ -73,6 +74,7 @@ class CardinalFst(GraphFst):
             pynini.cross("00", "s") | hundreds_parts
         )
         all_hundreds = one_hundreds | multiple_hundreds
+        self.all_hundreds = all_hundreds
 
         # Thousands
         delete_separator = pynini.closure(pynutil.delete(" "), 0, 1)
