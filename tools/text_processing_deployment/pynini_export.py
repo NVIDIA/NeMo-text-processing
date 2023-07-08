@@ -98,7 +98,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    if args.language in ['pt', 'ru', 'fr', 'vi'] and args.grammars == 'tn_grammars':
+    if args.language in ['pt', 'ru', 'vi'] and args.grammars == 'tn_grammars':
         raise ValueError('Only ITN grammars could be deployed in Sparrowhawk for the selected languages.')
 
     if args.language == 'en':
@@ -155,6 +155,10 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+        from nemo_text_processing.text_normalization.fr.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.fr.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'vi':
         from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
