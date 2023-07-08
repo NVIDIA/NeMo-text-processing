@@ -60,7 +60,7 @@ class VerbalizeFst(GraphFst):
         graph = (
             cardinal_graph
             # | measure_graph
-            # | decimal_graph
+            | decimal_graph
             | ordinal_graph
             # | date_graph
             # | electronic_graph
