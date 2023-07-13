@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,60 +11,78 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
-from nemo_text_processing.text_normalization.zh.utils import UNIT_1e01, get_abs_path
 from pynini.lib import pynutil
 
 
-class Date(GraphFst):
-    '''
-        tokens { date { year: "2002" month: "01" day: "28"} }  ->  二零零二年一月二十八日
-        tokens { date { year: "2002" } } ->  二零零八年
-    '''
+class DateFst(GraphFst):
+    """
+    Finite state transducer classifiying dates, e.g.
+    { date { year: "二零零二" } } -> 二零零二年
+    { date { year: "二零零二" month: "一" day: "二十八"} } -> 二零零二年一月二十八日
+    { date { year: "二零零二" month: "二" } } -> 二零零二年二月
+    { date { month: "二" day: "十一" } } -> 二月十一日
+    """
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="date", kind="verbalize", deterministic=deterministic)
-        date_type0 = pynutil.delete('year: \"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('\"')
-        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
-        graph_teen = pynini.string_file(get_abs_path("data/number/digit_teen.tsv"))
-        graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
-        graph_no_zero = pynini.cross("0", "")
-        graph_year = pynini.closure(graph_digit | graph_zero, 2, 4)
-        graph_digit_no_zero = graph_digit | graph_no_zero
-        graph_2_digit_date = (graph_teen + pynutil.insert(UNIT_1e01) + graph_digit_no_zero) | (
-            graph_no_zero + graph_digit
-        )
+    def __init__(self):
+        super().__init__(name="date", kind="verbalize")
 
-        date_type1 = (
-            pynutil.delete("year: \"")
-            + graph_year
+        year_component = (
+            pynutil.delete("year: ")
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
             + pynutil.insert("年")
+        )
+        month_component = (
+            pynutil.delete("month: ")
             + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("month: \"")
-            + graph_2_digit_date
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
             + pynutil.insert("月")
+        )
+        day_component = (
+            pynutil.delete("day: ")
             + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("day: \"")
-            + graph_2_digit_date
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
             + pynutil.insert("日")
-            + pynutil.delete("\"")
         )
 
-        date_type2 = (
-            pynutil.delete("year: \"")
-            + graph_year
-            + pynutil.insert("年")
-            + pynutil.delete("\"")
+        optional_era = (
+            pynutil.delete("era: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        )
+        graph_date = (
+            pynini.closure(year_component)
+            + pynini.closure(delete_space)
+            + pynini.closure(month_component)
+            + pynini.closure(delete_space)
+            + pynini.closure(day_component)
+        )
+        graph_date_era = optional_era + delete_space + graph_date
+
+        graph_date_all = graph_date | graph_date_era
+
+        # range
+        symbol = pynini.accep("-") | pynini.accep("~") | pynini.accep("——") | pynini.accep("—")
+        ranges = (
+            pynutil.delete("range: \"")
             + delete_space
-            + pynutil.delete("month: \"")
-            + graph_2_digit_date
-            + pynutil.insert("月")
+            + (pynini.closure(NEMO_NOT_QUOTE) | pynini.cross(symbol, "到"))
             + pynutil.delete("\"")
         )
+        graph_range = (
+            pynini.closure((ranges + delete_space), 0, 1)
+            + graph_date
+            + delete_space
+            + ranges
+            + delete_space
+            + graph_date
+        )
 
-        graph = date_type0 | date_type1 | date_type2
+        final_graph = graph_date_all | graph_range
 
-        self.fst = self.delete_tokens(graph).optimize()
+        delete_tokens = self.delete_tokens(final_graph)
+        self.fst = delete_tokens.optimize()
