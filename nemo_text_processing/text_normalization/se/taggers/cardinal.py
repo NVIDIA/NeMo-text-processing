@@ -249,7 +249,10 @@ def build_cased_number_fsts(deterministic=True):
         if not deterministic and k == "sg_gen":
             bare_thousand |= pynini.cross("000", "duhát")
         bare_thousands_fst[k] = prefix_digit + spacer + bare_thousand
-    thousands = {}
+    thousands_fst = {}
+    prefix_thousands = digits_nom_prefix + pynutil.insert("duhát")
+    for k in digits_cased_fst:
+        thousands_fst[k] = prefix_thousands + pynutil.delete("00") + spacer + digits_bare_cased_fst[k]
 
     return {
         "tens": tens_cased_fst,
@@ -263,6 +266,7 @@ def build_cased_number_fsts(deterministic=True):
         "hundreds": hundreds_fst,
         "three_digit_cased_fsts": three_digit_cased_fsts,
         "bare_thousands": bare_thousands_fst,
+        "thousands": thousands_fst,
     }
 
 
