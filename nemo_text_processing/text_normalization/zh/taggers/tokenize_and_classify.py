@@ -25,20 +25,18 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.zh.taggers.char import Char
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
-from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
-from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
-
-from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessor
-from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
-
 from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbol
 from nemo_text_processing.text_normalization.zh.taggers.measure import Measure
-from nemo_text_processing.text_normalization.zh.taggers.char import Char
+from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessor
+from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
+from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 from pynini.lib import pynutil
 
 
@@ -66,7 +64,7 @@ class ClassifyFst(GraphFst):
         whitelist: str = None,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
-        
+
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
@@ -104,7 +102,7 @@ class ClassifyFst(GraphFst):
             self.time = TimeFst(deterministic=deterministic)
             time_graph = self.time.fst
 
-            money = MoneyFst(cardinal=cardinal, decimal=decimal,deterministic=deterministic)
+            money = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
             money_graph = money.fst
 
             self.math = MathSymbol(deterministic=deterministic)
@@ -120,14 +118,14 @@ class ClassifyFst(GraphFst):
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.001)
                 | pynutil.add_weight(cardinal_graph, -3.0)
-                #| pynutil.add_weight(time_graph, 1.1)
-                #| pynutil.add_weight(fraction_graph, -1.1)
-                #| pynutil.add_weight(date_graph, 1.1)
-                #| pynutil.add_weight(ordinal_graph, 1.1)
-                #| pynutil.add_weight(decimal_graph, -1.1)
-                #| pynutil.add_weight(money_graph, -1.1)
-                #| pynutil.add_weight(math_graph, 1.1)
-                #| pynutil.add_weight(measure_graph, -3.1)
+                # | pynutil.add_weight(time_graph, 1.1)
+                # | pynutil.add_weight(fraction_graph, -1.1)
+                # | pynutil.add_weight(date_graph, 1.1)
+                # | pynutil.add_weight(ordinal_graph, 1.1)
+                # | pynutil.add_weight(decimal_graph, -1.1)
+                # | pynutil.add_weight(money_graph, -1.1)
+                # | pynutil.add_weight(math_graph, 1.1)
+                # | pynutil.add_weight(measure_graph, -3.1)
                 | pynutil.add_weight(word_graph, 1.1)
             )
 
@@ -142,7 +140,7 @@ class ClassifyFst(GraphFst):
             graph = token_plus_punct + pynini.closure(pynutil.add_weight(delete_extra_space, 1.1) + token_plus_punct)
             graph = delete_space + graph + delete_space
 
-            #self.fst = graph.optimize()
+            # self.fst = graph.optimize()
             tagger = graph.optimize()
             preprocessor = PreProcessor(remove_interjections=True, fullwidth_to_halfwidth=True,)
             self.fst = preprocessor.fst @ tagger

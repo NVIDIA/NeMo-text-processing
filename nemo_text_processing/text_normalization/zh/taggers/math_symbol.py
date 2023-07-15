@@ -29,7 +29,9 @@ class MathSymbol(GraphFst):
             add your sign in data/math/symbol.tsv,this graph just convert sigh to character,you can add more 
             cases with detailed cases 
         '''
-        score_sign = pynini.string_file(get_abs_path("data/math/score.tsv")) | pynini.string_file(get_abs_path("data/math/symbol.tsv"))
+        score_sign = pynini.string_file(get_abs_path("data/math/score.tsv")) | pynini.string_file(
+            get_abs_path("data/math/symbol.tsv")
+        )
         score = (
             pynutil.insert("score: \"")
             + pynini.closure(score_sign, 0, 1)

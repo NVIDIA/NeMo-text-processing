@@ -31,7 +31,6 @@ class TimeFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
 
-
         # mappings imported
         hour = pynini.string_file(get_abs_path("data/time/hour.tsv"))
         minute = pynini.string_file(get_abs_path("data/time/minute.tsv"))

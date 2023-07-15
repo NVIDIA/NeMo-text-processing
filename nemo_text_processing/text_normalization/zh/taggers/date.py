@@ -34,7 +34,7 @@ class DateFst(GraphFst):
     
     """
 
-    def __init__(self,deterministic: bool = True, lm: bool = False):
+    def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
@@ -57,12 +57,12 @@ class DateFst(GraphFst):
         )
         only_month = pynutil.insert("month: \"") + month + pynutil.delete('月') + pynutil.insert("\"")
         only_day = pynutil.insert("day: \"") + day + delete_day + pynutil.insert("\"")
-        graph_only_date = only_year | only_month | only_day  
+        graph_only_date = only_year | only_month | only_day
 
         year_month = only_year + pynutil.insert(' ') + only_month
         month_day = only_month + pynutil.insert(' ') + only_day
         graph_all = only_year + pynutil.insert(' ') + only_month + pynutil.insert(' ') + only_day
-        graph_combination = year_month | month_day | graph_all  
+        graph_combination = year_month | month_day | graph_all
 
         year_component = (
             pynutil.insert("year: \"")

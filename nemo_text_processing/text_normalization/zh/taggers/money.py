@@ -29,7 +29,6 @@ class MoneyFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
         super().__init__(name="money", kind="classify", deterministic=deterministic)
 
-
         cardinal = cardinal.just_cardinals
         decimal = decimal.decimal
 

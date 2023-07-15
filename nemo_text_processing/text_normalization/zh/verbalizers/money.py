@@ -30,7 +30,6 @@ class MoneyFst(GraphFst):
     def __init__(self, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
 
-
         # components to combine to make graphs
         number_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         currency_component = pynutil.delete("currency: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

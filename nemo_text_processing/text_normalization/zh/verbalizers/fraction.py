@@ -28,7 +28,6 @@ class FractionFst(GraphFst):
     def __init__(self, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
 
-
         graph_decimal = decimal.decimal_component
 
         integer_part = (

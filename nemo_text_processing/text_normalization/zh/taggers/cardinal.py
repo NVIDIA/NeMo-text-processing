@@ -30,7 +30,6 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
-
         # imports
         zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
         digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))

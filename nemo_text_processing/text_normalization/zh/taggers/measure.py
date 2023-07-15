@@ -28,7 +28,7 @@ class Measure(GraphFst):
 
         units_en = pynini.string_file(get_abs_path("data/measure/units_en.tsv"))
         units_zh = pynini.string_file(get_abs_path("data/measure/units_zh.tsv"))
-        
+
         graph = (
             pynutil.insert("cardinal { ")
             + pynutil.insert("integer: \"")
@@ -43,13 +43,9 @@ class Measure(GraphFst):
 
         decimal = decimal.decimal
         graph_decimal = (
-            decimal
-            + insert_space
-            + pynutil.insert("units: \"")
-            + (units_en | units_zh)
-            + pynutil.insert("\"")
+            decimal + insert_space + pynutil.insert("units: \"") + (units_en | units_zh) + pynutil.insert("\"")
         )
-        
+
         graph |= graph_decimal
-        
+
         self.fst = self.add_tokens(graph).optimize()

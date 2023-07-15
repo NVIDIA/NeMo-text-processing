@@ -130,6 +130,7 @@ class GraphFst:
         )
         return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
 
+
 def convert_space(fst) -> 'pynini.FstLike':
     """
     Converts space to nonbreaking space.
@@ -142,4 +143,3 @@ def convert_space(fst) -> 'pynini.FstLike':
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
-

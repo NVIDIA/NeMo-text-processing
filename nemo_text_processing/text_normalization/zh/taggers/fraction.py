@@ -36,7 +36,6 @@ class FractionFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
 
-
         graph_cardinals = cardinal.just_cardinals
         graph_decimal = decimal.decimal
 

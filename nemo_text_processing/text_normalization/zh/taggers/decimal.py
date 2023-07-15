@@ -71,7 +71,6 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True, lm: bool = False):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-
         cardinal_before_decimal = cardinal.just_cardinals
         cardinal_after_decimal = pynini.string_file(get_abs_path("data/number/digit.tsv")) | pynini.closure(
             pynini.cross('0', '零')
