@@ -30,7 +30,7 @@ NEMO_DIGIT = byte.DIGIT
 NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
 NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
 NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
-
+NEMO_NON_BREAKING_SPACE = u"\u00A0"
 NEMO_SPACE = " "
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00A0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
@@ -129,3 +129,17 @@ class GraphFst:
             + pynutil.delete("}")
         )
         return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+
+def convert_space(fst) -> 'pynini.FstLike':
+    """
+    Converts space to nonbreaking space.
+    Used only in tagger grammars for transducing token values within quotes, e.g. name: "hello kitty"
+    This is making transducer significantly slower, so only use when there could be potential spaces within quotes, otherwise leave it.
+
+    Args:
+        fst: input fst
+
+    Returns output fst where breaking spaces are converted to non breaking spaces
+    """
+    return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
+

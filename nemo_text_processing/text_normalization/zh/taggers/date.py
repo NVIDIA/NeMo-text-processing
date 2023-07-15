@@ -34,14 +34,14 @@ class DateFst(GraphFst):
     
     """
 
-    def __init__(self):
-        super().__init__(name="date", kind="classify")
+    def __init__(self,deterministic: bool = True, lm: bool = False):
+        super().__init__(name="date", kind="classify", deterministic=deterministic)
 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
-        month = pynini.string_file(get_abs_path("data/date/month.tsv"))
+        month = pynini.string_file(get_abs_path("data/date/months.tsv"))
         day = pynini.string_file(get_abs_path("data/date/day.tsv"))
-        suffix = pynini.string_file(get_abs_path("data/date/suffix.tsv"))
+        suffix = pynini.string_file(get_abs_path("data/date/suffixes.tsv"))
 
         delete_sign = pynutil.delete('/') | pynutil.delete('-') | pynutil.delete('.') | pynutil.delete('·')
         delete_day = pynutil.delete('号') | pynutil.delete('號') | pynutil.delete('日')

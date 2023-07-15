@@ -33,15 +33,13 @@ from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFs
 from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 
-# from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreprocessorFst
+from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessor
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 
-# from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbolFst
-# from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
-from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
+from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbol
+from nemo_text_processing.text_normalization.zh.taggers.measure import Measure
+from nemo_text_processing.text_normalization.zh.taggers.char import Char
 from pynini.lib import pynutil
-
-# from nemo.utils import logging
 
 
 class ClassifyFst(GraphFst):
@@ -68,6 +66,7 @@ class ClassifyFst(GraphFst):
         whitelist: str = None,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
+        
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
@@ -91,28 +90,28 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal=cardinal)
             ordinal_graph = ordinal.fst
 
-            decimal = DecimalFst(cardinal=cardinal)
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
 
-            fraction = FractionFst(cardinal=cardinal, decimal=decimal)
+            fraction = FractionFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
             fraction_graph = fraction.fst
 
-            date = DateFst()
+            date = DateFst(deterministic=deterministic)
             date_graph = date.fst
 
-            word_graph = WordFst(deterministic=deterministic).fst
+            word_graph = Char(deterministic=deterministic).fst
 
-            self.time = TimeFst()
+            self.time = TimeFst(deterministic=deterministic)
             time_graph = self.time.fst
 
-            money = MoneyFst(cardinal=cardinal, decimal=decimal)
+            money = MoneyFst(cardinal=cardinal, decimal=decimal,deterministic=deterministic)
             money_graph = money.fst
 
-            # self.math = MathSymbolFst(cardinal=self.cardinal, deterministic=deterministic)
-            # math_graph = self.math.fst
+            self.math = MathSymbol(deterministic=deterministic)
+            math_graph = self.math.fst
 
-            # self.measure = MeasureFst(cardinal=self.cardinal, deterministic=deterministic)
-            # measure_graph = self.measure.fst
+            self.measure = Measure(decimal=decimal, deterministic=deterministic)
+            measure_graph = self.measure.fst
 
             self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             whitelist_graph = self.whitelist.fst
@@ -121,14 +120,14 @@ class ClassifyFst(GraphFst):
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.001)
                 | pynutil.add_weight(cardinal_graph, -3.0)
-                | pynutil.add_weight(time_graph, 1.1)
-                | pynutil.add_weight(fraction_graph, -1.1)
-                | pynutil.add_weight(date_graph, 1.1)
-                | pynutil.add_weight(ordinal_graph, 1.1)
-                | pynutil.add_weight(decimal_graph, -1.1)
-                | pynutil.add_weight(money_graph, -1.1)
-                # | pynutil.add_weight(math_graph, 1.1)
-                # | pynutil.add_weight(measure_graph, 1.1)
+                #| pynutil.add_weight(time_graph, 1.1)
+                #| pynutil.add_weight(fraction_graph, -1.1)
+                #| pynutil.add_weight(date_graph, 1.1)
+                #| pynutil.add_weight(ordinal_graph, 1.1)
+                #| pynutil.add_weight(decimal_graph, -1.1)
+                #| pynutil.add_weight(money_graph, -1.1)
+                #| pynutil.add_weight(math_graph, 1.1)
+                #| pynutil.add_weight(measure_graph, -3.1)
                 | pynutil.add_weight(word_graph, 1.1)
             )
 
@@ -143,7 +142,11 @@ class ClassifyFst(GraphFst):
             graph = token_plus_punct + pynini.closure(pynutil.add_weight(delete_extra_space, 1.1) + token_plus_punct)
             graph = delete_space + graph + delete_space
 
-            self.fst = graph.optimize()
+            #self.fst = graph.optimize()
+            tagger = graph.optimize()
+            preprocessor = PreProcessor(remove_interjections=True, fullwidth_to_halfwidth=True,)
+            self.fst = preprocessor.fst @ tagger
+
             no_digits = pynini.closure(pynini.difference(NEMO_CHAR, NEMO_DIGIT))
             self.fst_no_digits = pynini.compose(self.fst, no_digits).optimize()
 

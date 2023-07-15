@@ -33,8 +33,8 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
 
         # data imported to process am/pm into mandarin
-        alphabet_am = pynini.string_file(get_abs_path("data/time/suffix_am.tsv"))
-        alphabet_pm = pynini.string_file(get_abs_path("data/time/suffix_pm.tsv"))
+        alphabet_am = pynini.string_file(get_abs_path("data/time/AM.tsv"))
+        alphabet_pm = pynini.string_file(get_abs_path("data/time/PM.tsv"))
 
         # fundamental components
         hour_component = pynutil.delete("hour: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

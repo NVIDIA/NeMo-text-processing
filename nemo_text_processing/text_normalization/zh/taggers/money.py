@@ -26,8 +26,9 @@ class MoneyFst(GraphFst):
     '23美元' -> money { integer: "二十三" currency: "美元" }
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
-        super().__init__(name="money", kind="classify")
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="money", kind="classify", deterministic=deterministic)
+
 
         cardinal = cardinal.just_cardinals
         decimal = decimal.decimal

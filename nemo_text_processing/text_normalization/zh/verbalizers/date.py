@@ -26,8 +26,8 @@ class DateFst(GraphFst):
     { date { month: "二" day: "十一" } } -> 二月十一日
     """
 
-    def __init__(self):
-        super().__init__(name="date", kind="verbalize")
+    def __init__(self, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="date", kind="verbalize", deterministic=deterministic)
 
         year_component = (
             pynutil.delete("year: ")

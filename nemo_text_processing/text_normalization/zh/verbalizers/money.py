@@ -27,8 +27,9 @@ class MoneyFst(GraphFst):
         tokens { money { currency: "$" integer: "二" } } -> 二美元
     """
 
-    def __init__(self, decimal: GraphFst):
-        super().__init__(name="money", kind="verbalize")
+    def __init__(self, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="money", kind="verbalize", deterministic=deterministic)
+
 
         # components to combine to make graphs
         number_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

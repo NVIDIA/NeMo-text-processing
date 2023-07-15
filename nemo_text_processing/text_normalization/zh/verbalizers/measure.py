@@ -37,14 +37,21 @@ class Measure(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE)
             + pynutil.delete("\"")
         )
-        percent_graph = (
-            pynutil.delete("decimal { ")
-            + pynutil.delete("integer_part: \"")
-            + pynutil.insert("百分之")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
+
+        decimal_graph = (
+            pynutil.delete("integer_part: \"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+            + pynutil.insert("点")
+            + delete_space
+            + pynutil.delete("fractional_part: \"")
+            + pynini.closure(NEMO_NOT_QUOTE, 0)
             + pynutil.delete("\"")
             + delete_space
-            + pynutil.delete("}")
+            + pynutil.delete("units: \"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
         )
-        graph |= percent_graph
+
+        graph |= decimal_graph
         self.fst = self.delete_tokens(graph).optimize()

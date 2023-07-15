@@ -27,14 +27,14 @@ class CardinalFst(GraphFst):
     +10000 -> cardinal { positive: "正" integer: "一万" }
     """
 
-    def __init__(self):
-        super().__init__(name="cardinal", kind="classify")
+    def __init__(self, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+
 
         # imports
         zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
         digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         digit_tens = pynini.string_file(get_abs_path("data/number/digit_tens.tsv"))
-        sign = pynini.string_file(get_abs_path("data/number/sign.tsv"))
 
         # morphemes inserted + punctuation
         tens_digit = pynutil.insert('十')
@@ -608,15 +608,13 @@ class CardinalFst(GraphFst):
         )
 
         # adding optional +(正)/-(负) signs
-        sign_symbol = (pynutil.insert("negative: \"") + sign + pynutil.insert("\"")) | (
-            pynutil.insert("positive: \"") + sign + pynutil.insert("\"")
-        )
-        sign_mandarin = (
-            (pynutil.insert("positive: \"") + pynini.accep('正') + pynutil.insert("\""))
+        graph_sign = (
+            (pynutil.insert("positive: \"") + pynini.accep("正") + pynutil.insert("\""))
             | (pynutil.insert("negative: \"") + pynini.accep("负") + pynutil.insert("\""))
             | (pynutil.insert("negative: \"") + pynini.cross("負", "负") + pynutil.insert("\""))
+            | (pynutil.insert("negative: \"") + pynini.cross("-", "负") + pynutil.insert("\""))
+            | (pynutil.insert("positive: \"") + pynini.cross("+", "正") + pynutil.insert("\""))
         )
-        graph_sign = sign_symbol | sign_mandarin
 
         graph_mandarin_sign = graph_sign + pynutil.insert(" ") + graph_mandarin
         # final graph
@@ -625,7 +623,7 @@ class CardinalFst(GraphFst):
         )
         final_graph_numbers_only = pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
         # imprted when building other grammars
-        self.just_cardinals = graph | graph_mandarin
+        self.just_cardinals = graph | graph_mandarin | final_graph_sign | graph_mandarin_sign
         graph_mandarins = pynutil.insert("integer: \"") + graph_mandarin + pynutil.insert("\"")
 
         final_graph = final_graph_numbers_only | final_graph_sign | graph_mandarins | graph_mandarin_sign

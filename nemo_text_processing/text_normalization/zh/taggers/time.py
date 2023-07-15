@@ -28,15 +28,16 @@ class TimeFst(GraphFst):
         1点1刻 -> tokens { time { hours: "一" minutes: "一刻" } }
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="time", kind="classify", deterministic=deterministic)
+
 
         # mappings imported
         hour = pynini.string_file(get_abs_path("data/time/hour.tsv"))
         minute = pynini.string_file(get_abs_path("data/time/minute.tsv"))
         second = pynini.string_file(get_abs_path("data/time/second.tsv"))
-        alphabet_am = pynini.string_file(get_abs_path("data/time/suffix_am.tsv"))
-        alphabet_pm = pynini.string_file(get_abs_path("data/time/suffix_pm.tsv"))
+        alphabet_am = pynini.string_file(get_abs_path("data/time/AM.tsv"))
+        alphabet_pm = pynini.string_file(get_abs_path("data/time/PM.tsv"))
 
         # gramamr for time, separated by colons 05:03:13
         symbol = pynutil.delete(":") | pynutil.delete("：")

@@ -33,8 +33,9 @@ class FractionFst(GraphFst):
         cardinal: CardinalFst， decimal: DecimalFst
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
-        super().__init__(name="fraction", kind="classify")
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="fraction", kind="classify", deterministic=deterministic)
+
 
         graph_cardinals = cardinal.just_cardinals
         graph_decimal = decimal.decimal
@@ -73,7 +74,6 @@ class FractionFst(GraphFst):
             "佰亿",
             "仟亿",
         )
-        percentage = pynutil.delete('%')
 
         integer_component = pynutil.insert("integer_part: \"") + graph_cardinals + pynutil.insert("\"")
         denominator_component = pynutil.insert("denominator: \"") + graph_cardinals + pynutil.insert("\"")
@@ -106,6 +106,7 @@ class FractionFst(GraphFst):
             + numerator_component
         )
 
+        percentage = pynutil.delete('%')
         graph_percentage = (
             numerator_component
             + percentage
