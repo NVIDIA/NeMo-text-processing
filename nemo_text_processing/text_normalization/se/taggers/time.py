@@ -205,11 +205,7 @@ class TimeFst(GraphFst):
         self.graph_hm = graph_hm
         # 2 pm est
         ins_minutes = pynutil.insert(" minutes: \"nolla\"")
-        graph_h = (
-            final_graph_hour
-            + ins_minutes
-            + ensure_space
-        )
+        graph_h = final_graph_hour + ins_minutes + ensure_space
         graph_h |= klockan_hour_graph + ins_minutes
         self.graph_h = graph_h
 
