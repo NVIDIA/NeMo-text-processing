@@ -155,7 +155,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'ar', 'es_en', 'zh'],
+        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh'],
         default="en",
         type=str,
     )
