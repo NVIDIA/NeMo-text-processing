@@ -27,10 +27,16 @@ class WhiteListFst(GraphFst):
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
+        input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
+            e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, input_file: str = None):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
-        whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv")).invert()
+
+        if input_file:
+            whitelist = pynini.string_file(input_file).invert()
+        else:
+            whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv")).invert()
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
         self.fst = graph.optimize()

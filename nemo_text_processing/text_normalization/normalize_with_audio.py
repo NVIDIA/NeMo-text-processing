@@ -18,12 +18,11 @@ from argparse import ArgumentParser
 from time import perf_counter
 from typing import List, Optional, Tuple
 
-import jiwer
+import editdistance
 import pynini
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
-from pynini import Far
 from pynini.lib import rewrite
 
 
@@ -188,6 +187,14 @@ class NormalizerWithAudio(Normalizer):
     def normalize_non_deterministic(
         self, text: str, n_tagged: int, punct_post_process: bool = True, verbose: bool = False
     ):
+        # get deterministic option
+        if self.tagger:
+            deterministic_form = super().normalize(
+                text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
+            )
+        else:
+            deterministic_form = None
+
         original_text = text
 
         text = pre_process(text)  # to handle []
@@ -243,6 +250,9 @@ class NormalizerWithAudio(Normalizer):
             remove_dup = sorted(list(set(zip(normalized_texts, weights))), key=lambda x: x[1])
             normalized_texts, weights = zip(*remove_dup)
             return list(normalized_texts), weights
+
+        if deterministic_form is not None:
+            normalized_texts.append(deterministic_form)
 
         normalized_texts = set(normalized_texts)
         return normalized_texts
@@ -396,7 +406,7 @@ def calculate_cer(normalized_texts: List[str], pred_text: str, remove_punct=Fals
             for punct in "!?:;,.-()*+-/<=>@^_":
                 text_clean = text_clean.replace(punct, " ").replace("  ", " ")
 
-        cer = jiwer.cer(pred_text, text_clean) * 100
+        cer = editdistance.eval(pred_text, text_clean) * 100.0 / len(pred_text)
         normalized_options.append((text, cer, i))
     return normalized_options
 
@@ -408,7 +418,7 @@ def parse_args():
         "--input_case", help="input capitalization", choices=["lower_cased", "cased"], default="cased", type=str
     )
     parser.add_argument(
-        "--language", help="Select target language", choices=["en", "ru", "de", "es"], default="en", type=str
+        "--language", help="Select target language", choices=["en", "ru", "de", "es", "sv"], default="en", type=str
     )
     parser.add_argument("--manifest", default=None, help="path to .json manifest")
     parser.add_argument(

@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# gaph_utils is kept due to the fatc that importing from en folders will cause import errors that the data file names have to be the same with what are in the en folder
+import logging
 import os
 import string
 from pathlib import Path
@@ -56,7 +59,7 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     for rule, graph in graphs.items():
         exporter[rule] = graph.optimize()
     exporter.close()
-    print(f'Created {file_name}')
+    logging.info(f'Created {file_name}')
 
 
 class GraphFst:
