@@ -39,7 +39,7 @@ class DateFst(GraphFst):
     def __init__(self, ordinal: GraphFst, deterministic: bool = True, lm: bool = False):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
 
-        month = pynini.closure(NEMO_NOT_QUOTE, 1)
+        phrase = pynini.closure(NEMO_NOT_QUOTE, 1)
         day_cardinal = (
             pynutil.delete("day:")
             + delete_space
@@ -48,8 +48,8 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
         day = day_cardinal @ ordinal.suffix
-
-        month = pynutil.delete("month:") + delete_space + pynutil.delete("\"") + month + pynutil.delete("\"")
+        period = pynutil.delete("text:") + delete_space + pynutil.delete("\"") + phrase + pynutil.delete("\"")
+        month = pynutil.delete("month:") + delete_space + pynutil.delete("\"") + phrase + pynutil.delete("\"")
 
         year = (
             pynutil.delete("year:")
@@ -58,6 +58,11 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + delete_space
             + pynutil.delete("\"")
+        )
+
+        # financial period
+        graph_fy = (
+            pynutil.insert("the ") + period + pynutil.insert(" of ") + pynini.closure(delete_extra_space + year, 0, 1)
         )
 
         # month (day) year
@@ -93,7 +98,7 @@ class DateFst(GraphFst):
         )
 
         final_graph = (
-            (plurals._priority_union(graph_mdy, pynutil.add_weight(graph_dmy, 0.0001), NEMO_SIGMA) | year)
+            (plurals._priority_union(graph_mdy, pynutil.add_weight(graph_dmy, 0.0001), NEMO_SIGMA) | year | graph_fy)
             + delete_space
             + optional_preserve_order
         )

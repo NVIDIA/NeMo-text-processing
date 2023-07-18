@@ -1,8 +1,6 @@
 **NeMo Text Processing**
 ==========================
 
-**This repository is under development, please refer to https://github.com/NVIDIA/NeMo/tree/main/nemo_text_processing for full functionality. See [documentation](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/nlp/text_normalization/wfst/wfst_text_normalization.html) for details.**
-
 Introduction
 ------------
 
@@ -53,6 +51,11 @@ Use this installation mode if you want the latest released version.
 ```
 pip install nemo_text_processing
 ```
+
+**_NOTE:_** This should work on any Linux OS with x86_64. Pip installation on MacOS and Windows are not supported due to the dependency [Pynini](https://www.openfst.org/twiki/bin/view/GRM/Pynini). On a platform other than Linux x86_64, installing from Pip tries to compile Pynini from scratch, and requires OpenFst headers and libraries to be in the expected place. So if it's working for you, it's because you happen to have installed OpenFst in the right way in the right place. So if you want to Pip install Pynini on MacOS, you have to have pre-compiled and pre-installed OpenFst. The Pynini README for that version should tell you which version it needs and what `--enable-foo` flags to use.
+Instead, we recommend you to use conda-forge to install Pynini on MacOS or Windows:
+`conda install -c conda-forge pynini=2.1.5`.
+
 
 ###  Pip from source
 
