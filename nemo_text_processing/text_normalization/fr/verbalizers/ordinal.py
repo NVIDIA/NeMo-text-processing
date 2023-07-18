@@ -36,11 +36,13 @@ class OrdinalFst(GraphFst):
         irregular_numbers = pynini.string_file(get_abs_path("data/ordinals/irregular_numbers.tsv"))
         irregular_numbers = pynini.closure(pynini.closure(NEMO_NOT_QUOTE, 1) + NEMO_SPACE) + irregular_numbers
         exceptions = pynini.project(irregular_numbers, "input")
-        irregular_numbers_graph = (
-            pynutil.delete("integer: \"")
-            + irregular_numbers
+        exception_suffix = (
+            pynutil.delete(" morphosyntactic_features: \"ième")
+            + pynini.closure(pynini.accep("s"), 0, 1)
             + pynutil.delete("\"")
-            + pynutil.delete(" morphosyntactic_features: \"ième\"")
+        )
+        irregular_numbers_graph = (
+            pynutil.delete("integer: \"") + irregular_numbers + pynutil.delete("\"") + exception_suffix
         )
 
         remove_dashes = pynini.closure(NEMO_ALPHA, 1) + pynini.cross("-", " ") + pynini.closure(NEMO_ALPHA, 1)
@@ -60,5 +62,6 @@ class OrdinalFst(GraphFst):
         )
 
         final_graph = pynini.union(regular_ordinals_graph, irregular_numbers_graph)
+        self.graph = final_graph
 
         self.fst = self.delete_tokens(final_graph).optimize()

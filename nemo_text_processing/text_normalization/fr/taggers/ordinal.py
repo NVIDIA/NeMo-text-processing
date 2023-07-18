@@ -44,6 +44,7 @@ class OrdinalFst(GraphFst):
         suffixes_graph = pynutil.insert("morphosyntactic_features: \"") + suffixes + pynutil.insert("\"")
 
         final_graph = numbers_graph + pynutil.insert(NEMO_SPACE) + suffixes_graph
+        self.graph = final_graph
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
