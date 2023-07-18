@@ -20,7 +20,6 @@ from nemo_text_processing.text_normalization.fr.utils import get_abs_path
 from pynini.lib import pynutil
 
 
-
 class DateFst(GraphFst):
     # MAKE SURE ANY COMMENTS APPLY TO YOUR LANGUAGE
     """
