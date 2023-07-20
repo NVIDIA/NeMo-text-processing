@@ -41,12 +41,5 @@ class VerbalizeFst(GraphFst):
         fraction_graph = fraction.fst
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
-
-        graph = (
-            cardinal_graph
-            | decimal_graph
-            | ordinal_graph
-            | fraction_graph
-            | whitelist_graph
-        )
+        graph = cardinal_graph | decimal_graph | ordinal_graph | fraction_graph | whitelist_graph
         self.fst = graph
