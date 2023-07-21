@@ -198,7 +198,9 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
                 raw_start, raw_end = item[0]
                 norm_start, norm_end = item[1]
                 pred_start, pred_end = item[2]
-                while idx < len(spans_merged_neighbors) - 1 and not ((pred_end - pred_start) > 2 and spans_merged_neighbors[idx][-1] == MATCH):
+                while idx < len(spans_merged_neighbors) - 1 and not (
+                    (pred_end - pred_start) > 2 and spans_merged_neighbors[idx][-1] == MATCH
+                ):
                     idx += 1
                     raw_end = spans_merged_neighbors[idx][0][1]
                     norm_end = spans_merged_neighbors[idx][1][1]
@@ -262,7 +264,7 @@ def get_alignment(raw: str, norm: str, pred_text: str, verbose: bool = False):
 
     norm_pred_diffs = _get_alignment(norm, pred_text)
     norm_raw_diffs = _get_alignment(norm, raw)
-    
+
     semiotic_spans, pred_texts, norm_spans, raw_text_masked_list, raw_text_mask_idx = adjust_boundaries(
         norm_raw_diffs, norm_pred_diffs, raw, norm, pred_text, verbose
     )
