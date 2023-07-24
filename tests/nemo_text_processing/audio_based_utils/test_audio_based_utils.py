@@ -25,6 +25,11 @@ class TestAudioBasedTNUtils:
         norm = 'This is nubmer four ranking on GSKT'
 
         output = get_alignment(raw, norm, pred_text, True)
-        reference = (['is #4', 'G.S.K.T.'], ['iss for', 'g k p'], ['is nubmer four', 'GSKT'], ['This', '[SEMIOTIC_SPAN]', 'ranking', 'on', '[SEMIOTIC_SPAN]'], [1, 4])
+        reference = (
+            ['is #4', 'G.S.K.T.'],
+            ['iss for', 'g k p'],
+            ['is nubmer four', 'GSKT'],
+            ['This', '[SEMIOTIC_SPAN]', 'ranking', 'on', '[SEMIOTIC_SPAN]'],
+            [1, 4],
+        )
         assert output == reference
-
