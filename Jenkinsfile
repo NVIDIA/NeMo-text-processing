@@ -68,7 +68,7 @@ pipeline {
       parallel {
         stage('L0: Test utils') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" pytest audio_based_utils/*.py --cpu'
+            sh 'CUDA_VISIBLE_DEVICES="" pytest nemo_text_processing/audio_based_utils/*.py --cpu'
           }
         }
         stage('L0: En TN grammars') {
