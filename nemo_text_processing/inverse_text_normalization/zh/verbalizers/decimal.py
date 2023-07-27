@@ -77,7 +77,7 @@ class DecimalFst(GraphFst):
 
         # combining graphs removing tokenizations *3
         graph = (optional_integer + optional_fractional + optional_quantity).optimize()
-    
+
         graph = optional_sign + graph  # add optional sign for negative number
         self.numebrs = graph
         delete_tokens = self.delete_tokens(graph)

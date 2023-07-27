@@ -63,24 +63,22 @@ def get_quantity(decimal, cardinal):
 
     return res
 
+
 class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="decimal", kind="classify")
 
-        cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv")) | pynini.closure(pynini.cross("零", "0"))
+        cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv")) | pynini.closure(
+            pynini.cross("零", "0")
+        )
         cardinal_before_decimal = cardinal.just_cardinals | pynini.cross("零", "0")
-                                                                                                                  
-        delete_decimal = pynutil.delete("点") | pynutil.delete("點")  
 
-        graph_integer = (
-            pynutil.insert('integer_part: "')
-            + cardinal_before_decimal
-            + pynutil.insert('" ')
-        )  
+        delete_decimal = pynutil.delete("点") | pynutil.delete("點")
+
+        graph_integer = pynutil.insert('integer_part: "') + cardinal_before_decimal + pynutil.insert('" ')
 
         graph_string_of_cardinals = pynini.closure(cardinal_after_decimal, 1)
         graph_fractional = pynutil.insert('fractional_part: "') + graph_string_of_cardinals + pynutil.insert('"')
-
 
         graph_decimal_no_sign = pynini.closure((graph_integer + delete_decimal + graph_fractional), 1)
 
