@@ -124,8 +124,8 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, -1.1)
                 | pynutil.add_weight(money_graph, -1.1)
-                # | pynutil.add_weight(math_graph, 1.1)
-                # | pynutil.add_weight(measure_graph, -3.1)
+                | pynutil.add_weight(math_graph, 1.1)
+                | pynutil.add_weight(measure_graph, -3.1)
                 | pynutil.add_weight(word_graph, 1.1)
             )
 
