@@ -22,11 +22,15 @@ pipeline {
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
+<<<<<<< HEAD
     ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-30-24-0'
     IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-22-24-0'
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-27-24-0'
+=======
+    ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-12-23-0'
+>>>>>>> e4925eb (Zh tn 0712 (#89))
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
