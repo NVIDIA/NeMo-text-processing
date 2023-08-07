@@ -13,7 +13,7 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.zh.taggers.cardinal import Cardinal
+from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -29,12 +29,15 @@ class MathSymbol(GraphFst):
             add your sign in data/math/symbol.tsv,this graph just convert sigh to character,you can add more 
             cases with detailed cases 
         '''
-        score_sign = pynini.string_file(get_abs_path("data/math/score.tsv"))
+        score_sign = pynini.string_file(get_abs_path("data/math/score.tsv")) | pynini.string_file(
+            get_abs_path("data/math/symbol.tsv")
+        )
         score = (
             pynutil.insert("score: \"")
-            + Cardinal().graph_cardinal
+            + pynini.closure(score_sign, 0, 1)
+            + CardinalFst().just_cardinals
             + score_sign
-            + Cardinal().graph_cardinal
+            + CardinalFst().just_cardinals
             + pynutil.insert("\"")
         )
         graph = score
