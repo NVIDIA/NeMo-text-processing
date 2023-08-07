@@ -40,7 +40,7 @@ class InverseNormalizer(Normalizer):
         overwrite_cache: set to True to overwrite .far files
         max_number_of_permutations_per_split: a maximum number
             of permutations which can be generated from input sequence of tokens.
-        filter_profanity: set to False to disable profanity filtering
+        filter_profanity: set to True to enable profanity filtering
     """
 
     def __init__(
@@ -52,7 +52,7 @@ class InverseNormalizer(Normalizer):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         max_number_of_permutations_per_split: int = 729,
-        filter_profanity: bool = True,
+        filter_profanity: bool = False,
     ):
 
         assert input_case in ["lower_cased", "cased"]
