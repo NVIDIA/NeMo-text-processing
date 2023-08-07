@@ -46,12 +46,12 @@ class ProfaneFst(GraphFst):
         super().__init__(name="profane", kind="classify")
         # Profane Grammar
         if input_file is None:
-            input_file = get_abs_path("data/swear_sequences.tsv")
+            input_file = "data/swear_sequences.tsv"
 
         if not os.path.exists(input_file):
             raise ValueError(f"Profane words file {input_file} not found")
 
-        profane_graph = pynini.string_file(get_abs_path("data/swear_sequences.tsv"))
+        profane_graph = pynini.string_file(get_abs_path(input_file))
 
         bowdlerize = (
             (NEMO_ALPHA | NEMO_DIGIT) + pynini.closure(pynini.cross(NEMO_SPACE | NEMO_ALPHA | NEMO_DIGIT, "*"), 1)

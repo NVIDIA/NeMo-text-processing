@@ -52,7 +52,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: set to True to overwrite .far files
         whitelist: path to a file with whitelist replacements
         profane_words: path to a file with profane words for redacting with "*" symbol
-        filter_profanity: set to False to disable profanity filtering
+        filter_profanity: set to True to enable profanity filtering
     """
 
     def __init__(
@@ -62,7 +62,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None,
         profane_words: str = None,
-        filter_profanity: bool = True,
+        filter_profanity: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -99,7 +99,7 @@ class ClassifyFst(GraphFst):
             punct_graph = PunctuationFst().fst
             electronic_graph = ElectronicFst(input_case=input_case).fst
             telephone_graph = TelephoneFst(cardinal, input_case=input_case).fst
-            profane_graph = ProfaneFst(input_case=input_case).fst
+            profane_graph = ProfaneFst(input_case=input_case, input_file=profane_words).fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
