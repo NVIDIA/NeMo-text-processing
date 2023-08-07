@@ -53,14 +53,12 @@ class DecimalFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        sign = (
-            pynini.closure(
-                pynutil.delete("negative:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.accep("负")
-                + pynutil.delete("\"")
-            )
+        sign = pynini.closure(
+            pynutil.delete("negative:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.accep("负")
+            + pynutil.delete("\"")
         )
 
         graph = integer + delete_space + pynutil.insert("点") + fractional

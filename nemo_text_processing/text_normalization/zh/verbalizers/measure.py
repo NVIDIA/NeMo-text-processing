@@ -27,7 +27,7 @@ class Measure(GraphFst):
         sign_component = pynutil.delete("negative: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         integer_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         unit_component = pynutil.delete("units: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        
+
         cardinal_graph = integer_component + delete_space + unit_component
 
         decimal_graph = (
@@ -46,5 +46,5 @@ class Measure(GraphFst):
         )
 
         graph = pynini.closure(sign_component + delete_space) + (cardinal_graph | decimal_graph)
-    
+
         self.fst = self.delete_tokens(graph).optimize()

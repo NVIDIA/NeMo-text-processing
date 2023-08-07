@@ -41,7 +41,7 @@ class Measure(GraphFst):
         graph_sign = (
             (pynutil.insert("negative: \"") + pynini.accep("负") + pynutil.insert("\""))
             | (pynutil.insert("negative: \"") + pynini.cross("負", "负") + pynutil.insert("\""))
-            | (pynutil.insert("negative: \"") + pynini.cross("-", "负") + pynutil.insert("\""))   
+            | (pynutil.insert("negative: \"") + pynini.cross("-", "负") + pynutil.insert("\""))
         )
 
         graph = pynini.closure(graph_sign + insert_space) + (graph_cardinal_measure | graph_decimal)
