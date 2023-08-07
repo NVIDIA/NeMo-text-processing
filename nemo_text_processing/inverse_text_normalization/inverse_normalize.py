@@ -34,13 +34,13 @@ class InverseNormalizer(Normalizer):
         lang: language specifying the ITN
         whitelist: path to a file with whitelist replacements. (each line of the file: written_form\tspoken_form\n),
             e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
-        profane_words: path to a file with profane words to be redacted with "*" symbol. (each line of the file: spoken_form\n)
-            e.g. nemo_text_processing/inverse_text_normalization/en/data/swear_sequences.tsv
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
         max_number_of_permutations_per_split: a maximum number
             of permutations which can be generated from input sequence of tokens.
         filter_profanity: set to True to enable profanity filtering
+        profane_words: path to a file with profane words to be redacted with "*" symbol. (each line of the file: spoken_form\n)
+            e.g. nemo_text_processing/inverse_text_normalization/en/data/swear_sequences.tsv
     """
 
     def __init__(
@@ -48,11 +48,11 @@ class InverseNormalizer(Normalizer):
         input_case: str = INPUT_LOWER_CASED,
         lang: str = "en",
         whitelist: str = None,
-        profane_words: str = None,
         cache_dir: str = None,
         overwrite_cache: bool = False,
         max_number_of_permutations_per_split: int = 729,
         filter_profanity: bool = False,
+        profane_words: str = None,
     ):
 
         assert input_case in ["lower_cased", "cased"]
@@ -68,10 +68,10 @@ class InverseNormalizer(Normalizer):
             self.tagger = ClassifyFst(
                 cache_dir=cache_dir,
                 whitelist=whitelist,
-                profane_words=profane_words,
                 overwrite_cache=overwrite_cache,
                 input_case=input_case,
                 filter_profanity=filter_profanity,
+                profane_words=profane_words,
             )
         else:
             if lang == 'es':  # Spanish (Espanol)

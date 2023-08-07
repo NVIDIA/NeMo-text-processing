@@ -22,7 +22,7 @@ from ..utils import CACHE_DIR, parse_test_case_file
 class TestProfane:
     inverse_normalizer_en = InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
     inverse_normalizer_en_cased = InverseNormalizer(
-        lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased", filter_profanity=True
+        lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased", filter_profanity=True,
     )
 
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_profane.txt'))

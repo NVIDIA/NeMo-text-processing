@@ -51,8 +51,8 @@ class ClassifyFst(GraphFst):
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
         whitelist: path to a file with whitelist replacements
-        profane_words: path to a file with profane words for redacting with "*" symbol
         filter_profanity: set to True to enable profanity filtering
+        profane_words: path to a file with profane words for redacting with "*" symbol
     """
 
     def __init__(
@@ -61,8 +61,8 @@ class ClassifyFst(GraphFst):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         whitelist: str = None,
-        profane_words: str = None,
         filter_profanity: bool = False,
+        profane_words: str = None,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
