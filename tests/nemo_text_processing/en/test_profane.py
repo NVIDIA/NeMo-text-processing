@@ -20,7 +20,9 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestProfane:
-    inverse_normalizer_en = InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, filter_profanity=True)
+    inverse_normalizer_en = InverseNormalizer(
+        lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, filter_profanity=True
+    )
     inverse_normalizer_en_cased = InverseNormalizer(
         lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased", filter_profanity=True,
     )
