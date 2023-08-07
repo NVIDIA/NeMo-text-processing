@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,21 +11,54 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
-class Money(GraphFst):
-    '''
-        tokens { money { integer_part: "一点五" fractional_part: "元" } } ->  一点五元
-    '''
+class MoneyFst(GraphFst):
+    """
+    Finite state transducer for verbalizing fraction e.g.
+        tokens { money { integer: "二" currency: "$"} } -> 二美元
+        tokens { money { integer: "三" major_unit: "块"} } -> 三块
+        tokens { money { currency: "$" integer: "二" } } -> 二美元
+    """
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
+    def __init__(self, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
 
-        cur = pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        num = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + delete_space
-        graph = num + cur
+        # components to combine to make graphs
+        number_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        currency_component = pynutil.delete("currency: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        decimal_component = decimal.decimal_component
+        unit_only_component = (
+            (pynutil.delete("currency: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
+            | (pynutil.delete("currency_major: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
+            | (pynutil.delete("currency_minor: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
+        )
 
-        self.fst = self.delete_tokens(graph).optimize()
+        # graphs
+        graph_regular_money = number_component + delete_space + currency_component
+        graph_unit_money = pynini.closure(
+            (number_component + delete_space + unit_only_component + pynini.closure(delete_space))
+        )
+        graph_decimal_money = decimal_component + delete_space + currency_component
+
+        graph_suffix = (
+            number_component
+            + delete_space
+            + pynutil.delete("quantity: \"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+            + delete_space
+            + currency_component
+        )
+
+        graph = graph_unit_money | graph_regular_money | graph_decimal_money | graph_suffix
+
+        final_graph = graph
+
+        delete_tokens = self.delete_tokens(final_graph)
+        self.fst = delete_tokens.optimize()
