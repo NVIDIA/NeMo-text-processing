@@ -13,7 +13,6 @@
 # limitations under the License.
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -23,29 +22,28 @@ class Measure(GraphFst):
         1kg  -> tokens { measure { cardinal { integer: "一" } units: "千克" } }
     '''
 
-    def __init__(self, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
 
         units_en = pynini.string_file(get_abs_path("data/measure/units_en.tsv"))
         units_zh = pynini.string_file(get_abs_path("data/measure/units_zh.tsv"))
 
-        graph = (
-            pynutil.insert("cardinal { ")
-            + pynutil.insert("integer: \"")
-            + CardinalFst().just_cardinals
-            + pynutil.insert("\"")
-            + pynutil.insert(" }")
-            + insert_space
-            + pynutil.insert("units: \"")
-            + (units_en | units_zh)
-            + pynutil.insert("\"")
-        )
+        graph_cardinal = cardinal.just_cardinals
+        integer_component = pynutil.insert("integer: \"") + graph_cardinal + pynutil.insert("\"")
+        unit_component = pynutil.insert("units: \"") + (units_en | units_zh) + pynutil.insert("\"")
+        graph_cardinal_measure = integer_component + insert_space + unit_component
 
         decimal = decimal.decimal
         graph_decimal = (
             decimal + insert_space + pynutil.insert("units: \"") + (units_en | units_zh) + pynutil.insert("\"")
         )
 
-        graph |= graph_decimal
+        graph_sign = (
+            (pynutil.insert("negative: \"") + pynini.accep("负") + pynutil.insert("\""))
+            | (pynutil.insert("negative: \"") + pynini.cross("負", "负") + pynutil.insert("\""))
+            | (pynutil.insert("negative: \"") + pynini.cross("-", "负") + pynutil.insert("\""))   
+        )
+
+        graph = pynini.closure(graph_sign + insert_space) + (graph_cardinal_measure | graph_decimal)
 
         self.fst = self.add_tokens(graph).optimize()

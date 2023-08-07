@@ -85,22 +85,15 @@ class DecimalFst(GraphFst):
 
         graph_sign = (
             (pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"负\"")) + pynutil.insert(" "))
-            | (pynini.closure(pynutil.insert("positive: ") + pynini.cross("+", "\"正\"")) + pynutil.insert(" "))
+            
         ) | (
             (
-                pynutil.insert("positive: ")
-                + pynutil.insert("\"")
-                + pynini.accep('正')
-                + pynutil.insert("\"")
-                + pynutil.insert(' ')
-            )
-            | (
                 pynutil.insert('negative: ')
                 + pynutil.insert("\"")
                 + (pynini.accep('负') | pynini.cross('負', '负'))
                 + pynutil.insert("\"")
-            )
             + pynutil.insert(' ')
+            )
         )
         graph_with_sign = graph_sign + graph_decimal
         graph_regular = graph_with_sign | graph_decimal

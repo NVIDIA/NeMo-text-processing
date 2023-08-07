@@ -55,15 +55,7 @@ class DecimalFst(GraphFst):
 
         sign = (
             pynini.closure(
-                pynutil.delete("positive: ")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.accep("正")
-                + pynutil.delete("\"")
-            )
-        ) | (
-            pynini.closure(
-                pynutil.delete("negative: ")
+                pynutil.delete("negative:")
                 + delete_space
                 + pynutil.delete("\"")
                 + pynini.accep("负")

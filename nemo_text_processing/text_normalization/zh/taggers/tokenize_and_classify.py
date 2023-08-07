@@ -108,7 +108,7 @@ class ClassifyFst(GraphFst):
             self.math = MathSymbol(deterministic=deterministic)
             math_graph = self.math.fst
 
-            self.measure = Measure(decimal=decimal, deterministic=deterministic)
+            self.measure = Measure(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
             measure_graph = self.measure.fst
 
             self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
@@ -117,15 +117,15 @@ class ClassifyFst(GraphFst):
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.001)
-                | pynutil.add_weight(cardinal_graph, -3.0)
+                | pynutil.add_weight(cardinal_graph, -2.0)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, -1.1)
-                | pynutil.add_weight(date_graph, 1.1)
+                | pynutil.add_weight(date_graph, 1.2)
                 | pynutil.add_weight(ordinal_graph, 1.1)
-                | pynutil.add_weight(decimal_graph, -1.1)
+                | pynutil.add_weight(decimal_graph, -1.0)
                 | pynutil.add_weight(money_graph, -1.1)
                 | pynutil.add_weight(math_graph, 1.1)
-                | pynutil.add_weight(measure_graph, -3.1)
+                | pynutil.add_weight(measure_graph, -1.1)
                 | pynutil.add_weight(word_graph, 1.1)
             )
 
