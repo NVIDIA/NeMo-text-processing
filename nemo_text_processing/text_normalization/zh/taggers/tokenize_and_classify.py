@@ -120,7 +120,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(cardinal_graph, -2.0)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, -1.1)
-                | pynutil.add_weight(date_graph, 1.2)
+                | pynutil.add_weight(date_graph, -1.0)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, -1.0)
                 | pynutil.add_weight(money_graph, -1.1)
