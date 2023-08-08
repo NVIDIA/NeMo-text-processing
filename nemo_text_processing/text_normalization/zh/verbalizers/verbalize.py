@@ -14,7 +14,6 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.zh.verbalizers.char import Char
 from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.zh.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
@@ -24,6 +23,7 @@ from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.zh.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import Whitelist
+from nemo_text_processing.text_normalization.zh.verbalizers.word import Char
 
 
 class VerbalizeFst(GraphFst):
