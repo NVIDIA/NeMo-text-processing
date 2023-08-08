@@ -25,7 +25,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.zh.taggers.char import Char
+from nemo_text_processing.text_normalization.zh.taggers.word import Char
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
