@@ -62,10 +62,10 @@ class TelephoneFst(GraphFst):
         three_digits = cardinal.three_digits_read
         two_or_three_digits = (two_digits | three_digits).optimize()
         one_two_or_three_digits = (digit | two_or_three_digits).optimize()
-        zero_after_country_code = pynini.union(pynini.cross("(0)", "noll "), zero_space)
+        zero_after_country_code = pynini.union(pynini.cross("(0)", "nolla "), zero_space)
         bracketed = pynutil.delete("(") + one_two_or_three_digits + pynutil.delete(")")
 
-        zero = pynini.cross("0", "noll")
+        zero = pynini.cross("0", "nolla")
         digit |= zero
 
         special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
@@ -124,20 +124,6 @@ class TelephoneFst(GraphFst):
             )
             + pynutil.insert("number_part: \"")
             + ip_graph.optimize()
-            + pynutil.insert("\"")
-        )
-        # ssn
-        ssn_prompts = pynini.string_file(get_abs_path("data/telephone/ssn_prompt.tsv"))
-        four_digit_part = digit + (pynutil.insert(" ") + digit) ** 3
-        ssn_separator = pynini.cross("-", ", ")
-        ssn_graph = three_digits + ssn_separator + two_digits + ssn_separator + four_digit_part
-
-        graph |= (
-            pynini.closure(
-                pynutil.insert("country_code: \"") + ssn_prompts + pynutil.insert("\"") + delete_extra_space, 0, 1
-            )
-            + pynutil.insert("number_part: \"")
-            + ssn_graph.optimize()
             + pynutil.insert("\"")
         )
 
