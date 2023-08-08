@@ -45,7 +45,7 @@ class ElectronicFst(GraphFst):
             pynutil.insert("username: \"")
             + accepted_characters_with_dot
             + pynutil.insert("\"")
-            + pynini.cross('@', ' ')
+            + (pynini.cross('@', ' ') | pynini.cross('(at)', ' '))
         )
         domain_graph = accepted_characters + dot + accepted_characters
         domain_graph = pynutil.insert("domain: \"") + domain_graph + pynutil.insert("\"")
