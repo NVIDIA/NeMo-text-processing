@@ -71,6 +71,8 @@ class TelephoneFst(GraphFst):
         special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
 
         telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
+        if not deterministic:
+            telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr_nd.tsv"))
         telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
         prompt = pynutil.insert("prompt: \"") + telephone_prompt + pynutil.insert("\"")
         prompt |= pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
@@ -117,7 +119,7 @@ class TelephoneFst(GraphFst):
 
         # ip
         ip_prompts = pynini.string_file(get_abs_path("data/telephone/ip_prompt.tsv"))
-        ip_graph = one_two_or_three_digits + (pynini.cross(".", " punkt ") + one_two_or_three_digits) ** 3
+        ip_graph = one_two_or_three_digits + (pynini.cross(".", " čuokkis ") + one_two_or_three_digits) ** 3
         graph |= (
             pynini.closure(
                 pynutil.insert("country_code: \"") + ip_prompts + pynutil.insert("\"") + delete_extra_space, 0, 1
