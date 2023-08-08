@@ -94,10 +94,6 @@ class DecimalFst(GraphFst):
                 + pynini.closure(insert_space + graph_digit),  # For cases such as "1,001"
             )
 
-        # Technically decimals could be space delineated groups of three, e.g. (1,333 333). This removes any possible spaces
-        strip_formatting = pynini.cdrewrite(delete_space, "", "", NEMO_SIGMA)
-        graph = strip_formatting @ graph
-
         graph = graph.optimize()
 
         delete_separator = pynutil.delete(",")
