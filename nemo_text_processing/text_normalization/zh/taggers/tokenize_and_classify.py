@@ -92,7 +92,7 @@ class ClassifyFst(GraphFst):
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-            tagger = pynini.closure(token, 1)
+            tagger = pynini.closure(token, 1)``
 
             self.fst = tagger
 
