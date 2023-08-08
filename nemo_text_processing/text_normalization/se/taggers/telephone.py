@@ -21,9 +21,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.se.graph_utils import ensure_space
+from nemo_text_processing.text_normalization.se.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.se.utils import get_abs_path
 from pynini.lib import pynutil
 
 
