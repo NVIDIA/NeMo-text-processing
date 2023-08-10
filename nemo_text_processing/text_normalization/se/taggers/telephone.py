@@ -99,6 +99,7 @@ class TelephoneFst(GraphFst):
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
         extension = pynutil.insert("extension: \"") + one_two_or_three_digits + pynutil.insert("\"")
         extension = pynini.closure(insert_space + extension, 0, 1)
+        # FIXME: Swedish
         ext_prompt = NEMO_SPACE + pynutil.delete(pynini.union("ankn", "ankn.", "anknytning")) + ensure_space
         passable = pynini.union(":", ": ", " ")
         prompt_pass = pynutil.delete(passable) + insert_space
