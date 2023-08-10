@@ -23,7 +23,7 @@ pipeline {
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     SE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
-    ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-29-23-0'
+    ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-12-23-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
 
   }
