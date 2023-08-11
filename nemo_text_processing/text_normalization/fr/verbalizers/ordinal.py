@@ -27,7 +27,7 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, strip_dashes: bool = False):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
         ones = pynini.cross("un", "prem")
@@ -44,11 +44,13 @@ class OrdinalFst(GraphFst):
             pynutil.delete("integer: \"") + irregular_numbers + pynutil.delete("\"") + exception_suffix
         )
 
-        remove_dashes = pynini.closure(NEMO_ALPHA, 1) + pynini.cross("-", " ") + pynini.closure(NEMO_ALPHA, 1)
-        remove_dashes = pynini.closure(remove_dashes, 0)
         numbers = pynini.closure(NEMO_NOT_QUOTE, 1)
         numbers = pynini.difference(numbers, exceptions)
-        numbers = pynini.union(numbers, pynutil.add_weight(numbers @ remove_dashes, -0.0001))
+
+        if strip_dashes:
+            remove_dashes = pynini.closure(NEMO_ALPHA, 1) + pynini.cross("-", " ") + pynini.closure(NEMO_ALPHA, 1)
+            remove_dashes = pynini.closure(remove_dashes, 0)
+            numbers = pynini.union(numbers, pynutil.add_weight(numbers @ remove_dashes, -0.0001))
 
         regular_ordinals = pynini.union(numbers, pynutil.add_weight(ones, -0.0001))
         regular_ordinals_graph = (
