@@ -86,6 +86,8 @@ class TelephoneFst(GraphFst):
         area_part |= bracketed + add_separator
 
         base_number_part = pynini.union(
+            two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
+            three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + three_digits,
             three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + two_digits,
             three_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
             three_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
