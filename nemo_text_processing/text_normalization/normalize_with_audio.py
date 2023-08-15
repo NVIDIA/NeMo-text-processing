@@ -141,7 +141,7 @@ class NormalizerWithAudio(Normalizer):
         Returns:
             normalized text options (usually there are multiple ways of normalizing a given semiotic class)
         """
-        if pred_text is None or self.tagger is None:
+        if pred_text is None or pred_text == "" or self.tagger is None:
             return self.normalize_non_deterministic(
                 text=text, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
             )
@@ -156,6 +156,7 @@ class NormalizerWithAudio(Normalizer):
         semiotic_spans, pred_text_spans, norm_spans, text_with_span_tags_list, masked_idx_list = get_alignment(
             text, det_norm, pred_text, verbose=False
         )
+
         sem_tag_idx = 0
         for cur_semiotic_span, cur_pred_text, cur_deter_norm in zip(semiotic_spans, pred_text_spans, norm_spans):
             if len(cur_semiotic_span) == 0:
