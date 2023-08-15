@@ -57,7 +57,6 @@ pipeline {
     }
 
 
-
     stage('L0: Create EN TN/ITN Grammars') {
       when {
         anyOf {
@@ -67,7 +66,11 @@ pipeline {
       }
       failFast true
       parallel {
-
+        stage('L0: Test utils') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/audio_based_utils/ --cpu'
+          }
+        }
         stage('L0: En TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="1" --cache_dir ${EN_TN_CACHE}'
