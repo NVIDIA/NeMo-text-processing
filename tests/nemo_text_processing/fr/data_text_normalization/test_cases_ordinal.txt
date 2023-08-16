@@ -8,7 +8,7 @@
 9e~neuvième
 10°~dixième
 4e~quatrième
-90e~quatre vingt dixième
+90e~quatre-vingt-dixième
 100e~centième
 1000e~millième
 2540e~deux mille cinq cent quarantième
