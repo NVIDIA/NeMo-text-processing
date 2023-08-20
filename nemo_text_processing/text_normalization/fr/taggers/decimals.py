@@ -19,7 +19,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    delete_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.fr.utils import get_abs_path

@@ -39,4 +39,5 @@ def load_labels(abs_path):
     """
     label_tsv = open(abs_path)
     labels = list(csv.reader(label_tsv, delimiter="\t"))
+    label_tsv.close()
     return labels
