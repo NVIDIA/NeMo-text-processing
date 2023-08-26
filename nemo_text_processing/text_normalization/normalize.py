@@ -639,6 +639,7 @@ class Normalizer:
 
         Args:
             lattice: verbalization lattice
+            text: full text line to raise in case of an exception
 
         Returns: shortest path
         """
