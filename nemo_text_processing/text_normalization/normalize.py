@@ -354,7 +354,7 @@ class Normalizer:
                     raise ValueError(f"No permutations were generated from tokens {s}")
                 output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice, text)
             except:
-                raise ValueError("Text: " + text)
+                raise ValueError("Failed text: " + text)
         output = SPACE_DUP.sub(' ', output[1:])
 
         if self.lang == "en" and hasattr(self, 'post_processor'):
