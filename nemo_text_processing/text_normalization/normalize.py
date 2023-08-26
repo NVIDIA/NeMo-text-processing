@@ -338,17 +338,20 @@ class Normalizer:
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
         output = ""
         for s in split_tokens:
-            tags_reordered = self.generate_permutations(s)
-            verbalizer_lattice = None
-            for tagged_text in tags_reordered:
-                tagged_text = pynini.escape(tagged_text)
+            try:
+                tags_reordered = self.generate_permutations(s)
+                verbalizer_lattice = None
+                for tagged_text in tags_reordered:
+                    tagged_text = pynini.escape(tagged_text)
 
-                verbalizer_lattice = self.find_verbalizer(tagged_text)
-                if verbalizer_lattice.num_states() != 0:
-                    break
-            if verbalizer_lattice is None:
-                raise ValueError(f"No permutations were generated from tokens {s}")
-            output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice)
+                    verbalizer_lattice = self.find_verbalizer(tagged_text)
+                    if verbalizer_lattice.num_states() != 0:
+                        break
+                if verbalizer_lattice is None:
+                    raise ValueError(f"No permutations were generated from tokens {s}")
+                output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice, text)
+            except:
+                raise ValueError("Text: " + text)
         output = SPACE_DUP.sub(' ', output[1:])
 
         if self.lang == "en" and hasattr(self, 'post_processor'):
@@ -554,7 +557,7 @@ class Normalizer:
                 elif isinstance(v, bool):
                     subl = ["".join(x) for x in itertools.product(subl, [f"{k}: true "])]
                 else:
-                    raise ValueError()
+                    raise ValueError("Key: " + str(k) + " Value: " + str(v))
             l.extend(subl)
         return l
 
@@ -627,7 +630,7 @@ class Normalizer:
         return lattice
 
     @staticmethod
-    def select_verbalizer(lattice: 'pynini.FstLike') -> str:
+    def select_verbalizer(lattice: 'pynini.FstLike', text: str) -> str:
         """
         Given verbalized lattice return shortest path
 
@@ -636,7 +639,10 @@ class Normalizer:
 
         Returns: shortest path
         """
-        output = pynini.shortestpath(lattice, nshortest=1, unique=True).string()
+        try:
+            output = pynini.shortestpath(lattice, nshortest=1, unique=True).string()
+        except Exception as e:
+            raise ValueError('Failed text: "' + text + '" ' + str(e))
         # lattice = output @ self.verbalizer.punct_graph
         # output = pynini.shortestpath(lattice, nshortest=1, unique=True).string()
         return output
