@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.text_normalization.es.graph_utils import roman_to_int, strip_accent
-from nemo_text_processing.text_normalization.es.utils import get_abs_path
+from nemo_text_processing.text_normalization.es.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
@@ -131,7 +131,8 @@ class OrdinalFst(GraphFst):
 
         # Managing Romanization, excluding words that may be ambiguous
         roman_ordinals = roman_to_int(ordinal_graph)
-        exceptions = pynini.accep("vi") | pynini.accep("di") | pynini.accep("mi")
+        # exceptions = pynini.accep("vi") | pynini.accep("di") | pynini.accep("mi")
+        exceptions = pynini.string_file(get_abs_path("data/ordinals/roman_exceptions.tsv"))
         graph_exception = pynini.project(exceptions, 'input')
         roman_ordinals = (pynini.project(roman_ordinals, "input") - graph_exception.arcsort()) @ roman_ordinals
 
