@@ -41,10 +41,11 @@ class CardinalFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
-        graph_numbers = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
+        graph_numbers = pynini.string_file(get_abs_path("data/numbers/tens.tsv"))
         graph_thousands = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
 
-        final_graph = graph_numbers | graph_thousands
+        final_graph = graph_digits | graph_numbers | graph_thousands
         final_graph = pynutil.insert("integer: \"") + final_graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
