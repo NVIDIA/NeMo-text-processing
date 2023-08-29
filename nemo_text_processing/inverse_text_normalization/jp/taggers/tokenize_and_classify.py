@@ -30,6 +30,8 @@ from nemo_text_processing.inverse_text_normalization.jp.taggers.fraction import 
 from nemo_text_processing.inverse_text_normalization.jp.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.jp.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.jp.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.word import WordFst
 from pynini.lib import pynutil
 
@@ -71,11 +73,17 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal)
             ordinal_graph = ordinal.fst
 
+            date = DateFst(cardinal)
+            date_graph = date.fst
+
             decimal = DecimalFst(cardinal)
             decimal_graph = decimal.fst
 
             fraction = FractionFst(cardinal, decimal)
             fraction_graph = fraction.fst
+
+            time = TimeFst()
+            time_graph = time.fst
 
             word_graph = WordFst().fst
             whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case).fst
@@ -85,8 +93,10 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(cardinal_graph, -1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
+                | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
 
