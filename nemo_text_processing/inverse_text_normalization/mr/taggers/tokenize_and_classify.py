@@ -3,6 +3,8 @@ import os
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.mr.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.mr.taggers.word import WordFst
+from nemo_text_processing.inverse_text_normalization.mr.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
@@ -42,11 +44,22 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst()
             cardinal_graph = cardinal.fst
 
-            classify = pynutil.add_weight(cardinal_graph, 1.1)
+            word_graph = WordFst().fst
+            punct_graph = PunctuationFst().fst
+            classify = (
+                pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(word_graph, 100)
+            )
 
-        token = pynutil.insert("token { ") + classify + pynutil.insert(" }")
+        punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
+        token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
+        token_plus_punct = (
+                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+        )
 
-        graph = token
+        graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
+        graph = delete_space + graph + delete_space
+
         self.fst = graph.optimize()
 
         if far_file:
