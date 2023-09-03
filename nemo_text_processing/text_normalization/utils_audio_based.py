@@ -24,8 +24,7 @@ SEMIOTIC_TAG = "[SEMIOTIC_SPAN]"
 
 def _get_alignment(a: str, b: str) -> Dict:
     """
-
-    Construscts alignment between a and b
+    Constructs alignment between a and b
 
     Returns:
         a dictionary, where keys are a's word index and values is a Tuple that contains span from b, and whether it
@@ -62,7 +61,7 @@ def _get_alignment(a: str, b: str) -> Dict:
 
 def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, norm: str, pred_text: str, verbose=False):
     """
-    Adjust alignement boundaries by taking norm--raw texts and norm--pred_text alignements, and creating raw-pred_text
+    Adjust alignment boundaries by taking norm--raw texts and norm--pred_text alignments, and creating raw-pred_text alignment
         alignment.
 
     norm_raw_diffs: output of _get_alignment(norm, raw)
@@ -92,10 +91,12 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
             raw_text_mask_idx: [1, 4]
     """
 
-    adjusted = []
+    raw_pred_spans = []
     word_id = 0
     while word_id < len(norm.split()):
         norm_raw, norm_pred = norm_raw_diffs[word_id], norm_pred_diffs[word_id]
+        # if there is a mismatch in norm_raw and norm_pred, expand the boundaries of the shortest mismatch to align with the longest one
+        # e.g., norm_raw = (1, 2, 'match') norm_pred = (1, 5, 'non-match') => expand norm_raw until the next matching sequence or the end of string to align with norm_pred
         if (norm_raw[2] == MATCH and norm_pred[2] == NONMATCH) or (norm_raw[2] == NONMATCH and norm_pred[2] == MATCH):
             mismatched_id = word_id
             non_match_raw_start = norm_raw[0]
@@ -114,7 +115,7 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
             if not done:
                 non_match_raw_end = len(raw.split())
                 non_match_pred_end = len(pred_text.split())
-            adjusted.append(
+            raw_pred_spans.append(
                 (
                     mismatched_id,
                     (non_match_raw_start, non_match_raw_end, NONMATCH),
@@ -122,12 +123,13 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
                 )
             )
         else:
-            adjusted.append((word_id, norm_raw, norm_pred))
+            raw_pred_spans.append((word_id, norm_raw, norm_pred))
         word_id += 1
 
-    adjusted2 = []
+    # aggregate neighboring spans with the same status
+    spans_merged_neighbors = []
     last_status = None
-    for idx, item in enumerate(adjusted):
+    for idx, item in enumerate(raw_pred_spans):
         if last_status is None:
             last_status = item[1][2]
             raw_start = item[1][0]
@@ -139,7 +141,7 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
             raw_end = item[1][1]
             pred_text_end = item[2][1]
         else:
-            adjusted2.append(
+            spans_merged_neighbors.append(
                 [[norm_span_start, item[0]], [raw_start, raw_end], [pred_text_start, pred_text_end], last_status]
             )
             last_status = item[1][2]
@@ -152,13 +154,13 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
     if last_status == item[1][2]:
         raw_end = item[1][1]
         pred_text_end = item[2][1]
-        adjusted2.append(
+        spans_merged_neighbors.append(
             [[norm_span_start, item[0]], [raw_start, raw_end], [pred_text_start, pred_text_end], last_status]
         )
     else:
-        adjusted2.append(
+        spans_merged_neighbors.append(
             [
-                [adjusted[idx - 1][0], len(norm.split())],
+                [raw_pred_spans[idx - 1][0], len(norm.split())],
                 [item[1][0], len(raw.split())],
                 [item[2][0], len(pred_text.split())],
                 item[1][2],
@@ -171,10 +173,10 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
 
     # increase boundaries between raw and pred_text if some spans contain empty pred_text
     extended_spans = []
-    adjusted3 = []
+    raw_norm_spans_corrected_for_pred_text = []
     idx = 0
-    while idx < len(adjusted2):
-        item = adjusted2[idx]
+    while idx < len(spans_merged_neighbors):
+        item = spans_merged_neighbors[idx]
 
         cur_semiotic = " ".join(raw_list[item[1][0] : item[1][1]])
         cur_pred_text = " ".join(pred_text_list[item[2][0] : item[2][1]])
@@ -186,8 +188,8 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
         # if cur_pred_text is an empty string
         if item[2][0] == item[2][1]:
             # for the last item
-            if idx == len(adjusted2) - 1 and len(adjusted3) > 0:
-                last_item = adjusted3[-1]
+            if idx == len(spans_merged_neighbors) - 1 and len(raw_norm_spans_corrected_for_pred_text) > 0:
+                last_item = raw_norm_spans_corrected_for_pred_text[-1]
                 last_item[0][1] = item[0][1]
                 last_item[1][1] = item[1][1]
                 last_item[2][1] = item[2][1]
@@ -196,29 +198,31 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
                 raw_start, raw_end = item[0]
                 norm_start, norm_end = item[1]
                 pred_start, pred_end = item[2]
-                while idx < len(adjusted2) - 1 and not ((pred_end - pred_start) > 2 and adjusted2[idx][-1] == MATCH):
+                while idx < len(spans_merged_neighbors) - 1 and not (
+                    (pred_end - pred_start) > 2 and spans_merged_neighbors[idx][-1] == MATCH
+                ):
                     idx += 1
-                    raw_end = adjusted2[idx][0][1]
-                    norm_end = adjusted2[idx][1][1]
-                    pred_end = adjusted2[idx][2][1]
+                    raw_end = spans_merged_neighbors[idx][0][1]
+                    norm_end = spans_merged_neighbors[idx][1][1]
+                    pred_end = spans_merged_neighbors[idx][2][1]
                 cur_item = [[raw_start, raw_end], [norm_start, norm_end], [pred_start, pred_end], NONMATCH]
-                adjusted3.append(cur_item)
-                extended_spans.append(len(adjusted3) - 1)
+                raw_norm_spans_corrected_for_pred_text.append(cur_item)
+                extended_spans.append(len(raw_norm_spans_corrected_for_pred_text) - 1)
             idx += 1
         else:
-            adjusted3.append(item)
+            raw_norm_spans_corrected_for_pred_text.append(item)
             idx += 1
 
     semiotic_spans = []
     norm_spans = []
     pred_texts = []
     raw_text_masked = ""
-    for idx, item in enumerate(adjusted3):
+    for idx, item in enumerate(raw_norm_spans_corrected_for_pred_text):
         cur_semiotic = " ".join(raw_list[item[1][0] : item[1][1]])
         cur_pred_text = " ".join(pred_text_list[item[2][0] : item[2][1]])
         cur_norm_span = " ".join(norm_list[item[0][0] : item[0][1]])
 
-        if idx == len(adjusted3) - 1:
+        if idx == len(raw_norm_spans_corrected_for_pred_text) - 1:
             cur_norm_span = " ".join(norm_list[item[0][0] : len(norm_list)])
         if (item[-1] == NONMATCH and cur_semiotic != cur_norm_span) or (idx in extended_spans):
             raw_text_masked += " " + SEMIOTIC_TAG
@@ -233,24 +237,31 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
 
     if verbose:
         print("+" * 50)
-        print("adjusted:")
-        for item in adjusted2:
+        print("raw_pred_spans:")
+        for item in spans_merged_neighbors:
             print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
 
         print("+" * 50)
-        print("adjusted2:")
-        for item in adjusted2:
+        print("spans_merged_neighbors:")
+        for item in spans_merged_neighbors:
             print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
         print("+" * 50)
-        print("adjusted3:")
-        for item in adjusted3:
+        print("raw_norm_spans_corrected_for_pred_text:")
+        for item in raw_norm_spans_corrected_for_pred_text:
             print(f"{raw.split()[item[1][0]: item[1][1]]} -- {pred_text.split()[item[2][0]: item[2][1]]}")
         print("+" * 50)
 
     return semiotic_spans, pred_texts, norm_spans, raw_text_masked_list, raw_text_mask_idx
 
 
-def get_alignment(raw, norm, pred_text, verbose: bool = False):
+def get_alignment(raw: str, norm: str, pred_text: str, verbose: bool = False):
+    """
+    Aligns raw text with deterministically normalized text and ASR output, finds semiotic spans
+    """
+    for value in [raw, norm, pred_text]:
+        if value is None or value == "":
+            return [], [], [], [], []
+
     norm_pred_diffs = _get_alignment(norm, pred_text)
     norm_raw_diffs = _get_alignment(norm, raw)
 
@@ -271,8 +282,9 @@ def get_alignment(raw, norm, pred_text, verbose: bool = False):
 
 
 if __name__ == "__main__":
-    raw = 'This is #4 ranking on G.S.K.T.'
-    pred_text = 'this iss for ranking on g k p'
+    raw = 'This is a #4 ranking on G.S.K.T.'
+    pred_text = 'this iss p k for ranking on g k p'
     norm = 'This is nubmer four ranking on GSKT'
 
-    get_alignment(raw, norm, pred_text, True)
+    output = get_alignment(raw, norm, pred_text, True)
+    print(output)
