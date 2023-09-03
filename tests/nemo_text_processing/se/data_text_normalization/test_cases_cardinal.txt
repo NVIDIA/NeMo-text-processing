@@ -1,0 +1,62 @@
+2~guokte
+3~golbma
+4~njeallje
+5~vihtta
+6~guhtta
+7~čieža
+8~gávcci
+9~ovcci
+10~logi
+11~oktanuppelohkái
+12~guoktenuppelohkái
+13~golbmanuppelohkái
+14~njealljenuppelohkái
+15~vihttanuppelohkái
+16~guhttanuppelohkái
+17~čiežanuppelohkái
+18~gávccinuppelohkái
+19~ovccinuppelohkái
+20~guoktelogi
+22~guoktelogiguokte
+23~guoktelogigolbma
+24~guokteloginjeallje
+25~guoktelogivihtta
+26~guoktelogiguhtta
+27~guoktelogičieža
+28~guoktelogigávcci
+29~guoktelogiovcci
+30~golbmalogi
+40~njealljelogi
+50~vihttalogi
+60~guhttalogi
+70~čiežalogi
+80~gávccilogi
+90~ovccilogi
+100~čuođi
+102~čuođiguokte
+120~čuođiguoktelogi
+130~čuođigolbmalogi
+1000~duhát
+1 000~duhát
+1.000~duhát
+1010~duhátlogi
+1020~duhátguoktelogi
+1100~duhátčuođi
+1110~duhátčuođilogi
+1111~duhátčuođioktanuppelohkái
+2000~guokteduhát
+2002~guokteduhátguokte
+2010~guokteduhátlogi
+2020~guokteduhátguoktelogi
+2100~guokteduhátčuođi
+2110~guokteduhátčuođilogi
+2111~guokteduhátčuođioktanuppelohkái
+10000~logiduhát
+10 000~logiduhát
+10.000~logiduhát
+100000~čuođiduhát
+100 000~čuođiduhát
+100.000~čuođiduhát
+1 000 000~miljovdna
+1.000.000~miljovdna
+1 034 068~miljovdnagolbmaloginjealljeduhátguhttalogigávcci
