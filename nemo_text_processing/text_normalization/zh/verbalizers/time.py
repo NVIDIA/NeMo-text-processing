@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,83 +11,82 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
-from nemo_text_processing.text_normalization.zh.utils import UNIT_1e01, get_abs_path
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 
 
-class Time(GraphFst):
-    '''
-        tokens { time { h: "1" m: "02" s: "36" } } -> 一点零二分三十六秒
-        tokens { time { suffix "am"  hours: "1" minutes: "02" seconds: "36" } } -> 上午一点零二分三十六秒
-    '''
+class TimeFst(GraphFst):
+    """
+    Finite state transducer for verbalizing time e.g.
+        tokens { time { hour: "五点" } } -> 五点
+        tokens { time { minute: "三分" }' } -> 三分
+        tokens { time { hour: "五点" minute: "三分" } } -> 五点三分
+        tokens { time { affix: "am" hour: "五点" verb: "差" minute: "三分" }' } -> 早上五点差三分
+        tokens { time { affix: "am" hour: "一点" minute: "三分" } } -> 深夜一点三分
+    """
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
+    def __init__(self, deterministic: bool = True):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
-        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
-        graph_teen = pynini.string_file(get_abs_path("data/number/digit_teen.tsv"))
-        graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
-        graph_no_zero = pynini.cross("0", "")
 
-        graph_digit_no_zero = graph_digit | graph_no_zero
+        # data imported to process am/pm into mandarin
+        alphabet_am = pynini.string_file(get_abs_path("data/time/AM.tsv"))
+        alphabet_pm = pynini.string_file(get_abs_path("data/time/PM.tsv"))
 
-        graph_2_digit_zero_none = pynini.cross("0", "") + pynini.cross("0", "")
-        graph_2_digit_zero = pynini.cross("00", "零")
-
-        graph_2_digit_time = (graph_teen + pynutil.insert(UNIT_1e01) + graph_digit_no_zero) | (
-            graph_zero + graph_digit
-        )
-        h = graph_2_digit_time | graph_2_digit_zero | graph_digit
-        m = graph_2_digit_time | graph_2_digit_zero
-        s = graph_2_digit_time | graph_2_digit_zero
-
-        # 6:25
-        h_m = (
-            pynutil.delete("hours: \"")
-            + h
-            + pynutil.insert("点")
-            + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("minutes: \"")
-            + (graph_2_digit_time)
-            + pynutil.insert("分")
-            + pynutil.delete("\"")
+        # fundamental components
+        hour_component = pynutil.delete("hour: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        minute_component = pynutil.delete("minute: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        second_component = pynutil.delete("second: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        graph_regular = (
+            hour_component
+            | minute_component
+            | second_component
+            | (hour_component + delete_space + minute_component + delete_space + second_component)
+            | (hour_component + delete_space + minute_component)
+            | (hour_component + delete_space + second_component)
+            | (minute_component + delete_space + second_component)
         )
 
-        # 23:00
-        h_00 = (
-            pynutil.delete("hours: \"")
-            + h
-            + pynutil.insert("点")
-            + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("minutes: \"")
-            + (graph_2_digit_zero_none)
-            + pynutil.delete("\"")
+        # back count 三点差五分
+        delete_verb = pynutil.delete("verb: \"") + pynini.accep("差") + pynutil.delete("\"")
+        graph_back_count = (
+            (
+                pynini.closure(delete_verb + pynutil.insert(' '))
+                + hour_component
+                + delete_space
+                + pynini.closure(delete_verb)
+                + delete_space
+                + minute_component
+            )
+            | (
+                pynini.closure(delete_verb + pynutil.insert(' '))
+                + hour_component
+                + delete_space
+                + pynini.closure(delete_verb)
+                + delete_space
+                + second_component
+            )
+            | (
+                pynini.closure(delete_verb + pynutil.insert(' '))
+                + hour_component
+                + delete_space
+                + pynini.closure(delete_verb)
+                + delete_space
+                + minute_component
+                + delete_space
+                + second_component
+            )
         )
 
-        # 9:12:52
-        h_m_s = (
-            pynutil.delete("hours: \"")
-            + h
-            + pynutil.insert("点")
-            + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("minutes: \"")
-            + m
-            + pynutil.insert("分")
-            + pynutil.delete("\"")
-            + delete_space
-            + pynutil.delete("seconds: \"")
-            + s
-            + pynutil.insert("秒")
-            + pynutil.delete("\"")
-        )
+        graph = graph_regular | graph_back_count
 
-        graph = h_m | h_m_s | h_00
-        graph_suffix = (
-            pynutil.delete("suffix: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + delete_space + graph
-        )
-        graph |= graph_suffix
-        self.fst = self.delete_tokens(graph).optimize()
+        delete_suffix = pynutil.delete("suffix: \"") + pynini.closure(alphabet_am | alphabet_pm) + pynutil.delete("\"")
+        graph = graph | (graph + delete_space + delete_suffix)
+
+        final_graph = graph
+
+        delete_tokens = self.delete_tokens(final_graph)
+        self.fst = delete_tokens.optimize()
