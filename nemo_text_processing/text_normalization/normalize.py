@@ -29,13 +29,13 @@ import pynini
 import regex
 import tqdm
 from joblib import Parallel, delayed
+from nemo_text_processing.logging import logger
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
     pre_process,
     write_file,
 )
-from nemo_text_processing.logging import logger
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
 from pynini.lib.rewrite import top_rewrite
@@ -460,10 +460,10 @@ class Normalizer:
             with open(f"{dir_name}/{batch_idx:06}.json", "w") as f_out:
                 for line in normalized_lines:
                     if isinstance(line['normalized'], set):
-                        if len(line['normalized']==1):
+                        if len(line['normalized'] == 1):
                             line['normalized'] = line['normalized'].pop()
                         else:
-                            raise ValueError("Len of "+str(line['normalized']) + " != 1 ")
+                            raise ValueError("Len of " + str(line['normalized']) + " != 1 ")
                     f_out.write(json.dumps(line, ensure_ascii=False) + '\n')
 
             logger.info(f"Batch -- {batch_idx} -- is complete")

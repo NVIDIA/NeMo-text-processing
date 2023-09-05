@@ -239,9 +239,9 @@ class NormalizerWithAudio(Normalizer):
 
         if len(normalized_texts) == 0:
             if raise_wfst_error:
-                raise ValueError("Failed text: " + text + ", normalized_texts: " +str(normalized_texts))
+                raise ValueError("Failed text: " + text + ", normalized_texts: " + str(normalized_texts))
             else:
-                logger.warning("Failed text: " + text + ", normalized_texts: " +str(normalized_texts))
+                logger.warning("Failed text: " + text + ", normalized_texts: " + str(normalized_texts))
                 return text
 
         if punct_post_process:
