@@ -20,6 +20,7 @@ from typing import List, Optional, Tuple
 
 import editdistance
 import pynini
+from nemo_text_processing.logging import logger
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
@@ -237,7 +238,11 @@ class NormalizerWithAudio(Normalizer):
                 self._verbalize(tagged_text, normalized_texts, n_tagged, verbose=verbose)
 
         if len(normalized_texts) == 0:
-            raise ValueError()
+            if raise_wfst_error:
+                raise ValueError("Failed text: " + text + ", normalized_texts: " +str(normalized_texts))
+            else:
+                logger.warning("Failed text: " + text + ", normalized_texts: " +str(normalized_texts))
+                return text
 
         if punct_post_process:
             # do post-processing based on Moses detokenizer
