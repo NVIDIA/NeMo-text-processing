@@ -460,7 +460,7 @@ class Normalizer:
             with open(f"{dir_name}/{batch_idx:06}.json", "w") as f_out:
                 for line in normalized_lines:
                     if isinstance(line['normalized'], set):
-                        if len(line['normalized'])==1:
+                        if len(line['normalized']) == 1:
                             line['normalized'] = line['normalized'].pop()
                         else:
                             logger.warning("Len of " + str(line['normalized']) + " != 1 ")
