@@ -29,13 +29,13 @@ import pynini
 import regex
 import tqdm
 from joblib import Parallel, delayed
+from nemo_text_processing.logging import logger
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
     pre_process,
     write_file,
 )
-from nemo_text_processing.logging import logger
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
 from pynini.lib.rewrite import top_rewrite
