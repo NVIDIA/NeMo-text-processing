@@ -55,7 +55,7 @@ if __name__ == "__main__":
     if args.lang == 'en':
         from nemo_text_processing.inverse_text_normalization.en.clean_eval_data import filter_loaded_data
     file_path = args.input
-    inverse_normalizer = InverseNormalizer()
+    inverse_normalizer = InverseNormalizer(lang=args.lang)
 
     print("Loading training data: " + file_path)
     training_data = load_files([file_path])
