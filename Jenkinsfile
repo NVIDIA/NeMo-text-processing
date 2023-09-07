@@ -308,6 +308,28 @@ pipeline {
       //  }
       }
     }
+    stage('L1: Create JP TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L1: JP ITN grammars') {
+         steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/normalize.py --lang=sv --text="百" --cache_dir ${JP_TN_CACHE}'
+          }
+        }
+      //  stage('L1: JP TN grammars') {
+      //    steps {
+      //      sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/inverse_normalize.py --lang=sv --text="100" --cache_dir ${JP_TN_CACHE}'
+      //    }
+      //  }
+      }
+    }
+
     stage('L0: Create ZH TN/ITN Grammars') {
       when {
         anyOf {
@@ -329,6 +351,9 @@ pipeline {
         }
       }
     }
+
+    
+
 
 // L1 Tests starts here
     stage('L1: TN/ITN Tests CPU') {
