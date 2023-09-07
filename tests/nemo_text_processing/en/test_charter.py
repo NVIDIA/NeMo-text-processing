@@ -28,7 +28,7 @@ class TestTelephone:
         lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased"
     )
 
-    @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_telephone.txt'))
+    @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_charter.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
@@ -36,30 +36,3 @@ class TestTelephone:
         assert pred == expected
         pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected
-
-    @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_telephone_cased.txt'))
-    @pytest.mark.run_only_on('CPU')
-    @pytest.mark.unit
-    def test_denorm(self, test_input, expected):
-        pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
-        assert pred == expected
-
-    normalizer_en = Normalizer(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
-    normalizer_with_audio_en = (
-        NormalizerWithAudio(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
-        if RUN_AUDIO_BASED_TESTS
-        else None
-    )
-
-    @parameterized.expand(parse_test_case_file('en/data_text_normalization/test_cases_telephone.txt'))
-    @pytest.mark.run_only_on('CPU')
-    @pytest.mark.unit
-    def test_norm(self, test_input, expected):
-        pred = self.normalizer_en.normalize(test_input, verbose=False)
-        assert pred == expected
-
-        if self.normalizer_with_audio_en:
-            pred_non_deterministic = self.normalizer_with_audio_en.normalize(
-                test_input, n_tagged=10, punct_post_process=False
-            )
-            assert expected in pred_non_deterministic

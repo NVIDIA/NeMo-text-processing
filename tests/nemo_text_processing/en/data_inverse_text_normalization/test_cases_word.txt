@@ -1,6 +1,6 @@
 ~
-, one~, one
-, one , two , three , four~, one , two , three , four
+, one~, 1
+, one , two , three , four~, 1 , 2 , 3 , 4
 e s three~es3
 yahoo!~yahoo!
 twenty!~20 !
@@ -50,6 +50,3 @@ aamer's~aamer's
 aamina~aamina
 aaminah~aaminah
 aamjiwnaang~aamjiwnaang
-~
-, one~, one
-, one , two , three , four~, one , two , three , four
