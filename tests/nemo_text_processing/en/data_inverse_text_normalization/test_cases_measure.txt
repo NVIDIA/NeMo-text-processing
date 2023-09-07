@@ -7,7 +7,7 @@ minus two thousand twelve kilo liters~-2012 kl
 minus sixty six kilograms~-66 kg
 two kilo watt hours~2 kWh
 one point o o o o two eight cubic deci meters~1.000028 dm³
-seven point five peta bytes~7.5 pb
+seven point five peta bytes~7.5 PB
 three hours~3 h
 one milli volt~1 mv
 two cubic meters~2 m³
@@ -51,7 +51,7 @@ eighteen thousand seven hundred hectares~18700 ha
 eight hectares~8 ha
 eight hundred eighty five astronomical units~885 au
 eight hundred eighty hectares~880 ha
-eight hundred eighty kilobytes~880 kb
+eight hundred eighty kilobytes~880 KB
 eight hundred eighty kilometers~880 km
 eight hundred eighty nine feet~889 ft
 eight hundred eighty six kilometers~886 km
@@ -68,14 +68,14 @@ eight hundred fifty three point six meters~853.6 m
 eight hundred five point four six square kilometers~805.46 km²
 eight hundred forty two point nine meters~842.9 m
 eight hundred forty two square kilometers~842 km²
-eight hundred gigabytes~800 gb
+eight hundred gigabytes~800 GB
 eight hundred horsepower~800 hp
 eight hundred kilograms~800 kg
 eight hundred kilo watt hours~800 kWh
 eight hundred kilowatts~800 kW
 eight hundred megahertz~800 mhz
 eight hundred ninety four c c~894 cc
-eight hundred ninety kilowatts~890 kW`
+eight hundred ninety kilowatts~890 kW
 eight hundred ninety millimeters~890 mm
 eight hundred ninety two square kilometers~892 km²
 eight hundred seventy horsepower~870 hp
@@ -98,7 +98,7 @@ eight hundred twenty meters~820 m
 eight hundred twenty one point zero feet~821.0 ft
 eight hundred two point eight nine kilometers~802.89 km
 eight hundred volts~800 v
-eight kilobits~8 kb
+eight kilobits~8 Kb
 eight kilograms~8 kg
 eight million two hundred thousand feet~8200000 ft
 eight point eight kilometers~8.8 km

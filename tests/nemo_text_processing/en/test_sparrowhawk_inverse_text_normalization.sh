@@ -25,6 +25,11 @@ testITNCardinal() {
   runtest $input
 }
 
+testITNCharter() {
+  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_charter.txt
+  runtest $input
+}
+
 testITNDate() {
   input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_date.txt
   runtest $input
