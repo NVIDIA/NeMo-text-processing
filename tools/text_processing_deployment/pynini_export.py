@@ -224,7 +224,6 @@ if __name__ == '__main__':
             VerbalizeFst as ITNVerbalizeFst,
         )
 
-
     elif args.language == 'jp':
         from nemo_text_processing.inverse_text_normalization.jp.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
