@@ -23,7 +23,6 @@ def get_quantity(decimal):
     suffix = pynini.union("万", "億", "兆")
     numbers = decimal
     res = numbers + pynutil.insert(' quantity: "') + suffix + pynutil.insert('"')
-    res = res
 
     return res
 
