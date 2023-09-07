@@ -110,7 +110,8 @@ def _get_year_graph(input_case: str):
 
     year_graph = (
         # 20 19, 40 12, 2012 - assuming no limit on the year
-        (graph_teen + delete_space + (graph_ties | graph_digits | graph_teen))
+        (graph_digit + delete_space + (graph_ties | graph_teen))
+        | (graph_teen + delete_space + (graph_ties | graph_digits | graph_teen))
         | (graph_ties + delete_space + (graph_ties | graph_digits | graph_teen))
         | graph_thousands
         | ((graph_digit + delete_space + (graph_ties | graph_digits | graph_teen)) + graph_ad_bc)
@@ -149,7 +150,7 @@ class DateFst(GraphFst):
     def __init__(self, ordinal: GraphFst, input_case: str):
         super().__init__(name="date", kind="classify")
 
-        ordinal_graph = ordinal.graph
+        ordinal_graph = ordinal.graph_no_exception
         year_graph = _get_year_graph(input_case=input_case)
         YEAR_WEIGHT = 0.001
         year_graph = pynutil.add_weight(year_graph, YEAR_WEIGHT)

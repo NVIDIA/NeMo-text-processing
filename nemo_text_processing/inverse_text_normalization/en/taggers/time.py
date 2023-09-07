@@ -70,7 +70,7 @@ class TimeFst(GraphFst):
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
 
         graph_minute_verbose = pynini.cross("half", "30") | pynini.cross("quarter", "15")
-        oclock = pynini.cross(pynini.union("o' clock", "o clock", "o'clock", "oclock", "hundred hours",), "",)
+        oclock = pynini.cross(pynini.union("o' clock", "o clock", "o'clock", "oclock", "hundred hours",), "00",)
 
         if input_case == INPUT_CASED:
             minute_to_graph = capitalized_input_graph(minute_to_graph)
@@ -80,23 +80,15 @@ class TimeFst(GraphFst):
             oclock |= pynini.cross(pynini.union("O' clock", "O clock", "O'clock", "Oclock", "Hundred hours",), "",)
 
         final_graph_hour = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
-        graph_minute = (
-            oclock + pynutil.insert("00")
-            | pynutil.delete("o") + delete_space + graph_minute_single
-            | graph_minute_double
-        )
+        graph_minute = pynutil.delete("o") + delete_space + graph_minute_single | graph_minute_double
         final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
         final_suffix = delete_space + insert_space + final_suffix
         final_suffix_optional = pynini.closure(final_suffix, 0, 1)
-        final_time_zone_optional = pynini.closure(
-            delete_space
-            + insert_space
-            + pynutil.insert("zone: \"")
-            + convert_space(time_zone_graph)
-            + pynutil.insert("\""),
-            0,
-            1,
+        final_time_zone = (
+            delete_extra_space + pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
         )
+
+        final_time_zone_optional = pynini.closure(final_time_zone, 0, 1,)
 
         # five o' clock
         # two o eight, two thirty five (am/pm)
@@ -154,9 +146,18 @@ class TimeFst(GraphFst):
             + final_suffix
             + final_time_zone_optional
         )
-        final_graph = (
-            (graph_hm | graph_m_past_h | graph_quarter_time) + final_suffix_optional + final_time_zone_optional
+        graph_h |= (
+            final_graph_hour
+            + delete_extra_space
+            + pynutil.insert("minutes: \"")
+            + oclock
+            + pynutil.insert("\"")
+            + final_time_zone_optional
         )
+        final_graph = (
+            (graph_hm + final_suffix)
+            | ((graph_m_past_h | graph_quarter_time) + final_suffix_optional) + final_time_zone_optional
+        ) | (graph_hm + final_time_zone)
         final_graph |= graph_h
         final_graph |= graph_m_to_h_suffix_time
 

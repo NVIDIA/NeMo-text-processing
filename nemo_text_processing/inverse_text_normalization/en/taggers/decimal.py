@@ -93,7 +93,7 @@ class DecimalFst(GraphFst):
         graph_decimal = pynini.closure(graph_decimal + delete_space) + graph_decimal
         self.graph = graph_decimal
 
-        point = pynutil.delete("point")
+        point = pynutil.add_weight(pynutil.delete("point"), -1.001)
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
