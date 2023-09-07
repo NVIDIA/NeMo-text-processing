@@ -135,7 +135,7 @@ class CardinalFst(GraphFst):
             graph_digit,
             graph_zero,
         )
-        
+
         leading_zero = (
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
         )
@@ -143,12 +143,13 @@ class CardinalFst(GraphFst):
 
         self.just_cardinals = graph
 
-        optional_sign = (pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\""))
-            
+        optional_sign = (
+            pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")
+        )
+
         final_graph = (
             optional_sign + pynutil.insert(" ") + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
         ) | (pynutil.insert("integer: \"") + graph + pynutil.insert("\""))
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-

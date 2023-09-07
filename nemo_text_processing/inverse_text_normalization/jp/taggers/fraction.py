@@ -46,22 +46,34 @@ class FractionFst(GraphFst):
             pynutil.insert("integer_part: \"")
             + ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal)
             + pynutil.insert("\"")
-        ) 
+        )
 
         root_denominator = (
             pynutil.insert("denominator: \"")
             + ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal)
             + pynutil.insert("\"")
-        ) 
+        )
         root_numerator = (
             pynutil.insert("numerator: \"")
             + ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal)
             + pynutil.insert("\"")
         )
 
-        graph_root_fraction = pynini.closure((optional_sign + pynutil.insert(" "))) + root_denominator + pynutil.insert(" ") + fraction_word + root_numerator
+        graph_root_fraction = (
+            pynini.closure((optional_sign + pynutil.insert(" ")))
+            + root_denominator
+            + pynutil.insert(" ")
+            + fraction_word
+            + root_numerator
+        )
 
-        graph_root_with_integer = pynini.closure((optional_sign + pynutil.insert(" "))) + root_integer + inetegr_word + pynutil.insert(" ") + graph_root_fraction
+        graph_root_with_integer = (
+            pynini.closure((optional_sign + pynutil.insert(" ")))
+            + root_integer
+            + inetegr_word
+            + pynutil.insert(" ")
+            + graph_root_fraction
+        )
 
         final_graph = graph_root_fraction | graph_root_with_integer
 

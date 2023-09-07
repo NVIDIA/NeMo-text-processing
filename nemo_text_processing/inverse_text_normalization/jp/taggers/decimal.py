@@ -54,12 +54,9 @@ class DecimalFst(GraphFst):
         self.just_decimal = cardinals + pynini.cross("点", ".") + after_decimal
 
         graph_sign = (
-                pynutil.insert("negative: \"")
-                + (pynini.cross("マイナス", "-") | pynini.accep("-"))
-                + pynutil.insert("\"")
-            )
-            
-      
+            pynutil.insert("negative: \"") + (pynini.cross("マイナス", "-") | pynini.accep("-")) + pynutil.insert("\"")
+        )
+
         final_graph = (
             (graph_sign + pynutil.insert(" ") + graph_decimal_regular)
             | (graph_sign + pynutil.insert(" ") + graph_deicimal_larger)
