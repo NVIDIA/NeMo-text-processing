@@ -40,8 +40,6 @@ class TimeFst(GraphFst):
 
         cardinal = cardinal.just_cardinals
 
-        graph_all = (ties + (digit | pynutil.insert("0")) | teen) | digit | zero
-
         hour_component = (
             pynutil.insert("hours: \"")
             + ((cardinal + pynutil.delete("時")) | pynini.accep("正午"))
