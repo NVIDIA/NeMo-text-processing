@@ -30,7 +30,7 @@ mhz	megahertz
 v	volt
 h	hour
 mc	mega coulomb
-s	second
+s	seconds
 nm	nanometer
 rpm	revolution per minute
 min	minute
@@ -55,38 +55,59 @@ oz	ounce
 hl	hecto liter
 μg	microgram
 pg	petagram
-kb	kilobit
-mb	megabit
-gb	gigabit
-tb	terabit
-pb	petabit
+Kb	kilobit
+Mb	megabit
+Gb	gigabit
+Tb	terabit
+Pb	petabit
 ev	electron volt
-mb	megabyte
-kb	kilobyte
-gb	gigabyte
-tb	terabyte
-pb	peta byte
+MB	megabyte
+KB	kilobyte
+GB	gigabyte
+TB	terabyte
+PB	peta byte
 bps	bit per second
-kbps	kilobit per second
-mbps	megabit per second
-gbps	gigabit per second
-kbps	kilo bit per second
-mbps	mega bit per second
-mbps	mega bit per second
-tbps	terabit per second
-tbps	tera bit per second
-pbps	petabit per second
-pbps	peta bit per second
-kb/s	kilobyte per second
-kb/s	kilo byte per second
-mb/s	megabyte  per second
-mb/s	mega byte  per second
-gb/s	gigabyte per second
-gb/s	giga byte per second
-tb/s	terabyte per second
-tb/s	tera byte per second
-pb/s	petabyte per second
-pb/s	peta byte per second
+Kbps	kilobit per second
+Mbps	megabit per second
+Gbps	gigabit per second
+Kbps	kilo bit per second
+Mbps	mega bit per second
+Mbps	mega bit per second
+Tbps	terabit per second
+Tbps	tera bit per second
+Pbps	petabit per second
+Pbps	peta bit per second
+KBps	kilobyte per second
+KBps	kilo byte per second
+MBps	megabyte  per second
+MBps	mega byte  per second
+GBps	gigabyte per second
+GBps	giga byte per second
+TBps	terabyte per second
+TBps	tera byte per second
+PBps	petabyte per second
+PBps	peta byte per second
+bps	bits per second
+Kbps	kilobits per second
+Mbps	megabits per second
+Gbps	gigabits per second
+Kbps	kilo bits per second
+Mbps	mega bits per second
+Mbps	mega bits per second
+Tbps	terabits per second
+Tbps	tera bits per second
+Pbps	petabits per second
+Pbps	peta bits per second
+KBps	kilobytes per second
+KBps	kilo bytes per second
+MBps	megabytes per second
+MBps	mega bytes per second
+GBps	gigabytes per second
+GBps	giga bytes per second
+TBps	terabytes per second
+TBps	tera bytes per second
+PBps	petabytes per second
+PBps	peta bytes per second
 st	stone
 kl	kilo liter
 tj	tera joule

@@ -49,20 +49,14 @@ class CardinalFst(GraphFst):
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
         self.graph_two_digit = graph_teen | ((graph_ties) + delete_space + (graph_digit | pynutil.insert("0")))
         graph_hundred = pynini.cross("hundred", "")
+        graph_digit_a = graph_digit | pynini.cross("a", "1") | pynutil.add_weight(pynini.cross("", "1"), 1)
 
-        graph_hundred_component = pynini.union(graph_digit + delete_space + graph_hundred, pynutil.insert("0"))
-        graph_hundred_component += delete_space
-        graph_hundred_component += pynini.union(
+        delete_space_or_optional_and = delete_space | pynutil.add_weight(pynutil.delete(" and "), 50.001)
+        graph_hundred_component = pynini.union(graph_digit_a + delete_space + graph_hundred, pynutil.insert("0"))
+        graph_hundred_component += delete_space_or_optional_and + pynini.union(
             graph_teen | pynutil.insert("00"),
             (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")),
         )
-
-        optional_and = pynutil.add_weight(pynutil.delete(" and "), 1.001) | delete_space
-        graph_00_99 = optional_and + (self.graph_two_digit | (pynutil.insert("0") + graph_digit))
-        self.t_graph_hundreds = graph_digit + delete_space + self.delete_word("hundred")
-        self.t_graph_hundreds += graph_00_99 | pynutil.insert("00")
-        t_graph_and_tens_ones =  pynutil.add_weight(graph_digit, 0.1) | pynutil.add_weight(self.graph_two_digit, -0.3)
-        t_graph_hundred_component = t_graph_and_tens_ones | pynutil.add_weight(self.t_graph_hundreds, -0.99)
 
         graph_hundred_component_at_least_one_none_zero_digit = graph_hundred_component @ (
             pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
@@ -74,13 +68,19 @@ class CardinalFst(GraphFst):
         # Transducer for eleven hundred -> 1100 or twenty one hundred eleven -> 2111
         graph_hundred_as_thousand = pynini.union(graph_teen, graph_ties + delete_space + graph_digit)
         graph_hundred_as_thousand += delete_space + graph_hundred
-        graph_hundred_as_thousand += delete_space + pynini.union(
+        graph_hundred_as_thousand += delete_space_or_optional_and + pynini.union(
             graph_teen | pynutil.insert("00"),
             (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")),
         )
 
-
-        graph_hundreds = t_graph_hundred_component | graph_hundred_as_thousand
+        graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
+        graph_only_hundred = delete_space | (pynutil.delete(" a ") + pynutil.insert(" ")) + pynini.cross(
+            "hundred", "1"
+        )
+        graph_only_hundred += delete_space_or_optional_and + pynini.union(
+            graph_teen | pynutil.insert("00"),
+            (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")),
+        )
 
         graph_ties_component = pynini.union(
             graph_teen | pynutil.insert("00"),
@@ -140,98 +140,33 @@ class CardinalFst(GraphFst):
             + graph_thousands
         )
 
-        # %% Indian numeric format simple https://en.wikipedia.org/wiki/Indian_numbering_system
-        # This only covers "standard format".
-        # Conventional format like thousand crores/lakh crores is yet to be implemented
-        graph_in_thousands = pynini.union(
-            graph_ties_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("thousand"),
-            pynutil.insert("00", weight=0.1),
-        )
-        graph_in_lakhs = pynini.union(
-            graph_ties_component_at_least_one_none_zero_digit
-            + delete_space
-            + (pynutil.delete("lakh") | pynutil.delete("lakhs")),
-            pynutil.insert("00", weight=0.1),
-        )
-
-        graph_in_crores = pynini.union(
-            graph_ties_component_at_least_one_none_zero_digit
-            + delete_space
-            + (pynutil.delete("crore") | pynutil.delete("crores")),
-            pynutil.insert("00", weight=0.1),
-        )
-
-        graph_in_arabs = pynini.union(
-            graph_ties_component_at_least_one_none_zero_digit
-            + delete_space
-            + (pynutil.delete("arab") | pynutil.delete("arabs")),
-            pynutil.insert("00", weight=0.1),
-        )
-
-        graph_in_kharabs = pynini.union(
-            graph_ties_component_at_least_one_none_zero_digit
-            + delete_space
-            + (pynutil.delete("kharab") | pynutil.delete("kharabs")),
-            pynutil.insert("00", weight=0.1),
-        )
-
-        graph_in_nils = pynini.union(
-            graph_ties_component_at_least_one_none_zero_digit
-            + delete_space
-            + (pynutil.delete("nil") | pynutil.delete("nils")),
-            pynutil.insert("00", weight=0.1),
-        )
-
-        graph_in_padmas = pynini.union(
-            graph_ties_component_at_least_one_none_zero_digit
-            + delete_space
-            + (pynutil.delete("padma") | pynutil.delete("padmas")),
-            pynutil.insert("00", weight=0.1),
-        )
-
-        graph_in_shankhs = pynini.union(
-            graph_ties_component_at_least_one_none_zero_digit
-            + delete_space
-            + (pynutil.delete("shankh") | pynutil.delete("shankhs")),
-            pynutil.insert("00", weight=0.1),
-        )
-
-        graph_ind = (
-            graph_in_shankhs
-            + delete_space
-            + graph_in_padmas
-            + delete_space
-            + graph_in_nils
-            + delete_space
-            + graph_in_kharabs
-            + delete_space
-            + graph_in_arabs
-            + delete_space
-            + graph_in_crores
-            + delete_space
-            + graph_in_lakhs
-            + delete_space
-            + graph_in_thousands
-        )
-
-        graph = pynini.union((graph_int | graph_ind) + delete_space + graph_hundreds, graph_zero,)
+        graph = pynini.union(graph_int + delete_space + graph_hundreds, graph_zero)
 
         graph = graph @ pynini.union(
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"
         )
 
         labels_exception = [num_to_word(x) for x in range(0, 13)]
+        ordinal_exception = [num_to_word(x) for x in range(0, 4)]
 
         if input_case == INPUT_CASED:
             labels_exception += [x.capitalize() for x in labels_exception]
+            ordinal_exception += [x.capitalize() for x in ordinal_exception]
 
         graph_exception = pynini.union(*labels_exception).optimize()
+        graph_ordinal_exception = pynini.union(*ordinal_exception).optimize()
 
+        # graph = (
+        #     pynini.cdrewrite(pynutil.delete("and"), NEMO_SPACE, NEMO_SPACE, NEMO_SIGMA)
+        #     @ (NEMO_ALPHA + NEMO_SIGMA)
+        #     @ graph
+        # ).optimize()
 
         if input_case == INPUT_CASED:
             graph = capitalized_input_graph(graph)
 
         self.graph_no_exception = graph
+        self.graph_ordinal_exception = (pynini.project(graph, "input") - graph_ordinal_exception.arcsort()) @ graph
 
         self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
 
