@@ -67,6 +67,9 @@ GB	gigabyte
 TB	terabyte
 PB	peta byte
 bps	bit per second
+Kbps	kbps
+Mbps	mbps
+Tbps	tbps
 Kbps	kilobit per second
 Mbps	megabit per second
 Gbps	gigabit per second
