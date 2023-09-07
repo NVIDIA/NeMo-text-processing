@@ -29,28 +29,43 @@ class TimeFst(GraphFst):
     正午一分前 -> time { hours: "正午" minutes: "1" suffix: "前" }
     正午十分過ぎ -> time { hours: "正午" minutes: "10" suffix: "過ぎ" }
     """
-    
-    def __init__(self):
+
+    def __init__(self, cardinal: GraphFst):
         super().__init__(name="time", kind="classify")
-        
+
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
         ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        
-        graph_all = (ties + (digit | pynutil.insert("0")) | teen) | digit | zero
-        
-        hour_component = pynutil.insert("hours: \"") + ((graph_all + pynutil.delete("時")) | pynini.accep("正午")) + pynutil.insert("\"")
-        minute_component = pynutil.insert("minutes: \"") + ((graph_all + pynutil.delete("分"))|  pynini.accep("半")) + pynutil.insert("\"")
-        second_component = pynutil.insert("seconds: \"") + graph_all + pynutil.delete("秒") + pynutil.insert("\"")
 
-        graph_regular = (hour_component + insert_space + minute_component + insert_space + second_component) | (hour_component | minute_component | second_component) | (hour_component + insert_space + minute_component) | (minute_component + insert_space + second_component)
+        cardinal = cardinal.just_cardinals
+
+        graph_all = (ties + (digit | pynutil.insert("0")) | teen) | digit | zero
+
+        hour_component = (
+            pynutil.insert("hours: \"")
+            + ((cardinal + pynutil.delete("時")) | pynini.accep("正午"))
+            + pynutil.insert("\"")
+        )
+        minute_component = (
+            pynutil.insert("minutes: \"")
+            + ((cardinal + pynutil.delete("分")) | pynini.accep("半"))
+            + pynutil.insert("\"")
+        )
+        second_component = pynutil.insert("seconds: \"") + cardinal + pynutil.delete("秒") + pynutil.insert("\"")
+
+        graph_regular = (
+            pynini.closure(hour_component + insert_space + minute_component + insert_space + second_component)
+            | pynini.closure(hour_component | minute_component | second_component)
+            | pynini.closure(hour_component + insert_space + minute_component)
+            | pynini.closure(minute_component + insert_space + second_component)
+        )
 
         words = pynini.accep("前") | pynini.accep("過ぎ") | pynini.accep("頃")
         suffix = pynutil.insert("suffix: \"") + words + pynutil.insert("\"")
-        graph =  graph_regular + pynini.closure(insert_space + suffix)
-        
+        graph = graph_regular + pynini.closure(insert_space + suffix)
+
         final_graph = graph
-        
+
         final_graph = self.add_tokens(final_graph.optimize())
         self.fst = final_graph.optimize()

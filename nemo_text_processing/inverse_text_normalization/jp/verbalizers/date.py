@@ -42,15 +42,26 @@ class DateFst(GraphFst):
     def __init__(self):
         super().__init__(name="date", kind="verbalize")
 
-        day_component = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("日") + pynutil.delete("\"")
-        month_component = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("月") + pynutil.delete("\"")
-        year_component = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("年") + pynutil.delete("\"")
+        day_component = (
+            pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("日") + pynutil.delete("\"")
+        )
+        month_component = (
+            pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("月") + pynutil.delete("\"")
+        )
+        year_component = (
+            pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("年") + pynutil.delete("\"")
+        )
         era_component = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         weekday_component = pynutil.delete("weekday: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
-        graph_regular = pynini.closure(era_component) + pynini.closure(pynutil.delete(" ") + year_component,0, 1) + pynini.closure(pynutil.delete(" ") + month_component,0, 1) + pynini.closure(pynutil.delete(" ") + day_component, 0, 1) + pynini.closure(pynutil.delete(" ") + weekday_component, 0, 1)
+        graph_regular = (
+            pynini.closure(era_component)
+            + pynini.closure(pynutil.delete(" ") + year_component, 0, 1)
+            + pynini.closure(pynutil.delete(" ") + month_component, 0, 1)
+            + pynini.closure(pynutil.delete(" ") + day_component, 0, 1)
+            + pynini.closure(pynutil.delete(" ") + weekday_component, 0, 1)
+        )
         graph = graph_regular | era_component
 
         final_graph = self.delete_tokens(graph)
         self.fst = final_graph.optimize()
-   

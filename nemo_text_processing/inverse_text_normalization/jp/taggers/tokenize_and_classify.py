@@ -25,13 +25,13 @@ from nemo_text_processing.inverse_text_normalization.jp.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.inverse_text_normalization.jp.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.jp.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.punctuation import PunctuationFst
-from nemo_text_processing.inverse_text_normalization.jp.taggers.whitelist import WhiteListFst
-from nemo_text_processing.inverse_text_normalization.jp.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.jp.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.jp.taggers.word import WordFst
 from pynini.lib import pynutil
 
@@ -82,7 +82,7 @@ class ClassifyFst(GraphFst):
             fraction = FractionFst(cardinal, decimal)
             fraction_graph = fraction.fst
 
-            time = TimeFst()
+            time = TimeFst(cardinal)
             time_graph = time.fst
 
             word_graph = WordFst().fst

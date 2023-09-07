@@ -41,14 +41,45 @@ class DateFst(GraphFst):
         cardinal = cardinal.just_cardinals
         week = pynini.string_file(get_abs_path("data/date.tsv"))
 
-        day_component = pynutil.insert("day: \"") + cardinal + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1) + pynutil.delete("日") + pynutil.insert("\"")
-        month_component = pynutil.insert("month: \"") + cardinal + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1) + pynutil.delete("月") + pynutil.insert("\"")
-        year_component = pynutil.insert("year: \"") + cardinal + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1) + pynutil.delete("年") + pynutil.insert("\"")
-        week_component = (pynutil.insert("weekday: \"(") + week + pynutil.insert(")\"")) | (pynutil.insert("weekday: \"(") + week + pynini.cross("から", "〜") + week + pynutil.insert(")\""))
-        graph_era = pynutil.insert("era: \"") + cardinal + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1) + (pynini.accep("年代") | pynini.accep("世紀")) + pynutil.insert("\"")
+        day_component = (
+            pynutil.insert("day: \"")
+            + cardinal
+            + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1)
+            + pynutil.delete("日")
+            + pynutil.insert("\"")
+        )
+        month_component = (
+            pynutil.insert("month: \"")
+            + cardinal
+            + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1)
+            + pynutil.delete("月")
+            + pynutil.insert("\"")
+        )
+        year_component = (
+            pynutil.insert("year: \"")
+            + cardinal
+            + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1)
+            + pynutil.delete("年")
+            + pynutil.insert("\"")
+        )
+        week_component = (pynutil.insert("weekday: \"(") + week + pynutil.insert(")\"")) | (
+            pynutil.insert("weekday: \"(") + week + pynini.cross("から", "〜") + week + pynutil.insert(")\"")
+        )
+        graph_era = (
+            pynutil.insert("era: \"")
+            + cardinal
+            + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1)
+            + (pynini.accep("年代") | pynini.accep("世紀"))
+            + pynutil.insert("\"")
+        )
 
         graph_component = day_component | month_component | year_component | graph_era | week_component
-        graph_date = pynini.closure(graph_era, 0, 1) + pynini.closure(year_component, 0, 1) + pynini.closure(pynutil.insert(" ") + month_component, 0, 1) + pynini.closure(pynutil.insert(" ") + day_component, 0, 1) 
+        graph_date = (
+            pynini.closure(graph_era, 0, 1)
+            + pynini.closure(year_component, 0, 1)
+            + pynini.closure(pynutil.insert(" ") + month_component, 0, 1)
+            + pynini.closure(pynutil.insert(" ") + day_component, 0, 1)
+        )
         graph_date = graph_date | (graph_date + pynini.closure(pynutil.insert(" ") + week_component, 0, 1))
 
         final_graph = graph_component | graph_date
