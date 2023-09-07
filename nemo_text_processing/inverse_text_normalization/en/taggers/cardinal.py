@@ -57,6 +57,13 @@ class CardinalFst(GraphFst):
             (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")),
         )
 
+        optional_and = pynutil.add_weight(pynutil.delete(" and "), 1.001) | delete_space
+        graph_00_99 = optional_and + (self.graph_two_digit | (pynutil.insert("0") + graph_digit))
+        self.t_graph_hundreds = graph_digit + delete_space + self.delete_word("hundred")
+        self.t_graph_hundreds += graph_00_99 | pynutil.insert("00")
+        t_graph_and_tens_ones =  pynutil.add_weight(graph_digit, 0.1) | pynutil.add_weight(self.graph_two_digit, -0.3)
+        t_graph_hundred_component = t_graph_and_tens_ones | pynutil.add_weight(self.t_graph_hundreds, -0.99)
+
         graph_hundred_component_at_least_one_none_zero_digit = graph_hundred_component @ (
             pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
         )
@@ -72,7 +79,8 @@ class CardinalFst(GraphFst):
             (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")),
         )
 
-        graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
+
+        graph_hundreds = t_graph_hundred_component | graph_hundred_as_thousand
 
         graph_ties_component = pynini.union(
             graph_teen | pynutil.insert("00"),
@@ -219,11 +227,6 @@ class CardinalFst(GraphFst):
 
         graph_exception = pynini.union(*labels_exception).optimize()
 
-        graph = (
-            pynini.cdrewrite(pynutil.delete("and"), NEMO_SPACE, NEMO_SPACE, NEMO_SIGMA)
-            @ (NEMO_ALPHA + NEMO_SIGMA)
-            @ graph
-        ).optimize()
 
         if input_case == INPUT_CASED:
             graph = capitalized_input_graph(graph)
