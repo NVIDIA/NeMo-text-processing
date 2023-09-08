@@ -99,13 +99,14 @@ class DecimalFst(GraphFst):
             pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
         )
 
+
+
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         final_graph_wo_sign = (
             pynini.closure(graph_integer + delete_extra_space, 0, 1) + point + delete_extra_space + graph_fractional
         )
-        final_graph = optional_graph_negative + final_graph_wo_sign
-
+        final_graph = (optional_graph_negative + final_graph_wo_sign)
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
             final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit, input_case=input_case
         )
@@ -122,5 +123,7 @@ class DecimalFst(GraphFst):
 
         if input_case == INPUT_CASED:
             final_graph = capitalized_input_graph(final_graph)
+
+
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

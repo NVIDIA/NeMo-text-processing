@@ -126,6 +126,8 @@ DP	d p
 DPDT	d p d t
 DPU	d p u
 DPX	d p x
+dvr	d v r
+dsl	d s l
 DeepMind	deep mind
 DeepMind	deepmind
 DeepStream	deep stream
@@ -203,7 +205,7 @@ IP	i p
 IPSec	i p sec
 ISC	i s c
 ISI	i s i
-InfiniBand	inifiband
+InfiniBand	infiband
 IoT	i o t
 Isaac SIM	isaac sim
 JSON	j son
