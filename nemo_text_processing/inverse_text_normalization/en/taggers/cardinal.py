@@ -72,7 +72,7 @@ class CardinalFst(GraphFst):
             graph_teen | pynutil.insert("00"),
             (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")),
         )
-
+        self.graph_hundred_as_thousand=graph_hundred_as_thousand
         graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
         graph_only_hundred = delete_space | (pynutil.delete(" a ") + pynutil.insert(" ")) + pynini.cross(
             "hundred", "1"

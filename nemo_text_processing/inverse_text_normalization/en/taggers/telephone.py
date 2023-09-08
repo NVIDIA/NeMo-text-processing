@@ -54,7 +54,8 @@ def get_serial_number(cardinal):
         + pynini.closure(pynutil.delete(" ") + two_digit, 1)
         + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA, 1)
     )
-    sequence = (sequence | sequence2) @ (pynini.closure(NEMO_ALNUM) + NEMO_DIGIT + pynini.closure(NEMO_ALNUM))
+    sequence3 =  pynini.closure(NEMO_ALPHA + pynutil.delete(" "), 2)+cardinal.graph_no_exception
+    sequence = (sequence | sequence2|sequence3) @ (pynini.closure(NEMO_ALNUM) + NEMO_DIGIT + pynini.closure(NEMO_ALNUM))
     return sequence.optimize()
 
 

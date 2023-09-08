@@ -48,6 +48,8 @@ class MoneyFst(GraphFst):
         # quantity, integer_part, fractional_part, currency
 
         cardinal_graph = cardinal.graph_no_exception
+        graph_two_digit = cardinal.graph_two_digit
+
         # add support for missing hundred (only for 3 digit numbers)
         # "one fifty" -> "one hundred fifty"
         with_hundred = pynini.compose(
@@ -62,6 +64,13 @@ class MoneyFst(GraphFst):
         if input_case == INPUT_CASED:
             unit_singular = capitalized_input_graph(unit_singular)
         unit_plural = get_singulars(unit_singular)
+
+        just_prefix = pynutil.insert("currency: \"") + (pynini.cross("just", "just")|pynini.cross("costs", "costs"))  + pynutil.insert(" \"")
+        just_prefix += delete_extra_space
+
+        just_graph_integer = just_prefix + pynutil.insert("integer_part: \"") + graph_two_digit + pynutil.insert("\"")
+        just_graph_integer += delete_extra_space
+        just_graph_integer += pynutil.insert("fractional_part: \"") + graph_two_digit + pynutil.insert("\"")
 
         graph_unit_singular = pynutil.insert("currency: \"") + convert_space(unit_singular) + pynutil.insert("\"")
         graph_unit_plural = (
@@ -130,6 +139,7 @@ class MoneyFst(GraphFst):
         )
         graph_decimal = graph_decimal_final + delete_extra_space + graph_unit_plural
         graph_decimal |= pynutil.insert("currency: \"$\" integer_part: \"0\" ") + cents_standalone
+        graph_decimal |= just_graph_integer
         final_graph = graph_integer | graph_decimal
 
         final_graph = self.add_tokens(final_graph)
