@@ -320,8 +320,8 @@ class Normalizer:
         Returns: spoken form
         """
         if len(text.split()) > 500:
-            print(
-                "WARNING! Your input is too long and could take a long time to normalize."
+            logger.warning(
+                "Your input is too long and could take a long time to normalize. "
                 "Use split_text_into_sentences() to make the input shorter and then call normalize_list()."
             )
         original_text = text
@@ -330,13 +330,13 @@ class Normalizer:
         text = text.strip()
         if not text:
             if verbose:
-                print(text)
+                logger.info(text)
             return text
         text = pynini.escape(text)
         tagged_lattice = self.find_tags(text)
         tagged_text = Normalizer.select_tag(tagged_lattice)
         if verbose:
-            print(tagged_text)
+            logger.info(tagged_text)
         self.parser(tagged_text)
         tokens = self.parser.parse()
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
@@ -506,7 +506,7 @@ class Normalizer:
                     lines = f_in.read()
                     f_out.write(lines)
 
-        print(f'Normalized version saved at {output_filename}')
+        logger.info(f'Normalized version saved at {output_filename}')
 
     def split_text_into_sentences(self, text: str, additional_split_symbols: str = "") -> List[str]:
         """
@@ -771,7 +771,7 @@ if __name__ == "__main__":
     )
     start_time = perf_counter()
     if args.input_string:
-        print(
+        logger.info(
             normalizer.normalize(
                 args.input_string,
                 verbose=args.verbose,
@@ -793,10 +793,10 @@ if __name__ == "__main__":
             )
 
         else:
-            print("Loading data: " + args.input_file)
+            logger.info("Loading data: " + args.input_file)
             data = load_file(args.input_file)
 
-            print("- Data: " + str(len(data)) + " sentences")
+            logger.info("- Data: " + str(len(data)) + " sentences")
             normalizer_prediction = normalizer.normalize_list(
                 data,
                 verbose=args.verbose,
@@ -805,8 +805,8 @@ if __name__ == "__main__":
             )
             if args.output_file:
                 write_file(args.output_file, normalizer_prediction)
-                print(f"- Normalized. Writing out to {args.output_file}")
+                logger.info(f"- Normalized. Writing out to {args.output_file}")
             else:
-                print(normalizer_prediction)
+                logger.info(normalizer_prediction)
 
-    print(f"Execution time: {perf_counter() - start_time:.02f} sec")
+    logger.info(f"Execution time: {perf_counter() - start_time:.02f} sec")
