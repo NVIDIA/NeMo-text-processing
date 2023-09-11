@@ -33,11 +33,6 @@ class TimeFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="time", kind="classify")
 
-        digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
-        ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
-        zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-
         cardinal = cardinal.just_cardinals
 
         hour_component = (
