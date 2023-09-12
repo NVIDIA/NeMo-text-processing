@@ -15,7 +15,6 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.jp.graph_utils import GraphFst, insert_space
-from nemo_text_processing.inverse_text_normalization.jp.utils import get_abs_path
 from pynini.lib import pynutil
 
 
