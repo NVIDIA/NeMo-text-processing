@@ -30,10 +30,11 @@ class CardinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
 
-        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        self.zero = graph_zero
 
         graph_all = graph_ties + (graph_digit | pynutil.insert("0")) | graph_teen
 
