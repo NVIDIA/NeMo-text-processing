@@ -15,4 +15,4 @@ import logging
 
 # overriding with the library specific logger, so that it's possible to
 # customize in any downstream applications
-logger = logging.getLogger("sdp")
+logger = logging.getLogger("NeMo-text-processing")
