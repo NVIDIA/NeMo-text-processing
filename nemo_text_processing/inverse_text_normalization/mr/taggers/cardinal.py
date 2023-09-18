@@ -41,23 +41,28 @@ class CardinalFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
-        graph_zero = pynini.string_file("/content/zero.tsv")
-        graph_digits = pynini.string_file("/content/digits.tsv")
-        graph_thousands = pynini.string_file("/content/thousands.tsv")
-        graph_tens = pynini.string_file("/content/tens.tsv")
+        # graph_zero = pynini.string_file("/content/zero.tsv")
+        graph_zero = pynini.string_map([('शून्य','०')])
+        # graph_digits = pynini.string_file("/content/digits.tsv")
+        graph_digits = pynini.string_map([('एक','१'),('दोन','२'),('तीन','३'),('चार','४'),('पाच','५'),('सहा','६'),('सात','७'),('आठ','८'),('नऊ','९')])
+        # graph_thousands = pynini.string_file("/content/thousands.tsv")
+        # graph_tens = pynini.string_file("/content/tens.tsv")
+        graph_tens = pynini.string_map([('बावीस','२२'),('बासष्ट','६२'),('तेहतीस','३३')])
+        graph_thousands_ = pynini.string_map([('हजार','१,०००'),('लाख','१,००,०००'),('कोटी','१,००,००,०००'),('अब्ज','१,००,००,००,०००')])
 
         graph_hundred = pynini.cross("शे", "")
+        # graph_thousands = pynini.cross("हजार","")=
 
         graph_hundred_component = pynini.union(graph_digits + graph_hundred, pynutil.insert("०"))
         graph_hundred_component += delete_space
         graph_hundred_component += pynini.union(
             pynutil.insert("००"),
-            graph_tens,
+            graph_tens ,
             pynutil.insert("०") + graph_digits
         )
 
         graph_hundred_component_at_least_one_non_zero_digit = graph_hundred_component @ (
-                pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "०") + pynini.closure(NEMO_DIGIT)
+            pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "०") + pynini.closure(NEMO_DIGIT)
         )
         self.graph_hundred_component_at_least_one_non_zero_digit = (graph_hundred_component_at_least_one_non_zero_digit)
 
@@ -65,7 +70,7 @@ class CardinalFst(GraphFst):
         graph_hundred_as_thousand = graph_tens + graph_hundred
         graph_hundred_as_thousand += delete_space + pynini.union(
             pynutil.insert("००"),
-            graph_tens,
+            graph_tens ,
             pynutil.insert("०") + graph_digits
         )
 
@@ -73,12 +78,12 @@ class CardinalFst(GraphFst):
 
         graph_two_digit_component = pynini.union(
             pynutil.insert("००"),
-            graph_tens,
+            graph_tens ,
             pynutil.insert("०") + graph_digits
         )
 
         graph_two_digit_component_at_least_one_non_zero_digit = graph_two_digit_component @ (
-                pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "०") + pynini.closure(NEMO_DIGIT)
+            pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "०") + pynini.closure(NEMO_DIGIT)
         )
         self.graph_two_digit_component_at_least_one_non_zero_digit = graph_two_digit_component_at_least_one_non_zero_digit
 
@@ -105,14 +110,19 @@ class CardinalFst(GraphFst):
         graph_higher_powers = (graph_arabs + delete_space + graph_crores + delete_space +
                                graph_lakhs + delete_space + graph_thousands)
 
-        graph = pynini.union(graph_higher_powers + delete_space + graph_hundreds, graph_zero, )
+        graph = pynini.union(graph_higher_powers + delete_space + graph_hundreds, graph_zero,)
+
         graph = graph @ pynini.union(
-            pynutil.delete(pynini.closure("०")) + pynini.difference(NEMO_DIGIT, "०") + pynini.closure(NEMO_DIGIT), "०"
+            pynutil.delete(pynini.closure("०")) + pynini.difference(NEMO_DIGIT,"०") + pynini.closure(NEMO_DIGIT), "०"
         )
         graph = graph.optimize()
 
         self.graph = (pynini.project(graph, "input")) @ graph
 
-        final_graph = pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
+        optional_minus_graph = pynini.closure(
+            pynutil.insert("negative: ") + pynini.cross("उणे", "\"-\"") + NEMO_SPACE, 0, 1
+        )
+
+        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
