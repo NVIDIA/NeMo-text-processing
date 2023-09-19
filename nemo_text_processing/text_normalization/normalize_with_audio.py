@@ -238,7 +238,8 @@ class NormalizerWithAudio(Normalizer):
                 self._verbalize(tagged_text, normalized_texts, n_tagged, verbose=verbose)
 
         if len(normalized_texts) == 0:
-            raise ValueError("Failed text: " + text + ", normalized_texts: " + str(normalized_texts))
+            logger.warning("Failed text: " + text + ", normalized_texts: " + str(normalized_texts))
+            return text
 
         if punct_post_process:
             # do post-processing based on Moses detokenizer
