@@ -97,6 +97,7 @@ class Normalizer:
             Note: punct_post_process flag in normalize() supports all languages.
         max_number_of_permutations_per_split: a maximum number
             of permutations which can be generated from input sequence of tokens.
+        verbose: whether to print intermediate meta information
     """
 
     def __init__(
@@ -110,6 +111,7 @@ class Normalizer:
         lm: bool = False,
         post_process: bool = True,
         max_number_of_permutations_per_split: int = 729,
+        verbose: bool = False,
     ):
         assert input_case in ["lower_cased", "cased"]
 
@@ -179,11 +181,11 @@ class Normalizer:
         self.parser = TokenParser()
         self.lang = lang
         self.moses_detokenizer = MosesDetokenizer(lang=lang)
+        self.verbose = verbose
 
     def normalize_list(
         self,
         texts: List[str],
-        verbose: bool = False,
         punct_pre_process: bool = False,
         punct_post_process: bool = False,
         batch_size: int = 1,
@@ -205,6 +207,7 @@ class Normalizer:
 
         Returns converted list input strings
         """
+        verbose=self.verbose
 
         def _process_batch(batch, verbose, punct_pre_process, punct_post_process, **kwargs):
             """
@@ -218,7 +221,6 @@ class Normalizer:
             normalized_lines = [
                 self.normalize(
                     text,
-                    verbose=verbose,
                     punct_pre_process=punct_pre_process,
                     punct_post_process=punct_post_process,
                     **kwargs,
@@ -305,7 +307,7 @@ class Normalizer:
         return splits
 
     def normalize(
-        self, text: str, verbose: bool = False, punct_pre_process: bool = False, punct_post_process: bool = False
+        self, text: str, punct_pre_process: bool = False, punct_post_process: bool = False
     ) -> str:
         """
         Main function. Normalizes tokens from written to spoken form
@@ -313,12 +315,12 @@ class Normalizer:
 
         Args:
             text: string that may include semiotic classes
-            verbose: whether to print intermediate meta information
             punct_pre_process: whether to perform punctuation pre-processing, for example, [25] -> [ 25 ]
             punct_post_process: whether to normalize punctuation
 
         Returns: spoken form
         """
+        verbose=self.verbose
         if len(text.split()) > 500:
             logger.warning(
                 "Your input is too long and could take a long time to normalize. "
@@ -356,7 +358,8 @@ class Normalizer:
                     return text
                 output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice, text)
             except:
-                logger.warning("Failed text: " + text)
+                if verbose:
+                    logger.warning("Failed text: " + text)
                 return text
         output = SPACE_DUP.sub(' ', output[1:])
 
@@ -394,7 +397,6 @@ class Normalizer:
 
         normalized_text = self.normalize(
             text=line[text_field],
-            verbose=verbose,
             punct_pre_process=punct_pre_process,
             punct_post_process=punct_post_process,
             **kwargs,
@@ -476,7 +478,7 @@ class Normalizer:
         with open(manifest, 'r') as f:
             lines = f.readlines()
 
-        logger.info(f'Normalizing {len(lines)} line(s) of {manifest}...')
+        logger.warning(f'Normalizing {len(lines)} line(s) of {manifest}...')
 
         # to save intermediate results to a file
         batch = min(len(lines), batch_size)
@@ -506,7 +508,7 @@ class Normalizer:
                     lines = f_in.read()
                     f_out.write(lines)
 
-        logger.info(f'Normalized version saved at {output_filename}')
+        logger.warning(f'Normalized version saved at {output_filename}')
 
     def split_text_into_sentences(self, text: str, additional_split_symbols: str = "") -> List[str]:
         """
@@ -765,13 +767,13 @@ if __name__ == "__main__":
         whitelist=whitelist,
         lang=args.language,
         max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
+        verbose=args.verbose,
     )
     start_time = perf_counter()
     if args.input_string:
         logger.info(
             normalizer.normalize(
                 args.input_string,
-                verbose=args.verbose,
                 punct_pre_process=args.punct_pre_process,
                 punct_post_process=args.punct_post_process,
             )
@@ -790,20 +792,19 @@ if __name__ == "__main__":
             )
 
         else:
-            logger.info("Loading data: " + args.input_file)
+            logger.warning("Loading data: " + args.input_file)
             data = load_file(args.input_file)
 
-            logger.info("- Data: " + str(len(data)) + " sentences")
+            logger.warning("- Data: " + str(len(data)) + " sentences")
             normalizer_prediction = normalizer.normalize_list(
                 data,
-                verbose=args.verbose,
                 punct_pre_process=args.punct_pre_process,
                 punct_post_process=args.punct_post_process,
             )
             if args.output_file:
                 write_file(args.output_file, normalizer_prediction)
-                logger.info(f"- Normalized. Writing out to {args.output_file}")
+                logger.warning(f"- Normalized. Writing out to {args.output_file}")
             else:
-                logger.info(normalizer_prediction)
+                logger.warning(normalizer_prediction)
 
-    logger.info(f"Execution time: {perf_counter() - start_time:.02f} sec")
+    logger.warning(f"Execution time: {perf_counter() - start_time:.02f} sec")
