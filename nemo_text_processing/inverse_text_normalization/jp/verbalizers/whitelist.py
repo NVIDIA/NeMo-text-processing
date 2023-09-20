@@ -23,7 +23,7 @@ class WhiteListFst(GraphFst):
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)
-        remove_erhua = pynutil.delete("erhua: \"") + pynutil.delete("儿") + pynutil.delete("\"")
+
         whitelist = pynutil.delete("name: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        graph = remove_erhua | whitelist
+        graph = whitelist
         self.fst = graph.optimize()

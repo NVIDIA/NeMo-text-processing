@@ -112,7 +112,7 @@ class InverseNormalizer(Normalizer):
                 VerbalizeFinalFst,
             )
 
-        elif lang == 'jp':  # Mandarin
+        elif lang == 'jp':  # Japanese
             from nemo_text_processing.inverse_text_normalization.jp.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.jp.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
