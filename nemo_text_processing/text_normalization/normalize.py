@@ -207,7 +207,7 @@ class Normalizer:
 
         Returns converted list input strings
         """
-        verbose=self.verbose
+        verbose = self.verbose
 
         def _process_batch(batch, verbose, punct_pre_process, punct_post_process, **kwargs):
             """
@@ -220,10 +220,7 @@ class Normalizer:
             """
             normalized_lines = [
                 self.normalize(
-                    text,
-                    punct_pre_process=punct_pre_process,
-                    punct_post_process=punct_post_process,
-                    **kwargs,
+                    text, punct_pre_process=punct_pre_process, punct_post_process=punct_post_process, **kwargs,
                 )
                 for text in tqdm(batch)
             ]
@@ -306,9 +303,7 @@ class Normalizer:
         assert sum([len(s) for s in splits]) == len(tokens)
         return splits
 
-    def normalize(
-        self, text: str, punct_pre_process: bool = False, punct_post_process: bool = False
-    ) -> str:
+    def normalize(self, text: str, punct_pre_process: bool = False, punct_post_process: bool = False) -> str:
         """
         Main function. Normalizes tokens from written to spoken form
             e.g. 12 kg -> twelve kilograms
@@ -320,7 +315,7 @@ class Normalizer:
 
         Returns: spoken form
         """
-        verbose=self.verbose
+        verbose = self.verbose
         if len(text.split()) > 500:
             logger.warning(
                 "Your input is too long and could take a long time to normalize. "
@@ -797,9 +792,7 @@ if __name__ == "__main__":
 
             logger.warning("- Data: " + str(len(data)) + " sentences")
             normalizer_prediction = normalizer.normalize_list(
-                data,
-                punct_pre_process=args.punct_pre_process,
-                punct_post_process=args.punct_post_process,
+                data, punct_pre_process=args.punct_pre_process, punct_post_process=args.punct_post_process,
             )
             if args.output_file:
                 write_file(args.output_file, normalizer_prediction)

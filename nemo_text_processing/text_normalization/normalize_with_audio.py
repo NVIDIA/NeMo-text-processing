@@ -83,7 +83,7 @@ class NormalizerWithAudio(Normalizer):
         lm: bool = False,
         post_process: bool = True,
         max_number_of_permutations_per_split: int = 729,
-        verbose: bool =False,
+        verbose: bool = False,
     ):
 
         # initialize non-deterministic normalizer
@@ -96,7 +96,7 @@ class NormalizerWithAudio(Normalizer):
             whitelist=whitelist,
             lm=lm,
             post_process=post_process,
-            verbose = verbose,
+            verbose=verbose,
         )
         self.tagger_non_deterministic = self.tagger
         self.verbalizer_non_deterministic = self.verbalizer
@@ -113,7 +113,7 @@ class NormalizerWithAudio(Normalizer):
                 lm=lm,
                 post_process=post_process,
                 max_number_of_permutations_per_split=max_number_of_permutations_per_split,
-                verbose = verbose,
+                verbose=verbose,
             )
         else:
             self.tagger, self.verbalizer = None, None
@@ -153,9 +153,7 @@ class NormalizerWithAudio(Normalizer):
             )
 
         try:
-            det_norm = super().normalize(
-                text=text, punct_pre_process=False, punct_post_process=punct_post_process
-            )
+            det_norm = super().normalize(text=text, punct_pre_process=False, punct_post_process=punct_post_process)
         except RecursionError:
             raise RecursionError(f"RecursionError. Try decreasing --max_number_of_permutations_per_split")
 
@@ -192,7 +190,7 @@ class NormalizerWithAudio(Normalizer):
         return normalized_text.replace("  ", " ")
 
     def normalize_non_deterministic(
-        self, text: str, n_tagged: int, punct_post_process: bool = True, 
+        self, text: str, n_tagged: int, punct_post_process: bool = True,
     ):
         # get deterministic option
         if self.tagger:
@@ -512,9 +510,7 @@ if __name__ == "__main__":
                 args.text = f.read().strip()
 
         options = normalizer.normalize(
-            text=args.text,
-            n_tagged=args.n_tagged,
-            punct_post_process=not args.no_punct_post_process,
+            text=args.text, n_tagged=args.n_tagged, punct_post_process=not args.no_punct_post_process,
         )
         for option in options:
             logger.info(option)
