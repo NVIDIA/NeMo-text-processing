@@ -352,9 +352,9 @@ class Normalizer:
                     logger.warning(f"No permutations were generated from tokens {s}")
                     return text
                 output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice)
-            except:
+            except Exception as e:
                 if verbose:
-                    logger.warning("Failed text: " + text)
+                    logger.warning("Failed text: " + text + str(e))
                 return text
         output = SPACE_DUP.sub(' ', output[1:])
 
