@@ -101,7 +101,7 @@ class CardinalFst(GraphFst):
         graphsenmanoku = pynini.union(graph_tenmillion_component + hundredmillion, pynutil.insert("00000000"))
         graphsenmanoku += graph_tenmillion_component  # 五千万億 = 五千兆
 
-        trillion = pynutil.delete("ちょう") | pynutil.delete("兆")
+        trillion = pynutil.delete("兆")
         graph_trillion_component = pynini.union(graph_digit + trillion, pynutil.insert("0"))
         graph_trillion_component += graph_hundredbillion_component
 
