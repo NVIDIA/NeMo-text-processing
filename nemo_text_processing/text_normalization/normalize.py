@@ -351,7 +351,7 @@ class Normalizer:
                 if verbalizer_lattice is None:
                     logger.warning(f"No permutations were generated from tokens {s}")
                     return text
-                output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice, text)
+                output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice)
             except:
                 if verbose:
                     logger.warning("Failed text: " + text)
