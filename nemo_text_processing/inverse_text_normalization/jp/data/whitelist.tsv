@@ -1,26 +1,21 @@
 PayPay	PayPay
-ぺいぺい	PayPay
-AAA	トリプル a
+PayPay	ぺいぺい
+トリプル a	AAA
+トリプル A	AAA
 にってれ	日テレ
 ニッテレ	日テレ
-COVID-19	コビット 19
-cm	シーエム
-CM	シーエム
-GW	ジーダブル
-gw	シーダブル
-NEET	ニート
-Neet	ニート
-NG	エヌジー
-ng	エヌジー
-ol	オーエル
-OL	オーエル
-PV	ピーブイ
-pv	ピーブイ
-w杯	ワールドカップ
-w	わら
-W	わら
-anime	アニメ
-Anime	アニメ
+コビット 19	COVID-19
+シーエム	cm
+シーエム	CM
+ジーダブル	GW
+シーダブル	gw
+エヌジー	NG
+エヌジー	ng
+オーエル	ol
+オーエル	OL
+ピーブイ	PV
+ピーブイ	pv
+ワールドカップ	w杯
 AC	a c
 ACL	a c l
 AEB	a e b
@@ -70,7 +65,7 @@ DCDB	d c d b
 DDR	d d r
 DDoS	d d o s
 DGL	d g l
-DGX	d g x	-1.1
+DGX	d g x
 DHCP	d h c p
 DLSS	d l s s
 DNA	d n a
@@ -133,7 +128,7 @@ ISC	i s c
 ISI	i s i
 IoT	i o t
 KVM	k v m
-LGA	l g a	-1.1
+LGA	l g a
 LLC	l l c
 LLM	l l m
 LLP	l l p
@@ -164,7 +159,7 @@ OVX	o v x
 OpenCL	open c l
 OpenGL	open g l
 PCI	p c i
-PCIe	p c i e	-1.1
+PCIe	p c i e
 PDF	p d f
 PHEV	p h e v
 PSO	p s o
@@ -209,13 +204,13 @@ TCP	t c p
 TCP/IP	t c p i p
 TFTP	t f t p
 TJ	t j
-TOS 	t o s
+TOS	t o s
 TPM	t p m
 TPMS	t p m s
 TPN	t p n
 TSL	t s l
 TSMC	t s m c
-TTS 	t t s
+TTS	t t s
 Telnet	tell net
 TensorRT	tensor r t
 Tick-Tock	tick tock
@@ -245,13 +240,10 @@ Wi-Fi	wi fi
 XFX	x f x
 XFX	x fx
 XML	x m l
-c#	c シャープ
-c++	c プラス プラス
-dr.	ドクター
-e.g.	たとえば
+c シャープ	c#
+c プラス プラス	c++
+ドクター	dr.
 iOS	i o s
 iTPMS	i t p m s
-sFTP	s f t p
-st.	セイント
-
-
+s f t p	sFTP
+セイント	st.
