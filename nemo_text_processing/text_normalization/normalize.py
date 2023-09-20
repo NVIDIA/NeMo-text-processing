@@ -352,10 +352,12 @@ class Normalizer:
                     if verbalizer_lattice.num_states() != 0:
                         break
                 if verbalizer_lattice is None:
-                    raise ValueError(f"No permutations were generated from tokens {s}")
+                    logger.warning(f"No permutations were generated from tokens {s}")
+                    return text
                 output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice, text)
             except:
-                raise ValueError("Failed text: " + text)
+                logger.warning("Failed text: " + text)
+                return text
         output = SPACE_DUP.sub(' ', output[1:])
 
         if self.lang == "en" and hasattr(self, 'post_processor'):
@@ -459,12 +461,10 @@ class Normalizer:
 
             with open(f"{dir_name}/{batch_idx:06}.json", "w") as f_out:
                 for line in normalized_lines:
-                    if isinstance(line['normalized'], set):
-                        if len(line['normalized']) == 1:
-                            line['normalized'] = line['normalized'].pop()
-                        else:
-                            logger.warning("Len of " + str(line['normalized']) + " != 1 ")
-                            line['normalized'] = line['normalized'].pop()
+                    if isinstance(line[output_field], set):
+                        if len(line[output_field]) > 1:
+                            logger.warning("Len of " + str(line[output_field]) + " > 1 ")
+                        line[output_field] = line[output_field].pop()
 
                     f_out.write(json.dumps(line, ensure_ascii=False) + '\n')
 
@@ -641,7 +641,7 @@ class Normalizer:
         return lattice
 
     @staticmethod
-    def select_verbalizer(lattice: 'pynini.FstLike', text: str) -> str:
+    def select_verbalizer(lattice: 'pynini.FstLike') -> str:
         """
         Given verbalized lattice return shortest path
 
@@ -651,10 +651,7 @@ class Normalizer:
 
         Returns: shortest path
         """
-        try:
-            output = pynini.shortestpath(lattice, nshortest=1, unique=True).string()
-        except Exception as e:
-            raise ValueError('Failed text: "' + text + '" ' + str(e))
+        output = pynini.shortestpath(lattice, nshortest=1, unique=True).string()
         # lattice = output @ self.verbalizer.punct_graph
         # output = pynini.shortestpath(lattice, nshortest=1, unique=True).string()
         return output
