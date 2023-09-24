@@ -29,6 +29,7 @@ from nemo_text_processing.text_normalization.it.taggers.decimals import DecimalF
 from nemo_text_processing.text_normalization.it.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.it.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.it.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.it.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.it.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.it.taggers.word import WordFst
 from pynini.lib import pynutil
@@ -90,6 +91,9 @@ class ClassifyFst(GraphFst):
             self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
             money_graph = self.money.fst
 
+            self.time = TimeFst(deterministic=deterministic)
+            time_graph = self.time.fst
+
             punct_graph = PunctuationFst(deterministic=deterministic).fst
 
             classify = (
@@ -99,6 +103,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(electronic_graph, 1.09)
                 | pynutil.add_weight(measure_graph, 1.09)
                 | pynutil.add_weight(money_graph, 1.09)
+                | pynutil.add_weight(time_graph, 1.09)
                 | pynutil.add_weight(word_graph, 100)
             )
 
