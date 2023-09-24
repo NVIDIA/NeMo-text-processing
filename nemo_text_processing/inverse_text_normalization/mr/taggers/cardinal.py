@@ -41,17 +41,12 @@ class CardinalFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
-        # graph_zero = pynini.string_file("/content/zero.tsv")
-        graph_zero = pynini.string_map([('शून्य','०')])
-        # graph_digits = pynini.string_file("/content/digits.tsv")
-        graph_digits = pynini.string_map([('एक','१'),('दोन','२'),('तीन','३'),('चार','४'),('पाच','५'),('सहा','६'),('सात','७'),('आठ','८'),('नऊ','९')])
-        # graph_thousands = pynini.string_file("/content/thousands.tsv")
-        # graph_tens = pynini.string_file("/content/tens.tsv")
-        graph_tens = pynini.string_map([('बावीस','२२'),('बासष्ट','६२'),('तेहतीस','३३')])
-        graph_thousands_ = pynini.string_map([('हजार','१,०००'),('लाख','१,००,०००'),('कोटी','१,००,००,०००'),('अब्ज','१,००,००,००,०००')])
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
+        graph_tens = pynini.string_file(get_abs_path("data/numbers/tens.tsv"))
+        graph_thousands = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
 
         graph_hundred = pynini.cross("शे", "")
-        # graph_thousands = pynini.cross("हजार","")=
 
         graph_hundred_component = pynini.union(graph_digits + graph_hundred, pynutil.insert("०"))
         graph_hundred_component += delete_space
