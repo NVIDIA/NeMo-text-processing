@@ -14,12 +14,12 @@
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.it.taggers.cardinal import CardinalFst as CardinalTagger
 from nemo_text_processing.text_normalization.it.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.it.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.it.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.it.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.it.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.it.taggers.cardinal import CardinalFst as CardinalTagger
 from nemo_text_processing.text_normalization.it.verbalizers.time import TimeFst
 
 
@@ -50,14 +50,14 @@ class VerbalizeFst(GraphFst):
         time = TimeFst(cardinal_tagger=cardinal_tagger, deterministic=deterministic)
         time_graph = time.fst
 
-
-        graph = (cardinal_graph
-                | decimal_graph
-                | electronic_graph 
-                | whitelist_graph 
-                | measure_graph 
-                | money_graph
-                | time_graph
+        graph = (
+            cardinal_graph
+            | decimal_graph
+            | electronic_graph
+            | whitelist_graph
+            | measure_graph
+            | money_graph
+            | time_graph
         )
 
         self.fst = graph

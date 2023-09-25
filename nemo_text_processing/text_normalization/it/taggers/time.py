@@ -59,11 +59,9 @@ class TimeFst(GraphFst):
             + (pynutil.delete("0") + graph_minute_single | graph_minute_double)
             + pynutil.insert("\"")
         )
-        
+
         graph_hm = (
-            final_graph_hour
-            + pynutil.delete(":")
-            + (pynutil.delete("00") | (insert_space + final_graph_minute))
+            final_graph_hour + pynutil.delete(":") + (pynutil.delete("00") | (insert_space + final_graph_minute))
         )
 
         graph_hms = (
@@ -76,7 +74,7 @@ class TimeFst(GraphFst):
         )
 
         graph_h = final_graph_hour_only
-        
+
         final_graph = (graph_hm | graph_h | graph_hms).optimize()
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

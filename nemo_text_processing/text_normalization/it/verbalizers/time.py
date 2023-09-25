@@ -38,7 +38,7 @@ class TimeFst(GraphFst):
 
     def __init__(self, cardinal_tagger: GraphFst, deterministic: bool = True):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
-        
+
         graph_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv"))).optimize()
         number_verbalization = graph_zero | cardinal_tagger.two_digit_no_zero
         hour = pynutil.delete("hours: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
@@ -83,15 +83,8 @@ class TimeFst(GraphFst):
         )
 
         graph_h = hour_verbalized
-        
-        self.graph = (
-            graph_hms_30
-            | graph_hms_30
-            | graph_hms_15
-            | graph_hm_30
-            | graph_hm_15
-            | graph_h            
-        )
+
+        self.graph = graph_hms_30 | graph_hms_30 | graph_hms_15 | graph_hm_30 | graph_hm_15 | graph_h
 
         delete_tokens = self.delete_tokens(self.graph + delete_preserve_order)
         self.fst = delete_tokens.optimize()
