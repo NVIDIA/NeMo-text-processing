@@ -70,7 +70,6 @@ class NormalizerWithAudio(Normalizer):
             Note: punct_post_process flag in normalize() supports all languages.
         max_number_of_permutations_per_split: a maximum number
                 of permutations which can be generated from input sequence of tokens.
-        verbose: whether to print intermediate meta information
     """
 
     def __init__(
@@ -83,7 +82,6 @@ class NormalizerWithAudio(Normalizer):
         lm: bool = False,
         post_process: bool = True,
         max_number_of_permutations_per_split: int = 729,
-        verbose: bool = False,
     ):
 
         # initialize non-deterministic normalizer
@@ -96,7 +94,6 @@ class NormalizerWithAudio(Normalizer):
             whitelist=whitelist,
             lm=lm,
             post_process=post_process,
-            verbose=verbose,
         )
         self.tagger_non_deterministic = self.tagger
         self.verbalizer_non_deterministic = self.verbalizer
@@ -113,7 +110,6 @@ class NormalizerWithAudio(Normalizer):
                 lm=lm,
                 post_process=post_process,
                 max_number_of_permutations_per_split=max_number_of_permutations_per_split,
-                verbose=verbose,
             )
         else:
             self.tagger, self.verbalizer = None, None
@@ -146,14 +142,13 @@ class NormalizerWithAudio(Normalizer):
         Returns:
             normalized text options (usually there are multiple ways of normalizing a given semiotic class)
         """
-        verbose = self.verbose
         if pred_text is None or pred_text == "" or self.tagger is None:
             return self.normalize_non_deterministic(
-                text=text, n_tagged=n_tagged, punct_post_process=punct_post_process
+                text=text, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose
             )
 
         try:
-            det_norm = super().normalize(text=text, punct_pre_process=False, punct_post_process=punct_post_process)
+            det_norm = super().normalize(text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process)
         except RecursionError:
             raise RecursionError(f"RecursionError. Try decreasing --max_number_of_permutations_per_split")
 
@@ -167,7 +162,7 @@ class NormalizerWithAudio(Normalizer):
                 text_with_span_tags_list[masked_idx_list[sem_tag_idx]] = ""
             else:
                 non_deter_options = self.normalize_non_deterministic(
-                    text=cur_semiotic_span, n_tagged=n_tagged, punct_post_process=punct_post_process,
+                    text=cur_semiotic_span, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose,
                 )
                 try:
                     best_option, cer, _ = self.select_best_match(
@@ -190,12 +185,12 @@ class NormalizerWithAudio(Normalizer):
         return normalized_text.replace("  ", " ")
 
     def normalize_non_deterministic(
-        self, text: str, n_tagged: int, punct_post_process: bool = True,
+        self, text: str, n_tagged: int, punct_post_process: bool = True, verbose: bool = False
     ):
         # get deterministic option
         if self.tagger:
             deterministic_form = super().normalize(
-                text=text, punct_pre_process=False, punct_post_process=punct_post_process
+                text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
             )
         else:
             deterministic_form = None
@@ -238,7 +233,7 @@ class NormalizerWithAudio(Normalizer):
         else:
             normalized_texts = []
             for tagged_text in tagged_texts:
-                self._verbalize(tagged_text, normalized_texts, n_tagged, verbose=self.verbose)
+                self._verbalize(tagged_text, normalized_texts, n_tagged, verbose=verbose)
 
         if len(normalized_texts) == 0:
             logger.warning("Failed text: " + text + ", normalized_texts: " + str(normalized_texts))
@@ -502,7 +497,6 @@ if __name__ == "__main__":
             whitelist=args.whitelist,
             lm=args.lm,
             max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
-            verbose=args.verbose,
         )
         start = perf_counter()
         if os.path.exists(args.text):
@@ -510,7 +504,10 @@ if __name__ == "__main__":
                 args.text = f.read().strip()
 
         options = normalizer.normalize(
-            text=args.text, n_tagged=args.n_tagged, punct_post_process=not args.no_punct_post_process,
+            text=args.text, 
+            n_tagged=args.n_tagged, 
+            punct_post_process=not args.no_punct_post_process,
+            verbose=args.verbose,
         )
         for option in options:
             logger.info(option)
@@ -522,7 +519,6 @@ if __name__ == "__main__":
             overwrite_cache=args.overwrite_cache,
             whitelist=args.whitelist,
             max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
-            verbose=args.verbose,
         )
         start = perf_counter()
         normalizer.normalize_manifest(
@@ -536,6 +532,7 @@ if __name__ == "__main__":
             text_field=args.manifest_text_field,
             asr_pred_field=args.manifest_asr_pred_field,
             cer_threshold=args.cer_threshold,
+            verbose=args.verbose,
         )
     else:
         raise ValueError(
