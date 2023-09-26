@@ -218,10 +218,11 @@ class Normalizer:
             """
             normalized_lines = [
                 self.normalize(
-                    text, 
-                    verbose=verbose, 
-                    punct_pre_process=punct_pre_process, 
-                    punct_post_process=punct_post_process, **kwargs,
+                    text,
+                    verbose=verbose,
+                    punct_pre_process=punct_pre_process,
+                    punct_post_process=punct_post_process,
+                    **kwargs,
                 )
                 for text in tqdm(batch)
             ]
@@ -304,7 +305,9 @@ class Normalizer:
         assert sum([len(s) for s in splits]) == len(tokens)
         return splits
 
-    def normalize(self, text: str, verbose: bool = False, punct_pre_process: bool = False, punct_post_process: bool = False) -> str:
+    def normalize(
+        self, text: str, verbose: bool = False, punct_pre_process: bool = False, punct_post_process: bool = False
+    ) -> str:
         """
         Main function. Normalizes tokens from written to spoken form
             e.g. 12 kg -> twelve kilograms
@@ -773,7 +776,7 @@ if __name__ == "__main__":
         logger.info(
             normalizer.normalize(
                 args.input_string,
-                verbose = args.verbose,
+                verbose=args.verbose,
                 punct_pre_process=args.punct_pre_process,
                 punct_post_process=args.punct_post_process,
             )
@@ -789,7 +792,7 @@ if __name__ == "__main__":
                 text_field=args.manifest_text_field,
                 output_field=args.output_field,
                 output_filename=args.output_file,
-                verbose = args.verbose,
+                verbose=args.verbose,
             )
 
         else:
@@ -798,7 +801,10 @@ if __name__ == "__main__":
 
             logger.warning("- Data: " + str(len(data)) + " sentences")
             normalizer_prediction = normalizer.normalize_list(
-                data, verbose = args.verbose, punct_pre_process=args.punct_pre_process, punct_post_process=args.punct_post_process,
+                data,
+                verbose=args.verbose,
+                punct_pre_process=args.punct_pre_process,
+                punct_post_process=args.punct_post_process,
             )
             if args.output_file:
                 write_file(args.output_file, normalizer_prediction)

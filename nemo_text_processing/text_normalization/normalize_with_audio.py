@@ -148,7 +148,9 @@ class NormalizerWithAudio(Normalizer):
             )
 
         try:
-            det_norm = super().normalize(text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process)
+            det_norm = super().normalize(
+                text=text, verbose=verbose, punct_pre_process=False, punct_post_process=punct_post_process
+            )
         except RecursionError:
             raise RecursionError(f"RecursionError. Try decreasing --max_number_of_permutations_per_split")
 
@@ -504,8 +506,8 @@ if __name__ == "__main__":
                 args.text = f.read().strip()
 
         options = normalizer.normalize(
-            text=args.text, 
-            n_tagged=args.n_tagged, 
+            text=args.text,
+            n_tagged=args.n_tagged,
             punct_post_process=not args.no_punct_post_process,
             verbose=args.verbose,
         )
