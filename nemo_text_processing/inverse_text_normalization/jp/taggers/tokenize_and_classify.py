@@ -86,6 +86,7 @@ class ClassifyFst(GraphFst):
             time_graph = time.fst
 
             word_graph = WordFst().fst
+
             whitelist_graph = WhiteListFst().fst
             punct_graph = PunctuationFst().fst
             punct_graph = PunctuationFst().fst

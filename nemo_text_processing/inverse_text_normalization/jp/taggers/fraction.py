@@ -50,12 +50,18 @@ class FractionFst(GraphFst):
 
         root_denominator = (
             pynutil.insert("denominator: \"")
-            + (((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal) + pynini.closure(pynutil.delete(' ')))
+            + (
+                ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal)
+                + pynini.closure(pynutil.delete(' '))
+            )
             + pynutil.insert("\"")
         )
         root_numerator = (
             pynutil.insert("numerator: \"")
-            + (pynini.closure(pynutil.delete(' ')) + ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal))
+            + (
+                pynini.closure(pynutil.delete(' '))
+                + ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal)
+            )
             + pynutil.insert("\"")
         )
 
