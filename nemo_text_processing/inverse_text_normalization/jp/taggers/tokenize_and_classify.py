@@ -61,7 +61,7 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"en_itn_{input_case}.far")
+            far_file = os.path.join(cache_dir, f"jp_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -86,7 +86,9 @@ class ClassifyFst(GraphFst):
             time_graph = time.fst
 
             word_graph = WordFst().fst
-            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case).fst
+            #whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case).fst
+            whitelist_graph = WhiteListFst().fst
+            punct_graph = PunctuationFst().fst
             punct_graph = PunctuationFst().fst
 
             classify = (
