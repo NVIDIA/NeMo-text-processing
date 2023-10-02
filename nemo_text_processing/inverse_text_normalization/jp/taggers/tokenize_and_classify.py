@@ -89,7 +89,6 @@ class ClassifyFst(GraphFst):
 
             whitelist_graph = WhiteListFst().fst
             punct_graph = PunctuationFst().fst
-            punct_graph = PunctuationFst().fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
