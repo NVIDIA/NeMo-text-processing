@@ -202,7 +202,7 @@ class NormalizerWithAudio(Normalizer):
         text = pre_process(text)  # to handle []
         text = text.strip()
         if not text:
-            if self.verbose:
+            if verbose:
                 logger.info(text)
             return text
 
