@@ -78,7 +78,9 @@ class MeasureFst(GraphFst):
         )
 
         optional_unit_denominator = pynini.closure(
-            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator, 0, 1,
+            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator,
+            0,
+            1,
         )
 
         complex_unit_singular_graph = (

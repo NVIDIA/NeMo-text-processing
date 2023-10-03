@@ -20,7 +20,7 @@ from pynini.lib import pynutil
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone numbers, e.g. 
+    Finite state transducer for classifying telephone numbers, e.g.
         uno dos tres uno dos tres cinco seis siete ocho -> { number_part: "123-123-5678" }.
         If 10 digits are spoken, they are grouped as 3+3+4 (eg. 123-456-7890).
         If 9 digits are spoken, they are grouped as 3+3+3 (eg. 123-456-789).
@@ -92,7 +92,10 @@ class TelephoneFst(GraphFst):
         # Denormalized phone numbers are grouped in sets of 3 or 4 digits
         group_of_two = pynini.union(doubled_digit, digit_twice, double_digits)
 
-        group_of_three = pynini.union(tripled_digit, single_digits + pynutil.delete(" ") + group_of_two,)
+        group_of_three = pynini.union(
+            tripled_digit,
+            single_digits + pynutil.delete(" ") + group_of_two,
+        )
 
         group_of_four = pynini.union(
             group_of_two + pynutil.delete(" ") + group_of_two,

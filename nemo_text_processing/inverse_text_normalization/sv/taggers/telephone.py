@@ -19,9 +19,9 @@ from pynini.lib import pynutil
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone numbers, e.g. 
+    Finite state transducer for classifying telephone numbers, e.g.
         noll åtta sjuhundraåttionio femtiotvå tjugofem -> tokens { name: "08-789 52 25" }
-    
+
     Args:
         tn_cardinal_tagger: TN Cardinal Tagger
     """

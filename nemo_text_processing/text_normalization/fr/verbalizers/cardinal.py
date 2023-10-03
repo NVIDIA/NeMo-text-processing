@@ -18,12 +18,12 @@ from pynini.lib import pynutil
 
 class CardinalFst(GraphFst):
     """
-	Finite state transducer for verbalizing cardinals
-		e.g. cardinal { negative: "true" integer: "un milliard et un" } -> "moins un milliard et un"
-	Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
-	"""
+    Finite state transducer for verbalizing cardinals
+            e.g. cardinal { negative: "true" integer: "un milliard et un" } -> "moins un milliard et un"
+    Args:
+            deterministic: if True will provide a single transduction option,
+                    for False multiple transduction are generated (used for audio-based normalization)
+    """
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)

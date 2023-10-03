@@ -138,7 +138,6 @@ def _clean_pre_norm_google(inputs: List[str], targets: List[List[str]]):
     This is specific for google dataset.
     """
     for i in range(len(inputs)):
-
         inputs[i] = re.sub(r"\$\s([0-9]{1,})", r"$\1", inputs[i])
         inputs[i] = re.sub(r"\bmr ", r"Mr. ", inputs[i])
         inputs[i] = re.sub(r"\bdr ", r"Dr. ", inputs[i])
@@ -363,7 +362,6 @@ def clean_post_norm(
         for i, _targets in enumerate(post_targets):
             for jj, option in enumerate(post_norm_texts[i][0]):
                 for _, _target in enumerate(_targets):
-
                     if not delim_present:
                         # nn doesn't have punctuation marks that leads for diff_pred_gt mismatch
                         _target = remove_punctuation(_target, remove_spaces=False, do_lower=True)
@@ -389,8 +387,8 @@ def clean_post_norm(
 
 def clean_libri_tts(target: str):
     """
-	Replace abbreviations in LibriTTS dataset
-	"""
+    Replace abbreviations in LibriTTS dataset
+    """
 
     # Normalized text in LibriTTS by Google which contains abbreviations from `libri_sometimes_converts_abbrs` sometimes wasn't converted.
     libri_sometimes_converts_abbrs = {"St.": "saint", "Rev.": "reverend"}
@@ -514,7 +512,11 @@ def get_alternative_label(pred: str, targets: List[str]) -> bool:
     return acceptable
 
 
-def get_labels(targets: List[str], norm_texts_weights: List[Tuple[str, str]], lang="en",) -> List[List[str]]:
+def get_labels(
+    targets: List[str],
+    norm_texts_weights: List[Tuple[str, str]],
+    lang="en",
+) -> List[List[str]]:
     """
     Assign labels to generated normalization options (1 - for ground truth, 0 - other options)
     Args:
@@ -604,7 +606,14 @@ def print_df(df):
     prints data frame
     """
     with pd.option_context(
-        "display.max_rows", None, "display.max_columns", None, "display.width", 1000, "display.max_colwidth", 400,
+        "display.max_rows",
+        None,
+        "display.max_columns",
+        None,
+        "display.width",
+        1000,
+        "display.max_colwidth",
+        400,
     ):
         print(df)
 
@@ -640,7 +649,7 @@ def get_diff(a: str, b: str):
 
 def diff_pred_gt(pred: str, gt: str):
     """returns list of different substrings between prediction and gt
-    relies on that prediction uses '< '  ' >'  
+    relies on that prediction uses '< '  ' >'
 
     Args:
         pred (str): prediction
@@ -648,7 +657,7 @@ def diff_pred_gt(pred: str, gt: str):
 
     Returns:
         list of Tuple(pred start and end, gt start and end) subsections
-    
+
     e.g. pred="< Edward third >., king Our own . loss had been < two thousand two hundred >"
          gt  ="Edward III., king Our own loss had been twenty two hundred"
          --> [([0, 16], [0, 10]),      ([32, 34], [26, 26]),      ([48, 76], [40, 58])]

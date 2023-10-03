@@ -26,7 +26,6 @@ except (ImportError, ModuleNotFoundError):
 
 
 class TestCardinal:
-
     inverse_normalizer = (
         InverseNormalizer(lang='vi', cache_dir=CACHE_DIR, overwrite_cache=False) if PYNINI_AVAILABLE else None
     )

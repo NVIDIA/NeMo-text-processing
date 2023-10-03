@@ -48,7 +48,6 @@ class VerbalizeFinalFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
             logging.info(f'VerbalizeFinalFst graph was restored from {far_file}.')
         else:
-
             verbalize = VerbalizeFst(deterministic=deterministic).fst
             word = WordFst(deterministic=deterministic).fst
             types = verbalize | word

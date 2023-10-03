@@ -25,18 +25,18 @@ from pynini.lib import pynutil
 
 class DecimalFst(GraphFst):
     """
-	Finite state transducer for classifying decimal, e.g.
-		decimal { negative: "true" integer_part: "venti"  fractional_part: "trentaquattro" quantity: "miliardi" } -> 
+        Finite state transducer for classifying decimal, e.g.
+                decimal { negative: "true" integer_part: "venti"  fractional_part: "trentaquattro" quantity: "miliardi" } ->
             meno venti virgola trentaquattro
-		decimal { integer_part: "un milione" fractional_part: "zero zero zero" quantity: "milioni" preserve_order: true } -->
+                decimal { integer_part: "un milione" fractional_part: "zero zero zero" quantity: "milioni" preserve_order: true } -->
             un milione virgola zero zero zero
         decimal { integer_part: "due" quantity: "milioni" preserve_order: true } -->
             due milioni
 
     Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
-	"""
+                deterministic: if True will provide a single transduction option,
+                        for False multiple transduction are generated (used for audio-based normalization)
+    """
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)

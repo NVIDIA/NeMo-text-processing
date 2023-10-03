@@ -20,7 +20,6 @@ from ..utils import CACHE_DIR, get_test_cases_multiple
 
 
 class TestNormalizeWithAudio:
-
     normalizer_es = NormalizerWithAudio(input_case='cased', lang='es', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(get_test_cases_multiple('es/data_text_normalization/test_cases_normalize_with_audio.txt'))

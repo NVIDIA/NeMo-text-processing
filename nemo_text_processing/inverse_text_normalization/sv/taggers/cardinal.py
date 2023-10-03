@@ -19,7 +19,7 @@ from pynini.lib import pynutil
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals. Numbers below ten are not converted. 
+    Finite state transducer for classifying cardinals. Numbers below ten are not converted.
     Allows both compound numeral strings or separated by whitespace.
 
         e.g. minus tjugoen -> cardinal { negative: "-" integer: "21" } }

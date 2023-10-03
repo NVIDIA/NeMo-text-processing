@@ -28,7 +28,7 @@ class FractionFst(GraphFst):
         100分之1 -> tokens { fraction { denominator: "一百" numerator: "一"} }
         百分之1 -> tokens { fraction { denominator: "百" numerator: "一"} }
         98% -> tokens { fraction { denominator: "百" numerator: "九十八"} }
-    
+
     Args:
         cardinal: CardinalFst， decimal: DecimalFst
     """

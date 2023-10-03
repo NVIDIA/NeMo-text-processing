@@ -34,7 +34,7 @@ domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
 class ElectronicFst(GraphFst):
     """
     Finite state transducer for verbalizing electronic
-        e.g. electronic { username: "abc.def2" domain: "studenti.università.it" } -> 
+        e.g. electronic { username: "abc.def2" domain: "studenti.università.it" } ->
         "a b c punto d e f due chiocciola s t u d e n t i punto u n i v e r s i t à punto IT
     Args:
         deterministic: if True will provide a single transduction option,

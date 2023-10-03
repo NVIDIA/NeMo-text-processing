@@ -31,7 +31,7 @@ class DateFst(GraphFst):
         2002/02      -> is an error format according to the national standard
         02/11        -> is an error format according to the national standard
         According to national standard, only when the year, month, and day are all exist, it is allowed to use symbols to separate them
-    
+
     """
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
