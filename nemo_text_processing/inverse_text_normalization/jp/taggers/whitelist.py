@@ -26,7 +26,7 @@ class WhiteListFst(GraphFst):
     This class has highest priority among all classifier grammars. Whitelisted tokens are defined and loaded from "data/whitelist.tsv".
     """
 
-    def __init__(self, input_file: str = None):
+    def __init__(self):
         super().__init__(name="whitelist", kind="classify")
 
         whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv"))
