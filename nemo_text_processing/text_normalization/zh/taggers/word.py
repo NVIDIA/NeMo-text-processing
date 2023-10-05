@@ -11,13 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_CHAR, GraphFst
 from pynini.lib import pynutil
 
 
-class Char(GraphFst):
+class WordFst(GraphFst):
     '''
         你 -> char { name: "你" }
     '''
@@ -25,5 +23,5 @@ class Char(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="char", kind="classify", deterministic=deterministic)
 
-        graph = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
+        graph = pynutil.insert("name: \"") + NEMO_CHAR + pynutil.insert("\"")
         self.fst = graph.optimize()
