@@ -15,12 +15,10 @@
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
-    NEMO_SIGMA,
     GraphFst,
-    convert_space,
     delete_preserve_order,
 )
-from nemo_text_processing.text_normalization.it.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.it.utils import get_abs_path
 from pynini.lib import pynutil
 
 
