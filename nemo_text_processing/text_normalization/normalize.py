@@ -360,8 +360,7 @@ class Normalizer:
                     return text
                 output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice)
             except Exception as e:
-                if verbose:
-                    logger.warning("Failed text: " + text + str(e))
+                logger.warning("Failed text: " + text + str(e))
                 return text
         output = SPACE_DUP.sub(' ', output[1:])
 
