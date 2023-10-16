@@ -13,11 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    GraphFst,
-    delete_preserve_order,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_preserve_order
 from nemo_text_processing.text_normalization.it.utils import get_abs_path
 from pynini.lib import pynutil
 
