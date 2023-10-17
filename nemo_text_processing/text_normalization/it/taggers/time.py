@@ -23,7 +23,7 @@ class TimeFst(GraphFst):
     Finite state transducer for classifying time, e.g.
     15:30:30 tokens { time { hours: "15" minutes: "30" seconds: "30" preserve_order: true } } -> quindici e mezza trenta secondi
     12:15 tokens { time { hours: "12" minutes: "15" } } -> dodici e un quarto
-    03:38 tokens { time { hours: "3" minutes: "38" } } -> tre e trentaotto minuti
+    03:38 tokens { time { hours: "3" minutes: "38" } } -> tre e trentotto minuti
     
     Args:
         deterministic: if True will provide a single transduction option,
