@@ -27,8 +27,8 @@ class OrdinalFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="ordinal", kind="verbalize")
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
         graph_cardinal = cardinal.just_cardinals
         morpheme = pynini.accep('第')
