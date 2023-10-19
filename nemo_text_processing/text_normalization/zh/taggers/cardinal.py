@@ -14,7 +14,7 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, NEMO_DIGIT
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -589,18 +589,18 @@ class CardinalFst(GraphFst):
         )
 
         digit_graph = NEMO_DIGIT @ digit
-        graph_teen = NEMO_DIGIT**2 @ graph_teen
-        graph_tens = NEMO_DIGIT**2 @ graph_tens
-        graph_hundred = NEMO_DIGIT**3 @ graph_hundred
-        graph_thousand = NEMO_DIGIT**4 @ graph_thousand
-        graph_tenthousand = NEMO_DIGIT**5 @ graph_tenthousand
-        graph_hundredthousand = NEMO_DIGIT**6 @ graph_hundredthousand
-        graph_million = NEMO_DIGIT**7 @ graph_million
-        graph_tenmillion = NEMO_DIGIT**8 @ graph_tenmillion
-        graph_hundredmillion = NEMO_DIGIT**9 @ graph_hundredmillion
-        graph_billion = NEMO_DIGIT**10 @ graph_billion
-        graph_tenbillion = NEMO_DIGIT**11 @ graph_tenbillion
-        graph_hundredbillion = NEMO_DIGIT**12 @ graph_hundredbillion
+        graph_teen = NEMO_DIGIT ** 2 @ graph_teen
+        graph_tens = NEMO_DIGIT ** 2 @ graph_tens
+        graph_hundred = NEMO_DIGIT ** 3 @ graph_hundred
+        graph_thousand = NEMO_DIGIT ** 4 @ graph_thousand
+        graph_tenthousand = NEMO_DIGIT ** 5 @ graph_tenthousand
+        graph_hundredthousand = NEMO_DIGIT ** 6 @ graph_hundredthousand
+        graph_million = NEMO_DIGIT ** 7 @ graph_million
+        graph_tenmillion = NEMO_DIGIT ** 8 @ graph_tenmillion
+        graph_hundredmillion = NEMO_DIGIT ** 9 @ graph_hundredmillion
+        graph_billion = NEMO_DIGIT ** 10 @ graph_billion
+        graph_tenbillion = NEMO_DIGIT ** 11 @ graph_tenbillion
+        graph_hundredbillion = NEMO_DIGIT ** 12 @ graph_hundredbillion
 
         # combining all the graph above
         graph = pynini.union(
