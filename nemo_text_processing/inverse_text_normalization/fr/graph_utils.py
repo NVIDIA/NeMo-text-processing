@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 import string
 from pathlib import Path
@@ -21,6 +20,7 @@ from typing import Dict
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
+from nemo_text_processing.utils.logging import logger
 from pynini import Far
 from pynini.examples import plurals
 from pynini.export import export

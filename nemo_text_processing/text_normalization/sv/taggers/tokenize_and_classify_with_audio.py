@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 
 import pynini
@@ -52,6 +51,7 @@ from nemo_text_processing.text_normalization.sv.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.sv.verbalizers.telephone import TelephoneFst as vTelephoneFst
 from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as vTimeFst
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 

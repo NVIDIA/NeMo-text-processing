@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 
 import pynini
@@ -37,6 +36,7 @@ from nemo_text_processing.text_normalization.zh.taggers.punctuation import Punct
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.zh.taggers.word import Char
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 

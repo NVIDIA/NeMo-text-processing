@@ -20,10 +20,10 @@ from typing import List, Optional, Tuple
 
 import editdistance
 import pynini
-from nemo_text_processing.utils.logging import logger
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import rewrite
 
 

@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import csv
-from nemo_text_processing.utils.logging import logger
 import os
+
+from nemo_text_processing.utils.logging import logger
 
 
 def get_abs_path(rel_path):

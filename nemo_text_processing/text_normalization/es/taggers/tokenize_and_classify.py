@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 
 import pynini
@@ -36,6 +35,7 @@ from nemo_text_processing.text_normalization.es.taggers.telephone import Telepho
 from nemo_text_processing.text_normalization.es.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.es.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.es.taggers.word import WordFst
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 

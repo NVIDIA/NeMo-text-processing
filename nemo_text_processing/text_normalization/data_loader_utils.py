@@ -14,13 +14,14 @@
 
 
 import json
-from nemo_text_processing.utils.logging import logger
 import re
 import string
 import sys
 from collections import defaultdict, namedtuple
 from typing import Dict, List, Optional, Set, Tuple
 from unicodedata import category
+
+from nemo_text_processing.utils.logging import logger
 
 EOS_TYPE = "EOS"
 PUNCT_TYPE = "PUNCT"

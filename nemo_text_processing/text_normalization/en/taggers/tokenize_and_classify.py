@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 import time
 
@@ -44,6 +43,7 @@ from nemo_text_processing.text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.verbalizers.date import DateFst as vDateFst
 from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTimeFst
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 

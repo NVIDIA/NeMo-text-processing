@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import itertools
 import json
 import os
@@ -38,6 +37,7 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
 )
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
+from nemo_text_processing.utils.logging import logger
 from pynini.lib.rewrite import top_rewrite
 from sacremoses import MosesDetokenizer
 from tqdm import tqdm
@@ -337,7 +337,7 @@ class Normalizer:
         tagged_lattice = self.find_tags(text)
         tagged_text = Normalizer.select_tag(tagged_lattice)
         logger.debug(tagged_text)
-        
+
         self.parser(tagged_text)
         tokens = self.parser.parse()
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
@@ -761,7 +761,7 @@ if __name__ == "__main__":
 
     if not args.input_string and not args.input_file:
         raise ValueError("Either `--text` or `--input_file` required")
-   
+
     normalizer = Normalizer(
         input_case=args.input_case,
         cache_dir=args.cache_dir,
@@ -772,13 +772,11 @@ if __name__ == "__main__":
     )
     start_time = perf_counter()
     if args.input_string:
-        output = (
-            normalizer.normalize(
-                args.input_string,
-                verbose=args.verbose,
-                punct_pre_process=args.punct_pre_process,
-                punct_post_process=args.punct_post_process,
-            )
+        output = normalizer.normalize(
+            args.input_string,
+            verbose=args.verbose,
+            punct_pre_process=args.punct_pre_process,
+            punct_post_process=args.punct_post_process,
         )
         print("=" * 40)
         print(output)

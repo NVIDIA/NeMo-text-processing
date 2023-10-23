@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 
 import pynini
@@ -31,6 +30,7 @@ from nemo_text_processing.text_normalization.it.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.it.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.it.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.it.taggers.word import WordFst
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 

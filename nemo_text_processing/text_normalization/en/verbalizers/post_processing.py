@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 
 import pynini
@@ -25,6 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 

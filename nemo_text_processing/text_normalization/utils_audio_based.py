@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 from typing import Dict
 
 from cdifflib import CSequenceMatcher
+from nemo_text_processing.utils.logging import logger
 
 MATCH = "match"
 NONMATCH = "non-match"

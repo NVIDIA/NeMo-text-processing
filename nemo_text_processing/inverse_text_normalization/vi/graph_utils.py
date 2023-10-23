@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 import string
 from pathlib import Path
 from typing import Dict
 
 import pynini
+from nemo_text_processing.utils.logging import logger
 from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.utils.logging import logger
 import os
 
 import pynini
@@ -30,6 +29,7 @@ from nemo_text_processing.text_normalization.fr.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.fr.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.fr.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.fr.taggers.word import WordFst
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 
