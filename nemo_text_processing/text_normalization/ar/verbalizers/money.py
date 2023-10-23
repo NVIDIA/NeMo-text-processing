@@ -60,9 +60,8 @@ class MoneyFst(GraphFst):
             + delete_space
             + add_and
             + fractional_part
-            + keep_space
             + delete_space
-            + min
+            + pynini.closure(keep_space + min, 0, 1)
             + delete_preserve_order
         )
         # this graph fix word order from dollar three (دولار تسعة)--> three dollar (تسعة دولار)
