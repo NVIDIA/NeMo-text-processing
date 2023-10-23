@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import csv
-import logging
+from nemo_text_processing.utils.logging import logger
 import os
 
 
@@ -29,7 +29,7 @@ def get_abs_path(rel_path):
     abs_path = os.path.dirname(os.path.abspath(__file__)) + os.sep + rel_path
 
     if not os.path.exists(abs_path):
-        logging.warning(f'{abs_path} does not exist')
+        logger.warning(f'{abs_path} does not exist')
     return abs_path
 
 

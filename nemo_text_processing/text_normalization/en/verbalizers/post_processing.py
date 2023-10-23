@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
+from nemo_text_processing.utils.logging import logger
 import os
 
 import pynini
@@ -46,7 +46,7 @@ class PostProcessingFst:
             far_file = os.path.join(cache_dir, "en_tn_post_processing.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["post_process_graph"]
-            logging.info(f'Post processing graph was restored from {far_file}.')
+            logger.info(f'Post processing graph was restored from {far_file}.')
         else:
             self.set_punct_dict()
             self.fst = self.get_punct_postprocess_graph()

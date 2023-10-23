@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
+from nemo_text_processing.utils.logging import logger
 import os
 
 import pynini
@@ -67,9 +67,9 @@ class ClassifyFst(GraphFst):
             far_file = os.path.join(cache_dir, f"ru_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info(f"Creating ClassifyFst grammars. This might take some time...")
+            logger.info(f"Creating ClassifyFst grammars. This might take some time...")
             tn_classify = TNClassifyFst(
                 input_case='cased', deterministic=False, cache_dir=cache_dir, overwrite_cache=True
             )
@@ -119,4 +119,4 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")
+                logger.info(f"ClassifyFst grammars are saved to {far_file}.")

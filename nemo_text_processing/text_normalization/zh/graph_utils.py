@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # gaph_utils is kept due to the fatc that importing from en folders will cause import errors that the data file names have to be the same with what are in the en folder
-import logging
+from nemo_text_processing.utils.logging import logger
 import os
 import string
 from pathlib import Path
@@ -59,7 +59,7 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     for rule, graph in graphs.items():
         exporter[rule] = graph.optimize()
     exporter.close()
-    logging.info(f'Created {file_name}')
+    logger.info(f'Created {file_name}')
 
 
 class GraphFst:

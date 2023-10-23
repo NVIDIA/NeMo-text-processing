@@ -14,7 +14,7 @@
 
 
 import json
-import logging
+from nemo_text_processing.utils.logging import logger
 import re
 import string
 import sys
@@ -344,7 +344,7 @@ def post_process_punct(input: str, normalized_text: str, add_unicode_punct: bool
                 idx_out += 1
                 idx_in += 1
         except:
-            logging.info(f"Skipping post-processing of {''.join(normalized_text)} for '{punct}'")
+            logger.info(f"Skipping post-processing of {''.join(normalized_text)} for '{punct}'")
 
     normalized_text = "".join(normalized_text)
     return re.sub(r' +', ' ', normalized_text)
