@@ -221,7 +221,6 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logger.info(f'ClassifyFst grammars are saved to {far_file}.')
 
         # to remove normalization options that still contain digits and some special symbols
         # e.g., "P&E" -> {P and E, P&E}, "P & E" will be removed from the list of normalization options

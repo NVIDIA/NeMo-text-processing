@@ -72,4 +72,3 @@ class VerbalizeFinalFst(GraphFst):
             self.fst = graph.optimize()
             if far_file:
                 generator_main(far_file, {"verbalize": self.fst})
-                logger.info(f"VerbalizeFinalFst grammars are saved to {far_file}.")

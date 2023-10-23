@@ -146,4 +146,3 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logger.info(f"ClassifyFst grammars are saved to {far_file}.")
