@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from nemo_text_processing.utils.logging import logger
 import itertools
 import json
 import os
@@ -35,7 +36,6 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
     pre_process,
     write_file,
 )
-from nemo_text_processing.utils.logging import logger
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
 from pynini.lib.rewrite import top_rewrite
@@ -320,6 +320,7 @@ class Normalizer:
 
         Returns: spoken form
         """
+        logger.setLevel('DEBUG' if verbose else 'INFO')
         if len(text.split()) > 500:
             logger.warning(
                 "Your input is too long and could take a long time to normalize. "
@@ -330,14 +331,13 @@ class Normalizer:
             text = pre_process(text)
         text = text.strip()
         if not text:
-            if verbose:
-                logger.debug(text)
+            logger.debug(text)
             return text
         text = pynini.escape(text)
         tagged_lattice = self.find_tags(text)
         tagged_text = Normalizer.select_tag(tagged_lattice)
-        if verbose:
-            logger.debug(tagged_text)
+        logger.debug(tagged_text)
+        
         self.parser(tagged_text)
         tokens = self.parser.parse()
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
@@ -761,7 +761,7 @@ if __name__ == "__main__":
 
     if not args.input_string and not args.input_file:
         raise ValueError("Either `--text` or `--input_file` required")
-
+   
     normalizer = Normalizer(
         input_case=args.input_case,
         cache_dir=args.cache_dir,
@@ -772,7 +772,7 @@ if __name__ == "__main__":
     )
     start_time = perf_counter()
     if args.input_string:
-        logger.info(
+        output = (
             normalizer.normalize(
                 args.input_string,
                 verbose=args.verbose,
@@ -780,6 +780,9 @@ if __name__ == "__main__":
                 punct_post_process=args.punct_post_process,
             )
         )
+        print("=" * 40)
+        print(output)
+        print("=" * 40)
     elif args.input_file:
         if args.input_file.endswith(".json"):
             normalizer.normalize_manifest(
