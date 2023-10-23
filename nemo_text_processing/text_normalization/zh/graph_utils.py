@@ -18,12 +18,13 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
-
-# gaph_utils is kept due to the fatc that importing from en folders will cause import errors that the data file names have to be the same with what are in the en folder
 from nemo_text_processing.utils.logging import logger
 from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
+
+# ghaph_utils is here since importing from en folders will cause import errors
+# that the data file names have to be the same with what are in the en folder
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
