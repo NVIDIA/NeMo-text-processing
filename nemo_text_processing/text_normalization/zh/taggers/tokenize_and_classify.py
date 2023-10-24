@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import os
 
 import pynini
@@ -30,6 +29,9 @@ from nemo_text_processing.text_normalization.zh.taggers.punctuation import Punct
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
+from nemo_text_processing.text_normalization.zh.taggers.word import Char
+from nemo_text_processing.utils.logging import logger
+from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
@@ -66,6 +68,22 @@ class ClassifyFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
         else:
             cardinal = CardinalFst(deterministic=deterministic)
+            no_digits = pynini.closure(pynini.difference(NEMO_CHAR, NEMO_DIGIT))
+            self.fst_no_digits = pynini.compose(self.fst, no_digits).optimize()
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
+
+            cardinal = CardinalFst()
+            cardinal_graph = cardinal.fst
+
+            ordinal = OrdinalFst(cardinal=cardinal)
+            ordinal_graph = ordinal.fst
+
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            decimal_graph = decimal.fst
+
+            fraction = FractionFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
+            fraction_graph = fraction.fst
+
             date = DateFst(deterministic=deterministic)
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             time = TimeFst(deterministic=deterministic)

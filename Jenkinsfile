@@ -28,6 +28,7 @@ pipeline {
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-17-24-1'
     HI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/12-06-24-1'
+    IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -203,7 +204,7 @@ pipeline {
       failFast true
       parallel {
         stage('L0: FR TN grammars') {
-         steps {
+          steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=fr --text="2" --cache_dir ${FR_TN_CACHE}'
           }
         }
@@ -212,6 +213,18 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=fr --text="cent " --cache_dir ${FR_TN_CACHE}'
           }
         }
+
+      }
+    }
+    stage('L0: Create VI ITN & HU TN & IT TN') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
         stage('L0: VI ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=vi --text="một ngàn " --cache_dir ${VI_TN_CACHE}'
