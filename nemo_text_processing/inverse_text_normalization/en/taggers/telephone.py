@@ -41,8 +41,9 @@ def get_serial_number(cardinal):
     digit = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT)
     two_digit = pynutil.add_weight(pynini.compose(cardinal.graph_two_digit, NEMO_DIGIT ** 2), 0.002)
     character = digit | two_digit | NEMO_ALPHA
+    character_not_a =  digit | two_digit | NEMO_LOWER_NOT_A
     sequence = (NEMO_LOWER_NOT_A | digit) + pynini.closure(pynutil.delete(" ") + character, 2)
-    sequence |= character + pynini.closure(pynutil.delete(" ") + (digit | NEMO_ALPHA), 2)
+    sequence |= character_not_a + pynini.closure(pynutil.delete(" ") + (digit | NEMO_ALPHA), 2)
     sequence2 = (
         NEMO_ALPHA
         + pynini.closure(pynutil.delete(" ") + NEMO_ALPHA, 1)
