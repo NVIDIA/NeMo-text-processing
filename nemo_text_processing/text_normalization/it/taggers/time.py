@@ -14,9 +14,8 @@
 
 
 import pynini
-from pynini.lib import pynutil
-
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, insert_space
+from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -25,7 +24,7 @@ class TimeFst(GraphFst):
     15:30:30 tokens { time { hours: "15" minutes: "30" seconds: "30" preserve_order: true } } -> quindici e mezza trenta secondi
     12:15 tokens { time { hours: "12" minutes: "15" } } -> dodici e un quarto
     03:38 tokens { time { hours: "3" minutes: "38" } } -> tre e trentotto minuti
-
+    
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)

@@ -13,9 +13,8 @@
 # limitations under the License.
 
 import pytest
-from parameterized import parameterized
-
 from nemo_text_processing.text_normalization.normalize import Normalizer
+from parameterized import parameterized
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
@@ -28,4 +27,4 @@ class TestChar:
     @pytest.mark.unit
     def test_norm_char(self, test_input, expected):
         preds = self.normalizer.normalize(test_input, punct_post_process=True)
-        assert preds in expected
+        assert expected == preds
