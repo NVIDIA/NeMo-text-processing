@@ -1,4 +1,5 @@
-12:30~dodici e mezza
-05:15~cinque e un quarto
-17:15:26~diciassette e un quarto e ventisei secondi
+12:30~dodici e trenta minuti~dodici e mezza
+05:15~cinque e quindici minuti~cinque e un quarto
+17:15:26~diciassette e quindici minuti e ventisei secondi~diciassette e un quarto e ventisei secondi
 23:45~ventitre e quarantacinque minuti
+03:38~tre e trentotto minuti
