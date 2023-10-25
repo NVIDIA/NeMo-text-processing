@@ -21,6 +21,11 @@ runtest () {
   done < "$input"
 }
 
+testTNTime() {
+  input=$PROJECT_DIR/it/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
+
 testTNCardinal() {
   input=$PROJECT_DIR/it/data_text_normalization/test_cases_cardinal.txt
   runtest $input
