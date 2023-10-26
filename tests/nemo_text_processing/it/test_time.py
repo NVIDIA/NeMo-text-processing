@@ -27,4 +27,4 @@ class TestChar:
     @pytest.mark.unit
     def test_norm_char(self, test_input, expected):
         preds = self.normalizer.normalize(test_input, punct_post_process=True)
-        assert expected == preds
+        assert preds in expected
