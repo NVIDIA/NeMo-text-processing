@@ -22,16 +22,11 @@ pipeline {
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
-<<<<<<< HEAD
     ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-30-24-0'
     IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-22-24-0'
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-27-24-0'
-=======
-    ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-27-23-0'
-    IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-26-23-0'
->>>>>>> 46fe49d (IT TN improvement on tests (#120))
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -168,15 +163,7 @@ pipeline {
       failFast true
       parallel {
         stage('L0: FR TN grammars') {
-<<<<<<< HEAD
-<<<<<<< HEAD
           steps {
-=======
-         steps {
->>>>>>> 44c516e (fix bug #111 (ar currencies) (#117))
-=======
-          steps {
->>>>>>> 48f67ac (Logging clean up + IT TN fix (#118))
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=fr --text="2" --cache_dir ${FR_TN_CACHE}'
           }
         }
@@ -185,21 +172,6 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=fr --text="cent " --cache_dir ${FR_TN_CACHE}'
           }
         }
-<<<<<<< HEAD
-=======
-
-      }
-    }
-    stage('L0: Create VI ITN & HU TN & IT TN') {
-      when {
-        anyOf {
-          branch 'main'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
->>>>>>> 48f67ac (Logging clean up + IT TN fix (#118))
         stage('L0: VI ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=vi --text="một ngàn " --cache_dir ${VI_TN_CACHE}'
@@ -213,31 +185,6 @@ pipeline {
         stage('L0: IT TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=it --text="122" --cache_dir ${IT_TN_CACHE}'
-<<<<<<< HEAD
-=======
-          }
-        }
-      }
-    }
-
-    stage('L0: Create PT TN/ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-       // stage('L0: PT TN grammars') {
-       //  steps {
-       //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=pt --text="2" --cache_dir ${DEFAULT_TN_CACHE}'
-       //   }
-       // }
-        stage('L0: PT ITN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=pt --text="dez " --cache_dir ${PT_TN_CACHE}'
->>>>>>> 48f67ac (Logging clean up + IT TN fix (#118))
           }
         }
       }
