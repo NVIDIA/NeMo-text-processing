@@ -36,14 +36,14 @@ two square meters~2 m²
 eighteen feet~18 ft
 eighteen mega siemens~18 Ms
 eighteen ounces~18 oz
-eighteen point five kilometers~18.5 km
+eighteen point five kilometers~18.5 Km
 eighteen point five two square kilometers~18.52 km²
 eighteen point nine one square kilometers~18.91 km²
 eighteen point one four percent~18.14%
 eighteen point one six percent~18.16%
 eighteen point one square kilometers~18.1 km²
-eighteen point six percent~18.6%
-eighteen point two two kilometers~18.22 km
+eighteen point six percent~18.6 %
+eighteen point two two kilometers~18.22 Km
 eighteen point zero kilometers~18.0 km
 eighteen point zero percent~18.0%
 eighteen square kilometers~18 km²
@@ -53,7 +53,7 @@ eight hectares~8 ha
 eight hundred eighty five astronomical units~885 au
 eight hundred eighty hectares~880 ha
 eight hundred eighty kilobytes~880 KB
-eight hundred eighty kilometers~880 km
+eight hundred eighty kilometers~880 Km
 eight hundred eighty nine feet~889 ft
 eight hundred eighty six kilometers~886 km
 eight hundred eighty two megawatts~882 MW
@@ -82,27 +82,27 @@ eight hundred ninety two square kilometers~892 km²
 eight hundred seventy horsepower~870 hp
 eight hundred seventy meters~870 m
 eight hundred sixty kilograms~860 Kg
-eight hundred sixty kilometers~860 km
+eight hundred sixty kilometers~860 Km
 eight hundred sixty miles~860 mi
 eight hundred sixty six feet~866 ft
 eight hundred ten hectares~810 ha
 eight hundred ten kilohertz~810 Khz
 eight hundred thirty eight point two millimeters~838.2 mm
-eight hundred thirty five kilometers~835 km
+eight hundred thirty five kilometers~835 Km
 eight hundred thirty kilohertz~830 Khz
 eight hundred thirty megawatts~830 MW
-eight hundred thirty nine kilometers~839 km
+eight hundred thirty nine kilometers~839 Km
 eight hundred thirty six meters~836 m
 eight hundred twenty feet~820 ft
-eight hundred twenty kilometers~820 km
+eight hundred twenty kilometers~820 Km
 eight hundred twenty meters~820 m
 eight hundred twenty one point zero feet~821.0 ft
-eight hundred two point eight nine kilometers~802.89 km
+eight hundred two point eight nine kilometers~802.89 Km
 eight hundred volts~800 v
 eight kilobits~8 Kb
 eight kilograms~8 Kg
 eight million two hundred thousand feet~8200000 ft
-eight point eight kilometers~8.8 km
+eight point eight kilometers~8.8 Km
 eight point eight meters~8.8 m
 eight point eight miles~8.8 mi
 eight point five centimeters~8.5 cm
