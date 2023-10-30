@@ -100,27 +100,27 @@ class CardinalFst(GraphFst):
         )
 
         graph_million = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + self.delete_word("million"),
+            (graph_digit_a |graph_hundred_component_at_least_one_none_zero_digit) + delete_space + self.delete_word("million"),
             pynutil.insert("000", weight=0.1),
         )
         graph_billion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + self.delete_word("billion"),
+            (graph_digit_a |graph_hundred_component_at_least_one_none_zero_digit) + delete_space + self.delete_word("billion"),
             pynutil.insert("000", weight=0.1),
         )
         graph_trillion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + self.delete_word("trillion"),
+            (graph_digit_a |graph_hundred_component_at_least_one_none_zero_digit) + delete_space + self.delete_word("trillion"),
             pynutil.insert("000", weight=0.1),
         )
         graph_quadrillion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + self.delete_word("quadrillion"),
+            (graph_digit_a |graph_hundred_component_at_least_one_none_zero_digit) + delete_space + self.delete_word("quadrillion"),
             pynutil.insert("000", weight=0.1),
         )
         graph_quintillion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + self.delete_word("quintillion"),
+            (graph_digit_a |graph_hundred_component_at_least_one_none_zero_digit) + delete_space + self.delete_word("quintillion"),
             pynutil.insert("000", weight=0.1),
         )
         graph_sextillion = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + self.delete_word("sextillion"),
+            (graph_digit_a |graph_hundred_component_at_least_one_none_zero_digit) + delete_space + self.delete_word("sextillion"),
             pynutil.insert("000", weight=0.1),
         )
         # %%%
