@@ -23,6 +23,7 @@ import pynini
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import rewrite
 
 
@@ -171,8 +172,8 @@ class NormalizerWithAudio(Normalizer):
                     )
                     if cer_threshold > 0 and cer > cer_threshold:
                         best_option = cur_deter_norm
-                        if verbose and True:
-                            print(
+                        if verbose:
+                            logger.info(
                                 f"CER of the best normalization option is above cer_theshold, using determinictis option. CER: {cer}"
                             )
                 except:
@@ -202,7 +203,7 @@ class NormalizerWithAudio(Normalizer):
         text = text.strip()
         if not text:
             if verbose:
-                print(text)
+                logger.info(text)
             return text
 
         text = pynini.escape(text)
@@ -237,7 +238,8 @@ class NormalizerWithAudio(Normalizer):
                 self._verbalize(tagged_text, normalized_texts, n_tagged, verbose=verbose)
 
         if len(normalized_texts) == 0:
-            raise ValueError()
+            logger.warning("Failed text: " + text + ", normalized_texts: " + str(normalized_texts))
+            return text
 
         if punct_post_process:
             # do post-processing based on Moses detokenizer
@@ -358,7 +360,7 @@ class NormalizerWithAudio(Normalizer):
                 tagged_text_reordered = pynini.escape(tagged_text_reordered)
                 normalized_texts.extend(get_verbalized_text(tagged_text_reordered))
                 if verbose:
-                    print(tagged_text_reordered)
+                    logger.info(tagged_text_reordered)
 
             except pynini.lib.rewrite.Error:
                 continue
@@ -383,10 +385,10 @@ class NormalizerWithAudio(Normalizer):
         normalized_text, cer, idx = normalized_texts_cer[0]
 
         if verbose:
-            print('-' * 30)
+            logger.info('-' * 30)
             for option in normalized_texts:
-                print(option)
-            print('-' * 30)
+                logger.info(option)
+            logger.info('-' * 30)
         return normalized_text, cer, idx
 
 
@@ -510,7 +512,7 @@ if __name__ == "__main__":
             verbose=args.verbose,
         )
         for option in options:
-            print(option)
+            logger.info(option)
     elif args.manifest.endswith('.json'):
         normalizer = NormalizerWithAudio(
             input_case=args.input_case,
@@ -532,10 +534,11 @@ if __name__ == "__main__":
             text_field=args.manifest_text_field,
             asr_pred_field=args.manifest_asr_pred_field,
             cer_threshold=args.cer_threshold,
+            verbose=args.verbose,
         )
     else:
         raise ValueError(
             "Provide either path to .json manifest with '--manifest' OR "
             + "an input text with '--text' (for debugging without audio)"
         )
-    print(f'Execution time: {round((perf_counter() - start)/60, 2)} min.')
+    logger.info(f'Execution time: {round((perf_counter() - start)/60, 2)} min.')

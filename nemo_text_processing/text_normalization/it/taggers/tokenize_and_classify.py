@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
@@ -29,8 +28,10 @@ from nemo_text_processing.text_normalization.it.taggers.decimals import DecimalF
 from nemo_text_processing.text_normalization.it.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.it.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.it.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.it.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.it.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.it.taggers.word import WordFst
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 
@@ -66,9 +67,9 @@ class ClassifyFst(GraphFst):
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info(f"Creating ClassifyFst grammars. This might take some time...")
+            logger.info(f"Creating ClassifyFst grammars. This might take some time...")
 
             self.cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = self.cardinal.fst
@@ -90,6 +91,9 @@ class ClassifyFst(GraphFst):
             self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
             money_graph = self.money.fst
 
+            self.time = TimeFst(deterministic=deterministic)
+            time_graph = self.time.fst
+
             punct_graph = PunctuationFst(deterministic=deterministic).fst
 
             classify = (
@@ -99,6 +103,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(electronic_graph, 1.09)
                 | pynutil.add_weight(measure_graph, 1.09)
                 | pynutil.add_weight(money_graph, 1.09)
+                | pynutil.add_weight(time_graph, 1.09)
                 | pynutil.add_weight(word_graph, 100)
             )
 
@@ -128,4 +133,3 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")
