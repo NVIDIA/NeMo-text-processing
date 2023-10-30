@@ -2,7 +2,9 @@
 1D	one d
 1G	one g
 1K	one k
+1x	one x
 2.5G	two point five g
+24/7	twenty four sevenths
 2D	two d
 2G	two g
 2K	two k
@@ -11,13 +13,14 @@
 4D	four d
 4G	four g
 4K	four k
-4K 64K	four k six four k
+4k64k	four k six four k
 5D	five d
 5G	five g
 6G	six g
 7-eleven	seven eleven
 7G	seven g
 8K	eight k
+A100	a one hundred
 AAA	triple a
 AC	a c
 ACE	a c e
@@ -40,32 +43,38 @@ AOI	aoi
 AOI	a o i
 API	a p i
 API	api
+APIs	apis
 ARP	a r p
 ASAP	a s a p
 ASAP	a sap
 ASMC	a s m c
 ASR	a s r
+AstraZeneca	astra zeneca
+AstraZeneca	astrazeneca
 ASUS	a sus
 ASUS	asus
 AT&T	a t and t
+AT&T	at and t
 ATM	a t m
+Audio2Face	audio to face
+Audio2Face	audio too face
 AV1	a v one
 AV1	av one
 AVAS	a v a s
 AVAS	a vas
+Avatar Cloud Engine	avatar cloud engine
 AVRCP	a v r c p
 AWS	a w s
 AWS	aws
-AlphaFold	alpha fold
-AstraZeneca	astra zeneca
-AstraZeneca	astrazeneca
-Audio2Face	audio to face
-Audio2Face	audio too face
+BasePOD	base pod
+BasePOD	basepod
 BBC	b b c
 BCP	b c p
 BEV	b e v
+BF 3	bf three
 BGA	b g a
 BGP	b g p
+Billion-X	billion X
 BIOS	Bios
 BIOS	bios
 BIS	b i s
@@ -77,10 +86,20 @@ BSP	b s p
 BasePOD	base pod
 BasePOD	basepod
 Billion-X	billion X
+BlueField-3 NIC	bluefield three nick
 BMW	bmw
+BSP	b s p
+BYD	byd
+BYD's	byd's
 C#	c sharp
 C++	c plus plus
+CAD	cad
+CAD	c a d
 CAE	cae
+CalTech	cal tech
+CalTech	caltech
+CapEx	cap ex
+CapEx	capex
 CAT5	cat five
 CAT5e	cat five e
 CAT6	cat six
@@ -88,30 +107,55 @@ CAT6A	cat six a
 CAT7	cat seven
 CAT8	cat eight
 CBC	c b c
+CBC	cbc
 CCS	c c s
+CCS	ccs
 CCTV	c c t v
 CCTV	c c tv
+CCTV	cctv
+CCTV	cct v
 CDN	c d n
+CDN	cdn
 CEO	c e o
+CEO	ceo
 CES	c e s
+CES	ces
 CFO	c f o
-CG 	cg
+CFO	cfo
+CG	cg
 CG	c g
 CHAdeMO	cha demo
 CHAdeMO	chai demo
+ChatGPT	chat g p t
+ChatGPT	chat gpt
+ChatGPT	chatgpt
+ChatUSD	chat usd
+ChatUSD	chat u s d
+ChatUSD	chat usb
+ChatUSD	chatus
 CLI	c l i
+CloudXR	cloud x r
 CMO	c m o
 CMS	c m s
 CNN	c n n
+Computex	computex
+ConnectUSD	connect usd
+ConnectX	connect x
+Core 2	core two
 COVID	covid
 COVID-19	covid nineteen
+CoWoS	cowos
 CPU	c p u
 CPU	cpu
 CPUs	cpus
 CPU's	cpu's
 CPUs	c p u s
 CSO	c s o
+CSO	cso
 CSP	c s p
+CSP	csp
+CSP's	csp's
+CSPs	csps
 CSS	c s s
 CSS	css
 cuBLAS	cue blah
@@ -127,70 +171,108 @@ cuOpt	cuopt
 cuQuantum	cue quantum
 cuQuantum	q quantum
 CV	c v
+CV	cv
 CVT	c v t
-CalTech	cal tech
-CalTech	caltech
-CapEx	cap ex
-CapEx	capex
-ChatGPT	chat g p t
-ChatUSD	chat usd
-ChatUSD	chat u s d
-CloudXR	cloud x r
-ConnectX	connect x
-Core 2	core two
+CVT	cvt
 CX7	cx seven
 DALI	d a l i
+datasets	data sets
 DB	d b
+DB	db
 DC	d c
+DC	dc
 DCDB	d c d b
-DDR	d d r
+DCDB	dcdb
 DDoS	d d o s
 DDoS	d dos
-DGL	d g l
-DGX	d g x
-DGX A100	d g x a hundred
-DGX A100	d g x a one hundred
-DGX Station	d g x station
-DHCP	d h c p
-DLSS	d l s s
-DLSS 2	d l s s two
-DLSS 3	d l s s three
-DMA	dma
-DMA	d m a
-DNA	d n a
-DNN	d n n
-DNS	d n s
-DOS	dos
-DP	d p
-DPDT	d p d t
-DPU	d p u
-DPX	d p x
-dvr	d v r
-dsl	d s l
+DDoS	ddos
+DDR	d d r
+DDR	ddr
 DeepMind	deep mind
 DeepMind	deepmind
 DeepStream	deep stream
 DeepStream	deepstream
+DENZA	denza
+DENZA N7 SUV	densa and seven suv
 DevOps	dev ops
+DGL	d g l
+DGL	dgl
+DGX	d g x
+DGX	dgx
+DGX A100	d g x a hundred
+DGX A100	d g x a one hundred
+DGX A100	dgx a hundred
+DGX A100	dgx a one hundred
+DGX Station	d g x station
+DGX Station	dgx station
+DHCP	d h c p
+DHCP	dhcp
 Direct3D	direct three d
 DisplayPort	display port
+DLSS	d l s s
+DLSS	dlss
+DLSS 2	d l s s two
+DLSS 2	dlss two
+DLSS 3	d l s s three
+DLSS 3	dlss three
+DMA	dma
+DMA	d m a
+DNA	d n a
+DNA	dna
+DNN	d n n
+DNN	dnn
+DNS	d n s
+DNS	dns
+DOS	dos
+DOS	d o s
+DP	d p
+DP	dp
+DPDT	d p d t
+DPDT	dpdt
+DPUs	dpus
+DPUs	d p u s
+DPU	d p u
+DPU	dpu
+DPX	d p x
+DPX	dpx
+dr.	doctor
+dsl	d s l
+dsl	dsl
+dvr	d v r
+dvr	dvr
+Earth-2	earth two
 EBC	e b c
+EBC	ebc
 EBS	e b s
+EBS	ebs
 EC2	e c two
+EC2	ec two
 ECC	e c c
+ECC	ecc
 ECS	e c s
-eda	eda
+ECS	ecs
+EDA	eda
+EDA	e d a
 EFS	e f s
+EFS	efs
 EGX	e g x
+EGX	egx
 EKS	e k s
+EKS	eks
 ELB	e l b
+ELB	elb
 ELCB	e l c b
+ELCB	elcb
 EMR	e m r
+EMR	emr
 EOL	e o l
+EOL	eol
+es3	e s three
 EV	e v
+EV	ev
 exaFLOPS	exaflops
 exaFLOPS	exa flops
-Earth-2	earth two
+ext4	e x t four
 FIFO	fee foe
 FIFO	fifo
 FOMO	foe moe
@@ -203,49 +285,80 @@ FTPS	f t p s
 FX	f x
 G-SYNC	g sync
 GCC	g c c
+GCC	gcc
 GCP	g c p
+GCP	gcp
 GCS	g c s
-GFN	G f n
+GCS	gcs
+GDN	gdn
+GeForce	geforce
+GeForce	ge force
+GeForce NOW	geforce now
+GeForce NOW	ge force now
+GFN	g f n
+GFN	gfn
 GH200	gh two hundred
 GH200	g h two hundred
-GPU	g p u
-GRPC	g r p c
-GRU	g r u
-GSK	g s k
-GTC	g t c
-GTX	g t x
-GUI	gui
-GUI	g u i
-GeForce	geforce
-GeForce NOW	geforce now
+GPT	gpt
+GPT	g p t
 GPT-3	gpt three
 GPT-3	gpd three
+GPT-3	gbt three
 GPT-4	gpt four
 GPT-4	gpd four
 GPT-5	gpt five
 GPT-5	gpd five
-H.264	H two six four
-H.264	H two sixty four
-H.265	H two six five
-H.265	H two sixty five
-H100	H one hundred
+GPU	g p u
+GPU	gpu
+GPU's	gpu's
+GPUs	gpus
+GPUs	g p u s
+Grace Hopper	grace hopper
+GRPC	g r p c
+GRPC	grpc
+GRU	g r u
+GRU	gru
+GSK	g s k
+GSK	gsk
+GTC	g t c
+GTC	gtc
+GTX	g t x
+GTX	gtx
+GUI	gui
+GUI	g u i
+H.264	h two six four
+H.264	h two sixty four
+H.265	h two six five
+H.265	h two sixty five
+H100	h one hundred
 HBM3	hbm three
+HBM3e	hbm three e
 HDMI	h d m i
 HDMI	hdmi
+HDRI	hdri
 HEVC	h e v c
 HGX	h g x
+HGX	hgx
 HMD	Hmd
+Hopper GPU	hopper gpu
 HPC	h p c
 HQ	h q
 HSM	h s m
 HT	h t
+HTML	html
 HTTP	h t t p
 HTTPS	h t t p s
+Huang	huang
 HuggingFace	hugging face
 HuggingFace	hugging phase
 HuggingFace	hugging fas
-IBM	ibm
+hyperscale	hyper scale
 I/O	i o
+i3	i three
+i5	i five
+i7	i seven
+i9	i nine
+IBM	ibm
 ICMP	i c m p
 IEC	i e c
 IEEE	i triple e
@@ -253,120 +366,168 @@ IGMP	i g m p
 IGX	i g x
 IISc	i i s c
 IIT	i i t
+InfiniBand	infiniband
 INT8	int eight
+iOS	ios
+IoT	i o t
 IP	i p
+iPhone	iphone
 IPSec	i p sec
+Isaac SIM	isaac sim
 ISC	i s c
 ISI	i s i
-InfiniBand	infiband
-IoT	i o t
-Isaac SIM	isaac sim
-JSON	j son
+ISO	iso
+iTPMS	i t p m s
 JavaScript	java script
 JavaScript	javascript
+Jensen	jensen
+Jetson	jetson
+JSON	j son
 Jupyter	jupiter
+K80	k eighty
 KVM	k v m
-K80	k80
-Llama	llama
-Llama 2	llama two
-Llama 2 70B	llama two seventy
 L&M	ln m
 L&M	l and m
+L40	l fourty
+L40	l forty
+L40S	l fourty s
+L40S	l forty s
 LFP	lee fei po
 LFP	life po
-LGA	l g a	-1.1
-LLC	l l c
-LLM	l l m
-LLMs	l l ms
-LLP	l l p
-LSTM	l s t m
-LT	l t
-LTT	l t t
+LGA	l g a
+LGA	lga
+Lidar	lidar
 LinkedIn	linked in
 LinkedIn	linkedin
+Llama	llama
+Llama 2	llama two
+Llama 2 70B	llama two seventy b
+LLC	l l c
+LLC	llc
+LLM	l l m
+LLM	llm
+LLMs	l l ms
+LLMs	llms
+LLP	l l p
+LLP	llp
+LPDDR	lpddr
+LSTM	l s t m
+LSTM	lstm
+LT	l t
+LT	lt
+LTT	l t t
+LTT	ltt
+MAC layer	mac layer
+MacBook	mac book
+MacBook	macbook
+MacBook Pro	mac book pro
+Magnum IO	magnum io
+Max-Q	max q
 MB	m b
+MB	mb
 MCB	m c b
+MCB	mcb
 MCCB	m c c b
+MCCB	mccb
 MCP	m c p
+MCP	mcp
 MDM	m d m
+MDM	mdm
+Mellanox	mellanox
 MFA	m f a
 MFA	mfa
 MGX	mg x
 MGX	mgx
+Million-X	million x
 MIT	m i t
+MIT	mit
 ML	m l
-MLPerf	m l perf
+ML	ml
+MLOps	mlops
+MLPerf	mlperf
+MoCap	mo cap
 MONAI	monai
+mr.	mister
+mrs.	misses
 MWC	m w c
 MXNet	m x net
-MacBook	mac book
-MacBook	macbook
-MacBook Pro	mac book pro
-Max-Q	max q
-Million-X	million x
-MoCap	mo cap
+N7	n seven
 NC	n c
+NeMo	nemo
+NGC	n g c
+Ni-CD	knee cad
 NIC	nic
 NIC	n i c
-NGC	n g c
+NiMH	n i m h
 NLP	n l p
 NLU	n l u
 NMC	n m c
 NO	n o
+NoSQL	no s q l
+NoSQL	no sql
+Nova Orin	nova orin
 NTP	n t p
-NVIDIA's	nvidia's
-NVLink	mv link
-NVLink	nv link
-NVLink	nvlink
+NV switches	mv switches
 NVDec	n v dec
 NVDec	n v deck
 NVEnc	n v enc
 NVEnc	n v inc
 NVEnc	n v ink
-NVMe	n v m e
-Ni-CD	knee cad
-NiMH	n i m h
-NoSQL	no s q l
-NoSQL	no sql
-Nova Orin	nova orin
+NVIDIA	nvidia
 Nvidia A100	nvidia a hundred
 Nvidia A100	nvidia a one hundred
 Nvidia A30	nvidia a thirty
 Nvidia A40	nvidia a forty
 NVIDIA TAO	nvidia tau
-NV switches	mv switches
-N7	n seven
+NVIDIA TAO	nvidia tao
+NVIDIA's	nvidia's
+NVLink	mv link
+NVLink	nv link
+NVLink	nvlink
+NVMe	n v m e
 OCI	o c i
+OCI	oci
 OEM	o e m
+OEM	oem
 OEMs	o e ms
+OEMs	oems
 OLTC	o l t c
+OLTC	oltc
 OLTP	o l t p
+OLTP	oltp
 Omniverse	omnibus
 Omniverse	omnivores
+Omniverse	omniverse
+on TikTok	on tick tock
 ONNX	o n n x
-OVX	o v x
-OpEx	op ex
-OpEx	opex
+OpenAI	openai
 OpenCL	open c l
 OpenGL	open g l
 OpenUSD	open usd
 OPenUSD	open u s d
 OpenXR	open xr
+OpEx	op ex
+OpEx	opex
+OVX	o v x
+OVX	ovx
 PageRank	pagerank
 PC	pc
 PCB	pcb
-PCBs	pcbs
+PCB	p c b
+PCB's	pcb's
 PCBA	pcba
 PCBA	pcb a
-PCB	p c b
+PCBs	pcbs
 PCI	p c i
-PCIe	p c i e	-1.1
+PCI	pci
+PCIe	p c i e
+PCIe	pcie
 PDF	p d f
+PDF	pdf
 Pegatron	pega tron
-Pegatron's 	pega ron's
+Pegatron's	pega ron's
+PetaFLOPS	petaflops
 PHEV	p h e v
-POP3	pop three
-PSO	p s o
 Photoshop	photo shop
 PhysX	fizz ex
 PhysX	fizz x
@@ -374,10 +535,12 @@ PhysX	phys ex
 PhysX	phys x
 PlayStation	play station
 PlayStation	playstation
+POP3	pop three
+PowerPoint	powerpoint
 Premiere Pro	premiere pro
-PetaFLOPS	petaflops
 ProVis	pro vis
 ProVis	provis
+PSO	p s o
 PyG	pi g
 PyG	py g
 PyTorch	pi torch
@@ -385,9 +548,14 @@ QCT	qct
 QCT	q c t
 QODA	q o d a
 QOS	q o s
+R&D	r and d
+RacerX	racer x
+Ray Tracing	ray tracing
 RCBO	r c b o
 RCCB	r c c b
+RDMA	rdma
 RDS	r d s
+READY Robotics	ready robotics
 RealityKit	reality kit
 RenderMan	render man
 RFP	r f p
@@ -400,8 +568,15 @@ RT	r t
 RTP	r t p
 RTX	r t x	-1.1
 RTX ON	r t x on
+RTX	r t x
+RTX	rtx
+RTX	our tx
+RTX 4060	rtx four thousand sixty
+RTX 4060 Ti	rtx four thousand sixty ti
 RTX Off	r t x off
-RacerX	racer x
+RTX ON	r t x on
+RunUSD	run usd
+runUSD	runn usd
 Ryzen 2	rye zen two
 Ryzen 3	rye zen three
 Ryzen 5	rye zen five
@@ -409,22 +584,27 @@ Ryzen 7	rye zen seven
 Ryzen 9	rye zen nine
 S&P	s and p
 S3	s three
+SaaS	saas
 SAE	s a e
 SDK	s d k
 SDXL	sd xl
 SDXL	sd x l
 SDXL	sd exl
 SEO	s e o
+ServiceNow	service now
+sFTP	s f t p
 SFU	s f u
 SHIELD TV	shield tv
-SIM	sim
+SideFX	sde fx
+SideFX	sde f x
+SideFX	sidefx
 SIGGRAPH	sig graph
 SIGGRAPH	siggraph
 SIGGRAPH	si graf
 SIGGRAPH	si graph
 SIGGRAPH	si graff
-SideFX	sde fx
-SideFX	sde f x
+SIM	sim
+SimReady	sim ready
 SmartNIC	smart nic
 SmartNIC	smartnic
 SMPS	s m p s
@@ -433,47 +613,59 @@ SNMP	s n m p
 SNS	s n s
 SoftBank	softbank
 SOL	s o l
-Spectrum-X	spectrum x
 SPDT	s p d t
+Spectrum-4	spectrum four
+Spectrum-X	spectrum x
 SPN	s p n
 SPST	s p s t
 SQL	s q l
+SQL	sequel
 SQS	s q s
 SSD	s s d
 SSH	s s h
 SSL	s s l
 SSO	s s o
 SSR	s s r
+st.	saint
 Stable Diffusion XL	stable diffusion excel
-SUV	s u v
-SWG	s w g
-SaaS	saas
-ServiceNow	service now
+Stable Diffusion XL	stable diffusion xl
 SuperCloud	super cloud
 SuperPOD	super pod
-System/360 	system three sixty
+SUV	s u v
+SUV	suv
+SWG	s w g
+SXM	sxm
+SXM	s x m
+System/360	system three sixty
+System/360	system three hundred and sixty
 TCO	t c o
 TCO	tco
 TCP	t c p
 TCP/IP	t c p i p
+TCP	tcp
+TCP/IP	tcp ip
+Telnet	tell net
+TensorRT	tensor rt
+TensorRT	tensor r t
 TFTP	t f t p
+Tick-Tock	tick tock
+TikTok app	tick tock app
+TikTok is	tick tock is
 TJ	t j
 TOS	t o s
+Toy Jensen	toy jensen
 TPM	t p m
 TPMS	t p m s
 TPN	t p n
 TSL	t s l
 TSMC	t s m c
+TSMC	tsmc
 TTS	t t s
-Telnet	tell net
-TensorRT	tensor r t
-tensorRT	tensor rt
-Tick-Tock	tick tock
-TikTok app	tick tock app
-TikTok is	tick tock is
+20x. 20x	twenty x twenty x
 UDP	u d p
 UEFI	u e f i
 UFI	u f i
+Unreal Engine 5	unreal engine five
 UPS	u p s
 USB	u s b
 USB	usb
@@ -481,6 +673,8 @@ USD	u s d
 USD	usd
 VAAPI	v a a p i
 VAAPI	v a api
+Vcc	v c c
+Vdd	v d d
 VDI	v d i
 VDPAU	v d p a u
 VDPAU	v d paw
@@ -488,22 +682,25 @@ VDPAU	v d pow
 VFD	v f d
 VLAN	v lan
 VMware	vmware
+VoIP	v o i p
 VP	v p
 VPN	v p n
-Vcc	v c c
-Vdd	v d d
-VoIP	v o i p
 WFSA	w f s a
 WFST	w f s t
 Wi-Fi	wi fi
 Wi-Fi	wifi
-WPP wpp	wpp
+Workbench	workbench
+WPP	wpp
 WSL2	wsl two
+x1	x one
+x2	x two
+x8	x eight
+x86, 4 L40s	x eighty six four l forty s
+XFX	x f x
+XFX	x fx
 XLabs	xlabs
 XLabs	x labs
 XLabs	x lab
-XFX	x f x
-XFX	x fx
 XML	x m l
 Zen 2	zen two
 Zen 3	zen three
@@ -539,3 +736,4 @@ x1	x one
 x2	x two
 x8	x eight
 HBM3E	Hbm Three E
+Zen 4	zen four
