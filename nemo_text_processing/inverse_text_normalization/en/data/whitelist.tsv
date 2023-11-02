@@ -11,6 +11,7 @@
 4D	four d
 4G	four g
 4K	four k
+4K 64K	four k six four k
 5D	five d
 5G	five g
 6G	six g
@@ -27,6 +28,8 @@ AGX	a g x
 AI	a i
 AI	ai
 AI	ais
+AI's	ai's
+AlphaFold	alpha fold
 ALU	a l u
 AMD	a m d
 API	a p i
@@ -60,6 +63,10 @@ BGP	b g p
 BIOS	Bios
 BIOS	bios
 BIS	b i s
+BlueField-3	bluefield three
+BlueField-3s	bluefield three s
+BlueField-3 NIC	bluefield three nick
+BMW	bmw
 BSP	b s p
 BasePOD	base pod
 BasePOD	basepod
@@ -89,9 +96,26 @@ CNN	c n n
 COVID	covid
 COVID-19	covid nineteen
 CPU	c p u
+CPU	cpu
+CPUs	cpus
+CPU's	cpu's
+CPUs	c p u s
 CSO	c s o
 CSP	c s p
 CSS	c s s
+CSS	css
+cuBLAS	cue blah
+cuBLAS	cue blahs
+cuBLAS	q blahs
+CUDA	cuda
+cuDNN	c u d n n
+cuDNN	cue d n n
+cuDNN	q d n n
+cuOpt	cue opt
+cuOpt	q opt
+cuOpt	cuopt
+cuQuantum	cue quantum
+cuQuantum	q quantum
 CV	c v
 CVT	c v t
 CalTech	cal tech
@@ -109,6 +133,17 @@ DCDB	d c d b
 DDR	d d r
 DDoS	d d o s
 DDoS	d dos
+DDoS	ddos
+DDR	d d r
+DDR	ddr
+DeepMind	deep mind
+DeepMind	deepmind
+DeepSearch	deep search
+DeepStream	deep stream
+DeepStream	deepstream
+DENZA	denza
+DENZA N7 SUV	densa and seven suv
+DevOps	dev ops
 DGL	d g l
 DGX	d g x	-1.1
 DGX A100	d g x a hundred	-1.1
@@ -215,6 +250,15 @@ KVM	k v m
 LFP	lee fei po
 LFP	life po
 LGA	l g a	-1.1
+LGA	l g a
+LGA	lga
+LGA 1150	lga1150
+Lidar	lidar
+LinkedIn	linked in
+LinkedIn	linkedin
+Llama	llama
+Llama 2	llama two
+Llama 2 70B	llama two seventy b
 LLC	l l c
 LLM	l l m
 LLMs	l l ms
@@ -224,12 +268,23 @@ LT	l t
 LTT	l t t
 LinkedIn	linked in
 LinkedIn	linkedin
+LTT	ltt
+L40S L4s	l forty s l four s
+MAC layer	mac layer
+MacBook	mac book
+MacBook	macbook
+MacBook Pro	mac book pro
+Magnum IO	magnum io
+Max-Q	max q
 MB	m b
 MCB	m c b
 MCCB	m c c b
 MCP	m c p
 MDM	m d m
 MFA	m f a
+MFA	mfa
+MGX	mg x
+MGX	mgx
 MIT	m i t
 ML	m l
 MLPerf	m l perf
@@ -276,6 +331,11 @@ OpenCL	open c l
 OpenGL	open g l
 PCI	p c i
 PCIe	p c i e	-1.1
+PCI	pci
+PCIe	p c i e
+PCIe	pcie
+PCs	pcs
+PCIe x8	p c i e x eight
 PDF	p d f
 PHEV	p h e v
 POP3	pop three
@@ -306,6 +366,14 @@ RSS	r s s
 RT	r t
 RTP	r t p
 RTX	r t x	-1.1
+RTX	r t x
+RTX 4050 Ti	r t x forty fifty t i
+RTX 4050 Ti	r t x fourty fifty t i
+RTX	rtx
+RTX	our tx
+RTX 4060	rtx four thousand sixty
+RTX 4060 Ti	rtx four thousand sixty ti
+RTX Off	r t x off
 RTX ON	r t x on
 RTX Off	r t x off
 RacerX	racer x

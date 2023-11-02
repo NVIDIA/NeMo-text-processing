@@ -22,10 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import INPUT_CASED, 
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.token_parser import TokenParser
 
-def post_process(prediction):
-        prediction=prediction.replace(' %','%')
-        prediction=prediction.replace(' xqwerty','x')
-        return prediction
+
 
 class InverseNormalizer(Normalizer):
     """
@@ -148,7 +145,7 @@ class InverseNormalizer(Normalizer):
 
         Returns: written form
         """
-        return post_process(self.normalize(text=text, verbose=verbose))
+        return self.normalize(text=text, verbose=verbose)
 
 
 def parse_args():
@@ -211,8 +208,7 @@ if __name__ == "__main__":
 
         print("- Data: " + str(len(data)) + " sentences")
         prediction = inverse_normalizer.inverse_normalize_list(data, verbose=args.verbose)
-        for i in range(len(prediction)):
-            prediction[i]=post_process(prediction[i])
+        
         if args.output_file:
             write_file(args.output_file, prediction)
             print(f"- Denormalized. Writing out to {args.output_file}")

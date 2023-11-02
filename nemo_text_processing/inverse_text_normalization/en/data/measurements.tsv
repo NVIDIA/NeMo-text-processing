@@ -1,169 +1,192 @@
-°F	fahrenheit
-°C	celsius
-°F	degree fahrenheit
-°C	degree celsius
-K	kelvin
-km	kilometer
-m	meter
-cm	centimeter
-mm	millimeter
-ha	hectare
-mi	mile
-m²	square meter
-km²	square kilometer
-ft	foot
+ °F	fahrenheit
+ °C	celsius
+ °F	degree fahrenheit
+ °C	degree celsius
+ K	kelvin
+ km	kilometer
+ m	meter
+ cm	centimeter
+ mm	millimeter
+ ha	hectare
+ mi	mile
+ m²	square meter
+ km²	square kilometer
+ ft	foot
 %	percent
-hz	hertz
-kW	kilowatt
-kW	kilo watt
-kWh	kilo watt hour
-kWh	kilowatt hour
-Wh	watt hour
-W	watt
-hp	horsepower
-hp	horse power
-mg	milligram
-kg	kilogram
-ghz	gigahertz
-khz	kilohertz
-mhz	megahertz
-v	volt
-h	hour
-mc	mega coulomb
-s	seconds
-nm	nanometer
-rpm	revolution per minute
-min	minute
-mA	milli ampere
+ hz	hertz
+ KW	kilowatt
+ KW	kilo watt
+ KWh	kilo watt hour
+ KWh	kilowatt hour 
+ Wh	watt hour
+ W	watt
+ hp	horsepower
+ hp	horse power
+ mg	milligram
+ Kg	kilogram
+ Ghz	gigahertz
+ Khz	kilohertz
+ Mhz	megahertz
+ v	volt
+ h	hour
+ Mc	mega coulomb
+ s	seconds
+ nm	nanometer
+ rpm	revolution per minute
+ min	minute
+ mA	milli ampere
 %	per cent
-m³	cubic meter
-mph	mile per hour
-tW	tera watt
-mv	milli volt
-mW	megawatt
-mW	mega watt
-μm	micrometer
+ m³	cubic meter
+ mph	mile per hour
+ TW	tera watt
+ mv	milli volt
+ MW	megawatt
+ MW	mega watt
+ μm	micrometer
 "	inch
-cc	c c
-g	gram
-da	dalton
-atm	atmosphere
-ω	ohm
-db	decibel
-ps	peta second
-oz	ounce
-hl	hecto liter
-μg	microgram
-pg	petagram
-Kb	kilobit
-Mb	megabit
-Gb	gigabit
-Tb	terabit
-Pb	petabit
-ev	electron volt
-MB	megabyte
-KB	kilobyte
-GB	gigabyte
-TB	terabyte
-PB	peta byte
-bps	bit per second
-Kbps	kbps
-Mbps	mbps
-Tbps	tbps
-Kbps	kilobit per second
-Mbps	megabit per second
-Gbps	gigabit per second
-Kbps	kilo bit per second
-Mbps	mega bit per second
-Mbps	mega bit per second
-Tbps	terabit per second
-Tbps	tera bit per second
-Pbps	petabit per second
-Pbps	peta bit per second
-KBps	kilobyte per second
-KBps	kilo byte per second
-MBps	megabyte  per second
-MBps	mega byte  per second
-GBps	gigabyte per second
-GBps	giga byte per second
-TBps	terabyte per second
-TBps	tera byte per second
-PBps	petabyte per second
-PBps	peta byte per second
-bps	bits per second
-Kbps	kilobits per second
-Mbps	megabits per second
-Gbps	gigabits per second
-Kbps	kilo bits per second
-Mbps	mega bits per second
-Mbps	mega bits per second
-Tbps	terabits per second
-Tbps	tera bits per second
-Pbps	petabits per second
-Pbps	peta bits per second
-KBps	kilobytes per second
-KBps	kilo bytes per second
-MBps	megabytes per second
-MBps	mega bytes per second
-GBps	gigabytes per second
-GBps	giga bytes per second
-TBps	terabytes per second
-TBps	tera bytes per second
-PBps	petabytes per second
-PBps	peta bytes per second
-st	stone
-kl	kilo liter
-tj	tera joule
-kv	kilo volt
-mv	mega volt
-kn	kilo newton
-kn	kilonewton
-mm	megameter
-au	astronomical unit
-yd	yard
-rad	radian
-lm	lumen
-hs	hecto second
-mol	mole
-gpa	giga pascal
-ml	milliliter
-gW	gigawatt
-gW	gigaWatt
-A	ampere
-mA	mili ampere
-µA	micro ampere
-MA	mega ampere
-kt	knot
-kgf	kilogram force
-ng	nano gram
-ns	nanosecond
-ms	mega siemens
-bar	bar
-gl	giga liter
-μs	microsecond
-dA	deci ampere
-pa	pascal
-ds	deci second
-ms	milli second
-dm	deci meter
-dm³	cubic deci meter
-amu	atomic mass unit
-mf	mega farad
-bq	becquerel
-pb	petabit
-mm²	square millimeter
-cm²	square centimeter
-sq mi	square mile
-sq ft	square foot
-kpa	kilopascal
-cd	candela
-tl	tera liter
-ms	mega second
-mpa	megapascal
-pm	peta meter
-gWh	giga watt hour
-kcal	kilo calory
-gy	gray
-sv	sievert
-cwt	hundredweight
-cc	c c
+ cc	c c
+ g	gram
+ da	dalton
+ atm	atmosphere
+ ω	ohm
+ db	decibel
+ Ps	peta second
+ oz	ounce
+ hl	hecto liter
+ μg	microgram
+ Pg	petagram
+ Kb	kilobit
+ Mb	megabit
+ Gb	gigabit
+ Tb	terabit
+ Pb	petabit
+ ev	electron volt
+ MB	megabyte
+ KB	kilobyte
+ GB	gigabyte
+ TB	terabyte
+ PB	peta byte
+ MB	megabytes
+ KB	kilobytes
+ GB	gigabytes
+ TB	terabytes
+ PB	peta bytes
+ bps	bit per second
+ Kbps	kbps
+ Mbps	mbps
+ Tbps	tbps
+ Kbps	kilobit per second
+ Kbps	kilobits per second
+ Mbps	megabit per second 
+ Mbps	megabits per second
+ Gbps	gigabit per second
+ Gbps	gigabits per second
+ Kbps	kilo bit per second
+ Mbps	mega bit per second
+ Mbps	mega bit per second
+ Tbps	terabit per second
+ Tbps	tera bit per second
+ Pbps	petabit per second
+ Pbps	peta bit per second
+ KBps	kilobyte per second
+ KBps	kilo byte per second
+ MBps	megabyte  per second
+ MBps	mega byte  per second
+ GBps	gigabyte per second
+ GBps	giga byte per second
+ MBps	megabytes  per second
+ MBps	mega bytes  per second
+ GBps	gigabytes per second
+ GBps	giga bytes per second
+ TBps	terabyte per second
+ TBps	tera byte per second
+ TBps	terabytes per second
+ TBps	tera bytes per second
+ PBps	petabyte per second
+ PBps	peta byte per second
+ bps	bits per second
+ Kbps	kilobits per second
+ Mbps	megabits per second
+ Gbps	gigabits per second
+ Kbps	kilo bits per second
+ Mbps	mega bits per second
+ Mbps	mega bits per second
+ Tbps	terabits per second
+ Tbps	tera bits per second
+ Pbps	petabits per second
+ Pbps	peta bits per second
+ KBps	kilobytes per second
+ KBps	kilo bytes per second
+ MBps	megabytes per second
+ MBps	mega bytes per second
+ GBps	gigabytes per second
+ GBps	giga bytes per second
+ TBps	terabytes per second
+ TBps	tera bytes per second
+ PBps	petabytes per second
+ PBps	peta bytes per second
+ st	stone
+ Kl	kilo liter
+ Tj	tera joule
+ Kv	kilo volt
+ Mv	mega volt
+ Kn	kilo newton
+ Kn	kilonewton
+ Mm	megameter
+ au	astronomical unit
+ yd	yard
+ rad	radian
+ lm	lumen
+ hs	hecto second
+ mol	mole
+ Gpa	giga pascal
+ ml	milliliter
+ GW	gigawatt
+ GW	gigaWatt
+ GW	gigawatts
+ GW	gigaWatts
+ A	ampere
+ mA	mili ampere
+ µA	micro ampere
+ MA	mega ampere
+ kt	knot
+ kgf	kilogram force
+ ng	nano gram
+ ns	nanosecond
+ Ms	mega siemens
+ bar	bar
+ Gl	giga liter
+ μs	microsecond
+ dA	deci ampere
+ pa	pascal
+ ds	deci second
+ ms	milli second
+ dm	deci meter
+ dm³	cubic deci meter
+ amu	atomic mass unit
+ Mf	mega farad
+ bq	becquerel
+ Pb	petabit
+ mm²	square millimeter
+ cm²	square centimeter
+ sq mi	square mile
+ sq ft	square foot
+ Kpa	kilopascal
+ cd	candela
+ tl	tera liter
+ ms	mega second
+ Mpa	megapascal
+ Pm	peta meter
+ GWh	giga watt hour
+ Kcal	kilo calory
+ gy	gray
+ sv	sievert
+ cwt	hundredweight
+ cc	c c
+x	x
+ km/h	kilometers per hour
+ /km²	per square kilometer
+ kgf/cm²	kilograms force per square centimeter
+ /m²	per square meter
+ cwt	hundredweight
+ cc	c c
