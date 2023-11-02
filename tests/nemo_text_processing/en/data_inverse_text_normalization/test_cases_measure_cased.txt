@@ -33,7 +33,7 @@ twenty foot~20 ft
 point two meters~.2 m
 two square meters~2 m²
 eighteen feet~18 ft
-eighteen mega siemens~18 ms
+eighteen mega siemens~18 Ms
 eighteen ounces~18 oz
 eighteen point five kilometers~18.5 km
 eighteen point five two square kilometers~18.52 km²
@@ -46,7 +46,7 @@ eighteen point two two kilometers~18.22 km
 eighteen point zero kilometers~18.0 km
 eighteen point zero percent~18.0%
 eighteen square kilometers~18 km²
-eighteen thousand eight hundred giga watt hours~18800 gWh
+eighteen thousand eight hundred giga watt hours~18800 GWh
 eighteen thousand seven hundred hectares~18700 ha
 eight hectares~8 ha
 eight hundred eighty five astronomical units~885 au
@@ -55,10 +55,10 @@ eight hundred eighty kilobytes~880 KB
 eight hundred eighty kilometers~880 km
 eight hundred eighty nine feet~889 ft
 eight hundred eighty six kilometers~886 km
-eight hundred eighty two megawatts~882 mW
+eight hundred eighty two megawatts~882 MW
 eight hundred feet~800 ft
 eight hundred fifty five square kilometers~855 km²
-eight hundred fifty megahertz~850 mhz
+eight hundred fifty megahertz~850 Mhz
 eight hundred fifty meters~850 m
 eight hundred fifty nanometers~850 nm
 eight hundred fifty one meters~851 m
@@ -72,10 +72,10 @@ eight hundred gigabytes~800 GB
 eight hundred horsepower~800 hp
 eight hundred kilograms~800 Kg
 eight hundred kilo watt hours~800 KWh
-eight hundred kilowatts~800 kW
-eight hundred megahertz~800 mhz
+eight hundred kilowatts~800 KW
+eight hundred megahertz~800 Mhz
 eight hundred ninety four c c~894 cc
-eight hundred ninety kilowatts~890 kW
+eight hundred ninety kilowatts~890 KW
 eight hundred ninety millimeters~890 mm
 eight hundred ninety two square kilometers~892 km²
 eight hundred seventy horsepower~870 hp
@@ -89,7 +89,7 @@ eight hundred ten kilohertz~810 Khz
 eight hundred thirty eight point two millimeters~838.2 mm
 eight hundred thirty five kilometers~835 km
 eight hundred thirty kilohertz~830 Khz
-eight hundred thirty megawatts~830 mW
+eight hundred thirty megawatts~830 MW
 eight hundred thirty nine kilometers~839 km
 eight hundred thirty six meters~836 m
 eight hundred twenty feet~820 ft
@@ -106,7 +106,7 @@ eight point eight meters~8.8 m
 eight point eight miles~8.8 mi
 eight point five centimeters~8.5 cm
 eight point five five percent~8.55%
-eight point five megawatts~8.5 mW
+eight point five megawatts~8.5 MW
 eight point five meters~8.5 m
 eight point five two percent~8.52%
 eight point four four percent~8.44%
@@ -115,7 +115,7 @@ Fifty six point three per square kilometer~56.3 /km²
 Two hundred kilometers per hour~200 km/h
 Twenty eight kilograms force per square centimeter~28 kgf/cm²
 Forty two thousand two hundred fifty nine per square meter~42259 /m²
-Minus two thousand twelve kilo liters~-2012 kl
+Minus two thousand twelve kilo liters~-2012 Kl
 Minus sixty six kilograms~-66 Kg
 Two kilo watt hours~2 KWh
 One point o o o o two eight cubic deci meters~1.000028 dm³
@@ -145,7 +145,7 @@ Twenty foot~20 ft
 Point two meters~.2 m
 Two square meters~2 m²
 Eighteen feet~18 ft
-Eighteen mega siemens~18 ms
+Eighteen mega siemens~18 Ms
 Eighteen ounces~18 oz
 Eighteen point five kilometers~18.5 km
 Eighteen point five two square kilometers~18.52 km²
@@ -158,7 +158,7 @@ Eighteen point two two kilometers~18.22 km
 Eighteen point zero kilometers~18.0 km
 Eighteen point zero percent~18.0%
 Eighteen square kilometers~18 km²
-Eighteen thousand eight hundred giga watt hours~18800 gWh
+Eighteen thousand eight hundred giga watt hours~18800 GWh
 Eighteen thousand seven hundred hectares~18700 ha
 Eight hectares~8 ha
 Eight hundred eighty five astronomical units~885 au
@@ -167,10 +167,10 @@ Eight hundred eighty kilobytes~880 KB
 Eight hundred eighty kilometers~880 km
 Eight hundred eighty nine feet~889 ft
 Eight hundred eighty six kilometers~886 km
-Eight hundred eighty two megawatts~882 mW
+Eight hundred eighty two megawatts~882 MW
 Eight hundred feet~800 ft
 Eight hundred fifty five square kilometers~855 km²
-Eight hundred fifty megahertz~850 mhz
+Eight hundred fifty megahertz~850 Mhz
 Eight hundred fifty meters~850 m
 Eight hundred fifty nanometers~850 nm
 Eight hundred fifty one meters~851 m
@@ -184,10 +184,10 @@ Eight hundred gigabytes~800 GB
 Eight hundred horsepower~800 hp
 Eight hundred kilograms~800 Kg
 Eight hundred kilo watt hours~800 KWh
-Eight hundred kilowatts~800 kW
-Eight hundred megahertz~800 mhz
+Eight hundred kilowatts~800 KW
+Eight hundred megahertz~800 Mhz
 Eight hundred ninety four c c~894 cc
-Eight hundred ninety kilowatts~890 kW
+Eight hundred ninety kilowatts~890 KW
 Eight hundred ninety millimeters~890 mm
 Eight hundred ninety two square kilometers~892 km²
 Eight hundred seventy horsepower~870 hp
@@ -201,7 +201,7 @@ Eight hundred ten kilohertz~810 Khz
 Eight hundred thirty eight point two millimeters~838.2 mm
 Eight hundred thirty five kilometers~835 km
 Eight hundred thirty kilohertz~830 Khz
-Eight hundred thirty megawatts~830 mW
+Eight hundred thirty megawatts~830 MW
 Eight hundred thirty nine kilometers~839 km
 Eight hundred thirty six meters~836 m
 Eight hundred twenty feet~820 ft
@@ -219,7 +219,7 @@ Eight point eight meters~8.8 m
 Eight point eight miles~8.8 mi
 Eight point five centimeters~8.5 cm
 Eight point five five percent~8.55%
-Eight point five megawatts~8.5 mW
+Eight point five megawatts~8.5 MW
 Eight point five meters~8.5 m
 Eight point five two percent~8.52%
 Eight point four four percent~8.44%

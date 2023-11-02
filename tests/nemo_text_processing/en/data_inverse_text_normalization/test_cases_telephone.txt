@@ -20,4 +20,4 @@ x eighty six~x86
 x three eighty six~x386
 a thirty six~a 36
 a ten eighty p display~a 1080p display
-r t x forty fifty t i~RTX 4050ti
+r t x forty fifty t i~RTX 4050 Ti
