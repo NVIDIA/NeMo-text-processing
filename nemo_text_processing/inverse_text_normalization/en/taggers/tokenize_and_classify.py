@@ -93,7 +93,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.09)
-                | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.9)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.09)

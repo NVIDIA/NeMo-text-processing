@@ -49,6 +49,7 @@ class DecimalFst(GraphFst):
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
+            + pynutil.insert(" ")
         )
         optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
         graph = optional_integer + optional_fractional + optional_quantity
