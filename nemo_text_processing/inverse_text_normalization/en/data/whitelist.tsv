@@ -2,7 +2,6 @@
 1D	one d
 1G	one g
 1K	one k
-1x	one x
 2.5G	two point five g
 24/7	twenty four sevenths
 2D	two d
@@ -13,7 +12,7 @@
 4D	four d
 4G	four g
 4K	four k
-4k64k	four k six four k
+4K 64K	four k six four k
 5D	five d
 5G	five g
 6G	six g
@@ -190,6 +189,7 @@ DDR	d d r
 DDR	ddr
 DeepMind	deep mind
 DeepMind	deepmind
+DeepSearch	deep search
 DeepStream	deep stream
 DeepStream	deepstream
 DENZA	denza
@@ -396,6 +396,7 @@ LFP	lee fei po
 LFP	life po
 LGA	l g a
 LGA	lga
+LGA 1150	lga1150
 Lidar	lidar
 LinkedIn	linked in
 LinkedIn	linkedin
@@ -417,6 +418,7 @@ LT	l t
 LT	lt
 LTT	l t t
 LTT	ltt
+L40S L4s	l forty s l four s
 MAC layer	mac layer
 MacBook	mac book
 MacBook	macbook
@@ -438,7 +440,6 @@ MFA	m f a
 MFA	mfa
 MGX	mg x
 MGX	mgx
-Million-X	million x
 MIT	m i t
 MIT	mit
 ML	m l
@@ -522,6 +523,8 @@ PCI	p c i
 PCI	pci
 PCIe	p c i e
 PCIe	pcie
+PCs	pcs
+PCIe x8	p c i e x eight
 PDF	p d f
 PDF	pdf
 Pegatron	pega tron
@@ -569,6 +572,8 @@ RTP	r t p
 RTX	r t x	-1.1
 RTX ON	r t x on
 RTX	r t x
+RTX 4050 Ti	r t x forty fifty t i
+RTX 4050 Ti	r t x fourty fifty t i
 RTX	rtx
 RTX	our tx
 RTX 4060	rtx four thousand sixty
