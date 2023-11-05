@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ from parameterized import parameterized
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
-class TestCardinal:
+class TestDate:
     inverse_normalizer_mr = InverseNormalizer(lang='mr', cache_dir=CACHE_DIR, overwrite_cache=False)
 
-    @parameterized.expand(parse_test_case_file('mr/data_inverse_text_normalization/test_cases_cardinal.txt'))
+    @parameterized.expand(parse_test_case_file('mr/data_inverse_text_normalization/test_cases_date.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):

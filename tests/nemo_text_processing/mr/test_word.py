@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import pytest
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from parameterized import parameterized
@@ -19,12 +20,12 @@ from parameterized import parameterized
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
-class TestCardinal:
-    inverse_normalizer_mr = InverseNormalizer(lang='mr', cache_dir=CACHE_DIR, overwrite_cache=False)
+class TestWord:
+    inverse_normalizer_mr = InverseNormalizer(lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
 
-    @parameterized.expand(parse_test_case_file('mr/data_inverse_text_normalization/test_cases_cardinal.txt'))
+    @parameterized.expand(parse_test_case_file('mr/data_inverse_text_normalization/test_cases_word.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
-        pred = self.inverse_normalizer_mr.inverse_normalize(test_input, verbose=False)
+        pred = self.inverse_normalizer_en.inverse_normalize(test_input, verbose=False)
         assert pred == expected
