@@ -41,10 +41,9 @@ class CardinalFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
-        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
-        graph_tens = pynini.string_file(get_abs_path("data/numbers/tens.tsv"))
-        graph_thousands = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
+        graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv")).invert()
+        graph_tens = pynini.string_file(get_abs_path("data/numbers/tens.tsv")).invert()
 
         graph_hundred = pynini.cross("शे", "")
 
@@ -115,7 +114,7 @@ class CardinalFst(GraphFst):
         self.graph = (pynini.project(graph, "input")) @ graph
 
         optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("उणे", "\"-\"") + NEMO_SPACE, 0, 1
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"-\"") + NEMO_SPACE, 0, 1
         )
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
