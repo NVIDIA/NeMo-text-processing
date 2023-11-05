@@ -36,7 +36,7 @@ def get_quantity(decimal, cardinal_fst):
   numbers = cardinal_fst @ (
         pynutil.delete(pynini.closure("०")) + pynini.difference(NEMO_DIGIT, "०") + pynini.closure(NEMO_DIGIT)
     )
-  suffix_labels = load_labels('/content/thousands.tsv')
+  suffix_labels = load_labels(get_abs_path('/data/numbers/thousands.tsv'))
   suffix_labels = [x[0] for x in suffix_labels if x[0] != "हजार"]
   suffix = pynini.union(*suffix_labels).optimize()
 
@@ -61,7 +61,7 @@ class DecimalFst(GraphFst):
             graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
             decimal_word = pynini.cross("पूर्णांक","")
             optional_graph_negative = pynini.closure(
-                    pynutil.insert("negative: ") + pynini.cross("उणे", "\"true\"") + delete_extra_space, 0, 1,
+                    pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
                 )
             graph_integer = pynutil.insert("integer_part: \"") + pynini.closure(cardinal.graph, 0, 1) + pynutil.insert("\"") + NEMO_SPACE
             graph_decimal = graph_integer + delete_space + decimal_word

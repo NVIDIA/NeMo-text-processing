@@ -58,4 +58,3 @@ class TimeFst(GraphFst):
             final_graph = graph
             final_graph = self.add_tokens(final_graph)
             self.fst = final_graph.optimize()
-            # वाजून बारा मिनिटे
