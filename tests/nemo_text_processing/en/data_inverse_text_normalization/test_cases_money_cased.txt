@@ -5,14 +5,14 @@ Seventy five dollars sixty three~$75.63
 Twenty nine dollars fifty cents~$29.50
 Eleven dollars and fifty one cents~$11.51
 Nine hundred ninety three dollars and ninety two cents~$993.92
-Four hundred sixty billion won~₩460 billion
-Thirty billion yen~¥30 billion
-Two point five billion dollars~$2.5 billion
-Forty five billion dollars~$45 billion
-Fifty million dollars~$50 million
-Fifty billion dollars~$50 billion
-Zero point two million dollars~$0.2 million
-Fifteen point two billion dollars~$15.2 billion
+Four hundred sixty billion won~₩460 billion 
+Thirty billion yen~¥30 billion 
+Two point five billion dollars~$2.5 billion 
+Forty five billion dollars~$45 billion 
+Fifty million dollars~$50 million 
+Fifty billion dollars~$50 billion 
+Zero point two million dollars~$0.2 million 
+Fifteen point two billion dollars~$15.2 billion 
 One point six nine billion yuan~1.69 billion yuan
 One point four three six billion yuan~1.436 billion yuan
 Four million yuan~4 million yuan
@@ -50,5 +50,5 @@ One fifty five dollars~$155
 Fifteen hundred dollars~$1500
 Ninety nine hundred dollars~$9900
 Ninety nine hundred and fifteen dollars and one cent~$9915.01
-zero point two Million Dollars~$0.2 Million
+zero point two Million Dollars~$0.2 Million 
 One Cent~$0.01
