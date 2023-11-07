@@ -111,3 +111,7 @@ eight point five megawatts~8.5 MW
 eight point five meters~8.5 m
 eight point five two percent~8.52%
 eight point four four percent~8.44%
+eight point four four x~8.44x
+nine ninety eight percent~998%
+million x~million x
+one million x~1 million x

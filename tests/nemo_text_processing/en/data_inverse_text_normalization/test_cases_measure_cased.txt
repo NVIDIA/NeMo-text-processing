@@ -230,3 +230,7 @@ seventy two degrees fahrenheit~72 °F
 Seventy two Degrees Fahrenheit~72 °F
 two hundred seventy three kelvin~273 K
 Nine GigaBits per second~9 Gbps
+eight point four four x~8.44x
+nine ninety eight percent~998%
+million x~million x
+one million x~1 million x
