@@ -124,7 +124,7 @@ class NormalizerWithAudio(Normalizer):
         pred_text: Optional[str] = None,
         cer_threshold: float = -1,
         **kwargs,
-    ) -> str:
+    ) -> set:
         """
         Main function. Normalizes tokens from written to spoken form
             e.g. 12 kg -> twelve kilograms
