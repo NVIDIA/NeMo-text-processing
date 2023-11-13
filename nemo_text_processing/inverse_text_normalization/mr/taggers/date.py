@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +14,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
+from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     MINUS,
-    NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    capitalized_input_graph,
     delete_space,
     delete_extra_space
 )
@@ -32,10 +28,18 @@ from pynini.lib import pynutil
 
 
 class DateFst(GraphFst):
+    """
+    Finite State Transducer for classifying dates
+        e.g. दहा जानेवारी दोन हजार -> date { day: "१०" month: "जानेवारी" year: "२०००" preserve_order: true }
+        e.g. इसवी सन दोन हजार बावीस -> date { text: "इ.स." year: "२०२२" preserve_order: true }
+
+    Args:
+        cardinal: CardinalFst
+    """
     def __init__(self, cardinal: GraphFst):
         super().__init__(name='date', kind="classify")
         months = pynini.string_file(get_abs_path("data/date/months.tsv"))
-        dates = pynini.string_file(get_abs_path("data/date/dates.tsv"))
+        dates = pynini.string_file(get_abs_path("data/date/dates.tsv")).invert()
         prefixes = pynini.string_file(get_abs_path("data/date/prefixes.tsv"))
 
         YEAR_WEIGHT = 0.001

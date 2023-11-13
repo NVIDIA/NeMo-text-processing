@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 import pynini
 from nemo_text_processing.inverse_text_normalization.mr.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.inverse_text_normalization.mr.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.mr.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import GraphFst, delete_extra_space, delete_space
 from pynini.lib import pynutil
 
 
 class VerbalizeFinalFst(GraphFst):
     """
     Finite state transducer that verbalizes an entire sentence, e.g.
-    tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
+    tokens { name: "दुपारचे" } tokens { time { hours: "२" minutes: "३०" } } tokens { name: "वाजले" } tokens { name: "आहेत" } -> दुपारचे 0२:३० वाजले आहेत
     """
 
     def __init__(self):

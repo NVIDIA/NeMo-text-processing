@@ -1,3 +1,18 @@
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2015 and onwards Google, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import logging
 import os
 
@@ -8,7 +23,7 @@ from nemo_text_processing.inverse_text_normalization.mr.taggers.time import Time
 from nemo_text_processing.inverse_text_normalization.mr.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.mr.taggers.word import WordFst
 from nemo_text_processing.inverse_text_normalization.mr.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
     delete_extra_space,
@@ -17,6 +32,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from pynini.lib import pynutil
 
+
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence.
@@ -24,14 +40,17 @@ class ClassifyFst(GraphFst):
     More details to deployment at NeMo/tools/text_processing_deployment
 
     Args:
-
+        cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
+        overwrite_cache: set to True to overwrite .far files
+        whitelist: path to a file with whitelist replacements
+        input_case: accepting either "lower_cased" or "cased" input.
     """
     def __init__(
         self,
-        input_case: str = INPUT_LOWER_CASED,
         cache_dir: str = None,
         overwrite_cache: bool = False,
         whitelist: str = None,
+        input_case: str = INPUT_LOWER_CASED
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
