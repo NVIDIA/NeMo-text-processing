@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +13,17 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
 
+
 class DecimalFst(GraphFst):
+    """
+    Finite state transducer for verbalizing decimal
+        e.g. decimal { integer_part: "३००" fractional_part: "०३१" } -> ३००.०३१
+        e.g. decimal { negative: "true" integer_part: "७३" fractional_part: "५" quantity: "लाख" } -> -७३.५ लाख
+        e.g. decimal { integer_part: "००८" fractional_part: "५०" } -> ८.५०
+    """
     def __init__(self):
         super().__init__(name="decimal", kind="verbalize")
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)

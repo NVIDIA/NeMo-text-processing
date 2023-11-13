@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.en.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.mr.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.mr.verbalizers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.mr.verbalizers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.mr.verbalizers.date import DateFst
-from nemo_text_processing.text_normalization.mr.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):

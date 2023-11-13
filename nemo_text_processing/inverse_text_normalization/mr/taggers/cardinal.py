@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +14,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
+from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     MINUS,
-    NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    capitalized_input_graph,
     delete_space,
 )
 from pynini.lib import pynutil
@@ -33,10 +29,7 @@ from pynini.lib import pynutil
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
-        e.g.
-
-    Args:
-        input_case:
+        e.g. तेहतीस -> cardinal { integer: "३३" }
     """
 
     def __init__(self):
@@ -44,6 +37,7 @@ class CardinalFst(GraphFst):
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv")).invert()
         graph_tens = pynini.string_file(get_abs_path("data/numbers/tens.tsv")).invert()
+        graph_hundred_unique = pynini.string_file(get_abs_path("data/numbers/hundred.tsv")).invert()
 
         graph_hundred = pynini.cross("शे", "")
 
@@ -104,7 +98,7 @@ class CardinalFst(GraphFst):
         graph_higher_powers = (graph_arabs + delete_space + graph_crores + delete_space +
                                graph_lakhs + delete_space + graph_thousands)
 
-        graph = pynini.union(graph_higher_powers + delete_space + graph_hundreds, graph_zero,)
+        graph = pynini.union(graph_higher_powers + delete_space + graph_hundreds, graph_hundred_unique, graph_zero,)
 
         graph = graph @ pynini.union(
             pynutil.delete(pynini.closure("०")) + pynini.difference(NEMO_DIGIT,"०") + pynini.closure(NEMO_DIGIT), "०"

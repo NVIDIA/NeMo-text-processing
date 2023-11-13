@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +14,14 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.mr.graph_utils import NEMO_NOT_SPACE, GraphFst
 from pynini.lib import pynutil
 
 
 class WordFst(GraphFst):
     """
     Finite state transducer for classifying plain tokens, that do not belong to any special class. This can be considered as the default class.
-        e.g. sleep -> tokens { name: "sleep" }
+        e.g. चालणे  -> tokens { name: "चालणे" }
     """
 
     def __init__(self):

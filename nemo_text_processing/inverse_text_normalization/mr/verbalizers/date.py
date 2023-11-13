@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +14,16 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_DIGIT, GraphFst, delete_space, delete_extra_space
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import NEMO_NOT_QUOTE, NEMO_DIGIT, GraphFst, delete_space, delete_extra_space
 from pynini.lib import pynutil
+
 
 class DateFst(GraphFst):
     """
     Finite state transducer for verbalizing date, e.g.
-        date { month: "january" day: "5" year: "2012" preserve_order: true } -> february 5 2012
-        date { day: "5" month: "january" year: "2012" preserve_order: true } -> 5 february 2012
+        e.g. date { month: "जानेवारी" year: "२०००" preserve_order: true } -> जानेवारी २०००
+        e.g. date { day: "१५" month: "फेब्रुवारी" year: "२०२३" } -> १५ फेब्रुवारी २०२३
+        e.g. date { text: "इ.स.पू." year: "१९८५" preserve_order: true } -> इ.स.पू. १९८५
     """
 
     def __init__(self):
