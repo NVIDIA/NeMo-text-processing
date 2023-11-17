@@ -37,7 +37,7 @@ MODE="export"
 OVERWRITE_CACHE="True" # Set to False to re-use .far files
 FORCE_REBUILD="False" # Set to True to re-build docker file
 WHITELIST=None # Path to a whitelist file, if None the default will be used
-FAR_PATH="" # Path where the grammars should be written
+FAR_PATH=$(pwd) # Path where the grammars should be written
 SKIP_FAR_CREATION="False"
 
 for ARG in "$@"
