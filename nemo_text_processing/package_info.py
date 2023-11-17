@@ -14,8 +14,8 @@
 
 
 MAJOR = 0
-MINOR = 1
-PATCH = 8
+MINOR = 2
+PATCH = 2
 PRE_RELEASE = 'rc0'
 
 # Use the following formatting: (major, minor, patch, pre-release)
