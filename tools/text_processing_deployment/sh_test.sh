@@ -55,7 +55,7 @@ VERBALIZE_FAR=${CACHE_DIR}"/verbalize/verbalize.far"
 
 cp $CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/classify/
 cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/verbalize/
-WORK_DIR="tests/${LANGUAGE}"
+WORK_DIR="tests/nemo_text_processing/${LANGUAGE}"
 
 if [[ $MODE == "test_tn_grammars" ]]; then
   cd ${WORK_DIR} && bash test_sparrowhawk_normalization.sh
