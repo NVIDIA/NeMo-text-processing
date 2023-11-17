@@ -119,7 +119,7 @@ class InverseNormalizer(Normalizer):
         self.parser = TokenParser()
         self.lang = lang
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
-    
+
     def inverse_normalize_list(self, texts: List[str], verbose=False) -> List[str]:
         """
         NeMo inverse text normalizer
