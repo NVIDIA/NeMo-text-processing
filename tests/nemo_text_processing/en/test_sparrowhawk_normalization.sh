@@ -1,6 +1,5 @@
 #! /bin/sh
-
-PROJECT_DIR=${1:-"/workspace/tests"}
+TEST_DIR=${1:-"/workspace/tests/en"}
 
 runtest () {
   input=$1
@@ -22,94 +21,97 @@ runtest () {
 }
 
 testTNSpecialText() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_special_text.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_special_text.txt
   runtest $input
 }
 
 testTNCardinal() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_cardinal.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_cardinal.txt
   runtest $input
 }
 
 testTNDate() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_date.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_date.txt
   runtest $input
 }
 
 testTNDecimal() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_decimal.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_decimal.txt
   runtest $input
 }
 
 testTNRange() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_range.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_range.txt
   runtest $input
 }
 
 testTNSerial() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_serial.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_serial.txt
   runtest $input
 }
 
 #testTNRoman() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_roman.txt
+#  input=$TEST_DIR/data_text_normalization/test_cases_roman.txt
 #  runtest $input
 #}
 
 testTNElectronic() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_electronic.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_electronic.txt
   runtest $input
 }
 
 testTNFraction() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_fraction.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_fraction.txt
   runtest $input
 }
 
 testTNMoney() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_money.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_money.txt
   runtest $input
 }
 
 testTNOrdinal() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_ordinal.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_ordinal.txt
   runtest $input
 }
 
 testTNTelephone() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_telephone.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_telephone.txt
   runtest $input
 }
 
 testTNTime() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_time.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_time.txt
   runtest $input
 }
 
 testTNMeasure() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_measure.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_measure.txt
   runtest $input
 }
 
 testTNWhitelist() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_whitelist.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_whitelist.txt
   runtest $input
 }
 
 testTNWord() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_word.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_word.txt
   runtest $input
 }
 
 testTNAddress() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_address.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_address.txt
   runtest $input
 }
 
 testTNMath() {
-  input=$PROJECT_DIR/en/data_text_normalization/test_cases_math.txt
+  input=$TEST_DIR/data_text_normalization/test_cases_math.txt
   runtest $input
 }
+
+# Remove all command-line arguments
+shift $#
 
 # Load shUnit2
 . /workspace/shunit2/shunit2
