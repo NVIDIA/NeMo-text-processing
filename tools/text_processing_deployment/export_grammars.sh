@@ -87,12 +87,14 @@ if [[ ${FORCE_REBUILD,,} == "true" ]]; then
 fi
 
 find . -name "Makefile" -type f -delete
-bash docker/build.sh $FORCE_REBUILD
+
+
 
 
 
 if [[ ${MODE} == "test" ]]; then
   MODE=${MODE}_${GRAMMARS}
+  bash docker/build.sh $FORCE_REBUILD
 else
   exit 0
 fi
