@@ -23,6 +23,7 @@ LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt
 OVERWRITE_CACHE="False" # Set to False to re-use .far files
 WHITELIST=None # Path to a whitelist file, if None the default will be used
 FAR_PATH=$(pwd) # Path where the grammars should be written
+MODE="test_itn_grammars"
 
 for ARG in "$@"
 do
