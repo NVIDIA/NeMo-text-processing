@@ -23,7 +23,6 @@ from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.token_parser import TokenParser
 
 
-
 class InverseNormalizer(Normalizer):
     """
     Inverse normalizer that converts text from spoken to written form. Useful for ASR postprocessing.
@@ -121,7 +120,6 @@ class InverseNormalizer(Normalizer):
         self.lang = lang
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
     
-
     def inverse_normalize_list(self, texts: List[str], verbose=False) -> List[str]:
         """
         NeMo inverse text normalizer
@@ -208,7 +206,6 @@ if __name__ == "__main__":
 
         print("- Data: " + str(len(data)) + " sentences")
         prediction = inverse_normalizer.inverse_normalize_list(data, verbose=args.verbose)
-        
         if args.output_file:
             write_file(args.output_file, prediction)
             print(f"- Denormalized. Writing out to {args.output_file}")
