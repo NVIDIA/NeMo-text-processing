@@ -66,8 +66,8 @@ bash export_grammars.sh --MODE="export" --GRAMMARS=$GRAMMARS --LANGUAGE=$LANGUAG
 CLASSIFY_FAR=${CACHE_DIR}"/classify/tokenize_and_classify.far"
 VERBALIZE_FAR=${CACHE_DIR}"/verbalize/verbalize.far"
 
-cp CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/classify/
-cp VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/verbalize/
+cp $CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/classify/
+cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/verbalize/
 WORK_DIR="tests/${LANGUAGE}"
 
 if [[ $MODE == "test_tn_grammars" ]]; then
