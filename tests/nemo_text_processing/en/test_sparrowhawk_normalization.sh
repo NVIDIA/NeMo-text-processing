@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PROJECT_DIR=/workspace/tests
+PROJECT_DIR=${1:-"/workspace/tests"}
 
 runtest () {
   input=$1
@@ -112,4 +112,4 @@ testTNMath() {
 }
 
 # Load shUnit2
-. $PROJECT_DIR/../shunit2/shunit2
+. /workspace/shunit2/shunit2
