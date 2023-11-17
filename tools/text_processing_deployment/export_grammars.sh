@@ -63,7 +63,7 @@ echo "FORCE_REBUILD = $FORCE_REBUILD"
 echo "WHITELIST = $WHITELIST"
 
 
-if [[ ${OVERWRITE_CACHE,,} == "true" ]] || [[ ${OVERWRITE_CACHE,,} == "True" ]] ; then
+if [[ ${OVERWRITE_CACHE,,} == "true" ]] ; then
   OVERWRITE_CACHE="--overwrite_cache "
   else OVERWRITE_CACHE=""
 fi
