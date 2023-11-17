@@ -406,13 +406,13 @@ pipeline {
       stages {
         stage('L2: EN ITN Run Sparrowhawk test') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES=""  cd tools/text_processing_deployment && bash export_grammars.sh  --MODE=notest --OVERWRITE_CACHE=False --CACHE_DIR=${EN_TN_CACHE}/ITN --LANGUAGE="en"'
+            sh 'CUDA_VISIBLE_DEVICES=""  cd tools/text_processing_deployment && bash sh_test.sh  --MODE=notest --OVERWRITE_CACHE=False --FAR_PATH=${EN_TN_CACHE}/SH_ITN --LANGUAGE="en"'
 
           }
         }
         stage('L2: EN TN Run Sparrowhawk test') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES=""  cd tools/text_processing_deployment && bash export_grammars.sh --MODE=notest --OVERWRITE_CACHE=False --CACHE_DIR=${EN_TN_CACHE}/TN --GRAMMARS="tn_grammars" --LANGUAGE="en" '
+            sh 'CUDA_VISIBLE_DEVICES=""  cd tools/text_processing_deployment && bash sh_test.sh --MODE=notest --OVERWRITE_CACHE=False --FAR_PATH=${EN_TN_CACHE}/SH_TN --GRAMMARS="tn_grammars" --LANGUAGE="en" '
           }
         }
 

@@ -18,9 +18,11 @@ MODE=${1:-"export"}
 LANGUAGE=${2:-"en"}
 INPUT_CASE=${3:-"lower_cased"}
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
-: ${CLASSIFY_DIR:="$SCRIPT_DIR/../$LANGUAGE/classify"}
-: ${VERBALIZE_DIR:="$SCRIPT_DIR/../$LANGUAGE/verbalize"}
-: ${CMD:=${4:-"/bin/bash"}}
+GRAMMAR_DIR=${4:-${SCRIPT_DIR}"/.."}
+
+: ${CLASSIFY_DIR:="$GRAMMAR_DIR/$LANGUAGE/classify"}
+: ${VERBALIZE_DIR:="$GRAMMAR_DIR/$LANGUAGE/verbalize"}
+: ${CMD:=${5:-"/bin/bash"}}
 
 MOUNTS=""
 MOUNTS+=" -v $CLASSIFY_DIR:/workspace/sparrowhawk/documentation/grammars/en_toy/classify"

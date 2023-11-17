@@ -34,11 +34,9 @@ GRAMMARS="itn_grammars" # tn_grammars
 INPUT_CASE="lower_cased" # cased
 LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi'} supports ITN only
 MODE="export"
-OVERWRITE_CACHE="True" # Set to False to re-use .far files
-FORCE_REBUILD="False" # Set to True to re-build docker file
+OVERWRITE_CACHE="False" # Set to False to re-use .far files
 WHITELIST=None # Path to a whitelist file, if None the default will be used
-FAR_PATH="" # Path where the grammars should be written
-SKIP_FAR_CREATION="False"
+FAR_PATH=$(pwd) # Path where the grammars should be written
 
 for ARG in "$@"
 do
@@ -54,7 +52,6 @@ done
 
 CACHE_DIR=${FAR_PATH}/${LANGUAGE}
 echo "GRAMMARS = $GRAMMARS"
-echo "MODE = $MODE"
 echo "LANGUAGE = $LANGUAGE"
 echo "INPUT_CASE = $INPUT_CASE"
 echo "CACHE_DIR = $CACHE_DIR"
@@ -62,39 +59,19 @@ echo "OVERWRITE_CACHE = $OVERWRITE_CACHE"
 echo "FORCE_REBUILD = $FORCE_REBUILD"
 echo "WHITELIST = $WHITELIST"
 
-
-if [[ ${OVERWRITE_CACHE,,} == "true" ]] || [[ ${OVERWRITE_CACHE,,} == "True" ]] ; then
-  OVERWRITE_CACHE="--overwrite_cache "
-  else OVERWRITE_CACHE=""
-fi
+bash export_grammars.sh --MODE="export" --GRAMMARS=$GRAMMARS --LANGUAGE=$LANGUAGE --INPUT_CASE=$INPUT_CASE \
+      --FAR_PATH=$FAR_PATH  --CACHE_DIR=$CACHE_DIR --OVERWRITE_CACHE=$OVERWRITE_CACHE --FORCE_REBUILD=$FORCE_REBUILD \
+      --WHITELIST=$WHITELIST
 
 CLASSIFY_FAR=${CACHE_DIR}"/classify/tokenize_and_classify.far"
 VERBALIZE_FAR=${CACHE_DIR}"/verbalize/verbalize.far"
 
-if [[ -f $CLASSIFY_FAR ]] && [[ -f $VERBALIZE_FAR ]] && [[ ${OVERWRITE_CACHE} == "" ]]; then
-  SKIP_FAR_CREATION="True"
-  echo "Far files exists and OVERWRITE_CACHE is set to False"
+cp CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/classify/
+cp VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/verbalize/
+WORK_DIR="tests/${LANGUAGE}"
+
+if [[ $MODE == "test_tn_grammars" ]]; then
+  CMD="cd ${WORK_DIR} && bash test_sparrowhawk_normalization.sh"
+elif [[ $MODE == "test_itn_grammars" ]]; then
+  CMD="cd ${WORK_DIR} && bash test_sparrowhawk_inverse_text_normalization${INPUT_CASE}"
 fi
-
-if [[ ${SKIP_FAR_CREATION} != "True" ]]; then
-  python3 pynini_export.py --output_dir=${FAR_PATH} --grammars=${GRAMMARS} --input_case=${INPUT_CASE} \
-    --language=${LANGUAGE} --cache_dir=${CACHE_DIR} --whitelist=${WHITELIST} ${OVERWRITE_CACHE} || exit 1
-fi
-
-if [[ ${FORCE_REBUILD,,} == "true" ]]; then
-  FORCE_REBUILD="--no-cache"
-  else FORCE_REBUILD=""
-fi
-
-find . -name "Makefile" -type f -delete
-bash docker/build.sh $FORCE_REBUILD
-
-
-
-if [[ ${MODE} == "test" ]]; then
-  MODE=${MODE}_${GRAMMARS}
-else
-  exit 0
-fi
-
-bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE $FAR_PATH
