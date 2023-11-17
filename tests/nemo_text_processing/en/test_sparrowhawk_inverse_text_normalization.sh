@@ -81,4 +81,4 @@ testITNWord() {
 shift $#
 
 # Load shUnit2
-. /workspace/tests/../shunit2/shunit2
+. /workspace/shunit2/shunit2
