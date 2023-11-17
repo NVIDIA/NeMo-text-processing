@@ -57,7 +57,7 @@ cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/verbalize
 WORK_DIR="tests/${LANGUAGE}"
 
 if [[ $MODE == "test_tn_grammars" ]]; then
-  CMD="cd ${WORK_DIR} && bash test_sparrowhawk_normalization.sh"
+  cd ${WORK_DIR} && bash test_sparrowhawk_normalization.sh
 elif [[ $MODE == "test_itn_grammars" ]]; then
-  CMD="cd ${WORK_DIR} && bash test_sparrowhawk_inverse_text_normalization${INPUT_CASE}"
+  cd ${WORK_DIR} && bash test_sparrowhawk_inverse_text_normalization${INPUT_CASE}
 fi
