@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,25 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script compiles and exports WFST-grammars from nemo_text_processing, builds C++ production backend Sparrowhawk (https://github.com/google/sparrowhawk) in docker,
-# plugs grammars into Sparrowhawk and returns prompt inside docker.
-# For inverse text normalization run:
-#       bash export_grammars.sh --GRAMMARS=itn_grammars --LANGUAGE=en
-#       echo "two dollars fifty" | ../../src/bin/normalizer_main --config=sparrowhawk_configuration.ascii_proto
-# For text normalization run:
-#       bash export_grammars.sh --GRAMMARS=tn_grammars --LANGUAGE=en
-#       echo "\$2.5" | ../../src/bin/normalizer_main --config=sparrowhawk_configuration.ascii_proto
-#
-# To test TN grammars, run:
-#       bash export_grammars.sh --GRAMMARS=tn_grammars --LANGUAGE=en --MODE=test
-#
-# To test ITN grammars, run:
-#       bash export_grammars.sh --GRAMMARS=itn_grammars --LANGUAGE=en --MODE=test
+# This script runs the CI/CD tests for Sparrowhawk. It calls export_grammars.sh to create the grammars.
+
 
 GRAMMARS="itn_grammars" # tn_grammars
 INPUT_CASE="lower_cased" # cased
 LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi'} supports ITN only
-MODE="export"
 OVERWRITE_CACHE="False" # Set to False to re-use .far files
 WHITELIST=None # Path to a whitelist file, if None the default will be used
 FAR_PATH=$(pwd) # Path where the grammars should be written
