@@ -32,6 +32,7 @@ digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
 tens = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 tens_one = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens_one.tsv")))
+tens_eight = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens_eight.tsv")))
 hundreds = pynini.invert(pynini.string_file(get_abs_path("data/numbers/hundreds.tsv")))
 
 
@@ -83,7 +84,8 @@ class CardinalFst(GraphFst):
         # double digit
         graph_tens = teen
         graph_tens |= tens + (pynutil.delete('0') | graph_digit)
-        graph_tens |= tens_one
+        graph_tens |= pynutil.add_weight(tens_one, -0.01)
+        graph_tens |= pynutil.add_weight(tens_eight, -0.01)
 
         self.tens = graph_tens.optimize()
 

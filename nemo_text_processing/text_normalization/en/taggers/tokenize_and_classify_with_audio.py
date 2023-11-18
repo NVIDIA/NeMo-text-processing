@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
@@ -56,6 +55,7 @@ from nemo_text_processing.text_normalization.en.verbalizers.roman import RomanFs
 from nemo_text_processing.text_normalization.en.verbalizers.telephone import TelephoneFst as vTelephone
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTime
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWord
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
 
@@ -93,9 +93,9 @@ class ClassifyFst(GraphFst):
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode='r')['tokenize_and_classify']
-            logging.info(f'ClassifyFst.fst was restored from {far_file}.')
+            logger.info(f'ClassifyFst.fst was restored from {far_file}.')
         else:
-            logging.info(f'Creating ClassifyFst grammars. This might take some time...')
+            logger.info(f'Creating ClassifyFst grammars. This might take some time...')
             # TAGGERS
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
@@ -221,7 +221,6 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f'ClassifyFst grammars are saved to {far_file}.')
 
         # to remove normalization options that still contain digits and some special symbols
         # e.g., "P&E" -> {P and E, P&E}, "P & E" will be removed from the list of normalization options
