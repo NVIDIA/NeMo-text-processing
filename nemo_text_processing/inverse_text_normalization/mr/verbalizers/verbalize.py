@@ -29,11 +29,10 @@ class VerbalizeFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="verbalize", kind="verbalize")
-        cardinal = CardinalFst()
-        cardinal_graph = cardinal.fst
-        decimal_graph = DecimalFst(cardinal).fst
+        cardinal_graph = CardinalFst().fst
+        decimal_graph = DecimalFst().fst
         time_graph = TimeFst().fst
-        date_graph = DateFst(cardinal).fst
+        date_graph = DateFst().fst
         graph = (
             cardinal_graph
             | decimal_graph

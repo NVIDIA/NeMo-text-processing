@@ -43,8 +43,8 @@ class DateFst(GraphFst):
         prefixes = pynini.string_file(get_abs_path("data/date/prefixes.tsv"))
 
         YEAR_WEIGHT = 0.001
-        month_graph = pynutil.insert("month: \"") + months + pynutil.insert("\"")
-        day_graph = pynutil.insert("day: \"") + dates + pynutil.insert("\"")
+        month_graph = pynutil.insert("month: \"") + months + pynutil.insert("\" ")
+        day_graph = pynutil.insert("day: \"") + dates + pynutil.insert("\" ")
         year_graph = cardinal.graph
         graph_year = (
                 delete_extra_space
