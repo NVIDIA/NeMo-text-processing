@@ -14,7 +14,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.mr.graph_utils import NEMO_NOT_QUOTE, NEMO_DIGIT, GraphFst, delete_space, delete_extra_space
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+)
 from pynini.lib import pynutil
 
 
@@ -78,9 +84,9 @@ class DateFst(GraphFst):
             + delete_space
         )
 
-        final_graph = ((graph_mdy | year | graph_dmy | graph_fy) + delete_space + optional_preserve_order
-                       |(graph_mdy | year | graph_dmy | graph_fy) + delete_space + optional_preserve_order
-                       )
+        final_graph = (graph_mdy | year | graph_dmy | graph_fy) + delete_space + optional_preserve_order | (
+            graph_mdy | year | graph_dmy | graph_fy
+        ) + delete_space + optional_preserve_order
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

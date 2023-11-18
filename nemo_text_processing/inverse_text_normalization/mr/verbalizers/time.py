@@ -31,6 +31,7 @@ class TimeFst(GraphFst):
             e.g. time { hours: "११" minutes: "३०" } -> ११:३०
             e.g. time { hours: "८" minutes: "१५" } -> ०८:१५
         """
+
     def __init__(self):
         super().__init__(name="time", kind="verbalize")
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("०") + NEMO_DIGIT)

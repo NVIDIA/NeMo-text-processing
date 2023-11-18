@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     MINUS,
     NEMO_DIGIT,
@@ -23,6 +22,7 @@ from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     GraphFst,
     delete_space,
 )
+from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
 from pynini.lib import pynutil
 
 
@@ -43,65 +43,58 @@ class CardinalFst(GraphFst):
 
         graph_hundred_component = pynini.union(graph_digits + graph_hundred, pynutil.insert("०"))
         graph_hundred_component += delete_space
-        graph_hundred_component += pynini.union(
-            pynutil.insert("००"),
-            graph_tens ,
-            pynutil.insert("०") + graph_digits
-        )
+        graph_hundred_component += pynini.union(pynutil.insert("००"), graph_tens, pynutil.insert("०") + graph_digits)
 
         graph_hundred_component_at_least_one_non_zero_digit = graph_hundred_component @ (
             pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "०") + pynini.closure(NEMO_DIGIT)
         )
-        self.graph_hundred_component_at_least_one_non_zero_digit = (graph_hundred_component_at_least_one_non_zero_digit)
+        self.graph_hundred_component_at_least_one_non_zero_digit = graph_hundred_component_at_least_one_non_zero_digit
 
         # eleven hundred -> 1100 etc form
         graph_hundred_as_thousand = graph_tens + graph_hundred
         graph_hundred_as_thousand += delete_space + pynini.union(
-            pynutil.insert("००"),
-            graph_tens ,
-            pynutil.insert("०") + graph_digits
+            pynutil.insert("००"), graph_tens, pynutil.insert("०") + graph_digits
         )
 
         graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
 
-        graph_two_digit_component = pynini.union(
-            pynutil.insert("००"),
-            graph_tens ,
-            pynutil.insert("०") + graph_digits
-        )
+        graph_two_digit_component = pynini.union(pynutil.insert("००"), graph_tens, pynutil.insert("०") + graph_digits)
 
         graph_two_digit_component_at_least_one_non_zero_digit = graph_two_digit_component @ (
             pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "०") + pynini.closure(NEMO_DIGIT)
         )
-        self.graph_two_digit_component_at_least_one_non_zero_digit = graph_two_digit_component_at_least_one_non_zero_digit
+        self.graph_two_digit_component_at_least_one_non_zero_digit = (
+            graph_two_digit_component_at_least_one_non_zero_digit
+        )
 
         graph_thousands = pynini.union(
             graph_two_digit_component_at_least_one_non_zero_digit + delete_space + pynutil.delete("हजार"),
-            pynutil.insert("००", weight=0.1)
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_lakhs = pynini.union(
             graph_two_digit_component_at_least_one_non_zero_digit + delete_space + pynutil.delete("लाख"),
-            pynutil.insert("००", weight=0.1)
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_crores = pynini.union(
             graph_two_digit_component_at_least_one_non_zero_digit + delete_space + pynutil.delete("कोटी"),
-            pynutil.insert("००", weight=0.1)
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_arabs = pynini.union(
             graph_two_digit_component_at_least_one_non_zero_digit + delete_space + pynutil.delete("अब्ज"),
-            pynutil.insert("००", weight=0.1)
+            pynutil.insert("००", weight=0.1),
         )
 
-        graph_higher_powers = (graph_arabs + delete_space + graph_crores + delete_space +
-                               graph_lakhs + delete_space + graph_thousands)
+        graph_higher_powers = (
+            graph_arabs + delete_space + graph_crores + delete_space + graph_lakhs + delete_space + graph_thousands
+        )
 
         graph = pynini.union(graph_higher_powers + delete_space + graph_hundreds, graph_hundred_unique, graph_zero,)
 
         graph = graph @ pynini.union(
-            pynutil.delete(pynini.closure("०")) + pynini.difference(NEMO_DIGIT,"०") + pynini.closure(NEMO_DIGIT), "०"
+            pynutil.delete(pynini.closure("०")) + pynini.difference(NEMO_DIGIT, "०") + pynini.closure(NEMO_DIGIT), "०"
         )
         graph = graph.optimize()
 

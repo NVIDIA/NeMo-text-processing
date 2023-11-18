@@ -26,7 +26,9 @@ from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
-NEMO_MARATHI_DIGITS = "\u0966" + "\u0967" + "\u0968" + "\u0969" + "\u096A" + "\u096B" + "\u096C" + "\u096D" + "\u096E" + "\u096F"
+NEMO_MARATHI_DIGITS = (
+    "\u0966" + "\u0967" + "\u0968" + "\u0969" + "\u096A" + "\u096B" + "\u096C" + "\u096D" + "\u096E" + "\u096F"
+)
 NEMO_DIGIT = pynini.union(*NEMO_MARATHI_DIGITS).optimize()
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00A0"

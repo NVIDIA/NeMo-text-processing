@@ -14,7 +14,12 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.mr.graph_utils import NEMO_NOT_QUOTE, NEMO_DIGIT, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+)
 from pynini.lib import pynutil
 
 
@@ -23,6 +28,7 @@ class CardinalFst(GraphFst):
     Finite state transducer for verbalizing cardinal
         e.g. cardinal { negative: "-" integer: "३३६२००" } : -३३६२००
     """
+
     def __init__(self):
         super().__init__(name="cardinal", kind="verbalize")
 
@@ -37,13 +43,12 @@ class CardinalFst(GraphFst):
             1,
         )
         graph = (
-                pynutil.delete("integer:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_DIGIT,
-                                 1)  # Accepts at least one digit change nemo digit to whatever is relevant
-                + pynutil.delete("\"")
-                + delete_space
+            pynutil.delete("integer:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_DIGIT, 1)  # Accepts at least one digit change nemo digit to whatever is relevant
+            + pynutil.delete("\"")
+            + delete_space
         )
         # graph = optional_sign + graph # concatenates two properties
         graph = optional_sign + graph
