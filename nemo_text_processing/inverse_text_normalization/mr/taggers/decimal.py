@@ -61,8 +61,8 @@ class DecimalFst(GraphFst):
     """
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="decimal", kind="classify")
-        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
+        graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv")).invert()
         decimal_word = pynini.cross("पूर्णांक","")
         optional_graph_negative = pynini.closure(
                 pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
