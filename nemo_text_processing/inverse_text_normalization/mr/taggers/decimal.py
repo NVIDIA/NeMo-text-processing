@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path, load_labels
 from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     MIN_NEG_WEIGHT,
     MINUS,
@@ -25,6 +24,7 @@ from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     delete_extra_space,
     delete_space,
 )
+from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
 
@@ -37,13 +37,13 @@ def get_quantity(decimal, cardinal_fst):
     suffix = pynini.union(*suffix_labels).optimize()
 
     res = (
-      pynutil.insert("integer_part: \"")
-      + numbers
-      + pynutil.insert("\"")
-      + delete_extra_space
-      + pynutil.insert("quantity: \"")
-      + suffix
-      + pynutil.insert("\"")
+        pynutil.insert("integer_part: \"")
+        + numbers
+        + pynutil.insert("\"")
+        + delete_extra_space
+        + pynutil.insert("quantity: \"")
+        + suffix
+        + pynutil.insert("\"")
     )
     res |= decimal + delete_extra_space + pynutil.insert("quantity: \"") + (suffix | "हजार") + pynutil.insert("\"")
 
@@ -59,18 +59,28 @@ class DecimalFst(GraphFst):
         Args:
             cardinal: CardinalFst
     """
+
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="decimal", kind="classify")
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv")).invert()
-        decimal_word = pynini.cross("पूर्णांक","")
+        decimal_word = pynini.cross("पूर्णांक", "")
         optional_graph_negative = pynini.closure(
-                pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
-            )
-        graph_integer = pynutil.insert("integer_part: \"") + pynini.closure(cardinal.graph, 0, 1) + pynutil.insert("\"") + NEMO_SPACE
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
+        )
+        graph_integer = (
+            pynutil.insert("integer_part: \"")
+            + pynini.closure(cardinal.graph, 0, 1)
+            + pynutil.insert("\"")
+            + NEMO_SPACE
+        )
         graph_decimal = graph_integer + delete_space + decimal_word
 
-        graph_fractional = pynutil.insert("fractional_part: \"") + pynini.closure(delete_space + (graph_zero|graph_digits), 1) + pynutil.insert("\"")
+        graph_fractional = (
+            pynutil.insert("fractional_part: \"")
+            + pynini.closure(delete_space + (graph_zero | graph_digits), 1)
+            + pynutil.insert("\"")
+        )
         graph_decimal += graph_fractional
 
         final_graph_without_sign = graph_decimal
@@ -81,8 +91,8 @@ class DecimalFst(GraphFst):
         )
 
         quantity_graph = get_quantity(
-                final_graph_without_sign, cardinal.graph_hundred_component_at_least_one_non_zero_digit
-            )
+            final_graph_without_sign, cardinal.graph_hundred_component_at_least_one_non_zero_digit
+        )
         final_graph |= optional_graph_negative + quantity_graph
 
         final_graph = self.add_tokens(final_graph)

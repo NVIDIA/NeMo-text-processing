@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.mr.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.mr.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.mr.verbalizers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.mr.verbalizers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.mr.verbalizers.date import DateFst
-from nemo_text_processing.inverse_text_normalization.mr.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):
@@ -33,10 +33,5 @@ class VerbalizeFst(GraphFst):
         decimal_graph = DecimalFst().fst
         time_graph = TimeFst().fst
         date_graph = DateFst().fst
-        graph = (
-            cardinal_graph
-            | decimal_graph
-            | time_graph
-            | date_graph
-        )
+        graph = cardinal_graph | decimal_graph | time_graph | date_graph
         self.fst = graph

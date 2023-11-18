@@ -14,16 +14,16 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     MINUS,
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
+    delete_extra_space,
     delete_space,
-    delete_extra_space
 )
+from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
 from pynini.lib import pynutil
 
 
@@ -36,6 +36,7 @@ class DateFst(GraphFst):
     Args:
         cardinal: CardinalFst
     """
+
     def __init__(self, cardinal: GraphFst):
         super().__init__(name='date', kind="classify")
         months = pynini.string_file(get_abs_path("data/date/months.tsv"))
@@ -47,26 +48,21 @@ class DateFst(GraphFst):
         day_graph = pynutil.insert("day: \"") + dates + pynutil.insert("\" ")
         year_graph = cardinal.graph
         graph_year = (
-                delete_extra_space
-                + pynutil.insert("year: \"")
-                + pynutil.add_weight(year_graph, -YEAR_WEIGHT)
-                + pynutil.insert("\"")
+            delete_extra_space
+            + pynutil.insert("year: \"")
+            + pynutil.add_weight(year_graph, -YEAR_WEIGHT)
+            + pynutil.insert("\"")
         )
-        optional_graph_year = pynini.closure(graph_year, 0, 1, )
+        optional_graph_year = pynini.closure(graph_year, 0, 1,)
         graph_ad_bc = pynutil.insert("text: \"") + prefixes + delete_space + pynutil.insert("\"")
 
         graph_mdy = month_graph + (
-                (delete_extra_space + day_graph) | graph_year | (delete_extra_space + day_graph + graph_year)
+            (delete_extra_space + day_graph) | graph_year | (delete_extra_space + day_graph + graph_year)
         )
-        graph_dmy = (
-                day_graph
-                + delete_space
-                + month_graph
-                + optional_graph_year
-        )
+        graph_dmy = day_graph + delete_space + month_graph + optional_graph_year
         graph_year_prefix = graph_ad_bc + graph_year
 
-        final_graph = (graph_mdy | graph_dmy | graph_year_prefix)
+        final_graph = graph_mdy | graph_dmy | graph_year_prefix
         final_graph += pynutil.insert(" preserve_order: true")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
