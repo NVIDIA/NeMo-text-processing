@@ -33,7 +33,7 @@
 GRAMMARS="itn_grammars" # tn_grammars
 INPUT_CASE="lower_cased" # cased
 LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi'} supports ITN only
-MODE="export"
+MODE="export" # default is one of {'export', 'interactive', 'test', 'ci'}. Default "export"
 OVERWRITE_CACHE="True" # Set to False to re-use .far files
 FORCE_REBUILD="False" # Set to True to re-build docker file
 WHITELIST=None # Path to a whitelist file, if None the default will be used
@@ -65,7 +65,9 @@ echo "WHITELIST = $WHITELIST"
 
 if [[ ${OVERWRITE_CACHE,,} == "true" ]] ; then
   OVERWRITE_CACHE="--overwrite_cache "
-  else OVERWRITE_CACHE=""
+  SKIP_FAR_CREATION="True"
+else
+  OVERWRITE_CACHE=""
 fi
 
 CLASSIFY_FAR=${CACHE_DIR}"/classify/tokenize_and_classify.far"
@@ -92,11 +94,12 @@ find . -name "Makefile" -type f -delete
 
 
 
-if [[ ${MODE} == "test" ]]; then
+if [[ ${MODE} == "test" ]] || [[ ${MODE} == "interactive" ]]; then
   MODE=${MODE}_${GRAMMARS}
   bash docker/build.sh $FORCE_REBUILD
+  bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE $FAR_PATH
 else
   exit 0
 fi
 
-bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE $FAR_PATH
+

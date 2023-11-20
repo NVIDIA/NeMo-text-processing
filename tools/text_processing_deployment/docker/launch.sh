@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-MODE=${1:-"export"}
+MODE=${1:-"interactive"}
 LANGUAGE=${2:-"en"}
 INPUT_CASE=${3:-"lower_cased"}
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
