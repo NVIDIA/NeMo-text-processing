@@ -40,5 +40,15 @@ testTNOrdinal() {
   runtest $input
 }
 
+testTNWhitelist() {
+  input=$PROJECT_DIR/fr/data_text_normalization/test_cases_whitelist.txt
+  runtest $input
+}
+
+testTNWord() {
+  input=$PROJECT_DIR/fr/data_text_normalization/test_cases_word.txt
+  runtest $input
+}
+
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2
