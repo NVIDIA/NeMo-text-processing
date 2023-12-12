@@ -47,6 +47,10 @@ delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
+delete_preserve_order = pynini.closure(
+    pynutil.delete(" preserve_order: true")
+    | (pynutil.delete(" field_order: \"") + NEMO_NOT_QUOTE + pynutil.delete("\""))
+)
 
 
 def generator_main(file_name: str, graphs: Dict[str, "pynini.FstLike"]):

@@ -57,12 +57,14 @@ class DateFst(GraphFst):
         )
         only_month = pynutil.insert("month: \"") + month + pynutil.delete('月') + pynutil.insert("\"")
         only_day = pynutil.insert("day: \"") + day + delete_day + pynutil.insert("\"")
+        # gh_1
         graph_only_date = only_year | only_month | only_day
 
         year_month = only_year + pynutil.insert(' ') + only_month
         month_day = only_month + pynutil.insert(' ') + only_day
-        graph_all = only_year + pynutil.insert(' ') + only_month + pynutil.insert(' ') + only_day
-        graph_combination = year_month | month_day | graph_all
+        graph_ymd = only_year + pynutil.insert(' ') + only_month + pynutil.insert(' ') + only_day
+        # gh_2
+        graph_combination = year_month | month_day | graph_ymd
 
         year_component = (
             pynutil.insert("year: \"")
@@ -72,8 +74,9 @@ class DateFst(GraphFst):
         )
         month_component = pynutil.insert("month: \"") + month + delete_sign + pynutil.insert("\"")
         day_component = pynutil.insert("day: \"") + day + pynutil.insert("\"")
+        # gp_3
         graph_sign = year_component + pynutil.insert(' ') + month_component + pynutil.insert(' ') + day_component
-
+        # gp_1+2+3
         graph_all = graph_only_date | graph_sign | graph_combination
 
         prefix = (
@@ -85,11 +88,13 @@ class DateFst(GraphFst):
             | pynini.accep('纪元前')
         )
         prefix_component = pynutil.insert("era: \"") + prefix + pynutil.insert("\"")
-        graph_prefix = prefix_component + pynutil.insert(' ') + (pynutil.add_weight(graph_all, -2.0))
+        # gp_prefix+(1,2,3)
+        graph_prefix = prefix_component + pynutil.insert(' ') + (graph_ymd | year_month | only_year)
 
         suffix_component = pynutil.insert("era: \"") + suffix + pynutil.insert("\"")
-        graph_suffix = (pynutil.add_weight(graph_all, -2.0)) + pynutil.insert(' ') + suffix_component
-
+        # gp_suffix +(1,2,3)
+        graph_suffix = (graph_ymd | year_month | only_year) + pynutil.insert(' ') + suffix_component
+        # gp_4
         graph_affix = graph_prefix | graph_suffix
 
         graph_suffix_year = (

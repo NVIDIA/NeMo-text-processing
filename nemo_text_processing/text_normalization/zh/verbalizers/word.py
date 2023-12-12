@@ -11,11 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst
+import pynini
+from nemo_text_processing.text_normalization.zh.graph_utils import (
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+)
 from pynini.lib import pynutil
 
 
-class Char(GraphFst):
+class WordFst(GraphFst):
     '''
         tokens { char: "你" } -> 你
     '''
@@ -24,4 +30,5 @@ class Char(GraphFst):
         super().__init__(name="char", kind="verbalize", deterministic=deterministic)
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
+        graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
         self.fst = graph.optimize()

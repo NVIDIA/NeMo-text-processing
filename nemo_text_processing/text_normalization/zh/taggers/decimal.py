@@ -72,19 +72,25 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
         cardinal_before_decimal = cardinal.just_cardinals
-        cardinal_after_decimal = pynini.string_file(get_abs_path("data/number/digit.tsv")) | pynini.closure(
-            pynini.cross('0', '零')
-        )
+        cardinal_after_decimal = pynini.string_file(get_abs_path("data/number/digit.tsv"))
+        zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
 
-        decimal_point = pynini.closure(pynutil.delete('.'), 0, 1)
-        graph_integer = pynutil.insert("integer_part: \"") + cardinal_before_decimal + pynutil.insert("\"")
+        graph_integer = pynutil.insert('integer_part: \"') + cardinal_before_decimal + pynutil.insert("\"")
+
         graph_fraction = (
-            pynutil.insert("fractional_part: \"") + pynini.closure(cardinal_after_decimal, 1) + pynutil.insert("\"")
+            pynutil.insert("fractional_part: \"")
+            + pynini.closure((pynini.closure(cardinal_after_decimal, 1) | (pynini.closure(zero, 1))), 1)
+            + pynutil.insert("\"")
         )
-        graph_decimal = graph_integer + decimal_point + pynutil.insert(" ") + graph_fraction
+        graph_decimal = graph_integer + pynutil.delete('.') + pynutil.insert(" ") + graph_fraction
+        self.regular_decimal = graph_decimal
 
         graph_sign = (
-            (pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"负\"")) + pynutil.insert(" "))
+            (
+                pynini.closure(pynutil.insert("negative: \"") + pynini.cross("-", "负"))
+                + pynutil.insert("\"")
+                + pynutil.insert(" ")
+            )
         ) | (
             (
                 pynutil.insert('negative: ')
@@ -97,12 +103,10 @@ class DecimalFst(GraphFst):
         graph_with_sign = graph_sign + graph_decimal
         graph_regular = graph_with_sign | graph_decimal
 
-        # graph_decimal_quantity = get_quantity(graph_decimal, cardinal.just_cardinals)
         graph_decimal_quantity = get_quantity(graph_decimal)
         graph_sign_quantity = graph_sign + graph_decimal_quantity
         graph_quantity = graph_decimal_quantity | graph_sign_quantity
 
-        # final_graph = graph_decimal | graph_sign | graph_decimal_quantity | graph_sign_quantity
         final_graph = graph_regular | graph_quantity
         self.decimal = final_graph
 

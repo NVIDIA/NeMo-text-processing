@@ -24,8 +24,8 @@ class OrdinalFst(GraphFst):
         tokens { ordinal { integer: "第一千万" } } -> 第一千万
     """
 
-    def __init__(self):
-        super().__init__(name="ordinal", kind="verbalize")
+    def __init__(self, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
         symbol = pynini.union("-", "~", "——", "—")
         dash = pynini.cross(symbol, "到")
