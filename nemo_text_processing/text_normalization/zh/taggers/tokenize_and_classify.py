@@ -91,4 +91,3 @@ class ClassifyFst(GraphFst):
 
             preprocessor = PreProcessorFst(remove_interjections=True, fullwidth_to_halfwidth=True,)
             self.fst = preprocessor.fst @ tagger
-
