@@ -35,7 +35,6 @@ class MeasureFst(GraphFst):
         cardinal = cardinal.numbers
         decimal = decimal.decimal_component
         sign_component = pynutil.delete("negative: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        integer_component = pynutil.delete("cardinal: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         unit_component = pynutil.delete("units: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
         graph_cardinal = (
