@@ -19,16 +19,12 @@ from nemo_text_processing.text_normalization.zh.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
-
-# from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbol
 from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessorFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
-
-# from nemo_text_processing.text_normalization.zh.taggers.char import Char
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
 from pynini.lib import pynutil
 
@@ -96,4 +92,3 @@ class ClassifyFst(GraphFst):
             preprocessor = PreProcessorFst(remove_interjections=True, fullwidth_to_halfwidth=True,)
             self.fst = preprocessor.fst @ tagger
 
-            # weight balance of car, decimal, fraction, and measure (make them all 1.05)
