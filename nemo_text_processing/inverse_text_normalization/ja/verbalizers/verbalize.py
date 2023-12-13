@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.jp.graph_utils import GraphFst
-from nemo_text_processing.inverse_text_normalization.jp.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.jp.verbalizers.date import DateFst
-from nemo_text_processing.inverse_text_normalization.jp.verbalizers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.jp.verbalizers.fraction import FractionFst
-from nemo_text_processing.inverse_text_normalization.jp.verbalizers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.jp.verbalizers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.jp.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.whitelist import WhiteListFst
 
 
 class VerbalizeFst(GraphFst):
