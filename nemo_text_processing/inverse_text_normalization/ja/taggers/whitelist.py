@@ -15,8 +15,8 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.jp.graph_utils import GraphFst
-from nemo_text_processing.inverse_text_normalization.jp.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.ja.utils import get_abs_path
 from pynini.lib import pynutil
 
 
