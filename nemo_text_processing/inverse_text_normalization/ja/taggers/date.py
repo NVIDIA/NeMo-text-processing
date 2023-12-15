@@ -40,18 +40,20 @@ class DateFst(GraphFst):
 
         cardinal = cardinal.just_cardinals
         week = pynini.string_file(get_abs_path("data/date.tsv"))
+        day = pynini.string_file(get_abs_path("data/day.tsv"))
+        month = pynini.string_file(get_abs_path("data/months.tsv"))
 
         day_component = (
             pynutil.insert("day: \"")
             + cardinal
-            + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1)
+            + pynini.closure((pynini.cross("から", "〜") + day), 0, 1)
             + pynutil.delete("日")
             + pynutil.insert("\"")
         )
         month_component = (
             pynutil.insert("month: \"")
             + cardinal
-            + pynini.closure((pynini.cross("から", "〜") + cardinal), 0, 1)
+            + pynini.closure((pynini.cross("から", "〜") + month), 0, 1)
             + pynutil.delete("月")
             + pynutil.insert("\"")
         )
