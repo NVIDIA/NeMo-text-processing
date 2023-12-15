@@ -15,6 +15,7 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst, insert_space
+from nemo_text_processing.inverse_text_normalization.ja.utils import get_abs_path
 from pynini.lib import pynutil
 
 
@@ -29,22 +30,23 @@ class TimeFst(GraphFst):
     正午十分過ぎ -> time { hours: "正午" minutes: "10" suffix: "過ぎ" }
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self):
         super().__init__(name="time", kind="classify")
 
-        cardinal = cardinal.just_cardinals
+        hours = pynini.string_file(get_abs_path("data/time_hours.tsv"))
+        minutes_seconds = pynini.string_file(get_abs_path("data/time_minutes_seconds.tsv"))
 
         hour_component = (
             pynutil.insert("hours: \"")
-            + ((cardinal + pynutil.delete("時")) | pynini.accep("正午"))
+            + ((hours + pynutil.delete("時")) | pynini.accep("正午"))
             + pynutil.insert("\"")
         )
         minute_component = (
             pynutil.insert("minutes: \"")
-            + ((cardinal + pynutil.delete("分")) | pynini.accep("半"))
+            + ((minutes_seconds + pynutil.delete("分")) | pynini.accep("半"))
             + pynutil.insert("\"")
         )
-        second_component = pynutil.insert("seconds: \"") + cardinal + pynutil.delete("秒") + pynutil.insert("\"")
+        second_component = pynutil.insert("seconds: \"") + minutes_seconds + pynutil.delete("秒") + pynutil.insert("\"")
 
         graph_regular = (
             pynini.closure(hour_component + insert_space + minute_component + insert_space + second_component)
