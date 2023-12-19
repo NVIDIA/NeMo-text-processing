@@ -22,46 +22,42 @@ runtest () {
 }
 
 
-#testTNCardinalText() {
-#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_cardinal.txt
-#  runtest $input
-#}
-#testTNOrdinalText() {
-#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_ordinal.txt
-#  runtest $input
-#}
-#testTNDecimalalText() {
-# input=$PROJECT_DIR/zh/data_text_normalization/test_cases_decimal.txt
-#  runtest $input
-#}
-#testTNFractionText() {
-#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_fraction.txt
-#  runtest $input
-#}
-#testTNDateText() {
-#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_date.txt
-#  runtest $input
-#}
-#testTNTimeText() {
-#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_time.txt
-#  runtest $input
-#}
-#testTNMoneyText() {
-#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_money.txt
-#  runtest $input
-#}
-#testTNCharText() {
-#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_char.txt
-#  runtest $input
-#}
-#testTNMathText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_math.txt
-#   runtest $input
-# }
-# testTNPreprocessText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_preprocess.txt
-#   runtest $input
-# }
+testTNCardinalText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_cardinal.txt
+  runtest $input
+}
+testTNOrdinalText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
+testTNDecimalalText() {
+ input=$PROJECT_DIR/zh/data_text_normalization/test_cases_decimal.txt
+  runtest $input
+}
+testTNFractionText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
+testTNDateText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_date.txt
+  runtest $input
+}
+testTNTimeText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
+testTNMoneyText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_money.txt
+  runtest $input
+}
+testTNCharText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_char.txt
+  runtest $input
+}
+testTNPreprocessText() {
+   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_preprocess.txt
+   runtest $input
+}
 testTNMeasureText() {
   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_measure.txt
   runtest $input
