@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_CHAR, NEMO_NOT_QUOTE, NEMO_NOT_SPACE, GraphFst
 from pynini.lib import pynutil
 
 
@@ -28,5 +28,6 @@ class WordFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="classify")
+        #word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"") # original line
         word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
         self.fst = word.optimize()

@@ -62,28 +62,28 @@ class ClassifyFst(GraphFst):
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
         else:
-            date = DateFst(deterministic=deterministic)
+            #date = DateFst(deterministic=deterministic)
             cardinal = CardinalFst(deterministic=deterministic)
-            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            #decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             word = WordFst(deterministic=deterministic)
-            fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
-            money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
-            time = TimeFst(deterministic=deterministic)
+            #fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
+            #money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
+            #measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+            #time = TimeFst(deterministic=deterministic)
             whitelist = WhiteListFst(deterministic=deterministic)
-            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            #ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
 
             classify = pynini.union(
-                pynutil.add_weight(date.fst, 1.1),
-                pynutil.add_weight(fraction.fst, -1.0),
-                pynutil.add_weight(money.fst, 1.1),
-                pynutil.add_weight(measure.fst, 1.05),
-                pynutil.add_weight(time.fst, 1.1),
+                #pynutil.add_weight(date.fst, 1.1),
+                #pynutil.add_weight(fraction.fst, -1.0),
+                #pynutil.add_weight(money.fst, 1.1),
+                #pynutil.add_weight(measure.fst, 1.05),
+                #pynutil.add_weight(time.fst, 1.1),
                 pynutil.add_weight(whitelist.fst, 1.1),
                 pynutil.add_weight(cardinal.fst, 3.06),
-                pynutil.add_weight(decimal.fst, 3.05),
-                pynutil.add_weight(ordinal.fst, 1.1),
-                pynutil.add_weight(word.fst, 300),
+                #pynutil.add_weight(decimal.fst, 3.05),
+                #pynutil.add_weight(ordinal.fst, 1.1),
+                pynutil.add_weight(word.fst, 100),
             )
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
 

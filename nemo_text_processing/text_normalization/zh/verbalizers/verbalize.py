@@ -24,6 +24,8 @@ from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import Whitelist
 from nemo_text_processing.text_normalization.zh.verbalizers.word import WordFst
 from pynini.lib import pynutil
+import pynini
+from nemo_text_processing.text_normalization.zh.graph_utils import delete_space
 
 
 class VerbalizeFst(GraphFst):
@@ -62,5 +64,7 @@ class VerbalizeFst(GraphFst):
             time.fst,
             whitelist.fst,
         )
+        graph =  pynini.closure(delete_space) + graph + pynini.closure(delete_space)
 
         self.fst = graph.optimize()
+        
