@@ -17,7 +17,7 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 
 
-class PreProcessor(GraphFst):
+class PreProcessorFst(GraphFst):
     '''
         Preprocessing of TN:
             1. interjections removal such as '啊, 呃'
