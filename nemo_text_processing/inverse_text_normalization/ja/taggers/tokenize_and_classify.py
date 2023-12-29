@@ -35,7 +35,7 @@ from nemo_text_processing.inverse_text_normalization.ja.taggers.punctuation impo
 from nemo_text_processing.inverse_text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.ja.taggers.preprocessor import PreProcessor
+from nemo_text_processing.inverse_text_normalization.ja.taggers.preprocessor import PreProcessorFst
 from pynini.lib import pynutil
 
 
@@ -98,34 +98,32 @@ class ClassifyFst(GraphFst):
             )
 
             ###
-            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
-            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-            token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" "),0,1) + pynini.closure(token,0,1) + pynini.closure(pynutil.insert(" ") + punct,0,1)
-            )
+            #punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
+            #token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
+            #token_plus_punct = (
+            #    pynini.closure(punct + pynutil.insert(" "),0,1) + pynini.closure(token,0,1) + pynini.closure(pynutil.insert(" ") + punct,0,1)
+            #)
 
-            #graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct) # removing delete_extra_space  gets program killed when normalizing
-            #graph = token_plus_punct + pynini.closure(delete_extra_space) + token_plus_punct # removing delete_extra_space  gets program killed when normalizing
-            graph = token_plus_punct + pynini.closure(delete_extra_space,0,1) + token_plus_punct 
-            graph = delete_space + graph + delete_space 
+            #graph = token_plus_punct + pynini.closure(delete_extra_space,0,1) + token_plus_punct 
+            #graph = delete_space + graph + delete_space 
 
-            self.fst = graph.optimize()
+            #self.fst = graph.optimize()
             
 
-            if far_file:
-                generator_main(far_file, {"tokenize_and_classify": self.fst})
+            #if far_file:
+            #    generator_main(far_file, {"tokenize_and_classify": self.fst})
             #the above was the original, at this stage words need spaces
 
 
 
 
             ### copied from zh tn takes more than 10 miniutes to initiate
-            #token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
 
-            #tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
+            tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
             #preprocessor = PreProcessorFst(remove_interjections=True, fullwidth_to_halfwidth=True,)
-            #self.fst = preprocessor.fst @ tagger
+            self.fst = tagger
             ###
 
 
