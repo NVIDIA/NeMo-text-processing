@@ -38,7 +38,7 @@ from pynini.lib import pynutil
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence, that is lower cased.
-    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File. 
+    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File.
     More details to deployment at NeMo/tools/text_processing_deployment.
 
     Args:
@@ -47,7 +47,11 @@ class ClassifyFst(GraphFst):
     """
 
     def __init__(
-        self, input_case: str, cache_dir: str = None, whitelist: str = None, overwrite_cache: bool = False,
+        self,
+        input_case: str,
+        cache_dir: str = None,
+        whitelist: str = None,
+        overwrite_cache: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 

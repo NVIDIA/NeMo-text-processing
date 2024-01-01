@@ -21,7 +21,7 @@ from pynini.lib import pynutil
 
 class VerbalizeFinalFst(GraphFst):
     """
-    Finite state transducer that verbalizes an entire sentence, e.g. 
+    Finite state transducer that verbalizes an entire sentence, e.g.
     tokens { name: "klockan" } tokens { name: "är" } tokens { time { hours: "12" minutes: "30" } } -> klockan är 12:30
     """
 

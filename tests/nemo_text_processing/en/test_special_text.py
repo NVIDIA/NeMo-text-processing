@@ -21,7 +21,6 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 
 class TestSpecialText:
-
     normalizer_en = Normalizer(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     normalizer_with_audio_en = (
@@ -40,6 +39,8 @@ class TestSpecialText:
         # Audio-based normalization will output only options without digits
         if self.normalizer_with_audio_en and sum([1 for ch in expected if ch.isdigit()]) == 0:
             pred_non_deterministic = self.normalizer_with_audio_en.normalize(
-                test_input, n_tagged=30, punct_post_process=True,
+                test_input,
+                n_tagged=30,
+                punct_post_process=True,
             )
             assert expected in pred_non_deterministic, f"input: {test_input}"

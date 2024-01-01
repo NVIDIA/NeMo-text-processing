@@ -40,8 +40,8 @@ class TelephoneFst(GraphFst):
         https://en.wikipedia.org/wiki/Telephone_numbers_in_Hungary
 
     Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
+                deterministic: if True will provide a single transduction option,
+                        for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True):

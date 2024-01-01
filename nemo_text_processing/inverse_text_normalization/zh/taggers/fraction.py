@@ -22,7 +22,7 @@ class FractionFst(GraphFst):
     Finite state transducer for classifying fraction
         e.g. 二分之一 -> tokens { fraction { denominator: "2" numerator: "1"} }
         e.g. 五又二分之一 -> tokens { fraction { integer_part: "1" denominator: "2" numerator: "1" } }
-    
+
     Args:
         cardinal: CardinalFst
     """

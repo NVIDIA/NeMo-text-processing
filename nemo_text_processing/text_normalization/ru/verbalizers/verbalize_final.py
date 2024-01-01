@@ -28,7 +28,7 @@ from pynini.lib import pynutil
 
 class VerbalizeFinalFst(GraphFst):
     """
-    Finite state transducer that verbalizes an entire sentence, e.g. 
+    Finite state transducer that verbalizes an entire sentence, e.g.
     tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
 
     Args:
@@ -49,7 +49,6 @@ class VerbalizeFinalFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
             logger.info(f'VerbalizeFinalFst graph was restored from {far_file}.')
         else:
-
             verbalize = VerbalizeFst().fst
             word = WordFst().fst
             types = verbalize | word

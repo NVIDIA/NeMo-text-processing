@@ -49,7 +49,7 @@ def load_inflection(abs_path):
 
     Args:
         abs_path: absolute path
-    
+
     Returns dictionary of mappings of word endings to
     lists of case endings.
     """
@@ -97,7 +97,7 @@ def inflect_abbreviation(abbr: str, word: str, singular_only=False):
         word: the base (nominative singular) form of the expansion
               of abbr
         singular_only: whether or not to add plural forms
-    
+
     Returns a list of tuples containing the inflected abbreviation and
     its expansion.
     """
@@ -133,7 +133,7 @@ def naive_inflector(abbr: str, word: str, singular_only=False):
         word: the base (nominative singular) form of the expansion
               of abbr
         singular_only: whether or not to add plural forms
-    
+
     Returns a list of tuples containing the inflected abbreviation and
     its expansion.
     """

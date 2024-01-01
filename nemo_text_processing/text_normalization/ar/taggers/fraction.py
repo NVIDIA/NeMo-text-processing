@@ -25,7 +25,7 @@ class FractionFst(GraphFst):
     tokens { fraction { integer_part: "واحد" numerator: "واحد" denominator: "نص" } }
 
     Args:
-        cardinal: cardinal fst 
+        cardinal: cardinal fst
     """
 
     def __init__(self, cardinal):

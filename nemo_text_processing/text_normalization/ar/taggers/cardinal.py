@@ -20,7 +20,7 @@ from pynini.lib import pynutil
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g. 
+    Finite state transducer for classifying cardinals, e.g.
         "9837" ->  cardinal { integer: "تسعة اَلاف وثمان مئة وسبعة وثلاثون" }
 
     Args:
@@ -29,7 +29,6 @@ class CardinalFst(GraphFst):
     """
 
     def __init__(self):
-
         super().__init__(name="cardinal", kind="classify")
         # zero
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))

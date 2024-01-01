@@ -84,7 +84,10 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
             written_capitalized = written[0].upper() + written[1:]
             additional_labels.extend(
                 [
-                    [written_capitalized, spoken.capitalize(),],  # first letter capitalized
+                    [
+                        written_capitalized,
+                        spoken.capitalize(),
+                    ],  # first letter capitalized
                     [
                         written_capitalized,
                         spoken.upper().replace(" AND ", " and "),
@@ -98,7 +101,10 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
                 print(f"This is weight {weight}")
                 if len(weight) == 0:
                     additional_labels.extend(
-                        [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()],]
+                        [
+                            [written, spoken_no_space],
+                            [written_capitalized, spoken_no_space.upper()],
+                        ]
                     )
                 else:
                     additional_labels.extend(

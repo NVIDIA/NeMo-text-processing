@@ -54,7 +54,9 @@ class MeasureFst(GraphFst):
         )
 
         optional_unit_denominator = pynini.closure(
-            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator, 0, 1,
+            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator,
+            0,
+            1,
         )
 
         unit_plural = (
@@ -75,15 +77,14 @@ class MeasureFst(GraphFst):
         )
 
         subgraph_cardinal = (
-            (optional_graph_negative + (pynini.closure(NEMO_DIGIT) - "1")) @ cardinal.fst
-            + insert_space
-            + pynini.closure(pynutil.delete(" "), 0, 1)
-            + unit_plural
-            | unit_plural
-            + pynini.closure(pynutil.delete(" "), 0, 1)
-            + insert_space
-            + (optional_graph_negative + (pynini.closure(NEMO_DIGIT) - "1")) @ cardinal.fst
-        )
+            optional_graph_negative + (pynini.closure(NEMO_DIGIT) - "1")
+        ) @ cardinal.fst + insert_space + pynini.closure(
+            pynutil.delete(" "), 0, 1
+        ) + unit_plural | unit_plural + pynini.closure(
+            pynutil.delete(" "), 0, 1
+        ) + insert_space + (
+            optional_graph_negative + (pynini.closure(NEMO_DIGIT) - "1")
+        ) @ cardinal.fst
 
         subgraph_cardinal |= (
             (optional_graph_negative + pynini.accep("1")) @ cardinal.fst

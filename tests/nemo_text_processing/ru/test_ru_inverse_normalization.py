@@ -26,7 +26,6 @@ except (ImportError, ModuleNotFoundError):
 
 
 class TestRuInverseNormalize:
-
     normalizer = InverseNormalizer(lang='ru', cache_dir=CACHE_DIR) if PYNINI_AVAILABLE else None
 
     @parameterized.expand(parse_test_case_file('ru/data_inverse_text_normalization/test_cases_cardinal.txt'))

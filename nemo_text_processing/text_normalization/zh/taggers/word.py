@@ -19,7 +19,7 @@ from pynini.lib import pynutil
 
 class Char(GraphFst):
     '''
-        你 -> char { name: "你" }
+    你 -> char { name: "你" }
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):

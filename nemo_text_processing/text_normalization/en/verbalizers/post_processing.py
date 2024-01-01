@@ -39,7 +39,6 @@ class PostProcessingFst:
     """
 
     def __init__(self, cache_dir: str = None, overwrite_cache: bool = False):
-
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
@@ -98,10 +97,10 @@ class PostProcessingFst:
 
     def get_punct_postprocess_graph(self):
         """
-            Returns graph to post process punctuation marks.
+        Returns graph to post process punctuation marks.
 
-            {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
-            By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
+        {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
+        By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
         """
         punct_marks_all = PunctuationFst().punct_marks
 
