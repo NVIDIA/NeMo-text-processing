@@ -79,7 +79,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'jp'],
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'ja'],
         type=str,
         default='en',
     )
@@ -228,11 +228,11 @@ if __name__ == '__main__':
             VerbalizeFst as ITNVerbalizeFst,
         )
 
-    elif args.language == 'jp':
-        from nemo_text_processing.inverse_text_normalization.jp.taggers.tokenize_and_classify import (
+    elif args.language == 'ja':
+        from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
         )
-        from nemo_text_processing.inverse_text_normalization.jp.verbalizers.verbalize import (
+        from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
     output_dir = os.path.join(args.output_dir, args.language)
