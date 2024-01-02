@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,27 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import pynini
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
-    NEMO_CHAR,
-    NEMO_SIGMA,
+from nemo_text_processing.text_normalization.zh.graph_utils import (
+    NEMO_NOT_QUOTE,
     GraphFst,
+    delete_extra_space,
     delete_space,
 )
 from pynini.lib import pynutil
 
 
 class WordFst(GraphFst):
-    """
-    Finite state transducer for verbalizing plain tokens
-        e.g. tokens { name: "sleep" } -> sleep
-    """
+    '''
+        tokens { char: "一" } -> 一
+    '''
 
-    def __init__(self):
-        super().__init__(name="word", kind="verbalize")
-        chars = pynini.closure(NEMO_CHAR - " ", 1)
-        char = pynutil.delete("name:") + delete_space + pynutil.delete('"') + chars + pynutil.delete('"')
-        graph = char @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+    def __init__(self, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="char", kind="verbalize", deterministic=deterministic)
 
+        graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
+        graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
         self.fst = graph.optimize()

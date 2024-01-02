@@ -72,16 +72,16 @@ class ClassifyFst(GraphFst):
             logging.info(f"Creating ClassifyFst grammars.")
             cardinal = CardinalFst()
             cardinal_graph = cardinal.fst
-            ordinal = OrdinalFst(cardinal)
-            ordinal_graph = ordinal.fst
-            date = DateFst(cardinal)
-            date_graph = date.fst
-            decimal = DecimalFst(cardinal)
-            decimal_graph = decimal.fst
-            fraction = FractionFst(cardinal, decimal)
-            fraction_graph = fraction.fst
-            time = TimeFst()
-            time_graph = time.fst
+            #ordinal = OrdinalFst(cardinal)
+            #ordinal_graph = ordinal.fst
+            #date = DateFst(cardinal)
+            #date_graph = date.fst
+            #decimal = DecimalFst(cardinal)
+            #decimal_graph = decimal.fst
+            #fraction = FractionFst(cardinal, decimal)
+            #fraction_graph = fraction.fst
+            #time = TimeFst()
+            #time_graph = time.fst
             word_graph = WordFst().fst
             whitelist_graph = WhiteListFst().fst
             punct_graph = PunctuationFst().fst
@@ -89,12 +89,12 @@ class ClassifyFst(GraphFst):
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(cardinal_graph, 1.0) #was -1.1
-                | pynutil.add_weight(ordinal_graph, 1.1)
-                | pynutil.add_weight(date_graph, 1.1)
-                | pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(fraction_graph, 1.1)
-                | pynutil.add_weight(time_graph, 1.0)
-                | pynutil.add_weight(word_graph, 300)
+                #| pynutil.add_weight(ordinal_graph, 1.1)
+                #| pynutil.add_weight(date_graph, 1.1)
+                #| pynutil.add_weight(decimal_graph, 1.1)
+                #| pynutil.add_weight(fraction_graph, 1.1)
+                #| pynutil.add_weight(time_graph, 1.0)
+                | pynutil.add_weight(word_graph, 100)
             )
 
             ###
@@ -123,6 +123,7 @@ class ClassifyFst(GraphFst):
             tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
             #preprocessor = PreProcessorFst(remove_interjections=True, fullwidth_to_halfwidth=True,)
+            #self.fst = preprocessor.fst @ tagger
             self.fst = tagger
             ###
 
@@ -132,5 +133,10 @@ class ClassifyFst(GraphFst):
             #token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             #graph = (pynini.closure(punct) + pynini.closure(word_graph) + pynini.closure(token) + pynini.closure(punct) + pynini.closure(word_graph)).optimize()
             #self.fst = graph 
+
+            if far_file:
+                generator_main(far_file, {"tokenize_and_classify": self.fst})
+            #the above was the original, at this stage words need spaces
+
 
 
