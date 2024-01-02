@@ -1,5 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,33 +11,39 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst, delete_extra_space, delete_space
-from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import VerbalizeFst
-from nemo_text_processing.inverse_text_normalization.ja.verbalizers.word import WordFst
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, delete_space, generator_main
+from nemo_text_processing.text_normalization.zh.verbalizers.postprocessor import PostProcessor
+from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst
 from pynini.lib import pynutil
+
+# from nemo.utils import logging
 
 
 class VerbalizeFinalFst(GraphFst):
     """
-    Finite state transducer that verbalizes an entire sentence, e.g. 
-    tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
+
     """
 
-    def __init__(self):
-        super().__init__(name="verbalize_final", kind="verbalize")
-        verbalize = VerbalizeFst().fst
-        word = WordFst().fst
-        types = verbalize | word
-        graph = (
-            pynutil.delete("tokens")
-            + delete_space
-            + pynutil.delete("{")
-            + delete_space
-            + types
-            + delete_space
-            + pynutil.delete("}")
-        )
-        graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
-        self.fst = graph
+    def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
+        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
+        far_file = None
+        if cache_dir is not None and cache_dir != "None":
+            os.makedirs(cache_dir, exist_ok=True)
+            far_file = os.path.join(cache_dir, f"zh_tn_{deterministic}_deterministic_verbalizer.far")
+        if not overwrite_cache and far_file and os.path.exists(far_file):
+            self.fst = pynini.Far(far_file, mode="r")["verbalize"]
+        else:
+            token_graph = VerbalizeFst(deterministic=deterministic)
+            token_verbalizer = (
+                pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
+            )
+            verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
+
+            postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
+
+            self.fst = (verbalizer @ postprocessor.fst).optimize()
+            if far_file:
+                generator_main(far_file, {"verbalize": self.fst})
