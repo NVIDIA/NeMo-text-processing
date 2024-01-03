@@ -37,9 +37,7 @@ class TimeFst(GraphFst):
         minutes_seconds = pynini.string_file(get_abs_path("data/time_minutes_seconds.tsv"))
 
         hour_component = (
-            pynutil.insert("hours: \"")
-            + ((hours + pynutil.delete("時")) | pynini.accep("正午"))
-            + pynutil.insert("\"")
+            pynutil.insert("hours: \"") + ((hours + pynutil.delete("時")) | pynini.accep("正午")) + pynutil.insert("\"")
         )
         minute_component = (
             pynutil.insert("minutes: \"")
