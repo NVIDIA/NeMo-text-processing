@@ -38,24 +38,24 @@ class VerbalizeFinalFst(GraphFst):
         else:
             token_graph = VerbalizeFst(deterministic=deterministic)
            
-            #token_verbalizer = (
-            #    pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
-            #)
-            #verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
-
-            #postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
-
-            #self.fst = (verbalizer @ postprocessor.fst).optimize()
-            
-            
             token_verbalizer = (
-                pynutil.delete("tokens {") + pynini.closure(delete_space) + token_graph.fst + pynini.closure(delete_space) + pynutil.delete(" }")
+               pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
             )
-            verbalizer = pynini.closure(pynini.closure(delete_space) + token_verbalizer + pynini.closure(delete_space))
-            self.fst = verbalizer.optimize()
+            verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
 
-            if far_file:
-                generator_main(far_file, {"verbalize": self.fst})
+            postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
+
+            self.fst = (verbalizer @ postprocessor.fst).optimize()
+            
+            #######################################
+            # token_verbalizer = (
+            #     pynutil.delete("tokens { ") + pynini.closure(delete_space) + token_graph.fst + pynini.closure(delete_space) + pynutil.delete(" }")
+            # )
+            # verbalizer = pynini.closure(pynini.closure(delete_space) + token_verbalizer + pynini.closure(delete_space))
+            # self.fst = verbalizer.optimize()
+
+            # if far_file:
+            #     generator_main(far_file, {"verbalize": self.fst})
             
 
             

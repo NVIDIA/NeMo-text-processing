@@ -85,9 +85,11 @@ class ClassifyFst(GraphFst):
                 #pynutil.add_weight(ordinal.fst, 1.1),
                 pynutil.add_weight(word.fst, 100),
             )
+            #token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ") # original line
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
 
             tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
-            preprocessor = PreProcessorFst(remove_interjections=True, fullwidth_to_halfwidth=True,)
-            self.fst = preprocessor.fst @ tagger
+            #preprocessor = PreProcessorFst(remove_interjections=True, fullwidth_to_halfwidth=True,) #original line
+            #self.fst = preprocessor.fst @ tagger # original line
+            self.fsft = tagger
