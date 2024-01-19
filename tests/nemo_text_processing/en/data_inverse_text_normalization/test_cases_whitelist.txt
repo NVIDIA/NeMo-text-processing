@@ -7,7 +7,6 @@ s and p five hundred~S&P 500
 seven eleven stores~7-eleven stores
 r t x~RTX
 cat five e~CAT5e
-nvidia a one hundred~Nvidia A100
 c u d n n~cuDNN
 p c i e x eight~PCIe x8
 l g a eleven fifty~LGA 1150
