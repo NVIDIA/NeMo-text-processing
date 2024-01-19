@@ -1,12 +1,12 @@
 #! /bin/sh
 
-GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
-TEST_DIR=${2:-"/workspace/tests/en"}
+TEST_DIR=${1:-"/workspace/tests/en"}
 
 runtest () {
   input=$1
-  echo "INPUT is $input"
-  cd ${GRAMMARS_DIR}
+    echo "INPUT is $input"
+
+  cd /workspace/sparrowhawk/documentation/grammars
 
   # read test file
   while read testcase; do

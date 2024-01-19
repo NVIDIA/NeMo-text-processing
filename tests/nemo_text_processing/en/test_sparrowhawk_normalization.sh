@@ -1,6 +1,5 @@
 #! /bin/sh
-GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
-TEST_DIR=${2:-"/workspace/tests/en"}
+TEST_DIR=${1:-"/workspace/tests/en"}
 
 runtest () {
   input=$1
