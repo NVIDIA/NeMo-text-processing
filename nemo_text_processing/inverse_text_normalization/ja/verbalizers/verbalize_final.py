@@ -14,9 +14,9 @@
 import os
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, delete_space, generator_main
-from nemo_text_processing.text_normalization.zh.verbalizers.postprocessor import PostProcessor
-from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst, delete_space, generator_main
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.postprocessor import PostProcessor
+from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import VerbalizeFst
 from pynini.lib import pynutil
 
 # from nemo.utils import logging
@@ -32,13 +32,17 @@ class VerbalizeFinalFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"zh_tn_{deterministic}_deterministic_verbalizer.far")
+            far_file = os.path.join(cache_dir, f"ja_tn_{deterministic}_deterministic_verbalizer.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
         else:
-            token_graph = VerbalizeFst(deterministic=deterministic)
+            #token_graph = VerbalizeFst(deterministic=deterministic)
+            token_graph = VerbalizeFst().fst
+            # token_verbalizer = (
+            #     pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
+            # )
             token_verbalizer = (
-                pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
+                pynutil.delete("tokens {") + delete_space + token_graph + delete_space + pynutil.delete(" }")
             )
             verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
 
