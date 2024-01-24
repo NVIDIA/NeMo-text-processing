@@ -32,4 +32,3 @@ class PunctuationFst(GraphFst):
         graph = pynutil.insert("name: \"") + punct + pynutil.insert("\"")
 
         self.fst = graph.optimize()
-    
