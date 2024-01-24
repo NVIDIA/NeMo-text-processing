@@ -36,7 +36,7 @@ class VerbalizeFinalFst(GraphFst):
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
         else:
-            #token_graph = VerbalizeFst(deterministic=deterministic)
+            # token_graph = VerbalizeFst(deterministic=deterministic)
             token_graph = VerbalizeFst().fst
             # token_verbalizer = (
             #     pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")

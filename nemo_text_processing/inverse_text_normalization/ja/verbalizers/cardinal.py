@@ -58,8 +58,6 @@ class CardinalFst(GraphFst):
         graph = graph @ group_by_threes
 
         final_graph = pynini.closure(optional_sign, 0, 1) + graph
-      
+
         final_graph = self.delete_tokens(final_graph)
         self.fst = final_graph.optimize()
-
-
