@@ -80,17 +80,17 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(word_graph, 100)
             )
 
-        punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
-        token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-        token_plus_punct = (
-            pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
-        )
+            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
+            token_plus_punct = (
+                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+            )
 
-        graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
-        graph = delete_space + graph + delete_space
+            graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
+            graph = delete_space + graph + delete_space
 
-        self.fst = graph.optimize()
+            self.fst = graph.optimize()
 
-        if far_file:
-            generator_main(far_file, {"tokenize_and_classify": self.fst})
-            logging.info(f"ClassifyFst grammars are saved to {far_file}.")
+            if far_file:
+                generator_main(far_file, {"tokenize_and_classify": self.fst})
+                logging.info(f"ClassifyFst grammars are saved to {far_file}.")

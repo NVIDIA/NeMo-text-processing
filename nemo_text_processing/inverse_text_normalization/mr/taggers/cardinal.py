@@ -17,7 +17,6 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     MINUS,
     NEMO_DIGIT,
-    NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
     delete_space,

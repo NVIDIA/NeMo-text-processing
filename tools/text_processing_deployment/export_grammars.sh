@@ -33,10 +33,12 @@
 GRAMMARS="itn_grammars" # tn_grammars
 INPUT_CASE="lower_cased" # cased
 LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi', 'mr'} supports ITN only
-MODE="export"
+MODE="export" # default is one of {'export', 'interactive', 'test', 'ci'}. Default "export"
 OVERWRITE_CACHE="True" # Set to False to re-use .far files
 FORCE_REBUILD="False" # Set to True to re-build docker file
 WHITELIST=None # Path to a whitelist file, if None the default will be used
+FAR_PATH=$(pwd) # Path where the grammars should be written
+SKIP_FAR_CREATION="False"
 
 for ARG in "$@"
 do
@@ -50,7 +52,7 @@ do
 done
 
 
-CACHE_DIR=${LANGUAGE}
+CACHE_DIR=${FAR_PATH}/${LANGUAGE}
 echo "GRAMMARS = $GRAMMARS"
 echo "MODE = $MODE"
 echo "LANGUAGE = $LANGUAGE"
@@ -61,11 +63,24 @@ echo "FORCE_REBUILD = $FORCE_REBUILD"
 echo "WHITELIST = $WHITELIST"
 
 
-if [[ ${OVERWRITE_CACHE,,} == "true" ]]; then
+if [[ ${OVERWRITE_CACHE,,} == "true" ]] ; then
   OVERWRITE_CACHE="--overwrite_cache "
-  python3 pynini_export.py --output_dir=. --grammars=${GRAMMARS} --input_case=${INPUT_CASE} \
+  SKIP_FAR_CREATION="True"
+else
+  OVERWRITE_CACHE=""
+fi
+
+CLASSIFY_FAR=${CACHE_DIR}"/classify/tokenize_and_classify.far"
+VERBALIZE_FAR=${CACHE_DIR}"/verbalize/verbalize.far"
+
+if [[ -f $CLASSIFY_FAR ]] && [[ -f $VERBALIZE_FAR ]] && [[ ${OVERWRITE_CACHE} == "" ]]; then
+  SKIP_FAR_CREATION="True"
+  echo "Far files exists and OVERWRITE_CACHE is set to False"
+fi
+
+if [[ ${SKIP_FAR_CREATION} != "True" ]]; then
+  python3 pynini_export.py --output_dir=${FAR_PATH} --grammars=${GRAMMARS} --input_case=${INPUT_CASE} \
     --language=${LANGUAGE} --cache_dir=${CACHE_DIR} --whitelist=${WHITELIST} ${OVERWRITE_CACHE} || exit 1
-  else OVERWRITE_CACHE=""
 fi
 
 if [[ ${FORCE_REBUILD,,} == "true" ]]; then
@@ -74,10 +89,17 @@ if [[ ${FORCE_REBUILD,,} == "true" ]]; then
 fi
 
 find . -name "Makefile" -type f -delete
-bash docker/build.sh $FORCE_REBUILD
 
-if [[ ${MODE} == "test" ]]; then
+
+
+
+
+if [[ ${MODE} == "test" ]] || [[ ${MODE} == "interactive" ]]; then
   MODE=${MODE}_${GRAMMARS}
+  bash docker/build.sh $FORCE_REBUILD
+  bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE $FAR_PATH
+else
+  exit 0
 fi
 
-bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE
+
