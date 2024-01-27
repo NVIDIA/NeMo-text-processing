@@ -14,11 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
-    NEMO_DIGIT,
-    GraphFst,
-    delete_space,
-)
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
