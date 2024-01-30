@@ -114,7 +114,7 @@ class InverseNormalizer(Normalizer):
         elif lang == 'hy':
             from nemo_text_processing.inverse_text_normalization.hy.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize_final import (
-                VerbalizeFinalFst
+                VerbalizeFinalFst,
             )
 
         self.tagger = ClassifyFst(

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import delete_space, NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -23,15 +23,16 @@ class CardinalFst(GraphFst):
     Finite state transducer for verbalizing cardinal
         e.g. cardinal { integer: "97" } -> 97
     """
+
     def __init__(self):
         super().__init__(name="cardinal", kind="verbalize")
 
         graph = (
-                pynutil.delete("integer:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_DIGIT, 1)
-                + pynutil.delete("\"")
+            pynutil.delete("integer:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynutil.delete("\"")
         )
 
         self.numbers = graph

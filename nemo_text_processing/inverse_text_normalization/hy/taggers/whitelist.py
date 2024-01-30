@@ -15,10 +15,7 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.hy.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    convert_space,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
 from pynini.lib import pynutil
 
 
@@ -29,6 +26,7 @@ class WhiteListFst(GraphFst):
     This class has highest priority among all classifier grammars.
     Whitelisted tokens are defined and loaded from "data/whitelist.tsv" (unless input_file specified).
     """
+
     def __init__(self):
         super().__init__(name="whitelist", kind="classify")
 

@@ -39,28 +39,20 @@ class MeasureFst(GraphFst):
             + delete_space
         )
         graph_decimal = (
-            pynutil.delete("decimal {")
-            + delete_space
-            + decimal.numbers
-            + delete_space
-            + pynutil.delete("}")
+            pynutil.delete("decimal {") + delete_space + decimal.numbers + delete_space + pynutil.delete("}")
         )
         graph_cardinal_first = (
-            pynutil.delete("cardinal {")
-            + delete_space
-            + cardinal.numbers
-            + delete_space
-            + pynutil.delete("} ")
+            pynutil.delete("cardinal {") + delete_space + cardinal.numbers + delete_space + pynutil.delete("} ")
         )
 
         graph_cardinal_two = (
-                pynutil.delete("cardinal {")
-                + pynutil.delete(" integer: \"")
-                + delete_space
-                + pynini.closure(NEMO_CHAR - " ", 1)
-                + pynutil.delete("\"")
-                + delete_space
-                + pynutil.delete("} ")
+            pynutil.delete("cardinal {")
+            + pynutil.delete(" integer: \"")
+            + delete_space
+            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynutil.delete("\"")
+            + delete_space
+            + pynutil.delete("} ")
         )
 
         graph_first = (graph_cardinal_first | graph_decimal) + delete_space + pynutil.insert(" ") + unit

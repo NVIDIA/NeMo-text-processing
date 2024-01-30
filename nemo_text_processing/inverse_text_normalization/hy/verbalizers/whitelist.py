@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space, NEMO_SIGMA
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -23,6 +23,7 @@ class WhiteListFst(GraphFst):
     Finite state transducer for verbalizing whitelist
         e.g. tokens { name: "մ.թ.ա" } -> մ.թ.ա
     """
+
     def __init__(self):
         super().__init__(name="whitelist", kind="verbalize")
         graph = (

@@ -48,11 +48,7 @@ def get_quantity(
         pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
     )
 
-    suffix = pynini.union(
-        "միլիոն",
-        "միլիարդ",
-        "տրիլիոն"
-    )
+    suffix = pynini.union("միլիոն", "միլիարդ", "տրիլիոն")
 
     res = (
         pynutil.insert("integer_part: \"")
@@ -96,8 +92,10 @@ class DecimalFst(GraphFst):
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         final_graph_wo_sign = (
-            pynini.closure((graph_integer | pynini.string_map(["", "0"])) + delete_extra_space, 0, 1) + (point_first | point_second)
-            + delete_extra_space + graph_fractional
+            pynini.closure((graph_integer | pynini.string_map(["", "0"])) + delete_extra_space, 0, 1)
+            + (point_first | point_second)
+            + delete_extra_space
+            + graph_fractional
         )
         final_graph = final_graph_wo_sign
 

@@ -14,8 +14,8 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.hy.graph_utils import INPUT_LOWER_CASED, GraphFst, delete_space
+from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -28,6 +28,7 @@ class FractionFst(GraphFst):
         (input_case is not necessary everything is made for lower_cased input)
         TODO add cased input support
     """
+
     def __init__(self, cardinal: GraphFst, ordinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="fraction", kind="classify")
         cardinal_graph = cardinal.graph_no_exception

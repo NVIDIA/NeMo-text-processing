@@ -15,7 +15,7 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.hy.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import delete_space, NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -24,15 +24,18 @@ class CardinalFst(GraphFst):
     Finite state transducer for classifying cardinals
         e.g. իննսունյոթ -> cardinal { integer: "97" } }
     """
+
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
 
         zero = pynini.string_map([("զրո", "0")])
-        digit = ((pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
-                 + (pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ի") | pynutil.delete("ին")))
-        digits_no_one = (pynini.string_file(get_abs_path("data/numbers/digits_no_one.tsv")))
-        graph_ties = (pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
-                      + (pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ի") | pynutil.delete("ին")))
+        digit = (pynini.string_file(get_abs_path("data/numbers/digit.tsv"))) + (
+            pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ի") | pynutil.delete("ին")
+        )
+        digits_no_one = pynini.string_file(get_abs_path("data/numbers/digits_no_one.tsv"))
+        graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv")) + (
+            pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ի") | pynutil.delete("ին")
+        )
         graph_digit = digit | pynutil.insert("0")
 
         graph_ties = graph_ties | pynutil.insert("0")
@@ -42,33 +45,42 @@ class CardinalFst(GraphFst):
         graph_hundred = pynini.cross("հարյուր", "1")
 
         graph_hundreds_first_digit = graph_hundred | (digits_no_one + delete_space + pynutil.delete(hundred))
-        graph_hundreds = ((graph_hundreds_first_digit + delete_space | pynutil.insert("0", weight=0.1)) + delete_space
-                          + graph_two_digit_nums)
+        graph_hundreds = (
+            (graph_hundreds_first_digit + delete_space | pynutil.insert("0", weight=0.1))
+            + delete_space
+            + graph_two_digit_nums
+        )
 
         self.graph_hundred_component_at_least_one_none_zero_digit = graph_hundreds @ (
-                pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
+            pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
         )
 
         graph_one_thousand = pynini.cross("հազար", "1")
         graph_many_thousand = graph_hundreds + delete_space + pynutil.delete("հազար")
-        graph_thousands = ((graph_one_thousand | graph_many_thousand | pynutil.insert("000",
-                                                                                     weight=0.000000001)) + delete_space
-                           + graph_hundreds)
+        graph_thousands = (
+            (graph_one_thousand | graph_many_thousand | pynutil.insert("000", weight=0.000000001))
+            + delete_space
+            + graph_hundreds
+        )
 
         millions = pynini.accep("միլիոն")
-        graph_millions = ((graph_hundreds + delete_space + pynutil.delete(millions)) | pynutil.insert(
-            "000", weight=0.1)
-                          ) + delete_space + graph_thousands
+        graph_millions = (
+            ((graph_hundreds + delete_space + pynutil.delete(millions)) | pynutil.insert("000", weight=0.1))
+            + delete_space
+            + graph_thousands
+        )
 
         billions = pynini.accep("միլիարդ") | pynini.accep("միլիարդ")
-        graph_billions = ((graph_hundreds + delete_space + pynutil.delete(billions) + delete_space) | pynutil.insert(
-            "000", weight=0.1)  # We need three zeroes now
-                          ) + graph_millions
+        graph_billions = (
+            (graph_hundreds + delete_space + pynutil.delete(billions) + delete_space)
+            | pynutil.insert("000", weight=0.1)  # We need three zeroes now
+        ) + graph_millions
 
         trillions = pynini.accep("տրիլիոն") | pynini.accep("տրիլիոն")
-        graph_trillions = ((graph_hundreds + delete_space + pynutil.delete(trillions) + delete_space) | pynutil.insert(
-            "000", weight=0.1)  # We need three zeroes now
-                           ) + graph_billions
+        graph_trillions = (
+            (graph_hundreds + delete_space + pynutil.delete(trillions) + delete_space)
+            | pynutil.insert("000", weight=0.1)  # We need three zeroes now
+        ) + graph_billions
 
         graph = graph_trillions | zero
 

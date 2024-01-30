@@ -14,10 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    NEMO_NOT_SPACE
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, GraphFst
 from pynini.lib import pynutil
 
 
@@ -26,6 +23,7 @@ class WordFst(GraphFst):
     Finite state transducer for classifying plain tokens, that do not belong to any special class. This can be considered as the default class.
         e.g. արթնանալ -> tokens { name: "արթնանալ" }
     """
+
     def __init__(self):
         super().__init__(name="word", kind="classify")
         word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")

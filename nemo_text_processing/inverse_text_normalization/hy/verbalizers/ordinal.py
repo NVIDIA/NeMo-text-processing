@@ -23,6 +23,7 @@ class OrdinalFst(GraphFst):
     Finite state transducer for verbalizing ordinal, e.g.
        tokens { ordinal { integer: "3" } } -> 3-րդ
     """
+
     def __init__(self):
         super().__init__(name="ordinal", kind="verbalize")
         graph = (
@@ -35,13 +36,7 @@ class OrdinalFst(GraphFst):
         convert_one = pynini.cross("[BOS]1", "[BOS]1-ին")
         convert_rest = pynutil.insert("-րդ", weight=0.01)
 
-        suffix = pynini.cdrewrite(
-            convert_rest
-            | convert_one,
-            "",
-            "[EOS]",
-            NEMO_SIGMA,
-        )
+        suffix = pynini.cdrewrite(convert_rest | convert_one, "", "[EOS]", NEMO_SIGMA,)
         graph = graph @ suffix
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

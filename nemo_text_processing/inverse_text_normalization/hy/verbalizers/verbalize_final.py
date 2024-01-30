@@ -25,6 +25,7 @@ class VerbalizeFinalFst(GraphFst):
     Finite state transducer that verbalizes an entire sentence, e.g.
     tokens { name: "նա" } tokens { cardinal { integer: "23" } } tokens { name: "տարեկան" } tokens { name: "է" } -> նա 23 տարեկան է
     """
+
     def __init__(self):
         super().__init__(name="verbalize_final", kind="verbalize")
         verbalize = VerbalizeFst().fst

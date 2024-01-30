@@ -23,6 +23,7 @@ class WordFst(GraphFst):
     Finite state transducer for verbalizing plain tokens
         e.g. tokens { name: "արթնանալ" } -> արթնանալ
     """
+
     def __init__(self):
         super().__init__(name="word", kind="verbalize")
         chars = pynini.closure(NEMO_CHAR - " ", 1)

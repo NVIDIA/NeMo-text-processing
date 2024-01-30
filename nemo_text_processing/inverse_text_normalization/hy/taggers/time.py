@@ -15,10 +15,7 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.hy.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    delete_space,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -29,6 +26,7 @@ class TimeFst(GraphFst):
         e.g. հինգին տասնհինգ պակաս -> time { hours: "04" minutes: "45" }
         e.g. տասներեք անց կես -> time { hours: "12" minutes: "30" }
     """
+
     def __init__(self):
         super().__init__(name="time", kind="classify")
         graph_oclock = pynini.accep("անց")
@@ -39,25 +37,29 @@ class TimeFst(GraphFst):
 
         graph_fractions = graph_demi
 
-        graph_hours = (pynini.string_file(get_abs_path("data/time/hours.tsv")) +
-                       (pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ին")))
-        graph_minutes = (pynini.string_file(get_abs_path("data/time/minutes.tsv")) +
-                         (pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ին")))
+        graph_hours = pynini.string_file(get_abs_path("data/time/hours.tsv")) + (
+            pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ին")
+        )
+        graph_minutes = pynini.string_file(get_abs_path("data/time/minutes.tsv")) + (
+            pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ին")
+        )
         graph_hours_to = pynini.string_file(get_abs_path("data/time/to_hour.tsv"))
         graph_minutes_to = pynini.string_file(get_abs_path("data/time/minutes_to.tsv"))
         graph_to = pynutil.delete("պակաս")
 
         graph_hours_component = graph_hours
-        graph_hours_component = (pynutil.insert("hours: \"") + graph_hours_component + (pynutil.delete(''))
-                                 + pynutil.insert("\""))
+        graph_hours_component = (
+            pynutil.insert("hours: \"") + graph_hours_component + (pynutil.delete('')) + pynutil.insert("\"")
+        )
 
         graph_minutes_component = (
-                pynutil.insert(" minutes: \"") + pynini.union(graph_minutes, graph_fractions) + pynutil.insert("\"")
+            pynutil.insert(" minutes: \"") + pynini.union(graph_minutes, graph_fractions) + pynutil.insert("\"")
         )
         graph_minutes_component = delete_space + graph_minutes_component
 
-        graph_time_standard = (graph_hours_component + delete_space + graph_oclock
-                               + pynini.closure(graph_minutes_component, 0, 1))
+        graph_time_standard = (
+            graph_hours_component + delete_space + graph_oclock + pynini.closure(graph_minutes_component, 0, 1)
+        )
 
         graph_hours_to_component = graph_hours + pynutil.delete('ին')
         graph_hours_to_component @= graph_hours_to

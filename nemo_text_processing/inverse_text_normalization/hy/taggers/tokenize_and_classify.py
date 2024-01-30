@@ -16,23 +16,23 @@
 import os
 
 import pynini
+from nemo_text_processing.inverse_text_normalization.hy.graph_utils import (
+    INPUT_LOWER_CASED,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.inverse_text_normalization.hy.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.hy.taggers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.hy.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.hy.taggers.fraction import FractionFst
-from nemo_text_processing.inverse_text_normalization.hy.taggers.measure import MeasureFst
-from nemo_text_processing.inverse_text_normalization.hy.taggers.word import WordFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.whitelist import WhiteListFst
-from nemo_text_processing.inverse_text_normalization.hy.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    INPUT_LOWER_CASED,
-    generator_main
-)
+from nemo_text_processing.inverse_text_normalization.hy.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 
@@ -49,11 +49,11 @@ class ClassifyFst(GraphFst):
     """
 
     def __init__(
-            self,
-            cache_dir: str = None,
-            whitelist: str = None,
-            overwrite_cache: bool = False,
-            input_case: str = INPUT_LOWER_CASED,
+        self,
+        cache_dir: str = None,
+        whitelist: str = None,
+        overwrite_cache: bool = False,
+        input_case: str = INPUT_LOWER_CASED,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -87,15 +87,15 @@ class ClassifyFst(GraphFst):
             whitelist_graph = WhiteListFst().fst
 
             classify = (
-                    pynutil.add_weight(whitelist_graph, 1.01)
-                    | pynutil.add_weight(time_graph, 1.05)
-                    | pynutil.add_weight(decimal_graph, 1.08)
-                    | pynutil.add_weight(measure_graph, 1.1)
-                    | pynutil.add_weight(cardinal_graph, 1.1)
-                    | pynutil.add_weight(ordinal_graph, 1.1)
-                    | pynutil.add_weight(fraction_graph, 1.09)
-                    | pynutil.add_weight(money_graph, 1.07)
-                    | pynutil.add_weight(word_graph, 100)
+                pynutil.add_weight(whitelist_graph, 1.01)
+                | pynutil.add_weight(time_graph, 1.05)
+                | pynutil.add_weight(decimal_graph, 1.08)
+                | pynutil.add_weight(measure_graph, 1.1)
+                | pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.09)
+                | pynutil.add_weight(money_graph, 1.07)
+                | pynutil.add_weight(word_graph, 100)
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")

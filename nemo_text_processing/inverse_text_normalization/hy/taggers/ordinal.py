@@ -15,7 +15,13 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.hy.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, INPUT_LOWER_CASED, INPUT_CASED, capitalized_input_graph
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    NEMO_CHAR,
+    GraphFst,
+    capitalized_input_graph,
+)
 from pynini.lib import pynutil
 
 
@@ -30,14 +36,13 @@ class OrdinalFst(GraphFst):
         (input_case is not necessary everything is made for lower_cased input)
         TODO add cased input support
     """
+
     def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="ordinal", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))
-        graph = pynini.closure(NEMO_CHAR) + pynini.union(
-            graph_digit, pynini.cross("երորդ", "")
-        )
+        graph = pynini.closure(NEMO_CHAR) + pynini.union(graph_digit, pynini.cross("երորդ", ""))
 
         self.graph = pynini.compose(graph, cardinal_graph).optimize()
 
