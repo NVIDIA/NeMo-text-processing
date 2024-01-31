@@ -17,10 +17,15 @@ import pynini
 from nemo_text_processing.inverse_text_normalization.hy.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
+    NEMO_DIGIT,
     NEMO_SIGMA,
     GraphFst,
+    capitalized_input_graph,
     convert_space,
-    delete_extra_space
+    delete_extra_space,
+    delete_space,
+    get_singulars,
+    insert_space,
 )
 from pynini.lib import pynutil
 

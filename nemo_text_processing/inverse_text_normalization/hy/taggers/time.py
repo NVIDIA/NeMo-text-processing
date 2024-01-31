@@ -64,6 +64,7 @@ class TimeFst(GraphFst):
         graph_hours_to_component = graph_hours + pynutil.delete('ին')
         graph_hours_to_component @= graph_hours_to
         graph_hours_to_component = pynutil.insert("hours: \"") + graph_hours_to_component + pynutil.insert("\"")
+        graph_hours_to_component = graph_hours_to_component
 
         graph_minutes_to_component = graph_minutes
         graph_minutes_to_component @= graph_minutes_to
