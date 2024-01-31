@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     GraphFst,
     convert_space,
-    delete_extra_space
+    delete_extra_space,
 )
 from pynini.lib import pynutil
 
