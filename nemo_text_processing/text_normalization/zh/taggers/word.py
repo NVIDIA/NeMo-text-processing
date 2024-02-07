@@ -31,3 +31,4 @@ class WordFst(GraphFst):
         #word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"") # original line
         word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
         self.fst = word.optimize()
+        #import pdb; pdb.set_trace() 

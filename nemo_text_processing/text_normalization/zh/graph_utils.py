@@ -40,8 +40,8 @@ NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 
 NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
 
-
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
+NEMO_NOT_ALPHA = pynini.difference(NEMO_SIGMA, NEMO_ALPHA).optimize()
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))

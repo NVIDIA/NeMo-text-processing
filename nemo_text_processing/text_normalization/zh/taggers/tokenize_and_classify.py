@@ -75,21 +75,19 @@ class ClassifyFst(GraphFst):
 
             classify = pynini.union(
                 pynutil.add_weight(date.fst, 1.1),
-                pynutil.add_weight(fraction.fst, -1.0),
+                pynutil.add_weight(fraction.fst, 1.0),
                 pynutil.add_weight(money.fst, 1.1),
                 pynutil.add_weight(measure.fst, 1.05),
                 pynutil.add_weight(time.fst, 1.1),
                 pynutil.add_weight(whitelist.fst, 1.1),
                 pynutil.add_weight(cardinal.fst, 3.06),
+                pynutil.add_weight(cardinal.fst, 1.1),
                 pynutil.add_weight(decimal.fst, 3.05),
                 pynutil.add_weight(ordinal.fst, 1.1),
                 pynutil.add_weight(word.fst, 100),
             )
-            #token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ") # original line
-            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
 
+            token = pynutil.insert("tokens { ") + classify+ pynutil.insert(" } ")
             tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
-
-            #preprocessor = PreProcessorFst(remove_interjections=True, fullwidth_to_halfwidth=True,) #original line
-            #self.fst = preprocessor.fst @ tagger # original line
-            self.fsft = tagger
+            
+            self.fst = tagger
