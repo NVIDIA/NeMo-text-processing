@@ -51,6 +51,8 @@ def tn_grammars(**kwargs):
         ).fst
     }
     d['verbalize'] = {'ALL': TNVerbalizeFst(deterministic=True).fst, 'REDUP': pynini.accep("REDUP")}
+    d['post_process_graph'] = {'ALL': TNPostProcessorFst().fst, 'REDUP': pynini.accep("REDUP")}
+    # add post_processor
     return d
 
 
@@ -71,6 +73,7 @@ def export_grammars(output_dir, grammars):
         if category == "classify":
             category = "tokenize_and_classify"
         generator_main(f"{out_dir}/{category}.far", graphs)
+        
 
 
 def parse_args():
@@ -124,6 +127,7 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.en.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst as TNPostProcessorFst
     elif args.language == 'de':
         from nemo_text_processing.inverse_text_normalization.de.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -195,16 +199,17 @@ if __name__ == '__main__':
             VerbalizeFst as ITNVerbalizeFst,
         )
     elif args.language == 'zh':
-        from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
+        #from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
+        #    ClassifyFst as ITNClassifyFst,
+        #)
+        #from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import (
+        #    VerbalizeFst as ITNVerbalizeFst,
+        #)
         from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.text_normalization.zh.verbalizers.post_processing import PostProcessingFst as TNPostProcessorFst # added for popst processor
     elif args.language == 'ar':
         from nemo_text_processing.inverse_text_normalization.ar.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
