@@ -51,9 +51,9 @@ class CardinalFst(GraphFst):
             + graph_two_digit_nums
         )
 
-        self.graph_hundred_component_at_least_one_none_zero_digit = graph_hundreds @ (
-                pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
-        ).optimize()
+        self.graph_hundred_component_at_least_one_none_zero_digit = (
+            graph_hundreds @ (pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)).optimize()
+        )
 
         graph_one_thousand = pynini.cross("հազար", "1")
         graph_many_thousand = graph_hundreds + delete_space + pynutil.delete("հազար")

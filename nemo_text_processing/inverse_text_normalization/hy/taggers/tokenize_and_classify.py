@@ -16,13 +16,6 @@
 import os
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_LOWER_CASED,
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
 from nemo_text_processing.inverse_text_normalization.hy.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.fraction import FractionFst
@@ -33,6 +26,13 @@ from nemo_text_processing.inverse_text_normalization.hy.taggers.punctuation impo
 from nemo_text_processing.inverse_text_normalization.hy.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.hy.taggers.word import WordFst
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
 

@@ -79,9 +79,8 @@ class DecimalFst(GraphFst):
 
         cardinal_graph = cardinal.graph_no_exception
 
-        graph_decimal = (
-                pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-                | pynini.string_map([("զրո", "0"), ("կես", "5")])
+        graph_decimal = pynini.string_file(get_abs_path("data/numbers/digit.tsv")) | pynini.string_map(
+            [("զրո", "0"), ("կես", "5")]
         )
 
         graph_decimal = pynini.closure(graph_decimal + delete_space) + graph_decimal
