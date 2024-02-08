@@ -79,12 +79,13 @@ class DecimalFst(GraphFst):
 
         cardinal_graph = cardinal.graph_no_exception
 
-        graph_decimal = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        graph_decimal |= pynini.string_map([("զրո", "0")])
-        graph_decimal |= pynini.string_map([("կես", "5")])
+        graph_decimal = (
+                pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+                | pynini.string_map([("զրո", "0"), ("կես", "5")])
+        )
 
         graph_decimal = pynini.closure(graph_decimal + delete_space) + graph_decimal
-        self.graph = graph_decimal
+        self.only_decimal = graph_decimal.optimize()
 
         point_first = pynutil.delete("ամբողջ")
         point_second = pynutil.delete("ու")

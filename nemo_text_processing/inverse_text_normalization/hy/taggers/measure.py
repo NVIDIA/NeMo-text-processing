@@ -56,9 +56,8 @@ class MeasureFst(GraphFst):
 
         measurements_unit = convert_space(graph_measurements_unit)
 
-        graph_measurements_dates_unit = pynini.string_file(get_abs_path("data/measurement_dates.tsv")) + (
-            pynutil.insert("") | pynutil.insert("ին")
-        )
+        graph_measurements_dates_unit = pynini.string_file(get_abs_path("data/measurement_dates.tsv"))
+
         graph_measurements_dates_unit = pynini.invert(graph_measurements_dates_unit)
         graph_measurements_dates_unit = pynini.compose(casing_graph, graph_measurements_dates_unit).optimize()
 

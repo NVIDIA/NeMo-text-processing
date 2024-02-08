@@ -30,11 +30,11 @@ class CardinalFst(GraphFst):
 
         zero = pynini.string_map([("զրո", "0")])
         digit = (pynini.string_file(get_abs_path("data/numbers/digit.tsv"))) + (
-            pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ի") | pynutil.delete("ին")
+            pynini.closure(pynutil.delete("ն") | pynutil.delete("ի") | pynutil.delete("ին"), 0, 1)
         )
         digits_no_one = pynini.string_file(get_abs_path("data/numbers/digits_no_one.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv")) + (
-            pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ի") | pynutil.delete("ին")
+            pynini.closure(pynutil.delete("ն") | pynutil.delete("ի") | pynutil.delete("ին"), 0, 1)
         )
         graph_digit = digit | pynutil.insert("0")
 
@@ -52,8 +52,8 @@ class CardinalFst(GraphFst):
         )
 
         self.graph_hundred_component_at_least_one_none_zero_digit = graph_hundreds @ (
-            pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
-        )
+                pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
+        ).optimize()
 
         graph_one_thousand = pynini.cross("հազար", "1")
         graph_many_thousand = graph_hundreds + delete_space + pynutil.delete("հազար")
@@ -70,16 +70,16 @@ class CardinalFst(GraphFst):
             + graph_thousands
         )
 
-        billions = pynini.accep("միլիարդ") | pynini.accep("միլիարդ")
+        billions = pynini.accep("միլիարդ")
         graph_billions = (
             (graph_hundreds + delete_space + pynutil.delete(billions) + delete_space)
-            | pynutil.insert("000", weight=0.1)  # We need three zeroes now
+            | pynutil.insert("000", weight=0.1)
         ) + graph_millions
 
-        trillions = pynini.accep("տրիլիոն") | pynini.accep("տրիլիոն")
+        trillions = pynini.accep("տրիլիոն")
         graph_trillions = (
             (graph_hundreds + delete_space + pynutil.delete(trillions) + delete_space)
-            | pynutil.insert("000", weight=0.1)  # We need three zeroes now
+            | pynutil.insert("000", weight=0.1)
         ) + graph_billions
 
         graph = graph_trillions | zero

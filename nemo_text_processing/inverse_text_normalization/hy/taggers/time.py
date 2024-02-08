@@ -29,27 +29,24 @@ class TimeFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="time", kind="classify")
-        graph_oclock = pynini.accep("անց")
-        graph_oclock = pynutil.delete(graph_oclock)
+        graph_oclock = pynutil.delete("անց")
 
-        graph_demi = pynini.accep("կես")
-        graph_demi = pynini.cross(graph_demi, "30")
+        graph_demi = pynini.cross("կես", "30")
 
         graph_fractions = graph_demi
 
         graph_hours = pynini.string_file(get_abs_path("data/time/hours.tsv")) + (
-            pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ին")
+            pynini.closure(pynutil.delete("ն") | pynutil.delete("ին"), 0, 1)
         )
         graph_minutes = pynini.string_file(get_abs_path("data/time/minutes.tsv")) + (
-            pynutil.delete("") | pynutil.delete("ն") | pynutil.delete("ին")
+            pynini.closure(pynutil.delete("ն") | pynutil.delete("ին"), 0, 1)
         )
         graph_hours_to = pynini.string_file(get_abs_path("data/time/to_hour.tsv"))
         graph_minutes_to = pynini.string_file(get_abs_path("data/time/minutes_to.tsv"))
         graph_to = pynutil.delete("պակաս")
 
-        graph_hours_component = graph_hours
         graph_hours_component = (
-            pynutil.insert("hours: \"") + graph_hours_component + (pynutil.delete('')) + pynutil.insert("\"")
+            pynutil.insert("hours: \"") + graph_hours + (pynutil.delete('')) + pynutil.insert("\"")
         )
 
         graph_minutes_component = (

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space, insert_space, NEMO_SPACE
 from pynini.lib import pynutil
 
 
@@ -33,7 +33,7 @@ class MoneyFst(GraphFst):
             pynutil.delete("currency:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynini.closure(NEMO_CHAR - NEMO_SPACE, 1)
             + pynutil.delete("\"")
         )
         graph = decimal.numbers + delete_space + insert_space + unit
