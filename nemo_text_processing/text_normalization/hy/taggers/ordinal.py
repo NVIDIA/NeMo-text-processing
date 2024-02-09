@@ -48,7 +48,7 @@ class OrdinalFst(GraphFst):
         third = pynini.cross("3", "երրորդ")
         fourth = pynini.cross("4", "չորրորդ")
 
-        special_denominator_graph = (second_format @ second | third_format @ third | fourth_format @ fourth)
+        special_denominator_graph = second_format @ second | third_format @ third | fourth_format @ fourth
 
         self.denominator_graph = (
             pynutil.add_weight(first_format @ first, 1)
