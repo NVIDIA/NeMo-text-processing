@@ -64,12 +64,7 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-        digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        zero = pynini.string_map(["0", "զրո"])
-
-        graph_digit = digit | zero
-
-        graph = pynini.union(graph_digit, cardinal.all_hundreds, cardinal.one_to_all_tens)
+        graph = cardinal.one_to_all_tens
 
         graph = graph.optimize()
 
