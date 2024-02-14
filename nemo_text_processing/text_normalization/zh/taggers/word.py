@@ -52,7 +52,12 @@ class WordFst(GraphFst):
 import pynini
 from pynini.lib import pynutil
 
+<<<<<<< HEAD
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+=======
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_SPACE, GraphFst
+
+>>>>>>> d6634c4 (update isort - fix precommit (#138))
 
 
 class WordFst(GraphFst):

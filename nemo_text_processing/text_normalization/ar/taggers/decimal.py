@@ -14,6 +14,12 @@
 
 import pynini
 from pynini.lib import pynutil
+<<<<<<< HEAD
+=======
+
+from nemo_text_processing.text_normalization.ar.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.ar.utils import get_abs_path
+>>>>>>> d6634c4 (update isort - fix precommit (#138))
 
 from nemo_text_processing.text_normalization.ar.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path

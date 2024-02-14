@@ -14,17 +14,6 @@
 # limitations under the License.
 
 import pynini
-<<<<<<< HEAD
-=======
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
-    NEMO_CHAR,
-    GraphFst,
-    capitalized_input_graph,
-)
->>>>>>> efcdd12 (update ITN to work after Punctuation capitalization model (#22))
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path

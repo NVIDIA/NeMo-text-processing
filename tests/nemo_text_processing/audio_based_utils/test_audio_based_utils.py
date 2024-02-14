@@ -13,10 +13,7 @@
 # limitations under the License.
 
 import pytest
-<<<<<<< HEAD
 
-=======
->>>>>>> 6948508 (audio-based TN fix for empty pred_text/text (#92))
 from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
 
 
