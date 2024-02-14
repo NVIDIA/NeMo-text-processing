@@ -16,7 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ar.graph_utils import (
-    NEMO_CHAR, NEMO_NOT_QUOTE, GraphFst, delete_space)
+    NEMO_CHAR, GraphFst, delete_space)
 
 
 class MoneyFst(GraphFst):
