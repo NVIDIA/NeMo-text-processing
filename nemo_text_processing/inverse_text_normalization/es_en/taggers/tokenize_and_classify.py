@@ -15,6 +15,8 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst as EnCardinalFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.date import DateFst as EnDateFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.decimal import DecimalFst as EnDecimalFst
@@ -49,7 +51,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):

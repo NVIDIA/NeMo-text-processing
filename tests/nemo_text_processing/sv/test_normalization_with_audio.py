@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pytest
-from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 from parameterized import parameterized
+
+from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
 from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, get_test_cases_multiple
 

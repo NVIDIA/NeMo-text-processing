@@ -21,7 +21,6 @@ from typing import List
 import pynini
 from pynini import Far
 
-
 """
 This files takes 1. Far file containing a fst graph created by TN or ITN 2. entire string.
 Optionally: 3. start position of substring 4. end (exclusive) position of substring

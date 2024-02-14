@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
 
 
 class PunctuationFst(GraphFst):
