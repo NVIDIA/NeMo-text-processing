@@ -13,16 +13,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE,
-    NEMO_SIGMA,
-    NEMO_SPACE,
-    GraphFst,
-    delete_preserve_order,
-)
-from nemo_text_processing.text_normalization.es.graph_utils import shift_cardinal_gender, strip_cardinal_apocope
-from nemo_text_processing.text_normalization.it.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_NOT_QUOTE, NEMO_SIGMA, NEMO_SPACE, GraphFst, delete_preserve_order)
+from nemo_text_processing.text_normalization.es.graph_utils import (
+    shift_cardinal_gender, strip_cardinal_apocope)
+from nemo_text_processing.text_normalization.it.utils import get_abs_path
 
 fem = pynini.string_file((get_abs_path("data/money/currency_plural_fem.tsv")))
 masc = pynini.string_file((get_abs_path("data/money/currency_plural_masc.tsv")))

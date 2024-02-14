@@ -13,11 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.ar.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.ar.verbalizers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.ar.verbalizers.fraction import FractionFst
-from nemo_text_processing.inverse_text_normalization.ar.verbalizers.measure import MeasureFst
-from nemo_text_processing.inverse_text_normalization.ar.verbalizers.money import MoneyFst
+from nemo_text_processing.inverse_text_normalization.ar.verbalizers.cardinal import \
+    CardinalFst
+from nemo_text_processing.inverse_text_normalization.ar.verbalizers.decimal import \
+    DecimalFst
+from nemo_text_processing.inverse_text_normalization.ar.verbalizers.fraction import \
+    FractionFst
+from nemo_text_processing.inverse_text_normalization.ar.verbalizers.measure import \
+    MeasureFst
+from nemo_text_processing.inverse_text_normalization.ar.verbalizers.money import \
+    MoneyFst
 from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
 
 

@@ -19,7 +19,9 @@ import time
 from argparse import ArgumentParser
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import generator_main
+
+from nemo_text_processing.text_normalization.en.graph_utils import \
+    generator_main
 
 # This script exports compiled grammars inside nemo_text_processing into OpenFst finite state archive files
 # tokenize_and_classify.far and verbalize.far for production purposes
@@ -114,119 +116,96 @@ if __name__ == '__main__':
         raise ValueError('Only ITN grammars could be deployed in Sparrowhawk for the selected languages.')
 
     if args.language == 'en':
-        from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.en.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
-        from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.en.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.en.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
+        from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
+        from nemo_text_processing.text_normalization.en.verbalizers.verbalize import \
+            VerbalizeFst as TNVerbalizeFst
     elif args.language == 'de':
-        from nemo_text_processing.inverse_text_normalization.de.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.de.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
-        from nemo_text_processing.text_normalization.de.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.de.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.inverse_text_normalization.de.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.de.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
+        from nemo_text_processing.text_normalization.de.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
+        from nemo_text_processing.text_normalization.de.verbalizers.verbalize import \
+            VerbalizeFst as TNVerbalizeFst
     elif args.language == 'ru':
-        from nemo_text_processing.inverse_text_normalization.ru.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.ru.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
+        from nemo_text_processing.inverse_text_normalization.ru.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.ru.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
     elif args.language == 'es':
-        from nemo_text_processing.inverse_text_normalization.es.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.es.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
-        from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.es.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.inverse_text_normalization.es.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.es.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
+        from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
+        from nemo_text_processing.text_normalization.es.verbalizers.verbalize import \
+            VerbalizeFst as TNVerbalizeFst
     elif args.language == 'pt':
-        from nemo_text_processing.inverse_text_normalization.pt.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.pt.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
+        from nemo_text_processing.inverse_text_normalization.pt.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.pt.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
     elif args.language == 'fr':
-        from nemo_text_processing.inverse_text_normalization.fr.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
-        from nemo_text_processing.text_normalization.fr.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.fr.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.inverse_text_normalization.fr.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
+        from nemo_text_processing.text_normalization.fr.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
+        from nemo_text_processing.text_normalization.fr.verbalizers.verbalize import \
+            VerbalizeFst as TNVerbalizeFst
     elif args.language == 'hu':
-        from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.hu.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
+        from nemo_text_processing.text_normalization.hu.verbalizers.verbalize import \
+            VerbalizeFst as TNVerbalizeFst
     elif args.language == 'sv':
-        from nemo_text_processing.inverse_text_normalization.sv.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.sv.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
-        from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.sv.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.inverse_text_normalization.sv.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.sv.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
+        from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
+        from nemo_text_processing.text_normalization.sv.verbalizers.verbalize import \
+            VerbalizeFst as TNVerbalizeFst
     elif args.language == 'vi':
-        from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.vi.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
+        from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.vi.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
     elif args.language == 'zh':
-        from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
-        from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
+        from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
+        from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import \
+            VerbalizeFst as TNVerbalizeFst
     elif args.language == 'ar':
-        from nemo_text_processing.inverse_text_normalization.ar.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
-        from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
+        from nemo_text_processing.inverse_text_normalization.ar.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
+        from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
     elif args.language == 'it':
-        from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.it.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import \
+            ClassifyFst as TNClassifyFst
+        from nemo_text_processing.text_normalization.it.verbalizers.verbalize import \
+            VerbalizeFst as TNVerbalizeFst
     elif args.language == 'es_en':
-        from nemo_text_processing.inverse_text_normalization.es_en.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.es_en.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
+        from nemo_text_processing.inverse_text_normalization.es_en.taggers.tokenize_and_classify import \
+            ClassifyFst as ITNClassifyFst
+        from nemo_text_processing.inverse_text_normalization.es_en.verbalizers.verbalize import \
+            VerbalizeFst as ITNVerbalizeFst
     output_dir = os.path.join(args.output_dir, args.language)
     export_grammars(
         output_dir=output_dir,

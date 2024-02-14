@@ -12,16 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.date import DateFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.electronic import ElectronicFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.measure import MeasureFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.money import MoneyFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.telephone import TelephoneFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.pt.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.cardinal import \
+    CardinalFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.date import \
+    DateFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.decimal import \
+    DecimalFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.electronic import \
+    ElectronicFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.measure import \
+    MeasureFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.money import \
+    MoneyFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.ordinal import \
+    OrdinalFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.telephone import \
+    TelephoneFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.time import \
+    TimeFst
+from nemo_text_processing.inverse_text_normalization.pt.verbalizers.whitelist import \
+    WhiteListFst
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 

@@ -29,18 +29,17 @@ import pynini
 import regex
 import tqdm
 from joblib import Parallel, delayed
-from nemo_text_processing.text_normalization.data_loader_utils import (
-    load_file,
-    post_process_punct,
-    pre_process,
-    write_file,
-)
-from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
-from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
-from nemo_text_processing.utils.logging import logger
 from pynini.lib.rewrite import top_rewrite
 from sacremoses import MosesDetokenizer
 from tqdm import tqdm
+
+from nemo_text_processing.text_normalization.data_loader_utils import (
+    load_file, post_process_punct, pre_process, write_file)
+from nemo_text_processing.text_normalization.preprocessing_utils import \
+    additional_split
+from nemo_text_processing.text_normalization.token_parser import (
+    PRESERVE_ORDER_KEY, TokenParser)
+from nemo_text_processing.utils.logging import logger
 
 # this is to handle long input
 sys.setrecursionlimit(3000)
@@ -117,50 +116,71 @@ class Normalizer:
         self.post_processor = None
 
         if lang == "en":
-            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
-            from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst
+            from nemo_text_processing.text_normalization.en.verbalizers.post_processing import \
+                PostProcessingFst
+            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
 
             if deterministic:
-                from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
+                from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import \
+                    ClassifyFst
             else:
                 if lm:
-                    from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify_lm import ClassifyFst
+                    from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify_lm import \
+                        ClassifyFst
                 else:
-                    from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify_with_audio import (
-                        ClassifyFst,
-                    )
+                    from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify_with_audio import \
+                        ClassifyFst
         elif lang == 'ru':
             # Ru TN only support non-deterministic cases and produces multiple normalization options
             # use normalize_with_audio.py
-            from nemo_text_processing.text_normalization.ru.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.ru.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.ru.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.ru.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         elif lang == 'de':
-            from nemo_text_processing.text_normalization.de.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.de.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.de.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.de.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         elif lang == 'es':
-            from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.es.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.es.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         elif lang == 'fr':
-            from nemo_text_processing.text_normalization.fr.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.fr.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.fr.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.fr.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         elif lang == 'sv':
-            from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.sv.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.sv.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         elif lang == 'hu':
-            from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.hu.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.hu.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         elif lang == 'zh':
-            from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         elif lang == 'ar':
-            from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.ar.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.ar.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         elif lang == 'it':
-            from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.it.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import \
+                ClassifyFst
+            from nemo_text_processing.text_normalization.it.verbalizers.verbalize_final import \
+                VerbalizeFinalFst
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 

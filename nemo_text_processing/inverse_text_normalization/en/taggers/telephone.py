@@ -14,21 +14,14 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
-    MIN_NEG_WEIGHT,
-    NEMO_ALNUM,
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_LOWER_NOT_A,
-    GraphFst,
-    capitalized_input_graph,
-    delete_space,
-    insert_space,
-)
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.en.utils import \
+    get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED, INPUT_LOWER_CASED, MIN_NEG_WEIGHT, NEMO_ALNUM, NEMO_ALPHA,
+    NEMO_DIGIT, NEMO_LOWER_NOT_A, GraphFst, capitalized_input_graph,
+    delete_space, insert_space)
 
 
 def get_serial_number(cardinal):

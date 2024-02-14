@@ -15,11 +15,15 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.sv.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path as get_tn_abs_path
-from nemo_text_processing.text_normalization.sv.utils import load_labels
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.sv.utils import \
+    get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import (NEMO_SPACE,
+                                                                    GraphFst)
+from nemo_text_processing.text_normalization.sv.utils import \
+    get_abs_path as get_tn_abs_path
+from nemo_text_processing.text_normalization.sv.utils import load_labels
 
 QUARTERS = {15: "kvart över", 30: "halv", 45: "kvart i"}
 

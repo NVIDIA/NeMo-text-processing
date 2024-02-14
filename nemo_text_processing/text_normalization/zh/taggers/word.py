@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_SPACE, GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.zh.graph_utils import (
+    NEMO_NOT_SPACE, GraphFst)
 
 
 class Char(GraphFst):

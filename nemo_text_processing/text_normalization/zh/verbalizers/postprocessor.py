@@ -12,16 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_PUNCT,
-    NEMO_SIGMA,
-    NEMO_WHITE_SPACE,
-    GraphFst,
-)
-from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil, utf8
+
+from nemo_text_processing.text_normalization.zh.graph_utils import (
+    NEMO_ALPHA, NEMO_DIGIT, NEMO_PUNCT, NEMO_SIGMA, NEMO_WHITE_SPACE, GraphFst)
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 
 class PostProcessor(GraphFst):

@@ -14,10 +14,16 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_DIGIT, NEMO_SPACE, GraphFst
-from nemo_text_processing.text_normalization.hu.graph_utils import TO_LOWER, TO_UPPER
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (NEMO_CHAR,
+                                                                    NEMO_DIGIT,
+                                                                    NEMO_SPACE,
+                                                                    GraphFst)
+from nemo_text_processing.text_normalization.hu.graph_utils import (TO_LOWER,
+                                                                    TO_UPPER)
+from nemo_text_processing.text_normalization.hu.utils import (get_abs_path,
+                                                              load_labels)
 
 
 def get_suffixed_days(labels):

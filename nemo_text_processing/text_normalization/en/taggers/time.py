@@ -14,19 +14,12 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    GraphFst,
-    convert_space,
-    delete_space,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.en.utils import (
-    augment_labels_with_punct_at_end,
-    get_abs_path,
-    load_labels,
-)
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT, GraphFst, convert_space, delete_space, insert_space)
+from nemo_text_processing.text_normalization.en.utils import (
+    augment_labels_with_punct_at_end, get_abs_path, load_labels)
 
 
 class TimeFst(GraphFst):

@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR,
-    NEMO_SIGMA,
-    NEMO_SPACE,
-    GraphFst,
-    delete_space,
-)
-from nemo_text_processing.text_normalization.es.graph_utils import roman_to_int, strip_accent
-from nemo_text_processing.text_normalization.es.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_CHAR, NEMO_SIGMA, NEMO_SPACE, GraphFst, delete_space)
+from nemo_text_processing.text_normalization.es.graph_utils import (
+    roman_to_int, strip_accent)
+from nemo_text_processing.text_normalization.es.utils import get_abs_path
 
 digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
 teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv")))

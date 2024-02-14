@@ -13,12 +13,18 @@
 # limitations under the License.
 
 from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.ar.taggers.cardinal import CardinalFst as CardinalTagger
-from nemo_text_processing.text_normalization.ar.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.ar.verbalizers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.ar.verbalizers.fraction import FractionFst
-from nemo_text_processing.text_normalization.ar.verbalizers.measure import MeasureFst
-from nemo_text_processing.text_normalization.ar.verbalizers.money import MoneyFst
+from nemo_text_processing.text_normalization.ar.taggers.cardinal import \
+    CardinalFst as CardinalTagger
+from nemo_text_processing.text_normalization.ar.verbalizers.cardinal import \
+    CardinalFst
+from nemo_text_processing.text_normalization.ar.verbalizers.decimal import \
+    DecimalFst
+from nemo_text_processing.text_normalization.ar.verbalizers.fraction import \
+    FractionFst
+from nemo_text_processing.text_normalization.ar.verbalizers.measure import \
+    MeasureFst
+from nemo_text_processing.text_normalization.ar.verbalizers.money import \
+    MoneyFst
 
 
 class VerbalizeFst(GraphFst):

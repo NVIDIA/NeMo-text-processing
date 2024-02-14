@@ -13,17 +13,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.ar.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_SIGMA,
-    GraphFst,
-    convert_space,
-    delete_extra_space,
-    delete_space,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.ar.taggers.money import ar_cur, maj_singular, min_plural, min_singular
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.ar.graph_utils import (
+    NEMO_DIGIT, NEMO_SIGMA, GraphFst, convert_space, delete_extra_space,
+    delete_space, insert_space)
+from nemo_text_processing.text_normalization.ar.taggers.money import (
+    ar_cur, maj_singular, min_plural, min_singular)
 
 
 class MoneyFst(GraphFst):

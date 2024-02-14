@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space
-from nemo_text_processing.text_normalization.es.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space)
+from nemo_text_processing.text_normalization.es.utils import (get_abs_path,
+                                                              load_labels)
 
 common_domains = [x[0] for x in load_labels(get_abs_path("data/electronic/domain.tsv"))]
 symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]

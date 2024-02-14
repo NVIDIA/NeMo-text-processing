@@ -13,9 +13,12 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, GraphFst, insert_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.es.utils import \
+    get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA, GraphFst, insert_space)
 
 
 class ElectronicFst(GraphFst):

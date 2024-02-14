@@ -18,7 +18,8 @@ from parameterized import parameterized
 from ..utils import CACHE_DIR, parse_test_case_file
 
 try:
-    from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
+    from nemo_text_processing.text_normalization.normalize_with_audio import \
+        NormalizerWithAudio
 
     PYNINI_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):

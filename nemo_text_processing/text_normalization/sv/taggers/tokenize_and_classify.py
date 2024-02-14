@@ -16,29 +16,36 @@ import os
 import time
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_WHITE_SPACE,
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
-from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst
+    NEMO_WHITE_SPACE, GraphFst, delete_extra_space, delete_space,
+    generator_main)
+from nemo_text_processing.text_normalization.en.taggers.punctuation import \
+    PunctuationFst
+from nemo_text_processing.text_normalization.sv.taggers.abbreviation import \
+    AbbreviationFst
+from nemo_text_processing.text_normalization.sv.taggers.cardinal import \
+    CardinalFst
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst
-from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst
-from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst
-from nemo_text_processing.text_normalization.sv.taggers.measure import MeasureFst
+from nemo_text_processing.text_normalization.sv.taggers.decimal import \
+    DecimalFst
+from nemo_text_processing.text_normalization.sv.taggers.electronic import \
+    ElectronicFst
+from nemo_text_processing.text_normalization.sv.taggers.fraction import \
+    FractionFst
+from nemo_text_processing.text_normalization.sv.taggers.measure import \
+    MeasureFst
 from nemo_text_processing.text_normalization.sv.taggers.money import MoneyFst
-from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.sv.taggers.telephone import TelephoneFst
+from nemo_text_processing.text_normalization.sv.taggers.ordinal import \
+    OrdinalFst
+from nemo_text_processing.text_normalization.sv.taggers.telephone import \
+    TelephoneFst
 from nemo_text_processing.text_normalization.sv.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.sv.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.sv.taggers.whitelist import \
+    WhiteListFst
 from nemo_text_processing.text_normalization.sv.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):

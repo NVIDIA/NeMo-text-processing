@@ -13,27 +13,21 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_NON_BREAKING_SPACE,
-    NEMO_SIGMA,
-    NEMO_SPACE,
-    NEMO_UPPER,
-    SINGULAR_TO_PLURAL,
-    TO_LOWER,
-    GraphFst,
-    convert_space,
-    delete_space,
-    delete_zero_or_one_space,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.en.taggers.ordinal import OrdinalFst as OrdinalTagger
-from nemo_text_processing.text_normalization.en.taggers.whitelist import get_formats
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
-from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as OrdinalVerbalizer
 from pynini.examples import plurals
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA, NEMO_DIGIT, NEMO_NON_BREAKING_SPACE, NEMO_SIGMA, NEMO_SPACE,
+    NEMO_UPPER, SINGULAR_TO_PLURAL, TO_LOWER, GraphFst, convert_space,
+    delete_space, delete_zero_or_one_space, insert_space)
+from nemo_text_processing.text_normalization.en.taggers.ordinal import \
+    OrdinalFst as OrdinalTagger
+from nemo_text_processing.text_normalization.en.taggers.whitelist import \
+    get_formats
+from nemo_text_processing.text_normalization.en.utils import (get_abs_path,
+                                                              load_labels)
+from nemo_text_processing.text_normalization.en.verbalizers.ordinal import \
+    OrdinalFst as OrdinalVerbalizer
 
 
 class MeasureFst(GraphFst):

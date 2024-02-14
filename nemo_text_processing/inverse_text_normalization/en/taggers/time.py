@@ -15,19 +15,15 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
-    GraphFst,
-    capitalized_input_graph,
-    convert_space,
-    delete_extra_space,
-    delete_space,
-    insert_space,
-)
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import \
+    CardinalFst
+from nemo_text_processing.inverse_text_normalization.en.utils import (
+    get_abs_path, num_to_word)
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED, INPUT_LOWER_CASED, GraphFst, capitalized_input_graph,
+    convert_space, delete_extra_space, delete_space, insert_space)
 
 
 class TimeFst(GraphFst):

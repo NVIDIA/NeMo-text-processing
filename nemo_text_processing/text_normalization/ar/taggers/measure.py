@@ -13,16 +13,12 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.ar.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_NON_BREAKING_SPACE,
-    GraphFst,
-    convert_space,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.ar.graph_utils import (
+    NEMO_ALPHA, NEMO_DIGIT, NEMO_NON_BREAKING_SPACE, GraphFst, convert_space,
+    insert_space)
+from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 
 unit_singular = pynini.string_file(get_abs_path("data/measure/measurements.tsv"))
 

@@ -16,28 +16,39 @@
 import os
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
-from nemo_text_processing.inverse_text_normalization.vi.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.date import DateFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.electronic import ElectronicFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.fraction import FractionFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.measure import MeasureFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.money import MoneyFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.punctuation import PunctuationFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.telephone import TelephoneFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.whitelist import WhiteListFst
-from nemo_text_processing.inverse_text_normalization.vi.taggers.word import WordFst
-from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED
-from nemo_text_processing.utils.logging import logger
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
+    GraphFst, delete_extra_space, delete_space, generator_main)
+from nemo_text_processing.inverse_text_normalization.vi.taggers.cardinal import \
+    CardinalFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.date import \
+    DateFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.decimal import \
+    DecimalFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.electronic import \
+    ElectronicFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.fraction import \
+    FractionFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.measure import \
+    MeasureFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.money import \
+    MoneyFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.ordinal import \
+    OrdinalFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.punctuation import \
+    PunctuationFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.telephone import \
+    TelephoneFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.time import \
+    TimeFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.whitelist import \
+    WhiteListFst
+from nemo_text_processing.inverse_text_normalization.vi.taggers.word import \
+    WordFst
+from nemo_text_processing.text_normalization.en.graph_utils import \
+    INPUT_LOWER_CASED
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):

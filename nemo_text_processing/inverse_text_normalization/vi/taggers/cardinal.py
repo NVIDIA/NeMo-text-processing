@@ -15,14 +15,12 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_SPACE,
-    GraphFst,
-    delete_space,
-)
-from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
+    NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_space)
+from nemo_text_processing.inverse_text_normalization.vi.utils import \
+    get_abs_path
 
 
 class CardinalFst(GraphFst):

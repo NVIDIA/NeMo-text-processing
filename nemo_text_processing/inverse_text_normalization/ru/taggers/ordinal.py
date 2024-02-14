@@ -14,8 +14,10 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (NEMO_DIGIT,
+                                                                    GraphFst)
 
 
 class OrdinalFst(GraphFst):

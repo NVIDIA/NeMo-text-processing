@@ -13,18 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_SIGMA,
-    NEMO_SPACE,
-    NEMO_WHITE_SPACE,
-    GraphFst,
-    delete_space,
-    insert_space,
-)
+    NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, NEMO_WHITE_SPACE, GraphFst,
+    delete_space, insert_space)
 from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 def make_million(word: str, hundreds: 'pynini.FstLike', deterministic=False):

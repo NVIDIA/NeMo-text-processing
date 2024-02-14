@@ -13,17 +13,14 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_NON_BREAKING_SPACE,
-    GraphFst,
-    convert_space,
-    delete_space,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.hu.taggers.whitelist import load_inflected
-from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA, NEMO_NON_BREAKING_SPACE, GraphFst, convert_space, delete_space,
+    insert_space)
+from nemo_text_processing.text_normalization.hu.taggers.whitelist import \
+    load_inflected
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 
 unit_singular = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
 

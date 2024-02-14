@@ -25,8 +25,10 @@ import model_utils
 import pandas as pd
 import utils
 from joblib import Parallel, delayed
-from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 from tqdm import tqdm
+
+from nemo_text_processing.text_normalization.normalize_with_audio import \
+    NormalizerWithAudio
 
 parser = argparse.ArgumentParser(description="Re-scoring")
 parser.add_argument("--lang", default="en", type=str, choices=["en"])

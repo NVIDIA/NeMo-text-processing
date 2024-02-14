@@ -13,14 +13,12 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
-    GraphFst,
-    delete_hyphen,
-    delete_space,
-    insert_space,
-)
-from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
+    GraphFst, delete_hyphen, delete_space, insert_space)
+from nemo_text_processing.inverse_text_normalization.fr.utils import \
+    get_abs_path
 
 
 class TelephoneFst(GraphFst):

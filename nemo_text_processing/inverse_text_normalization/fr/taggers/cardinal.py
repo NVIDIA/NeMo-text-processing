@@ -13,17 +13,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
-    NEMO_CHAR,
-    NEMO_DIGIT,
-    NEMO_NOT_SPACE,
-    NEMO_SIGMA,
-    NEMO_SPACE,
-    GraphFst,
-    delete_hyphen,
-)
-from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
+    NEMO_CHAR, NEMO_DIGIT, NEMO_NOT_SPACE, NEMO_SIGMA, NEMO_SPACE, GraphFst,
+    delete_hyphen)
+from nemo_text_processing.inverse_text_normalization.fr.utils import \
+    get_abs_path
 
 
 def rewrite(cardinal: 'pynini.FstLike') -> 'pynini.FstLike':

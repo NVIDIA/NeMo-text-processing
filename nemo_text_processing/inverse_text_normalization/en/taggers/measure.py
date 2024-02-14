@@ -14,20 +14,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
-    MINUS,
-    NEMO_SIGMA,
-    TO_LOWER,
-    GraphFst,
-    convert_space,
-    delete_extra_space,
-    delete_space,
-    get_singulars,
-)
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.en.utils import \
+    get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED, INPUT_LOWER_CASED, MINUS, NEMO_SIGMA, TO_LOWER, GraphFst,
+    convert_space, delete_extra_space, delete_space, get_singulars)
 
 
 class MeasureFst(GraphFst):

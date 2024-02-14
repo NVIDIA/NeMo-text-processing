@@ -14,15 +14,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
-    NEMO_CHAR,
-    GraphFst,
-    capitalized_input_graph,
-)
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.en.utils import \
+    get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED, INPUT_LOWER_CASED, NEMO_CHAR, GraphFst,
+    capitalized_input_graph)
 
 
 class OrdinalFst(GraphFst):

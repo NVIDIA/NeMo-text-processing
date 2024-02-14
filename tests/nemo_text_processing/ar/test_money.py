@@ -14,12 +14,16 @@
 
 
 import pytest
-from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
-from nemo_text_processing.text_normalization.normalize import Normalizer
-from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 from parameterized import parameterized
 
-from tests.nemo_text_processing.utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import \
+    InverseNormalizer
+from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.text_normalization.normalize_with_audio import \
+    NormalizerWithAudio
+
+from tests.nemo_text_processing.utils import (CACHE_DIR, RUN_AUDIO_BASED_TESTS,
+                                              parse_test_case_file)
 
 
 class TestMoney:

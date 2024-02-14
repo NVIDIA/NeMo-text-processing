@@ -14,17 +14,14 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_NOT_SPACE,
-    NEMO_SIGMA,
-    GraphFst,
-    convert_space,
-)
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 from pynini.examples import plurals
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA, NEMO_DIGIT, NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst,
+    convert_space)
+from nemo_text_processing.text_normalization.en.utils import (get_abs_path,
+                                                              load_labels)
 
 
 class SerialFst(GraphFst):

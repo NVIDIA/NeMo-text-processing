@@ -13,19 +13,30 @@
 # limitations under the License.
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import AbbreviationFst
-from nemo_text_processing.text_normalization.en.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import \
+    AbbreviationFst
+from nemo_text_processing.text_normalization.en.verbalizers.cardinal import \
+    CardinalFst
 from nemo_text_processing.text_normalization.en.verbalizers.date import DateFst
-from nemo_text_processing.text_normalization.en.verbalizers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.en.verbalizers.electronic import ElectronicFst
-from nemo_text_processing.text_normalization.en.verbalizers.fraction import FractionFst
-from nemo_text_processing.text_normalization.en.verbalizers.measure import MeasureFst
-from nemo_text_processing.text_normalization.en.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.en.verbalizers.roman import RomanFst
-from nemo_text_processing.text_normalization.en.verbalizers.telephone import TelephoneFst
+from nemo_text_processing.text_normalization.en.verbalizers.decimal import \
+    DecimalFst
+from nemo_text_processing.text_normalization.en.verbalizers.electronic import \
+    ElectronicFst
+from nemo_text_processing.text_normalization.en.verbalizers.fraction import \
+    FractionFst
+from nemo_text_processing.text_normalization.en.verbalizers.measure import \
+    MeasureFst
+from nemo_text_processing.text_normalization.en.verbalizers.money import \
+    MoneyFst
+from nemo_text_processing.text_normalization.en.verbalizers.ordinal import \
+    OrdinalFst
+from nemo_text_processing.text_normalization.en.verbalizers.roman import \
+    RomanFst
+from nemo_text_processing.text_normalization.en.verbalizers.telephone import \
+    TelephoneFst
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.en.verbalizers.whitelist import \
+    WhiteListFst
 
 
 class VerbalizeFst(GraphFst):

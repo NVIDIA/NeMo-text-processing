@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE,
-    NEMO_SIGMA,
-    NEMO_SPACE,
-    GraphFst,
-    delete_preserve_order,
-)
-from nemo_text_processing.text_normalization.es.graph_utils import strip_cardinal_apocope
-from nemo_text_processing.text_normalization.es.taggers.date import articles
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_NOT_QUOTE, NEMO_SIGMA, NEMO_SPACE, GraphFst, delete_preserve_order)
+from nemo_text_processing.text_normalization.es.graph_utils import \
+    strip_cardinal_apocope
+from nemo_text_processing.text_normalization.es.taggers.date import articles
 
 
 class DateFst(GraphFst):

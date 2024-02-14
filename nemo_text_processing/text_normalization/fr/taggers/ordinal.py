@@ -14,9 +14,11 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
-from nemo_text_processing.text_normalization.fr.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (NEMO_SPACE,
+                                                                    GraphFst)
+from nemo_text_processing.text_normalization.fr.utils import get_abs_path
 
 
 class OrdinalFst(GraphFst):

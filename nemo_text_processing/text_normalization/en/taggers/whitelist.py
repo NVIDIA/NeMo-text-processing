@@ -13,24 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
-    NEMO_CHAR,
-    NEMO_NOT_SPACE,
-    NEMO_SIGMA,
-    NEMO_UPPER,
-    SINGULAR_TO_PLURAL,
-    GraphFst,
-    convert_space,
-)
+    INPUT_CASED, INPUT_LOWER_CASED, NEMO_CHAR, NEMO_NOT_SPACE, NEMO_SIGMA,
+    NEMO_UPPER, SINGULAR_TO_PLURAL, GraphFst, convert_space)
 from nemo_text_processing.text_normalization.en.taggers.roman import get_names
 from nemo_text_processing.text_normalization.en.utils import (
-    augment_labels_with_punct_at_end,
-    get_abs_path,
-    load_labels,
-)
-from pynini.lib import pynutil
+    augment_labels_with_punct_at_end, get_abs_path, load_labels)
 
 
 class WhiteListFst(GraphFst):

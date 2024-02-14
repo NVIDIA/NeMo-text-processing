@@ -12,11 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.fr.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.fr.verbalizers.decimals import DecimalFst
-from nemo_text_processing.text_normalization.fr.verbalizers.fraction import FractionFst
-from nemo_text_processing.text_normalization.fr.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.en.verbalizers.whitelist import \
+    WhiteListFst
+from nemo_text_processing.text_normalization.fr.verbalizers.cardinal import \
+    CardinalFst
+from nemo_text_processing.text_normalization.fr.verbalizers.decimals import \
+    DecimalFst
+from nemo_text_processing.text_normalization.fr.verbalizers.fraction import \
+    FractionFst
+from nemo_text_processing.text_normalization.fr.verbalizers.ordinal import \
+    OrdinalFst
 
 
 class VerbalizeFst(GraphFst):

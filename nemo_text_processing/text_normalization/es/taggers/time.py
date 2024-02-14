@@ -12,15 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_SIGMA,
-    GraphFst,
-    delete_space,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.es.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT, NEMO_SIGMA, GraphFst, delete_space, insert_space)
+from nemo_text_processing.text_normalization.es.utils import get_abs_path
 
 time_zones = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
 suffix = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
