@@ -15,11 +15,16 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.es.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, NEMO_SIGMA, GraphFst, convert_space, delete_extra_space,
-    delete_space, insert_space)
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    GraphFst,
+    convert_space,
+    delete_extra_space,
+    delete_space,
+    insert_space,
+)
 
 
 class MoneyFst(GraphFst):

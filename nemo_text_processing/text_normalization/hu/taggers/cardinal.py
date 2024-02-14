@@ -16,8 +16,14 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, NEMO_WHITE_SPACE, GraphFst,
-    delete_space, insert_space)
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hu.graph_utils import HU_ALPHA
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 

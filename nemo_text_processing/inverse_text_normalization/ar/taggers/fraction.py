@@ -16,8 +16,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ar.graph_utils import (
-    NEMO_NOT_QUOTE, GraphFst, delete_space, delete_zero_or_one_space,
-    insert_space)
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    delete_zero_or_one_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 
 

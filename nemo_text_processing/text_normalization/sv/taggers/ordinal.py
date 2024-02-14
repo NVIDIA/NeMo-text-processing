@@ -16,10 +16,16 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA, NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, NEMO_WHITE_SPACE, GraphFst,
-    delete_space, insert_space)
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import (
-    filter_punctuation, make_million)
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
+from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 
 

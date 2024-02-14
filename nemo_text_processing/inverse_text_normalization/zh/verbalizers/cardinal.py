@@ -16,7 +16,11 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
-    NEMO_DIGIT, NEMO_SIGMA, GraphFst, delete_space)
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    GraphFst,
+    delete_space,
+)
 
 
 class CardinalFst(GraphFst):

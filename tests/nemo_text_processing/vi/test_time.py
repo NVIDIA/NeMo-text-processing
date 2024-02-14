@@ -18,8 +18,7 @@ from parameterized import parameterized
 from ..utils import CACHE_DIR, parse_test_case_file
 
 try:
-    from nemo_text_processing.inverse_text_normalization.inverse_normalize import \
-        InverseNormalizer
+    from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 
     PYNINI_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):

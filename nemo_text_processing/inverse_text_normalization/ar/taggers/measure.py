@@ -15,10 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import (
-    GraphFst, convert_space, delete_extra_space)
-from nemo_text_processing.text_normalization.ar.taggers.measure import \
-    unit_singular
+from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst, convert_space, delete_extra_space
+from nemo_text_processing.text_normalization.ar.taggers.measure import unit_singular
 
 
 class MeasureFst(GraphFst):

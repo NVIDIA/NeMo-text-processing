@@ -15,10 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
-    GraphFst, delete_space)
-from nemo_text_processing.inverse_text_normalization.fr.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.fr.graph_utils import GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
 
 
 class TimeFst(GraphFst):

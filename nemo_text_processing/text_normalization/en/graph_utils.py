@@ -24,8 +24,7 @@ from pynini.examples import plurals
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
-from nemo_text_processing.text_normalization.en.utils import (get_abs_path,
-                                                              load_labels)
+from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 from nemo_text_processing.utils.logging import logger
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR

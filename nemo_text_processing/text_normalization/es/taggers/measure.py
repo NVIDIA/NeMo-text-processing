@@ -15,10 +15,16 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA, NEMO_NON_BREAKING_SPACE, NEMO_SIGMA, NEMO_SPACE, GraphFst,
-    convert_space, delete_space, insert_space)
-from nemo_text_processing.text_normalization.es.graph_utils import \
-    strip_cardinal_apocope
+    NEMO_ALPHA,
+    NEMO_NON_BREAKING_SPACE,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+    convert_space,
+    delete_space,
+    insert_space,
+)
+from nemo_text_processing.text_normalization.es.graph_utils import strip_cardinal_apocope
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
 
 unit = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))

@@ -15,9 +15,13 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE, NEMO_SIGMA, NEMO_SPACE, GraphFst, delete_preserve_order)
-from nemo_text_processing.text_normalization.es.graph_utils import \
-    strip_cardinal_apocope
+    NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+    delete_preserve_order,
+)
+from nemo_text_processing.text_normalization.es.graph_utils import strip_cardinal_apocope
 from nemo_text_processing.text_normalization.es.taggers.date import articles
 
 

@@ -13,5 +13,4 @@
 # limitations under the License.
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
-from nemo_text_processing.text_normalization.normalize_with_audio import \
-    NormalizerWithAudio
+from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio

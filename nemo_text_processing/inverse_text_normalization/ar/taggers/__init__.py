@@ -15,10 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import \
-    ClassifyFst
-from nemo_text_processing.inverse_text_normalization.en.verbalizers.verbalize import \
-    VerbalizeFst
-from nemo_text_processing.inverse_text_normalization.en.verbalizers.verbalize_final import \
-    VerbalizeFinalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
+from nemo_text_processing.inverse_text_normalization.en.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.inverse_text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
 from nemo_text_processing.utils.logging import logger

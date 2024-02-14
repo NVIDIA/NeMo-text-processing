@@ -17,61 +17,39 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import \
-    CardinalFst as EnCardinalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.date import \
-    DateFst as EnDateFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.decimal import \
-    DecimalFst as EnDecimalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.electronic import \
-    ElectronicFst as EnElectronicFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.measure import \
-    MeasureFst as EnMeasureFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.money import \
-    MoneyFst as EnMoneyFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.ordinal import \
-    OrdinalFst as EnOrdinalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import \
-    PunctuationFst as EnPunctuationFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import \
-    TelephoneFst as EnTelephoneFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.time import \
-    TimeFst as EnTimeFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import \
-    WhiteListFst as EnWhiteListFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.word import \
-    WordFst as EnWordFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.cardinal import \
-    CardinalFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.date import \
-    DateFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.decimal import \
-    DecimalFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.electronic import \
-    ElectronicFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.fraction import \
-    FractionFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.measure import \
-    MeasureFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.money import \
-    MoneyFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.ordinal import \
-    OrdinalFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.punctuation import \
-    PunctuationFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.telephone import \
-    TelephoneFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.time import \
-    TimeFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.whitelist import \
-    WhiteListFst
-from nemo_text_processing.inverse_text_normalization.es.taggers.word import \
-    WordFst
-from nemo_text_processing.inverse_text_normalization.es_en.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst as EnCardinalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.date import DateFst as EnDateFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.decimal import DecimalFst as EnDecimalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.electronic import ElectronicFst as EnElectronicFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.measure import MeasureFst as EnMeasureFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.money import MoneyFst as EnMoneyFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.ordinal import OrdinalFst as EnOrdinalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst as EnPunctuationFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import TelephoneFst as EnTelephoneFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.time import TimeFst as EnTimeFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import WhiteListFst as EnWhiteListFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst as EnWordFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.electronic import ElectronicFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.money import MoneyFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.punctuation import PunctuationFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.telephone import TelephoneFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.es.taggers.word import WordFst
+from nemo_text_processing.inverse_text_normalization.es_en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_LOWER_CASED, GraphFst, delete_extra_space, delete_space,
-    generator_main)
+    INPUT_LOWER_CASED,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.utils.logging import logger
 
 

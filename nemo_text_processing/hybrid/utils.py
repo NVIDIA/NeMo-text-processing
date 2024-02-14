@@ -26,10 +26,8 @@ import pynini
 from pynini.lib.rewrite import top_rewrite
 from tqdm import tqdm
 
-from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import \
-    CardinalFst
-from nemo_text_processing.inverse_text_normalization.inverse_normalize import \
-    InverseNormalizer
+from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 
 DELIMITER = '~~'
 

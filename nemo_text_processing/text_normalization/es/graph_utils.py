@@ -15,11 +15,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (NEMO_SIGMA,
-                                                                    NEMO_SPACE)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, NEMO_SPACE
 from nemo_text_processing.text_normalization.es import LOCALIZATION
-from nemo_text_processing.text_normalization.es.utils import (get_abs_path,
-                                                              load_labels)
+from nemo_text_processing.text_normalization.es.utils import get_abs_path, load_labels
 
 digits = pynini.project(pynini.string_file(get_abs_path("data/numbers/digit.tsv")), "input")
 tens = pynini.project(pynini.string_file(get_abs_path("data/numbers/ties.tsv")), "input")

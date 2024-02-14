@@ -18,8 +18,14 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.de.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA, NEMO_DIGIT, NEMO_NON_BREAKING_SPACE, NEMO_SIGMA, GraphFst,
-    convert_space, insert_space)
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_NON_BREAKING_SPACE,
+    NEMO_SIGMA,
+    GraphFst,
+    convert_space,
+    insert_space,
+)
 
 unit_singular = pynini.string_file(get_abs_path("data/measure/measurements.tsv"))
 suppletive = pynini.string_file(get_abs_path("data/measure/suppletive.tsv"))

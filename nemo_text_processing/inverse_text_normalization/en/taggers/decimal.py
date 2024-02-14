@@ -16,12 +16,20 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.en.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED, INPUT_LOWER_CASED, MIN_NEG_WEIGHT, MINUS, NEMO_DIGIT,
-    NEMO_SIGMA, TO_LOWER, GraphFst, capitalized_input_graph,
-    delete_extra_space, delete_space)
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    MIN_NEG_WEIGHT,
+    MINUS,
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    TO_LOWER,
+    GraphFst,
+    capitalized_input_graph,
+    delete_extra_space,
+    delete_space,
+)
 from nemo_text_processing.text_normalization.en.utils import load_labels
 
 

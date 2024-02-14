@@ -18,11 +18,16 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, GraphFst, convert_space,
-    delete_extra_space, insert_space)
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+    convert_space,
+    delete_extra_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
-from nemo_text_processing.text_normalization.sv.utils import (get_abs_path,
-                                                              load_labels)
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 
 
 class TimeFst(GraphFst):

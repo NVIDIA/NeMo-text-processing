@@ -15,7 +15,13 @@ import pynini
 from pynini.lib import pynutil, utf8
 
 from nemo_text_processing.text_normalization.zh.graph_utils import (
-    NEMO_ALPHA, NEMO_DIGIT, NEMO_PUNCT, NEMO_SIGMA, NEMO_WHITE_SPACE, GraphFst)
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_PUNCT,
+    NEMO_SIGMA,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+)
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 

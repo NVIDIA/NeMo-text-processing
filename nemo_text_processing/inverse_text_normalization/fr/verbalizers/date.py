@@ -16,7 +16,11 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
-    NEMO_NOT_QUOTE, GraphFst, delete_extra_space, delete_space)
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+)
 
 
 class DateFst(GraphFst):

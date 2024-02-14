@@ -14,8 +14,7 @@
 
 import pytest
 
-from nemo_text_processing.text_normalization.utils_audio_based import \
-    get_alignment
+from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
 
 
 class TestAudioBasedTNUtils:

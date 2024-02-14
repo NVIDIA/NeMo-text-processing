@@ -17,9 +17,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_SPACE, GraphFst, delete_extra_space, insert_space)
-from nemo_text_processing.text_normalization.hu.taggers.cardinal import \
-    CardinalFst
+    NEMO_SPACE,
+    GraphFst,
+    delete_extra_space,
+    insert_space,
+)
+from nemo_text_processing.text_normalization.hu.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 
 

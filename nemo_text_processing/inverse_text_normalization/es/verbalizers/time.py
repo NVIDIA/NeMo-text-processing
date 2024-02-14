@@ -16,7 +16,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR, NEMO_DIGIT, GraphFst, delete_space, insert_space)
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 
 
 class TimeFst(GraphFst):

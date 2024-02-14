@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_NOT_QUOTE, GraphFst, insert_space)
 
 
+
 class FractionFst(GraphFst):
     """
     Finite state transducer for verbalizing fraction

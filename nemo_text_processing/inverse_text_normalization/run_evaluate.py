@@ -14,11 +14,14 @@
 
 from argparse import ArgumentParser
 
-from nemo_text_processing.inverse_text_normalization.inverse_normalize import \
-    InverseNormalizer
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.data_loader_utils import (
-    evaluate, known_types, load_files, training_data_to_sentences,
-    training_data_to_tokens)
+    evaluate,
+    known_types,
+    load_files,
+    training_data_to_sentences,
+    training_data_to_tokens,
+)
 
 '''
 Runs Evaluation on data in the format of : <semiotic class>\t<unnormalized text>\t<`self` if trivial class or normalized text>
@@ -49,8 +52,7 @@ if __name__ == "__main__":
     # python run_evaluate.py --input=<INPUT> --cat=<CATEGORY> --filter
     args = parse_args()
     if args.lang == 'en':
-        from nemo_text_processing.inverse_text_normalization.en.clean_eval_data import \
-            filter_loaded_data
+        from nemo_text_processing.inverse_text_normalization.en.clean_eval_data import filter_loaded_data
     file_path = args.input
     inverse_normalizer = InverseNormalizer(lang=args.lang)
 

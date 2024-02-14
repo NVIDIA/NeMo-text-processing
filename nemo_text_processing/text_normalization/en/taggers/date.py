@@ -17,10 +17,21 @@ from pynini.examples import plurals
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR, NEMO_DIGIT, NEMO_LOWER, NEMO_SIGMA, TO_LOWER, GraphFst,
-    delete_extra_space, delete_space, insert_space)
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    NEMO_LOWER,
+    NEMO_SIGMA,
+    TO_LOWER,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.en.utils import (
-    augment_labels_with_punct_at_end, get_abs_path, load_labels)
+    augment_labels_with_punct_at_end,
+    get_abs_path,
+    load_labels,
+)
 
 graph_teen = pynini.invert(pynini.string_file(get_abs_path("data/number/teen.tsv"))).optimize()
 graph_digit = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize()

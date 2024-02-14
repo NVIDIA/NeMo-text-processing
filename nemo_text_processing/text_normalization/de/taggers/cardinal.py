@@ -17,10 +17,14 @@ from collections import defaultdict
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.de.utils import (get_abs_path,
-                                                              load_labels)
+from nemo_text_processing.text_normalization.de.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, NEMO_SIGMA, GraphFst, delete_space, insert_space)
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 
 AND = "und"
 

@@ -15,8 +15,12 @@
 from argparse import ArgumentParser
 
 from nemo_text_processing.text_normalization.data_loader_utils import (
-    evaluate, known_types, load_files, training_data_to_sentences,
-    training_data_to_tokens)
+    evaluate,
+    known_types,
+    load_files,
+    training_data_to_sentences,
+    training_data_to_tokens,
+)
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
 '''
@@ -55,8 +59,7 @@ if __name__ == "__main__":
     # python run_evaluate.py --input=<INPUT> --cat=<CATEGORY> --filter
     args = parse_args()
     if args.lang == 'en':
-        from nemo_text_processing.text_normalization.en.clean_eval_data import \
-            filter_loaded_data
+        from nemo_text_processing.text_normalization.en.clean_eval_data import filter_loaded_data
     file_path = args.input
     normalizer = Normalizer(input_case=args.input_case, lang=args.lang)
 

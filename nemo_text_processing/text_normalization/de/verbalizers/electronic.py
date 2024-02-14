@@ -17,7 +17,12 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.de.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE, NEMO_SIGMA, GraphFst, delete_preserve_order, insert_space)
+    NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
+    GraphFst,
+    delete_preserve_order,
+    insert_space,
+)
 
 
 class ElectronicFst(GraphFst):
