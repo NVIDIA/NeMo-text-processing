@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (  # common string literals
+from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_ALPHA,
     NEMO_DIGIT,

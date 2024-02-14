@@ -31,7 +31,6 @@ from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteLi
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
 from nemo_text_processing.text_normalization.zh.taggers.word import Char
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
