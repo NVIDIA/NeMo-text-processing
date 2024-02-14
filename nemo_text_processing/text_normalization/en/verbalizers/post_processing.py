@@ -18,10 +18,14 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    MIN_NEG_WEIGHT, NEMO_ALPHA, NEMO_CHAR, NEMO_SIGMA, NEMO_SPACE,
-    generator_main)
-from nemo_text_processing.text_normalization.en.taggers.punctuation import \
-    PunctuationFst
+    MIN_NEG_WEIGHT,
+    NEMO_ALPHA,
+    NEMO_CHAR,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    generator_main,
+)
+from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
 
 

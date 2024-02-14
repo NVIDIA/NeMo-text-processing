@@ -12,17 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.sv.verbalizers.cardinal import \
-    CardinalFst
-from nemo_text_processing.inverse_text_normalization.sv.verbalizers.date import \
-    DateFst
-from nemo_text_processing.inverse_text_normalization.sv.verbalizers.decimal import \
-    DecimalFst
-from nemo_text_processing.inverse_text_normalization.sv.verbalizers.time import \
-    TimeFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.sv.verbalizers.cardinal import \
-    CardinalFst as TNCardinalVerbalizer
+from nemo_text_processing.text_normalization.sv.verbalizers.cardinal import CardinalFst as TNCardinalVerbalizer
 
 
 class VerbalizeFst(GraphFst):

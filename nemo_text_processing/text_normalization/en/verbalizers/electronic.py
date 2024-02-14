@@ -17,9 +17,19 @@ from pynini.examples import plurals
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    MIN_NEG_WEIGHT, NEMO_ALPHA, NEMO_CHAR, NEMO_LOWER, NEMO_NOT_QUOTE,
-    NEMO_SIGMA, NEMO_SPACE, TO_LOWER, GraphFst, delete_extra_space,
-    delete_space, insert_space)
+    MIN_NEG_WEIGHT,
+    NEMO_ALPHA,
+    NEMO_CHAR,
+    NEMO_LOWER,
+    NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    TO_LOWER,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
 
 

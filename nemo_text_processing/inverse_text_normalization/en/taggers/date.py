@@ -16,11 +16,17 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.en.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED, INPUT_LOWER_CASED, NEMO_ALPHA, NEMO_DIGIT, GraphFst,
-    capitalized_input_graph, delete_extra_space, delete_space)
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    GraphFst,
+    capitalized_input_graph,
+    delete_extra_space,
+    delete_space,
+)
 
 graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv")).optimize()
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()

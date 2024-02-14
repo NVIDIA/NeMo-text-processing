@@ -18,20 +18,18 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_WHITE_SPACE, GraphFst, delete_extra_space, delete_space,
-    generator_main)
-from nemo_text_processing.text_normalization.en.taggers.punctuation import \
-    PunctuationFst
-from nemo_text_processing.text_normalization.fr.taggers.cardinal import \
-    CardinalFst
-from nemo_text_processing.text_normalization.fr.taggers.decimals import \
-    DecimalFst
-from nemo_text_processing.text_normalization.fr.taggers.fraction import \
-    FractionFst
-from nemo_text_processing.text_normalization.fr.taggers.ordinal import \
-    OrdinalFst
-from nemo_text_processing.text_normalization.fr.taggers.whitelist import \
-    WhiteListFst
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
+from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.fr.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.fr.taggers.decimals import DecimalFst
+from nemo_text_processing.text_normalization.fr.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.fr.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.fr.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.fr.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
 

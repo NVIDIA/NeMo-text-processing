@@ -15,8 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import (NEMO_SPACE,
-                                                                    GraphFst)
+from nemo_text_processing.text_normalization.ar.graph_utils import NEMO_SPACE, GraphFst
 
 
 class CardinalFst(GraphFst):

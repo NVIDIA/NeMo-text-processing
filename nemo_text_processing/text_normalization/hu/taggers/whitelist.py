@@ -15,11 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst, convert_space)
-from nemo_text_processing.text_normalization.hu.utils import (get_abs_path,
-                                                              load_labels,
-                                                              naive_inflector)
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels, naive_inflector
 
 
 def load_inflected(filename, input_case, singular_only=False, skip_spaces=True):

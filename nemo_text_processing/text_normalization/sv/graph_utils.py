@@ -16,8 +16,7 @@
 import pynini
 from pynini.lib import byte, pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    delete_space, insert_space)
+from nemo_text_processing.text_normalization.en.graph_utils import delete_space, insert_space
 
 from .utils import get_abs_path, load_labels
 

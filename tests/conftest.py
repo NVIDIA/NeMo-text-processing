@@ -218,8 +218,7 @@ def pytest_configure(config):
         extract_data_from_tar(test_dir, test_data_archive, local_data=config.option.use_local_test_data)
 
     # Set cache directory for TN/ITN tests
-    from .nemo_text_processing.utils import (set_audio_based_tests,
-                                             set_cache_dir)
+    from .nemo_text_processing.utils import set_audio_based_tests, set_cache_dir
 
     set_cache_dir(config.option.tn_cache_dir)
     set_audio_based_tests(config.option.run_audio_based)

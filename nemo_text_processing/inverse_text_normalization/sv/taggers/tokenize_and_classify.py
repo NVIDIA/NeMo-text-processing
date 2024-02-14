@@ -17,47 +17,32 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import \
-    PunctuationFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.word import \
-    WordFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.cardinal import \
-    CardinalFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.date import \
-    DateFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.decimal import \
-    DecimalFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.electronic import \
-    ElectronicFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.fraction import \
-    FractionFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.ordinal import \
-    OrdinalFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.telephone import \
-    TelephoneFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.time import \
-    TimeFst
-from nemo_text_processing.inverse_text_normalization.sv.taggers.whitelist import \
-    WhiteListFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.electronic import ElectronicFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.telephone import TelephoneFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.sv.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_LOWER_CASED, GraphFst, delete_extra_space, delete_space,
-    generator_main)
-from nemo_text_processing.text_normalization.sv.taggers.cardinal import \
-    CardinalFst as TNCardinalTagger
-from nemo_text_processing.text_normalization.sv.taggers.date import \
-    DateFst as TNDateTagger
-from nemo_text_processing.text_normalization.sv.taggers.decimal import \
-    DecimalFst as TNDecimalTagger
-from nemo_text_processing.text_normalization.sv.taggers.electronic import \
-    ElectronicFst as TNElectronicTagger
-from nemo_text_processing.text_normalization.sv.taggers.fraction import \
-    FractionFst as TNFractionTagger
-from nemo_text_processing.text_normalization.sv.taggers.ordinal import \
-    OrdinalFst as TNOrdinalTagger
-from nemo_text_processing.text_normalization.sv.taggers.telephone import \
-    TelephoneFst as TNTelephoneTagger
-from nemo_text_processing.text_normalization.sv.verbalizers.electronic import \
-    ElectronicFst as TNElectronicVerbalizer
+    INPUT_LOWER_CASED,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
+from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst as TNCardinalTagger
+from nemo_text_processing.text_normalization.sv.taggers.date import DateFst as TNDateTagger
+from nemo_text_processing.text_normalization.sv.taggers.decimal import DecimalFst as TNDecimalTagger
+from nemo_text_processing.text_normalization.sv.taggers.electronic import ElectronicFst as TNElectronicTagger
+from nemo_text_processing.text_normalization.sv.taggers.fraction import FractionFst as TNFractionTagger
+from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFst as TNOrdinalTagger
+from nemo_text_processing.text_normalization.sv.taggers.telephone import TelephoneFst as TNTelephoneTagger
+from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst as TNElectronicVerbalizer
 from nemo_text_processing.utils.logging import logger
 
 

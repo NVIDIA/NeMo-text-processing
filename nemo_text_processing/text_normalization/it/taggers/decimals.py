@@ -16,9 +16,18 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, GraphFst, delete_space, insert_space)
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.es.graph_utils import (
-    cardinal_separator, decimal_separator, strip_cardinal_apocope)
+    cardinal_separator,
+    decimal_separator,
+    strip_cardinal_apocope,
+)
 from nemo_text_processing.text_normalization.it.utils import get_abs_path
 
 quantities = pynini.string_file(get_abs_path("data/numbers/quantities.tsv"))

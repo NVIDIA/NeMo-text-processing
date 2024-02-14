@@ -15,10 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.es.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, GraphFst, delete_extra_space, delete_space)
+    NEMO_DIGIT,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+)
 
 
 def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_million: 'pynini.FstLike') -> 'pynini.FstLike':

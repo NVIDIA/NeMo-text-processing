@@ -16,8 +16,7 @@
 import pynini
 from pynini.lib import byte
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    delete_space, insert_space)
+from nemo_text_processing.text_normalization.en.graph_utils import delete_space, insert_space
 
 _ALPHA_UPPER = "AÁBCDEÉFGHIÍJKLMNOÓÖŐPQRSTUÚÜŰVWXYZ"
 _ALPHA_LOWER = "aábcdeéfghiíjklmnoóöőpqrstuúüűvwxyz"

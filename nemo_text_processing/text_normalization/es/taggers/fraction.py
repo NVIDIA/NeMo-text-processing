@@ -14,11 +14,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (NEMO_CHAR,
-                                                                    NEMO_DIGIT,
-                                                                    NEMO_SIGMA,
-                                                                    NEMO_SPACE,
-                                                                    GraphFst)
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+)
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
 
 ordinal_exceptions = pynini.string_file(get_abs_path("data/fractions/ordinal_exceptions.tsv"))

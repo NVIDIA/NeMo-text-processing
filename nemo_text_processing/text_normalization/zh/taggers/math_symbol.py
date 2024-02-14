@@ -15,8 +15,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.zh.taggers.cardinal import \
-    CardinalFst
+from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 

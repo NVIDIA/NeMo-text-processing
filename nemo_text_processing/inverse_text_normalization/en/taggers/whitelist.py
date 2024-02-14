@@ -19,10 +19,14 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.en.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED, INPUT_LOWER_CASED, GraphFst, convert_space, string_map_cased)
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    GraphFst,
+    convert_space,
+    string_map_cased,
+)
 from nemo_text_processing.text_normalization.en.utils import load_labels
 
 

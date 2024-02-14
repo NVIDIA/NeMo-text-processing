@@ -18,29 +18,24 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_WHITE_SPACE, GraphFst, delete_extra_space, delete_space,
-    generator_main)
-from nemo_text_processing.text_normalization.en.taggers.punctuation import \
-    PunctuationFst
-from nemo_text_processing.text_normalization.hu.taggers.cardinal import \
-    CardinalFst
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
+from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.hu.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hu.taggers.date import DateFst
-from nemo_text_processing.text_normalization.hu.taggers.decimal import \
-    DecimalFst
-from nemo_text_processing.text_normalization.hu.taggers.electronic import \
-    ElectronicFst
-from nemo_text_processing.text_normalization.hu.taggers.fraction import \
-    FractionFst
-from nemo_text_processing.text_normalization.hu.taggers.measure import \
-    MeasureFst
+from nemo_text_processing.text_normalization.hu.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.hu.taggers.electronic import ElectronicFst
+from nemo_text_processing.text_normalization.hu.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.hu.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hu.taggers.money import MoneyFst
-from nemo_text_processing.text_normalization.hu.taggers.ordinal import \
-    OrdinalFst
-from nemo_text_processing.text_normalization.hu.taggers.telephone import \
-    TelephoneFst
+from nemo_text_processing.text_normalization.hu.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.hu.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hu.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.hu.taggers.whitelist import \
-    WhiteListFst
+from nemo_text_processing.text_normalization.hu.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.hu.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
 

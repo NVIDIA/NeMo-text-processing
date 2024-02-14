@@ -18,10 +18,20 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA, NEMO_DIGIT, NEMO_SIGMA, GraphFst, convert_space, insert_space)
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    GraphFst,
+    convert_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hu.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.hu.utils import (
-    get_abs_path, inflect_abbreviation, load_labels, naive_inflector)
+    get_abs_path,
+    inflect_abbreviation,
+    load_labels,
+    naive_inflector,
+)
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency.tsv")))

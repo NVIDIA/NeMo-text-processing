@@ -18,33 +18,25 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import \
-    CardinalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.date import \
-    DateFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.decimal import \
-    DecimalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.electronic import \
-    ElectronicFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.measure import \
-    MeasureFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.money import \
-    MoneyFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.ordinal import \
-    OrdinalFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import \
-    PunctuationFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import \
-    TelephoneFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.time import \
-    TimeFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import \
-    WhiteListFst
-from nemo_text_processing.inverse_text_normalization.en.taggers.word import \
-    WordFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.electronic import ElectronicFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.money import MoneyFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.telephone import TelephoneFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_LOWER_CASED, GraphFst, delete_extra_space, delete_space,
-    generator_main)
+    INPUT_LOWER_CASED,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.utils.logging import logger
 
 

@@ -15,8 +15,15 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE, NEMO_SIGMA, NEMO_SPACE, NEMO_WHITE_SPACE, GraphFst,
-    delete_extra_space, delete_preserve_order, delete_space)
+    NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_preserve_order,
+    delete_space,
+)
 from nemo_text_processing.text_normalization.es.graph_utils import ones
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
 

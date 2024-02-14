@@ -15,12 +15,19 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE, GraphFst, delete_preserve_order, delete_space,
-    insert_space)
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_preserve_order,
+    delete_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.es import LOCALIZATION
 from nemo_text_processing.text_normalization.es.graph_utils import (
-    add_cardinal_apocope_fem, shift_cardinal_gender, shift_number_gender,
-    strip_cardinal_apocope)
+    add_cardinal_apocope_fem,
+    shift_cardinal_gender,
+    shift_number_gender,
+    strip_cardinal_apocope,
+)
 
 
 class DecimalFst(GraphFst):

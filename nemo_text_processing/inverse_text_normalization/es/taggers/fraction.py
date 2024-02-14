@@ -16,11 +16,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.es.utils import \
-    get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (NEMO_SIGMA,
-                                                                    NEMO_SPACE,
-                                                                    GraphFst)
+from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, NEMO_SPACE, GraphFst
 
 
 class FractionFst(GraphFst):
