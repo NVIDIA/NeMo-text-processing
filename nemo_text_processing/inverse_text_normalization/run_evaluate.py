@@ -23,7 +23,6 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
     training_data_to_tokens,
 )
 
-
 '''
 Runs Evaluation on data in the format of : <semiotic class>\t<unnormalized text>\t<`self` if trivial class or normalized text>
 like the Google text normalization data https://www.kaggle.com/richardwilliamsproat/text-normalization-for-english-russian-and-polish

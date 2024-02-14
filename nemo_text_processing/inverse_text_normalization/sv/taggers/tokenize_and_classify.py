@@ -15,6 +15,8 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.cardinal import CardinalFst
@@ -42,7 +44,6 @@ from nemo_text_processing.text_normalization.sv.taggers.ordinal import OrdinalFs
 from nemo_text_processing.text_normalization.sv.taggers.telephone import TelephoneFst as TNTelephoneTagger
 from nemo_text_processing.text_normalization.sv.verbalizers.electronic import ElectronicFst as TNElectronicVerbalizer
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
