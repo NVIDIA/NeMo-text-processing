@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst

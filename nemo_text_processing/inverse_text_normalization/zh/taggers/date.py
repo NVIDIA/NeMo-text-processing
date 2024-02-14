@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class DateFst(GraphFst):

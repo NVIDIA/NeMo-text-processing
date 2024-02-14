@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NON_BREAKING_SPACE,
     NEMO_SPACE,
@@ -20,7 +22,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.text_normalization.ru.alphabet import RU_ALPHA
-from pynini.lib import pynutil
 
 
 class MeasureFst(GraphFst):
