@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_QUOTE,
@@ -20,7 +22,6 @@ from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):

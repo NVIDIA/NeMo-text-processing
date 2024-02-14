@@ -23,10 +23,11 @@ from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 import pynini
-from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from pynini.lib.rewrite import top_rewrite
 from tqdm import tqdm
+
+from nemo_text_processing.inverse_text_normalization.en.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 
 DELIMITER = '~~'
 

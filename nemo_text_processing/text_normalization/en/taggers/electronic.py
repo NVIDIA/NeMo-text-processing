@@ -14,6 +14,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_ALPHA,
@@ -26,7 +28,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     get_abs_path,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class ElectronicFst(GraphFst):

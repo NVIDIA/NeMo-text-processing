@@ -1,6 +1,6 @@
 black==19.10b0
 click==8.0.2
-isort[requirements] < 5
+isort[requirements]>5.1.0,<6.0.0
 parameterized
 pynini==2.1.5
 pytest

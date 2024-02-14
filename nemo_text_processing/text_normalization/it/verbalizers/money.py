@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
@@ -22,7 +24,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.es.graph_utils import shift_cardinal_gender, strip_cardinal_apocope
 from nemo_text_processing.text_normalization.it.utils import get_abs_path
-from pynini.lib import pynutil
 
 fem = pynini.string_file((get_abs_path("data/money/currency_plural_fem.tsv")))
 masc = pynini.string_file((get_abs_path("data/money/currency_plural_masc.tsv")))

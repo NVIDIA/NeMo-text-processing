@@ -29,6 +29,10 @@ import pynini
 import regex
 import tqdm
 from joblib import Parallel, delayed
+from pynini.lib.rewrite import top_rewrite
+from sacremoses import MosesDetokenizer
+from tqdm import tqdm
+
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -38,9 +42,6 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
 from nemo_text_processing.utils.logging import logger
-from pynini.lib.rewrite import top_rewrite
-from sacremoses import MosesDetokenizer
-from tqdm import tqdm
 
 # this is to handle long input
 sys.setrecursionlimit(3000)
@@ -117,8 +118,8 @@ class Normalizer:
         self.post_processor = None
 
         if lang == "en":
-            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
             from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst
+            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)

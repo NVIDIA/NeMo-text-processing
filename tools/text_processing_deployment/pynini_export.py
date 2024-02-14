@@ -19,6 +19,7 @@ import time
 from argparse import ArgumentParser
 
 import pynini
+
 from nemo_text_processing.text_normalization.en.graph_utils import generator_main
 
 # This script exports compiled grammars inside nemo_text_processing into OpenFst finite state archive files
