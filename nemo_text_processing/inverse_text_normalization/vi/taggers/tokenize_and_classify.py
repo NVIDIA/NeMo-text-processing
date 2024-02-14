@@ -16,6 +16,8 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -37,7 +39,6 @@ from nemo_text_processing.inverse_text_normalization.vi.taggers.whitelist import
 from nemo_text_processing.inverse_text_normalization.vi.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
