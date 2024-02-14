@@ -14,6 +14,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -22,7 +24,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 quantities = pynini.string_file(get_abs_path("data/numbers/quantities.tsv"))
 digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))

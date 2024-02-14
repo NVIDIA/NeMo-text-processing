@@ -15,6 +15,8 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -56,7 +58,6 @@ from nemo_text_processing.text_normalization.en.verbalizers.telephone import Tel
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTime
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWord
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):

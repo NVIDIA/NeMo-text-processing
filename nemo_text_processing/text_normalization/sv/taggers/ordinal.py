@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -25,7 +27,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):

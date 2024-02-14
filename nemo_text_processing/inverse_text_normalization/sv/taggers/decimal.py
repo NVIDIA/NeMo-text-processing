@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 from nemo_text_processing.text_normalization.sv.taggers.decimal import get_quantity
-from pynini.lib import pynutil
 
 
 class DecimalFst(GraphFst):
