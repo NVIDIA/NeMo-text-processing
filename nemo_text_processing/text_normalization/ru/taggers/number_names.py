@@ -26,9 +26,10 @@
 # acceptor (G).
 
 import pynini
+from pynini.lib import pynutil, rewrite
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA
 from nemo_text_processing.text_normalization.ru.utils import get_abs_path, load_labels
-from pynini.lib import pynutil, rewrite
 
 
 def get_number_names():

@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -27,7 +29,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     get_singulars,
 )
-from pynini.lib import pynutil
 
 
 class MeasureFst(GraphFst):

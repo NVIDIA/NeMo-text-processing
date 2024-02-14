@@ -13,6 +13,9 @@
 # limitations under the License.
 
 import pynini
+from pynini.examples import plurals
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -29,8 +32,6 @@ from nemo_text_processing.text_normalization.en.utils import (
     get_abs_path,
     load_labels,
 )
-from pynini.examples import plurals
-from pynini.lib import pynutil
 
 graph_teen = pynini.invert(pynini.string_file(get_abs_path("data/number/teen.tsv"))).optimize()
 graph_digit = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize()

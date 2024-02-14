@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -24,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     plurals,
 )
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TelephoneFst(GraphFst):

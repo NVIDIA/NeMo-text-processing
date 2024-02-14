@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
@@ -21,7 +23,6 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):

@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.ru.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):

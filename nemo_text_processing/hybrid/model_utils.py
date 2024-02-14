@@ -17,8 +17,9 @@ import math
 import re
 from typing import List, Union
 
-from nemo_text_processing.hybrid.mlm_scorer import MLMScorer
 from tqdm import tqdm
+
+from nemo_text_processing.hybrid.mlm_scorer import MLMScorer
 
 try:
     import torch

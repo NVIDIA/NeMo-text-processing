@@ -13,6 +13,9 @@
 # limitations under the License.
 
 import pynini
+from pynini.examples import plurals
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -32,8 +35,6 @@ from nemo_text_processing.text_normalization.en.taggers.ordinal import OrdinalFs
 from nemo_text_processing.text_normalization.en.taggers.whitelist import get_formats
 from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as OrdinalVerbalizer
-from pynini.examples import plurals
-from pynini.lib import pynutil
 
 
 class MeasureFst(GraphFst):

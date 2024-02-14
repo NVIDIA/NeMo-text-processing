@@ -15,6 +15,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SPACE,
@@ -28,7 +30,6 @@ from nemo_text_processing.text_normalization.hu.utils import (
     load_labels,
     naive_inflector,
 )
-from pynini.lib import pynutil
 
 QUARTERS = {15: "negyed", 30: "fél", 45: "háromnegyed"}
 

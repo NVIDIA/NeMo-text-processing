@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.de.taggers.money import maj_singular, min_plural, min_singular
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
@@ -23,7 +25,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
