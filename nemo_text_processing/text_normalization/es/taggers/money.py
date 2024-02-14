@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -23,7 +25,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.es.graph_utils import decimal_separator
 from nemo_text_processing.text_normalization.es.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")))

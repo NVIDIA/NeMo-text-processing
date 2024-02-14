@@ -14,10 +14,11 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import GraphFst, delete_extra_space, delete_space
 from nemo_text_processing.inverse_text_normalization.vi.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.inverse_text_normalization.vi.verbalizers.word import WordFst
-from pynini.lib import pynutil
 
 
 class VerbalizeFinalFst(GraphFst):

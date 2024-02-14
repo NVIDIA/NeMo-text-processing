@@ -13,6 +13,9 @@
 # limitations under the License.
 
 import pynini
+from pynini.examples import plurals
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_ALPHA,
@@ -28,8 +31,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
-from pynini.examples import plurals
-from pynini.lib import pynutil
 
 
 class ElectronicFst(GraphFst):

@@ -14,9 +14,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import GraphFst, delete_extra_space, delete_space
 from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
-from pynini.lib import pynutil
 
 graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv")).optimize()
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()

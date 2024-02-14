@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.de.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, convert_space, insert_space
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
