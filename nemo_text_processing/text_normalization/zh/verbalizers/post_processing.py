@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 
+import os
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     MIN_NEG_WEIGHT,
@@ -28,7 +30,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 
 from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class PostProcessingFst:

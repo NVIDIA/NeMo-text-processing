@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 
+
+import os
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
@@ -80,7 +81,6 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(measure.fst, 1.05),
                 pynutil.add_weight(time.fst, 1.1),
                 pynutil.add_weight(whitelist.fst, 1.1),
-                pynutil.add_weight(cardinal.fst, 3.06),
                 pynutil.add_weight(cardinal.fst, 1.1),
                 pynutil.add_weight(decimal.fst, 3.05),
                 pynutil.add_weight(ordinal.fst, 1.1),

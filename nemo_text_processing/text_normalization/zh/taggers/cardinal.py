@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,10 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class CardinalFst(GraphFst):
@@ -43,7 +46,6 @@ class CardinalFst(GraphFst):
         )  # graph_all when at the head of the larger numbere.g., 13万 -> 十三万 instead of 一十三万
         graph_all_alt = alls @ graph_all_alt
 
-        # 百
         hundreds = NEMO_DIGIT ** 3
         graph_hundred_component = (graph_digit + pynutil.insert('百')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
@@ -54,7 +56,6 @@ class CardinalFst(GraphFst):
         self.digit = graph_digit
         self.all = graph_all
 
-        # 千
         thousands = NEMO_DIGIT ** 4
         graph_thousand_component = (graph_digit_alt + pynutil.insert('千')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
@@ -65,11 +66,10 @@ class CardinalFst(GraphFst):
             pynini.closure(pynutil.delete('0')),
             graph_hundred_component,
             (pynini.closure(pynutil.delete('0')) + graph_all),
-        )
-        # graph_thousand_component_alt is for larger number in later gramamr
+        ) # graph_thousand_component_alt is for larger number in later gramamr
+        
         graph_thousand = thousands @ graph_thousand_component
 
-        # 万
         ten_thousands = NEMO_DIGIT ** 5
         graph_ten_thousand_component = (graph_digit_alt + pynutil.insert('万')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
@@ -79,7 +79,6 @@ class CardinalFst(GraphFst):
         )
         graph_ten_thousand = ten_thousands @ graph_ten_thousand_component
 
-        # 十万
         hundred_thousands = NEMO_DIGIT ** 6
         hundred_thousands_position = NEMO_DIGIT ** 2
         hundred_thousands_position = hundred_thousands_position @ graph_all_alt
@@ -91,7 +90,6 @@ class CardinalFst(GraphFst):
         )
         graph_hundred_thousand = hundred_thousands @ graph_hundred_thousand_component
 
-        # 百万
         millions = NEMO_DIGIT ** 7
         million_position = NEMO_DIGIT ** 3
         million_position = million_position @ graph_hundred_component
@@ -103,7 +101,6 @@ class CardinalFst(GraphFst):
         )
         graph_million = millions @ graph_million_component
 
-        # 千万
         ten_millions = NEMO_DIGIT ** 8
         ten_million_position = NEMO_DIGIT ** 4
         ten_million_position = ten_million_position @ graph_thousand_component
@@ -115,7 +112,6 @@ class CardinalFst(GraphFst):
         )
         graph_ten_million = ten_millions @ graph_ten_million_component
 
-        # 亿
         hundred_millions = NEMO_DIGIT ** 9
         graph_hundred_million_component = (graph_digit_alt + pynutil.insert('亿')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
@@ -129,7 +125,6 @@ class CardinalFst(GraphFst):
         )
         graph_hundred_million = hundred_millions @ graph_hundred_million_component
 
-        # 十亿
         thousand_millions = NEMO_DIGIT ** 10
         thousand_millions_position = NEMO_DIGIT ** 2
         thousand_millions_position = thousand_millions_position @ graph_all_alt
@@ -145,7 +140,6 @@ class CardinalFst(GraphFst):
         )
         graph_thousand_million = thousand_millions @ graph_thousand_million_component
 
-        # 百亿
         ten_billions = NEMO_DIGIT ** 11
         ten_billions_position = NEMO_DIGIT ** 3
         ten_billions_position = ten_billions_position @ graph_hundred_component
@@ -161,7 +155,6 @@ class CardinalFst(GraphFst):
         )
         graph_ten_billions = ten_billions @ graph_ten_billions_component
 
-        # 千亿
         hundred_billions = NEMO_DIGIT ** 12
         hundred_billions_position = NEMO_DIGIT ** 4
         hundred_billions_position = hundred_billions_position @ graph_thousand_component

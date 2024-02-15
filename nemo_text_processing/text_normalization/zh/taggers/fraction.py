@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -38,7 +39,6 @@ class FractionFst(GraphFst):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
 
         graph_cardinals = cardinal.just_cardinals
-        # graph_decimal = decimal.decimal
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
 
@@ -155,7 +155,6 @@ class FractionFst(GraphFst):
             | (graph_optional_sign + pynutil.insert(" ") + graph_with_suffix)
             | (graph_optional_sign + pynutil.insert(" ") + graph_integer_percentage)
             | (graph_optional_sign + pynutil.insert(" ") + graph_decimal_percentage)
-            # | pynutil.add_weight((graph_optional_sign + pynutil.insert(" ") + graph_hundred), -3.0)
             | graph_optional_sign + pynutil.insert(" ") + graph_hundred
         )
 
