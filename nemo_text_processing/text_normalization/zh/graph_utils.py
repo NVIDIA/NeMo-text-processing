@@ -43,7 +43,7 @@ NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
 
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 NEMO_NOT_ALPHA = pynini.difference(NEMO_SIGMA, NEMO_ALPHA).optimize()
-NEMO_SPACE_CHAR = pynini.union(NEMO_CHAR,NEMO_SPACE)
+NEMO_SPACE_CHAR = pynini.union(NEMO_CHAR, NEMO_SPACE)
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))

@@ -28,4 +28,3 @@ class MathSymbol(GraphFst):
         graph = pynutil.delete('score: \"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('\"')
 
         self.fst = graph.optimize()
-

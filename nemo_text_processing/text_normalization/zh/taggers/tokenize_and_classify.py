@@ -14,7 +14,10 @@
 
 
 import os
+
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
@@ -27,7 +30,6 @@ from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreP
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
@@ -87,7 +89,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(word.fst, 100),
             )
 
-            token = pynutil.insert("tokens { ") + classify+ pynutil.insert(" } ")
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
             tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
-            
+
             self.fst = tagger

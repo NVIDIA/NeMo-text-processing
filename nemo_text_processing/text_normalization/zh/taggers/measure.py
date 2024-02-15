@@ -101,4 +101,3 @@ class MeasureFst(GraphFst):
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-

@@ -29,4 +29,3 @@ class TestMath:
     def test_norm_math(self, test_input, expected):
         preds = self.normalizer_zh.normalize(test_input)
         assert expected == preds
-
