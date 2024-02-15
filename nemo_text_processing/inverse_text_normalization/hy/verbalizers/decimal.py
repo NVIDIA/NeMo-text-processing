@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_SPACE
 from pynini.lib import pynutil
 
 
@@ -50,7 +50,7 @@ class DecimalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
+        optional_quantity = pynini.closure(pynutil.insert(NEMO_SPACE) + quantity + delete_space, 0, 1)
         graph = optional_integer + optional_fractional + optional_quantity
         self.numbers = graph
         delete_tokens = self.delete_tokens(graph)

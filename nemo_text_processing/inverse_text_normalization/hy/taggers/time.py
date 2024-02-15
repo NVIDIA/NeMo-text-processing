@@ -45,7 +45,7 @@ class TimeFst(GraphFst):
         graph_minutes_to = pynini.string_file(get_abs_path("data/time/minutes_to.tsv"))
         graph_to = pynutil.delete("պակաս")
 
-        graph_hours_component = pynutil.insert("hours: \"") + graph_hours + (pynutil.delete('')) + pynutil.insert("\"")
+        graph_hours_component = pynutil.insert("hours: \"") + graph_hours + pynutil.insert("\"")
 
         graph_minutes_component = (
             pynutil.insert(" minutes: \"") + pynini.union(graph_minutes, graph_fractions) + pynutil.insert("\"")
