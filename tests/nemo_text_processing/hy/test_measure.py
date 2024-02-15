@@ -22,7 +22,7 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestMeasure:
-
+    
     inverse_normalizer = InverseNormalizer(lang='hy', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('hy/data_inverse_text_normalization/test_cases_measure.txt'))
