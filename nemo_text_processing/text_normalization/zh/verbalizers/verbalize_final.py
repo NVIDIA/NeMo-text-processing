@@ -38,16 +38,16 @@ class VerbalizeFinalFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
         else:
             token_graph = VerbalizeFst(deterministic=deterministic)
-           
+
             token_verbalizer = (
-               pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
+                pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
             )
             verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
 
             postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
 
             self.fst = (verbalizer @ postprocessor.fst).optimize()
-            
+
             #######################################
             # token_verbalizer = (
             #     pynutil.delete("tokens { ") + pynini.closure(delete_space) + token_graph.fst + pynini.closure(delete_space) + pynutil.delete(" }")
@@ -57,8 +57,3 @@ class VerbalizeFinalFst(GraphFst):
 
             # if far_file:
             #     generator_main(far_file, {"verbalize": self.fst})
-            
-
-            
-            
-            

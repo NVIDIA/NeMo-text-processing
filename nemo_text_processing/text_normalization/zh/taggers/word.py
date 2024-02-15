@@ -33,4 +33,3 @@ class WordFst(GraphFst):
         super().__init__(name="word", kind="classify")
         word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
         self.fst = word.optimize()
-        

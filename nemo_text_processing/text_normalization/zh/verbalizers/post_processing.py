@@ -14,20 +14,20 @@
 
 
 import os
+
 import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    delete_space,
     MIN_NEG_WEIGHT,
     NEMO_ALPHA,
     NEMO_CHAR,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
     NEMO_SPACE,
+    delete_space,
     generator_main,
 )
-
 from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
 
@@ -107,15 +107,15 @@ class PostProcessingFst:
             {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
             By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
         """
-       
+
         remove_space_around_single_quote = pynini.cdrewrite(
-          
-            delete_space, NEMO_NOT_SPACE, NEMO_NOT_SPACE, pynini.closure(NEMO_SIGMA) 
-        ) 
+            delete_space, NEMO_NOT_SPACE, NEMO_NOT_SPACE, pynini.closure(NEMO_SIGMA)
+        )
         # this works if spaces in between (good)
         # delete space between 2 NEMO_NOT_SPACE（left and right to the space) that are with in a content of NEMO_SIGMA
-        
+
         graph = remove_space_around_single_quote.optimize()
-        import pdb; pdb.set_trace() 
+        import pdb
+
+        pdb.set_trace()
         return graph
-    

@@ -66,8 +66,8 @@ class CardinalFst(GraphFst):
             pynini.closure(pynutil.delete('0')),
             graph_hundred_component,
             (pynini.closure(pynutil.delete('0')) + graph_all),
-        ) # graph_thousand_component_alt is for larger number in later gramamr
-        
+        )  # graph_thousand_component_alt is for larger number in later gramamr
+
         graph_thousand = thousands @ graph_thousand_component
 
         ten_thousands = NEMO_DIGIT ** 5
