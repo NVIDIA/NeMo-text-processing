@@ -72,16 +72,22 @@ class ClassifyFst(GraphFst):
             logging.info(f"Creating ClassifyFst grammars.")
             cardinal = CardinalFst()
             cardinal_graph = cardinal.fst
+
             ordinal = OrdinalFst(cardinal)
             ordinal_graph = ordinal.fst
+
             date = DateFst(cardinal)
             date_graph = date.fst
+
             decimal = DecimalFst(cardinal)
             decimal_graph = decimal.fst
+
             fraction = FractionFst(cardinal, decimal)
             fraction_graph = fraction.fst
+
             time = TimeFst()
             time_graph = time.fst
+
             word_graph = WordFst().fst
             whitelist_graph = WhiteListFst().fst
             punct_graph = PunctuationFst().fst
@@ -98,37 +104,11 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(punct_graph, 1.1)
             )
 
-            ###
-            # punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
-            # token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-            # token_plus_punct = (
-            #    pynini.closure(punct + pynutil.insert(" "),0,1) + pynini.closure(token,0,1) + pynini.closure(pynutil.insert(" ") + punct,0,1)
-            # )
-
-            # graph = token_plus_punct + pynini.closure(delete_extra_space,0,1) + token_plus_punct
-            # graph = delete_space + graph + delete_space
-
-            # self.fst = graph.optimize()
-
-            # if far_file:
-            #    generator_main(far_file, {"tokenize_and_classify": self.fst})
-            # the above was the original, at this stage words need spaces
-
-            ### copied from zh tn takes more than 10 miniutes to initiate
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-
             tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
-            # preprocessor = PreProcessorFst(remove_interjections=True, fullwidth_to_halfwidth=True,)
-            # self.fst = preprocessor.fst @ tagger
             self.fst = tagger
-            ###
-
-            # punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
-            # token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-            # graph = (pynini.closure(punct) + pynini.closure(word_graph) + pynini.closure(token) + pynini.closure(punct) + pynini.closure(word_graph)).optimize()
-            # self.fst = graph
-
+            
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-            # the above was the original, at this stage words need spaces
+           
