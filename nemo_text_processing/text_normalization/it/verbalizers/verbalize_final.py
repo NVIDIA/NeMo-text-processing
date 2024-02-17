@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+<<<<<<< HEAD
 import logging
+=======
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 import os
 
 import pynini
@@ -24,6 +27,10 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
 from nemo_text_processing.text_normalization.it.verbalizers.verbalize import VerbalizeFst
+<<<<<<< HEAD
+=======
+from nemo_text_processing.utils.logging import logger
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 from pynini.lib import pynutil
 
 
@@ -47,7 +54,11 @@ class VerbalizeFinalFst(GraphFst):
             far_file = os.path.join(cache_dir, f"it_tn_{deterministic}_deterministic_verbalizer.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
+<<<<<<< HEAD
             logging.info(f'VerbalizeFinalFst graph was restored from {far_file}.')
+=======
+            logger.info(f'VerbalizeFinalFst graph was restored from {far_file}.')
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         else:
 
             verbalize = VerbalizeFst(deterministic=deterministic).fst
@@ -67,4 +78,7 @@ class VerbalizeFinalFst(GraphFst):
             self.fst = graph.optimize()
             if far_file:
                 generator_main(far_file, {"verbalize": self.fst})
+<<<<<<< HEAD
                 logging.info(f"VerbalizeFinalFst grammars are saved to {far_file}.")
+=======
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6

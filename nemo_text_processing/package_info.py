@@ -15,7 +15,11 @@
 
 MAJOR = 0
 MINOR = 2
+<<<<<<< HEAD
 PATCH = 0
+=======
+PATCH = 2
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 PRE_RELEASE = 'rc0'
 
 # Use the following formatting: (major, minor, patch, pre-release)

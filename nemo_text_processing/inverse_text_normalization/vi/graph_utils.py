@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
+from nemo_text_processing.utils.logging import logger
 from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
@@ -67,7 +68,11 @@ def generator_main(file_name: str, graphs: Dict[str, pynini.FstLike]):
     for rule, graph in graphs.items():
         exporter[rule] = graph.optimize()
     exporter.close()
+<<<<<<< HEAD
     logging.info(f"Created {file_name}")
+=======
+    logger.info(f"Created {file_name}")
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
 
 def convert_space(fst) -> "pynini.FstLike":

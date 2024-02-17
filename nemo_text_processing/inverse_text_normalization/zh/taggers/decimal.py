@@ -68,6 +68,7 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="decimal", kind="classify")
 
+<<<<<<< HEAD
         cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))
         cardinal_before_decimal = cardinal.just_cardinals | (pynini.closure(pynini.cross("零", "0"), 0, 1))
 
@@ -97,6 +98,22 @@ class DecimalFst(GraphFst):
         graph_decimal_no_sign = pynini.closure((graph_integer_or_none + delete_decimal + graph_fractional), 1)
 
         # New Grammar added for Money
+=======
+        cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv")) | pynini.closure(
+            pynini.cross("零", "0")
+        )
+        cardinal_before_decimal = cardinal.just_cardinals | pynini.cross("零", "0")
+
+        delete_decimal = pynutil.delete("点") | pynutil.delete("點")
+
+        graph_integer = pynutil.insert('integer_part: "') + cardinal_before_decimal + pynutil.insert('" ')
+
+        graph_string_of_cardinals = pynini.closure(cardinal_after_decimal, 1)
+        graph_fractional = pynutil.insert('fractional_part: "') + graph_string_of_cardinals + pynutil.insert('"')
+
+        graph_decimal_no_sign = pynini.closure((graph_integer + delete_decimal + graph_fractional), 1)
+
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         self.final_graph_wo_negative = graph_decimal_no_sign | get_quantity(
             graph_decimal_no_sign, cardinal.just_cardinals
         )

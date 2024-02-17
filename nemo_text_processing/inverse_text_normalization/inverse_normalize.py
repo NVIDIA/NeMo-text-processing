@@ -111,6 +111,15 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+<<<<<<< HEAD
+=======
+
+        elif lang == 'ja':  # Japanese
+            from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
         self.tagger = ClassifyFst(
             cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case

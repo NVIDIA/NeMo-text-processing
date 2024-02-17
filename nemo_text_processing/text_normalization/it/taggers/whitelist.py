@@ -42,10 +42,17 @@ class WhiteListFst(GraphFst):
             graph = pynini.string_map(whitelist)
             return graph
 
+<<<<<<< HEAD
         graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist.tsv"))
         if not deterministic and input_case != "lower_cased":
             graph |= pynutil.add_weight(
                 _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv")), weight=0.0001
+=======
+        graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist/whitelist.tsv"))
+        if not deterministic and input_case != "lower_cased":
+            graph |= pynutil.add_weight(
+                _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist/whitelist.tsv")), weight=0.0001
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
             )
 
         if input_file:

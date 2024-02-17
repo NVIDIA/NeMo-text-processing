@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+<<<<<<< HEAD
 import logging
+=======
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 import os
 
 import pynini
@@ -52,6 +55,10 @@ from nemo_text_processing.text_normalization.sv.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.sv.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.sv.verbalizers.telephone import TelephoneFst as vTelephoneFst
 from nemo_text_processing.text_normalization.sv.verbalizers.time import TimeFst as vTimeFst
+<<<<<<< HEAD
+=======
+from nemo_text_processing.utils.logging import logger
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 from pynini.lib import pynutil
 
 
@@ -89,7 +96,11 @@ class ClassifyFst(GraphFst):
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
+<<<<<<< HEAD
             logging.info(f'ClassifyFst.fst was restored from {far_file}.')
+=======
+            logger.info(f'ClassifyFst.fst was restored from {far_file}.')
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         else:
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
@@ -194,7 +205,10 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
+<<<<<<< HEAD
                 logging.info(f'ClassifyFst grammars are saved to {far_file}.')
+=======
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
         # to remove normalization options that still contain digits and some special symbols
         # e.g., "P&E" -> {P and E, P&E}, "P & E" will be removed from the list of normalization options

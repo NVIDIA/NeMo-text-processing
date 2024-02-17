@@ -32,6 +32,7 @@ class DecimalFst(GraphFst):
 
         # insert a "," for every three numbers before decimal point
         space_every_three_integer = at_most_three_digits + (pynutil.insert(",") + exactly_three_digits).closure()
+<<<<<<< HEAD
         # insert a "," for every three numbers after decimal point
         space_every_three_decimal = (
             pynini.accep(".") + (exactly_three_digits + pynutil.insert(",")).closure() + at_most_three_digits
@@ -40,6 +41,8 @@ class DecimalFst(GraphFst):
         # combine both
         group_by_threes = space_every_three_integer | space_every_three_decimal
         self.group_by_threes = group_by_threes
+=======
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
         # removing tokenizations, 'negative: '
         optional_sign = pynini.closure(
@@ -56,10 +59,17 @@ class DecimalFst(GraphFst):
             pynutil.delete("integer_part:")
             + delete_space
             + pynutil.delete('"')
+<<<<<<< HEAD
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
         )
         integer = integer @ group_by_threes
+=======
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynutil.delete('"')
+        )
+        integer = integer @ space_every_three_integer
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         optional_integer = pynini.closure(integer + delete_space, 0, 1)
 
         # removing tokenizations, 'fractionl_part'
@@ -81,10 +91,18 @@ class DecimalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
         )
+<<<<<<< HEAD
         optional_quantity = pynini.closure(quantity + delete_space)
 
         # combining graphs removing tokenizations *3
         graph = (optional_integer + optional_fractional + optional_quantity).optimize()
+=======
+        optional_quantity = pynini.closure(delete_space + quantity)
+
+        # combining graphs removing tokenizations *3
+        graph = (optional_integer + optional_fractional + optional_quantity).optimize()
+
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         graph = optional_sign + graph  # add optional sign for negative number
         self.numebrs = graph
         delete_tokens = self.delete_tokens(graph)

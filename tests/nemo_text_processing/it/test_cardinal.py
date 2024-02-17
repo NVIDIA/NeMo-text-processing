@@ -22,7 +22,15 @@ from ..utils import CACHE_DIR, parse_test_case_file
 class TestChar:
     normalizer = Normalizer(lang='it', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
 
+<<<<<<< HEAD
     @parameterized.expand(parse_test_case_file('it/data_text_normalization/test_cases_cardinal.txt'))
+=======
+<<<<<<< HEAD:tests/nemo_text_processing/zh/test_word.py
+    @parameterized.expand(parse_test_case_file('zh/data_text_normalization/test_cases_word.txt'))
+=======
+    @parameterized.expand(parse_test_case_file('it/data_text_normalization/test_cases_cardinal.txt'))
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6:tests/nemo_text_processing/it/test_cardinal.py
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm_char(self, test_input, expected):

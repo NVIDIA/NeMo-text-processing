@@ -78,7 +78,15 @@ class CardinalFst(GraphFst):
             | (graph_digits + delete_ten_thousands + pynini.cross(pynini.closure("零"), "00") + graph_all)
             | (graph_digits + delete_ten_thousands + pynini.cross(pynini.closure("零"), "000") + graph_digits)
         )
+<<<<<<< HEAD
         graph_ten_thousands = graph_ten_thousands_simple | graph_ten_thousands_complex | pynutil.insert("00000")
+=======
+        graph_ten_thousands = (
+            pynutil.add_weight(graph_ten_thousands_simple, -1.0)
+            | graph_ten_thousands_complex
+            | pynutil.insert("00000")
+        )
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
         # grammmar for hundred thousands 十万
         graph_hundred_thousands_simple = graph_all + closure_ten_thousands
@@ -88,8 +96,15 @@ class CardinalFst(GraphFst):
             | (graph_all + delete_ten_thousands + pynini.cross(pynini.closure("零"), "00") + graph_all)
             | (graph_all + delete_ten_thousands + pynini.cross(pynini.closure("零"), "000") + graph_digits)
         )
+<<<<<<< HEAD
         graph_hundred_thousands = (graph_hundred_thousands_simple | graph_hundred_thousands_complex) | pynutil.insert(
             "000000"
+=======
+        graph_hundred_thousands = (
+            pynutil.add_weight(graph_hundred_thousands_simple, -1.0)
+            | graph_hundred_thousands_complex
+            | pynutil.insert("000000")
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         )
 
         # grammar for millions 百万
@@ -168,7 +183,13 @@ class CardinalFst(GraphFst):
             | (graph_digits + delete_hundred_millions + pynini.cross(pynini.closure("零"), "0000000") + graph_digits)
         )
         graph_hundred_millions = (
+<<<<<<< HEAD
             graph_hundred_millions_simple | graph_hundred_millions_complex | pynutil.insert("000000000")
+=======
+            pynutil.add_weight(graph_hundred_millions_simple, -1.0)
+            | graph_hundred_millions_complex
+            | pynutil.insert("000000000")
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         )
 
         # grammar for billions 十亿
@@ -203,7 +224,13 @@ class CardinalFst(GraphFst):
             | (graph_all + delete_hundred_millions + pynini.cross(pynini.closure("零"), "000000") + graph_all)
             | (graph_all + delete_hundred_millions + pynini.cross(pynini.closure("零"), "0000000") + graph_digits)
         )
+<<<<<<< HEAD
         graph_billions = graph_billions_simple | graph_billions_complex | pynutil.insert("0000000000")
+=======
+        graph_billions = (
+            pynutil.add_weight(graph_billions_simple, -1.0) | graph_billions_complex | pynutil.insert("0000000000")
+        )
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
         # grammar for ten billions 百亿
         graph_ten_billions_simple = graph_hundreds_complex + closure_hundred_millions
@@ -252,7 +279,15 @@ class CardinalFst(GraphFst):
                 + graph_digits
             )
         )
+<<<<<<< HEAD
         graph_ten_billions = graph_ten_billions_simple | graph_ten_billions_complex | pynutil.insert("00000000000")
+=======
+        graph_ten_billions = (
+            pynutil.add_weight(graph_ten_billions_simple, -1.0)
+            | graph_ten_billions_complex
+            | pynutil.insert("00000000000")
+        )
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
         # grammar for hundred billions 千亿
         graph_hundred_billions_simple = graph_thousands_complex + closure_hundred_millions
@@ -301,7 +336,13 @@ class CardinalFst(GraphFst):
                 + graph_digits
             )
         )
+<<<<<<< HEAD
         graph_hundred_billions = graph_hundred_billions_simple | graph_hundred_billions_complex
+=======
+        graph_hundred_billions = (
+            pynutil.add_weight(graph_hundred_billions_simple, -1.0) | graph_hundred_billions_complex
+        )
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
         # combining grammar; output for cardinal grammar
         graph = pynini.union(

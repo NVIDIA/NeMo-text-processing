@@ -8,4 +8,10 @@
 3544~tremila cinquecento quarantaquattro
 1000~mille
 1034500~un milione trentaquattromila cinquecento
+<<<<<<< HEAD
 3453243534~tremila quattrocento cinquantatre milioni duecento quarantatremila cinquecento trentaquattro
+=======
+3453243534~tremila quattrocento cinquantatre milioni duecento quarantatremila cinquecento trentaquattro
+38~trentotto
+7 giorni sono una settimana~sette giorni sono una settimana
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6

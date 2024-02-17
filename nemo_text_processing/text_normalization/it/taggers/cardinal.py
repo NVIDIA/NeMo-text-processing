@@ -84,8 +84,13 @@ class CardinalFst(GraphFst):
         # double digit
         graph_tens = teen
         graph_tens |= tens + (pynutil.delete('0') | graph_digit)
+<<<<<<< HEAD
         graph_tens |= tens_one
         graph_tens |= tens_eight
+=======
+        graph_tens |= pynutil.add_weight(tens_one, -0.01)
+        graph_tens |= pynutil.add_weight(tens_eight, -0.01)
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
         self.tens = graph_tens.optimize()
 

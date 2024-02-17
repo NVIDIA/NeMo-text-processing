@@ -21,31 +21,52 @@ runtest () {
 }
 
 testITNCardinal() {
+<<<<<<< HEAD
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_cardinal.txt
+=======
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_cardinal.txt
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
   runtest $input
 }
 
 testITNDate() {
+<<<<<<< HEAD
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_date.txt
+=======
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_date.txt
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
   runtest $input
 }
 
 testITNDecimal() {
+<<<<<<< HEAD
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_decimal.txt
+=======
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_decimal.txt
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
   runtest $input
 }
 
 testITNOrdinal() {
+<<<<<<< HEAD
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_ordinal.txt
+=======
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_ordinal.txt
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
   runtest $input
 }
 
 testITNFraction() {
+<<<<<<< HEAD
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_fraction.txt
+=======
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_fraction.txt
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
   runtest $input
 }
 
 testITNTime() {
+<<<<<<< HEAD
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_time.txt
   runtest $input
 }
@@ -57,10 +78,24 @@ testITNMeasure() {
 
 testITNMoney() {
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_money.txt
+=======
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_time.txt
+  runtest $input
+}
+
+#testITNMeasure() {
+#  input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_measure.txt
+#  runtest $input
+#}
+
+testITNMoney() {
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_money.txt
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
   runtest $input
 }
 
 testITNWhitelist() {
+<<<<<<< HEAD
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_whitelist.txt
   runtest $input
 }
@@ -77,6 +112,24 @@ testITNElectronic() {
 
 testITNWord() {
   input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_word.txt
+=======
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_whitelist.txt
+  runtest $input
+}
+
+#testITNTelephone() {
+#  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_telephone.txt
+#  runtest $input
+#}
+
+#testITNElectronic() {
+#  input=$PROJECT_DIR/fr/data_inverse_text_normalization/test_cases_electronic.txt
+#  runtest $input
+#}
+
+testITNWord() {
+  input=$PROJECT_DIR/zh/data_inverse_text_normalization/test_cases_word.txt
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
   runtest $input
 }
 

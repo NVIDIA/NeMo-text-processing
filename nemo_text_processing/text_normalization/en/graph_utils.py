@@ -21,6 +21,10 @@ from typing import Dict
 
 import pynini
 from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
+<<<<<<< HEAD
+=======
+from nemo_text_processing.utils.logging import logger
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 from pynini import Far
 from pynini.examples import plurals
 from pynini.export import export
@@ -140,7 +144,11 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     for rule, graph in graphs.items():
         exporter[rule] = graph.optimize()
     exporter.close()
+<<<<<<< HEAD
     logging.info(f'Created {file_name}')
+=======
+    logger.info(f'Created {file_name}')
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 
 
 def get_plurals(fst):
@@ -201,7 +209,11 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
             spoken_no_space = spoken.replace(" ", "")
             # add abbreviations without spaces (both lower and upper case), i.e. "BMW" not "B M W"
             if len(spoken) == (2 * len(spoken_no_space) - 1):
+<<<<<<< HEAD
                 logging.debug(f"This is weight {weight}")
+=======
+                logger.debug(f"This is weight {weight}")
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
                 if len(weight) == 0:
                     additional_labels.extend(
                         [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]

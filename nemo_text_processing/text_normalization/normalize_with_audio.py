@@ -24,6 +24,7 @@ from nemo_text_processing.logging import logger
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.utils_audio_based import get_alignment
+from nemo_text_processing.utils.logging import logger
 from pynini.lib import rewrite
 
 
@@ -172,7 +173,11 @@ class NormalizerWithAudio(Normalizer):
                     )
                     if cer_threshold > 0 and cer > cer_threshold:
                         best_option = cur_deter_norm
+<<<<<<< HEAD
                         if verbose and True:
+=======
+                        if verbose:
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
                             logger.info(
                                 f"CER of the best normalization option is above cer_theshold, using determinictis option. CER: {cer}"
                             )
@@ -541,4 +546,8 @@ if __name__ == "__main__":
             "Provide either path to .json manifest with '--manifest' OR "
             + "an input text with '--text' (for debugging without audio)"
         )
+<<<<<<< HEAD
     logger.warning(f'Execution time: {round((perf_counter() - start)/60, 2)} min.')
+=======
+    logger.info(f'Execution time: {round((perf_counter() - start)/60, 2)} min.')
+>>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
