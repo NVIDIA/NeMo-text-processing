@@ -35,13 +35,14 @@ class MoneyFst(GraphFst):
 
         unit = pynini.string_file(get_abs_path("data/currency.tsv"))
 
-        optional_delimiter = pynini.closure(pynutil.add_weight(pynini.cross(NEMO_SPACE, ""), -100), 0, 1)
+        weighted_delimiter = pynutil.add_weight(pynutil.delete(NEMO_SPACE), -100)
+        optional_delimiter = pynini.closure(weighted_delimiter, 0, 1)
         graph_unit_singular = optional_delimiter + pynutil.insert(" currency: \"") + unit + pynutil.insert("\"")
 
         graph_decimal = decimal_graph + graph_unit_singular
         graph_cardinal = cardinal_graph + graph_unit_singular
 
-        tagger_graph = (graph_cardinal.optimize() | graph_decimal.optimize()).optimize()
+        tagger_graph = (graph_cardinal | graph_decimal)
 
         integer = pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         integer_cardinal = pynutil.delete("integer: ") + integer
@@ -55,7 +56,7 @@ class MoneyFst(GraphFst):
         )
         unit = pynini.accep(NEMO_SPACE) + unit
 
-        verbalizer_graph_cardinal = (integer_cardinal + unit).optimize()
+        verbalizer_graph_cardinal = (integer_cardinal + unit)
 
         optional_fractional_part = pynini.closure(pynutil.delete("fractional_part: ") + integer, 0, 1)
         optional_quantity = pynini.closure(pynini.accep(NEMO_SPACE) + pynutil.delete("quantity: ") + integer, 0, 1)
@@ -73,7 +74,7 @@ class MoneyFst(GraphFst):
             + unit
         )
 
-        verbalizer_graph = (verbalizer_graph_cardinal | verbalizer_graph_decimal).optimize()
+        verbalizer_graph = (verbalizer_graph_cardinal | verbalizer_graph_decimal)
 
         self.final_graph = (tagger_graph @ verbalizer_graph).optimize()
         self.fst = self.add_tokens(

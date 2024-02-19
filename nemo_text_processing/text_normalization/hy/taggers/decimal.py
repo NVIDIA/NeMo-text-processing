@@ -23,10 +23,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 from pynini.lib import pynutil
 
-quantities = pynini.string_file(get_abs_path("data/numbers/quantities.tsv"))
-digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-zero = pynini.string_map(["0", "զրո"])
-
 
 def get_quantity(decimal_graph: "pynini.FstLike", cardinal_graph: "pynini.FstLike") -> "pynini.FstLike":
     """
@@ -37,7 +33,8 @@ def get_quantity(decimal_graph: "pynini.FstLike", cardinal_graph: "pynini.FstLik
         decimal_graph: DecimalFST
         cardinal_graph: CardinalFST
     """
-    delete_separator = pynini.closure(pynutil.delete(" "), 0, 1)
+    quantities = pynini.string_file(get_abs_path("data/numbers/quantities.tsv"))
+    delete_separator = pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)
     numbers = pynini.closure(NEMO_DIGIT, 1, 6) @ cardinal_graph
     numbers = pynini.cdrewrite(pynutil.delete(delete_separator), "", "", NEMO_SIGMA) @ numbers
 
@@ -67,6 +64,9 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
+        digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        zero = pynini.string_map(["0", "զրո"])
+
         graph_digit = digit | zero
 
         graph = pynini.union(graph_digit, cardinal.all_hundreds, cardinal.one_to_all_tens)
@@ -82,8 +82,8 @@ class DecimalFst(GraphFst):
         graph_integer = pynutil.insert('integer_part: "') + integers + pynutil.insert('"')
         final_graph_wo_sign = graph_integer + delete_separator + insert_space + graph_fractional
 
-        final_graph_wo_negative = final_graph_wo_sign | get_quantity(final_graph_wo_sign, integers).optimize()
-        self.final_graph_wo_negative = final_graph_wo_negative
+        final_graph_wo_negative = final_graph_wo_sign | get_quantity(final_graph_wo_sign, integers)
+        self.final_graph_wo_negative = final_graph_wo_negative.optimize()
 
         final_graph = optional_graph_negative + final_graph_wo_negative
 

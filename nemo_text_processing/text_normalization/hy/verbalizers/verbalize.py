@@ -34,7 +34,7 @@ class VerbalizeFst(GraphFst):
                 for False multiple options (used for audio-based normalization)
         """
 
-    def __init__(self, deterministic=False):
+    def __init__(self, deterministic=True):
         super().__init__(name="verbalize", kind="verbalize")
         cardinal = CardinalFst()
         cardinal_graph = cardinal.fst
@@ -57,4 +57,4 @@ class VerbalizeFst(GraphFst):
             | cardinal_graph
             | whitelist_graph
         )
-        self.fst = graph
+        self.fst = graph.optimize()

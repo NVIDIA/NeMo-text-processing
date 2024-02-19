@@ -36,7 +36,7 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
         graph = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        suffix = pynini.cdrewrite(pynini.cross("ըերորդ", "ներորդ"), "", "[EOS]", NEMO_SIGMA,).optimize()
+        suffix = pynini.cdrewrite(pynini.cross("ըերորդ", "ներորդ"), "", "[EOS]", NEMO_SIGMA).optimize()
         self.graph = (pynini.compose(graph, suffix)).optimize()
         delete_tokens = self.delete_tokens(self.graph)
         self.fst = delete_tokens.optimize()

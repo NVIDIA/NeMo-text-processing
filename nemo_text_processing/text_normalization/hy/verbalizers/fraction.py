@@ -36,9 +36,9 @@ class FractionFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        suffix = pynini.cdrewrite(pynini.cross("ըերորդ", "ներորդ"), "", "[EOS]", NEMO_SIGMA,).optimize()
+        suffix = pynini.cdrewrite(pynini.cross("ըերորդ", "ներորդ"), "", "[EOS]", NEMO_SIGMA).optimize()
 
         graph = (numerator + delete_space + pynini.compose(denominator, suffix)).optimize()
-        self.numbers = graph
+        self.numbers = graph.optimize()
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

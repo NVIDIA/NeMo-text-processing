@@ -39,13 +39,13 @@ class MeasureFst(GraphFst):
 
         cardinal_graph = cardinal.all_nums_no_tokens
 
-        casing_graph = pynini.closure(TO_LOWER | NEMO_SIGMA).optimize()
+        casing_graph = pynini.closure(TO_LOWER | NEMO_SIGMA)
 
         graph_measurements_unit = pynini.string_file(get_abs_path("data/measurements.tsv"))
-        graph_measurements_unit = pynini.compose(casing_graph, graph_measurements_unit).optimize()
+        graph_measurements_unit = pynini.compose(casing_graph, graph_measurements_unit)
 
         graph_measurements_dates_unit = pynini.string_file(get_abs_path("data/measurement_dates.tsv"))
-        graph_measurements_dates_unit = pynini.compose(casing_graph, graph_measurements_dates_unit).optimize()
+        graph_measurements_dates_unit = pynini.compose(casing_graph, graph_measurements_dates_unit)
 
         measurements_unit = pynutil.insert("units: \"") + graph_measurements_unit + pynutil.insert("\"")
 

@@ -36,6 +36,6 @@ class TimeFst(GraphFst):
         )
 
         graph = (numerator + delete_space + denominator).optimize()
-        self.numbers = graph
+        self.numbers = graph.optimize()
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

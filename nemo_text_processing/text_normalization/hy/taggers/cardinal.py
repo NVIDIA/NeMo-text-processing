@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, insert_space, delete_space
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -33,8 +33,8 @@ class CardinalFst(GraphFst):
 
         ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv")).invert()
         ties_unit = digits
-        double_digits = (pynini.string_map([("1", "տասը")]) | ties) + pynutil.delete("0") | (
-            pynini.string_map([("1", "տասն")]) | ties
+        double_digits = (pynini.cross("1", "տասը") | ties) + pynutil.delete("0") | (
+            pynini.cross("1", "տասն") | ties
         ) + ties_unit
 
         self.all_double_digits = double_digits.optimize()
@@ -45,12 +45,12 @@ class CardinalFst(GraphFst):
         hundreds_parts = (pynutil.delete("0") + insert_space + digits) | (insert_space + double_digits)
         one_hundreds = pynini.cross("1", "հարյուր") + (pynutil.delete("00") | hundreds_parts)
         multiple_hundreds = (digits_no_one + insert_space + pynutil.insert("հարյուր")) + (
-            pynini.cross("00", "") | hundreds_parts
+            pynutil.delete("00") | hundreds_parts
         )
         all_hundreds = one_hundreds | multiple_hundreds
-        self.all_hundreds = all_hundreds
+        self.all_hundreds = all_hundreds.optimize()
 
-        delete_separator = pynini.closure(pynutil.delete(" "), 0, 1)
+        delete_separator = pynini.closure(delete_space, 0, 1)
         one_thousand = pynini.cross("1", "հազար") + delete_separator
         other_thousands = (
             (digits_no_one | double_digits | all_hundreds) + insert_space + pynutil.insert("հազար") + delete_separator
@@ -84,4 +84,4 @@ class CardinalFst(GraphFst):
         final_graph = pynutil.insert("integer: \"") + final_graph + pynutil.insert("\"")
         self.final_graph = final_graph
         final_graph = self.add_tokens(final_graph)
-        self.fst = final_graph
+        self.fst = final_graph.optimize()
