@@ -13,8 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -37,9 +36,7 @@ class MoneyFst(GraphFst):
         unit = pynini.string_file(get_abs_path("data/currency.tsv"))
 
         optional_delimiter = pynini.closure(pynutil.add_weight(pynini.cross(NEMO_SPACE, ""), -100), 0, 1)
-        graph_unit_singular = (
-             optional_delimiter + pynutil.insert(" currency: \"") + unit + pynutil.insert("\"")
-        )
+        graph_unit_singular = optional_delimiter + pynutil.insert(" currency: \"") + unit + pynutil.insert("\"")
 
         graph_decimal = decimal_graph + graph_unit_singular
         graph_cardinal = cardinal_graph + graph_unit_singular
@@ -51,10 +48,10 @@ class MoneyFst(GraphFst):
         integer_part = pynutil.delete("integer_part: ") + integer
 
         unit = (
-                pynutil.delete("currency: ")
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_NOT_QUOTE, 1)
-                + pynutil.delete("\"")
+            pynutil.delete("currency: ")
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
         )
         unit = pynini.accep(NEMO_SPACE) + unit
 
@@ -64,16 +61,16 @@ class MoneyFst(GraphFst):
         optional_quantity = pynini.closure(pynini.accep(NEMO_SPACE) + pynutil.delete("quantity: ") + integer, 0, 1)
 
         verbalizer_graph_decimal = (
-                pynutil.delete('decimal { ')
-                + integer_part
-                + delete_space
-                + pynutil.insert(" ամբողջ ")
-                + optional_fractional_part
-                + delete_space
-                + optional_quantity
-                + delete_space
-                + pynutil.delete(" }")
-                + unit
+            pynutil.delete('decimal { ')
+            + integer_part
+            + delete_space
+            + pynutil.insert(" ամբողջ ")
+            + optional_fractional_part
+            + delete_space
+            + optional_quantity
+            + delete_space
+            + pynutil.delete(" }")
+            + unit
         )
 
         verbalizer_graph = (verbalizer_graph_cardinal | verbalizer_graph_decimal).optimize()

@@ -13,12 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    delete_space,
-    NEMO_SIGMA
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, GraphFst, delete_space
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -41,9 +36,7 @@ class FractionFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        suffix = pynini.cdrewrite(
-            pynini.cross("ըերորդ", "ներորդ"), "", "[EOS]", NEMO_SIGMA,
-        ).optimize()
+        suffix = pynini.cdrewrite(pynini.cross("ըերորդ", "ներորդ"), "", "[EOS]", NEMO_SIGMA,).optimize()
 
         graph = (numerator + delete_space + pynini.compose(denominator, suffix)).optimize()
         self.numbers = graph

@@ -14,7 +14,13 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_CHAR, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_CHAR,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 from pynini.lib import pynutil
 
 
@@ -58,15 +64,15 @@ class MeasureFst(GraphFst):
             + pynutil.delete("}")
         )
         graph_cardinal_two = (
-                pynutil.delete("cardinal {")
-                + pynutil.delete(" integer: \"")
-                + delete_space
-                + optional_sign
-                + delete_space
-                + pynini.closure(NEMO_CHAR - " ", 1)
-                + pynutil.delete("\"")
-                + delete_space
-                + pynutil.delete("} ")
+            pynutil.delete("cardinal {")
+            + pynutil.delete(" integer: \"")
+            + delete_space
+            + optional_sign
+            + delete_space
+            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynutil.delete("\"")
+            + delete_space
+            + pynutil.delete("} ")
         )
         graph_first = (graph_cardinal_first | graph_decimal) + delete_space + pynutil.insert(" ") + unit
         graph_second = graph_cardinal_two + delete_space + pynutil.insert(" ") + unit

@@ -32,6 +32,7 @@ class MoneyFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
 
-        delete_tokens = self.delete_tokens(pynutil.delete("integer_part: \"") +
-                                           pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\""))
+        delete_tokens = self.delete_tokens(
+            pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        )
         self.fst = delete_tokens.optimize()

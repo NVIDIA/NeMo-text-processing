@@ -14,9 +14,9 @@
 # limitations under the License.
 
 import pynini
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_extra_space, delete_space
 from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.hy.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_extra_space, delete_space
 from pynini.lib import pynutil
 
 
@@ -31,6 +31,7 @@ class VerbalizeFinalFst(GraphFst):
             cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
             overwrite_cache: set to True to overwrite .far files
         """
+
     def __init__(self, deterministic=True, cache_dir=None, overwrite_cache=False):
         super().__init__(name="verbalize_final", kind="verbalize")
         verbalize = VerbalizeFst().fst

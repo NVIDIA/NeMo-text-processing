@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space, NEMO_SIGMA
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -27,5 +27,7 @@ class WhiteListFst(GraphFst):
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
         )
-        graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA) # Removes possible null token
+        graph = graph @ pynini.cdrewrite(
+            pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA
+        )  # Removes possible null token
         self.fst = graph.optimize()

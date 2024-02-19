@@ -16,10 +16,10 @@ from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.hy.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hy.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.hy.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.hy.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hy.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.hy.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.hy.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.hy.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hy.verbalizers.whitelist import WhiteListFst
 
 
@@ -33,6 +33,7 @@ class VerbalizeFst(GraphFst):
             deterministic: if True will provide a single transduction option,
                 for False multiple options (used for audio-based normalization)
         """
+
     def __init__(self, deterministic=False):
         super().__init__(name="verbalize", kind="verbalize")
         cardinal = CardinalFst()

@@ -14,7 +14,13 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, GraphFst, delete_space, NEMO_CHAR
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_CHAR,
+    NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
+    GraphFst,
+    delete_space,
+)
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 from pynini.lib import pynutil
 
@@ -29,14 +35,8 @@ class OrdinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
-        graph = (
-            pynutil.delete("integer: \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
-        )
-        suffix = pynini.cdrewrite(
-            pynini.cross("ըերորդ", "ներորդ"), "", "[EOS]", NEMO_SIGMA,
-        ).optimize()
+        graph = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        suffix = pynini.cdrewrite(pynini.cross("ըերորդ", "ներորդ"), "", "[EOS]", NEMO_SIGMA,).optimize()
         self.graph = (pynini.compose(graph, suffix)).optimize()
         delete_tokens = self.delete_tokens(self.graph)
         self.fst = delete_tokens.optimize()

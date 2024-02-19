@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, INPUT_LOWER_CASED
+import pynini
+from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, GraphFst
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 from pynini.lib import pynutil
-import pynini
 
 
 class TimeFst(GraphFst):
@@ -23,6 +23,7 @@ class TimeFst(GraphFst):
     Finite state transducer for classifying time, e.g.
         "15:52" -> time { hours: "տասնհինգ" minutes: "հիսուներկու" }
     """
+
     def __init__(self, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="time", kind="classify")
         hours = pynini.string_file(get_abs_path('data/time/hours.tsv')).invert()

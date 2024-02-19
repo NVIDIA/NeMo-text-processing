@@ -27,6 +27,7 @@ class WordFst(GraphFst):
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
+
     def __init__(self):
         super().__init__(name="word", kind="verbalize")
         chars = pynini.closure(NEMO_CHAR - " ", 1)

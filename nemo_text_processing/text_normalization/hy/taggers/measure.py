@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     NEMO_SIGMA,
@@ -21,6 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
 )
+from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 from pynini.lib import pynutil
 
 
@@ -47,58 +47,50 @@ class MeasureFst(GraphFst):
         graph_measurements_dates_unit = pynini.string_file(get_abs_path("data/measurement_dates.tsv"))
         graph_measurements_dates_unit = pynini.compose(casing_graph, graph_measurements_dates_unit).optimize()
 
-        measurements_unit = (
-                pynutil.insert("units: \"")
-                + graph_measurements_unit
-                + pynutil.insert("\"")
-        )
+        measurements_unit = pynutil.insert("units: \"") + graph_measurements_unit + pynutil.insert("\"")
 
-        measurements_dates_unit = (
-                pynutil.insert("units: \"")
-                + graph_measurements_dates_unit
-                + pynutil.insert("\"")
-        )
+        measurements_dates_unit = pynutil.insert("units: \"") + graph_measurements_dates_unit + pynutil.insert("\"")
 
         subgraph_decimal = (
-                pynutil.insert("decimal { ")
-                + decimal.final_graph_wo_negative
-                + pynutil.insert(" }")
-                + delete_extra_space
-                + measurements_unit
+            pynutil.insert("decimal { ")
+            + decimal.final_graph_wo_negative
+            + pynutil.insert(" }")
+            + delete_extra_space
+            + measurements_unit
         )
 
         subgraph_cardinal = (
-                pynutil.insert("cardinal { ")
-                + pynutil.insert("integer: \"")
-                + cardinal_graph
-                + pynutil.insert("\"")
-                + pynutil.insert(" }")
-                + delete_extra_space
-                + measurements_unit
+            pynutil.insert("cardinal { ")
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(" }")
+            + delete_extra_space
+            + measurements_unit
         )
 
         subgraph_cardinal_dates = (
-                pynutil.insert("cardinal { ")
-                + pynutil.insert("integer: \"")
-                + cardinal_graph
-                + pynutil.insert("\"")
-                + pynutil.insert(" }")
-                + delete_extra_space
-                + measurements_dates_unit
+            pynutil.insert("cardinal { ")
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(" }")
+            + delete_extra_space
+            + measurements_dates_unit
         )
 
         subgraph_cardinal_dates |= (
-                pynutil.insert("cardinal { ")
-                + pynutil.insert("integer: \"")
-                + cardinal_graph
-                + pynutil.insert("ից")
-                + pynutil.delete("-")
-                + pynutil.insert(' ')
-                + cardinal_graph
-                + pynutil.insert("\"")
-                + pynutil.insert(" }")
-                + delete_extra_space
-                + measurements_dates_unit
+            pynutil.insert("cardinal { ")
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("ից")
+            + pynutil.delete("-")
+            + pynutil.insert(' ')
+            + cardinal_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(" }")
+            + delete_extra_space
+            + measurements_dates_unit
         )
 
         final_graph = subgraph_decimal | subgraph_cardinal | subgraph_cardinal_dates

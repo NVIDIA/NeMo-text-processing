@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, INPUT_LOWER_CASED
+from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, GraphFst
 from pynini.lib import pynutil
 
 
@@ -29,8 +29,7 @@ class FractionFst(GraphFst):
         ordinal_graph = ordinal.denominator_graph
 
         numerator = pynutil.insert("numerator: \"") + cardinal_graph + pynutil.insert("\"")
-        denominator = (pynutil.insert(" denominator: \"") +
-                       ordinal_graph + pynutil.insert("\""))
+        denominator = pynutil.insert(" denominator: \"") + ordinal_graph + pynutil.insert("\"")
 
         final_graph = numerator + pynutil.delete("/") + denominator
         final_graph = self.add_tokens(final_graph)

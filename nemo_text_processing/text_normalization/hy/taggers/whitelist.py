@@ -13,11 +13,8 @@
 # limitations under the License.
 
 import pynini
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, load_labels
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    load_labels,
-)
 from pynini.lib import pynutil
 
 

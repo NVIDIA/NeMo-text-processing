@@ -50,12 +50,11 @@ class DecimalFst(GraphFst):
         )
         optional_quantity = pynini.closure(quantity, 0, 1)
 
-        graph = pynini.union(
-            (integer + quantity), (integer + delete_space + fractional + optional_quantity)
-        )
+        graph = pynini.union((integer + quantity), (integer + delete_space + fractional + optional_quantity))
 
-        self.numbers_only_quantity = (pynini.union((integer + quantity),
-                                                   (integer + delete_space + fractional + quantity)).optimize())
+        self.numbers_only_quantity = pynini.union(
+            (integer + quantity), (integer + delete_space + fractional + quantity)
+        ).optimize()
 
         graph += delete_preserve_order
         self.numbers = graph

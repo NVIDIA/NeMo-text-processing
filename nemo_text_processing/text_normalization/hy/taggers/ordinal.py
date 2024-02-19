@@ -34,37 +34,20 @@ class OrdinalFst(GraphFst):
         cardinal_format = pynini.closure(NEMO_DIGIT | pynini.accep(","))
         rd = pynini.accep("-րդ")
         first_format = (
-                pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1)
-                + pynini.accep("1")
-                + pynutil.delete("-ին")
+            pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1) + pynini.accep("1") + pynutil.delete("-ին")
         )
-        second_format = (
-                pynini.closure(cardinal_format + (NEMO_DIGIT - "2"), 0, 1)
-                + pynini.accep("2")
-        )
-        third_format = (
-                pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1)
-                + pynini.accep("3")
-        )
-        fourth_format = (
-                pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1)
-                + pynini.accep("4")
-        )
-        th_format = (pynini.closure(
-            (NEMO_DIGIT - "1" - "2" - "3" - "4")
-            | (cardinal_format + "1" + NEMO_DIGIT)
-            | cardinal_format, 1)
+        second_format = pynini.closure(cardinal_format + (NEMO_DIGIT - "2"), 0, 1) + pynini.accep("2")
+        third_format = pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1) + pynini.accep("3")
+        fourth_format = pynini.closure(cardinal_format + (NEMO_DIGIT - "1"), 0, 1) + pynini.accep("4")
+        th_format = pynini.closure(
+            (NEMO_DIGIT - "1" - "2" - "3" - "4") | (cardinal_format + "1" + NEMO_DIGIT) | cardinal_format, 1
         )
         first = pynini.string_map([("1", "առաջին")])
         second = pynini.string_map([("2", "երկրորդ")])
         third = pynini.string_map([("3", "երրորդ")])
         fourth = pynini.string_map([("4", "չորրորդ")])
 
-        special_denominator_graph = (
-            second_format @ second
-            | third_format @ third
-            | fourth_format @ fourth
-        ).optimize()
+        special_denominator_graph = (second_format @ second | third_format @ third | fourth_format @ fourth).optimize()
 
         self.denominator_graph = (
             pynutil.add_weight(first_format @ first, 1)
@@ -73,15 +56,15 @@ class OrdinalFst(GraphFst):
         ).optimize()
 
         special_ordinals_graph = (
-                (second_format + pynutil.delete(rd)) @ second
-                | (third_format + pynutil.delete(rd)) @ third
-                | (fourth_format + pynutil.delete(rd)) @ fourth
+            (second_format + pynutil.delete(rd)) @ second
+            | (third_format + pynutil.delete(rd)) @ third
+            | (fourth_format + pynutil.delete(rd)) @ fourth
         ).optimize()
 
         self.graph = (
-                pynutil.add_weight(first_format @ first, 1)
-                | pynutil.add_weight(special_ordinals_graph, 1)
-                | pynutil.add_weight((th_format + pynutil.delete(rd)) @ cardinal_graph + pynutil.insert("երորդ"), 1.5)
+            pynutil.add_weight(first_format @ first, 1)
+            | pynutil.add_weight(special_ordinals_graph, 1)
+            | pynutil.add_weight((th_format + pynutil.delete(rd)) @ cardinal_graph + pynutil.insert("երորդ"), 1.5)
         ).optimize()
 
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")

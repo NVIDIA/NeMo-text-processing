@@ -23,6 +23,7 @@ class PunctuationFst(GraphFst):
         e.g. , -> tokens { name: "," }
 
     """
+
     def __init__(self):
         super().__init__(name="punctuation", kind="classify")
 
