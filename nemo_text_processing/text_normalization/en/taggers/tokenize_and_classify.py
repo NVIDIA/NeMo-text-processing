@@ -16,6 +16,8 @@ import os
 import time
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
@@ -44,7 +46,6 @@ from nemo_text_processing.text_normalization.en.verbalizers.date import DateFst 
 from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTimeFst
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
@@ -173,7 +174,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(electonic_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(range_graph, 1.1)
-                | pynutil.add_weight(serial_graph, 1.1001)  # should be higher than the rest of the classes
+                | pynutil.add_weight(serial_graph, 1.1003)  # should be higher than the rest of the classes
             )
 
             # roman_graph = RomanFst(deterministic=deterministic).fst

@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.ru.verbalizers.time import TimeFst as TNTimeVerbalizer
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):

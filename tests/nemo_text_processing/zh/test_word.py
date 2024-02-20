@@ -22,9 +22,14 @@ from nemo_text_processing.text_normalization.normalize import Normalizer
 =======
 
 import pytest
+<<<<<<< HEAD
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 >>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
+=======
+>>>>>>> main
 from parameterized import parameterized
+
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 

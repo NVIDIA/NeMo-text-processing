@@ -19,6 +19,8 @@ import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
@@ -42,8 +44,11 @@ from nemo_text_processing.text_normalization.hu.taggers.word import WordFst
 <<<<<<< HEAD
 =======
 from nemo_text_processing.utils.logging import logger
+<<<<<<< HEAD
 >>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 from pynini.lib import pynutil
+=======
+>>>>>>> main
 
 
 class ClassifyFst(GraphFst):

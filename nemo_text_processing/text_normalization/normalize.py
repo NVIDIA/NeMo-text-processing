@@ -29,7 +29,10 @@ import pynini
 import regex
 import tqdm
 from joblib import Parallel, delayed
-from nemo_text_processing.logging import logger
+from pynini.lib.rewrite import top_rewrite
+from sacremoses import MosesDetokenizer
+from tqdm import tqdm
+
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -39,9 +42,6 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
 from nemo_text_processing.utils.logging import logger
-from pynini.lib.rewrite import top_rewrite
-from sacremoses import MosesDetokenizer
-from tqdm import tqdm
 
 # this is to handle long input
 sys.setrecursionlimit(3000)
@@ -118,8 +118,8 @@ class Normalizer:
         self.post_processor = None
 
         if lang == "en":
-            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
             from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst
+            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
@@ -332,23 +332,13 @@ class Normalizer:
             text = pre_process(text)
         text = text.strip()
         if not text:
-<<<<<<< HEAD
-            if verbose:
-                logger.info(text)
-=======
             logger.debug(text)
->>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
             return text
         text = pynini.escape(text)
         tagged_lattice = self.find_tags(text)
         tagged_text = Normalizer.select_tag(tagged_lattice)
-<<<<<<< HEAD
-        if verbose:
-            logger.info(tagged_text)
-=======
         logger.debug(tagged_text)
 
->>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         self.parser(tagged_text)
         tokens = self.parser.parse()
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
@@ -783,21 +773,11 @@ if __name__ == "__main__":
     )
     start_time = perf_counter()
     if args.input_string:
-<<<<<<< HEAD
-        logger.info(
-            normalizer.normalize(
-                args.input_string,
-                verbose=args.verbose,
-                punct_pre_process=args.punct_pre_process,
-                punct_post_process=args.punct_post_process,
-            )
-=======
         output = normalizer.normalize(
             args.input_string,
             verbose=args.verbose,
             punct_pre_process=args.punct_pre_process,
             punct_post_process=args.punct_post_process,
->>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
         )
         print("=" * 40)
         print(output)
@@ -817,17 +797,10 @@ if __name__ == "__main__":
             )
 
         else:
-<<<<<<< HEAD
-            logger.warning("Loading data: " + args.input_file)
-            data = load_file(args.input_file)
-
-            logger.warning("- Data: " + str(len(data)) + " sentences")
-=======
             logger.info("Loading data: " + args.input_file)
             data = load_file(args.input_file)
 
             logger.info("- Data: " + str(len(data)) + " sentences")
->>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
             normalizer_prediction = normalizer.normalize_list(
                 data,
                 verbose=args.verbose,
@@ -836,16 +809,8 @@ if __name__ == "__main__":
             )
             if args.output_file:
                 write_file(args.output_file, normalizer_prediction)
-<<<<<<< HEAD
-                logger.warning(f"- Normalized. Writing out to {args.output_file}")
-            else:
-                logger.warning(normalizer_prediction)
-
-    logger.warning(f"Execution time: {perf_counter() - start_time:.02f} sec")
-=======
                 logger.info(f"- Normalized. Writing out to {args.output_file}")
             else:
                 logger.info(normalizer_prediction)
 
     logger.info(f"Execution time: {perf_counter() - start_time:.02f} sec")
->>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6

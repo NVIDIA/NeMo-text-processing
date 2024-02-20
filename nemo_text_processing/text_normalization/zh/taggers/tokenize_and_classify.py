@@ -19,6 +19,8 @@ import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -43,8 +45,11 @@ from nemo_text_processing.text_normalization.zh.taggers.word import Char
 <<<<<<< HEAD
 =======
 from nemo_text_processing.utils.logging import logger
+<<<<<<< HEAD
 >>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 from pynini.lib import pynutil
+=======
+>>>>>>> main
 
 
 class ClassifyFst(GraphFst):

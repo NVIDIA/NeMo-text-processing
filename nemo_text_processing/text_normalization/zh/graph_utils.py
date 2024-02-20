@@ -23,10 +23,11 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
-from nemo_text_processing.utils.logging import logger
 from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
+
+from nemo_text_processing.utils.logging import logger
 
 # ghaph_utils is here since importing from en folders will cause import errors
 # that the data file names have to be the same with what are in the en folder

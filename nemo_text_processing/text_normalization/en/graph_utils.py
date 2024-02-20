@@ -20,15 +20,21 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
+<<<<<<< HEAD
 from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 <<<<<<< HEAD
 =======
 from nemo_text_processing.utils.logging import logger
 >>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
+=======
+>>>>>>> main
 from pynini import Far
 from pynini.examples import plurals
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
+
+from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
+from nemo_text_processing.utils.logging import logger
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 

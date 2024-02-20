@@ -19,6 +19,8 @@ import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.inverse_text_normalization.sv.taggers.cardinal import CardinalFst
@@ -48,8 +50,11 @@ from nemo_text_processing.text_normalization.sv.verbalizers.electronic import El
 <<<<<<< HEAD
 =======
 from nemo_text_processing.utils.logging import logger
+<<<<<<< HEAD
 >>>>>>> 42c0071bbeb3141ba013d3965693bb100c06a8e6
 from pynini.lib import pynutil
+=======
+>>>>>>> main
 
 
 class ClassifyFst(GraphFst):
