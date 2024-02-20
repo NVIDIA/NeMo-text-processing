@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, GraphFst
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):

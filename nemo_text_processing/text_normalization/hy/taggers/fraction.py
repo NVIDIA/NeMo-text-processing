@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, GraphFst
 
 
 class FractionFst(GraphFst):
