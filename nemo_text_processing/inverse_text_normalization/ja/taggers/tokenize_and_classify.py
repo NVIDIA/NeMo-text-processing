@@ -23,10 +23,7 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     INPUT_LOWER_CASED,
     NEMO_SIGMA,
     GraphFst,
-    delete_extra_space,
-    delete_space,
     generator_main,
-    insert_space,
 )
 from nemo_text_processing.inverse_text_normalization.ja.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.date import DateFst

@@ -25,7 +25,7 @@ from pynini.lib import pynutil
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g.
+    Finite state transducer for verbalizing cardinals, e.g.
     cardinal { integer: "23" } -> 23
     cardinal { negative: "-" integer: "23" } -> -23
     cardinal { positive: "+" integer: "23" } -> +23
