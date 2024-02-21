@@ -14,12 +14,13 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class WordFst(GraphFst):
