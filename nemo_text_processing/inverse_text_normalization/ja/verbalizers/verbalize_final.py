@@ -14,10 +14,11 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst, delete_space, generator_main
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.postprocessor import PostProcessor
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import VerbalizeFst
-from pynini.lib import pynutil
 
 # from nemo.utils import logging
 
