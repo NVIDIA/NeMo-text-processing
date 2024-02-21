@@ -56,7 +56,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("decimal { ")
             + decimal.final_graph_wo_negative
             + pynutil.insert(" }")
-            + delete_extra_space
+            + pynini.closure(delete_extra_space, 0, 1)
             + measurements_unit
         )
 
@@ -66,7 +66,7 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" }")
-            + delete_extra_space
+            + pynini.closure(delete_extra_space, 0, 1)
             + measurements_unit
         )
 
@@ -76,7 +76,7 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" }")
-            + delete_extra_space
+            + pynini.closure(delete_extra_space, 0, 1)
             + measurements_dates_unit
         )
 
@@ -90,7 +90,7 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" }")
-            + delete_extra_space
+            + pynini.closure(delete_extra_space, 0, 1)
             + measurements_dates_unit
         )
 
