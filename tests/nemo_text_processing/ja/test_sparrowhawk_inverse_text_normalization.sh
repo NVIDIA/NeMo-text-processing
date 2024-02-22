@@ -25,30 +25,30 @@ testITNCardinal() {
   runtest $input
 }
 
-# testITNDate() {
-#   input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_date.txt
-#   runtest $input
-# }
+testITNDate() {
+  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_date.txt
+  runtest $input
+}
 
-# testITNDecimal() {
-#   input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_decimal.txt
-#   runtest $input
-# }
+testITNDecimal() {
+  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_decimal.txt
+  runtest $input
+}
 
-# testITNOrdinal() {
-#   input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_ordinal.txt
-#   runtest $input
-# }
+testITNOrdinal() {
+  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
 
-#testITNFraction() {
-#  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_fraction.txt
-#  runtest $input
-#}
+testITNFraction() {
+ input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_fraction.txt
+ runtest $input
+}
 
-# testITNTime() {
-#   input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_time.txt
-#   runtest $input
-# }
+testITNTime() {
+  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_time.txt
+  runtest $input
+}
 
 #testITNMeasure() {
 #  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_measure.txt
@@ -60,10 +60,10 @@ testITNCardinal() {
 #  runtest $input
 #}
 
-# testITNWhitelist() {
-#   input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_whitelist.txt
-#   runtest $input
-# }
+testITNWhitelist() {
+  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_whitelist.txt
+  runtest $input
+}
 
 #testITNTelephone() {
 #  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_telephone.txt
@@ -75,10 +75,10 @@ testITNCardinal() {
 #  runtest $input
 #}
 
-# testITNWord() {
-#   input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_word.txt
-#   runtest $input
-# }
+testITNWord() {
+  input=$PROJECT_DIR/ja/data_inverse_text_normalization/test_cases_word.txt
+  runtest $input
+}
 
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2
