@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, load_labels
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, load_labels, convert_space
 from nemo_text_processing.text_normalization.hy.utils import get_abs_path
 
 
@@ -44,5 +44,5 @@ class WhiteListFst(GraphFst):
             whitelist_provided = _get_whitelist_graph(input_file)
             whitelist |= whitelist_provided
 
-        graph = pynutil.insert("name: \"") + whitelist + pynutil.insert("\"")
+        graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
         self.fst = graph.optimize()

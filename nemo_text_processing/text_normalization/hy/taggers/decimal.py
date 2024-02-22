@@ -69,7 +69,7 @@ class DecimalFst(GraphFst):
 
         graph = graph.optimize()
 
-        delete_separator = pynutil.delete(".")
+        delete_separator = pynutil.delete(".") | pynutil.delete("․")
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
 
         graph_fractional = pynutil.insert('fractional_part: "') + graph + pynutil.insert('"')
