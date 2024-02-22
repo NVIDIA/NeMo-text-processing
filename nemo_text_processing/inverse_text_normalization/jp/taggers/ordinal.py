@@ -14,8 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.jp.graph_utils import GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.jp.graph_utils import GraphFst
 
 
 class OrdinalFst(GraphFst):

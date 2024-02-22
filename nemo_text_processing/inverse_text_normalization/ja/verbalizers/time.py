@@ -14,8 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class TimeFst(GraphFst):

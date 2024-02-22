@@ -14,8 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.jp.graph_utils import GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.jp.graph_utils import GraphFst
 
 
 class FractionFst(GraphFst):
@@ -50,12 +51,18 @@ class FractionFst(GraphFst):
 
         root_denominator = (
             pynutil.insert("denominator: \"")
-            + (((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal) + pynini.closure(pynutil.delete(' ')))
+            + (
+                ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal)
+                + pynini.closure(pynutil.delete(' '))
+            )
             + pynutil.insert("\"")
         )
         root_numerator = (
             pynutil.insert("numerator: \"")
-            + (pynini.closure(pynutil.delete(' ')) + ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal))
+            + (
+                pynini.closure(pynutil.delete(' '))
+                + ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal)
+            )
             + pynutil.insert("\"")
         )
 

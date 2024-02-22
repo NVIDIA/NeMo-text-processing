@@ -17,6 +17,8 @@ import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     INPUT_LOWER_CASED,
     NEMO_SIGMA,
@@ -36,7 +38,6 @@ from nemo_text_processing.inverse_text_normalization.ja.taggers.punctuation impo
 from nemo_text_processing.inverse_text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.word import WordFst
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
@@ -108,7 +109,6 @@ class ClassifyFst(GraphFst):
             tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
             self.fst = tagger
-            
+
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-           

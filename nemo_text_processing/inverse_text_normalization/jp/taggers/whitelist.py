@@ -15,9 +15,10 @@
 
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.jp.utils import get_abs_path
-from nemo_text_processing.inverse_text_normalization.jp.graph_utils import INPUT_LOWER_CASED, GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.jp.graph_utils import INPUT_LOWER_CASED, GraphFst
+from nemo_text_processing.inverse_text_normalization.jp.utils import get_abs_path
 
 
 class WhiteListFst(GraphFst):
@@ -33,4 +34,3 @@ class WhiteListFst(GraphFst):
         graph = (pynutil.insert('name: "')) + (whitelist) + pynutil.insert('"')
 
         self.fst = graph.optimize()
-    
