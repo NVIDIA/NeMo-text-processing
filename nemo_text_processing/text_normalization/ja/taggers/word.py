@@ -28,8 +28,4 @@ class WordFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
         word = pynutil.insert("name: \"") + NEMO_NOT_SPACE + pynutil.insert("\"")
-<<<<<<< HEAD
         self.fst = word.optimize()
-=======
-        self.fst = word.optimize()
->>>>>>> fdb3854f (date week component, punctuation range, tokenizer add time, word no change)
