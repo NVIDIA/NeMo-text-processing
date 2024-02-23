@@ -31,6 +31,7 @@ class TestCardinal:
         preds = self.normalizer_ja.normalize(test_input)
         assert expected == preds
 
+<<<<<<< HEAD
     inverse_normalizer_ja = InverseNormalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('ja/data_inverse_text_normalization/test_cases_date.txt'))
@@ -39,3 +40,13 @@ class TestCardinal:
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_ja.inverse_normalize(test_input, verbose=False)
         assert pred == expected
+=======
+    # inverse_normalizer_ja = InverseNormalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False)
+
+    # @parameterized.expand(parse_test_case_file('ja/data_inverse_text_normalization/test_cases_date.txt'))
+    # @pytest.mark.run_only_on('CPU')
+    # @pytest.mark.unit
+    # def test_denorm(self, test_input, expected):
+    #     pred = self.inverse_normalizer_ja.inverse_normalize(test_input, verbose=False)
+    #     assert pred == expected
+>>>>>>> e4cc1892 (adding sample tests for cardinal numebrs @ Japanese)
