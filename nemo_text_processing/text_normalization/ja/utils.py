@@ -12,13 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-<<<<<<< HEAD
 import csv
 import os
-=======
-import os
-import csv
->>>>>>> e534d56 (adding files for ja)
 
 
 def get_abs_path(rel_path):
@@ -31,6 +26,7 @@ def get_abs_path(rel_path):
     Returns absolute path
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
+
 
 def load_labels(abs_path):
     """
