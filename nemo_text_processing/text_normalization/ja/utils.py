@@ -27,7 +27,10 @@ def get_abs_path(rel_path):
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e534d56 (adding files for ja)
 def load_labels(abs_path):
     """
     loads relative path file as dictionary
