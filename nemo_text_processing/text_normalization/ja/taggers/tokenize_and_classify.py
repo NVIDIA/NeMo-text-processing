@@ -17,7 +17,6 @@ import os
 
 import pynini
 import logging
-import os
 
 import pynini
 from nemo_text_processing.text_normalization.ja.graph_utils import (
