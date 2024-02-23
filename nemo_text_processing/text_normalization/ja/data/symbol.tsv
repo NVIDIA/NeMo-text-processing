@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 &	アンド
 #	ハッシュタグ
 @	アット
@@ -21,3 +22,28 @@ $	ドール
 ¥	円
 °	度
 º	度
+=======
+&	and
+#	hash
+@	at
+§	section
+™	trademark
+®	registered trademark
+©	copyright
+_	underscore
+%	percent
+*	asterisk
++	plus
+/	slash
+=	equal sign
+^	circumflex
+|	vertical bar
+~	tilde
+$	dollar
+£	pound
+€	euro
+₩	won
+¥	yen
+°	degree
+º	degree
+>>>>>>> 42deb140 (data files for japanese tn)
