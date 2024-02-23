@@ -20,13 +20,20 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
+<<<<<<< HEAD
+=======
+from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
+>>>>>>> 4f536ec9 (adding fiels)
 from pynini import Far
 from pynini.examples import plurals
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
+<<<<<<< HEAD
 from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 
+=======
+>>>>>>> 4f536ec9 (adding fiels)
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
 NEMO_DIGIT = byte.DIGIT
@@ -36,7 +43,10 @@ NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
 NEMO_ALNUM = pynini.union(NEMO_DIGIT, NEMO_ALPHA).optimize()
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00A0"
+<<<<<<< HEAD
 NEMO_NARROW_NON_BREAK_SPACE = u"\u202F"
+=======
+>>>>>>> 4f536ec9 (adding fiels)
 NEMO_SPACE = " "
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00A0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
@@ -73,6 +83,7 @@ NEMO_LOWER_NOT_A = pynini.union(
     "y",
     "z",
 ).optimize()
+<<<<<<< HEAD
 NEMO_SPACES_AND_ALHPANUMERICS = pynini.closure(
     NEMO_SIGMA
     | pynini.closure(NEMO_SPACE)
@@ -80,6 +91,8 @@ NEMO_SPACES_AND_ALHPANUMERICS = pynini.closure(
     | pynini.closure(NEMO_DIGIT)
     | pynini.closure(NEMO_WHITE_SPACE)
 ).optimize()
+=======
+>>>>>>> 4f536ec9 (adding fiels)
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
@@ -294,4 +307,8 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
+<<<<<<< HEAD
         return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+=======
+        return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+>>>>>>> 4f536ec9 (adding fiels)
