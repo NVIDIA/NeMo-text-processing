@@ -11,18 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-<<<<<<< HEAD
 
 
 import logging
-=======
->>>>>>> 04917419 (verbalizers for numebrs)
 import os
 
 import pynini
 from pynini.lib import pynutil
 
-<<<<<<< HEAD
 from nemo_text_processing.text_normalization.ja.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -32,11 +28,6 @@ from nemo_text_processing.text_normalization.ja.graph_utils import (
 from nemo_text_processing.text_normalization.ja.verbalizers.postprocessor import PostProcessor
 from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
-=======
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space, generator_main
-from nemo_text_processing.text_normalization.ja.verbalizers.postprocessor import PostProcessor
-from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst
->>>>>>> 04917419 (verbalizers for numebrs)
 
 # from nemo.utils import logging
 
@@ -64,8 +55,4 @@ class VerbalizeFinalFst(GraphFst):
 
             postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
 
-<<<<<<< HEAD
             self.fst = (verbalizer @ postprocessor.fst).optimize()
-=======
-            self.fst = (verbalizer @ postprocessor.fst).optimize()
->>>>>>> 04917419 (verbalizers for numebrs)
