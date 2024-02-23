@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import sys
 from unicodedata import category
 
@@ -61,7 +62,7 @@ class PunctuationFst(GraphFst):
             + pynini.accep(">")
         )
         punct = plurals._priority_union(emphasis, punct, NEMO_SIGMA)
-        range_component = pynini.cross("〜", "から")  | pynini.accep("から")# forcing this conversion for special tilde
+        range_component = pynini.cross("〜", "から") | pynini.accep("から")  # forcing this conversion for special tilde
 
         self.graph = punct | pynutil.add_weight(range_component, -1.0)
         self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
