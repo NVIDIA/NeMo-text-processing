@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+=======
+# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+>>>>>>> 85aa1bd (japanese taggers for numbers)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +16,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 85aa1bd (japanese taggers for numbers)
 import sys
 from unicodedata import category
 
 import pynini
+<<<<<<< HEAD
 from pynini.examples import plurals
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
 
+=======
+from nemo_text_processing.text_normalization.jp.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.jp.utils import get_abs_path, load_labels
+from pynini.examples import plurals
+from pynini.lib import pynutil
+
+>>>>>>> 85aa1bd (japanese taggers for numbers)
 
 class PunctuationFst(GraphFst):
     """
@@ -62,7 +77,13 @@ class PunctuationFst(GraphFst):
             + pynini.accep(">")
         )
         punct = plurals._priority_union(emphasis, punct, NEMO_SIGMA)
+<<<<<<< HEAD
         range_component = pynini.cross("〜", "から") | pynini.accep("から")  # forcing this conversion for special tilde
 
         self.graph = punct | pynutil.add_weight(range_component, -1.0)
         self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
+=======
+
+        self.graph = punct
+        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
+>>>>>>> 85aa1bd (japanese taggers for numbers)
