@@ -17,11 +17,6 @@ import sys
 from unicodedata import category
 
 import pynini
-<<<<<<< HEAD
-=======
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
-from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
->>>>>>> 7ea8d3f5 (format license fixings)
 from pynini.examples import plurals
 from pynini.lib import pynutil
 

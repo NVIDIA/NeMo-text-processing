@@ -15,11 +15,6 @@
 
 
 import pynini
-<<<<<<< HEAD
-=======
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.ja.utils import get_abs_path
->>>>>>> 7ea8d3f5 (format license fixings)
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
