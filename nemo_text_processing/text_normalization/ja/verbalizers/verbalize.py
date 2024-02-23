@@ -70,6 +70,6 @@ class VerbalizeFst(GraphFst):
             time.fst,
             whitelist.fst,
         )
-        graph = (pynini.closure(delete_space) | pynini.closure(pynutil.delete(space))) + graph + (pynini.closure(delete_space) | pynini.closure(pynutil.delete(space)))
+        graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
 
         self.fst = graph.optimize()
