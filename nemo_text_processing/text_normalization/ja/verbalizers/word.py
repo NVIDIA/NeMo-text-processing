@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 # Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+=======
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2015 and onwards Google, Inc.
+>>>>>>> c073a50 (format license fixings)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
