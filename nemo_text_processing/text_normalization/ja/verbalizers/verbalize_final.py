@@ -17,19 +17,17 @@ import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ja.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst
-from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
-from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space, generator_main
 from nemo_text_processing.text_normalization.ja.verbalizers.postprocessor import PostProcessor
 from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
 
 # from nemo.utils import logging
 
