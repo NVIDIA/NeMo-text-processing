@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.jp.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.jp.utils import get_abs_path
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 from pynini.lib import pynutil
 
 
