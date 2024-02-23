@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import logging
 import os
 
 import pynini
-from nemo_text_processing.text_normalization.jp.graph_utils import (
+from nemo_text_processing.text_normalization.ja.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
     delete_extra_space,
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.jp.taggers.cardinal import CardinalFst
-#from nemo_text_processing.text_normalization.jp.taggers.date import DateFst
-#from nemo_text_processing.text_normalization.jp.taggers.decimal import DecimalFst
-#from nemo_text_processing.text_normalization.jp.taggers.fraction import FractionFst
-#from nemo_text_processing.text_normalization.jp.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.jp.taggers.punctuation import PunctuationFst
-#from nemo_text_processing.text_normalization.jp.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.jp.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.jp.taggers.word import WordFst
+from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
+#from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
+#from nemo_text_processing.text_normalization.ja.taggers.decimal import DecimalFst
+#from nemo_text_processing.text_normalization.ja.taggers.fraction import FractionFst
+#from nemo_text_processing.text_normalization.ja.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.ja.taggers.punctuation import PunctuationFst
+#from nemo_text_processing.text_normalization.ja.taggers.time import TimeFst
+from nemo_text_processing.text_normalization.ja.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.ja.taggers.word import WordFst
 from pynini.lib import pynutil
 
 

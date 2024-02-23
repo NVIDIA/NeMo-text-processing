@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import ClassifyFst
-from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import VerbalizeFst
-from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize_final import VerbalizeFinalFst
+
+from nemo_text_processing.text_normalization.ja.taggers.tokenize_and_classify import ClassifyFst
+from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.text_normalization.ja.verbalizers.verbalize_final import VerbalizeFinalFst
