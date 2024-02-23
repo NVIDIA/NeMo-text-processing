@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 # Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+=======
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2015 and onwards Google, Inc.
+>>>>>>> b06e0ca1 (format license fixings)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +19,10 @@
 
 
 import pynini
+<<<<<<< HEAD
+=======
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
+>>>>>>> b06e0ca1 (format license fixings)
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import (

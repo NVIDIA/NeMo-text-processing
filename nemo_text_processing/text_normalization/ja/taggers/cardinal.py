@@ -14,11 +14,21 @@
 
 
 import pynini
+<<<<<<< HEAD
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
+=======
+from nemo_text_processing.text_normalization.ja.graph_utils import (
+    NEMO_DIGIT,
+    GraphFst,
+)
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path
+from pynini.lib import pynutil
+
+>>>>>>> b06e0ca1 (format license fixings)
 
 class CardinalFst(GraphFst):
     """
