@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.jp.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.jp.verbalizers.cardinal import CardinalFst
-#from nemo_text_processing.text_normalization.jp.verbalizers.date import DateFst
-#from nemo_text_processing.text_normalization.jp.verbalizers.decimal import DecimalFst
-#from nemo_text_processing.text_normalization.jp.verbalizers.fraction import FractionFst
-#from nemo_text_processing.text_normalization.jp.verbalizers.ordinal import OrdinalFst
-#from nemo_text_processing.text_normalization.jp.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.jp.verbalizers.whitelist import WhiteListFst
+
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst
+#from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
+#from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
+#from nemo_text_processing.text_normalization.ja.verbalizers.fraction import FractionFst
+#from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
+#from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst
+from nemo_text_processing.text_normalization.ja.verbalizers.whitelist import WhiteListFst
 
 
 class VerbalizeFst(GraphFst):
