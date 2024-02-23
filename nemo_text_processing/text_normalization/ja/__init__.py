@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
-=======
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
->>>>>>> 8513ec84 (change jp to ja)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,13 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-<<<<<<< HEAD
 
 from nemo_text_processing.text_normalization.ja.taggers.tokenize_and_classify import ClassifyFst
 from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.ja.verbalizers.verbalize_final import VerbalizeFinalFst
-=======
-from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import ClassifyFst
-from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import VerbalizeFst
-from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize_final import VerbalizeFinalFst
->>>>>>> 8513ec84 (change jp to ja)
