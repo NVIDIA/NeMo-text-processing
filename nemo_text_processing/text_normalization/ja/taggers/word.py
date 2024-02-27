@@ -21,10 +21,10 @@ from pynini.lib import pynutil
 class WordFst(GraphFst):
     """
     Finite state transducer for classifying plain tokens, that do not belong to any special class. This can be considered as the default class.
-        e.g. sleep -> tokens { name: "sleep" }
+        e.g. 文字 -> tokens { name: "文字" }
     """
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
-        word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
+        word = pynutil.insert("name: \"") + NEMO_NOT_SPACE + pynutil.insert("\"")
         self.fst = word.optimize()
