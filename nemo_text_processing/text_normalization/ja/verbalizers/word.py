@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 # Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
-=======
-# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
->>>>>>> 8cf854f (format license fixings)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,18 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 from pynini.lib import pynutil
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 from nemo_text_processing.text_normalization.ja.graph_utils import (
-=======
-from nemo_text_processing.text_normalization.zh.graph_utils import (
->>>>>>> 03c25c6 (updates for space removal)
-=======
-from nemo_text_processing.text_normalization.ja.graph_utils import (
->>>>>>> 88165c66 (updates)
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_extra_space,
@@ -43,15 +29,7 @@ class WordFst(GraphFst):
         tokens { char: "文字" } -> 文字
     '''
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     def __init__(self, deterministic: bool = True):
-=======
-    def __init__(self, deterministic: bool = True, lm: bool = False):
->>>>>>> 03c25c6 (updates for space removal)
-=======
-    def __init__(self, deterministic: bool = True):
->>>>>>> 88165c66 (updates)
         super().__init__(name="char", kind="verbalize", deterministic=deterministic)
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
