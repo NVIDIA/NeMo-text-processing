@@ -14,10 +14,6 @@
 # limitations under the License.
 
 import pynini
-<<<<<<< HEAD
-=======
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_SPACE, GraphFst
->>>>>>> b06e0ca1 (format license fixings)
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_SPACE, GraphFst
