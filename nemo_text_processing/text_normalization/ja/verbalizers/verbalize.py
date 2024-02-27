@@ -1,4 +1,4 @@
-# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,22 +13,27 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
+import pynini
+from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space
 from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst
-#from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
-#from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
-#from nemo_text_processing.text_normalization.ja.verbalizers.fraction import FractionFst
-#from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
-#from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.decimal import DecimalFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.ordinal import OrdinalFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
 
 
 class VerbalizeFst(GraphFst):
     """
     Composes other verbalizer grammars.
-    For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
+    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File. 
     More details to deployment at NeMo/tools/text_processing_deployment.
-
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple options (used for audio-based normalization)
@@ -36,21 +41,30 @@ class VerbalizeFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
+
+        #date = DateFst(deterministic=deterministic)
         cardinal = CardinalFst(deterministic=deterministic)
-        cardinal_graph = cardinal.fst
-        #decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
-        #decimal_graph = decimal.fst
         #ordinal = OrdinalFst(deterministic=deterministic)
-        #ordinal_graph = ordinal.fst
-        #fraction = FractionFst(deterministic=deterministic)
-        #fraction_graph = fraction.fst
-        #time_graph = TimeFst(deterministic=deterministic).fst
-        #date_graph = DateFst(ordinal=ordinal, deterministic=deterministic).fst
-        whitelist_graph = WhiteListFst(deterministic=deterministic).fst
+        #decimal = DecimalFst(deterministic=deterministic)
+        word = WordFst(deterministic=deterministic)
+        #fraction = FractionFst(decimal=decimal, deterministic=deterministic)
+        #money = MoneyFst(decimal=decimal, deterministic=deterministic)
+        #measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+        #time = TimeFst(deterministic=deterministic)
+        whitelist = WhiteListFst(deterministic=deterministic)
 
-        graph = (
-            cardinal_graph
-            | whitelist_graph
+        graph = pynini.union(
+            #date.fst,
+            cardinal.fst,
+            #ordinal.fst,
+            #decimal.fst,
+            #fraction.fst,
+            word.fst,
+            #money.fst,
+            #measure.fst,
+            #time.fst,
+            whitelist.fst,
         )
+        graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
 
-        self.fst = graph
+        self.fst = graph.optimize()
