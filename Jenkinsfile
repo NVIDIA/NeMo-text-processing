@@ -406,7 +406,7 @@ pipeline {
         // }
         stage('L2: EN TN Run Sparrowhawk test') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES=""  cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_tn_grammars" --OVERWRITE_CACHE=True --FAR_PATH=${EN_TN_CACHE}/SH_TN --GRAMMARS="tn_grammars" --LANGUAGE="en" '
+            sh 'CUDA_VISIBLE_DEVICES=""  cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_tn_grammars" --OVERWRITE_CACHE=True --FAR_PATH=${EN_TN_CACHE}/SH_TN --GRAMMARS="tn_grammars" --LANGUAGE="en" --INPUT_CASE="cased"'
             sh 'CUDA_VISIBLE_DEVICES="" cd tests/nemo_text_processing/en && bash test_sparrowhawk_normalization.sh `pwd`'
           }
         }
