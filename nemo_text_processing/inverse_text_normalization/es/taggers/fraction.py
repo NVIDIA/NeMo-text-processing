@@ -15,7 +15,8 @@
 
 import pynini
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, NEMO_SIGMA, NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.es.graph_utils import ES_MINUS
 from pynini.lib import pynutil
 
 
@@ -37,9 +38,10 @@ class FractionFst(GraphFst):
     Args:
         cardinal: CardinalFst
         ordinal: OrdinalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, ordinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, ordinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="fraction", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
@@ -74,7 +76,7 @@ class FractionFst(GraphFst):
 
         # process negative fractions
         #     e.g. "menos dos tercios" -> "fractions { negative: True numerator: "2" denominator: "3" }"
-        optional_negative_graph = pynini.closure(pynini.cross("menos", "negative: \"True\"") + NEMO_SPACE, 0, 1)
+        optional_negative_graph = pynini.closure(pynini.cross(ES_MINUS, "negative: \"True\"") + NEMO_SPACE, 0, 1)
 
         # process mixed fractions
         #     e.g. "dos y dos tercios" -> "fractions { integer_part: "2" numerator: "2" denominator: "3" }"
@@ -96,7 +98,7 @@ class FractionFst(GraphFst):
         )
         proper_fractions_with_medio = optional_negative_graph + proper_fractions_with_medio
 
-        self.proper_fractions_with_medio = self.add_tokens(proper_fractions_with_medio)
+        self.proper_fractions_with_medio = self.add_tokens(proper_fractions_with_medio).optimize()
 
         graph = (
             optional_negative_graph + optional_integer_part_graph + numerators_graph + NEMO_SPACE + denominators_graph

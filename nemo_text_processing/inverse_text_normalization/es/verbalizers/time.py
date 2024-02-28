@@ -35,11 +35,13 @@ class TimeFst(GraphFst):
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
 
         # hour may or may not include preposition ("la" or "las")
+        preposition = pynini.union("la ", "las ", "La ", "Las ")
+
         hour = (
             pynutil.delete("hours:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(pynini.union("la ", "las "), 0, 1)
+            + pynini.closure(preposition, 0, 1)
             + pynini.closure(NEMO_DIGIT, 1)
             + pynutil.delete("\"")
         )
