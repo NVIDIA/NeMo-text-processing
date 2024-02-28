@@ -74,10 +74,12 @@ class VerbalizeFst(GraphFst):
         en_date_graph = EnDateFst().fst
         en_whitelist_graph = EnWhiteListFst().fst
         en_telephone_graph = EnTelephoneFst().fst
+        en_time_graph = EnTimeFst().fst
         en_electronic_graph = EnElectronicFst().fst
 
         graph = (
-            time_graph
+            en_time_graph
+            | pynutil.add_weight(time_graph, 1.1)
             | date_graph
             | pynutil.add_weight(en_date_graph, 1.1)
             | money_graph
