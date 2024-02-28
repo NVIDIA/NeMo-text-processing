@@ -38,7 +38,6 @@ class TestDecimal:
         pred = self.inverse_normalizer_es_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
-
     @parameterized.expand(parse_test_case_file('es/data_inverse_text_normalization/test_cases_decimal_cased.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit

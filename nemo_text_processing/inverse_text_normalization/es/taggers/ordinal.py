@@ -24,7 +24,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     capitalized_input_graph,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):
@@ -113,6 +112,6 @@ class OrdinalFst(GraphFst):
             + pynutil.insert("\"")
             + pynutil.insert(" morphosyntactic_features: \"er\"")
         )
-        
+
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

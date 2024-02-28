@@ -28,7 +28,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.text_normalization.es.graph_utils import ES_MINUS
-from pynini.lib import pynutil
 
 
 class MeasureFst(GraphFst):

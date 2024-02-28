@@ -25,7 +25,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.text_normalization.es.graph_utils import ES_PLUS
-from pynini.lib import pynutil
 
 
 class TelephoneFst(GraphFst):
@@ -138,7 +137,12 @@ class TelephoneFst(GraphFst):
 
         # optionally denormalize country codes
         optional_country_code = pynini.closure(
-            pynini.cross(plus, "+") + delete_space + (single_digits | group_of_two | group_of_three) + insert_separator, 0, 1
+            pynini.cross(plus, "+")
+            + delete_space
+            + (single_digits | group_of_two | group_of_three)
+            + insert_separator,
+            0,
+            1,
         )
 
         ext_phrase = pynini.accep(" extensión ")

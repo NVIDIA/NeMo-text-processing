@@ -25,7 +25,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class DateFst(GraphFst):
