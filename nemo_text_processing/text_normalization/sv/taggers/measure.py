@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NON_BREAKING_SPACE,
     NEMO_SIGMA,
@@ -24,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, TO_LOWER
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class MeasureFst(GraphFst):

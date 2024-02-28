@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):

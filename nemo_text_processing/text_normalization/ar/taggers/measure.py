@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -22,7 +24,6 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
-from pynini.lib import pynutil
 
 unit_singular = pynini.string_file(get_abs_path("data/measure/measurements.tsv"))
 
