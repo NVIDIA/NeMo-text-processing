@@ -3,7 +3,7 @@ TEST_DIR=${1:-"/workspace/tests/en"}
 
 runtest () {
   input=$1
-  cd /workspace/sparrowhawk/documentation/grammars
+  cd /workspace/sparrowhawk/documentation/grammars_tn_grammars_cased
 
   # read test file
   while read testcase; do

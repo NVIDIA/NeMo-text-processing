@@ -6,7 +6,7 @@ runtest () {
   input=$1
     echo "INPUT is $input"
 
-  cd /workspace/sparrowhawk/documentation/grammars
+  cd /workspace/sparrowhawk/documentation/grammars_itn_grammars_cased
 
   # read test file
   while read testcase; do

@@ -17,12 +17,14 @@
 MODE=${1:-"interactive"}
 LANGUAGE=${2:-"en"}
 INPUT_CASE=${3:-"lower_cased"}
+GRAMMARS=${4:-"tn_grammars"} # tn_grammars or itn_grammars
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
-GRAMMAR_DIR=${4:-${SCRIPT_DIR}"/.."}
+GRAMMAR_DIR=${5:-${SCRIPT_DIR}"/.."}
+CONFIG=${GRAMMARS}_${INPUT_CASE}
 
-: ${CLASSIFY_DIR:="$GRAMMAR_DIR/$LANGUAGE/classify"}
-: ${VERBALIZE_DIR:="$GRAMMAR_DIR/$LANGUAGE/verbalize"}
-: ${CMD:=${5:-"/bin/bash"}}
+: ${CLASSIFY_DIR:="$GRAMMAR_DIR/${LANGUAGE}_${CONFIG}/classify"}
+: ${VERBALIZE_DIR:="$GRAMMAR_DIR/${LANGUAGE}_${CONFIG}/verbalize"}
+: ${CMD:=${6:-"/bin/bash"}}
 
 MOUNTS=""
 MOUNTS+=" -v $CLASSIFY_DIR:/workspace/sparrowhawk/documentation/grammars/en_toy/classify"

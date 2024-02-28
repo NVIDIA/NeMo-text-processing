@@ -51,7 +51,8 @@ do
 done
 
 
-CACHE_DIR=${FAR_PATH}/${LANGUAGE}
+CACHE_DIR=${FAR_PATH}/${LANGUAGE}_${GRAMMARS}_${INPUT_CASE}
+
 echo "GRAMMARS = $GRAMMARS"
 echo "MODE = $MODE"
 echo "LANGUAGE = $LANGUAGE"
@@ -101,7 +102,7 @@ find . -name "Makefile" -type f -delete
 if [[ ${MODE} == "test" ]] || [[ ${MODE} == "interactive" ]]; then
   MODE=${MODE}_${GRAMMARS}
   bash docker/build.sh $FORCE_REBUILD
-  bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE $FAR_PATH
+  bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE $GRAMMARS $FAR_PATH
 else
   echo "done mode: $MODE"
   exit 0

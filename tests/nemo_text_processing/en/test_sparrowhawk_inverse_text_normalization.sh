@@ -5,7 +5,7 @@ TEST_DIR=${1:-"/workspace/tests/en"}
 runtest () {
   input=$1
   echo "INPUT is $input"
-  cd /workspace/sparrowhawk/documentation/grammars
+  cd /workspace/sparrowhawk/documentation/grammars_itn_grammars_lower_cased
 
   # read test file
   while read testcase; do
