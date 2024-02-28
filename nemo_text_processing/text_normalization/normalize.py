@@ -724,7 +724,7 @@ def parse_args():
     parser.add_argument(
         "--no_post_process",
         help="WFST-based post processing, e.g. to remove extra spaces added during TN, normalize punctuation marks [could differ from the input]. Only Eng is supported, not supported in Sparrowhawk",
-        action="store_false",
+        action="store_true",
     )
     parser.add_argument(
         "--punct_post_process",
