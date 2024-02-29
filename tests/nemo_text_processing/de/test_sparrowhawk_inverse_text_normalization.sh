@@ -3,7 +3,11 @@
 PROJECT_DIR=/workspace/tests
 
 GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+<<<<<<< HEAD
 PROJECT_DIR=${2:-"/workspace/tests/"}
+=======
+PROJECT_DIR=${2:-"/workspace/tests/en"}
+>>>>>>> 4193dd9 (Fix CI (#142))
 
 runtest () {
   input=$1
