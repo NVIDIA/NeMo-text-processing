@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil
-
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -138,7 +136,12 @@ class TelephoneFst(GraphFst):
 
         # optionally denormalize country codes
         optional_country_code = pynini.closure(
-            pynini.cross(plus, "+") + delete_space + (single_digits | group_of_two | group_of_three) + insert_separator, 0, 1
+            pynini.cross(plus, "+")
+            + delete_space
+            + (single_digits | group_of_two | group_of_three)
+            + insert_separator,
+            0,
+            1,
         )
 
         ext_phrase = pynini.accep(" extensión ")

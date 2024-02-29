@@ -14,8 +14,6 @@
 
 
 import pynini
-from pynini.lib import pynutil
-
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -178,7 +176,6 @@ class CardinalFst(GraphFst):
         numbers_up_to_million = pynini.compose(graph, digits_up_to_million).optimize()
         self.numbers_up_to_million = numbers_up_to_million.optimize()
 
-
         if input_case == INPUT_CASED:
             graph |= capitalized_input_graph(graph)
             graph_digit |= capitalized_input_graph(graph_digit)
@@ -200,7 +197,6 @@ class CardinalFst(GraphFst):
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-
 
     def delete_word(self, word: str):
         """ Capitalizes word for `cased` input"""

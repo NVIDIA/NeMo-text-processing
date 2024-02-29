@@ -14,8 +14,6 @@
 
 
 import pynini
-from pynini.lib import pynutil
-
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -112,8 +110,8 @@ class TimeFst(GraphFst):
             article |= pynini.accep("Las ").optimize()
             half |= pynini.accep("Media").optimize()
             quarter |= pynini.accep("Cuarto").optimize()
-            and_graph |= pynini.union("Y","Con").optimize()
-        
+            and_graph |= pynini.union("Y", "Con").optimize()
+
         graph_1oclock = pynini.cross(oneoclock, "la 1")
         if input_case == INPUT_CASED:
             graph_1oclock |= pynini.cross(pynini.accep("la Una"), "la 1")
@@ -156,10 +154,10 @@ class TimeFst(GraphFst):
         )
 
         # las nueve a eme (only convert on-the-hour times if they are followed by a suffix)
-        graph_1oclock_with_suffix = pynini.closure(pynini.union("la ", "La "), 0, 1) + pynini.cross(pynini.union("una", "Unia"), "1")
-        graph_hour_with_suffix = pynini.closure(article, 0, 1) + graph_1_to_100 @ pynini.union(
-            *digits_2_to_23
+        graph_1oclock_with_suffix = pynini.closure(pynini.union("la ", "La "), 0, 1) + pynini.cross(
+            pynini.union("una", "Unia"), "1"
         )
+        graph_hour_with_suffix = pynini.closure(article, 0, 1) + graph_1_to_100 @ pynini.union(*digits_2_to_23)
         final_graph_hour_with_suffix = (
             pynutil.insert("hours: \"") + (graph_1oclock_with_suffix | graph_hour_with_suffix) + pynutil.insert("\"")
         )

@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil
-
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -113,6 +111,6 @@ class OrdinalFst(GraphFst):
             + pynutil.insert("\"")
             + pynutil.insert(" morphosyntactic_features: \"er\"")
         )
-        
+
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

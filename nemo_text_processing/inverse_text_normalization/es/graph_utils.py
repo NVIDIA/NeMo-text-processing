@@ -14,9 +14,8 @@
 
 
 import pynini
-from pynini.lib import pynutil
-
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
+from pynini.lib import pynutil
 
 
 def int_to_roman(fst: 'pynini.FstLike') -> 'pynini.FstLike':

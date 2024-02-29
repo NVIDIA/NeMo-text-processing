@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil
-
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -28,6 +26,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
+from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
@@ -60,11 +59,15 @@ class MoneyFst(GraphFst):
 
         if input_case == INPUT_CASED:
             unit_singular = capitalized_input_graph(unit_singular)
-            unit_singular_capitalized = pynini.string_file(get_abs_path("data/money/currency_major_singular_capitalized.tsv"))
+            unit_singular_capitalized = pynini.string_file(
+                get_abs_path("data/money/currency_major_singular_capitalized.tsv")
+            )
             unit_singular |= pynini.invert(unit_singular_capitalized).optimize()
-            
+
             unit_plural = capitalized_input_graph(unit_plural)
-            unit_plural_capitalized = pynini.string_file(get_abs_path("data/money/currency_major_plural_capitalized.tsv"))
+            unit_plural_capitalized = pynini.string_file(
+                get_abs_path("data/money/currency_major_plural_capitalized.tsv")
+            )
             unit_plural |= pynini.invert(unit_plural_capitalized).optimize()
 
             unit_minor_singular = capitalized_input_graph(unit_minor_singular).optimize()
@@ -92,7 +95,8 @@ class MoneyFst(GraphFst):
             + insert_space
             + pynutil.insert("fractional_part: \"")
             + pynini.union(
-                pynutil.add_weight(((NEMO_SIGMA - one_graph) @ cardinal_graph), -0.7) @ add_leading_zero_to_double_digit
+                pynutil.add_weight(((NEMO_SIGMA - one_graph) @ cardinal_graph), -0.7)
+                @ add_leading_zero_to_double_digit
                 + delete_space,
                 pynini.cross(one_graph, "01") + delete_space,
             )

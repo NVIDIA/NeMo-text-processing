@@ -42,13 +42,7 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        month = (
-            pynutil.delete("month:")
-            + delete_space
-            + pynutil.delete("\"")
-            + graph_month
-            + pynutil.delete("\"")
-        )
+        month = pynutil.delete("month:") + delete_space + pynutil.delete("\"") + graph_month + pynutil.delete("\"")
         day = (
             pynutil.delete("day:")
             + delete_space

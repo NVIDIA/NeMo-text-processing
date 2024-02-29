@@ -78,11 +78,7 @@ class ElectronicFst(GraphFst):
         server_names = pynini.string_file(get_abs_path("data/electronic/server_name.tsv")).invert()
         if input_case == INPUT_CASED:
             server_names = capitalized_input_graph(server_names)
-        server = (
-            single_alphanum
-            | server_names
-            | pynini.closure(NEMO_ALPHA, 2)
-        )
+        server = single_alphanum | server_names | pynini.closure(NEMO_ALPHA, 2)
 
         if input_case == INPUT_CASED:
             domain = []
@@ -102,48 +98,42 @@ class ElectronicFst(GraphFst):
             + domain
             + pynutil.insert("\"")
         )
-        
+
         at = pynini.accep("arroba")
         if input_case == INPUT_CASED:
             at |= pynini.accep("Arroba")
 
-        graph = (
-            username + delete_extra_space + pynutil.delete(at) + insert_space + delete_extra_space + domain_graph
-        )
+        graph = username + delete_extra_space + pynutil.delete(at) + insert_space + delete_extra_space + domain_graph
 
         ############# url ###
         if input_case == INPUT_CASED:
             spoken_ws = pynini.union(
-                "doble ve doble ve doble ve", 
-                "Doble Ve Doble Ve Doble Ve", 
-                "Doble ve doble ve doble ve"
+                "doble ve doble ve doble ve", "Doble Ve Doble Ve Doble Ve", "Doble ve doble ve doble ve"
             )
             protocol_end = pynini.cross(pynini.union(*get_various_formats("www")) | spoken_ws, "www")
 
-            spoken_http = pynini.union(
-                "hache te te pe",
-                "Hache te te pe",
-                "Hache Te Te Pe"
-            )
-            spoken_https = pynini.union(
-                "hache te te pe ese",
-                "Hache te te pe ese",
-                "Hache Te Te Pe Ese"
-            )
-            protocol_start = pynini.cross(pynini.union(*get_various_formats("http")) | spoken_http, "http") | pynini.cross(
-                pynini.union(*get_various_formats("https")) | spoken_https, "https"
-            )
+            spoken_http = pynini.union("hache te te pe", "Hache te te pe", "Hache Te Te Pe")
+            spoken_https = pynini.union("hache te te pe ese", "Hache te te pe ese", "Hache Te Te Pe Ese")
+            protocol_start = pynini.cross(
+                pynini.union(*get_various_formats("http")) | spoken_http, "http"
+            ) | pynini.cross(pynini.union(*get_various_formats("https")) | spoken_https, "https")
         else:
-            protocol_end = pynutil.add_weight(pynini.cross(pynini.union("www", "w w w", "doble ve doble ve doble ve"), "www"), MIN_POS_WEIGHT)
-            protocol_start = pynutil.add_weight(pynini.cross(pynini.union("http", "h t t p", "hache te te pe"), "http"), MIN_POS_WEIGHT)
-            protocol_start |= pynutil.add_weight(pynini.cross(pynini.union("https", "h t t p s", "hache te te pe ese"), "https"), MIN_POS_WEIGHT)
+            protocol_end = pynutil.add_weight(
+                pynini.cross(pynini.union("www", "w w w", "doble ve doble ve doble ve"), "www"), MIN_POS_WEIGHT
+            )
+            protocol_start = pynutil.add_weight(
+                pynini.cross(pynini.union("http", "h t t p", "hache te te pe"), "http"), MIN_POS_WEIGHT
+            )
+            protocol_start |= pynutil.add_weight(
+                pynini.cross(pynini.union("https", "h t t p s", "hache te te pe ese"), "https"), MIN_POS_WEIGHT
+            )
 
         protocol_start += pynini.cross(" dos puntos barra barra ", "://")
 
         # e.g. .com, .es
         ending = (
             delete_extra_space
-            + symbols 
+            + symbols
             + delete_extra_space
             + (domain | pynini.closure(accepted_username + delete_extra_space,) + accepted_username)
         )
