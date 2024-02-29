@@ -60,7 +60,7 @@ bash export_grammars.sh --MODE="export" --GRAMMARS=$GRAMMARS --LANGUAGE=$LANGUAG
 CLASSIFY_FAR=${CACHE_DIR}"/classify/tokenize_and_classify.far"
 VERBALIZE_FAR=${CACHE_DIR}"/verbalize/verbalize.far"
 
-CONFIG=${GRAMMARS}_${INPUT_CASE}
+CONFIG=${LANGUAGE}_${GRAMMARS}_${INPUT_CASE}
 
 cp $CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars_${CONFIG}/en_toy/classify/
 cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars_${CONFIG}/en_toy/verbalize/
