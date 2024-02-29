@@ -21,7 +21,7 @@ GRAMMARS="itn_grammars" # tn_grammars
 INPUT_CASE="lower_cased" # cased
 LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi'} supports ITN only
 OVERWRITE_CACHE="False" # Set to False to re-use .far files
-WHITELIST=None # Path to a whitelist file, if None the default will be used
+WHITELIST="" # Path to a whitelist file, if None the default will be used
 FAR_PATH=$(pwd) # Path where the grammars should be written
 MODE="test_itn_grammars"
 
@@ -46,13 +46,22 @@ echo "OVERWRITE_CACHE = $OVERWRITE_CACHE"
 echo "FORCE_REBUILD = $FORCE_REBUILD"
 echo "WHITELIST = $WHITELIST"
 
+if [[ ${WHITELIST} != "" ]] && [[ -f $WHITELIST ]]; then
+  WHITELIST="--whitelist=${WHITELIST} "
+  echo "[I] Whitelist file wasn't provided or doesn't exist, using default"
+else
+  WHITELIST=""
+fi
+
 bash export_grammars.sh --MODE="export" --GRAMMARS=$GRAMMARS --LANGUAGE=$LANGUAGE --INPUT_CASE=$INPUT_CASE \
-      --FAR_PATH=$FAR_PATH  --CACHE_DIR=$CACHE_DIR --OVERWRITE_CACHE=$OVERWRITE_CACHE --FORCE_REBUILD=$FORCE_REBUILD \
-      --WHITELIST=$WHITELIST
+      --FAR_PATH=$FAR_PATH  --CACHE_DIR=$CACHE_DIR --OVERWRITE_CACHE=$OVERWRITE_CACHE \
+      --FORCE_REBUILD=$FORCE_REBUILD $WHITELIST
 
 CLASSIFY_FAR=${CACHE_DIR}"/classify/tokenize_and_classify.far"
 VERBALIZE_FAR=${CACHE_DIR}"/verbalize/verbalize.far"
 
-cp $CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/classify/
-cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/verbalize/
+CONFIG=${LANGUAGE}_${GRAMMARS}_${INPUT_CASE}
+
+cp $CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars_${CONFIG}/en_toy/classify/
+cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars_${CONFIG}/en_toy/verbalize/
 

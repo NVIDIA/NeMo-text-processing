@@ -722,6 +722,11 @@ def parse_args():
     )
     parser.add_argument("--verbose", help="print info for debugging", action='store_true')
     parser.add_argument(
+        "--no_post_process",
+        help="WFST-based post processing, e.g. to remove extra spaces added during TN, normalize punctuation marks [could differ from the input]. Only Eng is supported, not supported in Sparrowhawk",
+        action="store_true",
+    )
+    parser.add_argument(
         "--punct_post_process",
         help="Add this flag to enable punctuation post processing to match input.",
         action="store_true",
@@ -765,6 +770,7 @@ if __name__ == "__main__":
 
     normalizer = Normalizer(
         input_case=args.input_case,
+        post_process=not args.no_post_process,
         cache_dir=args.cache_dir,
         overwrite_cache=args.overwrite_cache,
         whitelist=whitelist,
