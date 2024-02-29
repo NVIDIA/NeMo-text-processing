@@ -190,7 +190,7 @@ pipeline {
       }
     }
 
-    stage('L0: Create RU TN/ITN Grammars & SV & PT') {
+    stage('L0: Create RU TN/ITN Grammars & SV & PT & ZH') {
       when {
         anyOf {
           branch 'main'
