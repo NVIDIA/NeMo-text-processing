@@ -319,21 +319,21 @@ pipeline {
       parallel {
         stage('L2: EN ITN Run Sparrowhawk test - Lower Cased Input') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES=""  cp -r /workspace/sparrowhawk/documentation/grammars /workspace/sparrowhawk/documentation/grammars_en_itn_grammars_lower_cased && cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_itn_grammars" --OVERWRITE_CACHE=True --FAR_PATH=${EN_TN_CACHE}/SH_ITN --LANGUAGE="en"'
+            sh 'CUDA_VISIBLE_DEVICES=""  cp -r /workspace/sparrowhawk/documentation/grammars /workspace/sparrowhawk/documentation/grammars_en_itn_grammars_lower_cased && cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_itn_grammars" --OVERWRITE_CACHE=False --FAR_PATH=${EN_TN_CACHE}/SH_ITN --LANGUAGE="en"'
             sh 'CUDA_VISIBLE_DEVICES="" cd tests/nemo_text_processing/en && bash test_sparrowhawk_inverse_text_normalization.sh /workspace/sparrowhawk/documentation/grammars_en_itn_grammars_lower_cased `pwd`'
 
           }
         }
         stage('L2: EN ITN Run Sparrowhawk test - Cased Input') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES=""  cp -r /workspace/sparrowhawk/documentation/grammars /workspace/sparrowhawk/documentation/grammars_en_itn_grammars_cased && cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_itn_grammars" --INPUT_CASE="cased" --OVERWRITE_CACHE=True --FAR_PATH=${EN_TN_CACHE}/SH_ITN_cased --LANGUAGE="en"'
+            sh 'CUDA_VISIBLE_DEVICES=""  cp -r /workspace/sparrowhawk/documentation/grammars /workspace/sparrowhawk/documentation/grammars_en_itn_grammars_cased && cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_itn_grammars" --INPUT_CASE="cased" --OVERWRITE_CACHE=False --FAR_PATH=${EN_TN_CACHE}/SH_ITN_cased --LANGUAGE="en"'
             sh 'CUDA_VISIBLE_DEVICES="" cd tests/nemo_text_processing/en && bash test_sparrowhawk_inverse_text_normalization_cased.sh /workspace/sparrowhawk/documentation/grammars_en_itn_grammars_cased `pwd`'
 
           }
         }
         stage('L2: EN TN Run Sparrowhawk test') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES=""  cp -r /workspace/sparrowhawk/documentation/grammars /workspace/sparrowhawk/documentation/grammars_en_tn_grammars_cased && cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_tn_grammars" --INPUT_CASE="cased" --OVERWRITE_CACHE=True --FAR_PATH=${EN_TN_CACHE}/SH_TN --GRAMMARS="tn_grammars" --LANGUAGE="en" '
+            sh 'CUDA_VISIBLE_DEVICES=""  cp -r /workspace/sparrowhawk/documentation/grammars /workspace/sparrowhawk/documentation/grammars_en_tn_grammars_cased && cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_tn_grammars" --INPUT_CASE="cased" --OVERWRITE_CACHE=False --FAR_PATH=${EN_TN_CACHE}/SH_TN --GRAMMARS="tn_grammars" --LANGUAGE="en" '
             sh 'CUDA_VISIBLE_DEVICES="" cd tests/nemo_text_processing/en && bash test_sparrowhawk_normalization.sh /workspace/sparrowhawk/documentation/grammars_en_tn_grammars_cased `pwd`'
           }
         }

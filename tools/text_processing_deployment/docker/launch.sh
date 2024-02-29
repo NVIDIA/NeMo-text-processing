@@ -14,16 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# this script runs Sparrowhawk tests in a docker container "locally" (not in CI/CD pipeline)
+
 MODE=${1:-"interactive"}
 LANGUAGE=${2:-"en"}
 INPUT_CASE=${3:-"lower_cased"}
 GRAMMARS=${4:-"tn_grammars"} # tn_grammars or itn_grammars
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
 GRAMMAR_DIR=${5:-${SCRIPT_DIR}"/.."}
-CONFIG=${GRAMMARS}_${INPUT_CASE}
+CONFIG=${LANGUAGE}_${GRAMMARS}_${INPUT_CASE}
 
-: ${CLASSIFY_DIR:="$GRAMMAR_DIR/${LANGUAGE}_${CONFIG}/classify"}
-: ${VERBALIZE_DIR:="$GRAMMAR_DIR/${LANGUAGE}_${CONFIG}/verbalize"}
+: ${CLASSIFY_DIR:="$GRAMMAR_DIR/${CONFIG}/classify"}
+: ${VERBALIZE_DIR:="$GRAMMAR_DIR/${CONFIG}/verbalize"}
 : ${CMD:=${6:-"/bin/bash"}}
 
 MOUNTS=""
