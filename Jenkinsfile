@@ -241,72 +241,72 @@ pipeline {
 
 
 // L1 Tests starts here
-//     stage('L1: TN/ITN Tests CPU') {
-//       when {
-//         anyOf {
-//           branch 'main'
-//           changeRequest target: 'main'
-//         }
-//       }
-//       failFast true
-//       stages {
-//         stage('L1: Test EN non-deterministic TN & Run all En TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/en/ -m "not pleasefixme" --cpu --tn_cache_dir ${EN_TN_CACHE}'
-//           }
-//         }
-//         stage('L1: Run all DE TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/de/ -m "not pleasefixme" --cpu --tn_cache_dir ${DE_TN_CACHE}'
-//           }
-//         }
-//         stage('L1: Run all ES TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/es/ -m "not pleasefixme" --cpu --tn_cache_dir ${ES_TN_CACHE}'
-//           }
-//         }
-//         stage('L1: Run all Codeswitched ES/EN TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/es_en/ -m "not pleasefixme" --cpu --tn_cache_dir ${ES_EN_TN_CACHE}'
-//           }
-//         }
-//         stage('L1: Run all AR TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ar/ -m "not pleasefixme" --cpu --tn_cache_dir ${AR_TN_CACHE}'
-//           }
-//         }
-//         stage('L1: Run all FR TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/fr/ -m "not pleasefixme" --cpu --tn_cache_dir ${FR_TN_CACHE}'
-//           }
-//         }
-//         stage('L1: Run all PT TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/pt/ -m "not pleasefixme" --cpu --tn_cache_dir ${PT_TN_CACHE}'
-//           }
-//         }
-//         stage('L1: Run all VI TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/vi/ -m "not pleasefixme" --cpu --tn_cache_dir ${VI_TN_CACHE}'
-//           }
-//         }
-//         stage('L1: Run all RU TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ru/ -m "not pleasefixme" --cpu --tn_cache_dir ${RU_TN_CACHE}'
-//           }
-//         }
-//         // stage('L1: Run all SV TN/ITN tests (restore grammars from cache)') {
-//         //   steps {
-//         //     sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/sv/ -m "not pleasefixme" --cpu --tn_cache_dir ${SV_TN_CACHE}'
-//         //   }
-//         // }
-//         stage('L1: Run all ZH TN/ITN tests (restore grammars from cache)') {
-//           steps {
-//             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/zh/ -m "not pleasefixme" --cpu --tn_cache_dir ${ZH_TN_CACHE}'
-//           }
-//         }
-//       }
-//     }
+    stage('L1: TN/ITN Tests CPU') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      stages {
+        stage('L1: Test EN non-deterministic TN & Run all En TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/en/ -m "not pleasefixme" --cpu --tn_cache_dir ${EN_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all DE TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/de/ -m "not pleasefixme" --cpu --tn_cache_dir ${DE_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all ES TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/es/ -m "not pleasefixme" --cpu --tn_cache_dir ${ES_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all Codeswitched ES/EN TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/es_en/ -m "not pleasefixme" --cpu --tn_cache_dir ${ES_EN_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all AR TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ar/ -m "not pleasefixme" --cpu --tn_cache_dir ${AR_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all FR TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/fr/ -m "not pleasefixme" --cpu --tn_cache_dir ${FR_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all PT TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/pt/ -m "not pleasefixme" --cpu --tn_cache_dir ${PT_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all VI TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/vi/ -m "not pleasefixme" --cpu --tn_cache_dir ${VI_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all RU TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ru/ -m "not pleasefixme" --cpu --tn_cache_dir ${RU_TN_CACHE}'
+          }
+        }
+        // stage('L1: Run all SV TN/ITN tests (restore grammars from cache)') {
+        //   steps {
+        //     sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/sv/ -m "not pleasefixme" --cpu --tn_cache_dir ${SV_TN_CACHE}'
+        //   }
+        // }
+        stage('L1: Run all ZH TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/zh/ -m "not pleasefixme" --cpu --tn_cache_dir ${ZH_TN_CACHE}'
+          }
+        }
+      }
+    }
 
      stage('L2: Sparrowhawk Tests') {
       when {
