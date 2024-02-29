@@ -46,7 +46,6 @@ class TestOrdinal:
         pred = self.inverse_normalizer_es_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
-
     normalizer = Normalizer(input_case='cased', lang='es', cache_dir=CACHE_DIR, overwrite_cache=False)
     normalizer_with_audio = (
         NormalizerWithAudio(input_case='cased', lang='es', cache_dir=CACHE_DIR, overwrite_cache=False)

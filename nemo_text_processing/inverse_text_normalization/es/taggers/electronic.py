@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.utils import get_various_formats
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
@@ -25,7 +27,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.en.utils import load_labels
-from pynini.lib import pynutil
 
 
 class ElectronicFst(GraphFst):

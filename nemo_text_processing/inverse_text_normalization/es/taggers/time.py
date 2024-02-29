@@ -26,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.es.graph_utils import ES_MINUS, ES_PLUS
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):

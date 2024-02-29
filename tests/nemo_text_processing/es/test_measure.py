@@ -39,14 +39,12 @@ class TestMeasure:
         pred = self.inverse_normalizer_es_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
-
     @parameterized.expand(parse_test_case_file('es/data_inverse_text_normalization/test_cases_measure_cased.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_es_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected
-
 
     normalizer = Normalizer(input_case='cased', lang='es', cache_dir=CACHE_DIR, overwrite_cache=False)
 
