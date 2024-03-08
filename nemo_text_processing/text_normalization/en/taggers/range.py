@@ -46,6 +46,19 @@ class RangeFst(GraphFst):
         self.graph = time_graph | (approx + time)
 
         cardinal = cardinal.graph_with_and
+        
+        # connector   #new add
+        connector_graph_two_digit = (NEMO_DIGIT ** 2 @ cardinal)  #for 20-30~twenty to thrirty
+        connector_graph_one_digit = (NEMO_DIGIT ** 1 @ cardinal)   #for 2-3~two to three
+        digit_to_digit_graph = (
+           (connector_graph_two_digit | connector_graph_one_digit)
+           + delete_space
+           + pynini.cross("-", " to ") #replacing "-" with "to"
+           + delete_space
+           +  (connector_graph_two_digit | connector_graph_one_digit)
+           )
+        self.graph |= digit_to_digit_graph
+          
         # YEAR
         date_year_four_digit = (NEMO_DIGIT ** 4 + pynini.closure(pynini.accep("s"), 0, 1)) @ date
         date_year_two_digit = (NEMO_DIGIT ** 2 + pynini.closure(pynini.accep("s"), 0, 1)) @ date
@@ -65,7 +78,7 @@ class RangeFst(GraphFst):
         range_graph = cardinal + pynini.closure(pynini.cross("+", " plus ") + cardinal, 1)
         range_graph |= cardinal + pynini.closure(pynini.cross(" + ", " plus ") + cardinal, 1)
         range_graph |= approx + cardinal
-        range_graph |= cardinal + (pynini.cross("...", " ... ") | pynini.accep(" ... ")) + cardinal
+       	range_graph |= cardinal + (pynini.cross("...", " ... ") | pynini.accep(" ... ")) + cardinal
 
         if not deterministic or lm:
             # cardinal ----
@@ -76,7 +89,7 @@ class RangeFst(GraphFst):
             range_graph |= cardinal_to_cardinal_graph | (
                 cardinal + delete_space + pynini.cross(":", " to ") + delete_space + cardinal
             )
-
+	    	
             # MULTIPLY
             for x in [" x ", "x"]:
                 range_graph |= cardinal + pynini.cross(x, pynini.union(" by ", " times ")) + cardinal
