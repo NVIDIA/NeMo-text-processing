@@ -31,7 +31,7 @@ class TestRange:
 
     # address is tagged by the measure class
     @parameterized.expand(parse_test_case_file('en/data_text_normalization/test_cases_range.txt'))
-    #@pytest.mark.run_only_on('CPU')
+    # @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         pred = self.normalizer_en.normalize(test_input, verbose=False)
