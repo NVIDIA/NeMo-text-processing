@@ -239,7 +239,7 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
-    output_dir = os.path.join(args.output_dir, args.language)
+    output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
         grammars=locals()[args.grammars](
