@@ -14,10 +14,16 @@
 
 
 import pynini
+<<<<<<< HEAD
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
+=======
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from pynini.lib import pynutil
+
+>>>>>>> 4c0498e0 (adding ordinal grammars for tokenizer and verbalizer)
 
 class OrdinalFst(GraphFst):
     """
@@ -25,19 +31,34 @@ class OrdinalFst(GraphFst):
         tokens { ordinal { integer: "第一千万" } } -> 第一千万
     """
 
+<<<<<<< HEAD
     def __init__(self, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
+=======
+    def __init__(self):
+        super().__init__(name="ordinal", kind="verbalize")
+>>>>>>> 4c0498e0 (adding ordinal grammars for tokenizer and verbalizer)
 
         moephemes = pynutil.delete('第') | pynutil.delete('番目')
         graph_integer = (
             pynutil.delete("integer:")
             + delete_space
             + pynutil.delete("\"")
+<<<<<<< HEAD
             + pynini.closure(NEMO_NOT_QUOTE)
+=======
+            + pynini.closure(moephemes, 0, 1)
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynini.closure(moephemes, 0, 1)
+>>>>>>> 4c0498e0 (adding ordinal grammars for tokenizer and verbalizer)
             + pynutil.delete("\"")
         )
 
         final_graph = graph_integer
 
         delete_tokens = self.delete_tokens(final_graph)
+<<<<<<< HEAD
         self.fst = delete_tokens.optimize()
+=======
+        self.fst = delete_tokens.optimize()
+>>>>>>> 4c0498e0 (adding ordinal grammars for tokenizer and verbalizer)

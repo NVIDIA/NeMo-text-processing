@@ -14,9 +14,14 @@
 
 
 import pynini
+<<<<<<< HEAD
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
+=======
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
+from pynini.lib import pynutil
+>>>>>>> 4c0498e0 (adding ordinal grammars for tokenizer and verbalizer)
 
 
 class OrdinalFst(GraphFst):
@@ -28,8 +33,13 @@ class OrdinalFst(GraphFst):
         cardinal: CardinalFst
     """
 
+<<<<<<< HEAD
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
+=======
+    def __init__(self, cardinal: GraphFst):
+        super().__init__(name="ordinal", kind="classify")
+>>>>>>> 4c0498e0 (adding ordinal grammars for tokenizer and verbalizer)
 
         graph_cardinal = cardinal.just_cardinals
         morpheme_pre = pynini.accep('第')
@@ -39,4 +49,8 @@ class OrdinalFst(GraphFst):
         final_graph = pynutil.insert("integer: \"") + graph_ordinal + pynutil.insert("\"")
 
         graph_ordinal_final = self.add_tokens(final_graph)
+<<<<<<< HEAD
         self.fst = graph_ordinal_final.optimize()
+=======
+        self.fst = graph_ordinal_final.optimize()
+>>>>>>> 4c0498e0 (adding ordinal grammars for tokenizer and verbalizer)
