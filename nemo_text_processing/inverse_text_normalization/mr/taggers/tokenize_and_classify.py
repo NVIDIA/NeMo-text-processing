@@ -17,6 +17,8 @@ import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
@@ -30,7 +32,6 @@ from nemo_text_processing.inverse_text_normalization.mr.taggers.decimal import D
 from nemo_text_processing.inverse_text_normalization.mr.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.mr.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.mr.taggers.word import WordFst
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):

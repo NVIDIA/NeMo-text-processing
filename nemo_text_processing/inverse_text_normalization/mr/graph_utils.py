@@ -20,10 +20,11 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.mr.utils import load_labels
 from pynini import Far
 from pynini.export import export
 from pynini.lib import pynutil, utf8
+
+from nemo_text_processing.inverse_text_normalization.mr.utils import load_labels
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 NEMO_MARATHI_DIGITS = (
