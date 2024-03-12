@@ -30,6 +30,7 @@ class TestOrdinal:
         preds = self.normalizer_ja.normalize(test_input)
         assert expected == preds
 
+<<<<<<< HEAD
     inverse_normalizer = InverseNormalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('ja/data_inverse_text_normalization/test_cases_ordinal.txt'))
@@ -39,3 +40,5 @@ class TestOrdinal:
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
+=======
+>>>>>>> f875821d (adding ordinal tests)
