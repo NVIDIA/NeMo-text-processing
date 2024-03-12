@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import Card
 # from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
 # from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
 # from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
-# from nemo_text_processing.text_normalization.zh.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
 # from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
@@ -44,7 +44,7 @@ class VerbalizeFst(GraphFst):
 
         #date = DateFst(deterministic=deterministic)
         cardinal = CardinalFst(deterministic=deterministic)
-        #ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal = OrdinalFst()
         #decimal = DecimalFst(deterministic=deterministic)
         word = WordFst(deterministic=deterministic)
         #fraction = FractionFst(decimal=decimal, deterministic=deterministic)
@@ -56,7 +56,7 @@ class VerbalizeFst(GraphFst):
         graph = pynini.union(
             #date.fst,
             cardinal.fst,
-            #ordinal.fst,
+            ordinal.fst,
             #decimal.fst,
             #fraction.fst,
             word.fst,
