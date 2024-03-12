@@ -19,6 +19,7 @@ import time
 from argparse import ArgumentParser
 
 import pynini
+
 from nemo_text_processing.text_normalization.en.graph_utils import generator_main
 
 # This script exports compiled grammars inside nemo_text_processing into OpenFst finite state archive files
@@ -79,7 +80,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'mr'],
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr'],
         type=str,
         default='en',
     )
@@ -234,7 +235,14 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.mr.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
-    output_dir = os.path.join(args.output_dir, args.language)
+    elif args.language == 'hy':
+        from nemo_text_processing.inverse_text_normalization.hy.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
+    output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
         grammars=locals()[args.grammars](

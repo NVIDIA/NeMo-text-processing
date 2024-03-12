@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     delete_extra_space,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class DecimalFst(GraphFst):

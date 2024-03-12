@@ -15,6 +15,8 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -31,7 +33,6 @@ from nemo_text_processing.text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ar.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):

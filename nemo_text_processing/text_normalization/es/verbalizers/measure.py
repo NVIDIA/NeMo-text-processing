@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
@@ -24,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.es.graph_utils import ones
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
-from pynini.lib import pynutil
 
 unit_plural_fem = pynini.string_file(get_abs_path("data/measures/measurements_plural_fem.tsv"))
 unit_plural_masc = pynini.string_file(get_abs_path("data/measures/measurements_plural_masc.tsv"))

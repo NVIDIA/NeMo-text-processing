@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
@@ -21,7 +23,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import bos_or_space, eos_or_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
-from pynini.lib import pynutil
 
 digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
