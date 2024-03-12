@@ -25,7 +25,7 @@ from nemo_text_processing.text_normalization.ja.taggers.cardinal import Cardinal
 # from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
 # from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 # from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
-# from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.ja.taggers.ordinal import OrdinalFst
 #from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessorFst
 # from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.taggers.whitelist import WhiteListFst
@@ -74,7 +74,7 @@ class ClassifyFst(GraphFst):
             #measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
             #time = TimeFst(deterministic=deterministic)
             whitelist = WhiteListFst(deterministic=deterministic)
-            #ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            ordinal = OrdinalFst(cardinal=cardinal)
 
             classify = pynini.union(
                 #pynutil.add_weight(date.fst, 1.1),
@@ -85,7 +85,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist.fst, 1.1),
                 pynutil.add_weight(cardinal.fst, 1.1),
                 #pynutil.add_weight(decimal.fst, 3.05),
-                #pynutil.add_weight(ordinal.fst, 1.1),
+                pynutil.add_weight(ordinal.fst, 1.1),
                 pynutil.add_weight(word.fst, 100),
             )
 
