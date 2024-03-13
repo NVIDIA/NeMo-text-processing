@@ -170,11 +170,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-<<<<<<< HEAD
         choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh', 'hy', 'mr', 'ja'],
-=======
-        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh', 'hy'],
->>>>>>> d9f749e (Armenian itn (#136))
         default="en",
         type=str,
     )

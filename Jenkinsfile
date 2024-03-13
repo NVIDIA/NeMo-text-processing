@@ -296,6 +296,33 @@ pipeline {
       }
     }
 
+    stage('L0: Create HY TN/ITN Grammars & MR') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: MR ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=mr --text="शून्य" --cache_dir ${MR_ITN_CACHE}'
+          }
+        }
+        stage('L0: HY TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hy --text="6" --cache_dir ${HY_TN_CACHE}'
+          }
+        }
+        stage('L0: HY ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hy --text="վեց" --cache_dir ${HY_TN_CACHE}'
+          }
+        }
+      }
+    }
+
 
 // L1 Tests starts here
 
