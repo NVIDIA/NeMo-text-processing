@@ -13,10 +13,17 @@
 # limitations under the License.
 
 
+<<<<<<< HEAD
 MAJOR = 1
 MINOR = 1
 PATCH = 0
 PRE_RELEASE = ''
+=======
+MAJOR = 0
+MINOR = 3
+PATCH = 0
+PRE_RELEASE = 'rc0'
+>>>>>>> 01b56cf (r0.3.0 release (#151))
 
 # Use the following formatting: (major, minor, patch, pre-release)
 VERSION = (MAJOR, MINOR, PATCH, PRE_RELEASE)
