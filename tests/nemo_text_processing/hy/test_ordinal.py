@@ -22,7 +22,11 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestOrdinal:
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 8c1809b (Armenian TN (#137))
     inverse_normalizer = InverseNormalizer(lang='hy', cache_dir=CACHE_DIR, overwrite_cache=True)
 
     @parameterized.expand(parse_test_case_file('hy/data_inverse_text_normalization/test_cases_ordinal.txt'))
