@@ -16,13 +16,20 @@ import pytest
 from parameterized import parameterized
 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+<<<<<<< HEAD
 from nemo_text_processing.text_normalization.normalize import Normalizer
+=======
+>>>>>>> 2295cfc (Marathi ITN (#134))
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
+<<<<<<< HEAD
 class TestPreprocess:
 
+=======
+class TestCardinal:
+>>>>>>> 2295cfc (Marathi ITN (#134))
     inverse_normalizer_mr = InverseNormalizer(lang='mr', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('mr/data_inverse_text_normalization/test_cases_cardinal.txt'))
@@ -30,4 +37,8 @@ class TestPreprocess:
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_mr.inverse_normalize(test_input, verbose=False)
+<<<<<<< HEAD
         assert pred == expected
+=======
+        assert pred == expected
+>>>>>>> 2295cfc (Marathi ITN (#134))

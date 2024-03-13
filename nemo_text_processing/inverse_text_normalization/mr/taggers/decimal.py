@@ -51,12 +51,21 @@ def get_quantity(decimal, cardinal_fst):
 
 class DecimalFst(GraphFst):
     """
+<<<<<<< HEAD
     Finite state transducer for classifying cardinals
         e.g. तेहतीस पूर्णांक तीन -> decimal { integer_part: "३३" fractional_part: "३" }
         e.g. उणे तेहतीस पूर्णांक तीन लाख -> decimal { negative: "true" integer_part: "३३" fractional_part: "३" quantity: "लाख" }
 
     Args:
         cardinal: CardinalFst
+=======
+        Finite state transducer for classifying cardinals
+            e.g. तेहतीस पूर्णांक तीन -> decimal { integer_part: "३३" fractional_part: "३" }
+            e.g. उणे तेहतीस पूर्णांक तीन लाख -> decimal { negative: "true" integer_part: "३३" fractional_part: "३" quantity: "लाख" }
+
+        Args:
+            cardinal: CardinalFst
+>>>>>>> 2295cfc (Marathi ITN (#134))
     """
 
     def __init__(self, cardinal: GraphFst):

@@ -23,6 +23,7 @@ from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_pat
 
 class TimeFst(GraphFst):
     """
+<<<<<<< HEAD
     Finite state transducer for classifying time
         e.g. साडे चार -> time { hours: "४" minutes: "३०" }
         e.g. सव्वा बारा -> time { hours: "१२" minutes: "१५" }
@@ -31,6 +32,16 @@ class TimeFst(GraphFst):
         e.g. अकरा वाजून दोन मिनिटे -> time { hours: "११" minutes: "२" }
         e.g. अडीच -> time { hours: "२" minutes: "३०" }
     """
+=======
+        Finite state transducer for classifying time
+            e.g. साडे चार -> time { hours: "४" minutes: "३०" }
+            e.g. सव्वा बारा -> time { hours: "१२" minutes: "१५" }
+            e.g. पावणे दहा -> time { hours: "९" minutes: "४५" }
+            e.g. अकराला पाच मिनिटे -> time { hours: "१०" minutes: "५५" }
+            e.g. अकरा वाजून दोन मिनिटे -> time { hours: "११" minutes: "२" }
+            e.g. अडीच -> time { hours: "२" minutes: "३०" }
+        """
+>>>>>>> 2295cfc (Marathi ITN (#134))
 
     def __init__(self):
         super().__init__(name="time", kind="classify")
