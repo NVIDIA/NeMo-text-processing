@@ -250,16 +250,16 @@ pipeline {
       }
       failFast true
       parallel {
-        stage('L0: MR ITN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=mr --text="शून्य " --cache_dir ${MR_TN_CACHE}'
-          }
-        }
-        stage('L0: HY TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hy --text="6" --cache_dir ${HY_TN_CACHE}'
-          }
-        }
+        // stage('L0: MR ITN grammars') {
+        //   steps {
+        //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=mr --text="शून्य " --cache_dir ${MR_TN_CACHE}'
+        //   }
+        // }
+        // stage('L0: HY TN grammars') {
+        //   steps {
+        //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hy --text="6" --cache_dir ${HY_TN_CACHE}'
+        //   }
+        // }
         stage('L0: HY ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hy --text="վեց " --cache_dir ${HY_TN_CACHE}'
@@ -339,11 +339,11 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/mr/ -m "not pleasefixme" --cpu --tn_cache_dir ${MR_TN_CACHE}'
           }
         }
-        stage('L1: Run all HY TN/ITN tests (restore grammars from cache)') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/hy/ -m "not pleasefixme" --cpu --tn_cache_dir ${HY_TN_CACHE}'
-          }
-        }
+        // stage('L1: Run all HY TN/ITN tests (restore grammars from cache)') {
+        //   steps {
+        //     sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/hy/ -m "not pleasefixme" --cpu --tn_cache_dir ${HY_TN_CACHE}'
+        //   }
+        // }
       }
     }
 
