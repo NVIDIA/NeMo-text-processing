@@ -52,8 +52,8 @@ def tn_grammars(**kwargs):
         ).fst
     }
     d['verbalize'] = {'ALL': TNVerbalizeFst(deterministic=True).fst, 'REDUP': pynini.accep("REDUP")}
-    d['post_process_graph'] = {'ALL': TNPostProcessorFst().fst, 'REDUP': pynini.accep("REDUP")}
-    # add post_processor
+    if TNPostProcessingFst is not None:
+        d['post_process'] = {'POSTPROCESSOR': TNPostProcessingFst().fst}
     return d
 
 
@@ -68,6 +68,8 @@ def export_grammars(output_dir, grammars):
 
     for category, graphs in grammars.items():
         out_dir = os.path.join(output_dir, category)
+        if category == "post_process":
+            out_dir = os.path.join(output_dir, "verbalize")
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
             time.sleep(1)
@@ -115,7 +117,7 @@ if __name__ == '__main__':
 
     if args.language in ['pt', 'ru', 'vi', 'es_en'] and args.grammars == 'tn_grammars':
         raise ValueError('Only ITN grammars could be deployed in Sparrowhawk for the selected languages.')
-
+    TNPostProcessingFst = None
     if args.language == 'en':
         from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -126,10 +128,9 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.en.verbalizers.post_processing import (
-            PostProcessingFst as TNPostProcessorFst,
-        )
         from nemo_text_processing.text_normalization.en.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst as TNPostProcessingFst
+
     elif args.language == 'de':
         from nemo_text_processing.inverse_text_normalization.de.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -201,17 +202,14 @@ if __name__ == '__main__':
             VerbalizeFst as ITNVerbalizeFst,
         )
     elif args.language == 'zh':
-        # from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
-        #    ClassifyFst as ITNClassifyFst,
-        # )
-        # from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import (
-        #    VerbalizeFst as ITNVerbalizeFst,
-        # )
+        from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
         from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.zh.verbalizers.post_processing import (
-            PostProcessingFst as TNPostProcessorFst,  # added for popst processor
         )
         from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'ar':
@@ -243,7 +241,7 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
-    output_dir = os.path.join(args.output_dir, args.language)
+    output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
         grammars=locals()[args.grammars](
