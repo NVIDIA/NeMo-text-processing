@@ -80,7 +80,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy'],
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr'],
         type=str,
         default='en',
     )
@@ -111,7 +111,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    if args.language in ['pt', 'ru', 'vi', 'es_en'] and args.grammars == 'tn_grammars':
+    if args.language in ['pt', 'ru', 'vi', 'es_en', 'mr'] and args.grammars == 'tn_grammars':
         raise ValueError('Only ITN grammars could be deployed in Sparrowhawk for the selected languages.')
 
     if args.language == 'en':
@@ -228,6 +228,13 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.es_en.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+    elif args.language == 'mr':
+        from nemo_text_processing.inverse_text_normalization.mr.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.mr.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
     elif args.language == 'hy':
         from nemo_text_processing.inverse_text_normalization.hy.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -235,6 +242,10 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+        from nemo_text_processing.text_normalization.hy.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,

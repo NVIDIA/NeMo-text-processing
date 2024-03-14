@@ -16,11 +16,13 @@ import pytest
 from parameterized import parameterized
 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+from nemo_text_processing.text_normalization.normalize import Normalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestDecimal:
+
     inverse_normalizer = InverseNormalizer(lang='hy', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('hy/data_inverse_text_normalization/test_cases_decimal.txt'))
@@ -28,4 +30,13 @@ class TestDecimal:
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
+        assert pred == expected
+
+    normalizer = Normalizer(lang='hy', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='lower_cased')
+
+    @parameterized.expand(parse_test_case_file('hy/data_text_normalization/test_cases_decimal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm(self, test_input, expected):
+        pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
