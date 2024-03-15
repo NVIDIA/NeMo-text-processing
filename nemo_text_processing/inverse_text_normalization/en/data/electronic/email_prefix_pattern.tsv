@@ -1,0 +1,5 @@
+(?:it(?:\'s|\sis)?(?:\s+under|at)?)
+(?:e?-?mail|digital inbox)(?:\s*-?address)?\s+(?:is)?
+(?:reach(?:ed|(?:able)|\s+(?:out\s*)?(?:to\s*))?|available|contact|send|compose|shoot|drop|e?-?mail|find)\s+(?:me\s+)?(\w*\s+){,3}(?:at|through|using|via|to)
+e?-?mail\s+(?:me\s+)?using
+(?:^|i|can|to email(\s*\w*){,3})\s*use
