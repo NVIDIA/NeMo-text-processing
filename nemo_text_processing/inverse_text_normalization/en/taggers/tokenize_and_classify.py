@@ -59,6 +59,14 @@ class ClassifyFst(GraphFst):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         whitelist: str = None,
+        classify_number: bool = True,
+        classify_date: bool = True,
+        classify_time: bool = True,
+        classify_money: bool = True,
+        classify_telephone: bool = True,
+        classify_measure: bool = True,
+        classify_whitelist: bool = True,
+        classify_electronic: bool = True,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -89,20 +97,52 @@ class ClassifyFst(GraphFst):
             punct_graph = PunctuationFst().fst
             electronic_graph = ElectronicFst(input_case=input_case).fst
             telephone_graph = TelephoneFst(cardinal, input_case=input_case).fst
+            
+            classify: pynini.Fst = pynini.Fst()
+            
+            if classify_whitelist:
+                classify |= pynutil.add_weight(whitelist_graph, 1.01)
+                
+            if classify_time:
+                classify |= pynutil.add_weight(time_graph, 1.1)
+                
+            if classify_date:
+                classify |= pynutil.add_weight(date_graph, 1.09)
+                
+            if classify_number:
+                classify |= (
+                    pynutil.add_weight(decimal_graph, 1.1) 
+                    | pynutil.add_weight(cardinal_graph, 1.1) 
+                    | pynutil.add_weight(ordinal_graph, 1.09)
+                )
+                
+            if classify_measure:
+                classify |= pynutil.add_weight(measure_graph, 1.1)
+                
+            if classify_money:
+                classify |= pynutil.add_weight(money_graph, 1.1)
+                
+            if classify_telephone:
+                classify |= pynutil.add_weight(telephone_graph, 1.1)
+                
+            if classify_electronic:
+                classify |= pynutil.add_weight(electronic_graph, 1.1)
+            
+            classify |= pynutil.add_weight(word_graph, 100)
 
-            classify = (
-                pynutil.add_weight(whitelist_graph, 1.01)
-                | pynutil.add_weight(time_graph, 1.1)
-                | pynutil.add_weight(date_graph, 1.09)
-                | pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(measure_graph, 1.1)
-                | pynutil.add_weight(cardinal_graph, 1.1)
-                | pynutil.add_weight(ordinal_graph, 1.09)
-                | pynutil.add_weight(money_graph, 1.1)
-                | pynutil.add_weight(telephone_graph, 1.1)
-                | pynutil.add_weight(electronic_graph, 1.1)
-                | pynutil.add_weight(word_graph, 100)
-            )
+            # classify = (
+            #     pynutil.add_weight(whitelist_graph, 1.01)
+            #     | pynutil.add_weight(time_graph, 1.1)
+            #     | pynutil.add_weight(date_graph, 1.09)
+            #     | pynutil.add_weight(decimal_graph, 1.1)
+            #     | pynutil.add_weight(measure_graph, 1.1)
+            #     | pynutil.add_weight(cardinal_graph, 1.1)
+            #     | pynutil.add_weight(ordinal_graph, 1.09)
+            #     | pynutil.add_weight(money_graph, 1.1)
+            #     | pynutil.add_weight(telephone_graph, 1.1)
+            #     | pynutil.add_weight(electronic_graph, 1.1)
+            #     | pynutil.add_weight(word_graph, 100)
+            # )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
