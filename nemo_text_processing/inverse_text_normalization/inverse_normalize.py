@@ -48,6 +48,14 @@ class InverseNormalizer(Normalizer):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         max_number_of_permutations_per_split: int = 729,
+        normalize_number: bool = True,
+        normalize_date: bool = True,
+        normalize_time: bool = True,
+        normalize_money: bool = True,
+        normalize_telephone: bool = True,
+        normalize_measure: bool = True,
+        normalize_whitelist: bool = True,
+        normalize_electronic: bool = True,
     ):
 
         assert input_case in ["lower_cased", "cased"]
@@ -123,7 +131,18 @@ class InverseNormalizer(Normalizer):
             )
 
         self.tagger = ClassifyFst(
-            cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case
+            cache_dir=cache_dir, 
+            whitelist=whitelist, 
+            overwrite_cache=overwrite_cache, 
+            input_case=input_case,
+            classify_number=normalize_number,
+            classify_date=normalize_date,
+            classify_time=normalize_time,
+            classify_money=normalize_money,
+            classify_telephone=normalize_telephone,
+            classify_measure=normalize_measure,
+            classify_whitelist=normalize_whitelist,
+            classify_electronic=normalize_electronic,
         )
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
