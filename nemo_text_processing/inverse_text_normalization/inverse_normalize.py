@@ -152,17 +152,19 @@ class InverseNormalizer(Normalizer):
             classify_electronic=True,
         )      
         
-        # self.tagger = ClassifyFst(
-        #     cache_dir=cache_dir, 
-        #     whitelist=whitelist, 
-        #     overwrite_cache=overwrite_cache, 
-        #     input_case=input_case,
-        # )
+        self.default_tagger = ClassifyFst(
+            cache_dir=cache_dir, 
+            whitelist=whitelist, 
+            overwrite_cache=overwrite_cache, 
+            input_case=input_case,
+        )
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
         self.lang = lang
-        self.email_prefix_pattern: re.Pattern = self.get_email_prefix_regex_pattern(input_case=input_case)
+        self.input_case = input_case
         self.word_to_symbol, self.symbol_to_word = self.symbol_mapping()
+        self.probable_email_pattern: re.Pattern = self.get_probable_email_regex_pattern()
+        self.email_prefix_pattern: re.Pattern = self.get_email_prefix_regex_pattern()
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
 
     def inverse_normalize_list(self, texts: List[str], verbose=False) -> List[str]:
@@ -188,18 +190,44 @@ class InverseNormalizer(Normalizer):
 
         Returns: written form
         """
-        self.tagger = self.numbers_tagger
-        numbers_inverse_normalized = self.normalize(text=text, verbose=verbose)
-        self.tagger = self.other_tagger
-        all_inverse_normalized = self.normalize(text=numbers_inverse_normalized, verbose=verbose)
-        all_inverse_normalized = self.process_email(all_inverse_normalized)
+        if self.input_case == "lower_cased":
+            probable_email = bool(self.probable_email_pattern.search(text, re.IGNORECASE))
+        else:
+            probable_email = bool(self.probable_email_pattern.search(text))
+        if not probable_email:
+            self.tagger = self.default_tagger
+            return self.normalize(text=text, verbose=verbose)
+        else:
+            self.tagger = self.numbers_tagger
+            numbers_inverse_normalized = self.normalize(text=text, verbose=verbose)
+            self.tagger = self.other_tagger
+            all_inverse_normalized = self.normalize(text=numbers_inverse_normalized, verbose=verbose)
+            all_inverse_normalized = self.process_email(
+                unprocessed_text=numbers_inverse_normalized,
+                inverse_normalized_text=all_inverse_normalized,
+            )
         
-        return all_inverse_normalized
+            return all_inverse_normalized
     
-    def get_email_prefix_regex_pattern(self, input_case:str = INPUT_LOWER_CASED) -> re.Pattern:
+    def get_probable_email_regex_pattern(self) -> re.Pattern:
+        probable_email_pattern = r"".join([
+            "(?:\w+ +)+(?:",
+            "|".join(self.symbol_to_word['@']),
+            ") +(?:\w+ +)+(?:",
+            "|".join(self.symbol_to_word['.']),
+            ") +\w",
+        ])
+        if self.input_case == "lower_cased":
+            pattern_regex = re.compile(probable_email_pattern, re.IGNORECASE)
+        else:
+            pattern_regex = re.compile(probable_email_pattern)
+            
+        return pattern_regex
+        
+    def get_email_prefix_regex_pattern(self) -> re.Pattern:
         pattern_list = load_file(self.get_abs_path(f"{self.lang}/data/electronic/email_prefix_pattern.tsv"))
         pattern_list = [pattern.rstrip('\n') for pattern in pattern_list]
-        if input_case == "lower_cased":
+        if self.input_case == "lower_cased":
             pattern_regex = re.compile(r"\b"+"|".join(pattern_list) + r"\b", re.IGNORECASE)
         else:
             pattern_regex = re.compile(r"\b"+"|".join(pattern_list) + r"\b")
@@ -219,7 +247,7 @@ class InverseNormalizer(Normalizer):
         
         return (word_to_symbol_mapping, symbol_to_word_mapping)
     
-    def process_email(self, inverse_normalized_text) -> str:
+    def process_email(self, unprocessed_text, inverse_normalized_text) -> str:
     
         for i, token in enumerate(reversed(self.tokens), 1):
             electronic_token = token['tokens'].get('electronic')
@@ -237,9 +265,18 @@ class InverseNormalizer(Normalizer):
                     if username_offset == 0:
                         break
                 email_username_words = word_splitted_text[:-i-username_offset]
+                
+                for j, word in enumerate(email_username_words):
+                    if word != unprocessed_text.split(' ')[j]:
+                        for k, unprocessed_word in enumerate(unprocessed_text.split(' ')[j:]):
+                            if word.endswith(unprocessed_word):
+                                email_username_words = unprocessed_text.split(' ')[:j+k+1]
+                                break
+                
                 prefix_search_string = " ".join(email_username_words)
                 matched_prefix_list = list(self.email_prefix_pattern.finditer(prefix_search_string))
                 prefix_string = ""
+  
                 if matched_prefix_list:
                     email_username_words = prefix_search_string[matched_prefix_list[-1].regs[0][1]:].split(' ')
                     prefix_string = prefix_search_string[:matched_prefix_list[-1].regs[0][1]]
@@ -249,7 +286,7 @@ class InverseNormalizer(Normalizer):
                         word = self.word_to_symbol.get(word) if self.word_to_symbol.get(word) is not None else word
                         electronic_text = word + electronic_text
                 
-                return " ".join([prefix_string, electronic_text] + word_splitted_text[-(i+1)+username_offset:])
+                return " ".join([prefix_string, electronic_text] + word_splitted_text[len(word_splitted_text)-i+1:])
         
         return inverse_normalized_text
 
