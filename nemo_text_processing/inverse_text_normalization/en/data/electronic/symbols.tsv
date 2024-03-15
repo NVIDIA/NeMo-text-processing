@@ -2,12 +2,18 @@
 -	dash
 -	hyphen
 _	underscore
+_	underline
 !	exclamation mark
 #	number sign
+#	hash tag
 $	dollar sign
 %	percent sign
 &	ampersand
+@	at
+@	at sign
 '	quote
+'	single quotation
+"	double quotation
 *	asterisk
 +	plus
 /	slash
