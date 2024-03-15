@@ -41,7 +41,7 @@ class CardinalFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, excepted_single_digit: bool = False):
         super().__init__(name="cardinal", kind="classify")
         self.input_case = input_case
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
@@ -231,7 +231,12 @@ class CardinalFst(GraphFst):
 
         self.graph_no_exception = graph
 
-        self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        if excepted_single_digit:
+            # numbers between zero to twelve would not be normalized to alphabetic form to prevent cases "one of us"
+            self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        else:
+            # disable exception to normalize numbers between 0 and 13
+            self.graph = self.graph_no_exception
 
         optional_minus_graph = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross(MINUS, "\"-\"") + NEMO_SPACE, 0, 1
