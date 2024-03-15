@@ -344,6 +344,7 @@ class Normalizer:
 
         self.parser(tagged_text)
         tokens = self.parser.parse()
+        self.tokens = tokens
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
         output = ""
         for s in split_tokens:
