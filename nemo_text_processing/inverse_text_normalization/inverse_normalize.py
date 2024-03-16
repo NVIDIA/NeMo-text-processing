@@ -164,7 +164,9 @@ class InverseNormalizer(Normalizer):
         self.input_case = input_case
         self.word_to_symbol, self.symbol_to_word = self.symbol_mapping()
         self.probable_email_pattern: re.Pattern = self.get_probable_email_regex_pattern()
-        self.email_prefix_pattern: re.Pattern = self.get_email_prefix_regex_pattern()
+        self.email_prefix_pattern: re.Pattern = self.get_email_prompt_regex_pattern()
+        self.tuple_to_value = self.get_tuple_to_value()
+        self.tuple_before_number_regex_pattern: re.Pattern = self.get_tuple_before_number_regex_pattern()
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
 
     def inverse_normalize_list(self, texts: List[str], verbose=False) -> List[str]:
@@ -190,24 +192,30 @@ class InverseNormalizer(Normalizer):
 
         Returns: written form
         """
+        inverse_normalized: str
         if self.input_case == "lower_cased":
             probable_email = bool(self.probable_email_pattern.search(text, re.IGNORECASE))
         else:
             probable_email = bool(self.probable_email_pattern.search(text))
         if not probable_email:
             self.tagger = self.default_tagger
-            return self.normalize(text=text, verbose=verbose)
+            tuples_normalized: str = self.normalize_tuples_before_numbers(
+                text=text,
+                pattern=self.tuple_before_number_regex_pattern,
+                tuple_dict=self.tuple_to_value,
+            )
+            inverse_normalized = self.normalize(text=tuples_normalized, verbose=verbose)
         else:
             self.tagger = self.numbers_tagger
             numbers_inverse_normalized = self.normalize(text=text, verbose=verbose)
             self.tagger = self.other_tagger
-            all_inverse_normalized = self.normalize(text=numbers_inverse_normalized, verbose=verbose)
-            all_inverse_normalized = self.process_email(
+            inverse_normalized = self.normalize(text=numbers_inverse_normalized, verbose=verbose)
+            inverse_normalized = self.process_email(
                 unprocessed_text=numbers_inverse_normalized,
-                inverse_normalized_text=all_inverse_normalized,
+                inverse_normalized_text=inverse_normalized,
             )
         
-            return all_inverse_normalized
+        return inverse_normalized
     
     def get_probable_email_regex_pattern(self) -> re.Pattern:
         probable_email_pattern = r"".join([
@@ -224,8 +232,8 @@ class InverseNormalizer(Normalizer):
             
         return pattern_regex
         
-    def get_email_prefix_regex_pattern(self) -> re.Pattern:
-        pattern_list = load_file(self.get_abs_path(f"{self.lang}/data/electronic/email_prefix_pattern.tsv"))
+    def get_email_prompt_regex_pattern(self) -> re.Pattern:
+        pattern_list = load_file(self.get_abs_path(f"{self.lang}/data/electronic/email_prompt_pattern.tsv"))
         pattern_list = [pattern.rstrip('\n') for pattern in pattern_list]
         if self.input_case == "lower_cased":
             pattern_regex = re.compile(r"\b"+"|".join(pattern_list) + r"\b", re.IGNORECASE)
@@ -247,7 +255,7 @@ class InverseNormalizer(Normalizer):
         
         return (word_to_symbol_mapping, symbol_to_word_mapping)
     
-    def process_email(self, unprocessed_text, inverse_normalized_text) -> str:
+    def process_email(self, unprocessed_text: str, inverse_normalized_text: str) -> str:
     
         for i, token in enumerate(reversed(self.tokens), 1):
             electronic_token = token['tokens'].get('electronic')
@@ -289,6 +297,58 @@ class InverseNormalizer(Normalizer):
                 return " ".join([prefix_string, electronic_text] + word_splitted_text[len(word_splitted_text)-i+1:])
         
         return inverse_normalized_text
+    
+    def normalize_tuples_before_numbers(self, text: str, pattern:re.Pattern, tuple_dict: Dict[str, int]) -> str:
+        normalized_text: str = pattern.sub(lambda m: f"{m.group(2)} " * tuple_dict[m.group(1)], text)
+        return normalized_text
+        
+        
+    def get_tuple_to_value(self) -> Dict[str, int]:
+        tuple_to_value: Dict[str, int] = {}
+        tuple_name_list = load_file(self.get_abs_path(f"{self.lang}/data/numbers/tuples.tsv"))
+        for tuple_name in tuple_name_list:
+            tuple_term, tuple_value = tuple_name.rstrip('\n').split('\t')
+            tuple_to_value[tuple_term] = int(tuple_value)
+        
+        return tuple_to_value
+    
+    def get_tuple_before_number_regex_pattern(self) -> re.Pattern:
+        numbers_to_value: Dict[str, int] = {}
+        digits_list = load_file(self.get_abs_path(f"{self.lang}/data/numbers/digit.tsv"))
+        for digit in digits_list:
+            digit_term, digit_value = digit.rstrip('\n').split('\t')
+            numbers_to_value[digit_term] = digit_value
+            
+        teen_numbers_list = load_file(self.get_abs_path(f"{self.lang}/data/numbers/teen.tsv"))
+        for teen_number in teen_numbers_list:
+            teen_number_term, teen_number_value = teen_number.rstrip('\n').split('\t')
+            numbers_to_value[teen_number_term] = teen_number_value
+        
+        ties_numbers_list = load_file(self.get_abs_path(f"{self.lang}/data/numbers/ties.tsv"))
+        for ties_number in ties_numbers_list:
+            ties_number_term, ties_number_value = ties_number.rstrip('\n').split('\t')
+            numbers_to_value[ties_number_term] = ties_number_value
+            
+        zero_number_list = load_file(self.get_abs_path(f"{self.lang}/data/numbers/zero.tsv"))
+        for zero_number in zero_number_list:
+            zero_number_term, zero_number_value = zero_number.rstrip('\n').split('\t')
+            numbers_to_value[zero_number_term] = zero_number_value
+        numbers_to_value['o'] = 0
+        numbers_to_value['oh'] = 0
+        
+        tuple_before_number_pattern: str = r"".join([
+            r"\b(",
+            r"|".join(list(self.get_tuple_to_value().keys())),
+            r")\s+(",
+            r"|".join(numbers_to_value.keys()),
+            r")(?:s?)\b",
+        ])
+        
+        if self.input_case == "lower_cased":
+            tuple_before_number_pattern_regex = re.compile(tuple_before_number_pattern, re.IGNORECASE)
+        else:
+            tuple_before_number_pattern_regex = re.compile(tuple_before_number_pattern)
+        return tuple_before_number_pattern_regex
 
     def get_abs_path(self, rel_path):
         """
