@@ -49,6 +49,14 @@ class InverseNormalizer(Normalizer):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         max_number_of_permutations_per_split: int = 729,
+        normalize_number=True,
+        normalize_date=True,
+        normalize_time=True,
+        normalize_money=True,
+        normalize_telephone=True,
+        normalize_measure=True,
+        normalize_whitelist=True,
+        normalize_electronic=True,
     ):
 
         assert input_case in ["lower_cased", "cased"]
@@ -128,10 +136,10 @@ class InverseNormalizer(Normalizer):
             overwrite_cache=overwrite_cache, 
             input_case=input_case,
             classify_number=True,
-            classify_date=True,
-            classify_time=True,
-            classify_money=True,
-            classify_telephone=True,
+            classify_date=normalize_date,
+            classify_time=normalize_time,
+            classify_money=normalize_money,
+            classify_telephone=normalize_telephone,
             classify_measure=False,
             classify_whitelist=False,
             classify_electronic=False,
@@ -147,9 +155,9 @@ class InverseNormalizer(Normalizer):
             classify_time=False,
             classify_money=False,
             classify_telephone=False,
-            classify_measure=True,
-            classify_whitelist=True,
-            classify_electronic=True,
+            classify_measure=normalize_measure,
+            classify_whitelist=normalize_whitelist,
+            classify_electronic=normalize_electronic,
         )      
         
         self.default_tagger = ClassifyFst(
@@ -157,11 +165,21 @@ class InverseNormalizer(Normalizer):
             whitelist=whitelist, 
             overwrite_cache=overwrite_cache, 
             input_case=input_case,
+            classify_number=normalize_number,
+            classify_date=normalize_date,
+            classify_time=normalize_time,
+            classify_money=normalize_money,
+            classify_telephone=normalize_telephone,
+            classify_measure=normalize_measure,
+            classify_whitelist=normalize_whitelist,
+            classify_electronic=normalize_electronic,
         )
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
         self.lang = lang
         self.input_case = input_case
+        self.normalize_telephone = normalize_telephone
+        self.normalize_electronic = normalize_electronic
         self.word_to_symbol, self.symbol_to_word = self.symbol_mapping()
         self.probable_email_pattern: re.Pattern = self.get_probable_email_regex_pattern()
         self.email_prefix_pattern: re.Pattern = self.get_email_prompt_regex_pattern()
@@ -193,18 +211,21 @@ class InverseNormalizer(Normalizer):
         Returns: written form
         """
         inverse_normalized: str
-        if self.input_case == "lower_cased":
-            probable_email = bool(self.probable_email_pattern.search(text, re.IGNORECASE))
-        else:
-            probable_email = bool(self.probable_email_pattern.search(text))
+        probable_email: bool = False
+        if self.normalize_electronic:
+            if self.input_case == "lower_cased":
+                probable_email = bool(self.probable_email_pattern.search(text, re.IGNORECASE))
+            else:
+                probable_email = bool(self.probable_email_pattern.search(text))
         if not probable_email:
             self.tagger = self.default_tagger
-            tuples_normalized: str = self.normalize_tuples_before_numbers(
-                text=text,
-                pattern=self.tuple_before_number_regex_pattern,
-                tuple_dict=self.tuple_to_value,
-            )
-            inverse_normalized = self.normalize(text=tuples_normalized, verbose=verbose)
+            if self.normalize_telephone:
+                text = self.normalize_tuples_before_numbers(
+                    text=text,
+                    pattern=self.tuple_before_number_regex_pattern,
+                    tuple_dict=self.tuple_to_value,
+                )
+            inverse_normalized = self.normalize(text=text, verbose=verbose)
         else:
             self.tagger = self.numbers_tagger
             numbers_inverse_normalized = self.normalize(text=text, verbose=verbose)
