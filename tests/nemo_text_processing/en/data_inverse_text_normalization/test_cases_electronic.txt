@@ -23,3 +23,7 @@ n vidia dot com~nvidia.com
 abc at gmail dot com~abc@gmail.com
 athreed at gmail dot com~athreed@gmail.com
 kore dot ai~kore.ai
+john dot smith underline eight o at sign g mail dot com~john.smith_80@gmail.com
+i use five underline john plus smith dot ninety nine at yahoo dot d e for my emails~i use 5_john+smith.99@yahoo.de for my emails
+i'm available at john dot smith ampersand a b c at sign live dot net every day~i'm available at john.smith&abc@live.net every day
+you can reach out to me at john dot smith dot ninteen ninety three at m s n dot ai~you can reach out to me at john.smith.1993@msn.ai
