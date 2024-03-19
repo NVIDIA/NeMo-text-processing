@@ -225,6 +225,7 @@ class InverseNormalizer(Normalizer):
                     pattern=self.tuple_before_number_regex_pattern,
                     tuple_dict=self.tuple_to_value,
                 )
+                text = re.sub(self.symbol_to_word['+'][0] + r"\s+(\d)", r"+\1", text)
             inverse_normalized = self.normalize(text=text, verbose=verbose)
         else:
             self.tagger = self.numbers_tagger
@@ -241,10 +242,10 @@ class InverseNormalizer(Normalizer):
     def get_probable_email_regex_pattern(self) -> re.Pattern:
         probable_email_pattern = r"".join([
             "(?:\w+ +)+(?:",
-            "|".join(self.symbol_to_word['@']),
-            ") +(?:\w+ +)+(?:",
-            "|".join(self.symbol_to_word['.']),
-            ") +\w",
+            " +|".join(self.symbol_to_word['@']),
+            " +|@)(?:\w+)+(?: +",
+            " +|".join(self.symbol_to_word['.']),
+            " +|\.)+\w",
         ])
         if self.input_case == "lower_cased":
             pattern_regex = re.compile(probable_email_pattern, re.IGNORECASE)
@@ -280,7 +281,10 @@ class InverseNormalizer(Normalizer):
     
         for i, token in enumerate(reversed(self.tokens), 1):
             electronic_token = token['tokens'].get('electronic')
-            if electronic_token is not None:
+            if any([
+                electronic_token is not None,
+                re.search(pattern=r"[\w-]+\.[\w-]{2,}", string=token['tokens'].get('name') or "")
+            ]):
                 word_splitted_text = inverse_normalized_text.split(' ')
                 electronic_text: str = word_splitted_text[-i]
                 # print(electronic_text)
