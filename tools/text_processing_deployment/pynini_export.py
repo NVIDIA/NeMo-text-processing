@@ -52,6 +52,8 @@ def tn_grammars(**kwargs):
         ).fst
     }
     d['verbalize'] = {'ALL': TNVerbalizeFst(deterministic=True).fst, 'REDUP': pynini.accep("REDUP")}
+    d['post_process_graph'] = {'ALL': TNPostProcessorFst().fst, 'REDUP': pynini.accep("REDUP")}
+    # add post_processor
     return d
 
 
@@ -123,6 +125,9 @@ if __name__ == '__main__':
         )
         from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.en.verbalizers.post_processing import (
+            PostProcessingFst as TNPostProcessorFst,
         )
         from nemo_text_processing.text_normalization.en.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'de':
@@ -196,14 +201,17 @@ if __name__ == '__main__':
             VerbalizeFst as ITNVerbalizeFst,
         )
     elif args.language == 'zh':
-        from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
+        # from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
+        #    ClassifyFst as ITNClassifyFst,
+        # )
+        # from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize import (
+        #    VerbalizeFst as ITNVerbalizeFst,
+        # )
         from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.zh.verbalizers.post_processing import (
+            PostProcessingFst as TNPostProcessorFst,  # added for popst processor
         )
         from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'ar':

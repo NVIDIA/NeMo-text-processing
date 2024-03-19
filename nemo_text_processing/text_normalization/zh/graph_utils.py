@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,13 +41,18 @@ NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 
 NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
 
-
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
+NEMO_NOT_ALPHA = pynini.difference(NEMO_SIGMA, NEMO_ALPHA).optimize()
+NEMO_SPACE_CHAR = pynini.union(NEMO_CHAR, NEMO_SPACE)
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
+delete_preserve_order = pynini.closure(
+    pynutil.delete(" preserve_order: true")
+    | (pynutil.delete(" field_order: \"") + NEMO_NOT_QUOTE + pynutil.delete("\""))
+)
 
 
 def generator_main(file_name: str, graphs: Dict[str, "pynini.FstLike"]):
