@@ -115,7 +115,7 @@ class PostProcessingFst:
         # delete space between 2 NEMO_NOT_SPACE（left and right to the space) that are with in a content of NEMO_SIGMA
 
         graph = remove_space_around_single_quote.optimize()
-        import pdb
 
-        pdb.set_trace()
+        #import pdb
+        #pdb.set_trace()
         return graph
