@@ -43,4 +43,3 @@ class MathSymbol(GraphFst):
         )
         graph = score
         self.fst = graph.optimize()
-
