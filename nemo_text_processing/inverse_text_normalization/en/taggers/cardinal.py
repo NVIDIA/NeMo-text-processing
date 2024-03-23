@@ -218,8 +218,6 @@ class CardinalFst(GraphFst):
         if input_case == INPUT_CASED:
             labels_exception += [x.capitalize() for x in labels_exception]
 
-        graph_exception = pynini.union(*labels_exception).optimize()
-
         graph = (
             pynini.cdrewrite(pynutil.delete("and"), NEMO_SPACE, NEMO_SPACE, NEMO_SIGMA)
             @ (NEMO_ALPHA + NEMO_SIGMA)
@@ -232,6 +230,7 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph
 
         if excepted_single_digit:
+            graph_exception = pynini.union(*labels_exception).optimize()
             # numbers between zero to twelve would not be normalized to alphabetic form to prevent cases "one of us"
             self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
         else:

@@ -37,7 +37,7 @@ class CardinalFst(GraphFst):
         tn_cardinal_tagger: TN cardinal tagger
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst, deterministic: bool = True):
+    def __init__(self, tn_cardinal_tagger: GraphFst, deterministic: bool = True, excepted_single_digit: bool = False):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
         # add_space_between_chars = pynini.cdrewrite(pynini.closure(insert_space, 0, 1), NEMO_CHAR, NEMO_CHAR, NEMO_SIGMA)
@@ -55,8 +55,11 @@ class CardinalFst(GraphFst):
         graph = pynutil.add_weight(graph, weight=0.001)
         self.graph_no_exception = graph
         self.digit = pynini.arcmap(tn_cardinal_tagger.digit, map_type="rmweight").invert().optimize()
-        graph_exception = pynini.project(self.digit, 'input')
-        self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        if excepted_single_digit:
+            graph_exception = pynini.project(self.digit, 'input')
+            self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        else:
+            self.graph = graph
 
         self.optional_minus_graph = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("minus ", "\"-\" "), 0, 1
