@@ -41,6 +41,8 @@ class InverseNormalizer(Normalizer):
             of permutations which can be generated from input sequence of tokens.
     """
 
+    customized_for_email_and_phone_languages = ["en", "de"]
+        
     def __init__(
         self,
         input_case: str = INPUT_LOWER_CASED,
@@ -58,7 +60,6 @@ class InverseNormalizer(Normalizer):
         normalize_whitelist=True,
         normalize_electronic=True,
     ):
-
         assert input_case in ["lower_cased", "cased"]
 
         if lang == 'en':  # English
@@ -130,61 +131,74 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
-        self.numbers_tagger = ClassifyFst(
-            cache_dir=cache_dir, 
-            whitelist=whitelist, 
-            overwrite_cache=overwrite_cache, 
-            input_case=input_case,
-            classify_number=True,
-            classify_date=normalize_date,
-            classify_time=normalize_time,
-            classify_money=normalize_money,
-            classify_telephone=normalize_telephone,
-            classify_measure=False,
-            classify_whitelist=False,
-            classify_electronic=False,
-        )
         
-        self.other_tagger = ClassifyFst(
-            cache_dir=cache_dir, 
-            whitelist=whitelist, 
-            overwrite_cache=overwrite_cache, 
-            input_case=input_case,
-            classify_number=False,
-            classify_date=False,
-            classify_time=False,
-            classify_money=False,
-            classify_telephone=False,
-            classify_measure=normalize_measure,
-            classify_whitelist=normalize_whitelist,
-            classify_electronic=normalize_electronic,
-        )      
-        
-        self.default_tagger = ClassifyFst(
-            cache_dir=cache_dir, 
-            whitelist=whitelist, 
-            overwrite_cache=overwrite_cache, 
-            input_case=input_case,
-            classify_number=normalize_number,
-            classify_date=normalize_date,
-            classify_time=normalize_time,
-            classify_money=normalize_money,
-            classify_telephone=normalize_telephone,
-            classify_measure=normalize_measure,
-            classify_whitelist=normalize_whitelist,
-            classify_electronic=normalize_electronic,
-        )
+        if lang in self.customized_for_email_and_phone_languages:
+            self.numbers_tagger = ClassifyFst(
+                cache_dir=cache_dir, 
+                whitelist=whitelist, 
+                overwrite_cache=overwrite_cache, 
+                input_case=input_case,
+                classify_number=True,
+                classify_date=normalize_date,
+                classify_time=normalize_time,
+                classify_money=normalize_money,
+                classify_telephone=normalize_telephone,
+                classify_measure=False,
+                classify_whitelist=False,
+                classify_electronic=False,
+            )
+            
+            self.other_tagger = ClassifyFst(
+                cache_dir=cache_dir, 
+                whitelist=whitelist, 
+                overwrite_cache=overwrite_cache, 
+                input_case=input_case,
+                classify_number=False,
+                classify_date=False,
+                classify_time=False,
+                classify_money=False,
+                classify_telephone=False,
+                classify_measure=normalize_measure,
+                classify_whitelist=normalize_whitelist,
+                classify_electronic=normalize_electronic,
+            )      
+            
+            self.default_tagger = ClassifyFst(
+                cache_dir=cache_dir, 
+                whitelist=whitelist, 
+                overwrite_cache=overwrite_cache, 
+                input_case=input_case,
+                classify_number=normalize_number,
+                classify_date=normalize_date,
+                classify_time=normalize_time,
+                classify_money=normalize_money,
+                classify_telephone=normalize_telephone,
+                classify_measure=normalize_measure,
+                classify_whitelist=normalize_whitelist,
+                classify_electronic=normalize_electronic,
+            )
+        else:
+            self.tagger = ClassifyFst(
+                cache_dir=cache_dir, 
+                whitelist=whitelist, 
+                overwrite_cache=overwrite_cache, 
+                input_case=input_case,
+            )
+            
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
         self.lang = lang
         self.input_case = input_case
         self.normalize_telephone = normalize_telephone
         self.normalize_electronic = normalize_electronic
-        self.word_to_symbol, self.symbol_to_word = self.symbol_mapping()
-        self.probable_email_pattern: re.Pattern = self.get_probable_email_regex_pattern()
-        self.email_prefix_pattern: re.Pattern = self.get_email_prompt_regex_pattern()
-        self.tuple_to_value = self.get_tuple_to_value()
-        self.tuple_before_number_regex_pattern: re.Pattern = self.get_tuple_before_number_regex_pattern()
+        
+        if self.lang in self.customized_for_email_and_phone_languages:
+            self.word_to_symbol, self.symbol_to_word = self.symbol_mapping()
+            self.probable_email_pattern: re.Pattern = self.get_probable_email_regex_pattern()
+            self.email_prefix_pattern: re.Pattern = self.get_email_prompt_regex_pattern()
+            self.tuple_to_value = self.get_tuple_to_value()
+            self.tuple_before_number_regex_pattern: re.Pattern = self.get_tuple_before_number_regex_pattern()
+        
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
 
     def inverse_normalize_list(self, texts: List[str], verbose=False) -> List[str]:
@@ -210,41 +224,52 @@ class InverseNormalizer(Normalizer):
 
         Returns: written form
         """
-        inverse_normalized: str
-        probable_email: bool = False
-        if self.normalize_electronic:
-            if self.input_case == "lower_cased":
-                probable_email = bool(self.probable_email_pattern.search(text, re.IGNORECASE))
+        if self.lang in self.customized_for_email_and_phone_languages:
+            inverse_normalized: str
+            probable_email: bool = False
+            if self.normalize_electronic:
+                if self.input_case == "lower_cased":
+                    probable_email = bool(self.probable_email_pattern.search(text, re.IGNORECASE))
+                else:
+                    probable_email = bool(self.probable_email_pattern.search(text))
+            if not probable_email:
+                self.tagger = self.default_tagger
+                if self.normalize_telephone:
+                    text = self.normalize_tuples_before_numbers(
+                        text=text,
+                        pattern=self.tuple_before_number_regex_pattern,
+                        tuple_dict=self.tuple_to_value,
+                    )
+                inverse_normalized = self.normalize(text=text, verbose=verbose)
+                if self.normalize_telephone:
+                    inverse_normalized = re.sub(self.symbol_to_word['+'][0] + r"\s+(\d)", r"+\1", inverse_normalized)
             else:
-                probable_email = bool(self.probable_email_pattern.search(text))
-        if not probable_email:
-            self.tagger = self.default_tagger
-            if self.normalize_telephone:
-                text = self.normalize_tuples_before_numbers(
-                    text=text,
-                    pattern=self.tuple_before_number_regex_pattern,
-                    tuple_dict=self.tuple_to_value,
+                self.tagger = self.numbers_tagger
+                numbers_inverse_normalized = self.normalize(text=text, verbose=verbose)
+                
+                # For languages that does not support electronic tag, un-comment following lines
+                # numbers_inverse_normalized = self.inverse_normalize_punctuations(
+                #     numbers_inverse_normalized, 
+                #     email_domain=True,
+                # )
+                    
+                self.tagger = self.other_tagger
+                inverse_normalized = self.normalize(text=numbers_inverse_normalized, verbose=verbose)
+                inverse_normalized = self.process_email(
+                    unprocessed_text=numbers_inverse_normalized,
+                    inverse_normalized_text=inverse_normalized,
                 )
-                text = re.sub(self.symbol_to_word['+'][0] + r"\s+(\d)", r"+\1", text)
-            inverse_normalized = self.normalize(text=text, verbose=verbose)
+            
+            return inverse_normalized
         else:
-            self.tagger = self.numbers_tagger
-            numbers_inverse_normalized = self.normalize(text=text, verbose=verbose)
-            self.tagger = self.other_tagger
-            inverse_normalized = self.normalize(text=numbers_inverse_normalized, verbose=verbose)
-            inverse_normalized = self.process_email(
-                unprocessed_text=numbers_inverse_normalized,
-                inverse_normalized_text=inverse_normalized,
-            )
-        
-        return inverse_normalized
+            return self.normalize(text=text, verbose=verbose)
     
     def get_probable_email_regex_pattern(self) -> re.Pattern:
         probable_email_pattern = r"".join([
             "(?:\w+ +)+(?:",
-            " +|".join(self.symbol_to_word['@']),
+            " +|".join([re.sub(r" ", r" ?-?", symbol_name) for symbol_name in self.symbol_to_word['@']]),
             " +|@)(?:\w+)+(?: +",
-            " +|".join(self.symbol_to_word['.']),
+            " +|".join([re.sub(r" ", r" ?-?", symbol_name) for symbol_name in self.symbol_to_word['.']]),
             " +|\.)+\w",
         ])
         if self.input_case == "lower_cased":
@@ -253,14 +278,24 @@ class InverseNormalizer(Normalizer):
             pattern_regex = re.compile(probable_email_pattern)
             
         return pattern_regex
+    
+    def inverse_normalize_punctuations(self, text: str, email_domain: bool = False) -> str:
+        pattern = re.compile(r"\s+(" + r"|".join(
+            [symbol for symbol in list(self.word_to_symbol.keys())]
+        ) + r")\s+", re.IGNORECASE)
+        text = pattern.sub(lambda m: self.word_to_symbol[re.sub(r" ?-?", r"", m.group(1))], text)
+        if email_domain:
+            text = re.sub(r'@\s*(\w*)\s*\.', '@\g<1>.',text)
+        return text
+            
         
     def get_email_prompt_regex_pattern(self) -> re.Pattern:
         pattern_list = load_file(self.get_abs_path(f"{self.lang}/data/electronic/email_prompt_pattern.tsv"))
         pattern_list = [pattern.rstrip('\n') for pattern in pattern_list]
         if self.input_case == "lower_cased":
-            pattern_regex = re.compile(r"\b"+"|".join(pattern_list) + r"\b", re.IGNORECASE)
+            pattern_regex = re.compile(r"\b" + r"\b|\b".join(pattern_list) + r"\b", re.IGNORECASE)
         else:
-            pattern_regex = re.compile(r"\b"+"|".join(pattern_list) + r"\b")
+            pattern_regex = re.compile(r"\b" + r"\b|\b".join(pattern_list) + r"\b")
         return pattern_regex
     
     def symbol_mapping(self) -> Tuple[Dict[str, str], Dict[str, List[str]]]:
@@ -269,7 +304,8 @@ class InverseNormalizer(Normalizer):
         symbols_list = load_file(self.get_abs_path(f"{self.lang}/data/electronic/symbols.tsv"))
         for symbol in symbols_list:
             symbol_char, symbol_name = symbol.rstrip('\n').split('\t')
-            word_to_symbol_mapping[symbol_name] = symbol_char
+            word_to_symbol_mapping[re.sub(r" ?-?", r"", symbol_name)] = symbol_char
+            word_to_symbol_mapping[re.sub(r" ", r" ?-?", symbol_name)] = symbol_char
             if symbol_to_word_mapping.get(symbol_char) is None:
                 symbol_to_word_mapping[symbol_char] = [symbol_name]
             else:
@@ -278,20 +314,23 @@ class InverseNormalizer(Normalizer):
         return (word_to_symbol_mapping, symbol_to_word_mapping)
     
     def process_email(self, unprocessed_text: str, inverse_normalized_text: str) -> str:
-    
+        buffered_token: str = ""
         for i, token in enumerate(reversed(self.tokens), 1):
             electronic_token = token['tokens'].get('electronic')
+            token_str: str = (token['tokens'].get('name') or "") + buffered_token
             if any([
                 electronic_token is not None,
-                re.search(pattern=r"[\w-]+\.[\w-]{2,}", string=token['tokens'].get('name') or "")
+                re.search(pattern=r"[\w-]+\.[\w-]{2,}", string=token_str or "") #
             ]):
                 word_splitted_text = inverse_normalized_text.split(' ')
-                electronic_text: str = word_splitted_text[-i]
+                electronic_text: str = word_splitted_text[-i] + buffered_token
                 # print(electronic_text)
                 username_offset = 0
                 if '@' not in electronic_text:
                     for symbol_word_length in range(1,4):
-                        if " ".join(word_splitted_text[-i-symbol_word_length:-i]) in self.symbol_to_word['@']:
+                        if "".join(word_splitted_text[-i-symbol_word_length:-i]) in [
+                            word.replace(" ", "").replace("-", "") for word in self.symbol_to_word['@']
+                        ]:
                             electronic_text = "@" + electronic_text
                             username_offset = symbol_word_length
                             break
@@ -320,11 +359,18 @@ class InverseNormalizer(Normalizer):
                         electronic_text = word + electronic_text
                 
                 return " ".join([prefix_string, electronic_text] + word_splitted_text[len(word_splitted_text)-i+1:])
-        
+            
+            elif re.search(pattern=r"\.[\w-]{2,}", string=token['tokens'].get('name') or ""):
+                buffered_token = token['tokens'].get('name')
+                del self.tokens[len(self.tokens)-i]
+                
+                
         return inverse_normalized_text
     
     def normalize_tuples_before_numbers(self, text: str, pattern:re.Pattern, tuple_dict: Dict[str, int]) -> str:
         normalized_text: str = pattern.sub(lambda m: f"{m.group(2)} " * tuple_dict[m.group(1)], text)
+        # remove extra whitespaces
+        normalized_text = re.sub(pattern=r"\s{2,}", repl=" ", string=normalized_text)
         return normalized_text
         
         
