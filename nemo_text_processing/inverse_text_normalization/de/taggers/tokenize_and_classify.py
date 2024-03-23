@@ -70,6 +70,14 @@ class ClassifyFst(GraphFst):
         deterministic: bool = True,
         whitelist: str = None,
         input_case: str = INPUT_LOWER_CASED,
+        classify_number: bool = True,
+        classify_date: bool = True,
+        classify_time: bool = True,
+        classify_money: bool = True,
+        classify_telephone: bool = True,
+        classify_measure: bool = True,
+        classify_whitelist: bool = True,
+        classify_electronic: bool = True,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
@@ -89,8 +97,8 @@ class ClassifyFst(GraphFst):
             tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
             tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, deterministic=False)
             tn_date_verbalizer = TNDateVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
-            tn_electronic_tagger = TNElectronicTagger(deterministic=False)
-            tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
+            # tn_electronic_tagger = TNElectronicTagger(deterministic=False)
+            # tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
             tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False, input_file=whitelist)
 
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger)
@@ -115,25 +123,60 @@ class ClassifyFst(GraphFst):
             money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal).fst
             whitelist_graph = WhiteListFst(tn_whitelist_tagger=tn_whitelist_tagger).fst
             punct_graph = PunctuationFst().fst
-            electronic_graph = ElectronicFst(
-                tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer
-            ).fst
-            telephone_graph = TelephoneFst(tn_cardinal_tagger=tn_cardinal_tagger).fst
+            # electronic_graph = ElectronicFst(
+            #     tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer
+            # ).fst
+            electronic_graph = ElectronicFst().fst
+            telephone_graph = TelephoneFst().fst
+            #tn_cardinal_tagger=tn_cardinal_tagger).fst
 
-            classify = (
-                pynutil.add_weight(cardinal_graph, 1.1)
-                | pynutil.add_weight(whitelist_graph, 1.0)
-                | pynutil.add_weight(time_graph, 1.1)
-                | pynutil.add_weight(date_graph, 1.1)
-                | pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(measure_graph, 1.1)
-                | pynutil.add_weight(ordinal_graph, 1.1)
-                | pynutil.add_weight(fraction_graph, 1.1)
-                | pynutil.add_weight(money_graph, 1.1)
-                | pynutil.add_weight(telephone_graph, 1.1)
-                | pynutil.add_weight(electronic_graph, 1.1)
-                | pynutil.add_weight(word_graph, 100)
-            )
+            
+            classify: pynini.Fst = pynini.Fst()
+            
+            if classify_whitelist:
+                classify |= pynutil.add_weight(whitelist_graph, 1.01)
+                
+            if classify_time:
+                classify |= pynutil.add_weight(time_graph, 1.1)
+                
+            if classify_date:
+                classify |= pynutil.add_weight(date_graph, 1.09)
+                
+            if classify_number:
+                classify |= (
+                    pynutil.add_weight(decimal_graph, 1.1) 
+                    | pynutil.add_weight(cardinal_graph, 1.1) 
+                    | pynutil.add_weight(ordinal_graph, 1.09)
+                )
+                
+            if classify_measure:
+                classify |= pynutil.add_weight(measure_graph, 1.1)
+                
+            if classify_money:
+                classify |= pynutil.add_weight(money_graph, 1.1)
+                
+            if classify_telephone:
+                classify |= pynutil.add_weight(telephone_graph, 1.1)
+                
+            if classify_electronic:
+                classify |= pynutil.add_weight(electronic_graph, 1.1)
+            
+            classify |= pynutil.add_weight(word_graph, 100)
+            
+            # classify = (
+            #     pynutil.add_weight(cardinal_graph, 1.1)
+            #     | pynutil.add_weight(whitelist_graph, 1.0)
+            #     | pynutil.add_weight(time_graph, 1.1)
+            #     | pynutil.add_weight(date_graph, 1.1)
+            #     | pynutil.add_weight(decimal_graph, 1.1)
+            #     | pynutil.add_weight(measure_graph, 1.1)
+            #     | pynutil.add_weight(ordinal_graph, 1.1)
+            #     | pynutil.add_weight(fraction_graph, 1.1)
+            #     | pynutil.add_weight(money_graph, 1.1)
+            #     | pynutil.add_weight(telephone_graph, 1.1)
+            #     | pynutil.add_weight(electronic_graph, 1.1)
+            #     | pynutil.add_weight(word_graph, 100)
+            # )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
