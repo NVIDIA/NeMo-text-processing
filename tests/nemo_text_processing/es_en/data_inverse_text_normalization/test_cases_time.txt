@@ -21,23 +21,23 @@ las dos de la tarde~las 2:00 p.m.
 cuarto para las cero~las 23:45
 cuarto para las veinticuatro~las 23:45
 diez para las doce~las 11:50
-dos y media de la tarde~2:30 p.m.
-la una de la tarde u t c más cuatro~la 1:00 p.m. utc+4
-eight oclock g m t~8:00 gmt
-seven a m e s t~7:00 a.m. est
-two p m~2:00 p.m.
-two thirty~2:30
-three o'clock~3:00
-quarter past one~1:15
-half past three~3:30
-eight fifty one~8:51
-eight fifty two~8:52
-eight forty~8:40
-eight nineteen~8:19
-eight o six~8:06
-eight thirty eight~8:38
-eight thirty two~8:32
-eight twenty nine~8:29
+dos y media de la tarde~02:30 p.m.
+la una de la tarde u t c más cuatro~la 1:00 p.m. UTC+4
+eight oclock g m t~08:00 gmt
+seven a m e s t~07:00 a.m. est
+two p m~02:00 p.m.
+two thirty~02:30
+three o'clock~03:00
+quarter past one~01:15
+half past three~03:30
+eight fifty one~08:51
+eight fifty two~08:52
+eight forty~08:40
+eight nineteen~08:19
+eight o six~08:06
+eight thirty eight~08:38
+eight thirty two~08:32
+eight twenty nine~08:29
 eleven fifty five p m~11:55 p.m.
 eleven fifty three p m~11:53 p.m.
 eleven forty a m~11:40 a.m.
@@ -47,7 +47,7 @@ eleven forty six a m~11:46 a.m.
 eleven o six p m~11:06 p.m.
 eleven thirteen a m~11:13 a.m.
 half past twelve~12:30
-quarter past one~1:15
+quarter past one~01:15
 quarter to one~12:45
 quarter to twelve~11:45
 set alarm at ten to eleven pm~set alarm at 10:50 p.m.
