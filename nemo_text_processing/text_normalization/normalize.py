@@ -517,7 +517,7 @@ class Normalizer:
         logger.warning(f'Normalized version saved at {output_filename}')
 
     def split_text_into_sentences(self, text: str, additional_split_symbols: str = "") -> List[str]:
-        """
+        r"""
         Split text into sentences.
 
         Args:
