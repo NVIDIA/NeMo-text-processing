@@ -10,7 +10,7 @@ runtest () {
   while read testcase; do
     IFS='~' read written spoken <<< $testcase
     # replace non breaking space with breaking space
-    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
+    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration_pp.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
     # # trim white space
     spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
@@ -21,7 +21,10 @@ runtest () {
   done < "$input"
 }
 
-
+testTNTimeText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
 testTNCardinalText() {
   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_cardinal.txt
   runtest $input
@@ -42,21 +45,17 @@ testTNDateText() {
   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_date.txt
   runtest $input
 }
-testTNTimeText() {
-  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_time.txt
-  runtest $input
-}
 testTNMoneyText() {
   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_money.txt
   runtest $input
 }
-testTNCharText() {
-  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_char.txt
+testTNWordText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_word.txt
   runtest $input
 }
-testTNPreprocessText() {
-   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_preprocess.txt
-   runtest $input
+testTNWhitelistText() {
+  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_whitelist.txt
+  runtest $input
 }
 testTNMeasureText() {
   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_measure.txt
