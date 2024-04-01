@@ -84,7 +84,7 @@ class DecimalFst(GraphFst):
             + pynutil.insert("\"")
         )
         graph_decimal = graph_integer + pynutil.delete('.') + pynutil.insert(" ") + graph_fraction
-        self.regular_decimal = graph_decimal
+        self.regular_decimal = graph_decimal.optimize()
 
         graph_sign = (
             (
@@ -109,7 +109,7 @@ class DecimalFst(GraphFst):
         graph_quantity = graph_decimal_quantity | graph_sign_quantity
 
         final_graph = graph_regular | graph_quantity
-        self.decimal = final_graph
+        self.decimal = final_graph.optimize()
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
