@@ -155,12 +155,13 @@ class FractionFst(GraphFst):
             | (graph_optional_sign + pynutil.insert(" ") + graph_with_suffix)
             | (graph_optional_sign + pynutil.insert(" ") + graph_integer_percentage)
             | (graph_optional_sign + pynutil.insert(" ") + graph_decimal_percentage)
-            | graph_optional_sign + pynutil.insert(" ") + graph_hundred
+            | (graph_optional_sign + pynutil.insert(" ") + graph_hundred)
         )
 
-        final_graph = graph | pynutil.add_weight(graph_with_sign, 3.0)
-        self.just_fractions = graph
-        self.fractions = final_graph
+        final_graph = graph | pynutil.add_weight(graph_with_sign, -3.0)
+        
+        self.just_fractions = graph.optimize()
+        self.fractions = final_graph.optimize()
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
