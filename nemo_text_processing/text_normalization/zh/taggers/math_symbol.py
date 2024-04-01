@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 class MathSymbol(GraphFst):
     '''
-        + -> tokens { sign: "加" }
+    + -> tokens { sign: "加" }
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):

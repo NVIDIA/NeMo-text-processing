@@ -143,7 +143,10 @@ class ClassifyFst(GraphFst):
 
             # self.fst = graph.optimize()
             tagger = graph.optimize()
-            preprocessor = PreProcessor(remove_interjections=True, fullwidth_to_halfwidth=True,)
+            preprocessor = PreProcessor(
+                remove_interjections=True,
+                fullwidth_to_halfwidth=True,
+            )
             self.fst = preprocessor.fst @ tagger
 
             no_digits = pynini.closure(pynini.difference(NEMO_CHAR, NEMO_DIGIT))

@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_SPAC
 
 class Char(GraphFst):
     '''
-        你 -> char { name: "你" }
+    你 -> char { name: "你" }
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):

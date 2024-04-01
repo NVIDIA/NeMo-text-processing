@@ -19,7 +19,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOT
 
 class MathSymbol(GraphFst):
     '''
-        tokens { sign: "加" }  -> 加
+    tokens { sign: "加" }  -> 加
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):

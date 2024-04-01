@@ -20,17 +20,19 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 class PreProcessor(GraphFst):
     '''
-        Preprocessing of TN:
-            1. interjections removal such as '啊, 呃'
-            2. fullwidth -> halfwidth char conversion
-        好啊 -> 好
-        呃对 -> 对
-        ：   -> :
-        ；   -> ;
+    Preprocessing of TN:
+        1. interjections removal such as '啊, 呃'
+        2. fullwidth -> halfwidth char conversion
+    好啊 -> 好
+    呃对 -> 对
+    ：   -> :
+    ；   -> ;
     '''
 
     def __init__(
-        self, remove_interjections: bool = True, fullwidth_to_halfwidth: bool = True,
+        self,
+        remove_interjections: bool = True,
+        fullwidth_to_halfwidth: bool = True,
     ):
         super().__init__(name="PreProcessor", kind="processor")
 

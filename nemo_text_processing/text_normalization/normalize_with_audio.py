@@ -164,11 +164,16 @@ class NormalizerWithAudio(Normalizer):
                 text_with_span_tags_list[masked_idx_list[sem_tag_idx]] = ""
             else:
                 non_deter_options = self.normalize_non_deterministic(
-                    text=cur_semiotic_span, n_tagged=n_tagged, punct_post_process=punct_post_process, verbose=verbose,
+                    text=cur_semiotic_span,
+                    n_tagged=n_tagged,
+                    punct_post_process=punct_post_process,
+                    verbose=verbose,
                 )
                 try:
                     best_option, cer, _ = self.select_best_match(
-                        normalized_texts=non_deter_options, pred_text=cur_pred_text, verbose=verbose,
+                        normalized_texts=non_deter_options,
+                        pred_text=cur_pred_text,
+                        verbose=verbose,
                     )
                     if cer_threshold > 0 and cer > cer_threshold:
                         best_option = cur_deter_norm
@@ -366,7 +371,11 @@ class NormalizerWithAudio(Normalizer):
                 continue
 
     def select_best_match(
-        self, normalized_texts: List[str], pred_text: str, verbose: bool = False, remove_punct: bool = False,
+        self,
+        normalized_texts: List[str],
+        pred_text: str,
+        verbose: bool = False,
+        remove_punct: bool = False,
     ):
         """
         Selects the best normalization option based on the lowest CER

@@ -25,7 +25,7 @@ def get_quantity(decimal: "pynini.FstLike", cardinal_up_to_hundred: "pynini.FstL
     e.g.  5 مليون -> integer_part: "خمسة" quantity: "مليون"
     e.g. 5.4 مليون -> integer_part: "خمسة" fractional_part: "اربعة من عشرة" quantity: "مليون"
 
-    Args: 
+    Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
@@ -46,8 +46,8 @@ def get_quantity(decimal: "pynini.FstLike", cardinal_up_to_hundred: "pynini.FstL
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g. 
-    321.7 --> ثلاث مئة وواحد وعشرون وسبعة من عشرة 
+    Finite state transducer for classifying decimal, e.g.
+    321.7 --> ثلاث مئة وواحد وعشرون وسبعة من عشرة
     -321.7  -> decimal { negative: "true" integer_part: "321"  fractional_part: ".7" }
     cardinal: CardinalFst
     """
