@@ -53,8 +53,8 @@ class CardinalFst(GraphFst):
         )
         graph_hundred = hundreds @ graph_hundred_component
 
-        self.digit = graph_digit
-        self.all = graph_all
+        self.digit = graph_digit.optimize()
+        self.all = graph_all.optimize()
 
         thousands = NEMO_DIGIT ** 4
         graph_thousand_component = (graph_digit_alt + pynutil.insert('千')) + pynini.union(
@@ -184,7 +184,7 @@ class CardinalFst(GraphFst):
             graph_all_alt,
             graph_zero,
         )
-        self.just_cardinals = graph
+        self.just_cardinals = graph.optimize()
         optional_sign = (
             pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("负", "-")) + pynutil.insert("\"")
         )
@@ -192,7 +192,7 @@ class CardinalFst(GraphFst):
             optional_sign + pynutil.insert(" ") + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
         ) | (pynutil.insert("integer: \"") + graph + pynutil.insert("\""))
 
-        self.with_sign = final_graph
+        self.with_sign = final_graph.optimize()
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
