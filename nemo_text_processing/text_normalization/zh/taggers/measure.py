@@ -18,7 +18,9 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
+
 # note importing 6 gramamrs and remember to use cardinal to ompotimze (self###)
+
 
 class MeasureFst(GraphFst):
     '''
@@ -36,12 +38,12 @@ class MeasureFst(GraphFst):
         # )
 
         graph_cardinal = cardinal.with_sign
-        graph_decimal = decimal.decimal #with tag
+        graph_decimal = decimal.decimal  # with tag
         # graph_fraction = fraction.fractions
 
-        #graph_just_cardinal = cardinal.just_cardinals
-        #graph_just_decimal = decimal.regular_decimal
-        #graph_just_fraction = fraction.just_fractions
+        # graph_just_cardinal = cardinal.just_cardinals
+        # graph_just_decimal = decimal.regular_decimal
+        # graph_just_fraction = fraction.just_fractions
 
         # these units ared added due to falures when running Sparrow Hawk tests that "ms" would be processed as "m" and "s" left outside of the tagegr
         units = (
@@ -68,18 +70,18 @@ class MeasureFst(GraphFst):
             | pynini.cross("mw", "毫瓦")
         )
 
-        #unit_component = pynutil.insert("units: \"") + (units_en | units_zh | units) + pynutil.insert("\"")
-        #unit_component = pynutil.insert("units: \"") + (units_en | units_zh) + pynutil.insert("\"")
+        # unit_component = pynutil.insert("units: \"") + (units_en | units_zh | units) + pynutil.insert("\"")
+        # unit_component = pynutil.insert("units: \"") + (units_en | units_zh) + pynutil.insert("\"")
         unit_component = pynutil.insert("units: \"") + (units_en | units) + pynutil.insert("\"")
 
-       # unit_component_math = pynutil.insert("units: \"") + score_sign + pynutil.insert("\"")
+        # unit_component_math = pynutil.insert("units: \"") + score_sign + pynutil.insert("\"")
 
         graph_cardinal_measure = pynini.closure(
             (pynutil.insert("cardinal { ") + graph_cardinal + pynutil.insert(" } ") + insert_space + unit_component), 1
         )
 
         graph_decimal_measure = pynini.closure(
-           (pynutil.insert("decimal { ") + graph_decimal + pynutil.insert(" } ") + unit_component), 1
+            (pynutil.insert("decimal { ") + graph_decimal + pynutil.insert(" } ") + unit_component), 1
         )
 
         # graph_fraction_measure = pynini.closure(
@@ -93,12 +95,14 @@ class MeasureFst(GraphFst):
         #    + graph_just_cardinal
         # )
 
-       # graph_math_cardinal = pynutil.insert("cardinal { integer: \"") + graph_math_cardinal + pynutil.insert("\" } ")
+        # graph_math_cardinal = pynutil.insert("cardinal { integer: \"") + graph_math_cardinal + pynutil.insert("\" } ")
 
-       # graph_maths = graph_math_cardinal
-        graph_measures = graph_decimal_measure | graph_cardinal_measure #| graph_math_cardinal # | graph_fraction_measure
+        # graph_maths = graph_math_cardinal
+        graph_measures = (
+            graph_decimal_measure | graph_cardinal_measure
+        )  # | graph_math_cardinal # | graph_fraction_measure
 
-        #final_graph = graph_measures #| graph_maths
+        # final_graph = graph_measures #| graph_maths
 
         final_graph = self.add_tokens(graph_measures)
         self.fst = final_graph.optimize()
