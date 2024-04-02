@@ -128,8 +128,10 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
+        from nemo_text_processing.text_normalization.en.verbalizers.post_processing import (
+            PostProcessingFst as TNPostProcessingFst,
+        )
         from nemo_text_processing.text_normalization.en.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
-        from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst as TNPostProcessingFst
 
     elif args.language == 'de':
         from nemo_text_processing.inverse_text_normalization.de.taggers.tokenize_and_classify import (
@@ -211,8 +213,10 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
+        from nemo_text_processing.text_normalization.zh.verbalizers.post_processing import (
+            PostProcessingFst as TNPostProcessingFst,
+        )
         from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
-        from nemo_text_processing.text_normalization.zh.verbalizers.post_processing import PostProcessingFst as TNPostProcessingFst
     elif args.language == 'ar':
         from nemo_text_processing.inverse_text_normalization.ar.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,

@@ -159,7 +159,7 @@ class FractionFst(GraphFst):
         )
 
         final_graph = graph | pynutil.add_weight(graph_with_sign, -3.0)
-        
+
         self.just_fractions = graph.optimize()
         self.fractions = final_graph.optimize()
 

@@ -75,10 +75,10 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
             whitelist = WhiteListFst(deterministic=deterministic)
             word = WordFst(deterministic=deterministic)
-          
+
             classify = pynini.union(
                 pynutil.add_weight(date.fst, 1.1),
-                pynutil.add_weight(fraction.fst, 1.0), # was 1.0
+                pynutil.add_weight(fraction.fst, 1.0),  # was 1.0
                 pynutil.add_weight(money.fst, 1.1),
                 pynutil.add_weight(measure.fst, 1.05),
                 pynutil.add_weight(time.fst, 1.1),
@@ -91,5 +91,5 @@ class ClassifyFst(GraphFst):
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
             tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
-      
+
             self.fst = tagger
