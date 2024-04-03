@@ -93,3 +93,6 @@ class ClassifyFst(GraphFst):
             tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
             self.fst = tagger
+            
+            if far_file:
+                generator_main(far_file, {"tokenize_and_classify": self.fst})
