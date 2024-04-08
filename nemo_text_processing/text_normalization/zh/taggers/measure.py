@@ -70,11 +70,7 @@ class MeasureFst(GraphFst):
             | pynini.cross("mw", "毫瓦")
         )
 
-        # unit_component = pynutil.insert("units: \"") + (units_en | units_zh | units) + pynutil.insert("\"")
-        # unit_component = pynutil.insert("units: \"") + (units_en | units_zh) + pynutil.insert("\"")
         unit_component = pynutil.insert("units: \"") + (units_en | units) + pynutil.insert("\"")
-
-        # unit_component_math = pynutil.insert("units: \"") + score_sign + pynutil.insert("\"")
 
         graph_cardinal_measure = pynini.closure(
             (pynutil.insert("cardinal { ") + graph_cardinal + pynutil.insert(" } ") + insert_space + unit_component), 1
@@ -84,25 +80,10 @@ class MeasureFst(GraphFst):
             (pynutil.insert("decimal { ") + graph_decimal + pynutil.insert(" } ") + unit_component), 1
         )
 
-        # graph_fraction_measure = pynini.closure(
-        #    (pynutil.insert("fraction { ") + graph_fraction + pynutil.insert(" } ") + insert_space + unit_component), 1
-        # )
 
-        # graph_math_cardinal = (
-        #    graph_just_cardinal
-        #    + pynini.closure(score_sign + graph_just_cardinal, 1)
-        #    + pynini.cross("=", "等于")
-        #    + graph_just_cardinal
-        # )
-
-        # graph_math_cardinal = pynutil.insert("cardinal { integer: \"") + graph_math_cardinal + pynutil.insert("\" } ")
-
-        # graph_maths = graph_math_cardinal
         graph_measures = (
             graph_decimal_measure | graph_cardinal_measure
-        )  # | graph_math_cardinal # | graph_fraction_measure
-
-        # final_graph = graph_measures #| graph_maths
+        )  
 
         final_graph = self.add_tokens(graph_measures)
         self.fst = final_graph.optimize()
