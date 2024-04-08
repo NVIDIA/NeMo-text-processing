@@ -19,8 +19,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.zh.graph_utils import generator_main
-
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
@@ -32,6 +31,7 @@ from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreP
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
+from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
 
 
 class ClassifyFst(GraphFst):
@@ -77,10 +77,11 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
             whitelist = WhiteListFst(deterministic=deterministic)
             word = WordFst(deterministic=deterministic)
+            punctuation = PunctuationFst(deterministic=deterministic)
 
             classify = pynini.union(
                 pynutil.add_weight(date.fst, 1.1),
-                pynutil.add_weight(fraction.fst, 1.0),  # was 1.0
+                pynutil.add_weight(fraction.fst, 1.0),
                 pynutil.add_weight(money.fst, 1.1),
                 pynutil.add_weight(measure.fst, 1.05),
                 pynutil.add_weight(time.fst, 1.1),
@@ -88,14 +89,16 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(cardinal.fst, 1.1),
                 pynutil.add_weight(decimal.fst, 3.05),
                 pynutil.add_weight(ordinal.fst, 1.1),
+                pynutil.add_weight(punctuation.fst, 1.0),
                 pynutil.add_weight(word.fst, 100),
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-            # added line 94
-            tagger = pynini.closure(token,1) 
-            # original line that worked for resolving sentence inputs: 
-            ##tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
+            #punct = pynutil.insert("tokens { ") + punctuation + pynutil.insert(" } ")
+            #punct = pynutil.insert("tokens { ") + pynutil.add_weight(punctuation, weight=1.1) + pynutil.insert(" }")
+            #tagger = pynini.closure(punct, 0, 1) + pynini.closure(token, 1) + pynini.closure(punct, 0, 1)
+            tagger = pynini.closure(token, 1)
+
 
             self.fst = tagger
 
