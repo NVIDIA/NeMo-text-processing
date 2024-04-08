@@ -18,9 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import generator_main
-
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst, generator_main
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
@@ -93,8 +91,8 @@ class ClassifyFst(GraphFst):
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
             # added line 94
-            tagger = pynini.closure(token,1) 
-            # original line that worked for resolving sentence inputs: 
+            tagger = pynini.closure(token, 1)
+            # original line that worked for resolving sentence inputs:
             ##tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
             self.fst = tagger
