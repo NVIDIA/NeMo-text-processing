@@ -94,10 +94,7 @@ class ClassifyFst(GraphFst):
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-            # added line 94
             tagger = pynini.closure(token,1) 
-            # original line that worked for resolving sentence inputs: 
-            ##tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
             self.fst = tagger
 
