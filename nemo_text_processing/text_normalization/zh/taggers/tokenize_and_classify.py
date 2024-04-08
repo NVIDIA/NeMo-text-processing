@@ -27,7 +27,6 @@ from nemo_text_processing.text_normalization.zh.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessorFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
