@@ -18,8 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import generator_main
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, generator_main
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
@@ -30,7 +29,6 @@ from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFs
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
-from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
 
 
 class ClassifyFst(GraphFst):
