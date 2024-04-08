@@ -18,8 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import generator_main
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, generator_main
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
@@ -28,10 +27,10 @@ from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessorFst
+from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
-from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
 
 
 class ClassifyFst(GraphFst):
@@ -95,8 +94,8 @@ class ClassifyFst(GraphFst):
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
             # added line 94
-            tagger = pynini.closure(token,1) 
-            # original line that worked for resolving sentence inputs: 
+            tagger = pynini.closure(token, 1)
+            # original line that worked for resolving sentence inputs:
             ##tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
 
             self.fst = tagger
