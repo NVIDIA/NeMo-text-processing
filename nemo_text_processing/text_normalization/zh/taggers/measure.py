@@ -33,17 +33,9 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
 
         units_en = pynini.string_file(get_abs_path("data/measure/units_en.tsv"))
-        # score_sign = pynini.string_file(get_abs_path("data/math/score.tsv")) | pynini.string_file(
-        #     get_abs_path("data/math/symbol.tsv")
-        # )
 
         graph_cardinal = cardinal.with_sign
         graph_decimal = decimal.decimal  # with tag
-        # graph_fraction = fraction.fractions
-
-        # graph_just_cardinal = cardinal.just_cardinals
-        # graph_just_decimal = decimal.regular_decimal
-        # graph_just_fraction = fraction.just_fractions
 
         # these units ared added due to falures when running Sparrow Hawk tests that "ms" would be processed as "m" and "s" left outside of the tagegr
         units = (
@@ -79,7 +71,6 @@ class MeasureFst(GraphFst):
         graph_decimal_measure = pynini.closure(
             (pynutil.insert("decimal { ") + graph_decimal + pynutil.insert(" } ") + unit_component), 1
         )
-
 
         graph_measures = (
             graph_decimal_measure | graph_cardinal_measure
