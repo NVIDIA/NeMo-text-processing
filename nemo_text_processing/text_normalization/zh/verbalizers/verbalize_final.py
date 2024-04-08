@@ -47,13 +47,3 @@ class VerbalizeFinalFst(GraphFst):
             postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
 
             self.fst = (verbalizer @ postprocessor.fst).optimize()
-
-            #######################################
-            # token_verbalizer = (
-            #     pynutil.delete("tokens { ") + pynini.closure(delete_space) + token_graph.fst + pynini.closure(delete_space) + pynutil.delete(" }")
-            # )
-            # verbalizer = pynini.closure(pynini.closure(delete_space) + token_verbalizer + pynini.closure(delete_space))
-            # self.fst = verbalizer.optimize()
-
-            # if far_file:
-            #     generator_main(far_file, {"verbalize": self.fst})

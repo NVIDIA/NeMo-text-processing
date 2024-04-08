@@ -116,6 +116,4 @@ class PostProcessingFst:
 
         graph = remove_space_around_single_quote.optimize()
 
-        # import pdb
-        # pdb.set_trace()
         return graph
