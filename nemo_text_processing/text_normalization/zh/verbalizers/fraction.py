@@ -85,6 +85,6 @@ class FractionFst(GraphFst):
 
         final_graph = graph_with_sign | graph | graph_with_decimal
         self.fraction = final_graph
-        # import pdb; pdb.set_trace()
+
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
