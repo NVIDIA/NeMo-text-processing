@@ -19,8 +19,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
-# note importing 6 gramamrs and remember to use cardinal to ompotimze (self###)
-
 
 class MeasureFst(GraphFst):
     '''
@@ -35,7 +33,7 @@ class MeasureFst(GraphFst):
         units_en = pynini.string_file(get_abs_path("data/measure/units_en.tsv"))
 
         graph_cardinal = cardinal.with_sign
-        graph_decimal = decimal.decimal  # with tag
+        graph_decimal = decimal.decimal 
 
         # these units ared added due to falures when running Sparrow Hawk tests that "ms" would be processed as "m" and "s" left outside of the tagegr
         units = (
