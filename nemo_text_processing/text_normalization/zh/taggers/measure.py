@@ -70,9 +70,7 @@ class MeasureFst(GraphFst):
             (pynutil.insert("decimal { ") + graph_decimal + pynutil.insert(" } ") + unit_component), 1
         )
 
-        graph_measures = (
-            graph_decimal_measure | graph_cardinal_measure
-        )  
+        graph_measures = graph_decimal_measure | graph_cardinal_measure
 
         final_graph = self.add_tokens(graph_measures)
         self.fst = final_graph.optimize()

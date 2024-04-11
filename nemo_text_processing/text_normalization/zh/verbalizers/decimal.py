@@ -30,17 +30,9 @@ class DecimalFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        integer = (
-            pynutil.delete("integer_part: \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
-        )
+        integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
-        fractional = (
-            pynutil.delete("fractional_part: \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
-        )
+        fractional = pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         quantity = (
             pynutil.delete("quantity:")
