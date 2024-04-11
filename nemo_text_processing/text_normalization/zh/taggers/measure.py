@@ -33,7 +33,7 @@ class MeasureFst(GraphFst):
         units_en = pynini.string_file(get_abs_path("data/measure/units_en.tsv"))
 
         graph_cardinal = cardinal.with_sign
-        graph_decimal = decimal.decimal 
+        graph_decimal = decimal.decimal
 
         # these units ared added due to falures when running Sparrow Hawk tests that "ms" would be processed as "m" and "s" left outside of the tagegr
         units = (
