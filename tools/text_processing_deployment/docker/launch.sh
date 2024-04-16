@@ -50,7 +50,6 @@ elif [[ $MODE == "test_itn_grammars" ]]; then
 fi
 
 echo $MOUNTS
-echo $CMD
 docker run -it -e LANG=C.UTF-8 -e LC_ALL=C.UTF-8 --rm \
   --shm-size=4g \
   --ulimit memlock=-1 \
@@ -58,4 +57,4 @@ docker run -it -e LANG=C.UTF-8 -e LC_ALL=C.UTF-8 --rm \
   $MOUNTS \
   -v $SCRIPT_DIR/../../../tests/nemo_text_processing/:/workspace/tests/ \
   -w $WORK_DIR \
-  sparrowhawk:latest
+  sparrowhawk:latest $CMD
