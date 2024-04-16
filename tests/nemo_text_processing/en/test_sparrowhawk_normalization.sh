@@ -11,7 +11,10 @@ runtest () {
   while read testcase; do
     IFS='~' read written spoken <<< $testcase
     # replace non breaking space with breaking space
+    # Use below if postprocessor is not used. Comment if it is used
     denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
+    # Use below if postprocessor is  used. Comment if it is not used
+    #denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration_pp.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
     # trim white space
     spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
