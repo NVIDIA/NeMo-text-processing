@@ -50,7 +50,7 @@ elif [[ $MODE == "test_itn_grammars" ]]; then
 fi
 
 echo $MOUNTS
-docker run -it --rm \
+docker run -it -e LANG=C.UTF-8 -e LC_ALL=C.UTF-8 --rm \
   --shm-size=4g \
   --ulimit memlock=-1 \
   --ulimit stack=67108864 \
