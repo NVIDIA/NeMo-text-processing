@@ -60,6 +60,8 @@ def get_various_formats(text: str) -> List[str]:
         result.append(t.upper())
         result.append(t.capitalize())
     return result
+
+
 def load_labels(abs_path):
     """
     loads relative path file as dictionary
