@@ -19,12 +19,8 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    MIN_NEG_WEIGHT,
-    NEMO_ALPHA,
-    NEMO_CHAR,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
-    NEMO_SPACE,
     delete_space,
     generator_main,
 )
