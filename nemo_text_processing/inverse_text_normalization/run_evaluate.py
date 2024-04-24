@@ -33,7 +33,11 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--input", help="input file path", type=str)
     parser.add_argument(
-        "--lang", help="language", choices=["ar", "de", "en", "es", "es_en", "fr", "hy", "mr", "pt", "ru", "sv", "vi", "zh"], default="en", type=str
+        "--lang",
+        help="language",
+        choices=["ar", "de", "en", "es", "es_en", "fr", "hy", "mr", "pt", "ru", "sv", "vi", "zh"],
+        default="en",
+        type=str,
     )
     parser.add_argument("--input_case", choices=["lower_cased", "cased"])
     parser.add_argument("--output_case", choices=["lower_cased", "cased"])

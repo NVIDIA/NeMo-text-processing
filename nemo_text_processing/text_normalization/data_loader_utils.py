@@ -87,7 +87,7 @@ def _load_kaggle_text_norm_file(file_path: str, to_lower: bool) -> List[Instance
     return res
 
 
-def load_files(file_paths: List[str], load_func=_load_kaggle_text_norm_file, to_lower: bool=True) -> List[Instance]:
+def load_files(file_paths: List[str], load_func=_load_kaggle_text_norm_file, to_lower: bool = True) -> List[Instance]:
     """
     Load given list of text files using the `load_func` function.
 
