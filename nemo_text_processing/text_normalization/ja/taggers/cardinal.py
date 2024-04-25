@@ -94,7 +94,7 @@ class CardinalFst(GraphFst):
         graph_hundred_billions = hundred_billions @ graph_hundred_billions_component
 
         graph = pynini.union(graph_hundred_billions, graph_ten_billions, graph_thousand_million,graph_hundred_million, graph_ten_million,graph_million, graph_hundred_thousand, graph_ten_thousand, graph_thousand, graph_hundred,graph_all, graph_zero)
-        self.just_cardinals = graph
+        self.just_cardinals = graph.optimize()
 
         optional_sign = (
             pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")
