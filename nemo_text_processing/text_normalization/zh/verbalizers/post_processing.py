@@ -23,7 +23,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
 
 
