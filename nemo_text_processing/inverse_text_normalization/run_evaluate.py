@@ -35,7 +35,11 @@ def parse_args():
     parser.add_argument(
         "--lang",
         help="language",
+<<<<<<< HEAD
         choices=["ar", "de", "en", "es", "es_en", "fr", "hy", "mr", "pt", "ru", "sv", "vi", "zh", 'ja'],
+=======
+        choices=["ar", "de", "en", "es", "es_en", "fr", "hy", "mr", "pt", "ru", "sv", "vi", "zh"],
+>>>>>>> 0b3a27d (update run_evaluate script for cased itn (#164))
         default="en",
         type=str,
     )
