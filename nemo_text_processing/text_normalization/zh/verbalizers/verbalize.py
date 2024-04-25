@@ -14,7 +14,6 @@
 
 
 import pynini
-from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, delete_space
 from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import CardinalFst
