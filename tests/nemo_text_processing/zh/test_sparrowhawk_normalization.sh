@@ -66,4 +66,5 @@ testTNMeasureText() {
 
 
 # Load shUnit2
-. $PROJECT_DIR/../shunit2/shunit2
+#. $PROJECT_DIR/../shunit2/shunit2
+. /workspace/shunit2/shunit2
