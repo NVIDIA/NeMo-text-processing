@@ -60,3 +60,17 @@ def get_various_formats(text: str) -> List[str]:
         result.append(t.upper())
         result.append(t.capitalize())
     return result
+
+
+def load_labels(abs_path):
+    """
+    loads relative path file as dictionary
+
+    Args:
+        abs_path: absolute path
+
+    Returns dictionary of mappings
+    """
+    with open(abs_path, encoding="utf-8") as label_tsv:
+        labels = list(csv.reader(label_tsv, delimiter="\t"))
+    return labels
