@@ -109,7 +109,7 @@ class PostProcessingFst:
         # no_space_before_punct assume no space before them
         quotes = ["'", "\"", "``", "«"]
         dashes = ["-", "—"]
-        brackets = ["<", "{", "(", r"\["]
+        brackets = ["<", "{", "(", "\["]
         open_close_single_quotes = [
             ("`", "`"),
         ]
