@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, del
 from nemo_text_processing.text_normalization.zh.verbalizers.postprocessor import PostProcessor
 from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst
 
-# from nemo_text_processing.utils.logging import logger
+# from nemo.utils import logging
 
 
 class VerbalizeFinalFst(GraphFst):
@@ -38,6 +38,7 @@ class VerbalizeFinalFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
         else:
             token_graph = VerbalizeFst(deterministic=deterministic)
+
             token_verbalizer = (
                 pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
             )
@@ -46,5 +47,3 @@ class VerbalizeFinalFst(GraphFst):
             postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
 
             self.fst = (verbalizer @ postprocessor.fst).optimize()
-            if far_file:
-                generator_main(far_file, {"verbalize": self.fst})
