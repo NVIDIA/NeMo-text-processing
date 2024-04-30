@@ -73,4 +73,8 @@ class MeasureFst(GraphFst):
         graph_measures = graph_decimal_measure | graph_cardinal_measure
 
         final_graph = self.add_tokens(graph_measures)
+<<<<<<< HEAD
         self.fst = final_graph.optimize()
+=======
+        self.fst = final_graph.optimize()
+>>>>>>> 02b8610 (ZH sentence-level TN (#112))

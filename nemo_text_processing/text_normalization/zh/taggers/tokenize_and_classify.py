@@ -35,9 +35,13 @@ from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence including punctuation.
+<<<<<<< HEAD
     For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File.
+=======
+    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File. 
+>>>>>>> 02b8610 (ZH sentence-level TN (#112))
     More details to deployment at NeMo/tools/text_processing_deployment.
-
+    
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
         deterministic: if True will provide a single transduction option,

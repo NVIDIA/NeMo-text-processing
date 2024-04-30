@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 02b8610 (ZH sentence-level TN (#112))
 # Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +36,7 @@ class WordFst(GraphFst):
         super().__init__(name="word", kind="classify")
         word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
         self.fst = word.optimize()
+<<<<<<< HEAD
 =======
 # Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
@@ -72,3 +76,5 @@ class WordFst(GraphFst):
 
         self.fst = graph.optimize()
 >>>>>>> 01f19ce (Zh tn char (#95))
+=======
+>>>>>>> 02b8610 (ZH sentence-level TN (#112))

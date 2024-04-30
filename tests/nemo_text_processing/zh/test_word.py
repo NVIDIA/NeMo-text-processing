@@ -39,4 +39,8 @@ class TestWord:
     @pytest.mark.unit
     def test_norm_date(self, test_input, expected):
         preds = self.normalizer_zh.normalize(test_input)
+<<<<<<< HEAD
         assert expected == preds
+=======
+        assert expected == preds
+>>>>>>> 02b8610 (ZH sentence-level TN (#112))

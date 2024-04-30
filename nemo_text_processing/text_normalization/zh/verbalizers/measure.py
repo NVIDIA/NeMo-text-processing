@@ -68,4 +68,8 @@ class MeasureFst(GraphFst):
         final_graph = graph_maths | graph_measures
 
         delete_tokens = self.delete_tokens(final_graph)
+<<<<<<< HEAD
         self.fst = delete_tokens.optimize()
+=======
+        self.fst = delete_tokens.optimize()
+>>>>>>> 02b8610 (ZH sentence-level TN (#112))
