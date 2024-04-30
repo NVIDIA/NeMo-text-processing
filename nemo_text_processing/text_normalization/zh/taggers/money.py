@@ -19,6 +19,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
+# def get_quantity(decimal):
 suffix = pynini.union(
     "万",
     "十万",
