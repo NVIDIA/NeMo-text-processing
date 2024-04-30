@@ -279,6 +279,7 @@ pipeline {
         }
       }
     }
+<<<<<<< HEAD
     stage('L0: Create JA ITN Grammars') {
       when {
         anyOf {
@@ -295,6 +296,8 @@ pipeline {
         }
       }
     }
+=======
+>>>>>>> 052e151 (ZH sentence-level TN (#112))
 
 
 // L1 Tests starts here
