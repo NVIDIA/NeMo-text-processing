@@ -233,7 +233,7 @@ pipeline {
       }
     }
 
-    stage('L0: Create RU TN/ITN Grammars & SV & PT & ZH') {
+    stage('L0: Create RU TN/ITN Grammars & SV & PT') {
       when {
         anyOf {
           branch 'main'
@@ -344,6 +344,27 @@ pipeline {
         stage('L0: HY ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hy --text="վեց " --cache_dir ${HY_TN_CACHE}'
+          }
+        }
+      }
+    }
+    stage('L0: Create ZH TN/ITN Grammar') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: ZH ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=zh --text="你" --cache_dir ${ZH_TN_CACHE}'
+          }
+        }
+        stage('L0: ZH TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=zh --text="6" --cache_dir ${ZH_TN_CACHE}'
           }
         }
       }
