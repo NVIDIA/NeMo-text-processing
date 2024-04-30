@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pynini
+
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
-class Char(GraphFst):
-    '''
-        你 -> char { name: "你" }
-    '''
+class WordFst(GraphFst):
+    """
+    Finite state transducer for classifying word.
+        e.g. dormir -> tokens { name: "dormir" }
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="char", kind="classify", deterministic=deterministic)
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
+    """
 
-        graph = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
-        self.fst = graph.optimize()
+    def __init__(self, deterministic: bool = True):
+        super().__init__(name="word", kind="classify")
+        word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
+        self.fst = word.optimize()
