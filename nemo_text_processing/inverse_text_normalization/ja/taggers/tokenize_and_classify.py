@@ -102,8 +102,11 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(punct_graph, 1.1)
             )
 
+            #token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
+            #tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-            tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
+            tagger = pynini.closure(token, 1)
+
 
             self.fst = tagger
 
