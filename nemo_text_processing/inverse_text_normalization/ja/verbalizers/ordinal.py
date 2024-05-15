@@ -31,7 +31,7 @@ class OrdinalFst(GraphFst):
 
         integer_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_DIGIT) + pynutil.delete("\"")
         ordinal_component = (
-            pynutil.delete("morphsyntactic_feature: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+            pynutil.delete("morphsyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         )
 
         final_graph = (ordinal_component + pynutil.delete(" ") + integer_component) | (
