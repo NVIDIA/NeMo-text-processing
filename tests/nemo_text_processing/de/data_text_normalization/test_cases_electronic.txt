@@ -7,3 +7,7 @@ a b drei bindestrich s d d bindestrich drei at g mail punkt com~ab3-sdd-3@gmail.
 h t t p s doppelpunkt slash slash w w w punkt a b c punkt com~https://www.abc.com
 w w w punkt a b c punkt com~www.abc.com
 h t t p s doppelpunkt slash slash w w w punkt a b c punkt com slash a b fragezeichen gleichheitszeichen drei bindestrich slash a b s slash eins~https://www.abc.com/ab?=3-/abs/1
+at z u c k~@zuck
+at z o o b e r e q~@zoobereq
+at a l e x punkt c u i~@alex.cui
+at s i m o n acht sechs~@simon86
