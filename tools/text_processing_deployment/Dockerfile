@@ -32,6 +32,8 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/pr
 RUN tar xzvf protobuf-2.5.0.tar.gz
 RUN cd protobuf-2.5.0 && ./configure && make && make install && ldconfig
 RUN conda install -c conda-forge thrax=1.3.4 -y
-RUN git clone https://github.com/anand-nv/sparrowhawk.git && cd sparrowhawk &&  git checkout nemo_tests &&   apt-get install -y autoconf &&     bash autoreconf && ./configure && make && make install && ldconfig
+RUN echo "ADDING this line temporarily2"
+RUN git clone https://github.com/anand-nv/sparrowhawk.git
+RUN cd sparrowhawk &&  git checkout test3 &&   apt-get install -y autoconf &&     bash autoreconf && ./configure && make && make install && ldconfig
 RUN git clone https://github.com/kward/shunit2.git
 RUN echo "DONE"
