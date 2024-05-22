@@ -37,6 +37,8 @@ def itn_grammars(**kwargs):
         ).fst
     }
     d['verbalize'] = {'ALL': ITNVerbalizeFst().fst, 'REDUP': pynini.accep("REDUP")}
+    if ITNPostProcessingFst is not None:
+        d['post_process'] = {'POSTPROCESSOR': ITNPostProcessingFst().fst}
     return d
 
 
@@ -260,7 +262,10 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
-        from nemo_text_processing.inverse_text_normalization.ja.verbalizers.post_processing import (PostProcessingFst as TNPostProcessingFst)
+        from nemo_text_processing.inverse_text_normalization.ja.verbalizers.post_processing import (
+            PostProcessingFst as ITNPostProcessingFst,
+        )
+
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
