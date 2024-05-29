@@ -138,7 +138,6 @@ class ElectronicFst(GraphFst):
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
 
-<<<<<<< HEAD
         # recursively handles the "/" in strings like:
         # update/upgrade -> update slash upgrade
         # update/upgrade/downgrade -> update slash upgrade slash downgrade
@@ -158,25 +157,9 @@ class ElectronicFst(GraphFst):
             # credit card cues
             numbers = pynini.closure(NEMO_DIGIT, 4, 16)
             cc_phrases = (
-                pynutil.insert('protocol: "') + cc_cues + pynutil.insert('" domain: "') + numbers + pynutil.insert('"')
+                pynutil.insert("protocol: \"") + cc_cues + pynutil.insert("\" domain: \"") + numbers + pynutil.insert("\"")
             )
             graph |= cc_phrases
-
-        if deterministic:
-            # credit card cues
-            numbers = pynini.closure(NEMO_DIGIT, 4, 16)
-            cc_phrases = (
-                pynutil.insert('protocol: "') + cc_cues + pynutil.insert('" domain: "') + numbers + pynutil.insert('"')
-            )
-            graph |= cc_phrases
-=======
-        # credit card cues
-        numbers = pynini.closure(NEMO_DIGIT, 4, 16)
-        cc_phrases = (
-            pynutil.insert("protocol: \"") + cc_cues + pynutil.insert("\" domain: \"") + numbers + pynutil.insert("\"")
-        )
-        graph |= cc_phrases
->>>>>>> fbcb4e84 (read card numbers as digits)
 
         final_graph = self.add_tokens(graph)
 
