@@ -157,7 +157,11 @@ class ElectronicFst(GraphFst):
             # credit card cues
             numbers = pynini.closure(NEMO_DIGIT, 4, 16)
             cc_phrases = (
-                pynutil.insert("protocol: \"") + cc_cues + pynutil.insert("\" domain: \"") + numbers + pynutil.insert("\"")
+                pynutil.insert("protocol: \"")
+                + cc_cues
+                + pynutil.insert("\" domain: \"")
+                + numbers
+                + pynutil.insert("\"")
             )
             graph |= cc_phrases
 
