@@ -1,4 +1,3 @@
-%	percento
 d	giorno
 f	fahrenheit
 c	celsius
@@ -62,3 +61,4 @@ dl	decilitro
 bar	bar
 kcal	chilocaloria
 cal	caloria
+%	percento
