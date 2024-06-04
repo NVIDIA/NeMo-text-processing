@@ -36,15 +36,15 @@ class ElectronicFst(GraphFst):
 
         dot = pynini.accep(".")
 
-        all_symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
-        all_symbols = pynini.union(*all_symbols)
+        symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
+        symbols = pynini.union(*symbols)
         # all symbols
-        accepted_symbols = pynini.difference(all_symbols, dot)  # alphabet of accepted symbols excluding the '.'
+        symbols_no_period = pynini.difference(symbols, dot)  # alphabet of accepted symbols excluding the '.'
         accepted_characters = pynini.closure(
-            (NEMO_ALPHA | NEMO_DIGIT | accepted_symbols), 1
+            (NEMO_ALPHA | NEMO_DIGIT | symbols_no_period), 1
         )  # alphabet of accepted chars excluding the '.'
         all_characters = pynini.closure(
-            (NEMO_ALPHA | NEMO_DIGIT | all_symbols), 1
+            (NEMO_ALPHA | NEMO_DIGIT | symbols), 1
         )  # alphabet of accepted chars including the '.'
 
         # domains

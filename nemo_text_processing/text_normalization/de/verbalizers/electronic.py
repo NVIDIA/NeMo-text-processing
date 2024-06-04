@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.de.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
+    NEMO_SPACE,
     GraphFst,
     delete_preserve_order,
     insert_space,
@@ -68,8 +69,8 @@ class ElectronicFst(GraphFst):
             + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + pynutil.delete('"')
         )
-        self.graph = (pynini.closure(protocol + pynini.accep(" "), 0, 1) + domain) | (
-            user_name + pynini.accep(" ") + pynutil.insert("at ") + domain | (pynutil.insert("at ") + user_name)
+        self.graph = (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain) | (
+            user_name + NEMO_SPACE + pynutil.insert("at ") + domain | (pynutil.insert("at ") + user_name)
         )
         delete_tokens = self.delete_tokens(self.graph + delete_preserve_order)
         self.fst = delete_tokens.optimize()
