@@ -30,9 +30,9 @@
 # To test ITN grammars, run:
 #       bash export_grammars.sh --GRAMMARS=itn_grammars --LANGUAGE=en --MODE=test
 
-GRAMMARS="itn_grammars" # tn_grammars
-INPUT_CASE="lower_cased" # cased
-LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi', 'mr'} supports ITN only
+GRAMMARS="tn_grammars" # tn_grammars
+INPUT_CASE="cased" # cased
+LANGUAGE="rw" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi', 'mr'} supports ITN only
 MODE="export" # default is one of {'export', 'interactive', 'test', 'ci'}. Default "export"
 OVERWRITE_CACHE="True" # Set to False to re-use .far files
 FORCE_REBUILD="False" # Set to True to re-build docker file
