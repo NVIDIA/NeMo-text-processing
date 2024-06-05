@@ -95,6 +95,7 @@ class TimeFst(GraphFst):
             "",
             NEMO_SIGMA,
         )
+        graph_hms @= pynini.cdrewrite(pynini.cross("one hours", "one hour"), "[BOS]", "", NEMO_SIGMA)
         graph = hour + delete_space + insert_space + minute + optional_suffix + optional_zone
         graph |= hour + insert_space + pynutil.insert("o'clock") + optional_zone
         graph |= hour + delete_space + insert_space + suffix + optional_zone
