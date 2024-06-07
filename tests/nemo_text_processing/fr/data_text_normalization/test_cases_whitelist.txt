@@ -4,4 +4,8 @@ Mᵐᵉ~madame
 Mᵐᵉˢ~mesdames
 Mˡˡᵉ~mademoiselle
 Mˡˡᵉˢ~mademoiselles
+<<<<<<< HEAD
 18%~dix-huit pour cent
+=======
+18%~dix-huit pour cent
+>>>>>>> 9d240f2 (FR TN Fixes (#181))
