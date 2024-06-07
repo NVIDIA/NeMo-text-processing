@@ -38,7 +38,11 @@ rtxprohelp@exchange.nvidia.com~RTX pro help at exchange dot NVIDIA dot com
 enterpriseservices@nvidia.com~enterprise services at NVIDIA dot com
 enterprise-services@nvidia.com~enterprise dash services at NVIDIA dot com
 https://www.nvidia.com/dgx-basepod/~HTTPS colon slash slash WWW dot NVIDIA dot com slash DGX dash BASEPOD slash
+<<<<<<< HEAD
 i can use your card ending in 8876~i can use your card ending in eight eight seven six
 upgrade/update~upgrade slash update
 upgrade / update~upgrade slash update
 upgrade/update/downgrade~upgrade slash update slash downgrade
+=======
+i can use your card ending in 8876~i can use your card ending in eight eight seven six
+>>>>>>> 700119e (Tts en tech terms (#167))

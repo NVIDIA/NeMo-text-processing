@@ -13,19 +13,11 @@ pipeline {
 
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-24-0'
-<<<<<<< HEAD
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-04-24-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-25-24-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
     HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
-=======
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/11-18-23-0'
-    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-27-23-0'
-    ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-13-23-2'
-    FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/12-05-23-0'
-    HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
->>>>>>> be7f5e9 (DE TN Fixes (#177))
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
