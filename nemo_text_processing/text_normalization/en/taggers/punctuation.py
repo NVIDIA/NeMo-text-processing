@@ -43,7 +43,7 @@ class PunctuationFst(GraphFst):
             chr(i)
             for i in range(sys.maxunicode)
             if category(chr(i)).startswith("P") and chr(i) not in punct_symbols_to_exclude
-        ]
+        ] + ["\[", "\]"]
 
         whitelist_symbols = load_labels(get_abs_path("data/whitelist/symbol.tsv"))
         whitelist_symbols = [x[0] for x in whitelist_symbols]
