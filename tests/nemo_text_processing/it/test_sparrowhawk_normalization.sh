@@ -1,6 +1,10 @@
 #! /bin/sh
 
+<<<<<<< HEAD
 GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+=======
+PGRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+>>>>>>> 5f7fded (Normalizes the '%' sign (#180))
 PROJECT_DIR=${2:-"/workspace/tests/"}
 
 runtest () {
