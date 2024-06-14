@@ -15,12 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    GraphFst,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space
 from nemo_text_processing.text_normalization.it.utils import get_abs_path, load_labels
 
 # common_domains = [x[0] for x in load_labels(get_abs_path("data/electronic/domain.tsv"))]
@@ -38,37 +33,24 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(
-            name="electronic", kind="classify", deterministic=deterministic
-        )
+        super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
         dot = pynini.accep(".")
 
-        symbols = [
-            x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))
-        ]
+        symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
         symbols = pynini.union(*symbols)
         symbols_no_period = pynini.difference(symbols, dot)
-        accepted_characters = pynini.closure(
-            (NEMO_ALPHA | NEMO_DIGIT | symbols_no_period), 1
-        )
+        accepted_characters = pynini.closure((NEMO_ALPHA | NEMO_DIGIT | symbols_no_period), 1)
         all_characters = pynini.closure((NEMO_ALPHA | NEMO_DIGIT | symbols), 1)
 
         # domains
         domain = dot + accepted_characters
         domain_graph = (
-            pynutil.insert('domain: "')
-            + (accepted_characters + pynini.closure(domain, 1))
-            + pynutil.insert('"')
+            pynutil.insert('domain: "') + (accepted_characters + pynini.closure(domain, 1)) + pynutil.insert('"')
         )
 
         # email
-        username = (
-            pynutil.insert('username: "')
-            + all_characters
-            + pynutil.insert('"')
-            + pynini.cross("@", " ")
-        )
+        username = pynutil.insert('username: "') + all_characters + pynutil.insert('"') + pynini.cross("@", " ")
         email = username + domain_graph
 
         # social media tags
@@ -82,9 +64,7 @@ class ElectronicFst(GraphFst):
         # url
         protocol_start = pynini.accep("https://") | pynini.accep("http://")
         protocol_end = (
-            pynini.accep("www.")
-            if deterministic
-            else pynini.accep("www.") | pynini.cross("www.", "vu vu vu.")
+            pynini.accep("www.") if deterministic else pynini.accep("www.") | pynini.cross("www.", "vu vu vu.")
         )
         protocol = protocol_start | protocol_end | (protocol_start + protocol_end)
         protocol = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
@@ -93,7 +73,5 @@ class ElectronicFst(GraphFst):
         graph = url | domain_graph | email | tag
         self.graph = graph
 
-        final_graph = self.add_tokens(
-            self.graph + pynutil.insert(" preserve_order: true")
-        )
+        final_graph = self.add_tokens(self.graph + pynutil.insert(" preserve_order: true"))
         self.fst = final_graph.optimize()

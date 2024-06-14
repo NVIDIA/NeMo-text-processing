@@ -25,9 +25,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.it.utils import get_abs_path
 
-digit_no_zero = pynini.invert(
-    pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-)
+digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
 
 graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv"))
@@ -46,9 +44,7 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(
-            name="electronic", kind="verbalize", deterministic=deterministic
-        )
+        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
 
         graph_digit = digit_no_zero | zero
 
@@ -57,28 +53,19 @@ class ElectronicFst(GraphFst):
                 NEMO_NOT_QUOTE - pynini.accep(" ")
             )
 
-        verbalize_characters = pynini.cdrewrite(
-            graph_symbols | graph_digit, "", "", NEMO_SIGMA
-        )
+        verbalize_characters = pynini.cdrewrite(graph_symbols | graph_digit, "", "", NEMO_SIGMA)
 
-        user_name = (
-            pynutil.delete('username: "') + add_space_after_char() + pynutil.delete('"')
-        )
+        user_name = pynutil.delete('username: "') + add_space_after_char() + pynutil.delete('"')
         user_name @= verbalize_characters
 
-        convert_defaults = (
-            pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001)
-            | server_common
-            | domain_common
-        )
+        convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | server_common | domain_common
         domain = convert_defaults + pynini.closure(insert_space + convert_defaults)
         domain @= verbalize_characters
 
         domain = pynutil.delete('domain: "') + domain + pynutil.delete('"')
         protocol = (
             pynutil.delete('protocol: "')
-            + add_space_after_char()
-            @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
+            + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + pynutil.delete('"')
         )
 
