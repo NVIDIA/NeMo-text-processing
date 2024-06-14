@@ -17,7 +17,7 @@ pipeline {
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-27-23-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-13-23-2'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
-    HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
+    HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-14-24-0'
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
