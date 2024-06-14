@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PGRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
 PROJECT_DIR=${2:-"/workspace/tests/"}
 
 runtest () {
