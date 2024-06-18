@@ -49,14 +49,14 @@ class ElectronicFst(GraphFst):
         else:
             numbers = pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" ")
 
-        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT)
+        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
         accepted_common_domains = pynini.project(
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
         )
 
-        dict_words = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/words.tsv")), MIN_NEG_WEIGHT)
+        dict_words = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/words.tsv")), MIN_NEG_WEIGHT,)
 
         dict_words_without_delimiter = dict_words + pynini.closure(
             pynutil.add_weight(pynutil.insert(" ") + dict_words, MIN_NEG_WEIGHT), 1
@@ -76,7 +76,7 @@ class ElectronicFst(GraphFst):
             NEMO_ALPHA | numbers | accepted_symbols | dict_words_graph
         )
 
-        username = pynutil.insert("username: \"") + username + pynutil.insert("\"") + pynini.cross('@', ' ')
+        username = pynutil.insert('username: "') + username + pynutil.insert('"') + pynini.cross("@", " ")
 
         domain_graph = all_accepted_symbols_start + pynini.closure(
             all_accepted_symbols_end | pynutil.add_weight(accepted_common_domains, MIN_NEG_WEIGHT)
@@ -92,15 +92,15 @@ class ElectronicFst(GraphFst):
         protocol = protocol_file_start | protocol_start | protocol_end | (protocol_start + protocol_end)
 
         domain_graph_with_class_tags = (
-            pynutil.insert("domain: \"")
+            pynutil.insert('domain: "')
             + pynini.compose(
                 NEMO_ALPHA + pynini.closure(NEMO_NOT_SPACE) + (NEMO_ALPHA | NEMO_DIGIT | pynini.accep("/")),
                 domain_graph,
             ).optimize()
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
         )
 
-        protocol = pynutil.insert("protocol: \"") + pynutil.add_weight(protocol, MIN_NEG_WEIGHT) + pynutil.insert("\"")
+        protocol = pynutil.insert('protocol: "') + pynutil.add_weight(protocol, MIN_NEG_WEIGHT) + pynutil.insert('"')
         # email
         graph = pynini.compose(
             NEMO_SIGMA + pynini.accep("@") + NEMO_SIGMA + pynini.accep(".") + NEMO_SIGMA,
@@ -110,12 +110,15 @@ class ElectronicFst(GraphFst):
         # abc.com, abc.com/123-sm
         # when only domain, make sure it starts and end with NEMO_ALPHA
         graph |= (
-            pynutil.insert("domain: \"")
+            pynutil.insert('domain: "')
             + pynini.compose(
-                NEMO_ALPHA + pynini.closure(NEMO_NOT_SPACE) + accepted_common_domains + pynini.closure(NEMO_NOT_SPACE),
+                NEMO_ALPHA
+                + pynini.closure(NEMO_NOT_SPACE)
+                + accepted_common_domains
+                + pynini.closure(pynini.difference(NEMO_NOT_SPACE, pynini.accep("."))),
                 domain_graph,
             ).optimize()
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
         )
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
@@ -124,11 +127,7 @@ class ElectronicFst(GraphFst):
             # credit card cues
             numbers = pynini.closure(NEMO_DIGIT, 4, 16)
             cc_phrases = (
-                pynutil.insert("protocol: \"")
-                + cc_cues
-                + pynutil.insert("\" domain: \"")
-                + numbers
-                + pynutil.insert("\"")
+                pynutil.insert('protocol: "') + cc_cues + pynutil.insert('" domain: "') + numbers + pynutil.insert('"')
             )
             graph |= cc_phrases
 
