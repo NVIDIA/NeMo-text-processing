@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ known_types = [
 ]
 
 
-def _load_kaggle_text_norm_file(file_path: str) -> List[Instance]:
+def _load_kaggle_text_norm_file(file_path: str, to_lower: bool) -> List[Instance]:
     """
     https://www.kaggle.com/richardwilliamsproat/text-normalization-for-english-russian-and-polish
     Loads text file in the Kaggle Google text normalization file format: <semiotic class>\t<unnormalized text>\t<`self` if trivial class or normalized text>
@@ -76,8 +76,9 @@ def _load_kaggle_text_norm_file(file_path: str) -> List[Instance]:
                 res.append(Instance(token_type=EOS_TYPE, un_normalized="", normalized=""))
             else:
                 l_type, l_token, l_normalized = parts
-                l_token = l_token.lower()
-                l_normalized = l_normalized.lower()
+                if to_lower:
+                    l_token = l_token.lower()
+                    l_normalized = l_normalized.lower()
 
                 if l_type == PLAIN_TYPE:
                     res.append(Instance(token_type=l_type, un_normalized=l_token, normalized=l_token))
@@ -86,7 +87,7 @@ def _load_kaggle_text_norm_file(file_path: str) -> List[Instance]:
     return res
 
 
-def load_files(file_paths: List[str], load_func=_load_kaggle_text_norm_file) -> List[Instance]:
+def load_files(file_paths: List[str], load_func=_load_kaggle_text_norm_file, to_lower: bool = True) -> List[Instance]:
     """
     Load given list of text files using the `load_func` function.
 
@@ -98,7 +99,7 @@ def load_files(file_paths: List[str], load_func=_load_kaggle_text_norm_file) -> 
     """
     res = []
     for file_path in file_paths:
-        res.extend(load_func(file_path=file_path))
+        res.extend(load_func(file_path=file_path, to_lower=to_lower))
     return res
 
 
