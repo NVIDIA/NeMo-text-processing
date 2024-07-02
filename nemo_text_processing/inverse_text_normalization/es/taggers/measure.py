@@ -29,7 +29,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 class MeasureFst(GraphFst):
     """
     Finite state transducer for classifying measure
-        e.g. menos doce kilogramos -> measure { cardinal { negative: "true" integer: "12" } units: "kg" } 
+        e.g. menos doce kilogramos -> measure { cardinal { negative: "true" integer: "12" } units: "kg" }
 
     Args:
         cardinal: CardinalFst

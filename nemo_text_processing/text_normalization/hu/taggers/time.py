@@ -71,7 +71,7 @@ class TimeFst(GraphFst):
         "09:00 óra" -> time { hours: "2" }
         "02:15:10 óra" -> time { hours: "2" minutes: "15" seconds: "10"}
         "negyed 2" -> time { minutes: "15" hours: "1" }
-    
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
@@ -180,7 +180,11 @@ class TimeFst(GraphFst):
         final_time_zone = (
             pynini.accep(" ") + pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
         )
-        final_time_zone_optional = pynini.closure(final_time_zone, 0, 1,)
+        final_time_zone_optional = pynini.closure(
+            final_time_zone,
+            0,
+            1,
+        )
 
         # This might be better as just the inflected forms
         hour_only_delimited = (

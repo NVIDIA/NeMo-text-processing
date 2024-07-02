@@ -69,7 +69,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     Returns:
         fst: A pynini.FstLike object
     """
-    exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
+    exactly_three_digits = NEMO_DIGIT**3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
 
     cardinal_separator = NEMO_SPACE
@@ -249,7 +249,7 @@ class CardinalFst(GraphFst):
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
+            @ NEMO_DIGIT**24
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
@@ -276,30 +276,27 @@ class CardinalFst(GraphFst):
         zero_space = zero + insert_space
         self.zero_space = zero_space
         self.three_digits_read = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
-            zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+            zero_space + ((NEMO_DIGIT**2) @ graph_tens),
             zero_space + zero_space + digit,
         )
         self.three_digits_read_en = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2))
             @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
-            zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
+            zero_space + ((NEMO_DIGIT**2) @ graph_tens),
             zero_space + zero_space + digit,
         )
         self.three_digits_read_frac = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
             zero_space + digit + insert_space + digit,
         )
         self.three_digits_read_frac_en = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2))
             @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
             zero_space + digit + insert_space + digit,
         )
         self.two_or_three_digits_read_frac = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
             ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens,
             zero_space + single_digits_graph + pynini.closure(insert_space + digit, 0, 1),
             single_digits_graph + pynini.closure(insert_space + single_digits_graph, 3),
@@ -307,7 +304,7 @@ class CardinalFst(GraphFst):
             single_digits_graph,
         )
         self.two_or_three_digits_read_frac_en = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2))
             @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
             ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ (graph_tens @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)),
             zero_space + single_digits_graph + pynini.closure(insert_space + single_digits_graph, 0, 1),
@@ -316,9 +313,8 @@ class CardinalFst(GraphFst):
             single_digits_graph,
         )
         self.two_or_three_digits_read_frac_both = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2))
             @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
             ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens,
             ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ (graph_tens @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)),

@@ -65,7 +65,9 @@ class TimeFst(GraphFst):
             + pynutil.insert('"')
         )
         final_time_zone_optional = pynini.closure(
-            pynini.accep(" ") + pynutil.insert('zone: "') + convert_space(time_zone_graph) + pynutil.insert('"'), 0, 1,
+            pynini.accep(" ") + pynutil.insert('zone: "') + convert_space(time_zone_graph) + pynutil.insert('"'),
+            0,
+            1,
         )
 
         # Accepts the following formats:  02:30 Uhr, 02.30 Uhr, 2:30 Uhr, 2.30 Uhr
