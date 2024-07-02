@@ -64,7 +64,7 @@ class DecimalFst(GraphFst):
         0.5 -> decimal { integer_part: "零" fractional_part: "五" }
         0.5万 -> decimal { integer_part: "零" fractional_part: "五" quantity: "万" }
         -0.5万 -> decimal { negative: "负" integer_part: "零" fractional_part: "五" quantity: "万"}
-        
+
     Args:
         cardinal: CardinalFst
     """

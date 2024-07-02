@@ -25,7 +25,7 @@ class OrdinalFst(GraphFst):
         vigésimo primero -> ordinal { integer: "21" morphosyntactic_features: "o" }
     This class converts ordinal up to "millesímo" (one thousandth) exclusive.
 
-    Cardinals below ten are not converted (in order to avoid 
+    Cardinals below ten are not converted (in order to avoid
     e.g. "primero hice ..." -> "1.º hice...", "segunda guerra mundial" -> "2.ª guerra mundial"
     and any other odd conversions.)
 
@@ -48,7 +48,13 @@ class OrdinalFst(GraphFst):
 
         full_graph_ties = graph_ties | (graph_ties + pynini.cross(" ", "y") + graph_digit)
 
-        ordinal_graph_union = pynini.union(graph_digit, graph_teens, graph_twenties, full_graph_ties, graph_hundreds,)
+        ordinal_graph_union = pynini.union(
+            graph_digit,
+            graph_teens,
+            graph_twenties,
+            full_graph_ties,
+            graph_hundreds,
+        )
 
         accept_o_endings = NEMO_SIGMA + pynini.accep("o")
         accept_a_endings = NEMO_SIGMA + pynini.accep("a")

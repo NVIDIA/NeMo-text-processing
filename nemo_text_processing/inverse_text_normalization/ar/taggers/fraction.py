@@ -29,7 +29,7 @@ class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
         e.g. واحد و نصف -> tokens { integer_part: "1" numerator: "1" denominator: "2" }
-    
+
     Args:
         tn_cardinal: TN cardinal tagger
 

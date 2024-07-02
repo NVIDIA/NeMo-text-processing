@@ -23,15 +23,15 @@ from nemo_text_processing.text_normalization.hy.verbalizers.word import WordFst
 
 class VerbalizeFinalFst(GraphFst):
     """
-        Finite state transducer that verbalizes an entire sentence, e.g.
-        tokens { name: "Երևանում" } tokens { name: "ժամը" } tokens { time { hours: "տասներկուսն" minutes: "հիսունհինգ" } } tokens { name: "է" } tokens { name: ":" } -> Երևանում ժամը տասներկուսն անց հիսունհինգ է:
+    Finite state transducer that verbalizes an entire sentence, e.g.
+    tokens { name: "Երևանում" } tokens { name: "ժամը" } tokens { time { hours: "տասներկուսն" minutes: "հիսունհինգ" } } tokens { name: "է" } tokens { name: ":" } -> Երևանում ժամը տասներկուսն անց հիսունհինգ է:
 
-        Args:
-            deterministic: if True will provide a single transduction option,
-                for False multiple options (used for audio-based normalization)
-            cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
-            overwrite_cache: set to True to overwrite .far files
-        """
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple options (used for audio-based normalization)
+        cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
+        overwrite_cache: set to True to overwrite .far files
+    """
 
     def __init__(self, deterministic=True, cache_dir=None, overwrite_cache=False):
         super().__init__(name="verbalize_final", kind="verbalize")

@@ -51,12 +51,12 @@ def get_quantity(decimal, cardinal_fst):
 
 class DecimalFst(GraphFst):
     """
-        Finite state transducer for classifying cardinals
-            e.g. तेहतीस पूर्णांक तीन -> decimal { integer_part: "३३" fractional_part: "३" }
-            e.g. उणे तेहतीस पूर्णांक तीन लाख -> decimal { negative: "true" integer_part: "३३" fractional_part: "३" quantity: "लाख" }
+    Finite state transducer for classifying cardinals
+        e.g. तेहतीस पूर्णांक तीन -> decimal { integer_part: "३३" fractional_part: "३" }
+        e.g. उणे तेहतीस पूर्णांक तीन लाख -> decimal { negative: "true" integer_part: "३३" fractional_part: "३" quantity: "लाख" }
 
-        Args:
-            cardinal: CardinalFst
+    Args:
+        cardinal: CardinalFst
     """
 
     def __init__(self, cardinal: GraphFst):
@@ -65,7 +65,9 @@ class DecimalFst(GraphFst):
         graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv")).invert()
         decimal_word = pynini.cross("पूर्णांक", "")
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space,
+            0,
+            1,
         )
         graph_integer = (
             pynutil.insert("integer_part: \"")

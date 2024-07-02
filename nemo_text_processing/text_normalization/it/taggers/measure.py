@@ -45,7 +45,7 @@ class MeasureFst(GraphFst):
     """
     Finite state transducer for classifying measure,  e.g.
         "2,4 g" -> measure { cardinal { integer_part: "due" fractional_part: "quattro" units: "grammi" preserve_order: true } }
-        
+
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
@@ -68,7 +68,9 @@ class MeasureFst(GraphFst):
         )
 
         optional_unit_denominator = pynini.closure(
-            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator, 0, 1,
+            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator,
+            0,
+            1,
         )
 
         unit_plural = (

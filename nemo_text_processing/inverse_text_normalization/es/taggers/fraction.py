@@ -23,18 +23,18 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, N
 class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fractions
-        e.g. dos quintos -> fraction { numerator: "2" denominator: "5" } 
-    This class converts fractions with a denominator up to (and including) 
+        e.g. dos quintos -> fraction { numerator: "2" denominator: "5" }
+    This class converts fractions with a denominator up to (and including)
     "1/999".
-    
+
     Fractions with 4 as their denominator, read as "cuarto(s)", are not
     converted because "room" is also "cuarto", which could cause issues like
         "quiero reservar un cuarto" -> quiero reservar 1/2".
-    
+
     Fractions without a numerator are not converted either to prevent issues
     like:
         "estaba medio dormido" -> "estaba 1/2 dormido"
-        
+
     Args:
         cardinal: CardinalFst
         ordinal: OrdinalFst

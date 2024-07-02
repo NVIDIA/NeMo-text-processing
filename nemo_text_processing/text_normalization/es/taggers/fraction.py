@@ -47,15 +47,50 @@ class FractionFst(GraphFst):
         ordinal_graph = ordinal.graph
 
         # 2-10 are all ordinals
-        three_to_ten = pynini.string_map(["2", "3", "4", "5", "6", "7", "8", "9", "10",])
+        three_to_ten = pynini.string_map(
+            [
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+            ]
+        )
         block_three_to_ten = pynutil.delete(three_to_ten)  # To block cardinal productions
         if not deterministic:  # Multiples of tens are sometimes rendered as ordinals
-            three_to_ten |= pynini.string_map(["20", "30", "40", "50", "60", "70", "80", "90",])
+            three_to_ten |= pynini.string_map(
+                [
+                    "20",
+                    "30",
+                    "40",
+                    "50",
+                    "60",
+                    "70",
+                    "80",
+                    "90",
+                ]
+            )
         graph_three_to_ten = three_to_ten @ ordinal_graph
         graph_three_to_ten @= pynini.cdrewrite(ordinal_exceptions, "", "", NEMO_SIGMA)
 
         # Higher powers of tens (and multiples) are converted to ordinals.
-        hundreds = pynini.string_map(["100", "200", "300", "400", "500", "600", "700", "800", "900",])
+        hundreds = pynini.string_map(
+            [
+                "100",
+                "200",
+                "300",
+                "400",
+                "500",
+                "600",
+                "700",
+                "800",
+                "900",
+            ]
+        )
         graph_hundreds = hundreds @ ordinal_graph
 
         multiples_of_thousand = ordinal.multiples_of_thousand  # So we can have X milésimos
@@ -68,7 +103,10 @@ class FractionFst(GraphFst):
         graph_higher_powers_of_ten += higher_powers_of_ten
         graph_higher_powers_of_ten = cardinal_graph @ graph_higher_powers_of_ten
         graph_higher_powers_of_ten @= pynini.cdrewrite(
-            pynutil.delete("un "), pynini.accep("[BOS]"), pynini.project(higher_powers_of_ten, "output"), NEMO_SIGMA,
+            pynutil.delete("un "),
+            pynini.accep("[BOS]"),
+            pynini.project(higher_powers_of_ten, "output"),
+            NEMO_SIGMA,
         )  # we drop 'un' from these ordinals (millionths, not one-millionths)
 
         graph_higher_powers_of_ten = multiples_of_thousand | graph_hundreds | graph_higher_powers_of_ten
@@ -83,10 +121,16 @@ class FractionFst(GraphFst):
 
         # Blocking the digits and hundreds from Cardinal graph
         graph_fractions_cardinals = pynini.cdrewrite(
-            block_three_to_ten | block_higher_powers_of_ten, pynini.accep("[BOS]"), pynini.accep("[EOS]"), NEMO_SIGMA,
+            block_three_to_ten | block_higher_powers_of_ten,
+            pynini.accep("[BOS]"),
+            pynini.accep("[EOS]"),
+            NEMO_SIGMA,
         )
         graph_fractions_cardinals @= NEMO_CHAR.plus @ pynini.cdrewrite(
-            pynutil.delete("0"), pynini.accep("[BOS]"), pynini.accep("[EOS]"), NEMO_SIGMA,
+            pynutil.delete("0"),
+            pynini.accep("[BOS]"),
+            pynini.accep("[EOS]"),
+            NEMO_SIGMA,
         )  # Empty characters become '0' for NEMO_CHAR fst, so need to block
         graph_fractions_cardinals @= cardinal_graph
         graph_fractions_cardinals += pynutil.insert(

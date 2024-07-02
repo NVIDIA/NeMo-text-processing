@@ -31,7 +31,7 @@ from nemo_text_processing.utils.logging import logger
 class VerbalizeFinalFst(GraphFst):
     """
     Finite state transducer that verbalizes an entire sentence
-    
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple options (used for audio-based normalization)

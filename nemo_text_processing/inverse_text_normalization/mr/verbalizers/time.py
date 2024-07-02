@@ -21,11 +21,11 @@ from nemo_text_processing.inverse_text_normalization.mr.graph_utils import NEMO_
 
 class TimeFst(GraphFst):
     """
-        Finite state transducer for verbalizing time, e.g.
-            e.g. time { hours: "४" minutes: "३०" } -> ०४:३०
-            e.g. time { hours: "११" minutes: "३०" } -> ११:३०
-            e.g. time { hours: "८" minutes: "१५" } -> ०८:१५
-        """
+    Finite state transducer for verbalizing time, e.g.
+        e.g. time { hours: "४" minutes: "३०" } -> ०४:३०
+        e.g. time { hours: "११" minutes: "३०" } -> ११:३०
+        e.g. time { hours: "८" minutes: "१५" } -> ०८:१५
+    """
 
     def __init__(self):
         super().__init__(name="time", kind="verbalize")
