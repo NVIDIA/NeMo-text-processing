@@ -98,7 +98,7 @@ class ClassifyFst(GraphFst):
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
-                | pynutil.add_weight(time_graph, 1.1)
+                | pynutil.add_weight(time_graph, 1.08)
                 | pynutil.add_weight(date_graph, 1.09)
                 | pynutil.add_weight(decimal_graph, 1.09)
                 | pynutil.add_weight(fraction_graph, 1.09)

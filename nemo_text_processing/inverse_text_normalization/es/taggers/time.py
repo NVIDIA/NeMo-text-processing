@@ -101,6 +101,8 @@ class TimeFst(GraphFst):
         half = pynini.accep("media")
         quarter = pynini.accep("cuarto")
         and_graph = pynini.union("y", "con")
+        hours_word_graph = pynini.accep(" horas")
+        minutes_word_graph = pynini.union(" minuto", " minutos")
 
         if input_case == INPUT_CASED:
             suffix_graph |= pynini.string_file(get_abs_path("data/time/time_suffix_cased.tsv")).optimize()
@@ -111,6 +113,8 @@ class TimeFst(GraphFst):
             half |= pynini.accep("Media").optimize()
             quarter |= pynini.accep("Cuarto").optimize()
             and_graph |= pynini.union("Y", "Con").optimize()
+            hours_word_graph |= pynini.accep(" Horas").optimize()
+            minutes_word_graph |= pynini.union(" Minuto", " Minutos").optimize()
 
         graph_1oclock = pynini.cross(oneoclock, "la 1")
         if input_case == INPUT_CASED:
@@ -128,6 +132,8 @@ class TimeFst(GraphFst):
             pynutil.insert("minutes: \"")
             + pynini.closure(pynutil.delete(and_graph) + delete_space, 0, 1)
             + (graph_minute | graph_minute_verbose)
+            + pynini.closure(pynutil.delete(minutes_word_graph), 0, 1)
+            + pynini.closure(pynutil.delete(hours_word_graph), 0, 1)
             + pynutil.insert("\"")
         ).optimize()
 
