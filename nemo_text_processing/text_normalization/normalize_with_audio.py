@@ -291,7 +291,7 @@ class NormalizerWithAudio(Normalizer):
         line = json.loads(line)
 
         normalized_text = self.normalize(
-            text=line["text"],
+            text=line[text_field],
             verbose=verbose,
             n_tagged=n_tagged,
             punct_post_process=punct_post_process,
