@@ -57,8 +57,8 @@ bash export_grammars.sh --MODE="export" --GRAMMARS=$GRAMMARS --LANGUAGE=$LANGUAG
       --FAR_PATH=$FAR_PATH  --CACHE_DIR=$CACHE_DIR --OVERWRITE_CACHE=$OVERWRITE_CACHE \
       --FORCE_REBUILD=$FORCE_REBUILD $WHITELIST
 
-CLASSIFY_FAR=${CACHE_DIR}"/classify/tokenize_and_classify.far"
-VERBALIZE_FAR=${CACHE_DIR}"/verbalize/verbalize.far"
+CLASSIFY_FAR=${CACHE_DIR}_${GRAMMARS}_${INPUT_CASE}/classify/tokenize_and_classify.far
+VERBALIZE_FAR=${CACHE_DIR}_${GRAMMARS}_${INPUT_CASE}/verbalize/verbalize.far
 
 CONFIG=${LANGUAGE}_${GRAMMARS}_${INPUT_CASE}
 

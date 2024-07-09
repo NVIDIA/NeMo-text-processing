@@ -35,10 +35,12 @@ def parse_args():
     parser.add_argument(
         "--lang",
         help="language",
-        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'vi', 'hy', 'ja'],
+        choices=["ar", "de", "en", "es", "es_en", "fr", "hy", "mr", "pt", "ru", "sv", "vi", "zh", 'ja'],
         default="en",
         type=str,
     )
+    parser.add_argument("--input_case", choices=["lower_cased", "cased"])
+    parser.add_argument("--output_case", choices=["lower_cased", "cased"])
     parser.add_argument(
         "--cat",
         dest="category",
@@ -58,10 +60,15 @@ if __name__ == "__main__":
     if args.lang == 'en':
         from nemo_text_processing.inverse_text_normalization.en.clean_eval_data import filter_loaded_data
     file_path = args.input
-    inverse_normalizer = InverseNormalizer(lang=args.lang)
+    inverse_normalizer = InverseNormalizer(lang=args.lang, input_case=args.input_case)
 
     print("Loading training data: " + file_path)
-    training_data = load_files([file_path])
+    if args.output_case == "lower_cased":
+        to_lower = True
+    elif args.output_case == "cased":
+        to_lower = False
+
+    training_data = load_files([file_path], to_lower=to_lower)
 
     if args.filter:
         training_data = filter_loaded_data(training_data)
