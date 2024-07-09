@@ -32,7 +32,7 @@ class OrdinalFst(GraphFst):
         cardinals = cardinal.just_cardinals
         ordinals = pynini.accep("第") | pynini.accep("番目")
 
-        ordinal_component = pynutil.insert("morphsyntactic_features: \"") + ordinals + pynutil.insert("\"")
+        ordinal_component = pynutil.insert("morphosyntactic_features: \"") + ordinals + pynutil.insert("\"")
         integer_component = pynutil.insert("integer :\"") + cardinals + pynutil.insert("\"")
 
         final_graph = (ordinal_component + pynutil.insert(" ") + integer_component) | (

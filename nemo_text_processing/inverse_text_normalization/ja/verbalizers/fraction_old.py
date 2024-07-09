@@ -33,36 +33,31 @@ class FractionFst(GraphFst):
         """
         super().__init__(name="fraction", kind="verbalize")
 
-        sign_component = pynutil.delete("negative: \"") + pynini.closure("-") + pynutil.delete("\"")
-
-        # integer_component = (
-        #     pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        # ) | (
-        #     sign_component
-        #     + pynutil.delete(" ")
-        #     + pynutil.delete("integer_part: \"")
-        #     + pynini.closure(NEMO_NOT_QUOTE)
-        #     + pynutil.delete("\"")
-        # )
+        sign_component = (pynutil.delete("negative: \"")) + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
         integer_component = (
             pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        ) | (
+            sign_component
+            + pynutil.delete(" ")
+            + pynutil.delete("integer_part: \"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
         )
         denominator_component = (
             pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         )
         numerator_component = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
-        final_graph = (
-            pynini.closure(sign_component, 0, 1)
-            + pynutil.delete(" ")
-            + pynini.closure(integer_component + pynutil.delete(" "))
-           # + pynini.closure(sign_component + pynutil.delete(" "))
+        graph = (
+            pynini.closure(integer_component + pynutil.delete(" ") + pynutil.insert(" "))
+            + pynini.closure(sign_component + pynutil.delete(" "))
             + numerator_component
             + pynutil.delete(" ")
             + pynutil.insert("/")
             + denominator_component
         )
 
+        final_graph = graph  # | (sign_component + pynutil.delete(" ") + graph)
         final_graph = self.delete_tokens(final_graph)
         self.fst = final_graph.optimize()
