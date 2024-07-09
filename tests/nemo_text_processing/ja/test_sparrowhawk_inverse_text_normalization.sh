@@ -26,6 +26,27 @@ testITNCardinalText() {
   input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_cardinal.txt
   runtest $input
 }
+testITNOrdinalText() {
+  input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
+testITNDateText() {
+  input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_date.txt
+  runtest $input
+}
+testITNDecimalext() {
+  input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_decimal.txt
+  runtest $input
+}
+testITNFractionText() {
+  input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
+testITNTimeText() {
+  input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_time.txt
+  runtest $input
+}
+
 
 # Remove all command-line arguments
 shift $#
