@@ -313,6 +313,22 @@ pipeline {
         }
       }
     }
+    stage('L0: Create JA ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: JA ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ja --text="100" --cache_dir ${JA_TN_CACHE}'
+          }
+        }
+      }
+    }
 
 // L1 Tests starts here
     stage('L1: TN/ITN Tests CPU') {
@@ -379,6 +395,11 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/zh/ -m "not pleasefixme" --cpu --tn_cache_dir ${ZH_TN_CACHE}'
           }
         }
+        stage('L1: Run all JA TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ja/ -m "not pleasefixme" --cpu --tn_cache_dir ${JA_TN_CACHE}'
+          }
+        }        
       }
     }
 
