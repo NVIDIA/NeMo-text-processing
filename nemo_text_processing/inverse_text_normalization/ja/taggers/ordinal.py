@@ -35,8 +35,9 @@ class OrdinalFst(GraphFst):
         # ordinal_component = pynutil.insert("morphosyntactic_features: \"") + ordinals + pynutil.insert("\"")
         # integer_component = pynutil.insert("integer :\"") + cardinals + pynutil.insert("\"")
 
-
-        integer_component = pynutil.insert("integer: \"") + ((cardinals + ordinals) | (ordinals + cardinals)) + pynutil.insert("\"")
+        integer_component = (
+            pynutil.insert("integer: \"") + ((cardinals + ordinals) | (ordinals + cardinals)) + pynutil.insert("\"")
+        )
 
         # final_graph = (ordinal_component + pynutil.insert(" ") + integer_component) | (
         #     integer_component + pynutil.insert(" ") + ordinal_component

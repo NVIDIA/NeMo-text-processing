@@ -45,9 +45,7 @@ class FractionFst(GraphFst):
         #     + pynutil.delete("\"")
         # )
 
-        integer_component = (
-            pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        )
+        integer_component = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         denominator_component = (
             pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         )
@@ -57,7 +55,7 @@ class FractionFst(GraphFst):
             pynini.closure(sign_component, 0, 1)
             + pynutil.delete(" ")
             + pynini.closure(integer_component + pynutil.delete(" "))
-           # + pynini.closure(sign_component + pynutil.delete(" "))
+            # + pynini.closure(sign_component + pynutil.delete(" "))
             + numerator_component
             + pynutil.delete(" ")
             + pynutil.insert("/")
