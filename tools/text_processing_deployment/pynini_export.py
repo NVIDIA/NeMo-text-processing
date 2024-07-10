@@ -120,6 +120,7 @@ if __name__ == '__main__':
     if args.language in ['pt', 'ru', 'vi', 'es_en', 'mr'] and args.grammars == 'tn_grammars':
         raise ValueError('Only ITN grammars could be deployed in Sparrowhawk for the selected languages.')
     TNPostProcessingFst = None
+    ITNPostProcessingFst = None
     if args.language == 'en':
         from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
