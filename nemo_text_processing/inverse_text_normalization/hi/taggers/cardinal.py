@@ -58,7 +58,7 @@ class CardinalFst(GraphFst):
         )
 
         # Transducer for eleven hundred -> 1100 or twenty one hundred eleven -> 2111
-        graph_hundred_as_thousand = pynini.union(graph_teens_and_ties + delete_space + graph_hundred, pynutil.insert("००"))
+        graph_hundred_as_thousand = pynini.union(graph_teens_and_ties + delete_space + graph_hundred, pynutil.insert("०"))
         graph_hundred_as_thousand += delete_space  
         graph_hundred_as_thousand += self.graph_two_digit | pynutil.insert("००")
 
@@ -174,7 +174,5 @@ class CardinalFst(GraphFst):
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-
-# This code is working for all numbers except "दस हजार निन्यानवे~१००९९". All test cases in ordinals are passing with this code but one test case i.e "दस हजार निन्यानवे~१००९९" in cardinal as mentioned is failing.
 
         
