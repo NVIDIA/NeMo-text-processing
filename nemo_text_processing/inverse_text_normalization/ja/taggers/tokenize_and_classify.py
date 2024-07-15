@@ -30,7 +30,6 @@ from nemo_text_processing.inverse_text_normalization.ja.taggers.date import Date
 from nemo_text_processing.inverse_text_normalization.ja.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.ja.taggers.preprocessor import PreProcessorFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.whitelist import WhiteListFst
