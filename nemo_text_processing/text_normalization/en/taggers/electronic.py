@@ -24,19 +24,24 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     NEMO_UPPER,
     TO_UPPER,
+    NEMO_SPACE,
     GraphFst,
-    accept_at,
-    accept_colon_double_slash,
-    accept_colon_triple_slash,
-    accept_file,
-    accept_period,
-    accept_slash,
     get_abs_path,
-    insert_domain,
-    insert_double_quotes,
-    insert_protocol,
-    insert_space,
-    insert_username,
+    # common string literals
+    username_string,
+    double_quotes,
+    domain_string,
+    protocol_string,
+    slash,
+    double_slash,
+    triple_slash,
+    file,
+    period,
+    at,
+    colon,
+    https,
+    http,
+    www,
 )
 
 
@@ -52,88 +57,162 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="electronic", kind="classify", deterministic=deterministic)
+        super().__init__(
+            name="electronic", kind="classify", deterministic=deterministic
+        )
+
         if deterministic:
             numbers = NEMO_DIGIT
         else:
-            numbers = insert_space + cardinal.long_numbers + insert_space
+            numbers = (
+                pynutil.insert(NEMO_SPACE)
+                + cardinal.long_numbers
+                + pynutil.insert(NEMO_SPACE)
+            )
 
-        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
+        cc_cues = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")),
+            MIN_NEG_WEIGHT,
+        )
 
-        accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
+        accepted_symbols = pynini.project(
+            pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input"
+        )
         accepted_common_domains = pynini.project(
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
         )
 
-        dict_words = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/words.tsv")), MIN_NEG_WEIGHT,)
+        dict_words = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/words.tsv")),
+            MIN_NEG_WEIGHT,
+        )
 
         dict_words_without_delimiter = dict_words + pynini.closure(
-            pynutil.add_weight(insert_space + dict_words, MIN_NEG_WEIGHT), 1
+            pynutil.add_weight(pynutil.insert(NEMO_SPACE) + dict_words, MIN_NEG_WEIGHT),
+            1,
         )
         dict_words_graph = dict_words_without_delimiter | dict_words
 
         all_accepted_symbols_start = (
-            dict_words_graph | pynini.closure(TO_UPPER) | pynini.closure(NEMO_UPPER) | accepted_symbols
+            dict_words_graph
+            | pynini.closure(TO_UPPER)
+            | pynini.closure(NEMO_UPPER)
+            | accepted_symbols
         ).optimize()
 
         all_accepted_symbols_end = (
-            dict_words_graph | numbers | pynini.closure(TO_UPPER) | pynini.closure(NEMO_UPPER) | accepted_symbols
+            dict_words_graph
+            | numbers
+            | pynini.closure(TO_UPPER)
+            | pynini.closure(NEMO_UPPER)
+            | accepted_symbols
         ).optimize()
 
-        graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
+        graph_symbols = pynini.string_file(
+            get_abs_path("data/electronic/symbol.tsv")
+        ).optimize()
         username = (NEMO_ALPHA | dict_words_graph) + pynini.closure(
             NEMO_ALPHA | numbers | accepted_symbols | dict_words_graph
         )
 
-        username = insert_username + username + insert_double_quotes + pynini.cross("@", " ")
+        username = (
+            pynutil.insert(username_string + colon + NEMO_SPACE + double_quotes)
+            + username
+            + pynutil.insert(double_quotes)
+            + pynini.cross(at, NEMO_SPACE)
+        )
 
         domain_graph = all_accepted_symbols_start + pynini.closure(
-            all_accepted_symbols_end | pynutil.add_weight(accepted_common_domains, MIN_NEG_WEIGHT)
+            all_accepted_symbols_end
+            | pynutil.add_weight(accepted_common_domains, MIN_NEG_WEIGHT)
         )
 
-        protocol_symbols = pynini.closure((graph_symbols | pynini.cross(":", "colon")) + insert_space)
-        protocol_start = (pynini.cross("https", "HTTPS ") | pynini.cross("http", "HTTP ")) + (
-            accept_colon_double_slash @ protocol_symbols
+        protocol_symbols = pynini.closure(
+            (graph_symbols | pynini.cross(colon, "colon")) + pynutil.insert(NEMO_SPACE)
         )
-        protocol_file_start = accept_file + insert_space + (accept_colon_triple_slash @ protocol_symbols)
+        protocol_start = (
+            pynini.cross(https, (https.upper() + NEMO_SPACE))
+            | pynini.cross(http, (http.upper() + NEMO_SPACE))
+        ) + (pynini.accep(colon + double_slash) @ protocol_symbols)
+        protocol_file_start = (
+            pynini.accep(file)
+            + pynutil.insert(NEMO_SPACE)
+            + (pynini.accep(colon + triple_slash) @ protocol_symbols)
+        )
 
-        protocol_end = pynutil.add_weight(pynini.cross("www", "WWW ") + accept_period @ protocol_symbols, -1000)
-        protocol = protocol_file_start | protocol_start | protocol_end | (protocol_start + protocol_end)
+        protocol_end = pynutil.add_weight(
+            pynini.cross(www, (www.upper() + NEMO_SPACE))
+            + pynini.accep(period) @ protocol_symbols,
+            -1000,
+        )
+        protocol = (
+            protocol_file_start
+            | protocol_start
+            | protocol_end
+            | (protocol_start + protocol_end)
+        )
 
         domain_graph_with_class_tags = (
-            insert_domain
+            pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
             + pynini.compose(
-                NEMO_ALPHA + pynini.closure(NEMO_NOT_SPACE) + (NEMO_ALPHA | NEMO_DIGIT | accept_slash), domain_graph,
+                NEMO_ALPHA
+                + pynini.closure(NEMO_NOT_SPACE)
+                + (NEMO_ALPHA | NEMO_DIGIT | pynini.accep(slash)),
+                domain_graph,
             ).optimize()
-            + insert_double_quotes
+            + pynutil.insert(double_quotes)
         )
 
-        protocol = insert_protocol + pynutil.add_weight(protocol, MIN_NEG_WEIGHT) + insert_double_quotes
+        protocol = (
+            pynutil.insert(protocol_string + colon + NEMO_SPACE + double_quotes)
+            + pynutil.add_weight(protocol, MIN_NEG_WEIGHT)
+            + pynutil.insert(double_quotes)
+        )
         # email
         graph = pynini.compose(
-            NEMO_SIGMA + accept_at + NEMO_SIGMA + accept_period + NEMO_SIGMA, username + domain_graph_with_class_tags,
+            NEMO_SIGMA
+            + pynini.accep(at)
+            + NEMO_SIGMA
+            + pynini.accep(period)
+            + NEMO_SIGMA,
+            username + domain_graph_with_class_tags,
         )
 
         # abc.com, abc.com/123-sm
         # when only domain, make sure it starts and end with NEMO_ALPHA
         graph |= (
-            insert_domain
+            pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
             + pynini.compose(
                 NEMO_ALPHA
                 + pynini.closure(NEMO_NOT_SPACE)
                 + accepted_common_domains
-                + pynini.closure(pynini.difference(NEMO_NOT_SPACE, accept_period)),
+                + pynini.closure(
+                    pynini.difference(NEMO_NOT_SPACE, pynini.accep(period))
+                ),
                 domain_graph,
             ).optimize()
-            + insert_double_quotes
+            + pynutil.insert(double_quotes)
         )
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
-        graph |= protocol + insert_space + domain_graph_with_class_tags
+        graph |= protocol + pynutil.insert(NEMO_SPACE) + domain_graph_with_class_tags
 
         if deterministic:
             # credit card cues
             numbers = pynini.closure(NEMO_DIGIT, 4, 16)
-            cc_phrases = insert_protocol + cc_cues + insert_domain + numbers + insert_double_quotes
+            cc_phrases = (
+                pynutil.insert(protocol_string + colon + NEMO_SPACE + double_quotes)
+                + cc_cues
+                + pynutil.insert(
+                    double_quotes
+                    + NEMO_SPACE
+                    + domain_string
+                    + colon
+                    + NEMO_SPACE
+                    + double_quotes
+                )
+                + numbers
+                + pynutil.insert(double_quotes)
+            )
             graph |= cc_phrases
 
         final_graph = self.add_tokens(graph)
