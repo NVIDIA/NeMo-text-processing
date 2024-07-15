@@ -162,6 +162,9 @@ class Normalizer:
         elif lang == 'it':
             from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.it.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'hy':
+            from nemo_text_processing.text_normalization.hy.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.hy.verbalizers.verbalize_final import VerbalizeFinalFst
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
@@ -514,7 +517,7 @@ class Normalizer:
         logger.warning(f'Normalized version saved at {output_filename}')
 
     def split_text_into_sentences(self, text: str, additional_split_symbols: str = "") -> List[str]:
-        """
+        r"""
         Split text into sentences.
 
         Args:
@@ -708,7 +711,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it"],
+        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it", "hy"],
         default="en",
         type=str,
     )
@@ -721,6 +724,11 @@ def parse_args():
         type=str,
     )
     parser.add_argument("--verbose", help="print info for debugging", action='store_true')
+    parser.add_argument(
+        "--no_post_process",
+        help="WFST-based post processing, e.g. to remove extra spaces added during TN, normalize punctuation marks [could differ from the input]. Only Eng is supported, not supported in Sparrowhawk",
+        action="store_true",
+    )
     parser.add_argument(
         "--punct_post_process",
         help="Add this flag to enable punctuation post processing to match input.",
@@ -765,6 +773,7 @@ if __name__ == "__main__":
 
     normalizer = Normalizer(
         input_case=args.input_case,
+        post_process=not args.no_post_process,
         cache_dir=args.cache_dir,
         overwrite_cache=args.overwrite_cache,
         whitelist=whitelist,

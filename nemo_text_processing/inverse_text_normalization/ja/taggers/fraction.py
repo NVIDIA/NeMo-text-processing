@@ -45,7 +45,12 @@ class FractionFst(GraphFst):
         root_word = pynini.accep("√") | pynini.cross("ルート", "√")
         root_integer = (
             pynutil.insert("integer_part: \"")
-            + ((decimal | decimal + integer_word) | ((cardinal + root_word + cardinal) | (cardinal + root_word + cardinal + integer_word)) | ((root_word + cardinal) | (root_word + cardinal + integer_word)) | (cardinal | (cardinal + integer_word)))
+            + (
+                (decimal | decimal + integer_word)
+                | ((cardinal + root_word + cardinal) | (cardinal + root_word + cardinal + integer_word))
+                | ((root_word + cardinal) | (root_word + cardinal + integer_word))
+                | (cardinal | (cardinal + integer_word))
+            )
             + pynutil.insert("\"")
         )
 
@@ -77,7 +82,7 @@ class FractionFst(GraphFst):
         graph_root_with_integer = (
             pynini.closure((optional_sign + pynutil.insert(" ")), 0, 1)
             + root_integer
-            #+ inetegr_word
+            # + inetegr_word
             + pynutil.insert(" ")
             + root_denominator
             + pynutil.insert(" ")
@@ -86,7 +91,6 @@ class FractionFst(GraphFst):
         )
 
         final_graph = graph_root_fraction | graph_root_with_integer
-        
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class OrdinalFst(GraphFst):
@@ -29,16 +29,7 @@ class OrdinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="ordinal", kind="verbalize")
 
-        #integer_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_DIGIT) + pynutil.delete("\"")
         integer_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        # ordinal_component = (
-        #     pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        # )
-
-        # final_graph = (ordinal_component + pynutil.delete(" ") + integer_component) | (
-        #     integer_component + pynutil.delete(" ") + ordinal_component
-        # )
-
 
         final_graph = self.delete_tokens(integer_component)
         self.fst = final_graph.optimize()

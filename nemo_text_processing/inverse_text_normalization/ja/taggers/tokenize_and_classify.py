@@ -102,10 +102,8 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(punct_graph, 1.1)
             )
 
-
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
             tagger = pynini.closure(token, 1)
-
 
             self.fst = tagger
 

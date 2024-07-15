@@ -111,6 +111,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.zh.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'mr':  # Marathi
+            from nemo_text_processing.inverse_text_normalization.mr.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.mr.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
         elif lang == 'hy':
             from nemo_text_processing.inverse_text_normalization.hy.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize_final import (
@@ -165,7 +170,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh', 'hy', 'ja'],
+        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh', 'hy', 'mr', 'ja'],
         default="en",
         type=str,
     )
