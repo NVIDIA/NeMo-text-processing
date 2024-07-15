@@ -19,7 +19,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
-# def get_quantity(decimal):
 suffix = pynini.union(
     "万",
     "十万",
@@ -122,19 +121,18 @@ class MoneyFst(GraphFst):
             + pynini.closure(currency_mandarin_component, 1)
         ) | (
             pynini.closure(currency_component, 1)
-            + pynutil.insert(" ")
             + pynini.closure(graph_decimal, 1)
             + pynini.closure(
                 (pynutil.insert(" ") + pynutil.insert('quantity: \"') + suffix + pynutil.insert('\"')), 0, 1
             )
         )
 
-        graph = (
+        final_graph = (
             graph_regular_money
             | graph_units
             | pynutil.add_weight(graph_mandarin_money, -3.0)
             | pynutil.add_weight(graph_decimal_money, -1.0)
         )
 
-        final_graph = self.add_tokens(graph)
+        final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
