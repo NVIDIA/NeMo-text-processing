@@ -16,31 +16,30 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (  # common string literals
     MIN_NEG_WEIGHT,
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
+    NEMO_SPACE,
     NEMO_UPPER,
     TO_UPPER,
-    NEMO_SPACE,
     GraphFst,
-    get_abs_path,
-    # common string literals
-    username_string,
-    double_quotes,
-    domain_string,
-    protocol_string,
-    slash,
-    double_slash,
-    triple_slash,
-    file,
-    period,
     at,
     colon,
-    https,
+    domain_string,
+    double_quotes,
+    double_slash,
+    file,
+    get_abs_path,
     http,
+    https,
+    period,
+    protocol_string,
+    slash,
+    triple_slash,
+    username_string,
     www,
 )
 
@@ -57,60 +56,36 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(
-            name="electronic", kind="classify", deterministic=deterministic
-        )
+        super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
         if deterministic:
             numbers = NEMO_DIGIT
         else:
-            numbers = (
-                pynutil.insert(NEMO_SPACE)
-                + cardinal.long_numbers
-                + pynutil.insert(NEMO_SPACE)
-            )
+            numbers = pynutil.insert(NEMO_SPACE) + cardinal.long_numbers + pynutil.insert(NEMO_SPACE)
 
-        cc_cues = pynutil.add_weight(
-            pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")),
-            MIN_NEG_WEIGHT,
-        )
+        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
 
-        accepted_symbols = pynini.project(
-            pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input"
-        )
+        accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
         accepted_common_domains = pynini.project(
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
         )
 
-        dict_words = pynutil.add_weight(
-            pynini.string_file(get_abs_path("data/electronic/words.tsv")),
-            MIN_NEG_WEIGHT,
-        )
+        dict_words = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/words.tsv")), MIN_NEG_WEIGHT,)
 
         dict_words_without_delimiter = dict_words + pynini.closure(
-            pynutil.add_weight(pynutil.insert(NEMO_SPACE) + dict_words, MIN_NEG_WEIGHT),
-            1,
+            pynutil.add_weight(pynutil.insert(NEMO_SPACE) + dict_words, MIN_NEG_WEIGHT), 1,
         )
         dict_words_graph = dict_words_without_delimiter | dict_words
 
         all_accepted_symbols_start = (
-            dict_words_graph
-            | pynini.closure(TO_UPPER)
-            | pynini.closure(NEMO_UPPER)
-            | accepted_symbols
+            dict_words_graph | pynini.closure(TO_UPPER) | pynini.closure(NEMO_UPPER) | accepted_symbols
         ).optimize()
 
         all_accepted_symbols_end = (
-            dict_words_graph
-            | numbers
-            | pynini.closure(TO_UPPER)
-            | pynini.closure(NEMO_UPPER)
-            | accepted_symbols
+            dict_words_graph | numbers | pynini.closure(TO_UPPER) | pynini.closure(NEMO_UPPER) | accepted_symbols
         ).optimize()
 
-        graph_symbols = pynini.string_file(
-            get_abs_path("data/electronic/symbol.tsv")
-        ).optimize()
+        graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
         username = (NEMO_ALPHA | dict_words_graph) + pynini.closure(
             NEMO_ALPHA | numbers | accepted_symbols | dict_words_graph
         )
@@ -123,41 +98,26 @@ class ElectronicFst(GraphFst):
         )
 
         domain_graph = all_accepted_symbols_start + pynini.closure(
-            all_accepted_symbols_end
-            | pynutil.add_weight(accepted_common_domains, MIN_NEG_WEIGHT)
+            all_accepted_symbols_end | pynutil.add_weight(accepted_common_domains, MIN_NEG_WEIGHT)
         )
 
-        protocol_symbols = pynini.closure(
-            (graph_symbols | pynini.cross(colon, "colon")) + pynutil.insert(NEMO_SPACE)
-        )
+        protocol_symbols = pynini.closure((graph_symbols | pynini.cross(colon, "colon")) + pynutil.insert(NEMO_SPACE))
         protocol_start = (
-            pynini.cross(https, (https.upper() + NEMO_SPACE))
-            | pynini.cross(http, (http.upper() + NEMO_SPACE))
+            pynini.cross(https, (https.upper() + NEMO_SPACE)) | pynini.cross(http, (http.upper() + NEMO_SPACE))
         ) + (pynini.accep(colon + double_slash) @ protocol_symbols)
         protocol_file_start = (
-            pynini.accep(file)
-            + pynutil.insert(NEMO_SPACE)
-            + (pynini.accep(colon + triple_slash) @ protocol_symbols)
+            pynini.accep(file) + pynutil.insert(NEMO_SPACE) + (pynini.accep(colon + triple_slash) @ protocol_symbols)
         )
 
         protocol_end = pynutil.add_weight(
-            pynini.cross(www, (www.upper() + NEMO_SPACE))
-            + pynini.accep(period) @ protocol_symbols,
-            -1000,
+            pynini.cross(www, (www.upper() + NEMO_SPACE)) + pynini.accep(period) @ protocol_symbols, -1000,
         )
-        protocol = (
-            protocol_file_start
-            | protocol_start
-            | protocol_end
-            | (protocol_start + protocol_end)
-        )
+        protocol = protocol_file_start | protocol_start | protocol_end | (protocol_start + protocol_end)
 
         domain_graph_with_class_tags = (
             pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
             + pynini.compose(
-                NEMO_ALPHA
-                + pynini.closure(NEMO_NOT_SPACE)
-                + (NEMO_ALPHA | NEMO_DIGIT | pynini.accep(slash)),
+                NEMO_ALPHA + pynini.closure(NEMO_NOT_SPACE) + (NEMO_ALPHA | NEMO_DIGIT | pynini.accep(slash)),
                 domain_graph,
             ).optimize()
             + pynutil.insert(double_quotes)
@@ -170,11 +130,7 @@ class ElectronicFst(GraphFst):
         )
         # email
         graph = pynini.compose(
-            NEMO_SIGMA
-            + pynini.accep(at)
-            + NEMO_SIGMA
-            + pynini.accep(period)
-            + NEMO_SIGMA,
+            NEMO_SIGMA + pynini.accep(at) + NEMO_SIGMA + pynini.accep(period) + NEMO_SIGMA,
             username + domain_graph_with_class_tags,
         )
 
@@ -186,9 +142,7 @@ class ElectronicFst(GraphFst):
                 NEMO_ALPHA
                 + pynini.closure(NEMO_NOT_SPACE)
                 + accepted_common_domains
-                + pynini.closure(
-                    pynini.difference(NEMO_NOT_SPACE, pynini.accep(period))
-                ),
+                + pynini.closure(pynini.difference(NEMO_NOT_SPACE, pynini.accep(period))),
                 domain_graph,
             ).optimize()
             + pynutil.insert(double_quotes)
@@ -202,14 +156,7 @@ class ElectronicFst(GraphFst):
             cc_phrases = (
                 pynutil.insert(protocol_string + colon + NEMO_SPACE + double_quotes)
                 + cc_cues
-                + pynutil.insert(
-                    double_quotes
-                    + NEMO_SPACE
-                    + domain_string
-                    + colon
-                    + NEMO_SPACE
-                    + double_quotes
-                )
+                + pynutil.insert(double_quotes + NEMO_SPACE + domain_string + colon + NEMO_SPACE + double_quotes)
                 + numbers
                 + pynutil.insert(double_quotes)
             )
