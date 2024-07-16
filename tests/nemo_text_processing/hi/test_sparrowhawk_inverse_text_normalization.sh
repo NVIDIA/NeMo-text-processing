@@ -31,10 +31,10 @@ testITNDecimal() {
   runtest $input
 }
 
-#testITNOrdinal() {
- # input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_ordinal.txt
- # runtest $input
-#}
+testITNOrdinal() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
 
 
 #testITNWhitelist() {

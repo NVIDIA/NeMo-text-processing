@@ -43,6 +43,7 @@ class CardinalFst(GraphFst):
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
         graph_teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")).invert()
+        graph_thousands = pynini.string_file(get_abs_path("data/numbers/thousands.tsv")).invert()
         self.graph_two_digit = graph_teens_and_ties | (pynutil.insert("०") + graph_digit)
         graph_hundred = pynini.cross("सौ", "")
         delete_thousand = pynutil.delete("हज़ार") | pynutil.delete("हजार")
@@ -58,10 +59,11 @@ class CardinalFst(GraphFst):
         )
 
         # Transducer for eleven hundred -> 1100 or twenty one hundred eleven -> 2111
-        graph_hundred_as_thousand = pynini.union(graph_teens_and_ties + delete_space + graph_hundred, pynutil.insert("००"))
+        graph_hundred_as_thousand = pynini.union(graph_teens_and_ties + delete_space + graph_hundred, pynutil.insert("०"))
         graph_hundred_as_thousand += delete_space  
         graph_hundred_as_thousand += self.graph_two_digit | pynutil.insert("००")
 
+        
         graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
 
         
@@ -176,6 +178,6 @@ class CardinalFst(GraphFst):
         self.fst = final_graph.optimize()
         
 cardinal = CardinalFst()
-input_text = "एक लाख एक"
+input_text = "अट्ठानवे सौ"
 output = rewrite.top_rewrite(input_text, cardinal.fst)
 print(output)

@@ -84,7 +84,7 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal
         Decimal point "." is determined by "दशमलव"
-            e.g. माइनस एक दशमलव दो छह -> decimal { negative: "true" integer_part: "1" morphosyntactic_features: "." fractional_part: "26" }
+            e.g. ऋण एक दशमलव दो छह -> decimal { negative: "true" integer_part: "1" morphosyntactic_features: "." fractional_part: "26" }
 
  
         This decimal rule assumes that decimals can be pronounced as:
