@@ -121,7 +121,7 @@ class MoneyFst(GraphFst):
             + pynini.closure(currency_mandarin_component, 1)
         ) | (
             pynini.closure(currency_component, 1)
-            + pynutil.insert(" ") 
+            + pynutil.insert(" ")
             + pynini.closure(graph_decimal, 1)
             + pynini.closure(
                 (pynutil.insert(" ") + pynutil.insert('quantity: \"') + suffix + pynutil.insert('\"')), 0, 1
