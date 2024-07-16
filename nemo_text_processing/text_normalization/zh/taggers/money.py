@@ -121,6 +121,7 @@ class MoneyFst(GraphFst):
             + pynini.closure(currency_mandarin_component, 1)
         ) | (
             pynini.closure(currency_component, 1)
+            + pynutil.insert(" ") 
             + pynini.closure(graph_decimal, 1)
             + pynini.closure(
                 (pynutil.insert(" ") + pynutil.insert('quantity: \"') + suffix + pynutil.insert('\"')), 0, 1
@@ -134,5 +135,5 @@ class MoneyFst(GraphFst):
             | pynutil.add_weight(graph_decimal_money, -1.0)
         )
 
-        final_graph = self.add_tokens(final_graph)
+        final_graph = self.add_tokens(graph_decimal_money)
         self.fst = final_graph.optimize()
