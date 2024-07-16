@@ -33,6 +33,7 @@ class DateFst(GraphFst):
     date { year: "2009" } -> 2009年
     date { year: "23" month: "2" day: "25" weekday: "土" } -> 23年2月25日(土)
     date { month: "7" day: "5~9" weekday: "月~金" } -> 月5〜9日(月〜金)
+    date { { year: "今年は令和6" } } -> 今年は令和6年
     """
 
     def __init__(self):
