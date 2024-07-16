@@ -16,7 +16,7 @@ import pynini
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from pynini.lib import pynutil
+from pynini.lib import pynutil, rewrite
 
 
 def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike') -> 'pynini.FstLike':
@@ -63,13 +63,6 @@ class DecimalFst(GraphFst):
         graph_digit |= pynini.cross("१", "एक")
         self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
         
-        cardinal_graph = cardinal.graph_with_and
-        cardinal_graph_hundred_component_at_least_one_none_zero_digit = (
-            cardinal.graph_hundred_component_at_least_one_none_zero_digit
-        )
-
-        self.graph = cardinal.single_digits_graph.optimize()
-
 
         point = pynutil.delete("दशमलव")
         optional_graph_negative = pynini.closure(pynutil.insert("ऋण : ") + pynini.cross("-", "\"true\" "), 0, 1)
@@ -93,11 +86,6 @@ class DecimalFst(GraphFst):
 cardinal = CardinalFst()
 decimal = DecimalFst(cardinal)
 input_text = "१२.५"
-output = apply_fst(input_text, decimal.fst)
+#output = apply_fst(input_text, decimal.fst)
 output = rewrite.top_rewrite(input_text, decimal.fst)
-print(output)        
-
-
-        
-        
-       
+print(output)
