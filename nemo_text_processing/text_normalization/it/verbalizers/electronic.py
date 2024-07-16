@@ -15,24 +15,21 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (  # Common string literals; expand as you see fit.
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    delete_preserve_order,
-    # Common string literals; expand as you see fit.
-    username_string,
-    double_quotes,
-    domain_string,
-    protocol_string,
     colon,
+    delete_preserve_order,
+    domain_string,
+    double_quotes,
+    protocol_string,
+    username_string,
 )
 from nemo_text_processing.text_normalization.it.utils import get_abs_path
 
-digit_no_zero = pynini.invert(
-    pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-)
+digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
 
 graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv"))
@@ -51,20 +48,16 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(
-            name="electronic", kind="verbalize", deterministic=deterministic
-        )
+        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
 
         graph_digit = digit_no_zero | zero
 
         def add_space_after_char():
-            return pynini.closure(
-                NEMO_NOT_QUOTE - pynini.accep(NEMO_SPACE) + pynutil.insert(NEMO_SPACE)
-            ) + (NEMO_NOT_QUOTE - pynini.accep(NEMO_SPACE))
+            return pynini.closure(NEMO_NOT_QUOTE - pynini.accep(NEMO_SPACE) + pynutil.insert(NEMO_SPACE)) + (
+                NEMO_NOT_QUOTE - pynini.accep(NEMO_SPACE)
+            )
 
-        verbalize_characters = pynini.cdrewrite(
-            graph_symbols | graph_digit, "", "", NEMO_SIGMA
-        )
+        verbalize_characters = pynini.cdrewrite(graph_symbols | graph_digit, "", "", NEMO_SIGMA)
 
         user_name = (
             pynutil.delete(username_string + colon + NEMO_SPACE + double_quotes)
@@ -73,25 +66,16 @@ class ElectronicFst(GraphFst):
         )
         user_name @= verbalize_characters
 
-        convert_defaults = (
-            pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001)
-            | server_common
-            | domain_common
-        )
-        domain = convert_defaults + pynini.closure(
-            pynutil.insert(NEMO_SPACE) + convert_defaults
-        )
+        convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | server_common | domain_common
+        domain = convert_defaults + pynini.closure(pynutil.insert(NEMO_SPACE) + convert_defaults)
         domain @= verbalize_characters
 
         domain = (
-            pynutil.delete(domain_string + colon + NEMO_SPACE + double_quotes)
-            + domain
-            + pynutil.delete(double_quotes)
+            pynutil.delete(domain_string + colon + NEMO_SPACE + double_quotes) + domain + pynutil.delete(double_quotes)
         )
         protocol = (
             pynutil.delete(protocol_string + colon + NEMO_SPACE + double_quotes)
-            + add_space_after_char()
-            @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
+            + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + pynutil.delete(double_quotes)
         )
 

@@ -20,19 +20,19 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SPACE,
     GraphFst,
-    username_string,
-    double_quotes,
-    domain_string,
-    protocol_string,
-    slash,
-    double_slash,
-    triple_slash,
-    file,
-    period,
     at,
     colon,
-    https,
+    domain_string,
+    double_quotes,
+    double_slash,
+    file,
     http,
+    https,
+    period,
+    protocol_string,
+    slash,
+    triple_slash,
+    username_string,
     www,
 )
 from nemo_text_processing.text_normalization.it.utils import get_abs_path, load_labels
@@ -52,20 +52,14 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(
-            name="electronic", kind="classify", deterministic=deterministic
-        )
+        super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
         dot = pynini.accep(".")
 
-        symbols = [
-            x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))
-        ]
+        symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
         symbols = pynini.union(*symbols)
         symbols_no_period = pynini.difference(symbols, dot)
-        accepted_characters = pynini.closure(
-            (NEMO_ALPHA | NEMO_DIGIT | symbols_no_period), 1
-        )
+        accepted_characters = pynini.closure((NEMO_ALPHA | NEMO_DIGIT | symbols_no_period), 1)
         all_characters = pynini.closure((NEMO_ALPHA | NEMO_DIGIT | symbols), 1)
 
         # domains
@@ -94,9 +88,7 @@ class ElectronicFst(GraphFst):
         )
 
         # url
-        protocol_start = pynini.accep(https + colon + double_slash) | pynini.accep(
-            http + colon + double_slash
-        )
+        protocol_start = pynini.accep(https + colon + double_slash) | pynini.accep(http + colon + double_slash)
         protocol_end = (
             pynini.accep(www + period)
             if deterministic
@@ -113,7 +105,5 @@ class ElectronicFst(GraphFst):
         graph = url | domain_graph | email | tag
         self.graph = graph
 
-        final_graph = self.add_tokens(
-            self.graph + pynutil.insert(" preserve_order: true")
-        )
+        final_graph = self.add_tokens(self.graph + pynutil.insert(" preserve_order: true"))
         self.fst = final_graph.optimize()
