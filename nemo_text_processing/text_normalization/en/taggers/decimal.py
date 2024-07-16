@@ -57,6 +57,7 @@ def get_quantity(
         + quantity
         + pynutil.insert("\"")
     )
+     
     return res
 
 

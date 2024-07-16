@@ -33,13 +33,7 @@ like the Google text normalization data https://www.kaggle.com/richardwilliamspr
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--input", help="input file path", type=str)
-    parser.add_argument(
-        "--lang",
-        help="language",
-        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh'],
-        default="en",
-        type=str,
-    )
+    parser.add_argument("--lang", help="language", choices=['en'], default="en", type=str)
     parser.add_argument(
         "--input_case", help="input capitalization", choices=["lower_cased", "cased"], default="cased", type=str
     )
