@@ -15,7 +15,26 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_SPACE,
+    GraphFst,
+    username_string,
+    double_quotes,
+    domain_string,
+    protocol_string,
+    slash,
+    double_slash,
+    triple_slash,
+    file,
+    period,
+    at,
+    colon,
+    https,
+    http,
+    www,
+)
 from nemo_text_processing.text_normalization.it.utils import get_abs_path, load_labels
 
 # common_domains = [x[0] for x in load_labels(get_abs_path("data/electronic/domain.tsv"))]
@@ -33,45 +52,68 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(name="electronic", kind="classify", deterministic=deterministic)
+        super().__init__(
+            name="electronic", kind="classify", deterministic=deterministic
+        )
 
         dot = pynini.accep(".")
 
-        symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
+        symbols = [
+            x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))
+        ]
         symbols = pynini.union(*symbols)
         symbols_no_period = pynini.difference(symbols, dot)
-        accepted_characters = pynini.closure((NEMO_ALPHA | NEMO_DIGIT | symbols_no_period), 1)
+        accepted_characters = pynini.closure(
+            (NEMO_ALPHA | NEMO_DIGIT | symbols_no_period), 1
+        )
         all_characters = pynini.closure((NEMO_ALPHA | NEMO_DIGIT | symbols), 1)
 
         # domains
         domain = dot + accepted_characters
         domain_graph = (
-            pynutil.insert('domain: "') + (accepted_characters + pynini.closure(domain, 1)) + pynutil.insert('"')
+            pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
+            + (accepted_characters + pynini.closure(domain, 1))
+            + pynutil.insert(double_quotes)
         )
 
         # email
-        username = pynutil.insert('username: "') + all_characters + pynutil.insert('"') + pynini.cross("@", " ")
+        username = (
+            pynutil.insert(username_string + colon + NEMO_SPACE + double_quotes)
+            + all_characters
+            + pynutil.insert(double_quotes)
+            + pynini.cross(at, NEMO_SPACE)
+        )
         email = username + domain_graph
 
         # social media tags
         tag = (
-            pynini.cross("@", "")
-            + pynutil.insert('username: "')
+            pynutil.delete(at)
+            + pynutil.insert(username_string + colon + NEMO_SPACE + double_quotes)
             + (accepted_characters | (accepted_characters + pynini.closure(domain, 1)))
-            + pynutil.insert('"')
+            + pynutil.insert(double_quotes)
         )
 
         # url
-        protocol_start = pynini.accep("https://") | pynini.accep("http://")
+        protocol_start = pynini.accep(https + colon + double_slash) | pynini.accep(
+            http + colon + double_slash
+        )
         protocol_end = (
-            pynini.accep("www.") if deterministic else pynini.accep("www.") | pynini.cross("www.", "vu vu vu.")
+            pynini.accep(www + period)
+            if deterministic
+            else pynini.accep(www + period) | pynini.cross((www + period), "vu vu vu.")
         )
         protocol = protocol_start | protocol_end | (protocol_start + protocol_end)
-        protocol = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
-        url = protocol + insert_space + (domain_graph)
+        protocol = (
+            pynutil.insert(protocol_string + colon + NEMO_SPACE + double_quotes)
+            + protocol
+            + pynutil.insert(double_quotes)
+        )
+        url = protocol + pynutil.insert(NEMO_SPACE) + (domain_graph)
 
         graph = url | domain_graph | email | tag
         self.graph = graph
 
-        final_graph = self.add_tokens(self.graph + pynutil.insert(" preserve_order: true"))
+        final_graph = self.add_tokens(
+            self.graph + pynutil.insert(" preserve_order: true")
+        )
         self.fst = final_graph.optimize()
