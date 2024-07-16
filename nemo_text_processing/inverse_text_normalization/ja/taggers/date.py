@@ -85,7 +85,26 @@ class DateFst(GraphFst):
         )
         graph_date = graph_date | (graph_date + pynini.closure(pynutil.insert(" ") + week_component, 0, 1))
 
-        final_graph = graph_component | graph_date
+        # specific context for era year, e.g., L6 -> "令和6年"
+        context = pynini.union(
+            pynini.accep("今年は"),
+            pynini.accep("来年は"),
+            pynini.accep("再来年は"),
+            pynini.accep("去年は"),
+            pynini.accep("一昨年は"),
+            pynini.accep("おととしは"),
+        )
+        era_year = pynini.union(
+            pynini.cross("R", "令和"),
+            pynini.cross("H", "平成"),
+            pynini.cross("S", "昭和"),
+            pynini.cross("T", "大正"),
+            pynini.cross("M", "明治"),
+        )
+        graph_era_year = context + era_year + cardinal
+        graph_content_specific = pynutil.insert("year: \"") + graph_era_year + pynutil.insert("\"")
+
+        final_graph = graph_component | graph_date | graph_content_specific
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
