@@ -19,17 +19,17 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    delete_preserve_order,
-    username_string,
-    double_quotes,
-    domain_string,
-    protocol_string,
-    double_slash,
-    period,
     at,
     colon,
-    https,
+    delete_preserve_order,
+    domain_string,
+    double_quotes,
+    double_slash,
     http,
+    https,
+    period,
+    protocol_string,
+    username_string,
     www,
 )
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
@@ -61,16 +61,14 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(
-            name="electronic", kind="verbalize", deterministic=deterministic
-        )
+        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
 
         graph_digit = digit_no_zero | zero
 
         def add_space_after_char():
-            return pynini.closure(
-                NEMO_NOT_QUOTE - accept_space + pynutil.insert(NEMO_SPACE)
-            ) + (NEMO_NOT_QUOTE - accept_space)
+            return pynini.closure(NEMO_NOT_QUOTE - accept_space + pynutil.insert(NEMO_SPACE)) + (
+                NEMO_NOT_QUOTE - accept_space
+            )
 
         hungarian_at = [
             "kukacjel ",
@@ -85,28 +83,19 @@ class ElectronicFst(GraphFst):
             for sign in hungarian_at:
                 at_sign |= pynutil.insert(sign)
 
-        verbalize_characters = pynini.cdrewrite(
-            graph_symbols | graph_digit, "", "", NEMO_SIGMA
-        )
+        verbalize_characters = pynini.cdrewrite(graph_symbols | graph_digit, "", "", NEMO_SIGMA)
 
         user_name = delete_username + add_space_after_char() + delete_double_quotes
         user_name @= verbalize_characters
 
-        convert_defaults = (
-            pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001)
-            | domain_common
-            | server_common
-        )
-        domain = convert_defaults + pynini.closure(
-            pynutil.insert(NEMO_SPACE) + convert_defaults
-        )
+        convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | domain_common | server_common
+        domain = convert_defaults + pynini.closure(pynutil.insert(NEMO_SPACE) + convert_defaults)
         domain @= verbalize_characters
 
         domain = delete_domain + domain + delete_double_quotes
         protocol = (
             delete_protocol
-            + add_space_after_char()
-            @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
+            + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + delete_double_quotes
         )
 
