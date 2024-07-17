@@ -56,6 +56,7 @@ class DecimalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+        
 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv")).invert()
         graph_digit |= pynini.string_file(get_abs_path("data/number/zero.tsv")).invert()
@@ -89,3 +90,4 @@ input_text = "१२.५"
 #output = apply_fst(input_text, decimal.fst)
 output = rewrite.top_rewrite(input_text, decimal.fst)
 print(output)
+
