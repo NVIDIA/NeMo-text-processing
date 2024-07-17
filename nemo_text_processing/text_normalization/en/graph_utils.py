@@ -82,7 +82,6 @@ delete_preserve_order = pynini.closure(
     | (pynutil.delete(' field_order: "') + NEMO_NOT_QUOTE + pynutil.delete('"'))
 )
 
-
 # Common string literals; expand as you see fit.
 username_string = "username"
 double_quotes = '"'
@@ -98,7 +97,6 @@ colon = ":"
 https = "https"
 http = "http"
 www = "www"
-
 
 suppletive = pynini.string_file(get_abs_path("data/suppletive.tsv"))
 # _v = pynini.union("a", "e", "i", "o", "u")
