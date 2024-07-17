@@ -103,15 +103,19 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist_graph, 0.0)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(electronic_graph, 1.09)
-                | pynutil.add_weight(measure_graph, 1.09)
-                | pynutil.add_weight(money_graph, 1.09)
-                | pynutil.add_weight(time_graph, 1.09)
+                | pynutil.add_weight(electronic_graph, 1.1)
+                | pynutil.add_weight(measure_graph, 1.1)
+                | pynutil.add_weight(money_graph, 1.1)
+                | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
-
+            punct = pynini.closure(
+                pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
+                | (pynutil.insert(" ") + punct),
+                1,
+            )
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
                 pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)

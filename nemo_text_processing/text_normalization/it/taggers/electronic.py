@@ -62,9 +62,10 @@ class ElectronicFst(GraphFst):
         # domains
         domain = dot + accepted_characters
         domain_graph = (
-            pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
-            + (accepted_characters + pynini.closure(domain, 1))
-            + pynutil.insert(double_quotes)
+            pynutil.insert("domain: \"")
+            + domain_graph
+            + pynini.closure((accepted_symbols | dot) + pynini.closure(accepted_characters, 1), 0, 1)
+            + pynutil.insert("\"")
         )
 
         # email
@@ -84,12 +85,11 @@ class ElectronicFst(GraphFst):
             + pynutil.insert(double_quotes)
         )
 
-        # url
-        protocol_start = pynini.accep(https + colon + double_slash) | pynini.accep(http + colon + double_slash)
+        graph = (username + domain_graph) | domain_common_graph
+
+        protocol_start = pynini.accep("https://") | pynini.accep("http://")
         protocol_end = (
-            pynini.accep(www + period)
-            if deterministic
-            else pynini.accep(www + period) | pynini.cross((www + period), "vu vu vu.")
+            pynini.accep("www.") if deterministic else pynini.accep("www.") | pynini.cross("www.", "vu vu vu.")
         )
         protocol = protocol_start | protocol_end | (protocol_start + protocol_end)
         protocol = (
@@ -97,7 +97,6 @@ class ElectronicFst(GraphFst):
             + protocol
             + pynutil.insert(double_quotes)
         )
-
         url = protocol + pynutil.insert(NEMO_SPACE) + (domain_graph)
 
         graph = url | domain_graph | email | tag
