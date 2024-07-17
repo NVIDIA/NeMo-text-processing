@@ -135,6 +135,5 @@ class MoneyFst(GraphFst):
             | pynutil.add_weight(graph_decimal_money, -1.0)
         )
 
-        #import pdb; pdb.set_trace() 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
