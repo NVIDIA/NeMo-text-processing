@@ -84,8 +84,8 @@ class DecimalFst(GraphFst):
 
 
 
-#cardinal = self.final_graph
-decimal = DecimalFst(self.fst)
+cardinal = CardinalFst(self.fst)
+decimal = DecimalFst(cardinal)
 input_text = "१२.५"
 #output = apply_fst(input_text, decimal.fst)
 output = rewrite.top_rewrite(input_text, decimal.fst)
