@@ -280,7 +280,7 @@ class CardinalFst(GraphFst):
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
         
-#input_text = "१११११"                                                                                              
-#output = rewrite.top_rewrite(input_text,CardinalFst().fst)          # rewrite.rewrites - to see all possible outcomes , rewrite.top_rewrite - shortest pa
-#print(output)
+input_text = "१११११"                                                                                              
+output = rewrite.top_rewrite(input_text,CardinalFst().fst)          # rewrite.rewrites - to see all possible outcomes , rewrite.top_rewrite - shortest pa
+print(output)
         
