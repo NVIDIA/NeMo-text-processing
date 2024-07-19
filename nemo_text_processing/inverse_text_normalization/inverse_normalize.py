@@ -121,6 +121,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'ja':  # Japanese
+            from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
 
         elif lang == 'he':  # Hebrew
             from nemo_text_processing.inverse_text_normalization.he.taggers.tokenize_and_classify import ClassifyFst
@@ -171,7 +176,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh', 'hy', 'mr', 'he'],
+        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh', 'hy', 'mr', 'ja', 'he'],
         default="en",
         type=str,
     )
