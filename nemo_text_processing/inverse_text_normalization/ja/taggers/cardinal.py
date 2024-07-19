@@ -24,7 +24,6 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
         e.g. 二十三 -> cardinal { integer: "23" }
-        e.g. にじゅうさん -> cardinal { integer: "23" }
     """
 
     def __init__(self):

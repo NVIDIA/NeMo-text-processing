@@ -87,6 +87,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
+<<<<<<< HEAD
         choices=[
             "en",
             "de",
@@ -106,6 +107,9 @@ def parse_args():
             'ja',
             'rw',
         ],
+=======
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr', 'ja'],
+>>>>>>> 0a4a21c (Jp itn 20240221 (#141))
         type=str,
         default='en',
     )
@@ -285,6 +289,7 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+<<<<<<< HEAD
         from nemo_text_processing.text_normalization.hy.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
@@ -294,6 +299,8 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+=======
+>>>>>>> 0a4a21c (Jp itn 20240221 (#141))
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,

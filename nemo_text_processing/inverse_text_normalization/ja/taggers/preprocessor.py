@@ -22,6 +22,7 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 class PreProcessorFst(GraphFst):
     '''
+<<<<<<< HEAD
     Preprocessing of TN:
         1. interjections removal such as '啊, 呃'
         2. fullwidth -> halfwidth char conversion
@@ -29,6 +30,15 @@ class PreProcessorFst(GraphFst):
     呃对 -> 对
     ：   -> :
     ；   -> ;
+=======
+        Preprocessing of TN:
+            1. interjections removal such as '啊, 呃'
+            2. fullwidth -> halfwidth char conversion
+        好啊 -> 好
+        呃对 -> 对
+        ：   -> :
+        ；   -> ;
+>>>>>>> 0a4a21c (Jp itn 20240221 (#141))
     '''
 
     def __init__(

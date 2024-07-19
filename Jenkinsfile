@@ -46,7 +46,11 @@ pipeline {
 >>>>>>> d5bcde5 (IT TN Fixes for #166 (#183))
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
+<<<<<<< HEAD
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-05-24-0'
+=======
+    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
+>>>>>>> 0a4a21c (Jp itn 20240221 (#141))
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -300,6 +304,9 @@ pipeline {
       }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0a4a21c (Jp itn 20240221 (#141))
     stage('L0: Create JA ITN Grammars') {
       when {
         anyOf {
@@ -316,8 +323,11 @@ pipeline {
         }
       }
     }
+<<<<<<< HEAD
 =======
 >>>>>>> 052e151 (ZH sentence-level TN (#112))
+=======
+>>>>>>> 0a4a21c (Jp itn 20240221 (#141))
 
 
 // L1 Tests starts here

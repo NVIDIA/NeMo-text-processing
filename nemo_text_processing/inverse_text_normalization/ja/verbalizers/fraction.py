@@ -23,7 +23,11 @@ class FractionFst(GraphFst):
     def __init__(self):
         """
         Fitite state transducer for classifying fractions
+<<<<<<< HEAD
         e.g.,
+=======
+        e.g., 
+>>>>>>> 0a4a21c (Jp itn 20240221 (#141))
         fraction { denominator: "4" numerator: "3" } -> 3/4
         fraction { integer: "1" denominator: "4" numerator: "3" } -> 1 3/4
         fraction { integer: "1" denominator: "4" numerator: "3" } -> 1 3/4
