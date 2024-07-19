@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
-class WhiteListFst(GraphFst):
+class WordFst(GraphFst):
     '''
-        tokens { whitelist: "ATM" } -> A T M
+        tokens { char: "一" } -> 一
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)
+        super().__init__(name="char", kind="verbalize", deterministic=deterministic)
 
-        whitelist = pynutil.delete("name: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        graph = whitelist
+        graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
+        graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
         self.fst = graph.optimize()
