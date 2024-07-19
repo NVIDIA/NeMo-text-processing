@@ -37,6 +37,8 @@ def itn_grammars(**kwargs):
         ).fst
     }
     d['verbalize'] = {'ALL': ITNVerbalizeFst().fst, 'REDUP': pynini.accep("REDUP")}
+    if ITNPostProcessingFst is not None:
+        d['post_process'] = {'POSTPROCESSOR': ITNPostProcessingFst().fst}
     return d
 
 
@@ -84,7 +86,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr'],
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr', 'ja'],
         type=str,
         default='en',
     )
@@ -118,6 +120,7 @@ if __name__ == '__main__':
     if args.language in ['pt', 'ru', 'vi', 'es_en', 'mr'] and args.grammars == 'tn_grammars':
         raise ValueError('Only ITN grammars could be deployed in Sparrowhawk for the selected languages.')
     TNPostProcessingFst = None
+    ITNPostProcessingFst = None
     if args.language == 'en':
         from nemo_text_processing.inverse_text_normalization.en.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -251,6 +254,16 @@ if __name__ == '__main__':
             ClassifyFst as ITNClassifyFst,
         )
         from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
+    elif args.language == 'ja':
+        from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.ja.verbalizers.post_processing import (
+            PostProcessingFst as ITNPostProcessingFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
