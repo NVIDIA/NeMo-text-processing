@@ -64,4 +64,3 @@ CONFIG=${LANGUAGE}_${GRAMMARS}_${INPUT_CASE}
 
 cp $CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars_${CONFIG}/en_toy/classify/
 cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars_${CONFIG}/en_toy/verbalize/
-
