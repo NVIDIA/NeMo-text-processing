@@ -37,10 +37,10 @@ testITNOrdinal() {
 }
 
 
-#testITNWhitelist() {
- # input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_whitelist.txt
-  #runtest $input
-#}
+testITNFraction() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
 
 
 #testITNWord() {

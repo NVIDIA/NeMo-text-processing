@@ -16,6 +16,7 @@
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.hi.verbalizers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst
 
@@ -33,6 +34,7 @@ class VerbalizeFst(GraphFst):
         cardinal_graph = cardinal.fst
         ordinal_graph = OrdinalFst().fst
         decimal_graph = DecimalFst().fst
+        fraction_graph = FractionFst().fst
 
         whitelist_graph = WhiteListFst().fst
 
@@ -41,6 +43,7 @@ class VerbalizeFst(GraphFst):
              | whitelist_graph
              | ordinal_graph
              | decimal_graph
+             | fraction_graph
 
         )
         self.fst = graph
