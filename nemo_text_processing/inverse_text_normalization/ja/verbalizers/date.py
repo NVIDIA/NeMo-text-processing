@@ -21,7 +21,11 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_
 
 class DateFst(GraphFst):
     """
+<<<<<<< HEAD
     Finite state transducer for verbalizing date, e.g.,
+=======
+    Finite state transducer for verbalizing date, e.g., 
+>>>>>>> 029ee08 (Jp itn 20240221 (#141))
     date { day: "1" } -> 1日
     date { day: "5~9" } -> 5~9日
     date { month: "1" } -> 1月

@@ -275,7 +275,6 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
-<<<<<<< HEAD
     elif args.language == 'ja':
         from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -298,8 +297,6 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
-=======
->>>>>>> 02b8610 (ZH sentence-level TN (#112))
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,

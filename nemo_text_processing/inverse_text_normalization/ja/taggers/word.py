@@ -12,9 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+<<<<<<< HEAD
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_SPACE, GraphFst
+=======
+
+from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst
+>>>>>>> 029ee08 (Jp itn 20240221 (#141))
 
 
 class WordFst(GraphFst):
@@ -25,5 +32,9 @@ class WordFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="word", kind="classify")
+<<<<<<< HEAD
         word = pynutil.insert("name: \"") + NEMO_NOT_SPACE + pynutil.insert("\"")
+=======
+        word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
+>>>>>>> 029ee08 (Jp itn 20240221 (#141))
         self.fst = word.optimize()

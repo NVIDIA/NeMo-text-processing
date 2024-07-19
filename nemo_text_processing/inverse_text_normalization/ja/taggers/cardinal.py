@@ -23,7 +23,11 @@ from nemo_text_processing.inverse_text_normalization.ja.utils import get_abs_pat
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
+<<<<<<< HEAD
         e.g. 二十三 -> cardinal { integer: "23" }
+=======
+        e.g. 二十三 -> cardinal { integer: "23" } 
+>>>>>>> 029ee08 (Jp itn 20240221 (#141))
         e.g. にじゅうさん -> cardinal { integer: "23" }
     """
 
