@@ -96,7 +96,7 @@ class TimeFst(GraphFst):
         digits_2_to_23 = [str(digits) for digits in range(2, 24)]
         digits_1_to_59 = [str(digits) for digits in range(1, 60)]
 
-        oneoclock = pynini.accep("la una")
+        one_o_clock = pynini.accep("la una")
         article = pynini.accep("las ")
         half = pynini.accep("media")
         quarter = pynini.accep("cuarto")
@@ -116,17 +116,17 @@ class TimeFst(GraphFst):
             hours_word_graph |= pynini.accep(" Horas").optimize()
             minutes_word_graph |= pynini.union(" Minuto", " Minutos").optimize()
 
-        graph_1oclock = pynini.cross(oneoclock, "la 1")
+        graph_one_o_clock = pynini.cross(one_o_clock, "la 1")
         if input_case == INPUT_CASED:
-            graph_1oclock |= pynini.cross(pynini.accep("la Una"), "la 1")
-            oneoclock_capitalized = pynini.union("La Una", "La una")
-            graph_1oclock |= pynini.cross(oneoclock_capitalized, "La 1").optimize()
+            graph_one_o_clock |= pynini.cross(pynini.accep("la Una"), "la 1")
+            one_o_clock_capitalized = pynini.union("La Una", "La una")
+            graph_one_o_clock |= pynini.cross(one_o_clock_capitalized, "La 1").optimize()
 
         graph_hour = article + graph_1_to_100 @ pynini.union(*digits_2_to_23)
         graph_minute = graph_1_to_100 @ pynini.union(*digits_1_to_59)
         graph_minute_verbose = pynini.cross(half, "30") | pynini.cross(quarter, "15")
 
-        final_graph_hour = pynutil.insert("hours: \"") + (graph_1oclock | graph_hour) + pynutil.insert("\"")
+        final_graph_hour = pynutil.insert("hours: \"") + (graph_one_o_clock | graph_hour) + pynutil.insert("\"")
 
         final_graph_minute = (
             pynutil.insert("minutes: \"")
@@ -160,12 +160,12 @@ class TimeFst(GraphFst):
         )
 
         # las nueve a eme (only convert on-the-hour times if they are followed by a suffix)
-        graph_1oclock_with_suffix = pynini.closure(pynini.union("la ", "La "), 0, 1) + pynini.cross(
-            pynini.union("una", "Unia"), "1"
+        graph_one_o_clock_with_suffix = pynini.closure(pynini.union("la ", "La "), 0, 1) + pynini.cross(
+            pynini.union("una", "Una"), "1"
         )
         graph_hour_with_suffix = pynini.closure(article, 0, 1) + graph_1_to_100 @ pynini.union(*digits_2_to_23)
         final_graph_hour_with_suffix = (
-            pynutil.insert("hours: \"") + (graph_1oclock_with_suffix | graph_hour_with_suffix) + pynutil.insert("\"")
+            pynutil.insert("hours: \"") + (graph_one_o_clock_with_suffix | graph_hour_with_suffix) + pynutil.insert("\"")
         )
 
         graph_hsuffix = (
