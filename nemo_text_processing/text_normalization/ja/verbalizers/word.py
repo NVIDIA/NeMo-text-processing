@@ -17,10 +17,14 @@ import pynini
 from pynini.lib import pynutil
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 from nemo_text_processing.text_normalization.ja.graph_utils import (
 =======
 from nemo_text_processing.text_normalization.zh.graph_utils import (
 >>>>>>> 03c25c6 (updates for space removal)
+=======
+from nemo_text_processing.text_normalization.ja.graph_utils import (
+>>>>>>> 88165c66 (updates)
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_extra_space,
@@ -34,10 +38,14 @@ class WordFst(GraphFst):
     '''
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __init__(self, deterministic: bool = True):
 =======
     def __init__(self, deterministic: bool = True, lm: bool = False):
 >>>>>>> 03c25c6 (updates for space removal)
+=======
+    def __init__(self, deterministic: bool = True):
+>>>>>>> 88165c66 (updates)
         super().__init__(name="char", kind="verbalize", deterministic=deterministic)
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
