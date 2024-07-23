@@ -288,6 +288,7 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.ja.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
+<<<<<<< HEAD
         from nemo_text_processing.text_normalization.ja.verbalizers.post_processing import (
             PostProcessingFst as TNPostProcessingFst,
         )
@@ -298,6 +299,12 @@ if __name__ == '__main__':
         )
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
+=======
+        from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import (
+            VerbalizeFst as TNVerbalizeFst,
+        )
+    output_dir = os.path.join(args.output_dir, args.language)
+>>>>>>> 5cf285a2 (updates for japanese tn)
     export_grammars(
         output_dir=output_dir,
         grammars=locals()[args.grammars](
