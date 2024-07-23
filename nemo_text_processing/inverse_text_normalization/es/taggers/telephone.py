@@ -18,7 +18,6 @@ from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_pat
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
-    MIN_NEG_WEIGHT,
     GraphFst,
     capitalized_input_graph,
     delete_space,
