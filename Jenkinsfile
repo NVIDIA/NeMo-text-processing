@@ -12,21 +12,20 @@ pipeline {
   environment {
 
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-24-24-0'
-    DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-24-0'
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
+    DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/11-18-23-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-27-23-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-13-23-2'
-    FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
-    HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
+    FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/12-05-23-0'
+    HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-30-24-0'
-    IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
+    IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-26-23-0'
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
-    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -279,22 +278,6 @@ pipeline {
         }
       }
     }
-    stage('L0: Create JA ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-        stage('L0: JA ITN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ja --text="100" --cache_dir ${JA_TN_CACHE}'
-          }
-        }
-      }
-    }
 
 
 // L1 Tests starts here
@@ -363,11 +346,6 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/zh/ -m "not pleasefixme" --cpu --tn_cache_dir ${ZH_TN_CACHE}'
           }
         }
-        stage('L1: Run all JA TN/ITN tests (restore grammars from cache)') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ja/ -m "not pleasefixme" --cpu --tn_cache_dir ${JA_TN_CACHE}'
-          }
-        }        
         stage('L1: Run all MR ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/mr/ -m "not pleasefixme" --cpu --tn_cache_dir ${MR_TN_CACHE}'

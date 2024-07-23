@@ -70,7 +70,7 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"_{input_case}_de_tn_{deterministic}_deterministic{whitelist_file}.far",
+                cache_dir, f"_{input_case}_de_tn_{deterministic}_deterministic{whitelist_file}.far"
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -92,7 +92,7 @@ class ClassifyFst(GraphFst):
             self.fraction = FractionFst(cardinal=self.cardinal, deterministic=deterministic)
             fraction_graph = self.fraction.fst
             self.measure = MeasureFst(
-                cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic,
+                cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic
             )
             measure_graph = self.measure.fst
             self.date = DateFst(cardinal=self.cardinal, deterministic=deterministic)
@@ -104,7 +104,7 @@ class ClassifyFst(GraphFst):
             telephone_graph = self.telephone.fst
             self.electronic = ElectronicFst(deterministic=deterministic)
             electronic_graph = self.electronic.fst
-            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic,)
+            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
             money_graph = self.money.fst
             self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             whitelist_graph = self.whitelist.fst
@@ -121,7 +121,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
-                | pynutil.add_weight(electronic_graph, 1.11)
+                | pynutil.add_weight(electronic_graph, 1.1)
             )
 
             classify |= pynutil.add_weight(word_graph, 100)
@@ -132,7 +132,7 @@ class ClassifyFst(GraphFst):
                 pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
             )
 
-            graph = token_plus_punct + pynini.closure((delete_extra_space).ques + token_plus_punct)
+            graph = token_plus_punct + pynini.closure(pynutil.add_weight(delete_extra_space, 1.1) + token_plus_punct)
             graph = delete_space + graph + delete_space
 
             self.fst = graph.optimize()

@@ -64,7 +64,7 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"_{input_case}_it_tn_{deterministic}_deterministic{whitelist_file}.far",
+                cache_dir, f"_{input_case}_it_tn_{deterministic}_deterministic{whitelist_file}.far"
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -86,10 +86,10 @@ class ClassifyFst(GraphFst):
             self.electronic = ElectronicFst(deterministic=deterministic)
             electronic_graph = self.electronic.fst
 
-            self.measure = MeasureFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic,)
+            self.measure = MeasureFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
             measure_graph = self.measure.fst
 
-            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic,)
+            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
             money_graph = self.money.fst
 
             self.time = TimeFst(deterministic=deterministic)
@@ -98,17 +98,17 @@ class ClassifyFst(GraphFst):
             punct_graph = PunctuationFst(deterministic=deterministic).fst
 
             classify = (
-                pynutil.add_weight(whitelist_graph, 0.0)
+                pynutil.add_weight(whitelist_graph, 1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(electronic_graph, 1.1)
-                | pynutil.add_weight(measure_graph, 1.1)
-                | pynutil.add_weight(money_graph, 1.1)
-                | pynutil.add_weight(time_graph, 1.1)
+                | pynutil.add_weight(electronic_graph, 1.09)
+                | pynutil.add_weight(measure_graph, 1.09)
+                | pynutil.add_weight(money_graph, 1.09)
+                | pynutil.add_weight(time_graph, 1.09)
                 | pynutil.add_weight(word_graph, 100)
             )
 
-            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
+            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             punct = pynini.closure(
                 pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
                 | (pynutil.insert(" ") + punct),
