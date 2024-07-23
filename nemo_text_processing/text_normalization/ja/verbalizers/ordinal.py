@@ -14,7 +14,7 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
@@ -24,8 +24,8 @@ class OrdinalFst(GraphFst):
         tokens { ordinal { integer: "第一千万" } } -> 第一千万
     """
 
-    def __init__(self):
-        super().__init__(name="ordinal", kind="verbalize")
+    def __init__(self, deterministic: bool = True):
+        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
         moephemes = pynutil.delete('第') | pynutil.delete('番目')
         graph_integer = (
