@@ -49,7 +49,6 @@ class FractionFst(GraphFst):
             + delete_space
         )
 
-<<<<<<< HEAD
         denominator_component = (
             pynutil.delete('denominator: \"')
             + pynini.closure(NEMO_NOT_QUOTE - "√")
@@ -74,12 +73,6 @@ class FractionFst(GraphFst):
         )
         # √3/1
         graph_regular_fraction_root = (denominator_component_root | denominator_component) + pynutil.delete(NEMO_SPACE) + pynutil.insert("分の") + (numerator_component_root | numerator_component)
-=======
-        graph_denominator = pynutil.delete('denominator: \"') +  pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        graph_numerator = pynutil.delete('numerator: \"') +  pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        graph_regular = graph_denominator + pynutil.delete(" ") + pynutil.insert("分の") + graph_numerator
-        #graph_regular = graph_numerator + pynutil.delete(" ") + pynutil.insert("分の") + graph_denominator
->>>>>>> 6c668c1 (updates)
         
         # 3分の1
         graph_regular_fraction_char = (denominator_component | denominator_component_root) + pynutil.delete(NEMO_SPACE) + pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + pynutil.delete(NEMO_SPACE) + (numerator_component | numerator_component_root)
@@ -118,6 +111,7 @@ class FractionFst(GraphFst):
 
         graph = pynini.closure(optional_sign, 0, 1) + (graph_regular_integer | graph_regular_fraction | graph_regular_fraction_root | graph_regular_fraction_char)
 
+        # graph = pynini.closure(graph_optional_sign, 0, 1) + graph_fractions
 
         final_graph = self.delete_tokens(graph)
         self.fst = final_graph.optimize()
