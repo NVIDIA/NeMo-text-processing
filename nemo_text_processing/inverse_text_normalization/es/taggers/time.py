@@ -165,7 +165,9 @@ class TimeFst(GraphFst):
         )
         graph_hour_with_suffix = pynini.closure(article, 0, 1) + graph_1_to_100 @ pynini.union(*digits_2_to_23)
         final_graph_hour_with_suffix = (
-            pynutil.insert("hours: \"") + (graph_one_o_clock_with_suffix | graph_hour_with_suffix) + pynutil.insert("\"")
+            pynutil.insert("hours: \"")
+            + (graph_one_o_clock_with_suffix | graph_hour_with_suffix)
+            + pynutil.insert("\"")
         )
 
         graph_hsuffix = (
