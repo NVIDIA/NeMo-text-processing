@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import (
+from nemo_text_processing.text_normalization.ja.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_extra_space,
@@ -29,7 +29,7 @@ class WordFst(GraphFst):
         tokens { char: "文字" } -> 文字
     '''
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
+    def __init__(self, deterministic: bool = True):
         super().__init__(name="char", kind="verbalize", deterministic=deterministic)
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
