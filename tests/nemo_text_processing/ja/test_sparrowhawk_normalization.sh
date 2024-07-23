@@ -22,7 +22,10 @@ runtest () {
     assertEquals "$written" "$spoken" "$denorm_pred"
   done < "$input"
 }
-
+testTNFractionText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
 testTNTimeText() {
   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_time.txt
   runtest $input
@@ -37,10 +40,6 @@ testTNOrdinalText() {
 }
 testTNDecimalalText() {
  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_decimal.txt
-  runtest $input
-}
-testTNFractionText() {
-  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_fraction.txt
   runtest $input
 }
 testTNDateText() {
