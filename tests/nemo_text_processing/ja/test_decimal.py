@@ -29,6 +29,7 @@ class TestDecimal:
     def test_norm_date(self, test_input, expected):
         preds = self.normalizer_ja.normalize(test_input)
         assert expected == preds
+<<<<<<< HEAD
 
     inverse_normalizer = InverseNormalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False)
 
@@ -38,3 +39,5 @@ class TestDecimal:
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
+=======
+>>>>>>> 77fae186 (updates)
