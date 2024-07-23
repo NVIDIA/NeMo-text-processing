@@ -72,11 +72,7 @@ class FractionFst(GraphFst):
 
         graph_fractions = graph_with_integer | graph_regular
 
-<<<<<<< HEAD
         graph = pynini.closure(graph_optional_sign, 0, 1) + graph_fractions
-=======
-        final_graph = pynini.closure(graph_optional_sign, 0, 1) + graph_fractions
->>>>>>> b592a30 (updates)
 
         final_graph = self.delete_tokens(graph_regular)
         self.fst = final_graph.optimize()
