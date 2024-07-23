@@ -87,7 +87,11 @@ def parse_args():
         "--language",
         help="language",
 <<<<<<< HEAD
+<<<<<<< HEAD
         choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr', 'ja'],
+=======
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'ja'],
+>>>>>>> 68b711b (updates for japanese tn)
 =======
         choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'ja'],
 >>>>>>> 68b711b (updates for japanese tn)
