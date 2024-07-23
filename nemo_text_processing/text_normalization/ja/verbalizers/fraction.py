@@ -111,7 +111,5 @@ class FractionFst(GraphFst):
 
         graph = pynini.closure(optional_sign, 0, 1) + (graph_regular_integer | graph_regular_fraction | graph_regular_fraction_root | graph_regular_fraction_char)
 
-        # graph = pynini.closure(graph_optional_sign, 0, 1) + graph_fractions
-
         final_graph = self.delete_tokens(graph)
         self.fst = final_graph.optimize()
