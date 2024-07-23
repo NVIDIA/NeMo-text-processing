@@ -51,7 +51,7 @@ class CardinalFst(GraphFst):
         ten_thousands = NEMO_DIGIT**5
         graph_ten_thousand_component= (graph_digit+ pynutil.insert('万')) + pynini.union(pynini.closure(pynutil.delete('0')),graph_thousand_component, (pynutil.delete('0') + graph_hundred_component), (pynini.closure(pynutil.delete('0')) + graph_all))
         graph_ten_thousand = ten_thousands @ graph_ten_thousand_component
-        self.man = graph_ten_thousand
+        self.man = graph_ten_thousand.optimize()
 
         hundred_thousands = NEMO_DIGIT**6
         hundred_thousands_position = NEMO_DIGIT**2
