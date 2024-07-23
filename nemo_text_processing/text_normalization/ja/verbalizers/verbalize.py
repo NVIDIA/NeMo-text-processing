@@ -23,7 +23,6 @@ from nemo_text_processing.text_normalization.ja.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst
-<<<<<<< HEAD
 from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ja.verbalizers.fraction import FractionFst
@@ -32,15 +31,6 @@ from nemo_text_processing.text_normalization.ja.verbalizers.fraction import Frac
 # from nemo_text_processing.text_normalization.ja.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst
-=======
-# from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
-from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.ja.verbalizers.fraction import FractionFst
-# from nemo_text_processing.text_normalization.ja.verbalizers.measure import MeasureFst
-# from nemo_text_processing.text_normalization.ja.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
-# from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst
->>>>>>> 036483c3 (updates)
 from nemo_text_processing.text_normalization.ja.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
 
@@ -62,7 +52,6 @@ class VerbalizeFst(GraphFst):
 
         date = DateFst(deterministic=deterministic)
         cardinal = CardinalFst(deterministic=deterministic)
-<<<<<<< HEAD
         ordinal = OrdinalFst(deterministic=deterministic)
         decimal = DecimalFst(deterministic=deterministic)
         word = WordFst(deterministic=deterministic)
@@ -71,15 +60,6 @@ class VerbalizeFst(GraphFst):
         # money = MoneyFst(decimal=decimal, deterministic=deterministic)
         # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
         time = TimeFst(deterministic=deterministic)
-=======
-        ordinal = OrdinalFst()
-        decimal = DecimalFst(deterministic=deterministic)
-        word = WordFst(deterministic=deterministic)
-        fraction = FractionFst(deterministic=deterministic)
-        #money = MoneyFst(decimal=decimal, deterministic=deterministic)
-        #measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
-        #time = TimeFst(deterministic=deterministic)
->>>>>>> 036483c3 (updates)
         whitelist = WhiteListFst(deterministic=deterministic)
 
         graph = pynini.union(
