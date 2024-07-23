@@ -18,7 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, generator_main
 from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
 # from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ja.taggers.decimal import DecimalFst
@@ -26,7 +26,7 @@ from nemo_text_processing.text_normalization.ja.taggers.fraction import Fraction
 # from nemo_text_processing.text_normalization.ja.taggers.measure import MeasureFst
 # from nemo_text_processing.text_normalization.ja.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ja.taggers.ordinal import OrdinalFst
-#from nemo_text_processing.text_normalization.ja.taggers.preprocessor import PreProcessorFst
+from nemo_text_processing.text_normalization.ja.taggers.punctuation import PunctuationFst
 # from nemo_text_processing.text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.taggers.word import WordFst
@@ -65,31 +65,36 @@ class ClassifyFst(GraphFst):
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
         else:
-            #date = DateFst(deterministic=deterministic)
             cardinal = CardinalFst(deterministic=deterministic)
+            # date = DateFst(deterministic=deterministic)
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
-            word = WordFst(deterministic=deterministic)
+            # time = TimeFst(deterministic=deterministic)
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
-            #money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
-            #measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
-            #time = TimeFst(deterministic=deterministic)
-            whitelist = WhiteListFst(deterministic=deterministic)
+            # money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
+            # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            whitelist = WhiteListFst(deterministic=deterministic)
+            word = WordFst(deterministic=deterministic)
+            punctuation = PunctuationFst(deterministic=deterministic)
 
             classify = pynini.union(
-                #pynutil.add_weight(date.fst, 1.1),
+                # pynutil.add_weight(date.fst, 1.1),
                 pynutil.add_weight(fraction.fst, 1.0),
-                #pynutil.add_weight(money.fst, 1.1),
-                #pynutil.add_weight(measure.fst, 1.05),
-                #pynutil.add_weight(time.fst, 1.1),
+                # pynutil.add_weight(money.fst, 1.1),
+                # pynutil.add_weight(measure.fst, 1.05),
+                # pynutil.add_weight(time.fst, 1.1),
                 pynutil.add_weight(whitelist.fst, 1.1),
                 pynutil.add_weight(cardinal.fst, 1.1),
                 pynutil.add_weight(decimal.fst, 3.05),
                 pynutil.add_weight(ordinal.fst, 1.1),
+                pynutil.add_weight(punctuation.fst, 1.0),
                 pynutil.add_weight(word.fst, 100),
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-            tagger = pynini.cdrewrite(token.optimize(), "", "", NEMO_SIGMA).optimize()
+            tagger = pynini.closure(token, 1)
 
             self.fst = tagger
+
+            if far_file:
+                generator_main(far_file, {"tokenize_and_classify": self.fst})
