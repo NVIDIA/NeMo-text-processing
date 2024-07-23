@@ -88,7 +88,6 @@ class OrdinalFst(GraphFst):
         graph_er_suffix = (pynini.project(graph_er_suffix, "input") - graph_exception.arcsort()) @ graph_er_suffix
 
         if input_case == INPUT_CASED:
-            graph_exception = capitalized_input_graph(graph_exception)
             graph_o_suffix = capitalized_input_graph(graph_o_suffix)
             graph_a_suffix = capitalized_input_graph(graph_a_suffix)
             graph_er_suffix = capitalized_input_graph(graph_er_suffix)
