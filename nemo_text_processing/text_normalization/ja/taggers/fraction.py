@@ -46,24 +46,28 @@ class FractionFst(GraphFst):
         morphemes = pynutil.delete('分の')
         root = pynini.accep('√')
 
-        integer_component = pynutil.insert('integer_part: \"') + (cardinal | root + cardinal) + pynutil.insert("\"")
-        denominator_component = pynutil.insert("denominator: \"") + (cardinal | root + cardinal) + pynutil.insert("\"")
-        numerator_component = pynutil.insert("numerator: \"") + (cardinal | root + cardinal) + pynutil.insert("\"")
+        # integer_component = pynutil.insert('integer_part: \"') + (cardinal | root + cardinal) + pynutil.insert("\"")
+        # denominator_component = pynutil.insert("denominator: \"") + (cardinal | root + cardinal) + pynutil.insert("\"")
+        # numerator_component = pynutil.insert("numerator: \"") + (cardinal | root + cardinal) + pynutil.insert("\"")
+
+        integer_component = pynutil.insert('integer_part: \"') + cardinal + pynutil.insert("\"")
+        denominator_component = pynutil.insert("denominator: \"") + cardinal + pynutil.insert("\"")
+        numerator_component = pynutil.insert("numerator: \"") + cardinal + pynutil.insert("\"")
 
         graph_fraction_slash = numerator_component + slash + pynutil.insert(" ") + denominator_component
-        graph_fraction_slash_integer = integer_component + pynini.closure((pynini.accep("と") | pynini.accep("荷")), 0, 1) + pynutil.insert(" ") + graph_fraction_slash
+        # graph_fraction_slash_integer = integer_component + pynini.closure((pynini.accep("と") | pynini.accep("荷")), 0, 1) + pynutil.insert(" ") + graph_fraction_slash
 
-        graph_fraction_morphemes = denominator_component + morphemes + pynutil.insert(" ") + numerator_component
-        graph_fraction_morphemes_integer = integer_component + pynini.closure((pynini.accep("と") | pynini.accep("荷")), 0, 1) + pynutil.insert(" ") + graph_fraction_morphemes
+        # graph_fraction_morphemes = denominator_component + morphemes + pynutil.insert(" ") + numerator_component
+        # graph_fraction_morphemes_integer = integer_component + pynini.closure((pynini.accep("と") | pynini.accep("荷")), 0, 1) + pynutil.insert(" ") + graph_fraction_morphemes
 
-        graph_fraction = graph_fraction_slash | graph_fraction_slash_integer | graph_fraction_morphemes | graph_fraction_morphemes_integer
+        # graph_fraction = graph_fraction_slash | graph_fraction_slash_integer | graph_fraction_morphemes | graph_fraction_morphemes_integer
 
-        optional_sign = (
-            pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")
-        )
+        # optional_sign = (
+        #     pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")
+        # )
 
-        graph = graph_fraction | optional_sign + graph_fraction
+        # graph = graph_fraction | optional_sign + graph_fraction
 
-        final_graph = self.add_tokens(graph_fraction_slash)
+        final_graph = self.add_tokens(graph_fraction_slash) ##
         self.fst = final_graph.optimize()
         
