@@ -87,7 +87,11 @@ def parse_args():
         "--language",
         help="language",
 <<<<<<< HEAD
+<<<<<<< HEAD
         choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr', 'ja'],
+=======
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'ja'],
+>>>>>>> 68b711b (updates for japanese tn)
 =======
         choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'ja'],
 >>>>>>> 68b711b (updates for japanese tn)
@@ -246,6 +250,7 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.es_en.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+<<<<<<< HEAD
     elif args.language == 'mr':
         from nemo_text_processing.inverse_text_normalization.mr.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -270,6 +275,7 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+    elif args.language == 'ja':
         from nemo_text_processing.text_normalization.ja.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
