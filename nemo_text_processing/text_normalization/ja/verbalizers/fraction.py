@@ -48,8 +48,8 @@ class FractionFst(GraphFst):
 
         graph_denominator = pynutil.delete('denominator: \"') +  pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         graph_numerator = pynutil.delete('numerator: \"') +  pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        #graph_regular = graph_denominator + pynutil.delete(" ") + pynutil.insert("分の") + graph_numerator
-        graph_regular = graph_numerator + pynutil.delete(" ") + pynutil.insert("分の") + graph_denominator
+        graph_regular = graph_denominator + pynutil.delete(" ") + pynutil.insert("分の") + graph_numerator
+        #graph_regular = graph_numerator + pynutil.delete(" ") + pynutil.insert("分の") + graph_denominator
         
         graph_integer = (
             pynutil.delete("integer_part:")
@@ -72,7 +72,7 @@ class FractionFst(GraphFst):
 
         graph_fractions = graph_with_integer | graph_regular
 
-        final_graph = pynini.closure(graph_optional_sign, 0, 1) + graph_fractions
+        graph = pynini.closure(graph_optional_sign, 0, 1) + graph_fractions
 
         final_graph = self.delete_tokens(graph_regular)
         self.fst = final_graph.optimize()
