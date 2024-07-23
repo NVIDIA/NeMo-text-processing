@@ -17,10 +17,10 @@ import pynini
 from pynini.lib import pynutil, utf8
 
 <<<<<<< HEAD
-from nemo_text_processing.text_normalization.ja.graph_utils import (
-=======
 from nemo_text_processing.text_normalization.zh.graph_utils import (
->>>>>>> 5a3f45a (resolving space for NeMo tests)
+=======
+from nemo_text_processing.text_normalization.ja.graph_utils import (
+>>>>>>> b268357a9b8b9d32698a65007ad11d5961817070
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_PUNCT,
@@ -29,10 +29,10 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
     GraphFst,
 )
 <<<<<<< HEAD
-from nemo_text_processing.text_normalization.ja.utils import get_abs_path
-=======
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
->>>>>>> 5a3f45a (resolving space for NeMo tests)
+=======
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path
+>>>>>>> b268357a9b8b9d32698a65007ad11d5961817070
 
 
 class PostProcessor(GraphFst):
@@ -82,8 +82,4 @@ class PostProcessor(GraphFst):
             tag_oov_graph = pynutil.insert(ltag) + oov_charset + pynutil.insert(rtag)
             graph @= pynini.cdrewrite(tag_oov_graph, "", "", NEMO_SIGMA).optimize()
 
-<<<<<<< HEAD
         self.fst = graph.optimize()
-=======
-        self.fst = graph.optimize()
->>>>>>> 5a3f45a (resolving space for NeMo tests)
