@@ -82,51 +82,38 @@ delete_preserve_order = pynini.closure(
     | (pynutil.delete(' field_order: "') + NEMO_NOT_QUOTE + pynutil.delete('"'))
 )
 
+# Common string literals; expand as you see fit.
+username_string = "username"
+double_quotes = '"'
+domain_string = "domain"
+protocol_string = "protocol"
+slash = "/"
+double_slash = "//"
+triple_slash = "///"
+file = "file"
+period = "."
+at = "@"
+colon = ":"
+https = "https"
+http = "http"
+www = "www"
+
 suppletive = pynini.string_file(get_abs_path("data/suppletive.tsv"))
 # _v = pynini.union("a", "e", "i", "o", "u")
 _c = pynini.union(
-    "b",
-    "c",
-    "d",
-    "f",
-    "g",
-    "h",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
+    "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z",
 )
 _ies = NEMO_SIGMA + _c + pynini.cross("y", "ies")
 _es = NEMO_SIGMA + pynini.union("s", "sh", "ch", "x", "z") + pynutil.insert("es")
 _s = NEMO_SIGMA + pynutil.insert("s")
 
 graph_plural = plurals._priority_union(
-    suppletive,
-    plurals._priority_union(
-        _ies, plurals._priority_union(_es, _s, NEMO_SIGMA), NEMO_SIGMA
-    ),
-    NEMO_SIGMA,
+    suppletive, plurals._priority_union(_ies, plurals._priority_union(_es, _s, NEMO_SIGMA), NEMO_SIGMA), NEMO_SIGMA,
 ).optimize()
 
 SINGULAR_TO_PLURAL = graph_plural
 PLURAL_TO_SINGULAR = pynini.invert(graph_plural)
-TO_LOWER = pynini.union(
-    *[
-        pynini.cross(x, y)
-        for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)
-    ]
-)
+TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)])
 TO_UPPER = pynini.invert(TO_LOWER)
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
@@ -136,9 +123,7 @@ MINUS = pynini.union("minus", "Minus").optimize()
 
 
 def capitalized_input_graph(
-    graph: "pynini.FstLike",
-    original_graph_weight: float = None,
-    capitalized_graph_weight: float = None,
+    graph: "pynini.FstLike", original_graph_weight: float = None, capitalized_graph_weight: float = None,
 ) -> "pynini.FstLike":
     """
     Allow graph input to be capitalized, e.g. for ITN)
@@ -154,9 +139,7 @@ def capitalized_input_graph(
         graph = pynutil.add_weight(graph, weight=original_graph_weight)
 
     if capitalized_graph_weight is not None:
-        capitalized_graph = pynutil.add_weight(
-            capitalized_graph, weight=capitalized_graph_weight
-        )
+        capitalized_graph = pynutil.add_weight(capitalized_graph, weight=capitalized_graph_weight)
 
     graph |= capitalized_graph
     return graph
@@ -212,9 +195,7 @@ def convert_space(fst) -> "pynini.FstLike":
 
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
-    return fst @ pynini.cdrewrite(
-        pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA
-    )
+    return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
 
 
 def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
@@ -226,10 +207,7 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
             written_capitalized = written[0].upper() + written[1:]
             additional_labels.extend(
                 [
-                    [
-                        written_capitalized,
-                        spoken.capitalize(),
-                    ],  # first letter capitalized
+                    [written_capitalized, spoken.capitalize(),],  # first letter capitalized
                     [
                         written_capitalized,
                         spoken.upper().replace(" AND ", " and "),
@@ -243,10 +221,7 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
                 logger.debug(f"This is weight {weight}")
                 if len(weight) == 0:
                     additional_labels.extend(
-                        [
-                            [written, spoken_no_space],
-                            [written_capitalized, spoken_no_space.upper()],
-                        ]
+                        [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()],]
                     )
                 else:
                     additional_labels.extend(
@@ -278,13 +253,9 @@ class GraphFst:
         self._fst = None
         self.deterministic = deterministic
 
-        self.far_path = Path(
-            os.path.dirname(__file__) + "/grammars/" + kind + "/" + name + ".far"
-        )
+        self.far_path = Path(os.path.dirname(__file__) + "/grammars/" + kind + "/" + name + ".far")
         if self.far_exist():
-            self._fst = Far(
-                self.far_path, mode="r", arc_type="standard", far_type="default"
-            ).get_fst()
+            self._fst = Far(self.far_path, mode="r", arc_type="standard", far_type="default").get_fst()
 
     def far_exist(self) -> bool:
         """
