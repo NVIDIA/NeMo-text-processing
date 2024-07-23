@@ -87,6 +87,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
+<<<<<<< HEAD
         choices=[
             "en",
             "de",
@@ -106,6 +107,9 @@ def parse_args():
             'ja',
             'rw',
         ],
+=======
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr', 'ja'],
+>>>>>>> 4caa8cc (updates for japanese tn)
         type=str,
         default='en',
     )
