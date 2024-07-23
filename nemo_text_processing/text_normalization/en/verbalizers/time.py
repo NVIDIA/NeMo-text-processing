@@ -86,12 +86,12 @@ class TimeFst(GraphFst):
             + optional_suffix
             + optional_zone
         )
-        graph_hms @= pynini.cdrewrite(pynini.cross("one hours", "one hour"), "[BOS]", "", NEMO_SIGMA)
         graph_hms @= pynini.cdrewrite(
             pynutil.delete("o ")
-            | pynutil.add_weight(pynini.cross("o one minutes", "one minute"), -0.01)
-            | pynutil.add_weight(pynini.cross("o one seconds", "one second"), -0.01),
-            " ",
+            | pynini.cross("one minutes", "one minute")
+            | pynini.cross("one seconds", "one second")
+            | pynini.cross("one hours", "one hour"),
+            pynini.union(" ", "[BOS]"),
             "",
             NEMO_SIGMA,
         )

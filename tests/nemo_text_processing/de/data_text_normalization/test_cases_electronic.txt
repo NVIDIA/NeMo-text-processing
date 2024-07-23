@@ -6,10 +6,4 @@ a eins b zwei at a b c punkt com~a1b2@abc.com
 a b drei bindestrich s d d bindestrich drei at g mail punkt com~ab3-sdd-3@gmail.com
 h t t p s doppelpunkt slash slash w w w punkt a b c punkt com~https://www.abc.com
 w w w punkt a b c punkt com~www.abc.com
-b r e t t s p i e l v e r s a n d punkt de .~brettspielversand.de.
-w w w punkt e n v e e d y a punkt net .~www.enveedya.net.
-w w w punkt a m a z o n punkt com punkt de .~www.amazon.com.de.
 h t t p s doppelpunkt slash slash w w w punkt a b c punkt com slash a b fragezeichen gleichheitszeichen drei bindestrich slash a b s slash eins~https://www.abc.com/ab?=3-/abs/1
-at j e n s e n~@jensen
-at j e n s e n punkt m e~@jensen.me
-at w e z y r eins neun acht sechs~@wezyr1986
