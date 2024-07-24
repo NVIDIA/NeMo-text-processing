@@ -16,32 +16,46 @@
 import pynini
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.HI.utils import get_abs_path, apply_fst
+from nemo_text_processing.text_normalization.HI.graph_utils import GraphFst, insert_space
 
+ 
+class CardinalFst(GraphFst):
+    """
+    Finite state transducer for classifying cardinals, e.g. 
+        -२३ -> cardinal { negative: "true"  integer: "तेइस" } }
+ s
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
+    """
 
- 
-# Define digit to word mappings
-graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).closure().optimize()
-graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).closure().optimize()
-graph_teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")).closure().optimize()
-graph_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv")).closure().optimize()
-graph_thousands = pynini.string_file(get_abs_path("data/numbers/thousands.tsv")).closure().optimize()
+    def __init__(self, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
-# Combine all mappings
-final_graph = graph_zero | graph_digit | graph_teens_and_ties | graph_hundred | graph_thousands
- 
-# Define a simple normalizer FST
-normalize_fst = pynutil.insert(" ") + final_graph + pynutil.insert(" ")
- 
-# Save the FST to a file
-normalize_fst.write("normalize_hindi.fst")
- 
-# Function to normalize text using the FST
-def normalize_hindi(text):
-    return apply_fst(text, normalize_fst)
- 
-# Example usage
-input_text = "११११"
-normalized_text = normalize_hindi(input_text)
-print(normalized_text) 
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        graph_teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+        graph_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
+        graph_thousands = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
+        
+        graph_hundred = pynini.cross("१००", "सौ")
+        
+        
+        
 
+        
+     
+         
+        final_graph = graph_digit | graph_zero | graph_teens_and_ties | graph_hundred |  graph_thousands
+
+        optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
+        
+        self.final_graph = final_graph
+        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + final_graph + pynutil.insert("\"")
+        final_graph = self.add_tokens(final_graph)
+        self.fst = final_graph.optimize()
+        
+input_text = "१०"                                                                                              
+output = apply_fst(input_text,CardinalFst().fst)          # rewrite.rewrites - to see all possible outcomes , rewrite.top_rewrite - shortest pa
+print(output)
 

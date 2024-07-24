@@ -29,10 +29,12 @@ from pynini.lib import byte, pynutil, utf8
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
 NEMO_DIGIT = byte.DIGIT
-NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
-NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
-NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
-NEMO_ALNUM = pynini.union(NEMO_DIGIT, NEMO_ALPHA).optimize()
+
+graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+
+NEMO_HI_WO = pynini.union("०","१","२", "३", "४", "५", "६", "७", "८", "९").optimize()
+
+
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00A0"
 NEMO_SPACE = " "
@@ -40,37 +42,8 @@ NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00A0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 
-NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
-NEMO_GRAPH = pynini.union(NEMO_ALNUM, NEMO_PUNCT).optimize()
-
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
-NEMO_LOWER_NOT_A = pynini.union(
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-).optimize()
+
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
@@ -81,28 +54,12 @@ delete_preserve_order = pynini.closure(
     | (pynutil.delete(" field_order: \"") + NEMO_NOT_QUOTE + pynutil.delete("\""))
 )
 
-suppletive = pynini.string_file(get_abs_path("data/suppletive.tsv"))
-# _v = pynini.union("a", "e", "i", "o", "u")
-_c = pynini.union(
-    "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"
-)
-_ies = NEMO_SIGMA + _c + pynini.cross("y", "ies")
-_es = NEMO_SIGMA + pynini.union("s", "sh", "ch", "x", "z") + pynutil.insert("es")
-_s = NEMO_SIGMA + pynutil.insert("s")
 
-graph_plural = plurals._priority_union(
-    suppletive, plurals._priority_union(_ies, plurals._priority_union(_es, _s, NEMO_SIGMA), NEMO_SIGMA), NEMO_SIGMA
-).optimize()
-
-SINGULAR_TO_PLURAL = graph_plural
-PLURAL_TO_SINGULAR = pynini.invert(graph_plural)
-TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)])
-TO_UPPER = pynini.invert(TO_LOWER)
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
-MINUS = pynini.union("minus", "Minus").optimize()
+MINUS = pynini.union("ऋणात्मक", "नकारात्मक").optimize()
 
 
 def capitalized_input_graph(
