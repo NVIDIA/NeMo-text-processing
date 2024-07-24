@@ -2,7 +2,11 @@ black==19.10b0
 click==8.0.2
 isort[requirements]>5.1.0,<6.0.0
 parameterized
+<<<<<<< HEAD
 pynini==2.1.6.post1
+=======
+pynini==2.1.6
+>>>>>>> 5a0f8d9 (update en tn folder to see if CI tests run - DO NOT MERGE (#199))
 pytest
 pytest-runner
 ruamel.yaml

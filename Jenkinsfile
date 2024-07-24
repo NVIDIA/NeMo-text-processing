@@ -15,6 +15,7 @@ pipeline {
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-24-0'
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-04-24-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
@@ -25,6 +26,9 @@ pipeline {
 =======
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
 >>>>>>> 7854126 (EN TN fixes for Issue #166 (#185))
+=======
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
+>>>>>>> 5a0f8d9 (update en tn folder to see if CI tests run - DO NOT MERGE (#199))
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-27-23-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-13-23-2'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
