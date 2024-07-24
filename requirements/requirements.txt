@@ -3,7 +3,7 @@ editdistance
 inflect
 joblib
 pandas
-pynini==2.1.5
+pynini==2.1.6
 regex
 sacremoses>=0.0.43
 setuptools>=65.5.1
