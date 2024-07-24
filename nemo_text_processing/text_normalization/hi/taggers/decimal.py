@@ -69,7 +69,7 @@ class DecimalFst(GraphFst):
         optional_graph_negative = pynini.closure(pynutil.insert("ऋण : ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
-        self.graph_integer = pynutil.insert("integer_part: \"") + self.final_graph + pynutil.insert("\"")
+        self.graph_integer = pynutil.insert("integer_part: \"") + cardinal.final_graph + pynutil.insert("\"")
         final_graph_wo_sign = self.graph_integer + point + insert_space + self.graph_fractional
 
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
@@ -83,8 +83,7 @@ class DecimalFst(GraphFst):
         self.fst = final_graph.optimize()
 
 
-
-cardinal = CardinalFst(self.fst)
+cardinal = CardinalFst()
 decimal = DecimalFst(cardinal)
 input_text = "१२.५"
 #output = apply_fst(input_text, decimal.fst)

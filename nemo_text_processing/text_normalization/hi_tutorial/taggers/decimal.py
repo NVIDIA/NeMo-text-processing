@@ -13,11 +13,26 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from pynini.lib import pynutil, rewrite
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    NEMO_NOT_QUOTE,
+    TO_UPPER,
+    get_abs_path,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 
+from pynini.lib import pynutil
+
+#delete_space = pynutil.delete(" ")
+zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
+thousands = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
 
 def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike') -> 'pynini.FstLike':
     """
@@ -29,6 +44,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
+
     numbers = cardinal_up_to_hundred
 
     res = (
@@ -37,57 +53,32 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
         + pynutil.insert("\"")
         + pynini.accep(" ")
         + pynutil.insert("quantity: \"")
-        + quantities
+        + thousands
         + pynutil.insert("\"")
     )
     res |= decimal + pynini.accep(" ") + pynutil.insert("quantity: \"") + quantities + pynutil.insert("\"")
     return res
 
-
-
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal, e.g. 
-        -१२.५००६ अरब -> decimal { negative: "true" integer_part: "बारह"  fractional_part: "पाँच शून्य शून्य छह" quantity: "अरब" preserve_order: true }
-        १ अरब -> decimal { integer_part: "एक" quantity: "अरब" preserve_order: true }
+        -१२.५००६ अरब -> decimal {negative: "true" integer_part: "बारह"  fractional_part: "पाँच शून्य शून्य छह" quantity: "अरब"}
+        १ अरब -> decimal {integer_part: "एक" quantity: "अरब"}
 
     cardinal: CardinalFst
     """
-
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
-        
-
-        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv")).invert()
-        graph_digit |= pynini.string_file(get_abs_path("data/number/zero.tsv")).invert()
-        graph_digit |= pynini.string_file(get_abs_path("data/number/thousands.tsv")).invert()
-        graph_digit |= pynini.cross("१", "एक")
-        self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
-        
-
-        point = pynutil.delete("दशमलव")
-        optional_graph_negative = pynini.closure(pynutil.insert("ऋण : ") + pynini.cross("-", "\"true\" "), 0, 1)
-
-        self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
-        self.graph_integer = pynutil.insert("integer_part: \"") + self.final_graph + pynutil.insert("\"")
-        final_graph_wo_sign = self.graph_integer + point + insert_space + self.graph_fractional
-
-        self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
-        )
-        final_graph = optional_graph_negative + self.final_graph_wo_negative
-        final_graph += pynutil.insert(" preserve_order: true")
-
-        final_graph = self.add_tokens(final_graph)
-
-        self.fst = final_graph.optimize()
+    def __init__(self, cardinal: GraphFst, deterministic: bool):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic)   
 
 
 
-#cardinal = self.final_graph
-decimal = DecimalFst(self.fst)
-input_text = "१२.५"
-#output = apply_fst(input_text, decimal.fst)
-output = rewrite.top_rewrite(input_text, decimal.fst)
-print(output)
+      
+
+
+
+
+
+
+
+
 

@@ -21,14 +21,12 @@ class CardinalFst(GraphFst):
 
         
         
-        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
-        graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
-        graph_teens_and_ties = pynini.string_file(get_abs_path("data/number/teens_and_ties.tsv"))
-        graph_hundred = pynini.string_file(get_abs_path("data/number/hundred.tsv"))
-        
-        
-         
-        graph_thousands = pynini.string_file(get_abs_path("data/number/thousands.tsv"))
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        graph_teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+        graph_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
+
+        graph_thousands = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
        
         hundred = pynutil.insert(" सौ")
         ins_space = pynutil.insert(" ")
