@@ -15,8 +15,8 @@
 import pytest
 from parameterized import parameterized
 
-from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+from nemo_text_processing.text_normalization.normalize import Normalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
@@ -30,6 +30,8 @@ class TestMath:
     def test_norm_math(self, test_input, expected):
         preds = self.normalizer_zh.normalize(test_input)
         assert expected == preds
+
+
 class TestDate:
     inverse_normalizer_mr = InverseNormalizer(lang='mr', cache_dir=CACHE_DIR, overwrite_cache=False)
 
