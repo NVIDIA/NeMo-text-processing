@@ -24,7 +24,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.en.taggers.punctuation import (
+    PunctuationFst,
+)
 from nemo_text_processing.text_normalization.es.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.es.taggers.date import DateFst
 from nemo_text_processing.text_normalization.es.taggers.decimals import DecimalFst
@@ -63,13 +65,16 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None,
     ):
-        super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
+        super().__init__(
+            name="tokenize_and_classify", kind="classify", deterministic=deterministic
+        )
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"_{input_case}_es_tn_{deterministic}_deterministic{whitelist_file}.far"
+                cache_dir,
+                f"_{input_case}_es_tn_{deterministic}_deterministic{whitelist_file}.far",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -80,16 +85,27 @@ class ClassifyFst(GraphFst):
             self.cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = self.cardinal.fst
 
-            self.ordinal = OrdinalFst(cardinal=self.cardinal, deterministic=deterministic)
+            self.ordinal = OrdinalFst(
+                cardinal=self.cardinal, deterministic=deterministic
+            )
             ordinal_graph = self.ordinal.fst
 
-            self.decimal = DecimalFst(cardinal=self.cardinal, deterministic=deterministic)
+            self.decimal = DecimalFst(
+                cardinal=self.cardinal, deterministic=deterministic
+            )
             decimal_graph = self.decimal.fst
 
-            self.fraction = FractionFst(cardinal=self.cardinal, ordinal=self.ordinal, deterministic=deterministic)
+            self.fraction = FractionFst(
+                cardinal=self.cardinal,
+                ordinal=self.ordinal,
+                deterministic=deterministic,
+            )
             fraction_graph = self.fraction.fst
             self.measure = MeasureFst(
-                cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic
+                cardinal=self.cardinal,
+                decimal=self.decimal,
+                fraction=self.fraction,
+                deterministic=deterministic,
             )
             measure_graph = self.measure.fst
             self.date = DateFst(cardinal=self.cardinal, deterministic=deterministic)
@@ -101,9 +117,15 @@ class ClassifyFst(GraphFst):
             telephone_graph = self.telephone.fst
             self.electronic = ElectronicFst(deterministic=deterministic)
             electronic_graph = self.electronic.fst
-            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
+            self.money = MoneyFst(
+                cardinal=self.cardinal,
+                decimal=self.decimal,
+                deterministic=deterministic,
+            )
             money_graph = self.money.fst
-            self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
+            self.whitelist = WhiteListFst(
+                input_case=input_case, deterministic=deterministic, input_file=whitelist
+            )
             whitelist_graph = self.whitelist.fst
             punct_graph = PunctuationFst(deterministic=deterministic).fst
 
@@ -118,10 +140,14 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.09)
                 | pynutil.add_weight(telephone_graph, 1.11)
-                | pynutil.add_weight(electronic_graph, 1.1)
+                | pynutil.add_weight(electronic_graph, 1.11)
                 | pynutil.add_weight(word_graph, 200)
             )
-            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
+            punct = (
+                pynutil.insert("tokens { ")
+                + pynutil.add_weight(punct_graph, weight=2.1)
+                + pynutil.insert(" }")
+            )
             punct = pynini.closure(
                 pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
                 | (pynutil.insert(" ") + punct),
@@ -129,12 +155,16 @@ class ClassifyFst(GraphFst):
             )
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+                pynini.closure(punct + pynutil.insert(" "))
+                + token
+                + pynini.closure(pynutil.insert(" ") + punct)
             )
 
             graph = token_plus_punct + pynini.closure(
                 (
-                    pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
+                    pynini.compose(
+                        pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space
+                    )
                     | (pynutil.insert(" ") + punct + pynutil.insert(" "))
                 )
                 + token_plus_punct
