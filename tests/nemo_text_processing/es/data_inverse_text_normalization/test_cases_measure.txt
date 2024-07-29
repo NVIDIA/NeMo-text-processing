@@ -13,7 +13,7 @@ cuatro segundos~4 s
 cinco litros~5 l
 tres metros cúbicos~3 m³
 dos kilómetros por hora~2 kph
-diez grados farenheit~10 ° f
+diez grados farenheit~10 ° F
 dos metros y medio~2 1/2 m
 tres quintos de metro~3/5 m
 menos tres y medio metros por hora~-3 1/2 m/h
