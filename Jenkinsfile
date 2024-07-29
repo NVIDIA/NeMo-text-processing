@@ -1,7 +1,7 @@
 pipeline {
   agent {
         docker {
-          image 'tnitn_ci'
+          image 'tnitn_ci:py310'
           args '--user 0:128 -v /home/jenkinsci:/home/jenkinsci -v $HOME/.cache:/root/.cache --shm-size=4g --entrypoint=""'
         }
   }
@@ -13,7 +13,7 @@ pipeline {
 
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-24-0'
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-23-24-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-23-24-0'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
