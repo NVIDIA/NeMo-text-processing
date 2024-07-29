@@ -22,14 +22,6 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestPreprocess:
-    normalizer_zh = Normalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
-
-    @parameterized.expand(parse_test_case_file('zh/data_text_normalization/test_cases_preprocess.txt'))
-    @pytest.mark.run_only_on('CPU')
-    @pytest.mark.unit
-    def test_norm_preprocess(self, test_input, expected):
-        preds = self.normalizer_zh.normalize(test_input)
-        assert expected == preds
 
     inverse_normalizer_mr = InverseNormalizer(lang='mr', cache_dir=CACHE_DIR, overwrite_cache=False)
 
