@@ -32,7 +32,7 @@ NEMO_DIGIT = byte.DIGIT
 
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
-NEMO_HI_WO = pynini.union("०","१","२", "३", "४", "५", "६", "७", "८", "९").optimize()
+NEMO_HI_WO = pynini.union("शून्य","एक","दो", "तीन", "चार", "पाँच", "छः", "सात", "आठ", "नौ").optimize()
 
 
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()

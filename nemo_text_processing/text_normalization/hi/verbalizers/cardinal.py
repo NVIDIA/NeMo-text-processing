@@ -1,12 +1,28 @@
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
-from pynini.lib import rewrite, pynutil
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space 
+from nemo_text_processing.text_normalization.hi.utils import apply_fst 
+from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst 
+from pynini.lib import pynutil, rewrite
 
 
 class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal, e.g.
-        cardinal { negative: "true" integer: "२३" } -> minus तेईस
+        cardinal { negative: "true" integer: "23" } -> minus twenty three
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -32,14 +48,13 @@ class CardinalFst(GraphFst):
         delete_tokens = self.delete_tokens(self.numbers)
         self.fst = delete_tokens.optimize()
 
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst as cfst
 
-tagger = cfst().fst
-input_text = "१"  
-tagger_output = rewrite.top_rewrite(input_text, tagger)
-print(tagger_output)
-cardinal = CardinalFst().fst   # calling cardinalFst       
-                                                                                             
-output = rewrite.top_rewrite(tagger_output, cardinal)           
-print(output)
+#tagger = CardinalFst().fst
+#input_text = 'cardinal { integer: "एक सौ ग्यारह" }'  
+#tagger_output = apply_fst(input_text, tagger)
+#print(tagger_output)
+#cardinal = CardinalFst().fst   # calling cardinalFst                                                                                              
+#input_text = 'cardinal { integer: "एक सौ ग्यारह" }'  
+#output = apply_fst(input_text, cardinal)           
+#print(output)
 

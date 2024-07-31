@@ -13,18 +13,8 @@
 # limitations under the License.
 
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.hi.verbalizers.abbreviation import AbbreviationFst
+
 from nemo_text_processing.text_normalization.hi.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.hi.verbalizers.date import DateFst
-from nemo_text_processing.text_normalization.hi.verbalizers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.hi.verbalizers.electronic import ElectronicFst
-from nemo_text_processing.text_normalization.hi.verbalizers.fraction import FractionFst
-from nemo_text_processing.text_normalization.hi.verbalizers.measure import MeasureFst
-from nemo_text_processing.text_normalization.hi.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.hi.verbalizers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.hi.verbalizers.roman import RomanFst
-from nemo_text_processing.text_normalization.hi.verbalizers.telephone import TelephoneFst
-from nemo_text_processing.text_normalization.hi.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.verbalizers.whitelist import WhiteListFst
 
 
@@ -43,32 +33,10 @@ class VerbalizeFst(GraphFst):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
-        decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
-        decimal_graph = decimal.fst
-        ordinal = OrdinalFst(deterministic=deterministic)
-        ordinal_graph = ordinal.fst
-        fraction = FractionFst(deterministic=deterministic)
-        fraction_graph = fraction.fst
-        telephone_graph = TelephoneFst(deterministic=deterministic).fst
-        electronic_graph = ElectronicFst(deterministic=deterministic).fst
-        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
-        measure_graph = measure.fst
-        time_graph = TimeFst(deterministic=deterministic).fst
-        date_graph = DateFst(ordinal=ordinal, deterministic=deterministic).fst
-        money_graph = MoneyFst(decimal=decimal, deterministic=deterministic).fst
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
         graph = (
-            time_graph
-            | date_graph
-            | money_graph
-            | measure_graph
-            | ordinal_graph
-            | decimal_graph
-            | cardinal_graph
-            | telephone_graph
-            | electronic_graph
-            | fraction_graph
+            cardinal_graph
             | whitelist_graph
         )
 

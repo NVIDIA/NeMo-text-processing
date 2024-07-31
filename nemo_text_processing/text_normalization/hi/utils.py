@@ -14,7 +14,7 @@
 
 import csv
 import os
-
+import pynini
 
 def get_abs_path(rel_path):
     """
@@ -58,3 +58,14 @@ def augment_labels_with_punct_at_end(labels):
             if label[0][-1] == "." and label[1][-1] != ".":
                 res.append([label[0], label[1] + "."] + label[2:])
     return res
+    
+def apply_fst(text, fst):
+    """ Given a string input, returns the output string
+        produced by traversing the path with lowest weight.
+        If no valid path accepts input string, returns an
+        error.
+    """
+    try:
+        print(pynini.shortestpath(text @ fst).string())
+    except pynini.FstOpError:
+        print(f"Error: No valid output with given input: '{text}'")

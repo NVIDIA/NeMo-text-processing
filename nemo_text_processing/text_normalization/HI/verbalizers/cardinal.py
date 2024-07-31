@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
-from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.HI.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space 
+from nemo_text_processing.text_normalization.HI.utils import apply_fst 
+from nemo_text_processing.text_normalization.HI.taggers.cardinal import CardinalFst 
+from pynini.lib import pynutil, rewrite
 
 
 class CardinalFst(GraphFst):
@@ -45,3 +47,14 @@ class CardinalFst(GraphFst):
         self.numbers = self.optional_sign + integer
         delete_tokens = self.delete_tokens(self.numbers)
         self.fst = delete_tokens.optimize()
+
+
+#tagger = CardinalFst().fst
+#input_text = 'cardinal { integer: "एक सौ ग्यारह" }'  
+#tagger_output = apply_fst(input_text, tagger)
+#print(tagger_output)
+cardinal = CardinalFst().fst   # calling cardinalFst                                                                                              
+input_text = 'cardinal { integer: "एक सौ ग्यारह" }'  
+output = apply_fst(input_text, cardinal)           
+print(output)
+
