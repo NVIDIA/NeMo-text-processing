@@ -39,17 +39,19 @@ class CardinalFst(GraphFst):
         teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
      
         def create_graph_suffix(digit_graph, suffix, zeros_counts):
-            insert_space = pynutil.insert(" ")
             zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
-            del_zero = pynini.closure(zero, zeros_counts, zeros_counts)
-            return digit_graph + del_zero + suffix 
+            if zeros_counts==0:
+                return digit_graph + suffix
+
+            return digit_graph + (zero ** zeros_counts ) + suffix
         
         def create_larger_number_graph(digit_graph, suffix, zeros_counts, sub_graph):
             insert_space = pynutil.insert(" ")
             zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
-            del_zero = pynini.closure(zero, zeros_counts, zeros_counts)
-            graph = digit_graph + suffix + del_zero + insert_space + sub_graph 
-            return graph
+            if zeros_counts==0:
+                return digit_graph + suffix + insert_space + sub_graph
+
+            return digit_graph + suffix + (zero ** zeros_counts) + insert_space + sub_graph
        
         #Hundred graph
         suffix_hundreds = pynutil.insert(" सौ")
@@ -292,8 +294,8 @@ class CardinalFst(GraphFst):
         self.fst = final_graph
 
                
-#input_text = "१०९८"                                              
+input_text = "१०९८००००००८८८"                                              
 #output = rewrite.rewrites(input_text, CardinalFst().fst) #rewrite.rewrites - to see all possible outcomes , rewrite.top_rewrite - shortest pa
-#output = apply_fst(input_text, CardinalFst().fst) #rewrite.rewrites - to see all possible outcomes , rewrite.top_rewrite - shortest pa
-#print(output)
+output = apply_fst(input_text, CardinalFst().fst) #rewrite.rewrites - to see all possible outcomes , rewrite.top_rewrite - shortest pa
+print(output)
 
