@@ -1,7 +1,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    NEMO_CHAR,
+)
 
 
 class MeasureFst(GraphFst):
@@ -12,6 +17,7 @@ class MeasureFst(GraphFst):
         e.g. measure { cardinal { integer: "1000" } units: "%" } -> 1,000%
         e.g. measure { units: "%" cardinal { integer: "1" } } -> 1%
         e.g. measure { spaced_units: "ס״מ" cardinal { integer: "1" } } -> 1 ס״מ
+        e.g. measure { prefix: "ל" cardinal { integer: "4" } spaced_units: "ס״מ" } -> ל-4 ס״מ
 
     Args:
         decimal: DecimalFst
@@ -20,6 +26,18 @@ class MeasureFst(GraphFst):
 
     def __init__(self, decimal: GraphFst, cardinal: GraphFst):
         super().__init__(name="measure", kind="verbalize")
+
+        optional_prefix = pynini.closure(
+            pynutil.delete("prefix:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.insert('-')
+            + pynutil.delete("\"")
+            + delete_space,
+            0,
+            1
+        )
 
         # Removes the negative attribute and leaves the sign if occurs
         optional_sign = pynini.closure(
@@ -78,7 +96,7 @@ class MeasureFst(GraphFst):
             + pynutil.delete("cardinal { integer: \"1\" }")
         )
 
-        graph = optional_sign + (numbers_graph | one_graph)
+        graph = optional_prefix + optional_sign + (numbers_graph | one_graph)
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
 
@@ -91,6 +109,8 @@ if __name__ == "__main__":
     cardinal = CardinalFst()
     decimal = DecimalFst()
     measure_fst = MeasureFst(decimal, cardinal).fst
+    # apply_fst('measure { prefix: "מ" cardinal { integer: "10" } units: "%" }', measure_fst)
+    # apply_fst('measure { prefix: "ל" cardinal { integer: "4" } spaced_units: "ס״מ" }', measure_fst)
     # apply_fst('measure { cardinal { integer: "15" } units: "%" }', measure_fst)
     # apply_fst('measure { negative: "-" cardinal { integer: "15" } units: "%" }', measure_fst)
     # apply_fst('measure { cardinal { integer: "3" } spaced_units: "מ״ג" }', measure_fst)

@@ -37,6 +37,11 @@ class MeasureFst(GraphFst):
             pynutil.insert("negative: ") + pynini.cross("מינוס", "\"-\"") + NEMO_SPACE, 0, 1
         )
 
+        prefix_graph = pynini.string_file(get_abs_path("data/prefix.tsv"))
+        optional_prefix_graph = pynini.closure(
+            pynutil.insert("prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space, 0, 1
+        )
+
         # cardinal numbers
         cardinal_graph = cardinal.graph_no_exception
 
@@ -84,7 +89,7 @@ class MeasureFst(GraphFst):
         number_graph = subgraph_decimal | subgraph_cardinal
         number_unit_graph = (number_graph + units_graph) | (units_graph + delete_space + one_graph)
 
-        final_graph = optional_graph_negative + number_unit_graph + delete_zero_or_one_space
+        final_graph = optional_prefix_graph + optional_graph_negative + number_unit_graph + delete_zero_or_one_space
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
 
@@ -96,6 +101,8 @@ if __name__ == '__main__':
     cardinal = CardinalFst()
     decimal = DecimalFst(cardinal)
     g = MeasureFst(cardinal, decimal).fst
+    apply_fst("מעשר אחוז", g)
+    # apply_fst("לארבע סנטימטר", g)
     # apply_fst("חמש עשרה אחוז", g)
     # apply_fst("מינוס חמש עשרה אחוז", g)
     # apply_fst("שלוש מיליגרם", g)
