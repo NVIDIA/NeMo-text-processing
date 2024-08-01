@@ -1,27 +1,15 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import pynini
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, \
-    NEMO_DIGIT
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
 
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for verbalizing decimal, e.g.
-        decimal { negative: "true" integer_part: "12"  fractional_part: "5006" quantity: "billion" } -> -12.5006 billion
+    Finite state transducer for verbalizing decimal,
+    e.g. decimal { integer_part: "0"  fractional_part: "33" } -> 0.33
+    e.g. decimal { negative: "true" integer_part: "400"  fractional_part: "323" } -> -400.323
+    e.g. decimal { integer_part: "4"  fractional_part: "5" quantity: "מיליון" } -> 4.5 מיליון
+
     """
 
     def __init__(self):
@@ -61,10 +49,11 @@ class DecimalFst(GraphFst):
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
 
+
 if __name__ == "__main__":
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
 
     decimal = DecimalFst().fst
-    apply_fst('decimal { integer_part: "0"  fractional_part: "33" }', decimal)
-    apply_fst('decimal { negative: "true" integer_part: "400"  fractional_part: "323" }', decimal)
-    apply_fst('decimal { integer_part: "4"  fractional_part: "5" quantity: "מיליון" }', decimal)
+    # apply_fst('decimal { integer_part: "0"  fractional_part: "33" }', decimal)
+    # apply_fst('decimal { negative: "true" integer_part: "400"  fractional_part: "323" }', decimal)
+    # apply_fst('decimal { integer_part: "4"  fractional_part: "5" quantity: "מיליון" }', decimal)

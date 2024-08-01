@@ -1,19 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import pynini
+from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     NEMO_DIGIT,
@@ -25,7 +11,6 @@ from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     delete_optional_and,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
@@ -40,8 +25,8 @@ class MoneyFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="money", kind="classify")
-        # quantity, integer_part, fractional_part, currency
 
+        # quantity, integer_part, fractional_part, currency
         cardinal_graph = cardinal.graph_no_exception
 
         graph_decimal_final = decimal.final_graph_wo_negative
@@ -112,20 +97,20 @@ class MoneyFst(GraphFst):
 if __name__ == '__main__':
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
-    from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
+    from nemo_text_processing.inverse_text_normalization.he.taggers.decimal_he import DecimalFst
 
     cardinal = CardinalFst()
     decimal = DecimalFst(cardinal)
     graph = MoneyFst(cardinal, decimal).fst
-    apply_fst("שלושה שקלים", graph)
-    apply_fst("שלושה ש״ח", graph)
-    apply_fst("שלושה שקלים חדשים", graph)
-    apply_fst("שלושה שקלים וחמישים אגורות", graph)
-    apply_fst("שני שקלים ותשעים ותשע אגורות", graph)
-    apply_fst("חמש אגורות", graph)
-    apply_fst("ארבעים ושבע יורו", graph)
-    apply_fst("ארבעים ושבע דולרים", graph)
-    apply_fst("שקל", graph)
-    apply_fst("שקל ותשעים", graph)
+    # apply_fst("שלושה שקלים", graph)
+    # apply_fst("שלושה ש״ח", graph)
+    # apply_fst("שלושה שקלים חדשים", graph)
+    # apply_fst("שלושה שקלים וחמישים אגורות", graph)
+    # apply_fst("שני שקלים ותשעים ותשע אגורות", graph)
+    # apply_fst("חמש אגורות", graph)
+    # apply_fst("ארבעים ושבע יורו", graph)
+    # apply_fst("ארבעים ושבע דולרים", graph)
+    # apply_fst("שקל", graph)
+    # apply_fst("שקל ותשעים", graph)
     # apply_fst("שקל וחצי", graph)  # TODO
 

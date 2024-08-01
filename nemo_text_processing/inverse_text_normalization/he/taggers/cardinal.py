@@ -1,4 +1,6 @@
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     NEMO_ALPHA,
@@ -11,16 +13,14 @@ from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     delete_optional_and,
     insert_space,
 )
-from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.he.utils import load_labels
 
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals
-        e.g. minus twenty three -> cardinal { integer: "23" negative: "-" } }
-    Numbers below thirteen are not converted.
+    Finite state transducer for classifying cardinals in Hebrew
+        e.g. מינוס עשרים ושלוש ("minus twenty three" in Hebrew)-> cardinal { negative: "-" integer: "23" } }
     """
 
     def __init__(self):
@@ -43,7 +43,7 @@ class CardinalFst(GraphFst):
         # hundreds
         hundred = pynini.string_map([("מאה", "1"), ("מאתיים", "2")])
         delete_hundred = pynini.cross("מאות", "")
-        graph_hundred = pynini.union(hundred | graph_digit + delete_space + delete_hundred, pynutil.insert("0"))
+        graph_hundred = delete_optional_and + (hundred | graph_digit + delete_space + delete_hundred | pynutil.insert("0"))
         graph_hundred += delete_space
         graph_hundred += pynini.union(
             delete_optional_and + graph_two_digit,
@@ -61,10 +61,10 @@ class CardinalFst(GraphFst):
         thousand_digit = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
 
         delete_thousand = pynutil.delete("אלפים") | pynutil.delete("אלף", weight=0.001)
-        large_number_prefix = graph_hundred | graph_two_digit | thousand_digit
+        large_number_prefix = graph_hundred | (pynutil.insert("0") + graph_two_digit) | (pynutil.insert("00") + thousand_digit)
         many_thousands = pynini.union(large_number_prefix, pynutil.insert("00")) + delete_space + delete_thousand
 
-        graph_thousands = pynini.union(thousand | many_thousands, pynutil.insert("000", weight=0.001))
+        graph_thousands = (delete_optional_and + pynini.union((pynutil.insert("00") + thousand) | many_thousands, pynutil.insert("000", weight=0.001)) | pynutil.insert("000"))
 
         self.graph_thousands = pynini.union(
             graph_thousands
@@ -81,7 +81,7 @@ class CardinalFst(GraphFst):
         delete_millions = pynutil.delete("מיליונים") | pynutil.delete("מיליון", weight=0.001)
         many_millions = pynini.union(large_number_prefix, pynutil.insert("000")) + delete_space + delete_millions
 
-        graph_millions = pynini.union(million | many_millions, pynutil.insert("000", weight=0.1))
+        graph_millions = pynini.union(million | many_millions, pynutil.insert("000", weight=0.001))
 
         graph = pynini.union(
             graph_millions
@@ -115,10 +115,9 @@ class CardinalFst(GraphFst):
             pynutil.insert("prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space, 0, 1
         )
 
-        int_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        int_graph = pynutil.insert("integer: \"") + self.graph_no_exception + pynutil.insert("\"")
 
         final_graph = optional_prefix_graph + optional_minus_graph + int_graph
-
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
@@ -133,21 +132,26 @@ class CardinalFst(GraphFst):
 if __name__ == '__main__':
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     g = CardinalFst().fst
-    apply_fst("מאה עשרים ושתיים", g)
-    apply_fst("מאה עשרים", g)
-    apply_fst("מינוס תשע מאות וארבע", g)
-    apply_fst("אלף", g)
-    apply_fst("אלף ושלושים", g)
-    apply_fst("אלפיים ושלוש", g)
-    apply_fst("שלושת אלפים ארבעים וחמש", g)
-    apply_fst("ארבעים וחמישה אלפים ושתיים", g)
-    apply_fst("תשע מאות אלף ותשע", g)
-    apply_fst("מיליון", g)
-    apply_fst("שלושה מיליון תשע מאות ארבעים וחמישה אלפים ושתיים", g)
-    apply_fst("שלושה מיליון ארבעים וחמישה אלפים ושתיים", g) # todo: bug, cardinal { integer: "345002" } and should be cardinal { integer: "3045002" }
-    apply_fst("כמאה עשרים ושלוש", g) # todo: bug, cardinal { integer: "345002" } and should be cardinal { integer: "3045002" }
-    apply_fst("ושלוש מאות וחמש", g) # todo: bug, cardinal { integer: "345002" } and should be cardinal { integer: "3045002" }
-    apply_fst("בחמישים", g) # todo: bug, cardinal { integer: "345002" } and should be cardinal { integer: "3045002" }
+    # apply_fst("מינוס עשרים ושלוש", g)
+    # apply_fst("עשר", g)
+    # apply_fst("אפס", g)
+    # apply_fst("מינוס חמש", g)
+    # apply_fst("מאה עשרים ושתיים", g)
+    # apply_fst("מאה עשרים", g)
+    # apply_fst("מינוס תשע מאות וארבע", g)
+    # apply_fst("אלף", g)
+    # apply_fst("שלוש עשרה", g)
+    # apply_fst("אלף ושלושים", g)
+    # apply_fst("אלפיים ושלוש", g)
+    # apply_fst("שלושת אלפים ארבעים וחמש", g)
+    # apply_fst("ארבעים וחמישה אלפים ושתיים", g)
+    # apply_fst("תשע מאות אלף ותשע", g)
+    # apply_fst("מיליון", g)
+    # apply_fst("שלושה מיליון תשע מאות ארבעים וחמישה אלפים ושתיים", g)
+    # apply_fst("שלושה מיליון ארבעים וחמישה אלפים ושתיים", g)
+    # apply_fst("שלושה מיליון וארבעים וחמש אלף ושתיים", g)
+    # apply_fst("כמאה עשרים ושלוש", g)
+    # apply_fst("ושלוש מאות וחמש", g)
+    # apply_fst("בחמישים", g)
     # apply_fst("שש", g)  # this should fail
     # apply_fst("ושש", g)  # this should fail
-    apply_fst("שש", CardinalFst().graph_no_exception)
