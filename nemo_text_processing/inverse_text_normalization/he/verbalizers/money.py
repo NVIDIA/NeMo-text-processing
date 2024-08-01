@@ -1,21 +1,6 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import pynini
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_CHAR, GraphFst, delete_space
 from pynini.lib import pynutil
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_CHAR, GraphFst, delete_space
 
 
 class MoneyFst(GraphFst):
@@ -43,11 +28,11 @@ class MoneyFst(GraphFst):
 
 if __name__ == "__main__":
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
-    from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal2 import DecimalFst
+    from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal_he import DecimalFst
     decimal = DecimalFst()
     money = MoneyFst(decimal).fst
-    apply_fst('money { integer_part: "3" currency: "₪" }', money)
-    apply_fst('money { integer_part: "1" currency: "₪" }', money)
-    apply_fst('money { integer_part: "47" currency: "€" }', money)
-    apply_fst('money { integer_part: "2" currency: "₪" fractional_part: "99" }', money)
-    apply_fst('money { currency: "₪" integer_part: "0" fractional_part: "05" }', money)
+    # apply_fst('money { integer_part: "3" currency: "₪" }', money)
+    # apply_fst('money { integer_part: "1" currency: "₪" }', money)
+    # apply_fst('money { integer_part: "47" currency: "€" }', money)
+    # apply_fst('money { integer_part: "2" currency: "₪" fractional_part: "99" }', money)
+    # apply_fst('money { currency: "₪" integer_part: "0" fractional_part: "05" }', money)

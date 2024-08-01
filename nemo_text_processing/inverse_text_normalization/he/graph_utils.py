@@ -1,29 +1,15 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import logging
 import os
-import string
-from pathlib import Path
-from typing import Dict
-
 import pynini
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
+import string
+import logging
+from typing import Dict
+from pathlib import Path
+
 from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
+
+from nemo_text_processing.text_normalization.en.utils import load_labels
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
@@ -49,26 +35,7 @@ delete_and = pynini.cross("ו", "")
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
-delete_preserve_order = pynini.closure(
-    pynutil.delete(" preserve_order: true")
-    | (pynutil.delete(" field_order: \"") + NEMO_NOT_QUOTE + pynutil.delete("\""))
-)
 
-# suppletive = pynini.string_file(get_abs_path("data/suppletive.tsv"))
-# _v = pynini.union("a", "e", "i", "o", "u")
-# _c = pynini.union(
-#     "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"
-# )
-# _ies = NEMO_SIGMA + _c + pynini.cross("y", "ies")
-# _es = NEMO_SIGMA + pynini.union("s", "sh", "ch", "x", "z") + pynutil.insert("es")
-# _s = NEMO_SIGMA + pynutil.insert("s")
-#
-# graph_plural = plurals._priority_union(
-#     suppletive, plurals._priority_union(_ies, plurals._priority_union(_es, _s, NEMO_SIGMA), NEMO_SIGMA), NEMO_SIGMA
-# ).optimize()
-
-# SINGULAR_TO_PLURAL = graph_plural
-# PLURAL_TO_SINGULAR = pynini.invert(graph_plural)
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 MINUS = pynini.union("מינוס").optimize()
