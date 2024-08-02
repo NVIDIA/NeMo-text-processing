@@ -37,10 +37,10 @@ testTNCardinal() {
 #  runtest $input
 #}
 
-#testTNDecimal() {
-#  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_decimal.txt
-#  runtest $input
-#}
+testTNDecimal() {
+  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_decimal.txt
+  runtest $input
+}
 
 #testTNRange() {
 #  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_range.txt

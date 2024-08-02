@@ -26,6 +26,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
 
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
 
@@ -77,6 +78,11 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
             logging.debug(f"cardinal: {time.time() - start_time: .2f}s -- {cardinal_graph.num_states()} nodes")
+            
+            start_time = time.time()
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            decimal_graph = decimal.fst
+            logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
            
            # start_time = time.time()
@@ -89,7 +95,10 @@ class ClassifyFst(GraphFst):
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
             logging.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
-            classify = (pynutil.add_weight(cardinal_graph, 1.1))
+            classify = (
+                pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(cardinal_graph, 1.1)
+            )
             #classify |= pynutil.add_weight(whitelist_graph, 1.01)
             start_time = time.time()
             word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst

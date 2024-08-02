@@ -15,6 +15,7 @@
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
 
 from nemo_text_processing.text_normalization.hi.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hi.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.hi.verbalizers.whitelist import WhiteListFst
 
 
@@ -33,10 +34,13 @@ class VerbalizeFst(GraphFst):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
+        decimal = DecimalFst(deterministic=deterministic)
+        decimal_graph = decimal.fst
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
         graph = (
             cardinal_graph
+            | decimal_graph
             | whitelist_graph
         )
 

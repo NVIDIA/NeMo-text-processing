@@ -59,7 +59,7 @@ MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
-MINUS = pynini.union("ऋणात्मक", "नकारात्मक").optimize()
+MINUS = pynini.union(" ऋणात्मक ", " ऋणात्मक ").optimize()
 
 
 def capitalized_input_graph(

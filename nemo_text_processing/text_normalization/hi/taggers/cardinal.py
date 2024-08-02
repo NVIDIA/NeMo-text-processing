@@ -292,10 +292,4 @@ class CardinalFst(GraphFst):
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.final_graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
-
                
-#input_text = "१०९८००००००८८८"                                              
-#output = rewrite.rewrites(input_text, CardinalFst().fst) #rewrite.rewrites - to see all possible outcomes , rewrite.top_rewrite - shortest pa
-#output = apply_fst(input_text, CardinalFst().fst) #rewrite.rewrites - to see all possible outcomes , rewrite.top_rewrite - shortest pa
-#print(output)
-

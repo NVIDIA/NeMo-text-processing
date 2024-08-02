@@ -23,8 +23,7 @@ quantities_abbr |= TO_UPPER @ quantities_abbr
 
 
 def get_quantity(
-    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', include_abbr: bool
-) -> 'pynini.FstLike':
+    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', include_abbr: bool) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. 1 million -> integer_part: "one" quantity: "million"
