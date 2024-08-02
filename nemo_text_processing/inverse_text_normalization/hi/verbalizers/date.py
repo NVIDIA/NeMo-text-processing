@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -86,9 +86,3 @@ class DateFst(GraphFst):
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
-        
-#date = DateFst()
-#input_text = 'date { day: "२५" month: "मार्च" year: "२०१०" }'
-#input_text = 'date { day: "१७"month: "अप्रैल"year: "२००२" }'
-#output = apply_fst(input_text, date.fst)
-#print(output)        

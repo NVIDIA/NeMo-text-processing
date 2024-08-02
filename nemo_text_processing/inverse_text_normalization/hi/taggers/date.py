@@ -24,7 +24,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
     delete_space,
 ) 
-from pynini.lib import pynutil, rewrite
+from pynini.lib import pynutil
+
+
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying fraction
@@ -62,11 +64,3 @@ class DateFst(GraphFst):
         
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()
-        
-#from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-#cardinal = CardinalFst()
-#date = DateFst(cardinal)
-#input_text = "पच्चीस मार्च दो हज़ार दस"
-#input_text = "तीन फ़रवरी"
-#output = apply_fst(input_text, date.fst)
-#print(output) 
