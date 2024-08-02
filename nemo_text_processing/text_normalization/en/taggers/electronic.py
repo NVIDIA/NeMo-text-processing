@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (  # common string literals
     MIN_NEG_WEIGHT,
+    MIN_POS_WEIGHT,
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
@@ -80,7 +81,6 @@ class ElectronicFst(GraphFst):
             | pynini.closure(TO_UPPER)
             | pynini.closure(NEMO_UPPER)
             | accepted_symbols
-            # | (accepted_symbols - ".")
         ).optimize()
 
         all_accepted_symbols_end = (
@@ -89,12 +89,12 @@ class ElectronicFst(GraphFst):
             | pynini.closure(TO_UPPER)
             | pynini.closure(NEMO_UPPER)
             | accepted_symbols
-            # | (accepted_symbols - ".")
         ).optimize()
 
         graph_symbols = pynini.string_file(
             get_abs_path("data/electronic/symbol.tsv")
         ).optimize()
+
         username = (NEMO_ALPHA | dict_words_graph) + pynini.closure(
             NEMO_ALPHA | numbers | accepted_symbols | dict_words_graph
         )
@@ -188,6 +188,7 @@ class ElectronicFst(GraphFst):
             username + domain_graph_with_class_tags,
         )
 
+        """
         # abc.com, abc.com/123-sm
         # when only domain, make sure it starts and ends with NEMO_ALPHA
         graph |= (
@@ -202,6 +203,23 @@ class ElectronicFst(GraphFst):
             ).optimize()
             + pynutil.insert('"')
         )
+        """
+        dot = pynini.accep(".")
+        # Include for the correct transduction of the money graph
+        dollar = pynini.accep("$")
+        exclude = dot | dollar
+        symbols_filtered = pynini.difference(accepted_symbols, exclude)
+        accepted_characters = pynini.closure(
+            (NEMO_ALPHA | NEMO_DIGIT | symbols_filtered), 2
+        )
+        domain_component = dot + accepted_characters
+        graph_domain = (
+            pynutil.insert('domain: "')
+            + (accepted_characters + pynini.closure(domain_component, 1))
+            + pynutil.insert('"')
+        ).optimize()
+
+        graph |= pynutil.add_weight(graph_domain, MIN_POS_WEIGHT)
 
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
