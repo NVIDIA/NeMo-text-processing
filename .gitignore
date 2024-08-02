@@ -175,3 +175,9 @@ examples/neural_graphs/*.yml
 .hydra/
 nemo_experiments/
 *.swp
+
+#Ignore hi_tutorial
+nemo_text_processing/inverse_text_normalization/hi_tutorial
+
+#Ignore all files starting with .~lock.tsv#
+*.~lock.tsv#
