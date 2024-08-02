@@ -1,5 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2024 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     delete_space,
 )
 from pynini.lib import pynutil
+
 
 class CardinalFst(GraphFst):
     """
@@ -173,6 +174,4 @@ class CardinalFst(GraphFst):
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
 
         final_graph = self.add_tokens(final_graph)
-        self.fst = final_graph.optimize()
-
-        
+        self.fst = final_graph.optimize()        

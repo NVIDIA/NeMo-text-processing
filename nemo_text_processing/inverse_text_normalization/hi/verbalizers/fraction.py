@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
-from pynini.lib import pynutil, rewrite
+from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -43,9 +43,3 @@ class FractionFst(GraphFst):
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
-        
-        
-fraction = FractionFst()
-input_text = 'fraction { numerator: "१३०" denominator: "२००६" }'
-output = rewrite.top_rewrite(input_text, fraction.fst)
-print(output)

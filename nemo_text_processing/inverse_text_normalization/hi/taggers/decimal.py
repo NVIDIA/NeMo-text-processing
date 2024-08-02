@@ -1,5 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2024 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.import pynini
+
 import pynini
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
@@ -28,7 +29,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
 ) 
 from nemo_text_processing.text_normalization.en.utils import load_labels
-from pynini.lib import pynutil, rewrite
+from pynini.lib import pynutil
  
  
 def get_quantity(
@@ -68,18 +69,8 @@ def get_quantity(
     )
     res |= decimal + delete_extra_space + pynutil.insert("quantity: \"") + suffix + pynutil.insert("\"")
     return res
- 
-def apply_fst(text, fst):
-  """ Given a string input, returns the output string
-  produced by traversing the path with lowest weight.
-  If no valid path accepts input string, returns an
-  error.
-  """
-  #try:
-     #print(pynini.shortestpath(text @ fst).string())
-  #except pynini.FstOpError:
-    #print(f"Error: No valid output with given input: '{text}'")
- 
+
+
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal
@@ -140,7 +131,3 @@ class DecimalFst(GraphFst):
             final_graph = capitalized_input_graph(final_graph)
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-
-from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-cardinal = CardinalFst()
-decimal = DecimalFst(cardinal)

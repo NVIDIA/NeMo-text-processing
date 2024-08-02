@@ -1,5 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2024 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ from nemo_text_processing.inverse_text_normalization.hi.verbalizers.cardinal imp
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.hi.verbalizers.date import DateFst
+
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst
 
@@ -35,6 +37,7 @@ class VerbalizeFst(GraphFst):
         ordinal_graph = OrdinalFst().fst
         decimal_graph = DecimalFst().fst
         fraction_graph = FractionFst().fst
+        date_graph = DateFst().fst
 
         whitelist_graph = WhiteListFst().fst
 
@@ -44,6 +47,7 @@ class VerbalizeFst(GraphFst):
              | ordinal_graph
              | decimal_graph
              | fraction_graph
+             | date_graph
 
         )
         self.fst = graph

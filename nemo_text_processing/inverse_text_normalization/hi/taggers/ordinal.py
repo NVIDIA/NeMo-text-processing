@@ -1,5 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2024 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,20 +19,11 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     NEMO_CHAR,
     GraphFst, 
     NEMO_SIGMA,
-    NEMO_HINDI_DIGIT,
+    NEMO_HI_DIGIT,
 )
-from pynini.lib import pynutil, rewrite
-def apply_fst(text, fst):
-  """ Given a string input, returns the output string
-  produced by traversing the path with lowest weight.
-  If no valid path accepts input string, returns an
-  error.
-  """
-  #try:
-     #print(pynini.shortestpath(text @ fst).string())
-  #except pynini.FstOpError:
-    #print(f"Error: No valid output with given input: '{text}'")
- 
+from pynini.lib import pynutil
+
+
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal
@@ -62,19 +53,12 @@ class OrdinalFst(GraphFst):
         )
         graph = pynini.compose(graph | graph_fem, (cardinal_graph + pynini.union(pynini.cross("वाँ", "वाँ"), pynini.cross("वां","वां"), pynini.cross("वीं", "वीं"), pynini.cross("वी", "वी"), pynini.cross("वें", "वें"), pynini.cross("वे", "वे") ))).optimize()
 
-#Optimize the following. 
         
-        morpho_graph = pynini.cross("वाँ", "\" morphosyntactic_features: \"वाँ\"")
-        morpho_graph|= pynini.cross("वां", "\" morphosyntactic_features: \"वां\"")
-        morpho_graph|= pynini.cross("वीं", "\" morphosyntactic_features: \"वीं\"")
-        morpho_graph|= pynini.cross("वी", "\" morphosyntactic_features: \"वी\"")
-        morpho_graph|= pynini.cross("वें", "\" morphosyntactic_features: \"वें\"")
-        morpho_graph|= pynini.cross("वे", "\" morphosyntactic_features: \"वे\"")
+        morph_features_graph = pynini.string_file(get_abs_path("data/ordinals/morph_features.tsv"))
+        morpho_graph = pynutil.insert("\" morphosyntactic_features: \"") + morph_features_graph + pynutil.insert("\"")
         
-        rule = pynini.cdrewrite(morpho_graph, pynini.closure(NEMO_HINDI_DIGIT), pynini.union("[EOS]"," "), NEMO_SIGMA ) 
+        rule = pynini.cdrewrite(morpho_graph, pynini.closure(NEMO_HI_DIGIT), pynini.union("[EOS]"," "), NEMO_SIGMA ) 
 
         final_graph = (pynutil.insert("integer: \"") + graph@rule )
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-
-

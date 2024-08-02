@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2024 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

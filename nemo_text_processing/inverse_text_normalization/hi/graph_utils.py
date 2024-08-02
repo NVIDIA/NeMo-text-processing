@@ -1,5 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2024 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
 NEMO_GRAPH = pynini.union(NEMO_CHAR, NEMO_PUNCT).optimize()
 
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
-NEMO_HINDI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "६", "७", "८", "९")
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
@@ -56,13 +55,11 @@ delete_preserve_order = pynini.closure(
 )
 
 
-
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
 MINUS = pynini.union("ऋणात्मक", "नकारात्मक").optimize()
-
 
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
@@ -78,10 +75,6 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
         exporter[rule] = graph.optimize()
     exporter.close()
     logging.info(f'Created {file_name}')
-
-
-
-
 
 
 def convert_space(fst) -> 'pynini.FstLike':

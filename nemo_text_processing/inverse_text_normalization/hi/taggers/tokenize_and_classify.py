@@ -1,5 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2024 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@ from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import 
 from nemo_text_processing.inverse_text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.decimal import DecimalFst 
 from nemo_text_processing.inverse_text_normalization.hi.taggers.fraction import FractionFst 
+from nemo_text_processing.inverse_text_normalization.hi.taggers.date import DateFst 
 
 
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.word import WordFst
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -75,6 +76,8 @@ class ClassifyFst(GraphFst):
             decimal_graph = DecimalFst(cardinal).fst
             fraction = FractionFst(cardinal)
             fraction_graph = fraction.fst
+            date = DateFst(cardinal)
+            date_graph = date.fst
             punct_graph = PunctuationFst().fst
             #whitelist_graph = WhiteListFst(input_file=whitelist).fst
             word_graph = WordFst().fst
@@ -85,6 +88,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
+                | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
                 #|  pynutil.add_weight(whitelist_graph, 1.01)
             )
