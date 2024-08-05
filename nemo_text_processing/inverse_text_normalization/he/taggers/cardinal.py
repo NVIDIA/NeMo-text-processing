@@ -104,18 +104,38 @@ class CardinalFst(GraphFst):
         graph = ((NEMO_ALPHA + NEMO_SIGMA) @ graph).optimize()
 
         self.graph_no_exception = graph
-        self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
 
         ### Token insertion
-        optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("מינוס", "\"-\"") + NEMO_SPACE, 0, 1
-        )
+        minus_graph = pynutil.insert("negative: ") + pynini.cross("מינוס", "\"-\"") + NEMO_SPACE
+        optional_minus_graph = pynini.closure(minus_graph, 0, 1)
 
         optional_prefix_graph = pynini.closure(
             pynutil.insert("prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space, 0, 1
         )
 
         int_graph = pynutil.insert("integer: \"") + self.graph_no_exception + pynutil.insert("\"")
+
+        graph_wo_small_digits = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+
+        small_number_with_minus = (
+            insert_space
+            + minus_graph
+            + pynutil.insert("integer: \"")
+            + self.graph_no_exception
+        )
+        big_number_wit_optional_minus = (
+            optional_minus_graph
+            + pynutil.insert("integer: \"")
+            + graph_wo_small_digits
+        )
+
+        self.graph = (
+                pynutil.insert("cardinal {")
+                + optional_prefix_graph
+                + (small_number_with_minus | big_number_wit_optional_minus)
+                + pynutil.insert("\"")
+                + pynutil.insert(" }")
+        )
 
         final_graph = optional_prefix_graph + optional_minus_graph + int_graph
 
@@ -142,7 +162,7 @@ if __name__ == '__main__':
     # apply_fst("אלף", g)
     # apply_fst("שלוש עשרה", g)
     # apply_fst("אלף ושלושים", g)
-    # apply_fst("אלפיים ושלוש", g)
+    # apply_fst("מינוס אלפיים ושלוש", g)
     # apply_fst("שלושת אלפים ארבעים וחמש", g)
     # apply_fst("ארבעים וחמישה אלפים ושתיים", g)
     # apply_fst("תשע מאות אלף ותשע", g)
