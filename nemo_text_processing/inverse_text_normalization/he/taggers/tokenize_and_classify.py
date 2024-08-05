@@ -46,7 +46,7 @@ class ClassifyFst(GraphFst):
             logging.info(f"Creating ClassifyFst grammars.")
 
             cardinal = CardinalFst()
-            cardinal_graph = cardinal.fst
+            cardinal_graph = cardinal.graph
 
             ordinal = OrdinalFst(cardinal)
             ordinal_graph = ordinal.fst
