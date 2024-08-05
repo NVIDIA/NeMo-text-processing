@@ -220,7 +220,7 @@ class ElectronicFst(GraphFst):
             + pynutil.insert('"')
         ).optimize()
 
-        graph |= graph_domain
+        graph |= pynutil.add_weight(graph_domain, MIN_NEG_WEIGHT)
         # graph |= pynutil.add_weight(graph_domain, MIN_POS_WEIGHT)
 
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
