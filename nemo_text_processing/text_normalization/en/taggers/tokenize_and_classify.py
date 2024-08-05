@@ -25,7 +25,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.en.taggers.abbreviation import AbbreviationFst
+from nemo_text_processing.text_normalization.en.taggers.abbreviation import (
+    AbbreviationFst,
+)
 from nemo_text_processing.text_normalization.en.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.en.taggers.date import DateFst
 from nemo_text_processing.text_normalization.en.taggers.decimal import DecimalFst
@@ -34,17 +36,27 @@ from nemo_text_processing.text_normalization.en.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.en.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.en.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.en.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.en.taggers.range import RangeFst as RangeFst
+from nemo_text_processing.text_normalization.en.taggers.punctuation import (
+    PunctuationFst,
+)
+from nemo_text_processing.text_normalization.en.taggers.range import (
+    RangeFst as RangeFst,
+)
 from nemo_text_processing.text_normalization.en.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.en.taggers.serial import SerialFst
 from nemo_text_processing.text_normalization.en.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.en.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.en.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.en.taggers.word import WordFst
-from nemo_text_processing.text_normalization.en.verbalizers.date import DateFst as vDateFst
-from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as vOrdinalFst
-from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTimeFst
+from nemo_text_processing.text_normalization.en.verbalizers.date import (
+    DateFst as vDateFst,
+)
+from nemo_text_processing.text_normalization.en.verbalizers.ordinal import (
+    OrdinalFst as vOrdinalFst,
+)
+from nemo_text_processing.text_normalization.en.verbalizers.time import (
+    TimeFst as vTimeFst,
+)
 from nemo_text_processing.utils.logging import logger
 
 
@@ -71,14 +83,17 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None,
     ):
-        super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
+        super().__init__(
+            name="tokenize_and_classify", kind="classify", deterministic=deterministic
+        )
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"en_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
+                cache_dir,
+                f"en_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -89,77 +104,125 @@ class ClassifyFst(GraphFst):
             start_time = time.time()
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
-            logger.debug(f"cardinal: {time.time() - start_time: .2f}s -- {cardinal_graph.num_states()} nodes")
+            logger.debug(
+                f"cardinal: {time.time() - start_time: .2f}s -- {cardinal_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
             ordinal_graph = ordinal.fst
-            logger.debug(f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes")
+            logger.debug(
+                f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
-            logger.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
+            logger.debug(
+                f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             fraction = FractionFst(deterministic=deterministic, cardinal=cardinal)
             fraction_graph = fraction.fst
-            logger.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
+            logger.debug(
+                f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic,)
+            measure = MeasureFst(
+                cardinal=cardinal,
+                decimal=decimal,
+                fraction=fraction,
+                deterministic=deterministic,
+            )
             measure_graph = measure.fst
-            logger.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
+            logger.debug(
+                f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             date_graph = DateFst(cardinal=cardinal, deterministic=deterministic).fst
-            logger.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
+            logger.debug(
+                f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             time_graph = TimeFst(cardinal=cardinal, deterministic=deterministic).fst
-            logger.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
+            logger.debug(
+                f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             telephone_graph = TelephoneFst(deterministic=deterministic).fst
-            logger.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
+            logger.debug(
+                f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
-            electonic_graph = ElectronicFst(cardinal=cardinal, deterministic=deterministic).fst
-            logger.debug(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
+            electonic_graph = ElectronicFst(
+                cardinal=cardinal, deterministic=deterministic
+            ).fst
+            logger.debug(
+                f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic).fst
-            logger.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
+            money_graph = MoneyFst(
+                cardinal=cardinal, decimal=decimal, deterministic=deterministic
+            ).fst
+            logger.debug(
+                f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             whitelist_graph = WhiteListFst(
                 input_case=input_case, deterministic=deterministic, input_file=whitelist
             ).fst
-            logger.debug(f"whitelist: {time.time() - start_time: .2f}s -- {whitelist_graph.num_states()} nodes")
+            logger.debug(
+                f"whitelist: {time.time() - start_time: .2f}s -- {whitelist_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
-            logger.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
+            logger.debug(
+                f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
-            word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
-            logger.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
+            word_graph = WordFst(
+                punctuation=punctuation, deterministic=deterministic
+            ).fst
+            logger.debug(
+                f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
-            serial_graph = SerialFst(cardinal=cardinal, ordinal=ordinal, deterministic=deterministic).fst
-            logger.debug(f"serial: {time.time() - start_time: .2f}s -- {serial_graph.num_states()} nodes")
+            serial_graph = SerialFst(
+                cardinal=cardinal, ordinal=ordinal, deterministic=deterministic
+            ).fst
+            logger.debug(
+                f"serial: {time.time() - start_time: .2f}s -- {serial_graph.num_states()} nodes"
+            )
 
             start_time = time.time()
             v_time_graph = vTimeFst(deterministic=deterministic).fst
             v_ordinal_graph = vOrdinalFst(deterministic=deterministic)
-            v_date_graph = vDateFst(ordinal=v_ordinal_graph, deterministic=deterministic).fst
+            v_date_graph = vDateFst(
+                ordinal=v_ordinal_graph, deterministic=deterministic
+            ).fst
             time_final = pynini.compose(time_graph, v_time_graph)
             date_final = pynini.compose(date_graph, v_date_graph)
             range_graph = RangeFst(
-                time=time_final, date=date_final, cardinal=cardinal, deterministic=deterministic,
+                time=time_final,
+                date=date_final,
+                cardinal=cardinal,
+                deterministic=deterministic,
             ).fst
-            logger.debug(f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes")
+            logger.debug(
+                f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes"
+            )
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
@@ -171,10 +234,12 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
-                | pynutil.add_weight(electonic_graph, 1.1001)
+                | pynutil.add_weight(electonic_graph, 1.11)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(range_graph, 1.1)
-                | pynutil.add_weight(serial_graph, 1.1003)  # should be higher than the rest of the classes
+                | pynutil.add_weight(
+                    serial_graph, 1.12
+                )  # should be higher than the rest of the classes
             )
 
             # roman_graph = RomanFst(deterministic=deterministic).fst
@@ -184,7 +249,11 @@ class ClassifyFst(GraphFst):
                 abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst
                 classify |= pynutil.add_weight(abbreviation_graph, 100)
 
-            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
+            punct = (
+                pynutil.insert("tokens { ")
+                + pynutil.add_weight(punct_graph, weight=2.1)
+                + pynutil.insert(" }")
+            )
             punct = pynini.closure(
                 pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
                 | (pynutil.insert(" ") + punct)
@@ -195,12 +264,16 @@ class ClassifyFst(GraphFst):
             classify |= pynutil.add_weight(word_graph, 100)
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+                pynini.closure(punct + pynutil.insert(" "))
+                + token
+                + pynini.closure(pynutil.insert(" ") + punct)
             )
 
             graph = token_plus_punct + pynini.closure(
                 (
-                    pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
+                    pynini.compose(
+                        pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space
+                    )
                     | (pynutil.insert(" ") + punct + pynutil.insert(" "))
                 )
                 + token_plus_punct
