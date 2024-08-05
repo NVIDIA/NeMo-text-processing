@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,10 +32,13 @@ class VerbalizeFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
+        
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
+        
         decimal = DecimalFst(deterministic=deterministic)
         decimal_graph = decimal.fst
+        
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
         graph = (
@@ -43,7 +46,6 @@ class VerbalizeFst(GraphFst):
             | decimal_graph
             | whitelist_graph
         )
-
 
         if not deterministic:
             abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst

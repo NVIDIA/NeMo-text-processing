@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,14 +57,3 @@ class DecimalFst(GraphFst):
         self.numbers = graph
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
-
-
-decimal = DecimalFst().fst   # calling DecimalFst                                                                                              
-#input_text = 'decimal { integer_part: "इक्कीस करोड़ ग्यारह लाख ग्यारह हज़ार एक सौ ग्यारह" fractional_part: "एक एक शुन्य एक शुन्य एक शुन्य" }'  
-#input_text = 'decimal { integer_part: "इक्कीस" fractional_part: "एक" }'  
-#input_text = 'decimal { integer_part: "इक्कीस" fractional_part: "एक एक एक एक" }'  
-input_text = 'decimal { integer_part: "निन्यानवे" fractional_part: "नौ नौ" }'  
-#input_text = 'decimal { negative: "true" integer_part: "इक्कीस" fractional_part: "शुन्य शुन्य शुन्य" }'  
-output = apply_fst(input_text, decimal)           
-print(output)
-

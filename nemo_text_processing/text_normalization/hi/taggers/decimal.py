@@ -83,8 +83,3 @@ class DecimalFst(GraphFst):
         
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-
-cardinal = CardinalFst()
-decimal = DecimalFst(cardinal)
-input_text = "९९.९९"
-output = apply_fst(input_text, decimal.fst)

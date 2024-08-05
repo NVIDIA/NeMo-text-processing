@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
-from nemo_text_processing.text_normalization.en.verbalizers.verbalize import VerbalizeFst
-from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
+from nemo_text_processing.text_normalization.hi.taggers.tokenize_and_classify import ClassifyFst
+from nemo_text_processing.text_normalization.hi.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.text_normalization.hi.verbalizers.verbalize_final import VerbalizeFinalFst
