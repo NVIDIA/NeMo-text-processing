@@ -214,17 +214,19 @@ class ElectronicFst(GraphFst):
         dollar = pynini.accep("$")
         exclude = dot | dollar
         symbols_filtered = pynini.difference(accepted_symbols, exclude)
-        accepted_characters = pynini.closure(
-            (NEMO_ALPHA | NEMO_DIGIT | symbols_filtered), 2
-        )
-        domain_component = dot + accepted_characters
+        accepted_characters = NEMO_ALPHA | NEMO_DIGIT | symbols_filtered
+        domain_component = dot + pynini.closure(accepted_characters, 2)
         graph_domain = (
             pynutil.insert('domain: "')
-            + (accepted_characters + pynini.closure(domain_component, 1))
+            + (
+                pynini.closure(accepted_characters, 1)
+                + pynini.closure(domain_component, 1)
+            )
             + pynutil.insert('"')
         ).optimize()
 
-        graph |= pynutil.add_weight(graph_domain, MIN_POS_WEIGHT)
+        graph |= graph_domain
+        # graph |= pynutil.add_weight(graph_domain, MIN_POS_WEIGHT)
 
 
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad

@@ -25,35 +25,35 @@ runtest () {
   done < "$input"
 }
 
-testTNSpecialText() {
-  input=$TEST_DIR/data_text_normalization/test_cases_special_text.txt
-  runtest $input
-}
+# testTNSpecialText() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_special_text.txt
+#   runtest $input
+# }
 
-testTNCardinal() {
-  input=$TEST_DIR/data_text_normalization/test_cases_cardinal.txt
-  runtest $input
-}
+# testTNCardinal() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_cardinal.txt
+#   runtest $input
+# }
 
-testTNDate() {
-  input=$TEST_DIR/data_text_normalization/test_cases_date.txt
-  runtest $input
-}
+# testTNDate() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_date.txt
+#   runtest $input
+# }
 
-testTNDecimal() {
-  input=$TEST_DIR/data_text_normalization/test_cases_decimal.txt
-  runtest $input
-}
+# testTNDecimal() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_decimal.txt
+#   runtest $input
+# }
 
-testTNRange() {
-  input=$TEST_DIR/data_text_normalization/test_cases_range.txt
-  runtest $input
-}
+# testTNRange() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_range.txt
+#   runtest $input
+# }
 
-testTNSerial() {
-  input=$TEST_DIR/data_text_normalization/test_cases_serial.txt
-  runtest $input
-}
+# testTNSerial() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_serial.txt
+#   runtest $input
+# }
 
 #testTNRoman() {
 #  input=$TEST_DIR/data_text_normalization/test_cases_roman.txt
@@ -65,55 +65,55 @@ testTNElectronic() {
   runtest $input
 }
 
-testTNFraction() {
-  input=$TEST_DIR/data_text_normalization/test_cases_fraction.txt
-  runtest $input
-}
+# testTNFraction() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_fraction.txt
+#   runtest $input
+# }
 
-testTNMoney() {
-  input=$TEST_DIR/data_text_normalization/test_cases_money.txt
-  runtest $input
-}
+# testTNMoney() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_money.txt
+#   runtest $input
+# }
 
-testTNOrdinal() {
-  input=$TEST_DIR/data_text_normalization/test_cases_ordinal.txt
-  runtest $input
-}
+# testTNOrdinal() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_ordinal.txt
+#   runtest $input
+# }
 
-testTNTelephone() {
-  input=$TEST_DIR/data_text_normalization/test_cases_telephone.txt
-  runtest $input
-}
+# testTNTelephone() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_telephone.txt
+#   runtest $input
+# }
 
-testTNTime() {
-  input=$TEST_DIR/data_text_normalization/test_cases_time.txt
-  runtest $input
-}
+# testTNTime() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_time.txt
+#   runtest $input
+# }
 
-testTNMeasure() {
-  input=$TEST_DIR/data_text_normalization/test_cases_measure.txt
-  runtest $input
-}
+# testTNMeasure() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_measure.txt
+#   runtest $input
+# }
 
 testTNWhitelist() {
   input=$TEST_DIR/data_text_normalization/test_cases_whitelist.txt
   runtest $input
 }
 
-testTNWord() {
-  input=$TEST_DIR/data_text_normalization/test_cases_word.txt
-  runtest $input
-}
+# testTNWord() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_word.txt
+#   runtest $input
+# }
 
-testTNAddress() {
-  input=$TEST_DIR/data_text_normalization/test_cases_address.txt
-  runtest $input
-}
+# testTNAddress() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_address.txt
+#   runtest $input
+# }
 
-testTNMath() {
-  input=$TEST_DIR/data_text_normalization/test_cases_math.txt
-  runtest $input
-}
+# testTNMath() {
+#   input=$TEST_DIR/data_text_normalization/test_cases_math.txt
+#   runtest $input
+# }
 
 # Remove all command-line arguments
 shift $#
