@@ -1,6 +1,7 @@
 .com	dot com
 .org	dot org
 .gov	dot gov
+.edu	dot edu
 .uk	dot UK
 .fr	dot FR
 .net	dot net
@@ -10,12 +11,3 @@
 .de	dot DE
 .it	dot IT
 .jpg	dot jpeg
-.info	dot info
-.biz	dot biz
-.edu	dot edu
-.gov	dot gov
-.mil	dot mil
-.us	dot us
-.pl	dot pl
-.ca	dot ca
-.au	dot au
