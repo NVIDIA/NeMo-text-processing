@@ -101,7 +101,7 @@ if __name__ == '__main__':
     cardinal = CardinalFst()
     decimal = DecimalFst(cardinal)
     g = MeasureFst(cardinal, decimal).fst
-    apply_fst("מעשר אחוז", g)
+    # apply_fst("שלוש וחצי קילוגרם", g)
     # apply_fst("לארבע סנטימטר", g)
     # apply_fst("חמש עשרה אחוז", g)
     # apply_fst("מינוס חמש עשרה אחוז", g)
