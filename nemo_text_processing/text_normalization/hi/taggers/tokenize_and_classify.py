@@ -27,10 +27,8 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
 
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
-
+from nemo_text_processing.text_normalization.hi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
-
-#from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
 
 from pynini.lib import pynutil
@@ -83,29 +81,26 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
             logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
-
-           
-           # start_time = time.time()
-           # whitelist_graph = WhiteListFst(
-           #     input_case=input_case, deterministic=deterministic, input_file=whitelist
-           # ).fst
-           # logging.debug(f"whitelist: {time.time() - start_time: .2f}s -- {whitelist_graph.num_states()} nodes")
+            
+            start_time = time.time()
+            fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
+            fraction_graph = fraction.fst
+            logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
             start_time = time.time()
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
-            
             logging.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
+            
             classify = (
-                pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(cardinal_graph, 1.1)
+                pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.1)
             )
-            #classify |= pynutil.add_weight(whitelist_graph, 1.01)
+    
             start_time = time.time()
             word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
             logging.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
-
-            
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             punct = pynini.closure(

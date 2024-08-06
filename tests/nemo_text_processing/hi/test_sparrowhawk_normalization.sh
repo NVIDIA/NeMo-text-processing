@@ -62,10 +62,10 @@ testTNDecimal() {
 #  runtest $input
 #}
 
-#testTNFraction() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_fraction.txt
-#  runtest $input
-#}
+testTNFraction() {
+  input=$PROJECT_DIR/en/data_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
 
 #testTNMoney() {
 #  input=$PROJECT_DIR/en/data_text_normalization/test_cases_money.txt
