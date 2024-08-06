@@ -1,6 +1,6 @@
 import pynini
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_ALPHA
 
 
 class DecimalFst(GraphFst):
@@ -15,6 +15,7 @@ class DecimalFst(GraphFst):
     def __init__(self):
         super().__init__(name="decimal", kind="verbalize")
         optionl_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)
+
         integer = (
             pynutil.delete("integer_part:")
             + delete_space
@@ -43,7 +44,20 @@ class DecimalFst(GraphFst):
         )
         optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
 
-        graph = optional_integer + optional_fractional + optional_quantity
+        # Keep the prefix if exists and add a dash
+        optional_prefix = pynini.closure(
+            pynutil.delete("prefix:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_ALPHA, 1)
+            + pynutil.insert("-")
+            + pynutil.delete("\"")
+            + delete_space,
+            0,
+            1,
+        )
+
+        graph = optional_prefix + optional_integer + optional_fractional + optional_quantity
         self.numbers = graph
         graph = optionl_sign + graph
         delete_tokens = self.delete_tokens(graph)

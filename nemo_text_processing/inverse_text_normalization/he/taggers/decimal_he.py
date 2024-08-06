@@ -7,6 +7,7 @@ from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
+    insert_space,
     delete_and,
     delete_zero_or_one_space
 )
@@ -60,6 +61,11 @@ class DecimalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="decimal", kind="classify")
+
+        prefix_graph = pynini.string_file(get_abs_path("data/prefix.tsv"))
+        optional_prefix_graph = pynini.closure(
+            pynutil.insert("prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space, 0, 1
+        )
 
         # all cardinals
         cardinal_graph = cardinal.graph_no_exception
@@ -128,10 +134,10 @@ class DecimalFst(GraphFst):
 
         final_graph_wo_sign = graph_w_point | graph_wo_point
         self.final_graph_wo_sign = graph_w_point | all_decimals_wo_point
-        final_graph = optional_graph_negative + final_graph_wo_sign
+        final_graph = optional_prefix_graph + optional_graph_negative + final_graph_wo_sign
 
         quantity_graph = get_quantity(self.final_graph_wo_sign, cardinal.graph_hundred)
-        final_graph |= optional_graph_negative + quantity_graph
+        final_graph |= optional_prefix_graph + optional_graph_negative + quantity_graph
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
@@ -142,6 +148,7 @@ if __name__ == '__main__':
     from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
     cardinal = CardinalFst()
     graph = DecimalFst(cardinal).fst
+    # apply_fst("בשתיים וחצי מיליון", graph)
     # apply_fst("שמונה ורבע מיליון", graph)
     # apply_fst("שבעים ותשע וחצי", graph)
     # apply_fst("עשרים ושלוש וחצי", graph)
