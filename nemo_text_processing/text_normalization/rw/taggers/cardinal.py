@@ -301,8 +301,10 @@ class CardinalFst(GraphFst):
                                     | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert(SIX_ZEROS)+graph_hundreds \
                                     | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert(SEVEN_ZEROS)+graph_tens_ends
         
-        graph_all = graph_hundreds_of_trillions | graph_tens_of_trillions | graph_trillions | graph_hundreds_of_millions | graph_tens_of_millions | graph_millions | graph_hundreds_of_thousands | graph_tens_of_thousands \
-                                    | graph_thousands | graph_hundreds | pynutil.add_weight(ten, weight=-0.1) | graph_tens_starts | digits | pynini.cross("zeru","0") 
+        graph_all = graph_hundreds_of_trillions | graph_tens_of_trillions | graph_trillions | graph_hundreds_of_millions | graph_tens_of_millions \
+                                    | graph_millions | graph_hundreds_of_thousands | graph_tens_of_thousands \
+                                    | graph_thousands | graph_hundreds | pynutil.add_weight(ten, weight=-0.1) \
+                                    | graph_tens_starts | digits | pynini.cross("zeru","0") 
                 
         inverted_graph_all = pynini.compose(pynini.invert(graph_all),rewrite_add_separator_fst)
         inverted_graph_all = pynini.compose(inverted_graph_all,remove_extra_space_fst)
