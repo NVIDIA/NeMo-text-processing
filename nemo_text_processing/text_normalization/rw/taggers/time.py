@@ -1,4 +1,5 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, DIGITAL UMUGANDA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,31 +24,17 @@ class TimeFst(GraphFst):
         
         hours = pynini.string_map([
             ('1', 'saa saba'),
-            ('2', 'saa mumani'),
+            ('2', 'saa munani'),
             ('3', 'saa cyenda'),
-            ('4', 'saa kumi'),
-            ('5', "saa kumi n'imwe"),
-            ('6', "saa kumi n'ebyiri"),
+            ('4', 'saa cumi'),
+            ('5', "saa cumi n'imwe"),
+            ('6', "saa cumi n'ebyiri"),
             ('7', 'saa moya'),
             ('8', 'saa mbiri'),
             ('9', 'saa tatu'),
             ('10', 'saa ine'),
             ('11', 'saa tanu'),
-            ('12', 'saa sita'),
-            ('13', 'saa saba'),
-            ('14', 'saa munani'),
-            ('15', 'saa cyenda'),
-            ('16', 'saa kumi'),
-            ('17', "saa kumi n'imwe"),
-            ('18', "saa kumi n'ebyiri"),
-            ('19', "saa moya"),
-            ("20", "saa mbiri"),
-            ("21", "saa tatu"),
-            ("22", "saa ine"),
-            ("23", "saa tanu"),
-            ("24", "saa sita")
-            
-
+            ('12', 'saa sita'),            
         ])
         
         minutes = pynini.string_map([
@@ -113,9 +100,7 @@ class TimeFst(GraphFst):
             ('59', " n'iminota mirongo itanu n'icyenda") ,
         ])
         
-        
-        final_graph = pynutil.insert("hours: \"")+hours+pynutil.insert("\"")+pynutil.delete(":")+pynutil.insert(" minutes: \"")+minutes+pynutil.insert("\"")
-
+        final_graph = pynutil.insert("hours:\"")+hours+pynutil.insert("\"")+pynutil.delete(":")+pynutil.insert(" minutes:\"")+minutes+pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
 
         self.fst = final_graph.optimize()

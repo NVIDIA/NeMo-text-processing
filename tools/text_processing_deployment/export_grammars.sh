@@ -30,9 +30,9 @@
 # To test ITN grammars, run:
 #       bash export_grammars.sh --GRAMMARS=itn_grammars --LANGUAGE=en --MODE=test
 
-GRAMMARS="tn_grammars" # tn_grammars
-INPUT_CASE="cased" # cased
-LANGUAGE="rw" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi', 'mr'} supports ITN only
+GRAMMARS="itn_grammars" # tn_grammars
+INPUT_CASE="lower_cased" # cased
+LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi', 'mr'} supports ITN only
 MODE="export" # default is one of {'export', 'interactive', 'test', 'ci'}. Default "export"
 OVERWRITE_CACHE="True" # Set to False to re-use .far files
 FORCE_REBUILD="False" # Set to True to re-build docker file
@@ -64,17 +64,17 @@ echo "WHITELIST = $WHITELIST"
 
 # check if WHITELIST file exists
 if [[ ${WHITELIST} != "" ]] && [[ -f $WHITELIST ]]; then
-  WHITELIST="--whitelist=${WHITELIST} "
-  echo "[I] Whitelist file wasn't provided or doesn't exist, using default"
+    WHITELIST="--whitelist=${WHITELIST} "
+    echo "[I] Whitelist file wasn't provided or doesn't exist, using default"
 else
-  WHITELIST=""
+    WHITELIST=""
 fi
 
 
 if [[ ${OVERWRITE_CACHE,,} == "true" ]] ; then
-  OVERWRITE_CACHE="--overwrite_cache "
+    OVERWRITE_CACHE="--overwrite_cache "
 else
-  OVERWRITE_CACHE=""
+    OVERWRITE_CACHE=""
 fi
 
 CLASSIFY_FAR=${CACHE_DIR}"/classify/tokenize_and_classify.far"
@@ -82,30 +82,28 @@ VERBALIZE_FAR=${CACHE_DIR}"/verbalize/verbalize.far"
 
 # check if .far files do not exist
 if [[ ! -f $CLASSIFY_FAR ]] || [[ ! -f $VERBALIZE_FAR ]] ; then
-  echo "[I] FSTs do not exist, will overwrite cache"
-  OVERWRITE_CACHE="--overwrite_cache "
+    echo "[I] FSTs do not exist, will overwrite cache"
+    OVERWRITE_CACHE="--overwrite_cache "
 fi
 
 if [[ ${OVERWRITE_CACHE} != "" ]] ; then
-  echo "[I] Exporting grammars"
-  python3 pynini_export.py --output_dir=${FAR_PATH} --grammars=${GRAMMARS} --input_case=${INPUT_CASE} \
+    echo "[I] Exporting grammars"
+    python3 pynini_export.py --output_dir=${FAR_PATH} --grammars=${GRAMMARS} --input_case=${INPUT_CASE} \
     --language=${LANGUAGE} --cache_dir=${CACHE_DIR} ${WHITELIST} ${OVERWRITE_CACHE} || exit 1
 fi
 
 if [[ ${FORCE_REBUILD,,} == "true" ]]; then
-  FORCE_REBUILD="--no-cache"
-  else FORCE_REBUILD=""
+    FORCE_REBUILD="--no-cache"
+    else FORCE_REBUILD=""
 fi
 
 find . -name "Makefile" -type f -delete
 
 if [[ ${MODE} == "test" ]] || [[ ${MODE} == "interactive" ]]; then
-  MODE=${MODE}_${GRAMMARS}
-  bash docker/build.sh $FORCE_REBUILD
-  bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE $GRAMMARS $FAR_PATH
+    MODE=${MODE}_${GRAMMARS}
+    bash docker/build.sh $FORCE_REBUILD
+    bash docker/launch.sh $MODE $LANGUAGE $INPUT_CASE $GRAMMARS $FAR_PATH
 else
-  echo "done mode: $MODE"
-  exit 0
+    echo "done mode: $MODE"
+    exit 0
 fi
-
-

@@ -1,4 +1,5 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# Copyright (c) 2024, DIGITAL UMUGANDA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,6 +31,6 @@ class TestTime:
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         pred = self.normalizer_rw.normalize(test_input, verbose=False)
-        assert pred.strip() == expected
+        assert pred == expected
 
         

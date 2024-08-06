@@ -44,7 +44,10 @@ testTNWhitelist() {
   runtest $input
 }
 
-
+testTNWord() {
+  input=$TEST_DIR/data_text_normalization/test_cases_word.txt
+  runtest $input
+}
 
 
 
