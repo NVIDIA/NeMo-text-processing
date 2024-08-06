@@ -29,8 +29,7 @@ from pynini.lib import pynutil
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying fraction
-          Finite state transducer for classifying date, 
+        Finite state transducer for classifying date, 
         e.g. पांच जनवरी दो हज़ार बारह -> date { month: "जनवरी" day: "५" year: "२०१२" preserve_order: true }
         e.g. दो हज़ार बारह -> date { year: "२०१२" preserve_order: true }     
     Args:
@@ -40,21 +39,16 @@ class DateFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="date", kind="classify")
         
-        cardinal_graph = cardinal.graph_no_exception
+        cardinal_graph = cardinal.graph
         
-        
-        month_graph = pynini.string_file(get_abs_path("data/months.tsv"))
-        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
+        month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
         graph_date_days = pynini.string_file(get_abs_path("data/date/date_days.tsv")).invert()
-        graph_date = graph_digit | graph_date_days
-        self.graph_date = graph_date
-        
-        insert_comma = pynutil.insert(",")
+        #self.graph_date_days = graph_date_days
 
         
-        self.day = pynini.closure(pynutil.insert("day: \"") + graph_date + pynutil.insert("\" "))
+        self.day = pynini.closure(pynutil.insert("day: \"") + pynutil.add_weight(graph_date_days, 0.5) + pynutil.insert("\" "))
         self.month = pynini.closure(pynutil.insert("month: \"") + month_graph + pynutil.insert("\" "))
-        self.year = pynini.closure(pynutil.insert("year: \"") + cardinal_graph + pynutil.insert("\" "))
+        self.year = pynini.closure(pynutil.insert("year: \"") + pynutil.add_weight(cardinal_graph, 0.3) + pynutil.insert("\" "))
         insert_comma = pynutil.insert(", ") 
         
         graph_date = self.day + delete_space + self.month + pynini.closure(delete_space + self.year, 0,1)
