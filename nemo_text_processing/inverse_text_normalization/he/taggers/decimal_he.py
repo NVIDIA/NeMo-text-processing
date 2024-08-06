@@ -61,9 +61,20 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="decimal", kind="classify")
 
+        # all cardinals
         cardinal_graph = cardinal.graph_no_exception
 
-        fractions = delete_zero_or_one_space + delete_and + pynini.string_file(get_abs_path("data/numbers/decimal_fractions.tsv"))
+        # all fractions
+        fractions = pynini.string_file(get_abs_path("data/numbers/decimal_fractions.tsv"))
+        fractions_graph = delete_zero_or_one_space + delete_and + fractions
+        fractions_graph = pynutil.insert("fractional_part: \"") + fractions_graph + pynutil.insert("\"")
+
+        # identify decimals that can be understood time, and don't convert them to avoid ambiguity
+        viable_minutes_verbose = ["חצי", "רבע"]
+        viable_minutes_exception = pynini.union(*viable_minutes_verbose).optimize()
+        fractions_wo_minutes = (pynini.project(fractions, "input") - viable_minutes_exception.arcsort()) @ fractions
+        fractions_wo_minutes = delete_zero_or_one_space + delete_and + fractions_wo_minutes
+        fractions_wo_minutes = pynutil.insert("fractional_part: \"") + fractions_wo_minutes + pynutil.insert("\"")
 
         graph_decimal = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_decimal |= pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
@@ -74,23 +85,50 @@ class DecimalFst(GraphFst):
 
         point = pynutil.delete("נקודה")
 
-        optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
-        )
+        graph_negative = pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space
+        optional_graph_negative = pynini.closure(graph_negative, 0, 1,)
 
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
 
-        fractions_graph = pynutil.insert("fractional_part: \"") + fractions + pynutil.insert("\"")
-        graph_wo_point = graph_integer + delete_extra_space + fractions_graph
+        # integer could be an hour, but minutes are cannot: convert to decimal
+        viable_hour_unviable_minutes = (
+            graph_integer
+            + delete_extra_space
+            + fractions_wo_minutes
+        )
+
+        # integer cannot be an hour, but minutes can: convert to decimal
+        unviable_hour_viable_minutes = (
+                pynutil.insert("integer_part: \"")
+                + cardinal.graph_wo_viable_hours
+                + pynutil.insert("\"")
+                + delete_extra_space
+                + fractions_graph
+        )
+
+        # minus sign followed by ambiguous decimal: convert to decimal, there is no negative time
+        negative_viable_time = (
+            graph_negative
+            + graph_integer
+            + delete_extra_space
+            + fractions_graph
+        )
+
+        # all decimals with fractions, not excluding anything (used in other FSTs)
+        all_decimals_wo_point = graph_integer + delete_extra_space + fractions_graph
+
+        # only cases with fractional part that cannot be interpreted as time
+        graph_wo_point = viable_hour_unviable_minutes | unviable_hour_viable_minutes | negative_viable_time
+
+        # all decimals with the word "point"
         graph_w_point = (
             pynini.closure(graph_integer + delete_extra_space, 0, 1) + point + delete_extra_space + graph_fractional
         )
 
-        self.final_graph_wo_sign = graph_w_point | graph_wo_point
-        final_graph = optional_graph_negative + self.final_graph_wo_sign
-
-        self.final_graph_wo_negative = self.final_graph_wo_sign | get_quantity(self.final_graph_wo_sign, cardinal.graph_hundred)
+        final_graph_wo_sign = graph_w_point | graph_wo_point
+        self.final_graph_wo_sign = graph_w_point | all_decimals_wo_point
+        final_graph = optional_graph_negative + final_graph_wo_sign
 
         quantity_graph = get_quantity(self.final_graph_wo_sign, cardinal.graph_hundred)
         final_graph |= optional_graph_negative + quantity_graph
@@ -104,6 +142,8 @@ if __name__ == '__main__':
     from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
     cardinal = CardinalFst()
     graph = DecimalFst(cardinal).fst
+    # apply_fst("שמונה ורבע מיליון", graph)
+    # apply_fst("שבעים ותשע וחצי", graph)
     # apply_fst("עשרים ושלוש וחצי", graph)
     # apply_fst("אחד נקודה שלוש", graph)
     # apply_fst("ארבע נקודה חמש מיליון", graph)
