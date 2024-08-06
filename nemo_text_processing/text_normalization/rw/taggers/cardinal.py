@@ -218,59 +218,83 @@ class CardinalFst(GraphFst):
 
         graph_tens_for_thousands = tens_for_beginnings +pynutil.delete(" ")+ digits_for_thousands | tens_for_beginnings+pynutil.insert("0") 
 
-        graph_tens_for_millions_trillions = tens_for_beginnings +pynutil.delete(" ")+ digits_millions_trillions | tens_for_beginnings+pynutil.insert("0") 
-        graph_hundreds = hundreds+pynutil.delete(" ")+graph_tens_ends | hundreds+pynutil.insert("00") | hundreds+pynutil.delete(" ")+pynutil.insert("0")+digits
-        graph_thousands = thousands+pynutil.delete(" ")+graph_hundreds | thousands+pynutil.insert(THREE_ZEROS) | thousands+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_ends \
+        graph_tens_for_millions_trillions = tens_for_beginnings +pynutil.delete(" ")+ digits_millions_trillions \
+                                    | tens_for_beginnings+pynutil.insert("0") 
+        graph_hundreds = hundreds+pynutil.delete(" ")+graph_tens_ends | hundreds+pynutil.insert("00") \
+                                    | hundreds+pynutil.delete(" ")+pynutil.insert("0")+digits
+        graph_thousands = thousands+pynutil.delete(" ")+graph_hundreds | thousands+pynutil.insert(THREE_ZEROS) \
+                                    | thousands+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_ends \
                                     | thousands+pynutil.delete(" ")+pynutil.insert("00")+digits
 
-        graph_ten_thousand_and_hundreds = ten_thousand +pynutil.insert(THREE_ZEROS) | ten_thousand +pynutil.delete(" ") + graph_hundreds | ten_thousand+pynutil.delete(" ") +pynutil.insert("0")+graph_tens_ends \
-                                    |ten_thousand+pynutil.delete(" ") +pynutil.insert("00")+digits
+        graph_ten_thousand_and_hundreds = ten_thousand +pynutil.insert(THREE_ZEROS) | ten_thousand +pynutil.delete(" ") + graph_hundreds \
+                                    | ten_thousand+pynutil.delete(" ") +pynutil.insert("0")+graph_tens_ends \
+                                    | ten_thousand+pynutil.delete(" ") +pynutil.insert("00")+digits
         prefix_tens_of_thousands = tens_of_thousands+pynutil.delete(" ") + digits_for_thousands 
-        graph_tens_of_thousands = pynutil.add_weight(graph_ten_thousand_and_hundreds, weight=-0.1) | prefix_tens_of_thousands+ pynutil.delete(" ")+ graph_hundreds \
-                                    |prefix_tens_of_thousands + pynutil.insert(THREE_ZEROS) \
-                                    | prefix_tens_of_thousands+pynutil.delete(" ")+pynutil.insert("0")+graph_hundreds | prefix_tens_of_thousands+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_ends \
+        graph_tens_of_thousands = pynutil.add_weight(graph_ten_thousand_and_hundreds, weight=-0.1) \
+                                    | prefix_tens_of_thousands+ pynutil.delete(" ")+ graph_hundreds \
+                                    | prefix_tens_of_thousands + pynutil.insert(THREE_ZEROS) \
+                                    | prefix_tens_of_thousands+pynutil.delete(" ")+pynutil.insert("0")+graph_hundreds \
+                                    | prefix_tens_of_thousands+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_ends \
                                     | prefix_tens_of_thousands+pynutil.delete(" ")+pynutil.insert("00")+digits
         
         prefix_hundreds_of_thousands = hundreds_of_thousands+pynutil.delete(" ") + graph_tens_for_thousands 
-        graph_hundreds_of_thousands =  hundreds_of_thousands+pynutil.insert(FIVE_ZEROS) | prefix_hundreds_of_thousands+pynutil.insert(THREE_ZEROS) | prefix_hundreds_of_thousands+pynutil.delete(" ")+graph_hundreds  \
+        graph_hundreds_of_thousands =  hundreds_of_thousands+pynutil.insert(FIVE_ZEROS) \
+                                    | prefix_hundreds_of_thousands+pynutil.insert(THREE_ZEROS) \
+                                    | prefix_hundreds_of_thousands+pynutil.delete(" ")+graph_hundreds  \
                                     | pynutil.add_weight(prefix_hundreds_of_thousands+pynutil.delete(" ")+pynutil.insert("00")+digits,weight=-0.1) \
                                     | prefix_hundreds_of_thousands+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_for_thousands  
         
-        graph_millions = millions +pynutil.delete(" ") + graph_hundreds_of_thousands | millions+pynutil.insert(SIX_ZEROS) | millions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_thousands \
-                                    | millions+pynutil.delete(" ")+pynutil.insert("00")+graph_thousands | millions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds \
+        graph_millions = millions +pynutil.delete(" ") + graph_hundreds_of_thousands | millions+pynutil.insert(SIX_ZEROS) \
+                                    | millions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_thousands \
+                                    | millions+pynutil.delete(" ")+pynutil.insert("00")+graph_thousands \
+                                    | millions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds \
                                     | millions+pynutil.delete(" ")+pynutil.insert(FOUR_ZEROS)+graph_tens_ends \
                                     | millions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+digits
         
         prefix_tens_of_millions =  tens_of_millions+pynutil.delete(" ") + digits_millions_trillions 
-        graph_tens_of_millions = prefix_tens_of_millions +pynutil.delete(" ")+graph_hundreds_of_thousands  | prefix_tens_of_millions+pynutil.delete(" ")+pynutil.insert(SIX_ZEROS) \
+        graph_tens_of_millions = prefix_tens_of_millions +pynutil.delete(" ")+graph_hundreds_of_thousands  \
+                                    | prefix_tens_of_millions+pynutil.delete(" ")+pynutil.insert(SIX_ZEROS) \
                                     | prefix_tens_of_millions+pynutil.delete(" ") +pynutil.insert("0")+graph_tens_of_thousands \
-                                    | prefix_tens_of_millions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds | prefix_tens_of_millions+pynutil.delete(" ")+pynutil.insert(FOUR_ZEROS)+graph_tens_ends \
-                                    | tens_of_millions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+graph_tens_ends | prefix_tens_of_millions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+digits
+                                    | prefix_tens_of_millions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds \
+                                    | prefix_tens_of_millions+pynutil.delete(" ")+pynutil.insert(FOUR_ZEROS)+graph_tens_ends \
+                                    | tens_of_millions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+graph_tens_ends \
+                                    | prefix_tens_of_millions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+digits
 
         prefix_hundreds_of_millions = hundreds_of_millions+pynutil.delete(" ") +graph_tens_for_millions_trillions
-        graph_hundreds_of_millions = prefix_hundreds_of_millions+pynutil.delete(" ")+graph_hundreds_of_thousands | prefix_hundreds_of_millions+pynutil.insert(SIX_ZEROS) \
-                                    | prefix_hundreds_of_millions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_thousands | prefix_hundreds_of_millions+pynutil.delete(" ")+pynutil.insert("00")+graph_thousands \
+        graph_hundreds_of_millions = prefix_hundreds_of_millions+pynutil.delete(" ")+graph_hundreds_of_thousands \
+                                    | prefix_hundreds_of_millions+pynutil.insert(SIX_ZEROS) \
+                                    | prefix_hundreds_of_millions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_thousands \
+                                    | prefix_hundreds_of_millions+pynutil.delete(" ")+pynutil.insert("00")+graph_thousands \
                                     | prefix_hundreds_of_millions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds \
                                     | prefix_hundreds_of_millions+pynutil.delete(" ")+pynutil.insert(FOUR_ZEROS)+graph_tens_ends
         
-        graph_trillions = trillions+pynutil.delete(" ")+graph_hundreds_of_millions | trillions+pynutil.insert(NINE_ZEROS) | trillions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_millions \
-                                    | trillions+pynutil.delete(" ")+pynutil.insert("00")+graph_millions | trillions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds_of_thousands \
-                                    | trillions+pynutil.delete(" ")+pynutil.insert(FOUR_ZEROS)+graph_tens_of_thousands | trillions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+graph_thousands\
-                                    | trillions+pynutil.delete(" ")+pynutil.insert(SIX_ZEROS)+graph_hundreds | trillions+pynutil.delete(" ")+pynutil.insert(SEVEN_ZEROS)+graph_tens_ends \
+        graph_trillions = trillions+pynutil.delete(" ")+graph_hundreds_of_millions | trillions+pynutil.insert(NINE_ZEROS) \
+                                    | trillions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_millions \
+                                    | trillions+pynutil.delete(" ")+pynutil.insert("00")+graph_millions \
+                                    | trillions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds_of_thousands \
+                                    | trillions+pynutil.delete(" ")+pynutil.insert(FOUR_ZEROS)+graph_tens_of_thousands \
+                                    | trillions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+graph_thousands\
+                                    | trillions+pynutil.delete(" ")+pynutil.insert(SIX_ZEROS)+graph_hundreds \
+                                    | trillions+pynutil.delete(" ")+pynutil.insert(SEVEN_ZEROS)+graph_tens_ends \
                                     | trillions+pynutil.delete(" ")+pynutil.insert(EIGHT_ZEROS)+digits
         
         prefix_tens_of_trillions =  tens_of_trillions+pynutil.delete(" ") + digits_millions_trillions
-        graph_tens_of_trillions = prefix_tens_of_trillions+pynutil.delete(" ")+graph_hundreds_of_millions | prefix_tens_of_trillions+pynutil.insert(NINE_ZEROS) \
-                                    | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_millions | \
-                                    prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert("00")+graph_millions | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds_of_thousands \
+        graph_tens_of_trillions = prefix_tens_of_trillions+pynutil.delete(" ")+graph_hundreds_of_millions \
+                                    | prefix_tens_of_trillions+pynutil.insert(NINE_ZEROS) \
+                                    | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_millions  \
+                                    | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert("00")+graph_millions \
+                                    | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds_of_thousands \
                                     | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(FOUR_ZEROS)+graph_tens_of_thousands \
                                     | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+graph_thousands \
-                                    | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(SIX_ZEROS)+graph_hundreds | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(SEVEN_ZEROS)+graph_tens_ends \
+                                    | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(SIX_ZEROS)+graph_hundreds \
+                                    | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(SEVEN_ZEROS)+graph_tens_ends \
                                     | prefix_tens_of_trillions+pynutil.delete(" ")+pynutil.insert(EIGHT_ZEROS)+digits 
         
         prefix_hundreds_of_trillions = hundreds_of_trillions+pynutil.delete(" ") +graph_tens_for_millions_trillions
-        graph_hundreds_of_trillions = prefix_hundreds_of_trillions+pynutil.delete(" ")+ graph_hundreds_of_millions | prefix_hundreds_of_trillions+pynutil.insert(NINE_ZEROS) \
-                                    | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_millions | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert("00")+graph_millions \
+        graph_hundreds_of_trillions = prefix_hundreds_of_trillions+pynutil.delete(" ")+ graph_hundreds_of_millions \
+                                    | prefix_hundreds_of_trillions+pynutil.insert(NINE_ZEROS) \
+                                    | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert("0")+graph_tens_of_millions \
+                                    | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert("00")+graph_millions \
                                     | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert(THREE_ZEROS)+graph_hundreds_of_thousands \
                                     | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert(FOUR_ZEROS)+graph_tens_of_thousands \
                                     | prefix_hundreds_of_trillions+pynutil.delete(" ")+pynutil.insert(FIVE_ZEROS)+graph_thousands \
