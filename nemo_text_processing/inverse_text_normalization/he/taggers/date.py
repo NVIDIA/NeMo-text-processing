@@ -21,12 +21,11 @@ def _get_year_graph(graph_two_digits, graph_thousands):
     """
     Transducer for year, e.g. twenty twenty -> 2020
     """
-    graph_bc = pynini.string_file(get_abs_path("data/year_suffix.tsv")).invert()
-    optional_graph_bc = pynini.closure(delete_space + insert_space + graph_bc, 0, 1)
     year_graph = pynini.union(
         (graph_two_digits + delete_space + graph_two_digits),  # 20 19, 40 12, 20 20
-        graph_thousands)  # 2012 - assuming no limit on the year
-    year_graph += optional_graph_bc  # optional graph for BC
+        graph_thousands
+    )  # 2012 - assuming no limit on the year
+
     year_graph.optimize()
     return year_graph
 
