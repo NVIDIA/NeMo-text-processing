@@ -64,9 +64,8 @@ class DateFst(GraphFst):
         all_month_graph = pynini.invert(all_month_graph)
         all_month_graph = pynutil.insert("month: \"") + all_month_graph + pynutil.insert("\"")
         month_names_graph = pynutil.insert("month: \"") + month_names + pynutil.insert("\"")
-        optional_month_prefix_graph = pynini.closure(
-            pynutil.insert("month_prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space, 0, 1
-        )
+        month_prefix_graph = pynutil.insert("month_prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space
+        optional_month_prefix_graph = pynini.closure(month_prefix_graph, 0, 1)
 
         year_graph = _get_year_graph(two_digits_graph, cardinal.graph_thousands)
         year_graph = pynutil.add_weight(year_graph, 0.001)
@@ -85,7 +84,7 @@ class DateFst(GraphFst):
             + day_graph
             + insert_space
             + delete_space
-            + optional_month_prefix_graph
+            + month_prefix_graph
             + all_month_graph
             + optional_graph_year
         )
