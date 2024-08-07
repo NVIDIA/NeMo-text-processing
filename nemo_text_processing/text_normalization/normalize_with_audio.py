@@ -35,6 +35,7 @@ To run this script with a .json manifest file, the manifest file should contain 
     "text" - raw text (could be changed using "--manifest_text_field")
     "pred_text" - ASR model prediction, see https://github.com/NVIDIA/NeMo/blob/main/examples/asr/transcribe_speech.py 
         on how to transcribe manifest
+
     Example for a manifest line:
         {"text": "In December 2015, ...", "pred_txt": "on december two thousand fifteen"}
 
