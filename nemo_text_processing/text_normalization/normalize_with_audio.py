@@ -33,9 +33,8 @@ The script provides multiple normalization options and chooses the best one that
 
 To run this script with a .json manifest file, the manifest file should contain the following fields:
     "text" - raw text (could be changed using "--manifest_text_field")
-    "pred_text" - ASR model prediction, see https://github.com/NVIDIA/NeMo/blob/main/examples/asr/transcribe_speech.py
+    "pred_text" - ASR model prediction, see https://github.com/NVIDIA/NeMo/blob/main/examples/asr/transcribe_speech.py 
         on how to transcribe manifest
-
     Example for a manifest line:
         {"text": "In December 2015, ...", "pred_txt": "on december two thousand fifteen"}
 
