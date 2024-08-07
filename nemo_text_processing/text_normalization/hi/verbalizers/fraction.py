@@ -53,11 +53,4 @@ class FractionFst(GraphFst):
         graph = self.graph 
 
         delete_tokens = self.delete_tokens(graph)
-        self.fst = delete_tokens.optimize()
-        
-#cardinal = CardinalFst() # calling CardinalFst 
-#fraction = FractionFst(cardinal)   # calling FractionFst                                                                                      
-#input_text = 'fraction { integer_part: "पैंसठ" numerator: "दो" denominator: "दो" }'   
-#input_text = 'fraction { numerator: "एक लाख" denominator: "सत्रह" }'   
-#output = apply_fst(input_text, fraction.fst)           
-#print(output)
+        self.fst = delete_tokens.optimize()        
