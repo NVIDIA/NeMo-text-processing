@@ -1,21 +1,25 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import csv
 import os
+import csv
 
 
+#############
+# CONSTANTS #
+#############
+units_feminine_dict = {"0": "אפס", "1": "אחת", "2": "שתיים", "3": "שלוש", "4": "ארבע", "5": "חמש", "6": "שש",
+                       "7": "שבע", "8": "שמונה", "9": "תשע"}
+
+units_masculine_dict = {"0": "אפס", "1": "אחד", "2": "שניים", "3": "שלושה", "4": "ארבעה", "5": "חמישה", "6": "שישה",
+                        "7": "שבעה", "8": "שמונה", "9": "תשעה"}
+
+tens_dict = {"2": "עשרים", "3": "שלושים", "4": "ארבעים", "5": "חמישים", "6": "שישים", "7": "שבעים",
+             "8": "שמונים", "9": "תשעים"}
+
+ten = {"short": "עשר", "long": "עשרה"}  # double pronunciation: short is 'eser' and 'asar', long is 'esre' and 'asara'
+
+
+#############
+# FUNCTIONS #
+#############
 def get_abs_path(rel_path):
     """
     Get absolute path
@@ -58,19 +62,6 @@ def augment_labels_with_punct_at_end(labels):
             if label[0][-1] == "." and label[1][-1] != ".":
                 res.append([label[0], label[1] + "."] + label[2:])
     return res
-
-
-
-units_feminine_dict = {"0": "אפס", "1": "אחת", "2": "שתיים", "3": "שלוש", "4": "ארבע", "5": "חמש", "6": "שש",
-                       "7": "שבע", "8": "שמונה", "9": "תשע"}
-
-units_masculine_dict = {"0": "אפס", "1": "אחד", "2": "שניים", "3": "שלושה", "4": "ארבעה", "5": "חמישה", "6": "שישה",
-                        "7": "שבעה", "8": "שמונה", "9": "תשעה"}
-
-tens_dict = {"2": "עשרים", "3": "שלושים", "4": "ארבעים", "5": "חמישים", "6": "שישים", "7": "שבעים",
-             "8": "שמונים", "9": "תשעים"}
-
-ten = {"short": "עשר", "long": "עשרה"}  # double pronunciation: short is 'eser' and 'asar', long is 'esre' and 'asara'
 
 
 def digit_by_digit(num):
