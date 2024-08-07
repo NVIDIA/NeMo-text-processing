@@ -147,36 +147,12 @@ class CardinalFst(GraphFst):
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
 
-    @staticmethod
-    def delete_word(word: str):
-        """ Capitalizes word for `cased` input"""
-        delete_graph = pynutil.delete(word).optimize()
-        return delete_graph.optimize()
-
 
 if __name__ == '__main__':
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
+
     g = CardinalFst().fst
-    # apply_fst("מינוס עשרים ושלוש", g)
-    # apply_fst("עשר", g)
-    # apply_fst("אפס", g)
-    # apply_fst("מינוס חמש", g)
-    # apply_fst("מאה עשרים ושתיים", g)
-    # apply_fst("מאה עשרים", g)
-    # apply_fst("מינוס תשע מאות וארבע", g)
-    # apply_fst("אלף", g)
-    # apply_fst("שלוש עשרה", g)
-    # apply_fst("אלף ושלושים", g)
-    # apply_fst("מינוס אלפיים ושלוש", g)
-    # apply_fst("שלושת אלפים ארבעים וחמש", g)
-    # apply_fst("ארבעים וחמישה אלפים ושתיים", g)
-    # apply_fst("תשע מאות אלף ותשע", g)
-    # apply_fst("מיליון", g)
-    # apply_fst("שלושה מיליון תשע מאות ארבעים וחמישה אלפים ושתיים", g)
-    # apply_fst("שלושה מיליון ארבעים וחמישה אלפים ושתיים", g)
-    # apply_fst("שלושה מיליון וארבעים וחמש אלף ושתיים", g)
-    # apply_fst("כמאה עשרים ושלוש", g)
-    # apply_fst("ושלוש מאות וחמש", g)
-    # apply_fst("בחמישים", g)
-    # apply_fst("שש", g)  # this should fail
-    # apply_fst("ושש", g)  # this should fail
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

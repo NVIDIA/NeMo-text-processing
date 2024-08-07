@@ -101,21 +101,13 @@ class DateFst(GraphFst):
 
 
 if __name__ == '__main__':
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
     from nemo_text_processing.inverse_text_normalization.he.taggers.ordinal import OrdinalFst
+
     c = CardinalFst()
     g = DateFst(c, OrdinalFst(c)).fst
-    # apply_fst("אחד במאי אלף תשע מאות שמונים ושלוש", g)
-    # apply_fst("הראשון ביוני אלפיים ושתיים עשרה", g)
-    # apply_fst("העשירי ביוני", g)
-    # apply_fst("מרץ אלף תשע מאות שמונים ותשע", g)
-    # apply_fst("שלושים למאי תשעים ותשע", g)
-    # apply_fst("שבעים לפני הספירה", g)
-    # apply_fst("עשרים עשרים ושתיים לפני הספירה", g)
-    # apply_fst("השלוש עשרה בינואר עשרים עשרים", g)
-    # apply_fst("בשני לפברואר עשרים עשרים ואחת", g)
-    # apply_fst("במרץ אלפיים עשרים ושתיים", g)
-    # apply_fst("בשלישי לשלישי אלפיים עשרים ושתיים", g)
-    # apply_fst("בינואר עשרים עשרים", g)
-    # apply_fst("בשנת תשעים ושמונה", g)
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

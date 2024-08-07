@@ -23,8 +23,10 @@ class OrdinalFst(GraphFst):
 
 
 if __name__ == "__main__":
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
 
     cardinal = OrdinalFst().fst
-    # apply_fst('ordinal { integer: "1" }', cardinal)
-    # apply_fst('ordinal { integer: "10" }', cardinal)
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

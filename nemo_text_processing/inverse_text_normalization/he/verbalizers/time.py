@@ -104,14 +104,10 @@ class TimeFst(GraphFst):
 
 
 if __name__ == "__main__":
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
-    time = TimeFst().fst
-    # apply_fst('time { hours: "2" minutes: "10" suffix: "בוקר" }', time)
-    # apply_fst('time { hours: "2" minutes: "01" suffix: "צהריים" }', time)
-    # apply_fst('time { hours: "12" minutes: "03" suffix: "צהריים" }', time)
-    # apply_fst('time { hours: "2" minutes: "20" suffix: "בוקר" }', time)
-    # apply_fst('time { hours: "3" minutes: "00" suffix: "לילה" }', time)
-    # apply_fst('time { hours: "2" minutes: "55" suffix: "לילה" }', time)
-    # apply_fst('time { hours: "2" minutes: "57" suffix: "בוקר" }', time)
-    # apply_fst('time { prefix: "ב" hours: "6" minutes: "32" suffix: "ערב" }', time)
-    # apply_fst('time { prefix: "בשעה" hours: "2" minutes: "10" suffix: "צהריים" }', time)
+
+    g = TimeFst().fst
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

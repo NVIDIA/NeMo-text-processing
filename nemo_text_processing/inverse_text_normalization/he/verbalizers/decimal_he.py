@@ -65,9 +65,10 @@ class DecimalFst(GraphFst):
 
 
 if __name__ == "__main__":
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
 
-    decimal = DecimalFst().fst
-    # apply_fst('decimal { integer_part: "0"  fractional_part: "33" }', decimal)
-    # apply_fst('decimal { negative: "true" integer_part: "400"  fractional_part: "323" }', decimal)
-    # apply_fst('decimal { integer_part: "4"  fractional_part: "5" quantity: "מיליון" }', decimal)
+    g = DecimalFst().fst
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

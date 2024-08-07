@@ -95,17 +95,14 @@ class MeasureFst(GraphFst):
 
 
 if __name__ == '__main__':
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
     from nemo_text_processing.inverse_text_normalization.he.taggers.decimal_he import DecimalFst
+
     cardinal = CardinalFst()
     decimal = DecimalFst(cardinal)
     g = MeasureFst(cardinal, decimal).fst
-    # apply_fst("שלוש וחצי קילוגרם", g)
-    # apply_fst("לארבע סנטימטר", g)
-    # apply_fst("חמש עשרה אחוז", g)
-    # apply_fst("מינוס חמש עשרה אחוז", g)
-    # apply_fst("שלוש מיליגרם", g)
-    # apply_fst("אלף אחוז", g)
-    # apply_fst("אחוז אחד", g)
-    # apply_fst("סנטימטר אחד", g)
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

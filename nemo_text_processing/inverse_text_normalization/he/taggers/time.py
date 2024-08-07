@@ -211,31 +211,10 @@ class TimeFst(GraphFst):
 
 
 if __name__ == '__main__':
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
-    graph = TimeFst().fst
-    # apply_fst("שלוש דקות לחצות", graph)
-    # apply_fst("שתיים ורבע", graph)
-    # apply_fst("באחת ושתי דקות בצהריים", graph)
-    # apply_fst("שתיים ועשרה בבוקר", graph)
-    # apply_fst("בחמש בצהריים", graph)
-    # apply_fst("שתיים ועשרה בצהריים", graph)
-    # apply_fst("בשתיים ועשרה אחרי הצהריים", graph)
-    # apply_fst("שתיים ודקה בצהריים", graph)
-    # apply_fst("שתיים עשרה ושלוש דקות אחרי הצהריים", graph)
-    # apply_fst("שש ועשרים דקות בערב", graph)
-    # apply_fst("חמישה לשלוש בבוקר", graph)
-    # apply_fst("רבע לשש בערב", graph)
-    # apply_fst("שלוש בצהריים", graph)
-    # apply_fst("חמישה לשלוש בלילה", graph)
-    # apply_fst("חמישה לשלוש בצהריים", graph)
-    # apply_fst("שלוש דקות לשלוש בבוקר", graph)
-    # apply_fst("שלוש וחצי בבוקר", graph)
-    # apply_fst("חמש ורבע בערב", graph)
-    # apply_fst("בחמש ורבע אחרי הצהריים", graph)
-    # apply_fst("שתיים עשרה בלילה", graph)
-    # apply_fst("חצות ועשרה", graph)
-    # apply_fst("חמישה לחצות", graph)
-    # apply_fst("חצות בלילה", graph)
-    # apply_fst("בחצות", graph)
-    # apply_fst("שתיים עשרה וחצי", graph)
-    # apply_fst("ארבע עשרה", graph) # should fail
+
+    g = TimeFst().fst
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

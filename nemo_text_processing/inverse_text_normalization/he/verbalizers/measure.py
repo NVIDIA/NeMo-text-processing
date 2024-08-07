@@ -102,18 +102,14 @@ class MeasureFst(GraphFst):
 
 
 if __name__ == "__main__":
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     from nemo_text_processing.inverse_text_normalization.he.verbalizers.cardinal import CardinalFst
     from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal_he import DecimalFst
 
     cardinal = CardinalFst()
     decimal = DecimalFst()
-    measure_fst = MeasureFst(decimal, cardinal).fst
-    # apply_fst('measure { prefix: "מ" cardinal { integer: "10" } units: "%" }', measure_fst)
-    # apply_fst('measure { prefix: "ל" cardinal { integer: "4" } spaced_units: "ס״מ" }', measure_fst)
-    # apply_fst('measure { cardinal { integer: "15" } units: "%" }', measure_fst)
-    # apply_fst('measure { negative: "-" cardinal { integer: "15" } units: "%" }', measure_fst)
-    # apply_fst('measure { cardinal { integer: "3" } spaced_units: "מ״ג" }', measure_fst)
-    # apply_fst('measure { cardinal { integer: "1000" } units: "%" }', measure_fst)
-    # apply_fst('measure { units: "%" cardinal { integer: "1" } }', measure_fst)
-    # apply_fst('measure { spaced_units: "ס״מ" cardinal { integer: "1" } }', measure_fst)
+    g = MeasureFst(decimal, cardinal).fst
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)
