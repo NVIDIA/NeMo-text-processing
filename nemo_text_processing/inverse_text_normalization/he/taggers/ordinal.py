@@ -28,11 +28,12 @@ class OrdinalFst(GraphFst):
 
 
 if __name__ == '__main__':
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
-    cardinal = CardinalFst()
-    ordinal = OrdinalFst(cardinal).fst
 
-    # apply_fst("ראשון", ordinal)
-    # apply_fst("שביעי", ordinal)
-    # apply_fst("עשירי", ordinal)
+    cardinal = CardinalFst()
+    g = OrdinalFst(cardinal).fst
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

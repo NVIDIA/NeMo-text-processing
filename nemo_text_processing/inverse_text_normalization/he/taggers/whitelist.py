@@ -57,10 +57,12 @@ class WhiteListFst(GraphFst):
         final_graph = optional_prefix_graph + graph
         self.fst = final_graph.optimize()
 
-if __name__ == "__main__":
-    from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
-    g = WhiteListFst().fst
-    apply_fst("אחר כך", g)
-    apply_fst("עורך דין", g)
-    apply_fst("ועורך דין", g)
 
+if __name__ == "__main__":
+
+    from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
+
+    g = WhiteListFst().fst
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)

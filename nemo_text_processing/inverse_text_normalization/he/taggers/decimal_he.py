@@ -144,15 +144,12 @@ class DecimalFst(GraphFst):
 
 
 if __name__ == '__main__':
+
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
+
     cardinal = CardinalFst()
-    graph = DecimalFst(cardinal).fst
-    # apply_fst("בשתיים וחצי מיליון", graph)
-    # apply_fst("שמונה ורבע מיליון", graph)
-    # apply_fst("שבעים ותשע וחצי", graph)
-    # apply_fst("עשרים ושלוש וחצי", graph)
-    # apply_fst("אחד נקודה שלוש", graph)
-    # apply_fst("ארבע נקודה חמש מיליון", graph)
-    # apply_fst("מינוס ארבע מאות נקודה שלוש שתיים שלוש", graph)
-    # apply_fst("אפס נקודה שלושים ושלוש", graph)
+    g = DecimalFst(cardinal).fst
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst("טקסט לבדיקה", g)
