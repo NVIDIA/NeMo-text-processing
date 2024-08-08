@@ -94,7 +94,15 @@ class DateFst(GraphFst):
             + graph_year
         )
 
-        final_graph = graph_dmy | graph_my
+        year_only_prefix = pynini.accep("בשנת")
+        graph_y_only = (
+            pynutil.insert("year_only_prefix: \"")
+            + year_only_prefix
+            + pynutil.insert("\"")
+            + graph_year
+        )
+
+        final_graph = graph_dmy | graph_my | graph_y_only
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
 

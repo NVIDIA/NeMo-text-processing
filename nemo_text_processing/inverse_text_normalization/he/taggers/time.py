@@ -34,12 +34,6 @@ class TimeFst(GraphFst):
         to_hour_graph = pynini.string_file(get_abs_path("data/time/to_hour.tsv"))
         minute_to_graph = pynini.string_file(get_abs_path("data/time/minute_to.tsv"))
         suffix_graph = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
-        to_suffix_graph = pynini.union(
-            pynutil.delete("לפנות") + delete_space,
-            pynutil.delete("ב"),
-            pynutil.delete("אחר") + delete_space + pynutil.delete("ה"),
-            pynutil.delete("אחרי") + delete_space + pynutil.delete("ה")
-        )
 
         time_prefix = pynini.string_file(get_abs_path("data/prefix.tsv"))
         time_prefix_graph = (
@@ -97,8 +91,8 @@ class TimeFst(GraphFst):
             graph_minute_double
         )
 
-        final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
-        final_suffix = delete_space + insert_space + to_suffix_graph + final_suffix
+        final_suffix = pynutil.insert("suffix: \"") + suffix_graph + pynutil.insert("\"")
+        final_suffix = delete_space + insert_space + final_suffix
 
         graph_h_and_m = (
             final_graph_hour
@@ -217,4 +211,4 @@ if __name__ == '__main__':
     g = TimeFst().fst
 
     # To test this FST, remove comment out and change the input text
-    # apply_fst("טקסט לבדיקה", g)
+    apply_fst('רבע לשש בבוקר', g)

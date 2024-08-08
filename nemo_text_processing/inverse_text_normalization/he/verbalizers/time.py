@@ -4,6 +4,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_space,
+    insert_space,
     delete_zero_or_one_space,
 )
 from pynini.lib import pynutil
@@ -12,10 +13,10 @@ from pynini.lib import pynutil
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time in Hebrew
-        e.g. time { hours: "2" minutes: "55" suffix: "לילה" } -> 2:55
-        e.g. time { hours: "2" minutes: "57" suffix: "בוקר" } -> 2:57
-        e.g. time { prefix: "ב" hours: "6" minutes: "32" suffix: "ערב" } -> ב-18:32
-        e.g. time { prefix: "בשעה" hours: "2" minutes: "10" suffix: "צהריים" } -> בשעה-14:10
+        e.g. time { hours: "2" minutes: "55" suffix: "בלילה" } -> 2:55 בלילה
+        e.g. time { hours: "2" minutes: "57" suffix: "בבוקר" } -> 2:57 בבוקר
+        e.g. time { prefix: "ב" hours: "6" minutes: "32" suffix: "בערב" } -> ב-18:32 בערב
+        e.g. time { prefix: "בשעה" hours: "2" minutes: "10" suffix: "בצהריים" } -> בשעה-14:10 בצהריים
 
     """
 
@@ -54,10 +55,33 @@ class TimeFst(GraphFst):
             ("4", "4"),
         ])
 
-        day_suffixes = pynutil.delete("suffix: \"בוקר\"")
-        noon_suffixes = pynutil.delete("suffix: \"צהריים\"")
-        evening_suffixes = pynutil.delete("suffix: \"ערב\"")
-        night_suffixes = pynutil.delete("suffix: \"לילה\"")
+        day_suffixes = (
+            insert_space
+            + pynutil.delete("suffix: \"")
+            + (pynini.accep("בבוקר") | pynini.accep("לפנות בוקר"))
+            + pynutil.delete("\"")
+        )
+
+        noon_suffixes = (
+                insert_space
+                + pynutil.delete("suffix: \"")
+                + (pynini.accep("בצהריים") | pynini.accep("אחרי הצהריים") | pynini.accep("אחר הצהריים"))
+                + pynutil.delete("\"")
+        )
+
+        evening_suffixes = (
+                insert_space
+                + pynutil.delete("suffix: \"")
+                + (pynini.accep("בערב") | pynini.accep("לפנות ערב"))
+                + pynutil.delete("\"")
+        )
+
+        night_suffixes = (
+                insert_space
+                + pynutil.delete("suffix: \"")
+                + pynini.accep("בלילה")
+                + pynutil.delete("\"")
+        )
 
         hour = (
             pynutil.delete("hours:")
