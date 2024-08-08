@@ -1,6 +1,6 @@
 import pynini
 from pynini.lib import pynutil
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_ALPHA
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_ALPHA, NEMO_DIGIT
 
 
 class DecimalFst(GraphFst):
@@ -16,6 +16,16 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="verbalize")
         optionl_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)
 
+        # Need parser to group digits by threes
+        exactly_three_digits = NEMO_DIGIT ** 3
+        at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
+
+        # Thousands separator
+        group_by_threes = (
+            at_most_three_digits +
+            (pynutil.insert(",") + exactly_three_digits).closure()
+        )
+
         integer = (
             pynutil.delete("integer_part:")
             + delete_space
@@ -23,6 +33,9 @@ class DecimalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
+
+        integer = integer @ group_by_threes
+
         optional_integer = pynini.closure(integer + delete_space, 0, 1)
 
         fractional = (
