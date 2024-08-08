@@ -13,5 +13,5 @@ class TestFullSentences:
     @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
-        pred = self.inverse_normalizer_en.inverse_normalize(test_input, verbose=False)
+        pred = self.inverse_normalizer_en.inverse_normalize(test_input, verbose=True)
         assert pred == expected

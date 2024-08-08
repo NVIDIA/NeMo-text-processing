@@ -5,6 +5,7 @@ from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_space,
+    insert_space,
     delete_zero_or_one_space,
 )
 
@@ -63,12 +64,11 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        year_prefix = (
-                pynutil.delete("year_prefix:")
+        year_only_prefix = (
+                pynutil.delete("year_only_prefix:")
                 + delete_space
                 + pynutil.delete("\"")
-                + pynutil.delete(NEMO_NOT_QUOTE, 1)
-                + pynutil.insert('-')
+                + pynini.accep("בשנת")
                 + pynutil.delete("\"")
                 + delete_space
         )
@@ -111,12 +111,20 @@ class DateFst(GraphFst):
         )
 
         # only year
-        graph_y = (
-            pynini.closure(year_prefix + delete_zero_or_one_space, 0, 1) +
-            year
-        )
+        graph_y_only = year_only_prefix + insert_space + year
 
-        final_graph = (graph_dm | graph_dmy | graph_my | graph_y) + delete_space
+        final_graph = (graph_dm | graph_dmy | graph_my | graph_y_only) + delete_space
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
+
+
+if __name__ == '__main__':
+
+    from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
+    from nemo_text_processing.inverse_text_normalization.he.verbalizers.date import DateFst
+
+    g = DateFst().fst
+
+    # To test this FST, remove comment out and change the input text
+    # apply_fst('טקסט לבדיקה', g)
