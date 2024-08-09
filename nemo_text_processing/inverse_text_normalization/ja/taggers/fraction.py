@@ -37,13 +37,18 @@ class FractionFst(GraphFst):
         decimal = decimal.just_decimal
 
         fraction_word = pynutil.delete("分の") | pynutil.delete(" 分 の　") | pynutil.delete("分 の　") | pynutil.delete("分 の")
-        integer_word = pynini.accep("と") | pynini.accep("荷")
-        optional_sign = (
+        integer_word = pynutil.delete("と") | pynutil.delete("荷")
+        root_word = pynini.accep("√") | pynini.cross("ルート", "√")
+
+        graph_sign = (
             pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")
         )
 
-        root_word = pynini.accep("√") | pynini.cross("ルート", "√")
-        root_integer = (
+        graph_numerator_sign = (
+            pynutil.insert("field_order: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")
+        )  ###
+
+        graph_integer = (
             pynutil.insert("integer_part: \"")
             + (
                 (decimal | decimal + integer_word)
@@ -54,7 +59,7 @@ class FractionFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        root_denominator = (
+        graph_denominator = (
             pynutil.insert("denominator: \"")
             + (
                 ((decimal) | (cardinal + root_word + cardinal) | (root_word + cardinal) | cardinal)
@@ -62,7 +67,7 @@ class FractionFst(GraphFst):
             )
             + pynutil.insert("\"")
         )
-        root_numerator = (
+        graph_numerator = (
             pynutil.insert("numerator: \"")
             + (
                 pynini.closure(pynutil.delete(' '))
@@ -71,26 +76,43 @@ class FractionFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        graph_root_fraction = (
-            pynini.closure((optional_sign + pynutil.insert(" ")), 0, 1)
-            + root_denominator
+        graph_fraction_sign = (
+            graph_sign
+            + pynutil.insert(" ")
+            + graph_denominator
             + pynutil.insert(" ")
             + fraction_word
-            + root_numerator
-        )
+            + graph_numerator
+        ) 
+
+        graph_fraction_no_sign = (graph_denominator + pynutil.insert(" ") + fraction_word + graph_numerator)
+
+        graph_fraction_numerator_sign = (
+            graph_denominator
+            + pynutil.insert(" ")
+            + fraction_word
+            + graph_numerator_sign
+            + pynutil.insert(" ")
+            + graph_numerator
+        ) 
+        
+        graph_regular_fractions = graph_fraction_sign | graph_fraction_no_sign | graph_fraction_numerator_sign
+
+
+
 
         graph_root_with_integer = (
-            pynini.closure((optional_sign + pynutil.insert(" ")), 0, 1)
-            + root_integer
+            pynini.closure((graph_sign + pynutil.insert(" ")), 0, 1)
+            + graph_integer
             # + inetegr_word
             + pynutil.insert(" ")
-            + root_denominator
+            + graph_denominator
             + pynutil.insert(" ")
             + fraction_word
-            + root_numerator
+            + graph_numerator
         )
 
-        final_graph = graph_root_fraction | graph_root_with_integer
+        final_graph = graph_regular_fractions | graph_root_with_integer
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
