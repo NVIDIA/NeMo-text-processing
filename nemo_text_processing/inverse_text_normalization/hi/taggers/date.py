@@ -43,18 +43,24 @@ class DateFst(GraphFst):
         
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
         graph_date_days = pynini.string_file(get_abs_path("data/date/date_days.tsv")).invert()
-        #self.graph_date_days = graph_date_days
-
+        graph_sun_varsh_sadhi = pynini.string_file(get_abs_path("data/date/sun_varsh_sadhi.tsv"))
         
-        self.day = pynini.closure(pynutil.insert("day: \"") + pynutil.add_weight(graph_date_days, 0.5) + pynutil.insert("\" "))
-        self.month = pynini.closure(pynutil.insert("month: \"") + month_graph + pynutil.insert("\" "))
-        self.year = pynini.closure(pynutil.insert("year: \"") + pynutil.add_weight(cardinal_graph, 0.3) + pynutil.insert("\" "))
-        insert_comma = pynutil.insert(", ") 
         
-        graph_date = self.day + delete_space + self.month + pynini.closure(delete_space + self.year, 0,1)
+        self.day = pynutil.insert("day: \"") + graph_date_days + pynutil.insert("\" ")
+        self.month = pynutil.insert("month: \"") + month_graph + pynutil.insert("\" ")
+        self.year = pynutil.insert("year: \"") + pynutil.add_weight(cardinal_graph, 0.3) + pynutil.insert("\" ")
+        insert_comma = pynutil.insert(", ")
+        
+        graph_day_month = self.day + delete_space + self.month
+        graph_month_day = self.month + delete_space + self.day
+        graph_day_month_year = self.day + delete_space + self.month + delete_space + self.year
+        graph_month_day_year = self.month + delete_space + self.day + delete_space + self.year
+        graph_month_year = self.month + delete_space + self.year
+        graph_saal = graph_sun_varsh_sadhi + insert_space + self.year
+        
 
-        graph = graph_date 
+        graph = graph_day_month | graph_month_year | graph_day_month_year | graph_month_day_year | graph_month_year | graph_saal
         self.graph = graph.optimize()
         
         final_graph = self.add_tokens(graph)
-        self.fst = final_graph.optimize()
+        self.fst = final_graph
