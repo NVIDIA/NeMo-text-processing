@@ -4,7 +4,7 @@ from nemo_text_processing.inverse_text_normalization.he.verbalizers.date import 
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal_he import DecimalFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.whitelist import WhiteListFst
 # from nemo_text_processing.inverse_text_normalization.he.verbalizers.electronic import ElectronicFst

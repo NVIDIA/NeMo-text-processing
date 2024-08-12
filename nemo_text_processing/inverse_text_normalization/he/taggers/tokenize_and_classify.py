@@ -10,7 +10,7 @@ from nemo_text_processing.inverse_text_normalization.he.taggers.word import Word
 from nemo_text_processing.inverse_text_normalization.he.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.he.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.decimal_he import DecimalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.he.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.he.taggers.punctuation import PunctuationFst
 # from nemo_text_processing.inverse_text_normalization.he.taggers.money import MoneyFst
