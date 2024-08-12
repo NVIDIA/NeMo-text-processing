@@ -10,7 +10,7 @@ class TestFullSentences:
     inverse_normalizer_en = InverseNormalizer(lang='he', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('he/data_inverse_text_normalization/test_full_sentences.txt'))
-    @pytest.mark.run_only_on('GPU')
+    @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_en.inverse_normalize(test_input, verbose=False)

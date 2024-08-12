@@ -2,7 +2,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.decimal_he import DecimalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
-    from nemo_text_processing.inverse_text_normalization.he.taggers.decimal_he import DecimalFst
+    from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
 
     cardinal = CardinalFst()
     decimal = DecimalFst(cardinal)

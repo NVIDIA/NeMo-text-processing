@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
     from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
     from nemo_text_processing.inverse_text_normalization.he.verbalizers.cardinal import CardinalFst
-    from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal_he import DecimalFst
+    from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal import DecimalFst
 
     cardinal = CardinalFst()
     decimal = DecimalFst()
