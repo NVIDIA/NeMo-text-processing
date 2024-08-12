@@ -55,8 +55,6 @@ class DecimalFst(GraphFst):
         e.g. אפס נקודה שלושים ושלוש -> decimal { integer_part: "0"  fractional_part: "33" }
     Args:
         cardinal: CardinalFst
-
-    TODO: add and a half, and a quarter only for negative numbers and numbers with quantity
     """
 
     def __init__(self, cardinal: GraphFst):
