@@ -29,4 +29,4 @@ if __name__ == "__main__":
     cardinal = OrdinalFst().fst
 
     # To test this FST, remove comment out and change the input text
-    # apply_fst("טקסט לבדיקה", g)
+    # apply_fst('טקסט לבדיקה כאן', g)
