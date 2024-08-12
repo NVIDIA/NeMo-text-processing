@@ -45,8 +45,8 @@ class TimeFst(GraphFst):
         
         delete_minute = pynutil.delete("मिनट")
         
-        self.hour = pynini.closure(pynutil.insert("hour: \"") + hour_graph + pynutil.insert("\" "))
-        self.minute = pynini.closure(pynutil.insert("minute: \"") + minute_graph + pynutil.insert("\" "))
+        self.hour = pynutil.insert("hour: \"") + hour_graph + pynutil.insert("\" ")
+        self.minute = pynutil.insert("minute: \"") + minute_graph + pynutil.insert("\" ")
 
         graph_time = self.hour + pynini.closure(delete_space + delete_baje, 0,1) + self.minute + pynini.closure(delete_space + delete_minute, 0,1)
 
