@@ -155,4 +155,4 @@ if __name__ == '__main__':
     g = CardinalFst().fst
 
     # To test this FST, remove comment out and change the input text
-    apply_fst('שתיים עשרה אלף ושתיים עשרה', g)
+    # apply_fst('טקסט לבדיקה כאן', g)
