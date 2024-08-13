@@ -24,7 +24,7 @@ from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
-from nemo_text_processing.text_normalization.en.utils import load_labels
+from nemo_text_processing.inverse_text_normalization.he.utils import load_labels
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
