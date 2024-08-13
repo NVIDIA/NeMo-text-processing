@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
 
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.time import TimeFst

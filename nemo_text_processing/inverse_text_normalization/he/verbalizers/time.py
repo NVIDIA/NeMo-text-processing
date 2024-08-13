@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_QUOTE,
     GraphFst,
