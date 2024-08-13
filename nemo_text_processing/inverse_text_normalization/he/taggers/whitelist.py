@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import os
-
 import pynini
+from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
@@ -24,7 +23,6 @@ from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     convert_space,
     string_map_cased, insert_space,
 )
-from pynini.lib import pynutil
 
 
 class WhiteListFst(GraphFst):
