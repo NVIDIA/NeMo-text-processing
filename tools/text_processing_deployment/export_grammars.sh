@@ -32,7 +32,7 @@
 
 GRAMMARS="itn_grammars" # tn_grammars
 INPUT_CASE="lower_cased" # cased
-LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi', 'mr'} supports ITN only
+LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi', 'mr', 'he'} supports ITN only
 MODE="export" # default is one of {'export', 'interactive', 'test', 'ci'}. Default "export"
 OVERWRITE_CACHE="True" # Set to False to re-use .far files
 FORCE_REBUILD="False" # Set to True to re-build docker file
