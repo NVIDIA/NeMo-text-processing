@@ -15,8 +15,18 @@
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.inverse_text_normalization.en.utils import get_various_formats
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    MIN_POS_WEIGHT,
+    NEMO_ALPHA,
+    GraphFst,
+    capitalized_input_graph,
+    insert_space,
+)
+from nemo_text_processing.text_normalization.en.utils import load_labels
 
 from nemo_text_processing.inverse_text_normalization.en.utils import get_various_formats
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
@@ -39,7 +49,7 @@ class ElectronicFst(GraphFst):
     and URLS (which get converted to a "protocol" field).
         e.g. c d f uno arroba a b c punto e d u -> tokens { electronic { username: "cdf1" domain: "abc.edu" } }
         e.g. doble ve doble ve doble ve a b c punto e d u -> tokens { electronic { protocol: "www.abc.edu" } }
-
+    
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
     """
