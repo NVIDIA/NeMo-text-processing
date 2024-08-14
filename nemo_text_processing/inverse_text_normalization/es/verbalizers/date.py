@@ -15,7 +15,6 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
@@ -33,9 +32,6 @@ class DateFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="date", kind="verbalize")
-        graph_month = pynini.string_file(get_abs_path("data/dates/months.tsv"))
-        graph_month |= pynini.string_file(get_abs_path("data/dates/months_cased.tsv"))
-
         year = (
             pynutil.delete("year:")
             + delete_space
@@ -43,7 +39,13 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        month = pynutil.delete("month:") + delete_space + pynutil.delete("\"") + graph_month + pynutil.delete("\"")
+        month = (
+            pynutil.delete("month:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
         day = (
             pynutil.delete("day:")
             + delete_space

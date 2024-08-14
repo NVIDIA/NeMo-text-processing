@@ -1,8 +1,8 @@
-usted~Ud.
-ustedes~Uds.
-habla usted español~habla Ud. español
-hablan ustedes español~hablan Uds. español
-estados unidos~EE. UU.
+usted~ud.
+ustedes~uds.
+habla usted español~habla ud. español
+hablan ustedes español~hablan uds. español
+estados unidos~ee. uu.
 doctor dao~dr. dao
 misses smith~mrs. smith
 mister dao~mr. dao
