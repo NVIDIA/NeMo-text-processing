@@ -32,9 +32,14 @@ pipeline {
 >>>>>>> 5a0f8d9 (update en tn folder to see if CI tests run - DO NOT MERGE (#199))
 =======
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-02-24-0'
+<<<<<<< HEAD
 >>>>>>> 282e91c (Reverts EN TN fixes for Issue #166 (#202))
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-27-23-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-13-23-2'
+=======
+    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-23-24-0'
+    ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-23-24-0'
+>>>>>>> 5246add (es and es_en changes for unified models (#143))
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
 <<<<<<< HEAD
     HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
