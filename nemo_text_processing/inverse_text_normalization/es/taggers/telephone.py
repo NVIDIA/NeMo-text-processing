@@ -14,9 +14,15 @@
 
 import pynini
 from pynini.lib import pynutil
-
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    GraphFst,
+    capitalized_input_graph,
+    delete_space,
+)
+from nemo_text_processing.text_normalization.es.graph_utils import ES_PLUS
 
 
 class TelephoneFst(GraphFst):
@@ -31,9 +37,12 @@ class TelephoneFst(GraphFst):
             "twelve thirty four" = "1234".
 
         (we ignore more complicated cases such as "three hundred and two" or "three nines").
+    
+        Args:
+            input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="telephone", kind="classify")
 
         # create `single_digits` and `double_digits` graphs as these will be
@@ -42,8 +51,16 @@ class TelephoneFst(GraphFst):
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
         graph_twenties = pynini.string_file(get_abs_path("data/numbers/twenties.tsv"))
+        graph_zero = pynini.cross("cero", "0")
 
-        single_digits = graph_digit.optimize() | pynini.cross("cero", "0")
+        if input_case == INPUT_CASED:
+            graph_digit = capitalized_input_graph(graph_digit)
+            graph_ties = capitalized_input_graph(graph_ties)
+            graph_teen = capitalized_input_graph(graph_teen)
+            graph_twenties = capitalized_input_graph(graph_twenties)
+            graph_zero = pynini.cross(pynini.union("cero", "Cero"), "0").optimize()
+
+        single_digits = graph_digit.optimize() | graph_zero
 
         double_digits = pynini.union(
             graph_twenties,
@@ -58,7 +75,7 @@ class TelephoneFst(GraphFst):
         digit_thrice = digit_twice + pynutil.delete(" ") + single_digits
 
         # accept `doble cero` -> `00` and `triple ocho` -> `888`
-        digit_words = pynini.union(graph_digit.optimize(), pynini.cross("cero", "0")).invert()
+        digit_words = pynini.union(graph_digit.optimize(), graph_zero).invert()
 
         doubled_digit = pynini.union(
             *[
@@ -112,14 +129,26 @@ class TelephoneFst(GraphFst):
         # 8-digit option
         eight_digit_graph = group_of_four + insert_separator + group_of_four
 
+        plus = pynini.accep("más")
+        if input_case == INPUT_CASED:
+            plus |= ES_PLUS
+
         # optionally denormalize country codes
         optional_country_code = pynini.closure(
-            pynini.cross("más ", "+") + (single_digits | group_of_two | group_of_three) + insert_separator, 0, 1
+            pynini.cross(plus, "+")
+            + delete_space
+            + (single_digits | group_of_two | group_of_three)
+            + insert_separator,
+            0,
+            1,
         )
 
+        ext_phrase = pynini.accep(" extensión ")
+        if input_case == INPUT_CASED:
+            ext_phrase = pynini.union(" extensión ", " Extensión ")
         # optionally denormalize extensions
         optional_extension = pynini.closure(
-            pynini.cross(" extensión ", " ext. ") + (single_digits | group_of_two | group_of_three), 0, 1
+            pynini.cross(ext_phrase, " ext. ") + (single_digits | group_of_two | group_of_three), 0, 1
         )
 
         number_part = (
@@ -131,5 +160,8 @@ class TelephoneFst(GraphFst):
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
 
         graph = number_part
+        if input_case == INPUT_CASED:
+            graph |= capitalized_input_graph(graph)
+
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

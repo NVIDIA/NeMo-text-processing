@@ -14,17 +14,25 @@
 
 import pynini
 from pynini.lib import pynutil
-
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    MIN_NEG_WEIGHT,
     NEMO_DIGIT,
+    NEMO_SIGMA,
+    TO_LOWER,
     GraphFst,
+    capitalized_input_graph,
     delete_extra_space,
     delete_space,
 )
+from nemo_text_processing.text_normalization.es.graph_utils import ES_MINUS
 
 
-def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_million: 'pynini.FstLike') -> 'pynini.FstLike':
+def get_quantity(
+    decimal: 'pynini.FstLike', cardinal_up_to_million: 'pynini.FstLike', input_case: str = INPUT_LOWER_CASED
+) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. one million -> integer_part: "1" quantity: "million"
@@ -33,12 +41,13 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_million: 'pynini.FstL
     Args: 
         decimal: decimal FST
         cardinal_up_to_million: cardinal FST
+        input_case: accepting either "lower_cased" or "cased" input.
     """
     numbers = cardinal_up_to_million @ (
         pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
     )
 
-    suffix = pynini.union(
+    suffix_labels = [
         "millón",
         "millones",
         "millardo",
@@ -49,7 +58,12 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_million: 'pynini.FstL
         "trillones",
         "cuatrillón",
         "cuatrillones",
-    )
+    ]
+    suffix = pynini.union(*suffix_labels)
+
+    if input_case == INPUT_CASED:
+        suffix |= pynini.union(*[x[0].upper() + x[1:] for x in suffix_labels]).optimize()
+
     res = (
         pynutil.insert("integer_part: \"")
         + numbers
@@ -79,23 +93,28 @@ class DecimalFst(GraphFst):
             e.g. mil ochocientos veinticuatro millones -> decimal { negative: "false" integer_part: "1824" quantity: "millones" }
     Args:
         cardinal: CardinalFst
+        input_case: accepting either "lower_cased" or "cased" input.
 
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="decimal", kind="classify")
 
         # number after decimal point can be any series of cardinals <1000, including 'zero'
         graph_decimal = cardinal.numbers_up_to_thousand
         graph_decimal = pynini.closure(graph_decimal + delete_space) + graph_decimal
-        self.graph = graph_decimal
+        self.graph = graph_decimal.optimize()
 
         # decimal point can be denoted by 'coma' or 'punto'
         decimal_point = pynini.cross("coma", "morphosyntactic_features: \",\"")
         decimal_point |= pynini.cross("punto", "morphosyntactic_features: \".\"")
 
+        if input_case == INPUT_CASED:
+            decimal_point |= pynini.cross("Coma", "morphosyntactic_features: \",\"")
+            decimal_point |= pynini.cross("Punto", "morphosyntactic_features: \".\"")
+
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("menos", "\"true\"") + delete_extra_space, 0, 1
+            pynutil.insert("negative: ") + pynini.cross(ES_MINUS, "\"true\"") + delete_extra_space, 0, 1
         )
 
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
@@ -110,9 +129,21 @@ class DecimalFst(GraphFst):
         )
         final_graph = optional_graph_negative + final_graph_wo_sign
 
-        self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal.numbers_up_to_million
+        self.final_graph_wo_negative = (
+            final_graph_wo_sign
+            | get_quantity(final_graph_wo_sign, cardinal.numbers_up_to_million, input_case=input_case).optimize()
         )
-        final_graph |= optional_graph_negative + get_quantity(final_graph_wo_sign, cardinal.numbers_up_to_million)
+
+        # accept semiotic spans that start with a capital letter
+        self.final_graph_wo_negative |= pynutil.add_weight(
+            pynini.compose(TO_LOWER + NEMO_SIGMA, self.final_graph_wo_negative), MIN_NEG_WEIGHT
+        ).optimize()
+
+        quantity_graph = get_quantity(final_graph_wo_sign, cardinal.numbers_up_to_million, input_case=input_case)
+        final_graph |= optional_graph_negative + quantity_graph
+
+        if input_case == INPUT_CASED:
+            final_graph |= capitalized_input_graph(final_graph)
+
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

@@ -17,9 +17,9 @@ min	minuto
 %	por ciento
 %	porciento
 s	segundo
-° c	grado centígrado
-° f	grado farenheit
-° k	grado kelvin
+° C	grado centígrado
+° F	grado farenheit
+° K	grado kelvin
 mph	milla por hora
 kph	kilómetro por hora
 gsm	gramo por metro cuadrado
@@ -27,3 +27,9 @@ gsm	g s m
 gsm	ge ese eme
 psi	p s i
 psi	pe ese i
+mb	megabit
+MB	megabyte
+gb	gigabit
+GB	gigabyte
+TB	terabyte
+PB	petabyte
