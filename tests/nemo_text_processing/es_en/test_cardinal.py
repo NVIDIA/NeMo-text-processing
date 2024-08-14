@@ -38,4 +38,8 @@ class TestCardinal:
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_cased.inverse_normalize(test_input, verbose=False)
+<<<<<<< HEAD
         assert pred == expected
+=======
+        assert pred == expected
+>>>>>>> a8ca196 (es and es_en changes for unified models (#143))
