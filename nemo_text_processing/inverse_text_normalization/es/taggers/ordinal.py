@@ -14,9 +14,15 @@
 
 import pynini
 from pynini.lib import pynutil
-
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    NEMO_SIGMA,
+    GraphFst,
+    capitalized_input_graph,
+    delete_space,
+)
 
 
 class OrdinalFst(GraphFst):
@@ -34,9 +40,10 @@ class OrdinalFst(GraphFst):
 
     Args:
         cardinal: CardinalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="ordinal", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
@@ -45,6 +52,13 @@ class OrdinalFst(GraphFst):
         graph_twenties = pynini.string_file(get_abs_path("data/ordinals/twenties.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/ordinals/ties.tsv"))
         graph_hundreds = pynini.string_file(get_abs_path("data/ordinals/hundreds.tsv"))
+
+        if input_case == INPUT_CASED:
+            graph_digit |= pynini.string_file(get_abs_path("data/ordinals/digit_capitalized.tsv")).optimize()
+            graph_teens |= pynini.string_file(get_abs_path("data/ordinals/teen_capitalized.tsv")).optimize()
+            graph_twenties |= pynini.string_file(get_abs_path("data/ordinals/twenties_capitalized.tsv")).optimize()
+            graph_ties |= pynini.string_file(get_abs_path("data/ordinals/ties_capitalized.tsv")).optimize()
+            graph_hundreds |= pynini.string_file(get_abs_path("data/ordinals/hundreds_capitalized.tsv")).optimize()
 
         full_graph_ties = graph_ties | (graph_ties + pynini.cross(" ", "y") + graph_digit)
 
@@ -65,13 +79,18 @@ class OrdinalFst(GraphFst):
         graph_a_suffix = (optional_numbers_in_front + ordinal_graph_a) @ cardinal_graph
         graph_er_suffix = (optional_numbers_in_front + ordinal_graph_er) @ cardinal_graph
 
-        self.graph_masc_num_no_exception = graph_o_suffix
+        self.graph_masc_num_no_exception = graph_o_suffix.optimize()
 
         # don't convert ordinals from one to nine inclusive
         graph_exception = pynini.project(pynini.union(graph_digit), 'input')
         graph_o_suffix = (pynini.project(graph_o_suffix, "input") - graph_exception.arcsort()) @ graph_o_suffix
         graph_a_suffix = (pynini.project(graph_a_suffix, "input") - graph_exception.arcsort()) @ graph_a_suffix
         graph_er_suffix = (pynini.project(graph_er_suffix, "input") - graph_exception.arcsort()) @ graph_er_suffix
+
+        if input_case == INPUT_CASED:
+            graph_o_suffix = capitalized_input_graph(graph_o_suffix)
+            graph_a_suffix = capitalized_input_graph(graph_a_suffix)
+            graph_er_suffix = capitalized_input_graph(graph_er_suffix)
 
         graph = (
             pynutil.insert("integer: \"")
