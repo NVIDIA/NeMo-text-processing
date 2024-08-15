@@ -87,9 +87,7 @@ class FractionFst(GraphFst):
 
         graph_fraction_no_sign = graph_denominator + pynutil.insert(" ") + fraction_word + graph_numerator
 
-        graph_regular_fractions = (
-            graph_fraction_sign | graph_fraction_no_sign 
-        )
+        graph_regular_fractions = graph_fraction_sign | graph_fraction_no_sign
 
         graph_integer_fraction_sign = (
             pynini.closure((graph_sign + pynutil.insert(" ")), 0, 1)
