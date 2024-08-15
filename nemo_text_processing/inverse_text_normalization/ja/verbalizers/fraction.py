@@ -33,41 +33,26 @@ class FractionFst(GraphFst):
         """
         super().__init__(name="fraction", kind="verbalize")
 
-        # integer_component = (
-        #     pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        # ) | (
-        #     sign_component
-        #     + pynutil.delete(" ")
-        #     + pynutil.delete("integer_part: \"")
-        #     + pynini.closure(NEMO_NOT_QUOTE)
-        #     + pynutil.delete("\"")
-        # )
-
         sign_component = pynutil.delete("negative: \"") + pynini.closure("-") + pynutil.delete("\"")
 
-        numerator_sign_component = pynutil.delete("field_order: \"") + pynini.closure("-") + pynutil.delete("\"")  ###
-
         integer_component = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        
+
         denominator_component = (
             pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         )
-        
+
         numerator_component = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
-        final_graph = (
+        regular_graph = (
             pynini.closure((sign_component + pynutil.delete(" ")), 0, 1)
             + pynini.closure(integer_component + pynutil.delete(" ") + pynutil.insert(" "))
-            # + pynini.closure(sign_component + pynutil.delete(" "))
-            #+ pynutil.insert(" ")
-            + numerator_sign_component
             + numerator_component
             + pynutil.delete(" ")
             + pynutil.insert("/")
             + denominator_component
         )
 
-        graph = numerator_sign_component + pynutil.delete(" ") + numerator_component + pynutil.insert("/")+ pynutil.delete(" ") + denominator_component
+        final_graph = regular_graph 
 
-        final_graph = self.delete_tokens(graph)
+        final_graph = self.delete_tokens(final_graph)
         self.fst = final_graph.optimize()
