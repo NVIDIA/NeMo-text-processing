@@ -4,7 +4,7 @@ a@hotmail.fr~a at hotmail dot FR
 a@hotmail.it~a at hotmail dot IT
 a@aol.it~a at aol dot IT
 a@msn.it~a at msn dot IT
-cdf@abc.edu~cdf at abc dot EDU
+cdf@abc.edu~cdf at abc dot edu
 abc@gmail.abc~abc at gmail dot ABC
 abc@abc.com~abc at abc dot com
 asdf123@abc.com~asdf one two three at abc dot com
