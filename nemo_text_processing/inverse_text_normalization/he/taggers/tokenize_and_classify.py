@@ -60,10 +60,9 @@ class ClassifyFst(GraphFst):
             logging.info(f"Creating ClassifyFst grammars.")
 
             cardinal = CardinalFst()
-            cardinal_graph = cardinal.graph
+            cardinal_graph = cardinal.fst
 
             ordinal = OrdinalFst(cardinal)
-            ordinal_graph = ordinal.fst
 
             decimal = DecimalFst(cardinal)
             decimal_graph = decimal.fst

@@ -127,7 +127,6 @@ class CardinalFst(GraphFst):
             pynutil.insert("prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space, 0, 1
         )
 
-        int_graph = pynutil.insert("integer: \"") + self.graph_no_exception + pynutil.insert("\"")
         graph_wo_small_digits = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
 
         cardinal_wo_viable_hours = load_labels(get_abs_path("data/numbers/viable_hours.tsv"))
@@ -140,25 +139,22 @@ class CardinalFst(GraphFst):
             + minus_graph
             + pynutil.insert("integer: \"")
             + self.graph_no_exception
+            + pynutil.insert("\"")
         )
 
         big_number_with_optional_minus = (
             optional_minus_graph
             + pynutil.insert("integer: \"")
             + graph_wo_small_digits
+            + pynutil.insert("\"")
         )
 
-        self.graph = (
-                pynutil.insert("cardinal {")
-                + optional_prefix_graph
+        graph = (
+                optional_prefix_graph
                 + (small_number_with_minus | big_number_with_optional_minus)
-                + pynutil.insert("\"")
-                + pynutil.insert(" }")
         )
 
-        final_graph = optional_prefix_graph + optional_minus_graph + int_graph
-
-        final_graph = self.add_tokens(final_graph)
+        final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()
 
 
