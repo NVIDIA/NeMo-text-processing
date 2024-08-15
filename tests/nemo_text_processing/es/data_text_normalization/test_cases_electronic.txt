@@ -13,3 +13,10 @@ http://www.ourdailynews.com.sm~h t t p dos puntos barra barra w w w punto o u r 
 nvidia.com/1|2~nvidia punto com barra uno barra vertical dos
 nvidia.com/2^~nvidia punto com barra dos acento circunflejo
 www.unicef.org~w w w punto u n i c e f punto o r g
+brettspielversand.de.~b r e t t s p i e l v e r s a n d punto d e .
+www.enveedya.net.~w w w punto e n v e e d y a punto net .
+www.amazon.com.de.~w w w punto a m a z o n punto com punto d e .
+https://www.abc.com~h t t p s dos puntos barra barra w w w punto a b c punto com
+@jensen~arroba j e n s e n
+@jensen.me~arroba j e n s e n punto m e
+@wezyr1986~arroba w e z y r uno nueve ocho seis
