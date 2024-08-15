@@ -52,7 +52,7 @@ class FractionFst(GraphFst):
             + denominator_component
         )
 
-        final_graph = regular_graph 
+        final_graph = regular_graph
 
         final_graph = self.delete_tokens(final_graph)
         self.fst = final_graph.optimize()
