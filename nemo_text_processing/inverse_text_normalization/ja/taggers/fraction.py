@@ -44,10 +44,6 @@ class FractionFst(GraphFst):
             pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")
         )
 
-        graph_numerator_sign = (
-            pynutil.insert("field_order: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")
-        )  ###
-
         graph_integer = (
             pynutil.insert("integer_part: \"")
             + (
@@ -83,28 +79,17 @@ class FractionFst(GraphFst):
             + pynutil.insert(" ")
             + fraction_word
             + graph_numerator
-        ) 
+        )
 
-        graph_fraction_no_sign = (graph_denominator + pynutil.insert(" ") + fraction_word + graph_numerator)
+        graph_fraction_no_sign = graph_denominator + pynutil.insert(" ") + fraction_word + graph_numerator
 
-        graph_fraction_numerator_sign = (
-            graph_denominator
-            + pynutil.insert(" ")
-            + fraction_word
-            + graph_numerator_sign
-            + pynutil.insert(" ")
-            + graph_numerator
-        ) 
-        
-        graph_regular_fractions = graph_fraction_sign | graph_fraction_no_sign | graph_fraction_numerator_sign
+        graph_regular_fractions = (
+            graph_fraction_sign | graph_fraction_no_sign 
+        )
 
-
-
-
-        graph_root_with_integer = (
+        graph_integer_fraction_sign = (
             pynini.closure((graph_sign + pynutil.insert(" ")), 0, 1)
-            + graph_integer
-            # + inetegr_word
+            + pynutil.add_weight(graph_integer, 1.1)
             + pynutil.insert(" ")
             + graph_denominator
             + pynutil.insert(" ")
@@ -112,7 +97,7 @@ class FractionFst(GraphFst):
             + graph_numerator
         )
 
-        final_graph = graph_regular_fractions | graph_root_with_integer
+        final_graph = graph_regular_fractions | graph_integer_fraction_sign
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
