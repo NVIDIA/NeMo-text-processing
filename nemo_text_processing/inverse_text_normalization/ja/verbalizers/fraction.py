@@ -41,18 +41,21 @@ class FractionFst(GraphFst):
             pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE,1) + pynutil.delete("\"")
         )
 
-        numerator_component = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE,1) + pynutil.delete("\"")
+        numerator_component = pynutil.insert(" ") + pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE,1) + pynutil.delete("\"")
 
-        regular_graph = (
-            pynini.closure((sign_component + pynutil.delete(" ")), 0, 1)
-            + pynini.closure(integer_component + pynutil.delete(" ") + pynutil.insert(" "))
-            + numerator_component
-            + pynutil.delete(" ")
-            + pynutil.insert("/")
-            + denominator_component
-        )
+        # regular_graph = (
+        #     pynini.closure((sign_component + pynutil.delete(" ")), 0, 1)
+        #     + pynini.closure(integer_component + pynutil.delete(" ") + pynutil.insert(" "))
+        #     + numerator_component
+        #     + pynutil.delete(" ")
+        #     + pynutil.insert("/")
+        #     + denominator_component
+        # )
+        # this is the orignal grammar that worked except for integer part with space issue
 
-        final_graph = regular_graph
+
+        final_graph = integer_component + pynini.closure(pynutil.delete(" "), 0,1) + pynutil.insert("1 test ")+ (pynutil.insert(" ") + numerator_component + pynutil.delete(" ") + pynutil.insert("/") + denominator_component)
+        # this final graph was an attempt to make fixings
 
         final_graph = self.delete_tokens(final_graph)
         self.fst = final_graph.optimize()
