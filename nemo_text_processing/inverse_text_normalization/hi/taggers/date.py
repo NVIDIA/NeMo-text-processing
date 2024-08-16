@@ -15,14 +15,12 @@
 import pynini 
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path, apply_fst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_SIGMA,
-    TO_LOWER,
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     GraphFst,
     delete_extra_space,
     insert_space,
     delete_space,
+    NEMO_HI_DIGIT
 ) 
 from pynini.lib import pynutil
 
@@ -39,25 +37,26 @@ class DateFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="date", kind="classify")
         
-        cardinal_graph = cardinal.graph
+        #cardinal_graph = cardinal.graph_hundreds | cardinal.graph_thousands
+        graph_year = pynini.compose(cardinal.graph, pynini.closure(NEMO_HI_DIGIT, 1,4))
         
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
         graph_date_days = pynini.string_file(get_abs_path("data/date/date_days.tsv")).invert()
-        graph_sun_varsh_sadhi = pynini.string_file(get_abs_path("data/date/sun_varsh_sadhi.tsv"))
         
         
         self.day = pynutil.insert("day: \"") + graph_date_days + pynutil.insert("\" ")
         self.month = pynutil.insert("month: \"") + month_graph + pynutil.insert("\" ")
-        self.year = pynutil.insert("year: \"") + pynutil.add_weight(cardinal_graph, 0.3) + pynutil.insert("\" ")
-        self.period = pynutil.insert("period: \"") + graph_sun_varsh_sadhi + pynutil.insert("\" ")
+        self.year = pynutil.insert("year: \"") + graph_year + pynutil.insert("\" ")
         insert_comma = pynutil.insert(", ")
         
         graph_day_month = self.day + delete_space + self.month
         graph_month_day = self.month + delete_space + self.day
+        graph_month_day += pynutil.insert(" preserve_order: true")
         graph_day_month_year = self.day + delete_space + self.month + delete_space + self.year
         graph_month_day_year = self.month + delete_space + self.day + delete_space + self.year
+        graph_month_day_year += pynutil.insert(" preserve_order: true")
         graph_month_year = self.month + delete_space + self.year
-        graph_saal = self.period + delete_space + self.year
+        graph_saal = self.year
         
 
         graph = graph_day_month | graph_month_day | graph_day_month_year | graph_month_day_year | graph_month_year | graph_saal
@@ -65,3 +64,12 @@ class DateFst(GraphFst):
         
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
+
+#from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
+#cardinal = CardinalFst()
+#date = DateFst(cardinal)
+#input_text = "वर्ष दो हज़ार उन्नीस"
+#input_text = "मार्च दो हज़ार दस"
+#input_text = "सन उन्नीस सौ नब्बे"
+#output = apply_fst(input_text, date.fst)
+#print(output)

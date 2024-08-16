@@ -55,13 +55,13 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
         period = (
-            pynutil.delete("period:")
+            pynutil.delete("text:")
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        graph_fy = period + pynini.closure(delete_extra_space + year, 0, 1)
+        graph_fy = period + delete_space + year
         #month (day) year
         graph_mdy = (
             month + delete_extra_space + day + pynutil.insert(",") + delete_extra_space + year
@@ -102,3 +102,9 @@ class DateFst(GraphFst):
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
+
+#date = DateFst()
+#input_text = 'date { period: "सन " year: "२०१९"  }'
+#input_text = 'date { day: "१७"month: "अप्रैल"year: "२००२" }'
+#output = apply_fst(input_text, date.fst)
+#print(output)

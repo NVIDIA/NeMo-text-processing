@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path, apply_fst
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
@@ -63,7 +63,7 @@ class CardinalFst(GraphFst):
         graph_hundred_as_thousand += delete_space  
         graph_hundred_as_thousand += self.graph_two_digit | pynutil.insert("००")
 
-        graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
+        self.graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
 
         
         graph_teens_and_ties_component = pynini.union(
@@ -84,6 +84,8 @@ class CardinalFst(GraphFst):
             self.graph_two_digit + delete_space + delete_thousand,
             pynutil.insert("००", weight=0.1),
         )
+        self.graph_thousands = graph_in_thousands
+        
         graph_in_lakhs = pynini.union(
             self.graph_two_digit
             + delete_space
@@ -151,8 +153,9 @@ class CardinalFst(GraphFst):
                 + graph_in_thousands
         )
         graph_no_prefix = pynini.union(pynini.cross("सौ", "१००") | pynini.cross("हज़ार", "१०००") | pynini.cross("लाख", "१०००००") | pynini.cross("करोड़", "१०००००००"), pynutil.insert("graph_no_prefix", weight=2))
-        
-        graph = pynini.union(graph_ind + delete_space + graph_hundreds, graph_zero, graph_no_prefix) #graph_digit_plus_hundred, 
+
+        #self.graph_year = pynini.union(graph_in_thousands + delete_space + self.graph_hundreds, graph_zero, graph_no_prefix)
+        graph = pynini.union(graph_ind + delete_space + self.graph_hundreds, graph_zero, graph_no_prefix) #graph_digit_plus_hundred, 
 
         graph = graph @ pynini.union(
             pynutil.delete(pynini.closure("०")) + pynini.difference(NEMO_HI_DIGIT, "०") + pynini.closure(NEMO_HI_DIGIT),
@@ -166,7 +169,7 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph
 
         self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
-
+        
         optional_minus_graph = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross(MINUS, "\"-\"") + NEMO_SPACE, 0, 1
         )
@@ -175,3 +178,10 @@ class CardinalFst(GraphFst):
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
+        
+#cardinal = CardinalFst()
+#input_text = "बारह बजकर पाँच मिनट"
+#input_text = "शून्य"
+#self.fst = graph_digit
+#output = apply_fst(input_text, cardinal.fst)
+#print(output)

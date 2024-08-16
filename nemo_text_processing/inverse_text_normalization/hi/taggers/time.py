@@ -36,6 +36,8 @@ class TimeFst(GraphFst):
 
         hour_graph = pynini.string_file(get_abs_path("data/time/hour.tsv")).invert()
         minute_graph = pynini.string_file(get_abs_path("data/time/minute.tsv")).invert()
+        second_graph = pynini.string_file(get_abs_path("data/time/second.tsv")).invert()
+        
 
         delete_baje = pynini.union(
             pynutil.delete("बजके") 
@@ -44,14 +46,39 @@ class TimeFst(GraphFst):
         )
         
         delete_minute = pynutil.delete("मिनट")
+        delete_second = pynutil.delete("सेकंड")
         
         self.hour = pynutil.insert("hour: \"") + hour_graph + pynutil.insert("\" ")
         self.minute = pynutil.insert("minute: \"") + minute_graph + pynutil.insert("\" ")
+        self.second = pynutil.insert("second: \"") + second_graph + pynutil.insert("\" ")
 
-        graph_time = self.hour + pynini.closure(delete_space + delete_baje, 0,1) + self.minute + pynini.closure(delete_space + delete_minute, 0,1)
+        #hour minute second
+        graph_hms = self.hour + delete_space + delete_baje + delete_space + self.minute + delete_space + delete_minute + delete_space + self.second + delete_space + delete_second
 
-        graph = graph_time 
-        self.graph = graph
+        #hour minute and hour minute without "baje and minat"
+        graph_hm = self.hour + delete_space + pynini.closure(delete_baje, 0,1) + delete_space + self.minute + pynini.closure(delete_space + delete_minute, 0,1)
+
+        #hour second
+        graph_hs = self.hour + delete_space + delete_baje + delete_space + self.second + delete_space + delete_second
+
+        #minute second
+        graph_ms = self.minute + delete_space + delete_minute + delete_space + self.second + delete_space + delete_second
+
+        #hour
+        graph_hour = self.hour + delete_space + delete_baje
+        
+        
+        graph = graph_hms | graph_hm | graph_hs | graph_ms | graph_hour
+        self.graph = graph.optimize()
         
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
+
+#time = TimeFst()
+#input_text = "चार बजके नौ मिनट"
+#input_text = "बारह पाँच"
+#input_text = "एक बजे सात मिनट इकतालीस सेकंड"
+#input_text = "सात बजे बारह सेकंड"
+#input_text = "तेईस बजके छे मिनट"
+#output = apply_fst(input_text, time.fst)
+#print(output)
