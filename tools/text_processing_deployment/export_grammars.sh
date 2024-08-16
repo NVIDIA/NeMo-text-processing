@@ -106,4 +106,8 @@ if [[ ${MODE} == "test" ]] || [[ ${MODE} == "interactive" ]]; then
 else
   echo "done mode: $MODE"
   exit 0
+<<<<<<< HEAD
 fi
+=======
+fi
+>>>>>>> 8a7e28e (Zh tn bug 240712 (#187))

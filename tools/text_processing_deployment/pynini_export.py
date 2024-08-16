@@ -290,10 +290,14 @@ if __name__ == '__main__':
             VerbalizeFst as ITNVerbalizeFst,
         )
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8a7e28e (Zh tn bug 240712 (#187))
         from nemo_text_processing.text_normalization.hy.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+<<<<<<< HEAD
     elif args.language == 'rw':
         from nemo_text_processing.text_normalization.rw.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
@@ -301,6 +305,8 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
 =======
 >>>>>>> 0a4a21c (Jp itn 20240221 (#141))
+=======
+>>>>>>> 8a7e28e (Zh tn bug 240712 (#187))
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,

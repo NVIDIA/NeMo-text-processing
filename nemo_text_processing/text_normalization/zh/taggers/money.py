@@ -136,4 +136,8 @@ class MoneyFst(GraphFst):
         )
 
         final_graph = self.add_tokens(graph)
+<<<<<<< HEAD
         self.fst = final_graph.optimize()
+=======
+        self.fst = final_graph.optimize()
+>>>>>>> 8a7e28e (Zh tn bug 240712 (#187))

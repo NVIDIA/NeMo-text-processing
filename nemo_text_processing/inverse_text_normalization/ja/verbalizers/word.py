@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8a7e28e (Zh tn bug 240712 (#187))
 # Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,15 +25,24 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOT
 
 class WordFst(GraphFst):
     '''
+<<<<<<< HEAD
     tokens { name: "一" } -> 一
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="word", kind="verbalize", deterministic=deterministic)
+=======
+        tokens { char: "一" } -> 一
+    '''
+
+    def __init__(self, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="char", kind="verbalize", deterministic=deterministic)
+>>>>>>> 8a7e28e (Zh tn bug 240712 (#187))
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
         graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
         self.fst = graph.optimize()
+<<<<<<< HEAD
 =======
 # Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
@@ -65,3 +77,5 @@ class WordFst(GraphFst):
         graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
         self.fst = graph.optimize()
 >>>>>>> 0a4a21c (Jp itn 20240221 (#141))
+=======
+>>>>>>> 8a7e28e (Zh tn bug 240712 (#187))
