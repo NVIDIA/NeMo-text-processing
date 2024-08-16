@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil, rewrite
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path, apply_fst
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space, delete_space
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space 
 
  
 class CardinalFst(GraphFst):
@@ -59,6 +59,11 @@ class CardinalFst(GraphFst):
         graph_hundreds |= create_larger_number_graph(digit, suffix_hundreds, 1, digit)
         graph_hundreds |= create_larger_number_graph(digit, suffix_hundreds, 0, teens_ties)
         graph_hundreds.optimize()
+        self.graph_hundreds = graph_hundreds
+
+        # Transducer for eleven hundred -> 1100 or twenty one hundred eleven -> 2111
+        graph_hundred_as_thousand = teens_ties + pynutil.delete("०") + suffix_hundreds + digit
+        self.graph_hundred_as_thousand = graph_hundred_as_thousand
         
         #Thousands and Ten thousands graph 
         suffix_thousands = pynutil.insert(" हज़ार")
@@ -67,6 +72,7 @@ class CardinalFst(GraphFst):
         graph_thousands |= create_larger_number_graph(digit, suffix_thousands, 1, teens_ties)
         graph_thousands |= create_larger_number_graph(digit, suffix_thousands, 0, graph_hundreds)
         graph_thousands.optimize()
+        self.graph_thousands = graph_thousands
         
         graph_ten_thousands = create_graph_suffix(teens_and_ties, suffix_thousands, 3)
         graph_ten_thousands |= create_larger_number_graph(teens_and_ties, suffix_thousands, 2, digit)
