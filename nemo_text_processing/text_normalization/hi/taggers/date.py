@@ -41,7 +41,7 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="classify")
         
         graph_year = pynini.compose((NEMO_HI_DIGIT + NEMO_HI_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_thousands)
-        graph_year_as = pynini.compose((NEMO_HI_DIGIT + NEMO_HI_NON_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_hundred_as_thousand)
+        graph_year_as = pynini.compose((NEMO_HI_DIGIT + NEMO_HI_NON_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_hundreds_as_thousand)
         graph_years = graph_year | graph_year_as
         
         delete_dash = pynutil.delete("-")
@@ -64,7 +64,7 @@ class DateFst(GraphFst):
         
         graph_yyyy_mm = years_graph + delete_dash + months_graph
         
-        final_graph = graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_dd | graph_dd_mm | graph_mm_yyyy | graph_yyyy_mm
+        final_graph = graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_dd | graph_dd_mm | graph_mm_yyyy | graph_yyyy_mm 
         
         self.final_graph = final_graph.optimize()
         
@@ -73,8 +73,8 @@ class DateFst(GraphFst):
         
 cardinal = CardinalFst()
 date = DateFst(cardinal)
-#input_text = "१७-०१-१०१७" # १७ २५ ३१ ३७ ४४ ५० ५९ ७० ७९ ८९ ९९ 
-input_text = "१७-०२-११००"  
+#input_text = "१७-०१-१०९९" # १७ २५ ३१ ३७ ४४ ५० ५९ ७० ७९ ८९ ९९ 
+#input_text = "१७-०२-११९९"  
 #input_text = "१७-०३-१२००" 
 #input_text = "२५-०३-१३९९"
 #input_text = "३१-०९-१४००"
@@ -89,7 +89,7 @@ input_text = "१७-०२-११००"
 #input_text = "१९-०९-२३९९"
 #input_text = "१९-०९-२४९९"
 #input_text = "१९-०९-२५३१"
-#input_text = "०९-१९-२५३१"
+input_text = "०९-१९-२५३१"
 #input_text = "०२-१९"
 #input_text = "१९-०९"
 #input_text = "०९-२०२४"
