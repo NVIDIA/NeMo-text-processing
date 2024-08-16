@@ -16,11 +16,13 @@ import pytest
 from parameterized import parameterized
 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+from nemo_text_processing.text_normalization.normalize import Normalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
-class TestCardinal:
+class TestPreprocess:
+
     inverse_normalizer_mr = InverseNormalizer(lang='mr', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('mr/data_inverse_text_normalization/test_cases_cardinal.txt'))
