@@ -70,10 +70,14 @@ pipeline {
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
 <<<<<<< HEAD
+<<<<<<< HEAD
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-05-24-0'
 =======
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
 >>>>>>> 0a4a21c (Jp itn 20240221 (#141))
+=======
+    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-19-24-0'
+>>>>>>> 73ad43b (update jp tn date)
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
