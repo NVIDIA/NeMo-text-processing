@@ -70,12 +70,12 @@ class TimeFst(GraphFst):
         
         #hour second
         graph_hs = (
-            hour + delete_space + pynutil.insert(":") + delete_space + second + delete_space
+            hour + delete_space + pynutil.insert(":") + delete_space + pynutil.insert("००") + delete_space + pynutil.insert(":") + second + delete_space
         )
         
         #minute second
         graph_ms = (
-            minute + delete_space + pynutil.insert(":") + delete_space + second + delete_space
+            pynutil.insert("००") + delete_space + pynutil.insert(":") + delete_space + minute + delete_space + pynutil.insert(":") + delete_space + second + delete_space
         )
 
         graph = graph_hour | graph_hms | graph_hm | graph_hs | graph_ms
