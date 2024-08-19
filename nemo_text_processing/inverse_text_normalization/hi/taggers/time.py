@@ -43,6 +43,7 @@ class TimeFst(GraphFst):
             pynutil.delete("बजके") 
             | pynutil.delete("बजकर") 
             | pynutil.delete("बजे")
+            | pynutil.delete("घंटा")
         )
         
         delete_minute = pynutil.delete("मिनट")
