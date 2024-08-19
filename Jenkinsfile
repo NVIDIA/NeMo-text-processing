@@ -18,11 +18,15 @@ pipeline {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-04-24-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
 =======
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-02-24-0'
+=======
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-15-24-0'
+>>>>>>> 55eab83 (EN TN Fixes for Issue 166 (#207))
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-14-24-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-14-24-0'
 >>>>>>> c319fa4 (ES TN Fixes for Issue #166 (#206))

@@ -4,7 +4,7 @@ a@hotmail.fr~a at hotmail dot FR
 a@hotmail.it~a at hotmail dot IT
 a@aol.it~a at aol dot IT
 a@msn.it~a at msn dot IT
-cdf@abc.edu~cdf at abc dot EDU
+cdf@abc.edu~cdf at abc dot edu
 abc@gmail.abc~abc at gmail dot ABC
 abc@abc.com~abc at abc dot com
 asdf123@abc.com~asdf one two three at abc dot com
@@ -39,6 +39,10 @@ enterpriseservices@nvidia.com~enterprise services at NVIDIA dot com
 enterprise-services@nvidia.com~enterprise dash services at NVIDIA dot com
 https://www.nvidia.com/dgx-basepod/~HTTPS colon slash slash WWW dot NVIDIA dot com slash DGX dash BASEPOD slash
 i can use your card ending in 8876~i can use your card ending in eight eight seven six
+<<<<<<< HEAD
 upgrade/update~upgrade slash update
 upgrade / update~upgrade slash update
 upgrade/update/downgrade~upgrade slash update slash downgrade
+=======
+here is mail.nasa.gov.~here is mail dot nasa dot gov.
+>>>>>>> 55eab83 (EN TN Fixes for Issue 166 (#207))
