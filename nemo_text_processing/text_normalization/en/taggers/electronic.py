@@ -27,6 +27,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (  # common s
     GraphFst,
     get_abs_path,
     insert_space,
+    domain_string,
+    colon,
+    double_quotes,
 )
 
 
@@ -129,6 +132,16 @@ class ElectronicFst(GraphFst):
 
         graph |= pynutil.add_weight(graph_domain, MIN_NEG_WEIGHT)
 
+        # graph |= (
+        #     pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
+        #     + pynini.closure(NEMO_ALPHA, 1)
+        #     + pynini.accep(NEMO_SPACE).ques
+        #     + pynini.accep("/")
+        #     + pynini.accep(NEMO_SPACE).ques
+        #     + pynini.closure(NEMO_ALPHA, 1)
+        #     + pynutil.insert(double_quotes)
+        # ).optimize()
+
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
 
@@ -151,6 +164,8 @@ class ElectronicFst(GraphFst):
                 + pynutil.insert("\"")
             )
             graph |= cc_phrases
+        
+
 
         final_graph = self.add_tokens(graph)
 
