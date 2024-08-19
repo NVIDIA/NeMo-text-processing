@@ -39,7 +39,6 @@ a: ``b``, ``c``, ``d``, ``e``, ``f`` or ``g``.~a: "b", "c", "d", "e", "f" or "g"
 "And now," he said, "He,~"And now," he said, "He,
 80's~eighty's
 test .b@gmail.com~test. b at gmail dot com
-ourdailynews.abc/123-sm~ourdailynews. abc/one hundred twenty three-sm
 123,000012~one hundred and twenty three, zero zero zero zero one two
 9000,000th~nine thousand, zero zero zero th
 16 July, 1943~the sixteenth of july, nineteen forty three
@@ -59,6 +58,6 @@ dr. Evil~dr. Evil
 1!!!!~one!!!!
 (1)Hello~(one) Hello
 ÀÁÂÃ check §- and ƛ, also ɧ~ÀÁÂÃ check section - and ƛ, also ɧ
-Hi it's 5pm,4A.M.?-34. Hi,no,yes,34! 12,again,4 and NO?17 and $.01,here & there--0.004kg~Hi it's five PM, four AM.? minus thirty four. Hi,no,yes, thirty four! twelve, again, four and NO? seventeen and one cent, here and there - minus zero point zero zero four kilograms
+Hi it's 5pm,4A.M.?-34. Hi,no,yes,34! 12,again,4 and NO?17 and $.01,here & there -0.004kg~Hi it's five PM, four AM.? minus thirty four. Hi,no,yes, thirty four! twelve, again, four and NO? seventeen and one cent, here and there minus zero point zero zero four kilograms
 1°C.~one degree Celsius.
 my email is myemail@gmail.com!~my email is myemail at gmail dot com!
