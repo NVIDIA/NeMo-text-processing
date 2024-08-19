@@ -22,7 +22,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (  # common s
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
-    NEMO_SPACE,
     NEMO_UPPER,
     TO_UPPER,
     GraphFst,
@@ -116,16 +115,19 @@ class ElectronicFst(GraphFst):
             username + domain_graph_with_class_tags,
         )
 
-        # abc.com, abc.com/123-sm
-        # when only domain, make sure it starts and end with NEMO_ALPHA
-        graph |= (
+        full_stop_accep = pynini.accep(".")
+        dollar_accep = pynini.accep("$")  # Include for the correct transduction of the money graph
+        excluded_symbols = full_stop_accep | dollar_accep
+        filtered_symbols = pynini.difference(accepted_symbols, excluded_symbols)
+        accepted_characters = NEMO_ALPHA | NEMO_DIGIT | filtered_symbols
+        domain_component = full_stop_accep + pynini.closure(accepted_characters, 2)
+        graph_domain = (
             pynutil.insert('domain: "')
-            + pynini.compose(
-                NEMO_ALPHA + pynini.closure(NEMO_NOT_SPACE) + accepted_common_domains + pynini.closure(NEMO_NOT_SPACE),
-                domain_graph,
-            ).optimize()
+            + (pynini.closure(accepted_characters, 1) + pynini.closure(domain_component, 1))
             + pynutil.insert('"')
-        )
+        ).optimize()
+
+        graph |= pynutil.add_weight(graph_domain, MIN_NEG_WEIGHT)
 
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
