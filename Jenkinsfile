@@ -13,15 +13,9 @@ pipeline {
 
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-24-0'
-<<<<<<< HEAD
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-04-24-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-25-24-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
-=======
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-02-24-0'
-    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-14-24-0'
-    ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-14-24-0'
->>>>>>> b8ae8f6 (ES TN Fixes for Issue #166 (#206))
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
     HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
