@@ -151,6 +151,16 @@ class ElectronicFst(GraphFst):
             + pynutil.insert('"')
         )
 
+        # graph |= (
+        #     pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
+        #     + pynini.closure(NEMO_ALPHA, 1)
+        #     + pynini.accep(NEMO_SPACE).ques
+        #     + pynini.accep("/")
+        #     + pynini.accep(NEMO_SPACE).ques
+        #     + pynini.closure(NEMO_ALPHA, 1)
+        #     + pynutil.insert(double_quotes)
+        # ).optimize()
+
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
 
