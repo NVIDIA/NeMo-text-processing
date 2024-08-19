@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini 
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path, apply_fst
-from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -37,7 +36,6 @@ class DateFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="date", kind="classify")
         
-        #cardinal_graph = cardinal.graph_hundreds | cardinal.graph_thousands
         graph_year = pynini.compose(cardinal.graph, pynini.closure(NEMO_HI_DIGIT, 1,4))
         
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
@@ -64,12 +62,3 @@ class DateFst(GraphFst):
         
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
-
-#from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-#cardinal = CardinalFst()
-#date = DateFst(cardinal)
-#input_text = "वर्ष दो हज़ार उन्नीस"
-#input_text = "मार्च दो हज़ार दस"
-#input_text = "सन उन्नीस सौ नब्बे"
-#output = apply_fst(input_text, date.fst)
-#print(output)

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini 
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path, apply_fst
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     GraphFst,
     insert_space,
@@ -48,9 +48,9 @@ class TimeFst(GraphFst):
         delete_minute = pynutil.delete("मिनट")
         delete_second = pynutil.delete("सेकंड")
         
-        self.hour = pynutil.insert("hour: \"") + hour_graph + pynutil.insert("\" ")
-        self.minute = pynutil.insert("minute: \"") + minute_graph + pynutil.insert("\" ")
-        self.second = pynutil.insert("second: \"") + second_graph + pynutil.insert("\" ")
+        self.hour = pynutil.insert("hours: \"") + hour_graph + pynutil.insert("\" ")
+        self.minute = pynutil.insert("minutes: \"") + minute_graph + pynutil.insert("\" ")
+        self.second = pynutil.insert("seconds: \"") + second_graph + pynutil.insert("\" ")
 
         #hour minute second
         graph_hms = self.hour + delete_space + delete_baje + delete_space + self.minute + delete_space + delete_minute + delete_space + self.second + delete_space + delete_second
@@ -73,12 +73,3 @@ class TimeFst(GraphFst):
         
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
-
-#time = TimeFst()
-#input_text = "चार बजके नौ मिनट"
-#input_text = "बारह पाँच"
-#input_text = "एक बजे सात मिनट इकतालीस सेकंड"
-#input_text = "सात बजे बारह सेकंड"
-#input_text = "तेईस बजके छे मिनट"
-#output = apply_fst(input_text, time.fst)
-#print(output)

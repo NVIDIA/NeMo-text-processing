@@ -19,7 +19,6 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     delete_extra_space,
     delete_space,
 )
-from nemo_text_processing.inverse_text_normalization.hi.utils import apply_fst
 from pynini.lib import pynutil
 
 
@@ -102,9 +101,3 @@ class DateFst(GraphFst):
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
-
-#date = DateFst()
-#input_text = 'date { period: "सन " year: "२०१९"  }'
-#input_text = 'date { day: "१७"month: "अप्रैल"year: "२००२" }'
-#output = apply_fst(input_text, date.fst)
-#print(output)
