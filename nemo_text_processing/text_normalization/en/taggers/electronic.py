@@ -22,6 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (  # common s
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
+    NEMO_SPACE,
     NEMO_UPPER,
     TO_UPPER,
     GraphFst,
