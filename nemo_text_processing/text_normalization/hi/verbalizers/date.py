@@ -1,0 +1,68 @@
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import pynini
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    NEMO_NOT_QUOTE,
+    NEMO_SPACE,
+    GraphFst
+)
+from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path, apply_fst
+from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
+
+class DateFst(GraphFst):
+    """
+    Finite state transducer for verbalizing date, e.g.
+        date { day: "एक" month: "अप्रैल" year: "दो हज़ार चौबीस" } -> "एक अप्रैल दो हज़ार चौबीस"
+        date { month: "अप्रैल" day: "एक" year: "दो हज़ार चौबीस" } -> "अप्रैल एक दो हज़ार चौबीस"
+        
+
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
+    """
+
+    def __init__(self):
+        super().__init__(name="date", kind="verbalize")
+
+        day = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        
+        month = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        
+        year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+
+        graph_dd_mm = day + NEMO_SPACE +  month
+        
+        graph_mm_dd = month + NEMO_SPACE + day 
+
+        graph_dd_mm_yyyy = day + NEMO_SPACE + month + NEMO_SPACE + year
+        
+        graph_mm_dd_yyyy = month + NEMO_SPACE + day + NEMO_SPACE + year
+        
+        graph_mm_yyyy = month + NEMO_SPACE + year 
+
+        graph_yyyy = year
+        
+        self.graph  = graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy | graph_yyyy
+        final_graph = self.graph 
+
+        delete_tokens = self.delete_tokens(final_graph)
+        self.fst = delete_tokens.optimize()
+
+
+#date = DateFst()
+#input_text = 'date { day: "सत्रह" month: "जनवरी" year: "एक हज़ार निन्यानवे"  }'   
+#output = apply_fst(input_text, date.fst)           
+#print(output)
