@@ -2,6 +2,7 @@
 *.model
 *.pkl
 #*.ipynb
+.ipynb_checkpoints/
 output
 result
 *.pt
