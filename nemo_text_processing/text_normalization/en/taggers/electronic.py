@@ -134,7 +134,7 @@ class ElectronicFst(GraphFst):
 
         graph |= (
             pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
-            + (pynini.closure(NEMO_ALPHA, 1) - "and") #| (pynini.closure(NEMO_ALPHA, 1) - "or")
+            + (pynini.closure(NEMO_ALPHA, 1) - "and")
             + pynini.accep(NEMO_SPACE).ques
             + pynini.accep("/")
             + pynini.accep(NEMO_SPACE).ques
