@@ -25,11 +25,11 @@ from nemo_text_processing.text_normalization.en.graph_utils import (  # common s
     NEMO_UPPER,
     TO_UPPER,
     GraphFst,
+    colon,
+    domain_string,
+    double_quotes,
     get_abs_path,
     insert_space,
-    domain_string,
-    colon,
-    double_quotes,
 )
 
 
@@ -174,8 +174,6 @@ class ElectronicFst(GraphFst):
                 + pynutil.insert("\"")
             )
             graph |= cc_phrases
-        
-
 
         final_graph = self.add_tokens(graph)
 
