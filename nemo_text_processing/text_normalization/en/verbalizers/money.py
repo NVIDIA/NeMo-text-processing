@@ -22,6 +22,10 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_preserve_order,
 )
 
+from nemo_text_processing.text_normalization.en.utils import get_abs_path
+
+per_units = pynini.string_file(get_abs_path("data/money/per_unit.tsv"))
+
 
 class MoneyFst(GraphFst):
     """
@@ -37,11 +41,21 @@ class MoneyFst(GraphFst):
     def __init__(self, decimal: GraphFst, deterministic: bool = True):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
         keep_space = pynini.accep(" ")
-        maj = pynutil.delete("currency_maj: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        min = pynutil.delete("currency_min: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        maj = (
+            pynutil.delete('currency_maj: "')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
+        )
+        min = (
+            pynutil.delete('currency_min: "')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
+        )
 
         fractional_part = (
-            pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+            pynutil.delete('fractional_part: "')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
         )
 
         integer_part = decimal.integer
@@ -55,7 +69,14 @@ class MoneyFst(GraphFst):
         if not deterministic:
             fractional |= pynutil.insert("and ") + fractional
 
-        graph_integer_with_minor = integer_part + keep_space + maj + keep_space + fractional + delete_preserve_order
+        graph_integer_with_minor = (
+            integer_part
+            + keep_space
+            + maj
+            + keep_space
+            + fractional
+            + delete_preserve_order
+        )
 
         # *** point *** currency_maj
         graph_decimal = decimal.numbers + keep_space + maj
@@ -67,6 +88,15 @@ class MoneyFst(GraphFst):
 
         if not deterministic:
             graph |= graph_integer + delete_preserve_order
+
+        per_units_normalized = pynini.project(per_units, "output")
+        remove_per_units_normalized = (
+            pynutil.delete(' morphosyntactic_features: "')
+            + pynutil.insert(" ")
+            + per_units_normalized
+            + pynutil.delete('" ')
+        )
+        graph += remove_per_units_normalized.ques
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
