@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_SPACE, GraphFst, NEMO_NOT_QUOTE
 
 
 class WordFst(GraphFst):
