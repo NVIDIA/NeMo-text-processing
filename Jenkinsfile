@@ -13,75 +13,20 @@ pipeline {
 
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-24-0'
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-04-24-0'
     ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
-=======
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-02-24-0'
-=======
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-15-24-0'
->>>>>>> 55eab83 (EN TN Fixes for Issue 166 (#207))
-    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-14-24-0'
-    ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-14-24-0'
->>>>>>> c319fa4 (ES TN Fixes for Issue #166 (#206))
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
     HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
-=======
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-06-24-0'
-=======
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
->>>>>>> 7854126 (EN TN fixes for Issue #166 (#185))
-=======
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
->>>>>>> 5a0f8d9 (update en tn folder to see if CI tests run - DO NOT MERGE (#199))
-=======
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-02-24-0'
-<<<<<<< HEAD
->>>>>>> 282e91c (Reverts EN TN fixes for Issue #166 (#202))
-    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-27-23-0'
-    ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-13-23-2'
-=======
-    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-23-24-0'
-    ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-23-24-0'
->>>>>>> 5246add (es and es_en changes for unified models (#143))
-    FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
-<<<<<<< HEAD
-    HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
->>>>>>> 9a9edfc (FR TN Fixes (#181))
-=======
-    HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
->>>>>>> bcfd23d (HU TN Fixes issue #166 (#184))
     PT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     RU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     SV_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
     ZH_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-30-24-0'
-<<<<<<< HEAD
     IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-22-24-0'
-=======
-    IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
->>>>>>> d5bcde5 (IT TN Fixes for #166 (#183))
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-05-24-0'
-=======
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
->>>>>>> 0a4a21c (Jp itn 20240221 (#141))
-=======
-    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-19-24-0'
->>>>>>> 73ad43b (update jp tn date)
-=======
-    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-20-24-0'
->>>>>>> 6f158db (updats on Jenkins)
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -334,10 +279,6 @@ pipeline {
         }
       }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0a4a21c (Jp itn 20240221 (#141))
     stage('L0: Create JA ITN Grammars') {
       when {
         anyOf {
@@ -354,11 +295,6 @@ pipeline {
         }
       }
     }
-<<<<<<< HEAD
-=======
->>>>>>> 052e151 (ZH sentence-level TN (#112))
-=======
->>>>>>> 0a4a21c (Jp itn 20240221 (#141))
 
 
 // L1 Tests starts here
