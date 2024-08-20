@@ -48,13 +48,3 @@ class CardinalFst(GraphFst):
         delete_tokens = self.delete_tokens(self.numbers)
         self.fst = delete_tokens.optimize()
 
-
-#tagger = CardinalFst().fst
-#input_text = 'cardinal { integer: "एक सौ ग्यारह" }'  
-#tagger_output = apply_fst(input_text, tagger)
-#print(tagger_output)
-#cardinal = CardinalFst().fst   # calling cardinalFst                                                                                              
-#input_text = 'cardinal { integer: "एक सौ ग्यारह" }'  
-#output = apply_fst(input_text, cardinal)           
-#print(output)
-

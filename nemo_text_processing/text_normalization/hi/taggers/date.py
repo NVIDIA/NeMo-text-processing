@@ -68,15 +68,4 @@ class DateFst(GraphFst):
         self.final_graph = final_graph.optimize()
         
         self.fst = self.add_tokens(self.final_graph)
-
-        
-cardinal = CardinalFst()
-date = DateFst(cardinal)
-#input_text = "०१-११-१०९९" # १७ २५ ३१ ३७ ४४ ५० ५९ ७० ७९ ८९ ९९ 
-#input_text = "०२-२९-१८९९"  # १८०० १८०१ १८०९ १८१० १८३७ १८९९
-#input_text = "०६-०२"  
-input_text = "०१-०१"
-#input_text = "०९-२०२४"
-#input_text = "२०२४"
-output = apply_fst(input_text, date.fst)  
-#print(dir(cardinal))
+      
