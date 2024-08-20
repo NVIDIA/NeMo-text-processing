@@ -61,8 +61,3 @@ class DateFst(GraphFst):
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
 
-
-#date = DateFst()
-#input_text = 'date { day: "सत्रह" month: "जनवरी" year: "एक हज़ार निन्यानवे"  }'   
-#output = apply_fst(input_text, date.fst)           
-#print(output)
