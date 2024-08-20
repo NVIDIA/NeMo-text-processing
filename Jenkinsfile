@@ -26,7 +26,7 @@ pipeline {
     IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
-    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-20-24-0'
+    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-20-24-1'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
