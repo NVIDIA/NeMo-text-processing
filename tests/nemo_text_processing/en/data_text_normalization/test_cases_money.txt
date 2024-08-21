@@ -69,3 +69,4 @@ $350/yr is the fee.~three hundred and fifty dollars per year is the fee.
 £10/wk sounds good to us.~ten pounds per week sounds good to us.
 $1/d is the new subscription cost.~one dollar per day is the new subscription cost.
 $0.5/hr is the total cost.~fifty cents per hour is the total cost.
+$150-$200~one hundred and fifty dollars to two hundred dollars
