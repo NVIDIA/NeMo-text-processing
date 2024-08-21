@@ -29,12 +29,11 @@ from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
 min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")))
-per_units = pynini.string_file(get_abs_path("data/money/per_unit.tsv"))
 
 
 class MoneyFst(GraphFst):
     """
-    Finite state transducer for classifying money, suppletive aware, e.g.
+    Finite state transducer for classifying money, suppletive aware, e.g. 
         $12.05 -> money { integer_part: "twelve" currency_maj: "dollars" fractional_part: "five" currency_min: "cents" preserve_order: true }
         $12.0500 -> money { integer_part: "twelve" currency_maj: "dollars" fractional_part: "five" currency_min: "cents" preserve_order: true }
         $1 -> money { currency_maj: "dollar" integer_part: "one" }
@@ -60,14 +59,14 @@ class MoneyFst(GraphFst):
         maj_unit_plural = convert_space(maj_singular @ SINGULAR_TO_PLURAL)
         maj_unit_singular = convert_space(maj_singular)
 
-        graph_maj_singular = pynutil.insert('currency_maj: "') + maj_unit_singular + pynutil.insert('"')
-        graph_maj_plural = pynutil.insert('currency_maj: "') + maj_unit_plural + pynutil.insert('"')
+        graph_maj_singular = pynutil.insert("currency_maj: \"") + maj_unit_singular + pynutil.insert("\"")
+        graph_maj_plural = pynutil.insert("currency_maj: \"") + maj_unit_plural + pynutil.insert("\"")
 
         optional_delete_fractional_zeros = pynini.closure(
             pynutil.delete(".") + pynini.closure(pynutil.delete("0"), 1), 0, 1
         )
 
-        graph_integer_one = pynutil.insert('integer_part: "') + pynini.cross("1", "one") + pynutil.insert('"')
+        graph_integer_one = pynutil.insert("integer_part: \"") + pynini.cross("1", "one") + pynutil.insert("\"")
         # only for decimals where third decimal after comma is non-zero or with quantity
         decimal_delete_last_zeros = (
             pynini.closure(NEMO_DIGIT | pynutil.delete(","))
@@ -82,7 +81,9 @@ class MoneyFst(GraphFst):
             graph_maj_plural + insert_space + (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
         )
 
-        graph_integer = pynutil.insert('integer_part: "') + ((NEMO_SIGMA - "1") @ cardinal_graph) + pynutil.insert('"')
+        graph_integer = (
+            pynutil.insert("integer_part: \"") + ((NEMO_SIGMA - "1") @ cardinal_graph) + pynutil.insert("\"")
+        )
 
         graph_integer_only = graph_maj_singular + insert_space + graph_integer_one
         graph_integer_only |= graph_maj_plural + insert_space + graph_integer
@@ -100,8 +101,8 @@ class MoneyFst(GraphFst):
             | ((NEMO_DIGIT - "0") + NEMO_DIGIT)
         )
 
-        graph_min_singular = pynutil.insert(' currency_min: "') + min_singular + pynutil.insert('"')
-        graph_min_plural = pynutil.insert(' currency_min: "') + min_plural + pynutil.insert('"')
+        graph_min_singular = pynutil.insert(" currency_min: \"") + min_singular + pynutil.insert("\"")
+        graph_min_plural = pynutil.insert(" currency_min: \"") + min_plural + pynutil.insert("\"")
         # format ** dollars ** cent
         decimal_graph_with_minor = None
         integer_graph_reordered = None
@@ -112,19 +113,19 @@ class MoneyFst(GraphFst):
             integer_plus_maj |= graph_integer_one + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
 
             integer_plus_maj_with_comma = pynini.compose(
-                NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | pynutil.delete(",")), integer_plus_maj,
+                NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | pynutil.delete(",")), integer_plus_maj
             )
             integer_plus_maj = pynini.compose(pynini.closure(NEMO_DIGIT) - "0", integer_plus_maj)
             integer_plus_maj |= integer_plus_maj_with_comma
 
             graph_fractional_one = two_digits_fractional_part @ pynini.cross("1", "one")
-            graph_fractional_one = pynutil.insert('fractional_part: "') + graph_fractional_one + pynutil.insert('"')
+            graph_fractional_one = pynutil.insert("fractional_part: \"") + graph_fractional_one + pynutil.insert("\"")
             graph_fractional = (
                 two_digits_fractional_part
                 @ (pynini.closure(NEMO_DIGIT, 1, 2) - "1")
                 @ cardinal.graph_hundred_component_at_least_one_none_zero_digit
             )
-            graph_fractional = pynutil.insert('fractional_part: "') + graph_fractional + pynutil.insert('"')
+            graph_fractional = pynutil.insert("fractional_part: \"") + graph_fractional + pynutil.insert("\"")
 
             fractional_plus_min = graph_fractional + insert_space + pynutil.insert(curr_symbol) @ graph_min_plural
             fractional_plus_min |= (
@@ -137,9 +138,9 @@ class MoneyFst(GraphFst):
                 decimal_graph_with_minor_curr |= pynutil.add_weight(
                     integer_plus_maj
                     + pynini.cross(".", " ")
-                    + pynutil.insert('fractional_part: "')
+                    + pynutil.insert("fractional_part: \"")
                     + two_digits_fractional_part @ cardinal.graph_hundred_component_at_least_one_none_zero_digit
-                    + pynutil.insert('"'),
+                    + pynutil.insert("\""),
                     weight=0.0001,
                 )
                 default_fraction_graph = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
@@ -182,16 +183,11 @@ class MoneyFst(GraphFst):
         # weight for SH
         final_graph |= pynutil.add_weight(decimal_graph_with_minor, -0.0001)
 
-        # utilizes morphosyntactic features to append "per units"
-        graph_per_units = pynutil.insert(' morphosyntactic_features: "') + per_units + pynutil.insert('"')
-
         if not deterministic:
             final_graph |= integer_graph_reordered | decimal_default_reordered
             # to handle "$2.00" cases
             final_graph |= pynini.compose(
-                NEMO_SIGMA + pynutil.delete(".") + pynini.closure(pynutil.delete("0"), 1), integer_graph_reordered,
+                NEMO_SIGMA + pynutil.delete(".") + pynini.closure(pynutil.delete("0"), 1), integer_graph_reordered
             )
-
-        final_graph += graph_per_units.ques
         final_graph = self.add_tokens(final_graph.optimize())
         self.fst = final_graph.optimize()
