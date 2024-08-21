@@ -174,7 +174,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(electonic_graph, 1.11)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(range_graph, 1.1)
-                | pynutil.add_weight(serial_graph, 1.12)  # should be higher than the rest of the classes
+                | pynutil.add_weight(serial_graph, 3.3)  # should be higher than the rest of the classes # was 1.12
             )
 
             # roman_graph = RomanFst(deterministic=deterministic).fst
