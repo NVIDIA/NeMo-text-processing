@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path, apply_fst
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
@@ -178,10 +178,3 @@ class CardinalFst(GraphFst):
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-        
-#cardinal = CardinalFst()
-#input_text = "बारह बजकर पाँच मिनट"
-#input_text = "शून्य"
-#self.fst = graph_digit
-#output = apply_fst(input_text, cardinal.fst)
-#print(output)
