@@ -161,6 +161,22 @@ class ClassifyFst(GraphFst):
             ).fst
             logger.debug(f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes")
 
+            # A quick fix to address money ranges:
+            # $150-$200 -> one hundred and fifty dollars to two hundred dollars
+
+            dash = (pynutil.insert('name: "') + pynini.cross("-", "to") + pynutil.insert('"')).optimize()
+
+            graph_range_money = pynini.closure(
+                money_graph
+                + pynutil.insert(" }")
+                + pynutil.insert(" tokens { ")
+                + dash
+                + pynutil.insert(" } ")
+                + pynutil.insert("tokens { ")
+                + money_graph,
+                1,
+            )
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(time_graph, 1.1)
@@ -175,6 +191,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(range_graph, 1.1)
                 | pynutil.add_weight(serial_graph, 1.12)  # should be higher than the rest of the classes
+                | pynutil.add_weight(graph_range_money, 1.1)
             )
 
             # roman_graph = RomanFst(deterministic=deterministic).fst
