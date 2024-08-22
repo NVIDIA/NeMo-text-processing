@@ -66,7 +66,6 @@ class DecimalFst(GraphFst):
         self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
         
         point = pynutil.delete(".")
-        #add_point = pynutil.insert("दशमलव")
             
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,)
      
@@ -83,3 +82,13 @@ class DecimalFst(GraphFst):
         
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
+        
+#cardinal = CardinalFst()
+#decimal = DecimalFst(cardinal)
+#input_text = "२५६३.४१२"
+#input_text = "१५००.२२"
+#input_text = "५०००.१२३५६"
+#input_text = "१०००.३१"
+#input_text = "५१४६.१७"
+#output = apply_fst(input_text, decimal.fst)
+#print(output)        
