@@ -51,7 +51,7 @@ class ElectronicFst(GraphFst):
 
         cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
 
-        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT)
+        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
 
@@ -159,11 +159,7 @@ class ElectronicFst(GraphFst):
             # credit card cues
             numbers = pynini.closure(NEMO_DIGIT, 4, 16)
             cc_phrases = (
-                pynutil.insert("protocol: \"")
-                + cc_cues
-                + pynutil.insert("\" domain: \"")
-                + numbers
-                + pynutil.insert("\"")
+                pynutil.insert('protocol: "') + cc_cues + pynutil.insert('" domain: "') + numbers + pynutil.insert('"')
             )
             graph |= cc_phrases
 
