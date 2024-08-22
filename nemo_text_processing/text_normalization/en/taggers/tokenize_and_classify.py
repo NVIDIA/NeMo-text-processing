@@ -161,12 +161,12 @@ class ClassifyFst(GraphFst):
             ).fst
             logger.debug(f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes")
 
-            slash = (pynutil.insert("name: \"") + pynini.cross("-", "to") + pynutil.insert("\"")).optimize()
+            dash = (pynutil.insert("name: \"") + pynini.cross("-", "to") + pynutil.insert("\"")).optimize()
             graph_range_money = pynini.closure(
                 money_graph
                 + pynutil.insert(" }")
                 + pynutil.insert(" tokens { ")
-                + slash
+                + dash
                 + pynutil.insert(" } ")
                 + pynutil.insert("tokens { ")
                 + money_graph,
@@ -186,7 +186,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(electonic_graph, 1.11)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(range_graph, 1.1)
-                | pynutil.add_weight(serial_graph, 1.12)  # should be higher than the rest of the classes # was 1.12
+                | pynutil.add_weight(serial_graph, 1.12)  # should be higher than the rest of the classes
                 | pynutil.add_weight(graph_range_money, 1.1)
             )
 
