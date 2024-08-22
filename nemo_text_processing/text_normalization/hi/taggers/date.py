@@ -34,7 +34,7 @@ class DateFst(GraphFst):
     Finite state transducer for classifying date, e.g.
         "०१-०४-२०२४" -> date { day: "एक" month: "अप्रैल" year: "दो हज़ार चौबीस" }
         "०४-०१-२०२४" -> date { month: "अप्रैल" day: "एक" year: "दो हज़ार चौबीस" }
-        "२०२४-०१-०४" -> date { year: "दो हज़ार चौबीस" day: "एक" month: "अप्रैल" }
+        
 
     Args:
         cardinal: cardinal GraphFst
@@ -48,20 +48,20 @@ class DateFst(GraphFst):
         graph_year_thousands = pynini.compose(
             (NEMO_HI_DIGIT + NEMO_HI_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_thousands
         )
-        hundreds_as_thousand = pynini.compose(
+        graph_year_hundreds_as_thousands = pynini.compose(
             (NEMO_HI_DIGIT + NEMO_HI_NON_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_hundreds_as_thousand
         )
-        graph_years = graph_year_thousands | hundreds_as_thousand
+
+        graph_year = graph_year_thousands | graph_year_hundreds_as_thousands
 
         delete_dash = pynutil.delete("-")
-
         delete_slash = pynutil.delete("/")
 
         days_graph = pynutil.insert("day: \"") + days + pynutil.insert("\"") + insert_space
 
         months_graph = pynutil.insert("month: \"") + months + pynutil.insert("\"") + insert_space
 
-        years_graph = pynutil.insert("year: \"") + graph_years + pynutil.insert("\"") + insert_space
+        years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
 
         graph_dd_mm = days_graph + delete_dash + months_graph
 
@@ -91,3 +91,4 @@ class DateFst(GraphFst):
         self.final_graph = final_graph.optimize()
 
         self.fst = self.add_tokens(self.final_graph)
+
