@@ -40,3 +40,6 @@ enterprise-services@nvidia.com~enterprise dash services at NVIDIA dot com
 https://www.nvidia.com/dgx-basepod/~HTTPS colon slash slash WWW dot NVIDIA dot com slash DGX dash BASEPOD slash
 i can use your card ending in 8876~i can use your card ending in eight eight seven six
 here is mail.nasa.gov.~here is mail dot nasa dot gov.
+upgrade/update~upgrade slash update
+upgrade / update~upgrade slash update
+upgrade/update/downgrade~upgrade slash update slash downgrade
