@@ -133,25 +133,24 @@ class ElectronicFst(GraphFst):
 
         graph |= pynutil.add_weight(graph_domain, MIN_NEG_WEIGHT)
 
-        graph |= (
-            pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
-            + (pynini.closure(NEMO_ALPHA, 1) - "and")
-            + pynini.accep(NEMO_SPACE).ques
+
+# recursively handles the "/" in strings like:
+        # update/upgrade -> update slash upgrade
+        # update/upgrade/downgrade -> update slash upgrade slash downgrade
+
+        slash_string = (
+            pynini.accep(" ").ques
             + pynini.accep("/")
-            + pynini.accep(NEMO_SPACE).ques
+            + pynini.accep(" ").ques
             + pynini.closure(NEMO_ALPHA, 1)
-            + pynutil.insert(double_quotes)
-        ).optimize()
+        )
 
         graph |= (
-            pynutil.insert(domain_string + colon + NEMO_SPACE + double_quotes)
+            pynutil.insert('domain: "')
             + (pynini.closure(NEMO_ALPHA, 1) - "and")
-            + pynini.accep(NEMO_SPACE).ques
-            + pynini.accep("/")
-            + pynini.accep(NEMO_SPACE).ques
-            + pynini.closure(NEMO_ALPHA, 1)
-            + pynutil.insert(double_quotes)
-        ).optimize()
+            + pynini.closure(slash_string, 1)
+            + pynutil.insert('"')
+        ) 
 
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
