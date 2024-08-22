@@ -62,3 +62,13 @@ class FractionFst(GraphFst):
         graph = self.graph 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()
+        
+#cardinal = CardinalFst()
+#fraction = FractionFst(cardinal)
+#input_text = "२५६३/४१२"
+#input_text = "१५००/२२"
+#input_text = "५०००/१२३५६"
+#input_text = "१०००/३१"
+#input_text = "५१४६/१७"
+#output = apply_fst(input_text, fraction.fst)
+#print(output)

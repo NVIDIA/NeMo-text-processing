@@ -295,7 +295,7 @@ class CardinalFst(GraphFst):
         graph_ten_shankhs |= create_larger_number_graph(teens_and_ties, suffix_shankhs, 0, graph_ten_padmas)
         graph_ten_shankhs.optimize()  
     
-        final_graph = digit | zero | teens_and_ties | graph_hundreds | graph_hundreds_as_thousand | graph_thousands | graph_ten_thousands | graph_lakhs | graph_ten_lakhs | graph_crores | graph_ten_crores | graph_arabs | graph_ten_arabs | graph_kharabs | graph_ten_kharabs | graph_nils | graph_ten_nils | graph_padmas | graph_ten_padmas | graph_shankhs | graph_ten_shankhs
+        final_graph = digit | zero | teens_and_ties | graph_hundreds | graph_thousands | graph_ten_thousands | graph_lakhs | graph_ten_lakhs | graph_crores | graph_ten_crores | graph_arabs | graph_ten_arabs | graph_kharabs | graph_ten_kharabs | graph_nils | graph_ten_nils | graph_padmas | graph_ten_padmas | graph_shankhs | graph_ten_shankhs
         
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
         
@@ -304,3 +304,14 @@ class CardinalFst(GraphFst):
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
                
+                                           
+#input_text = "१०९९"                                             
+#input_text = "५५५१"                                             
+#input_text = "१३२३"                                             
+#input_text = "१३४५"                                             
+#input_text = "१३४५"                                             
+#input_text = "११००"                                             
+#input_text = "२००१"                                             
+#output = rewrite.rewrites(input_text, CardinalFst().fst) #rewrite.rewrites - to see all possible outcomes, rewrite.top_rewrite - shortest pa
+#output = apply_fst(input_text, CardinalFst().fst) 
+#print(output)
