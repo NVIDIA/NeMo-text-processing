@@ -63,10 +63,5 @@ class PunctuationFst(GraphFst):
         punct = plurals._priority_union(emphasis, punct, NEMO_SIGMA)
 
         self.graph = punct
-        slash = (pynutil.insert("name: \"") + pynini.cross("-", "to") + pynutil.insert("\"")).optimize()
-        # self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize() | pynutil.add_weight(
-        #     slash, 0.0000000001 # was -1.0
-        # )
-        self.fst = pynutil.add_weight(slash, -0.9999) | (
-            (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
-        )
+        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize() 
+ 
