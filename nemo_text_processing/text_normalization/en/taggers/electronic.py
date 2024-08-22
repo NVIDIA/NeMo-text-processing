@@ -51,7 +51,7 @@ class ElectronicFst(GraphFst):
 
         cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
 
-        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT)
+        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
 
@@ -132,6 +132,21 @@ class ElectronicFst(GraphFst):
         # www.abc.com/sdafsdf, or https://www.abc.com/asdfad or www.abc.abc/asdfad
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
 
+        # recursively handles the "/" in strings like:
+        # update/upgrade -> update slash upgrade
+        # update/upgrade/downgrade -> update slash upgrade slash downgrade
+
+        slash_string = (
+            pynini.accep(" ").ques + pynini.accep("/") + pynini.accep(" ").ques + pynini.closure(NEMO_ALPHA, 1)
+        )
+
+        graph |= (
+            pynutil.insert('domain: "')
+            + (pynini.closure(NEMO_ALPHA, 1) - "and")
+            + pynini.closure(slash_string, 1)
+            + pynutil.insert('"')
+        ).optimize()
+
         if deterministic:
             # credit card cues
             numbers = pynini.closure(NEMO_DIGIT, 4, 16)
@@ -144,11 +159,7 @@ class ElectronicFst(GraphFst):
             # credit card cues
             numbers = pynini.closure(NEMO_DIGIT, 4, 16)
             cc_phrases = (
-                pynutil.insert("protocol: \"")
-                + cc_cues
-                + pynutil.insert("\" domain: \"")
-                + numbers
-                + pynutil.insert("\"")
+                pynutil.insert('protocol: "') + cc_cues + pynutil.insert('" domain: "') + numbers + pynutil.insert('"')
             )
             graph |= cc_phrases
 
