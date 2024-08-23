@@ -64,6 +64,7 @@ class DateFst(GraphFst):
         graph_yyyy = years_graph
         
         # default assume dd_mm_yyyy 
+        
         final_graph = pynutil.add_weight(graph_dd_mm, -0.001) | graph_mm_dd | pynutil.add_weight(graph_dd_mm_yyyy, -0.001) | graph_mm_dd_yyyy | graph_mm_yyyy | graph_yyyy
         
         self.final_graph = final_graph.optimize()
