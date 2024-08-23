@@ -99,7 +99,8 @@ EPS = "<eps>"
 WHITE_SPACE = "\u23B5"
 ITN_MODE = "itn"
 TN_MODE = "tn"
-tn_itn_symbols = list(string.ascii_letters + string.digits) + list("$\:+-=")
+tn_item_special_chars = ["$", "\\", ":", "+", "-", "="]
+tn_itn_symbols = list(string.ascii_letters + string.digits) + tn_item_special_chars
 
 
 def get_word_segments(text: str) -> List[List[int]]:
