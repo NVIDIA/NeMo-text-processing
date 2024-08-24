@@ -29,7 +29,6 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
 )
 from nemo_text_processing.utils.logging import logger
 
-from pynini.lib import byte, pynutil, utf8
 
 class PostProcessingFst:
     """
