@@ -29,6 +29,7 @@ from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
+NEMO_NARROW_NON_BREAK_SPACE = u"\u202F"
 NEMO_DIGIT = byte.DIGIT
 NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
 NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
@@ -73,6 +74,8 @@ NEMO_LOWER_NOT_A = pynini.union(
     "y",
     "z",
 ).optimize()
+NEMO_SPACES_AND_ALHPANUMERICS = pynini.closure(NEMO_SIGMA | pynini.closure(NEMO_SPACE) | pynini.closure(NEMO_NON_BREAKING_SPACE) | pynini.closure(NEMO_DIGIT) | pynini.closure(NEMO_WHITE_SPACE)).optimize()
+
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
