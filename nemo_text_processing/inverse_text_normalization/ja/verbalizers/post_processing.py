@@ -16,15 +16,20 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
     delete_space,
     generator_main,
+    NEMO_DIGIT,
+    NEMO_NARROW_NON_BREAK_SPACE,
+    NEMO_SPACES_AND_ALHPANUMERICS,
 )
 from nemo_text_processing.utils.logging import logger
 
+from pynini.lib import byte, pynutil, utf8
 
 class PostProcessingFst:
     """
@@ -101,10 +106,11 @@ class PostProcessingFst:
             {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
             By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
         """
+        delete_regular_space = pynini.cdrewrite(pynutil.delete(" "), NEMO_NOT_SPACE, NEMO_NOT_SPACE, NEMO_SIGMA) 
+        delete_fraction_space = pynini.cdrewrite(pynutil.delete(NEMO_NARROW_NON_BREAK_SPACE) + pynutil.insert(" "), NEMO_NOT_SPACE, NEMO_NOT_SPACE, NEMO_SPACES_AND_ALHPANUMERICS)
 
-        remove_space_around_single_quote = pynini.cdrewrite(
-            delete_space, NEMO_NOT_SPACE, NEMO_NOT_SPACE, pynini.closure(NEMO_SIGMA)
-        )
+        remove_space_around_single_quote =  delete_fraction_space | delete_regular_space
+
         # this works if spaces in between (good)
         # delete space between 2 NEMO_NOT_SPACE（left and right to the space) that are with in a content of NEMO_SIGMA
 
