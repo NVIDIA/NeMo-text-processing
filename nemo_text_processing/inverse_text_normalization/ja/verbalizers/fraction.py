@@ -16,7 +16,11 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, NEMO_NARROW_NON_BREAK_SPACE
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
+    NEMO_NARROW_NON_BREAK_SPACE,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+)
 
 
 class FractionFst(GraphFst):
@@ -49,7 +53,7 @@ class FractionFst(GraphFst):
 
         regular_graph = (
             pynini.closure((sign_component + pynutil.delete(" ")), 0, 1)
-            + pynini.closure(integer_component + pynutil.delete(" ") + pynutil.insert(NEMO_NARROW_NON_BREAK_SPACE) )
+            + pynini.closure(integer_component + pynutil.delete(" ") + pynutil.insert(NEMO_NARROW_NON_BREAK_SPACE))
             + numerator_component
             + pynutil.delete(" ")
             + pynutil.insert("/")
