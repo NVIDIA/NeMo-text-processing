@@ -34,7 +34,7 @@ testITNDateText() {
   input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_date.txt
   runtest $input
 }
-testITNDecimalext() {
+testITNDecimalText() {
   input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_decimal.txt
   runtest $input
 }
