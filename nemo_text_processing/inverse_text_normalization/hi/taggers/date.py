@@ -36,7 +36,7 @@ class DateFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="date", kind="classify")
         
-        graph_year = pynini.compose(cardinal.graph, pynini.closure(NEMO_HI_DIGIT, 1,4))
+        graph_year = pynutil.add_weight(pynini.compose(cardinal.graph, pynini.closure(NEMO_HI_DIGIT, 1,4)), 0.03)
         
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
         graph_date_days = pynini.string_file(get_abs_path("data/date/date_days.tsv")).invert()
