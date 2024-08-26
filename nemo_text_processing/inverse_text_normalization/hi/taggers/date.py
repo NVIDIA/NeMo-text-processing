@@ -57,7 +57,7 @@ class DateFst(GraphFst):
         graph_saal = self.year
         
 
-        graph = graph_day_month | graph_month_day | graph_day_month_year | graph_month_day_year | graph_month_year | graph_saal
+        graph = graph_day_month | graph_month_day | graph_day_month_year | graph_month_day_year | graph_month_year
         self.graph = graph.optimize()
         
         final_graph = self.add_tokens(graph)
