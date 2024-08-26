@@ -111,11 +111,7 @@ class ClassifyFst(GraphFst):
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
-            punct = pynini.closure(
-                pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                | (pynutil.insert(" ") + punct),
-                1,
-            )
+
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
                 pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
