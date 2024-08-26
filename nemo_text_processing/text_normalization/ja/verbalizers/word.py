@@ -1,13 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 # Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
-=======
-# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
->>>>>>> 8cf854f (format license fixings)
-=======
-# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
->>>>>>> 9b64bc0 (updates for space removal)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +28,7 @@ class WordFst(GraphFst):
     '''
 
     def __init__(self, deterministic: bool = True):
-        
+
         super().__init__(name="word", kind="verbalize", deterministic=deterministic)
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
 
