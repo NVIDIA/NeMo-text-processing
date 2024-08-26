@@ -30,7 +30,7 @@ class WordFst(GraphFst):
     '''
 
     def __init__(self, deterministic: bool = True):
-        
+
         super().__init__(name="word", kind="verbalize", deterministic=deterministic)
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
 
