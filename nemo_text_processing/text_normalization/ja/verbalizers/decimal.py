@@ -16,42 +16,37 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.ja.utils import get_abs_path
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g.
-        0.5 -> decimal { integer_part: "零" fractional_part: "五" }
-        -0.5万 -> decimal { negative: "マイナス" integer_part: "零" fractional_part: "五" quantity: "万"}
-        
-    Args:
-        cardinal: CardinalFst
+    Finite state transducer for verbalizing decimal, e.g.
+        decimal { integer_part: "零" fractional_part: "五" } -> 零点五
+        decimal { positive: "-" integer_part: "零" fractional_part: "五" } -> マイナス零点五
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True):
+        super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        cardinal_before_decimal = cardinal.just_cardinals
-        cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-
-        graph_integer = pynutil.insert('integer_part: \"') + cardinal_before_decimal + pynutil.insert("\"")
+        graph_integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         graph_fraction = (
-            pynutil.insert("fractional_part: \"")
-            + pynini.closure((cardinal_after_decimal | zero), 1)
-            + pynutil.insert("\"")
-        )
-        graph_decimal_no_sign = graph_integer + pynutil.delete('.') + pynutil.insert(" ") + graph_fraction
-
-        graph_optional_sign = (
-            pynutil.insert("negative: \"") + (pynini.cross("-", "マイナス") | pynini.accep("マイナス")) + pynutil.insert("\"")
+            pynutil.delete("fractional_part: \"")
+            + pynutil.insert("点")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
         )
 
-        graph_decimal = graph_decimal_no_sign | (graph_optional_sign + pynutil.insert(" ") + graph_decimal_no_sign)
+        graph_optional_sign = pynini.closure(
+            pynutil.delete("negative:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
 
-        self.just_decimal = graph_decimal_no_sign.optimize()
+        graph_decimal_no_sign = graph_integer + pynutil.delete(" ") + graph_fraction
+        graph_decimal = graph_decimal_no_sign | (graph_optional_sign + pynutil.delete(" ") + graph_decimal_no_sign)
 
-        final_graph = self.add_tokens(graph_decimal)
-        self.fst = final_graph.optimize()
+        delete_tokens = self.delete_tokens(graph_decimal)
+        self.fst = delete_tokens.optimize()
