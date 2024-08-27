@@ -53,9 +53,9 @@ class DateFst(GraphFst):
         
         graph_mm_yyyy = month + NEMO_SPACE + year 
 
-        graph_yyyy = year
         
-        self.graph  = graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy | graph_yyyy
+        
+        self.graph  = graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy 
         final_graph = self.graph 
 
         delete_tokens = self.delete_tokens(final_graph)
