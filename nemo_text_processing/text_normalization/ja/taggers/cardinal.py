@@ -183,8 +183,5 @@ class CardinalFst(GraphFst):
         ) | (pynutil.insert("integer: \"") + graph + pynutil.insert("\""))
 
         final_graph = self.add_tokens(final_graph)
-<<<<<<< HEAD
         
-=======
->>>>>>> 3a64dd2 (format license fixings)
         self.fst = final_graph.optimize()
