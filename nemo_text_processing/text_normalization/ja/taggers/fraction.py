@@ -35,13 +35,20 @@ class FractionFst(GraphFst):
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
+        super().__init__(name="fraction", kind="classify", deterministic=deterministic)
 
         cardinal = cardinal.just_cardinals
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        
-        quantity = pynini.union(pynini.accep("万"), pynini.accep("百万"), pynini.accep("千万"), pynini.accep("億"), pynini.accep("百奥"), pynini.accep("千億"))
+
+        quantity = pynini.union(
+            pynini.accep("万"),
+            pynini.accep("百万"),
+            pynini.accep("千万"),
+            pynini.accep("億"),
+            pynini.accep("百奥"),
+            pynini.accep("千億"),
+        )
         slash = pynutil.delete('/')
         morphemes = pynutil.delete('分の')
         root = pynini.accep('√')
@@ -68,6 +75,5 @@ class FractionFst(GraphFst):
 
         # graph = graph_fraction | optional_sign + graph_fraction
 
-        final_graph = self.add_tokens(graph_fraction_slash) ##
+        final_graph = self.add_tokens(graph_fraction_slash)  ##
         self.fst = final_graph.optimize()
-        
