@@ -183,4 +183,5 @@ class CardinalFst(GraphFst):
         ) | (pynutil.insert("integer: \"") + graph + pynutil.insert("\""))
 
         final_graph = self.add_tokens(final_graph)
+        
         self.fst = final_graph.optimize()
