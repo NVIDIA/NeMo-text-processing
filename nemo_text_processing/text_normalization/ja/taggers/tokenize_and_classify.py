@@ -16,37 +16,19 @@
 import os
 
 import pynini
-import logging
-import os
-
-import pynini
-from nemo_text_processing.text_normalization.ja.graph_utils import (
-    INPUT_LOWER_CASED,
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
-from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
-#from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
-#from nemo_text_processing.text_normalization.ja.taggers.decimal import DecimalFst
-#from nemo_text_processing.text_normalization.ja.taggers.fraction import FractionFst
-#from nemo_text_processing.text_normalization.ja.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.ja.taggers.punctuation import PunctuationFst
-#from nemo_text_processing.text_normalization.ja.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.ja.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.ja.taggers.word import WordFst
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, generator_main
 from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
-# from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
+from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ja.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ja.taggers.fraction import FractionFst
+
 # from nemo_text_processing.text_normalization.ja.taggers.measure import MeasureFst
 # from nemo_text_processing.text_normalization.ja.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ja.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ja.taggers.punctuation import PunctuationFst
+
 # from nemo_text_processing.text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.taggers.word import WordFst
@@ -86,7 +68,7 @@ class ClassifyFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
         else:
             cardinal = CardinalFst(deterministic=deterministic)
-            # date = DateFst(deterministic=deterministic)
+            date = DateFst(cardinal, deterministic=deterministic)
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             # time = TimeFst(deterministic=deterministic)
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
@@ -98,7 +80,7 @@ class ClassifyFst(GraphFst):
             punctuation = PunctuationFst(deterministic=deterministic)
 
             classify = pynini.union(
-                # pynutil.add_weight(date.fst, 1.1),
+                pynutil.add_weight(date.fst, 1.1),
                 pynutil.add_weight(fraction.fst, 1.0),
                 # pynutil.add_weight(money.fst, 1.1),
                 # pynutil.add_weight(measure.fst, 1.05),

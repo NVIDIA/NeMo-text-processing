@@ -30,7 +30,12 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
         graph_integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        graph_fraction = pynutil.delete("fractional_part: \"") + pynutil.insert("点") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        graph_fraction = (
+            pynutil.delete("fractional_part: \"")
+            + pynutil.insert("点")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
 
         graph_optional_sign = pynini.closure(
             pynutil.delete("negative:")
@@ -41,7 +46,7 @@ class DecimalFst(GraphFst):
         )
 
         graph_decimal_no_sign = graph_integer + pynutil.delete(" ") + graph_fraction
-        graph_decimal = graph_decimal_no_sign | (graph_optional_sign + pynutil.delete(" ") + graph_decimal_no_sign) 
+        graph_decimal = graph_decimal_no_sign | (graph_optional_sign + pynutil.delete(" ") + graph_decimal_no_sign)
 
         delete_tokens = self.delete_tokens(graph_decimal)
         self.fst = delete_tokens.optimize()
