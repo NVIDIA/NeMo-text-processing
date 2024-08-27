@@ -14,10 +14,6 @@
 
 
 import pynini
-<<<<<<< HEAD
-=======
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
->>>>>>> 61d6490 (updates)
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
