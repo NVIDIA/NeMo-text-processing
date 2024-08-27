@@ -12,18 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 import csv
 import os
-=======
-import os
-import csv
->>>>>>> e534d568 (adding files for ja)
-=======
-import os
-import csv
->>>>>>> ac1b127a (adding files for ja)
 
 
 def get_abs_path(rel_path):
@@ -37,13 +27,7 @@ def get_abs_path(rel_path):
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> e534d568 (adding files for ja)
-=======
->>>>>>> ac1b127a (adding files for ja)
 def load_labels(abs_path):
     """
     loads relative path file as dictionary
@@ -55,12 +39,4 @@ def load_labels(abs_path):
     """
     label_tsv = open(abs_path, encoding="utf-8")
     labels = list(csv.reader(label_tsv, delimiter="\t"))
-<<<<<<< HEAD
-<<<<<<< HEAD
     return labels
-=======
-    return labels
->>>>>>> e534d568 (adding files for ja)
-=======
-    return labels
->>>>>>> ac1b127a (adding files for ja)
