@@ -29,10 +29,6 @@ import pynini
 import regex
 import tqdm
 from joblib import Parallel, delayed
-from pynini.lib.rewrite import top_rewrite
-from sacremoses import MosesDetokenizer
-from tqdm import tqdm
-
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -116,8 +112,8 @@ class Normalizer:
         self.post_processor = None
 
         if lang == "en":
-            from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst
             from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
+            from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
