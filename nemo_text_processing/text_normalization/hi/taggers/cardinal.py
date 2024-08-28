@@ -304,13 +304,3 @@ class CardinalFst(GraphFst):
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
                
-#input_text = "१००१"                                          
-#input_text = "१०९९"                                             
-#input_text = "५५५१"                                             
-#input_text = "१३२३"                                             
-#input_text = "१३४५"                                                                                          
-#input_text = "११००"                                             
-#input_text = "२००१"                                             
-#output = rewrite.rewrites(input_text, CardinalFst().fst) #rewrite.rewrites - to see all possible outcomes, rewrite.top_rewrite - shortest pa
-#output = apply_fst(input_text, CardinalFst().fst) 
-#print(output)

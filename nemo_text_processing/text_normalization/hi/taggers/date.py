@@ -55,9 +55,13 @@ class DateFst(GraphFst):
         
         graph_mm_dd = months_graph + delete_dash + days_graph 
 
+        graph_mm_dd += pynutil.insert(" preserve_order: true ")
+
         graph_dd_mm_yyyy = days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
         
         graph_mm_dd_yyyy = months_graph + (delete_dash | delete_slash) + days_graph + (delete_dash | delete_slash) + years_graph
+
+        graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
         
         graph_mm_yyyy = months_graph + delete_dash + years_graph 
         
@@ -69,12 +73,3 @@ class DateFst(GraphFst):
         
         self.fst = self.add_tokens(self.final_graph)
         
-#cardinal = CardinalFst()
-#date = DateFst(cardinal)
-#input_text = "०२-२७" 
-#input_text = "१०-२९-२०००" 
-#input_text = "११-१४-११००" 
-#input_text = "२०७०" 
-#input_text = "२०२४" 
-#output = apply_fst(input_text, date.fst)  
-#print(output)
