@@ -47,4 +47,3 @@ class CardinalFst(GraphFst):
         self.numbers = self.optional_sign + integer
         delete_tokens = self.delete_tokens(self.numbers)
         self.fst = delete_tokens.optimize()
-

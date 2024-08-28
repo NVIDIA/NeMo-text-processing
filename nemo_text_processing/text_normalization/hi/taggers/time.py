@@ -54,8 +54,7 @@ class TimeFst(GraphFst):
         self.fst = final_graph.optimize()
 
 
-#input_text = "१:१०:१०"
-input_text = "११:४०"    
-output = rewrite.rewrites(input_text, TimeFst().fst)  
+#input_text = "१२:१०:१०"
+input_text = "७:४०"     
 output = apply_fst(input_text, TimeFst().fst) 
 print(output)
