@@ -29,27 +29,23 @@ class DateFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
 
-        year_component = (
-            pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + pynutil.insert("年")
-        )
-        month_component = (
-            pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + pynutil.insert("月")
-        )
-        day_component = (
-            pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + pynutil.insert("日")
-        )
+        era_component = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        year_component = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        month_component = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        day_component = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         week_component = pynutil.delete("weekday: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
         graph_basic_date = (
-            year_component
-            + pynutil.delete(" ")
-            + month_component
-            + pynutil.delete(" ")
-            + day_component
+            pynini.closure(era_component + pynutil.delete(" "), 0, 1)
+            + pynini.closure(year_component + pynutil.delete(" "), 0, 1)
+            + pynini.closure(month_component + pynutil.delete(" "), 0, 1)
+            + pynini.closure(day_component)
             + pynini.closure(pynutil.delete(" ") + week_component, 0, 1)
-        )
+        ) | month_component + pynutil.delete(" ") + week_component
 
-        final_graph = graph_basic_date
+
+
+        final_graph = graph_basic_date 
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
