@@ -20,7 +20,7 @@ from nemo_text_processing.inverse_text_normalization.inverse_normalize import In
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
-class TestCardinal:
+class TestDate:
 
     inverse_normalizer = InverseNormalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False)
 
