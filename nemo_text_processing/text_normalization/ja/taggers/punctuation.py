@@ -62,6 +62,7 @@ class PunctuationFst(GraphFst):
             + pynini.accep(">")
         )
         punct = plurals._priority_union(emphasis, punct, NEMO_SIGMA)
+        range_component = pynini.cross("〜", "から")
 
-        self.graph = punct
+        self.graph = punct | range_component
         self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
