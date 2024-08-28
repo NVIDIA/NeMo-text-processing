@@ -23,6 +23,7 @@ runtest () {
   done < "$input"
 }
 
+<<<<<<< HEAD
 testTNTimeText() {
   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_time.txt
   runtest $input
@@ -63,6 +64,48 @@ testTNMeasureText() {
   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_measure.txt
   runtest $input
 }
+=======
+# testTNTimeText() {
+#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_time.txt
+#   runtest $input
+# }
+# testTNCardinalText() {
+#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_cardinal.txt
+#   runtest $input
+# }
+# testTNOrdinalText() {
+#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_ordinal.txt
+#   runtest $input
+# }
+# testTNDecimalalText() {
+#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_decimal.txt
+#   runtest $input
+# }
+#testTNFractionText() {
+#  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_fraction.txt
+#  runtest $input
+#}
+testTNDateText() {
+   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_date.txt
+   runtest $input
+}
+# testTNMoneyText() {
+#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_money.txt
+#   runtest $input
+# }
+# testTNWordText() {
+#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_word.txt
+#   runtest $input
+# }
+# testTNWhitelistText() {
+#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_whitelist.txt
+#   runtest $input
+# }
+# testTNMeasureText() {
+#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_measure.txt
+#   runtest $input
+# }
+>>>>>>> 78f5269 (test case updates on jp tn)
 
 
 # Load shUnit2
