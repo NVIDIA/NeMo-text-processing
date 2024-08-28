@@ -32,7 +32,7 @@ class DateFst(GraphFst):
         S.5 -> date { era: "昭和" "year: "五年" }
         T.5 -> date { era: "大正" "year: "五年" }
         M.5 -> date { era: "明治" "year: "五年" }
-        1月1日(月)〜3日(水) -> 一月一日月曜から三日水曜
+        1月1日(月)〜3日(水) -> 一月一日月曜日から三日水曜日 # combiend with punct grammar
         70〜80年代 -> 七十から八十年代
         70年代 -> 七十年代
         7月5〜9日(月〜金) -> 七月五から九日月曜日から金曜日
@@ -57,33 +57,38 @@ class DateFst(GraphFst):
         month = pynini.string_file(get_abs_path("data/date/month.tsv"))
         day = pynini.string_file(get_abs_path("data/date/day.tsv"))
         week = pynini.string_file(get_abs_path("data/date/week.tsv"))
+        era = pynini.string_file(get_abs_path("data/date/era.tsv"))
 
         signs = pynutil.delete("/") | pynutil.delete(".") | pynutil.delete("-")
+        words = pynini.accep("年") | pynini.accep("月") | pynini.accep("日")
 
-        year_component = pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("\"")
-        month_component = pynutil.insert("month: \"") + month + pynutil.insert("\"")
-        day_component = pynutil.insert("day: \"") + day + pynutil.insert("\"")
+        era_component = pynutil.insert("era: \"") + era + pynutil.insert("\"")
+        year_component = pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("年") + pynutil.insert("\"")
+        month_component = pynutil.insert("month: \"") + month + pynutil.insert("月") + pynutil.insert("\"")
+        day_component = pynutil.insert("day: \"") + day + pynutil.insert("日") + pynutil.insert("\"")
 
-        bracket = (
+        front_bracket = (
             pynutil.delete("(")
-            | pynutil.delete(")")
             | pynutil.delete("（")
+            | pynutil.delete("（") 
+        )
+        preceding_bracket = (
+            pynutil.delete(")")
             | pynutil.delete("）")
-            | pynutil.delete("（")
             | pynutil.delete("）")
         )
         week_component = (
-            pynini.closure(bracket, 0, 1)
+            front_bracket
             + pynutil.insert("weekday: \"")
             + week
-            + pynini.closure(bracket, 0, 1)
+            + preceding_bracket
             + pynutil.insert("\"")
         )
 
-        graph_basic_date = (
-            year_component
-            + signs
-            + pynutil.insert(" ")
+        # era, year, month, date
+        graph_basic_date = (  # (R.|令和)2024/01/01, (R.|令和)2024/01/01/(水), (R.|令和)01/01, (R.|令和)01/01(水)
+            pynini.closure(era_component + pynutil.insert(" "), 0, 1)
+            + pynini.closure(year_component + signs + pynutil.insert(" "), 0, 1)
             + month_component
             + signs
             + pynutil.insert(" ")
@@ -91,7 +96,36 @@ class DateFst(GraphFst):
             + pynini.closure(pynutil.insert(" ") + week_component, 0, 1)
         )
 
-        graph_dates = graph_basic_date
+        # 2024年, 9月, 28日
+        individual_year_component = (
+            pynini.closure(era_component + pynutil.insert(" "), 0, 1)
+            + pynutil.insert("year: \"")
+            + graph_cardinal
+            + pynini.accep("年")
+            + pynutil.insert("\"")
+        )
+        individual_month_component = pynutil.insert("month: \"") + month + pynini.accep("月") + pynutil.insert("\"")
+        individual_day_component = (
+            pynutil.insert("day: \"") + graph_cardinal + pynini.accep("日") + pynutil.insert("\"")
+        )
 
-        final_graph = self.add_tokens(graph_dates)
+        graph_individual_component = (individual_year_component | individual_month_component | individual_day_component | week_component) + pynini.closure(pynutil.insert(" ") + week_component, 0, 1)
+        graph_individual_component_combined = (
+            (individual_year_component + pynutil.insert(" ") + individual_month_component)
+            | (individual_month_component + pynutil.insert(" ") + individual_day_component)
+            | (
+                individual_year_component
+                + pynutil.insert(" ")
+                + individual_month_component
+                + pynutil.insert(" ")
+                + individual_day_component
+            )
+        ) + pynini.closure(pynutil.insert(" ") + week_component, 0, 1)
+
+        graph_regular_date = graph_basic_date | graph_individual_component | graph_individual_component_combined
+
+
+        final_graph = graph_regular_date 
+
+        final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
