@@ -17,6 +17,7 @@ import logging
 import os
 import pynini
 
+
 def get_abs_path(rel_path):
     """
     Get absolute path
@@ -48,6 +49,7 @@ def load_labels(abs_path):
 
 
 from pynini.lib import pynutil
+
 
 def apply_fst(text, fst):
     """ Given a string input, returns the output string

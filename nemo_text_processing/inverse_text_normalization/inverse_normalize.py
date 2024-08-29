@@ -116,7 +116,7 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.mr.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
-        elif lang == 'hi': # Hindi
+        elif lang == 'hi':  # Hindi
             from nemo_text_processing.inverse_text_normalization.hi.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.hi.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,

@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     NEMO_CHAR,
     NEMO_HI_DIGIT,
@@ -21,7 +23,6 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     delete_space,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -55,30 +56,54 @@ class TimeFst(GraphFst):
             + pynini.closure(NEMO_HI_DIGIT, 1)
             + pynutil.delete("\"")
         )
-        
+
         graph_hour = hour + delete_space + pynutil.insert(":") + delete_space + pynutil.insert("००") + delete_space
-        
-        #hour minute second
+
+        # hour minute second
         graph_hms = (
-            hour + delete_space + pynutil.insert(":") + delete_space + minute + delete_space + pynutil.insert(":") + delete_space + second + delete_space
+            hour
+            + delete_space
+            + pynutil.insert(":")
+            + delete_space
+            + minute
+            + delete_space
+            + pynutil.insert(":")
+            + delete_space
+            + second
+            + delete_space
         )
-        
-        #hour minute
-        graph_hm = (
-            hour + delete_space + pynutil.insert(":") + delete_space + minute + delete_space
-        )
-        
-        #hour second
+
+        # hour minute
+        graph_hm = hour + delete_space + pynutil.insert(":") + delete_space + minute + delete_space
+
+        # hour second
         graph_hs = (
-            hour + delete_space + pynutil.insert(":") + delete_space + pynutil.insert("००") + delete_space + pynutil.insert(":") + second + delete_space
+            hour
+            + delete_space
+            + pynutil.insert(":")
+            + delete_space
+            + pynutil.insert("००")
+            + delete_space
+            + pynutil.insert(":")
+            + second
+            + delete_space
         )
-        
-        #minute second
+
+        # minute second
         graph_ms = (
-            pynutil.insert("००") + delete_space + pynutil.insert(":") + delete_space + minute + delete_space + pynutil.insert(":") + delete_space + second + delete_space
+            pynutil.insert("००")
+            + delete_space
+            + pynutil.insert(":")
+            + delete_space
+            + minute
+            + delete_space
+            + pynutil.insert(":")
+            + delete_space
+            + second
+            + delete_space
         )
 
         graph = graph_hour | graph_hms | graph_hm | graph_hs | graph_ms
-                       
+
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

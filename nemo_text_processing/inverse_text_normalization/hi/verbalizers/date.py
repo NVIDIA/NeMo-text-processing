@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_extra_space,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class DateFst(GraphFst):
@@ -61,31 +62,24 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
         graph_fy = period + delete_space + year
-        #month (day) year
-        graph_mdy = (
-            month + delete_extra_space + day + pynutil.insert(",") + delete_extra_space + year
-        )
-        
-        #(day) month year
+        # month (day) year
+        graph_mdy = month + delete_extra_space + day + pynutil.insert(",") + delete_extra_space + year
+
+        # (day) month year
         graph_dmy = (
-            day + pynini.closure(delete_extra_space + month, 0, 1) + pynini.closure(pynutil.insert(",") + delete_extra_space + year, 0, 1)
-        )
-        
-        #month year
-        graph_my = (
-            month + pynini.closure(delete_extra_space + year, 0, 1)
-        )
-        
-        #month day
-        graph_md = (
-            month + pynini.closure(delete_extra_space + day, 0, 1)
+            day
+            + pynini.closure(delete_extra_space + month, 0, 1)
+            + pynini.closure(pynutil.insert(",") + delete_extra_space + year, 0, 1)
         )
 
-        #day month
-        graph_dm = (
-            day + pynini.closure(delete_extra_space + month, 0, 1)
-        )
+        # month year
+        graph_my = month + pynini.closure(delete_extra_space + year, 0, 1)
 
+        # month day
+        graph_md = month + pynini.closure(delete_extra_space + day, 0, 1)
+
+        # day month
+        graph_dm = day + pynini.closure(delete_extra_space + month, 0, 1)
 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
@@ -97,7 +91,11 @@ class DateFst(GraphFst):
             + delete_space
         )
 
-        final_graph = (graph_fy | graph_mdy | graph_dmy | graph_my | graph_md | graph_dm) + delete_space + optional_preserve_order
+        final_graph = (
+            (graph_fy | graph_mdy | graph_dmy | graph_my | graph_md | graph_dm)
+            + delete_space
+            + optional_preserve_order
+        )
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

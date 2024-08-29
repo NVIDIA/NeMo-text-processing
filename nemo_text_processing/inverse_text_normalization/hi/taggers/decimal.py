@@ -14,6 +14,8 @@
 # limitations under the License.import pynini
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -27,11 +29,10 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     capitalized_input_graph,
     delete_extra_space,
     delete_space,
-) 
+)
 from nemo_text_processing.text_normalization.en.utils import load_labels
-from pynini.lib import pynutil
- 
- 
+
+
 def get_quantity(
     decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', input_case: str = INPUT_LOWER_CASED
 ) -> 'pynini.FstLike':
@@ -48,16 +49,7 @@ def get_quantity(
     numbers = cardinal_up_to_hundred @ (
         pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
     )
-    suffix = pynini.union(
-    	"हजार",
-	"लाख",
-	"करोड़",
-	"अरब",
-	"खरब",
-	"नील",
-	"पद्म",
-	"शंख",
-    )
+    suffix = pynini.union("हजार", "लाख", "करोड़", "अरब", "खरब", "नील", "पद्म", "शंख",)
     res = (
         pynutil.insert("integer_part: \"")
         + numbers
@@ -89,44 +81,43 @@ class DecimalFst(GraphFst):
         cardinal: CardinalFst
  
     """
+
     def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="decimal", kind="classify")
- 
+
         cardinal_graph = cardinal.graph_no_exception
- 
+
         graph_decimal = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
         graph_decimal |= pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
- 
+
         graph_decimal = pynini.closure(graph_decimal + delete_space) + graph_decimal
         self.graph = graph_decimal
- 
+
         point = pynutil.delete("दशमलव")
- 
+
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("ऋण", "\"true\"") + delete_extra_space, 0, 1,
         )
- 
+
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         final_graph_wo_sign = (
             pynini.closure(graph_integer + delete_extra_space, 0, 1) + point + delete_extra_space + graph_fractional
         )
         final_graph = optional_graph_negative + final_graph_wo_sign
- 
+
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
             final_graph_wo_sign, cardinal_graph, input_case=input_case
         )
- 
+
         # accept semiotic spans that start with a capital letter
         self.final_graph_wo_negative |= pynutil.add_weight(
             pynini.compose(TO_LOWER + NEMO_SIGMA, self.final_graph_wo_negative).optimize(), MIN_NEG_WEIGHT
         )
- 
-        quantity_graph = get_quantity(
-            final_graph_wo_sign, cardinal_graph, input_case=input_case
-        )
+
+        quantity_graph = get_quantity(final_graph_wo_sign, cardinal_graph, input_case=input_case)
         final_graph |= optional_graph_negative + quantity_graph
- 
+
         if input_case == INPUT_CASED:
             final_graph = capitalized_input_graph(final_graph)
         final_graph = self.add_tokens(final_graph)

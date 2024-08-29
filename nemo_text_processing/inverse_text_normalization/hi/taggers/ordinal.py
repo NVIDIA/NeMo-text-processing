@@ -14,14 +14,15 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     NEMO_CHAR,
-    GraphFst, 
-    NEMO_SIGMA,
     NEMO_HI_DIGIT,
+    NEMO_SIGMA,
+    GraphFst,
 )
-from pynini.lib import pynutil
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
 class OrdinalFst(GraphFst):
@@ -42,23 +43,45 @@ class OrdinalFst(GraphFst):
         graph_teens = pynini.string_file(get_abs_path("data/ordinals/teens_and_ties.tsv"))
         graph_digit_hundred = pynini.string_file(get_abs_path("data/ordinals/hundred_digit.tsv"))
         graph = pynini.closure(NEMO_CHAR) + pynini.union(
-            graph_digit, graph_teens, graph_digit_hundred, pynini.cross("वाँ", "वाँ"), pynini.cross("वां","वां"), pynini.cross("वें", "वें"), pynini.cross("वे", "वे")
+            graph_digit,
+            graph_teens,
+            graph_digit_hundred,
+            pynini.cross("वाँ", "वाँ"),
+            pynini.cross("वां", "वां"),
+            pynini.cross("वें", "वें"),
+            pynini.cross("वे", "वे"),
         )
 
         graph_fem_digit = pynini.string_file(get_abs_path("data/ordinals/digit_fem.tsv"))
         graph_fem_teens = pynini.string_file(get_abs_path("data/ordinals/teens_and_ties_fem.tsv"))
         graph_digit_hundred_fem = pynini.string_file(get_abs_path("data/ordinals/hundred_digit_fem.tsv"))
         graph_fem = pynini.closure(NEMO_CHAR) + pynini.union(
-            graph_fem_digit, graph_fem_teens, graph_digit_hundred_fem, pynini.cross("वीं", "वीं"), pynini.cross("वी", "वी")
+            graph_fem_digit,
+            graph_fem_teens,
+            graph_digit_hundred_fem,
+            pynini.cross("वीं", "वीं"),
+            pynini.cross("वी", "वी"),
         )
-        graph = pynini.compose(graph | graph_fem, (cardinal_graph + pynini.union(pynini.cross("वाँ", "वाँ"), pynini.cross("वां","वां"), pynini.cross("वीं", "वीं"), pynini.cross("वी", "वी"), pynini.cross("वें", "वें"), pynini.cross("वे", "वे") ))).optimize()
+        graph = pynini.compose(
+            graph | graph_fem,
+            (
+                cardinal_graph
+                + pynini.union(
+                    pynini.cross("वाँ", "वाँ"),
+                    pynini.cross("वां", "वां"),
+                    pynini.cross("वीं", "वीं"),
+                    pynini.cross("वी", "वी"),
+                    pynini.cross("वें", "वें"),
+                    pynini.cross("वे", "वे"),
+                )
+            ),
+        ).optimize()
 
-        
         morph_features_graph = pynini.string_file(get_abs_path("data/ordinals/morph_features.tsv"))
         morpho_graph = pynutil.insert("\" morphosyntactic_features: \"") + morph_features_graph + pynutil.insert("\"")
-        
-        rule = pynini.cdrewrite(morpho_graph, pynini.closure(NEMO_HI_DIGIT), pynini.union("[EOS]"," "), NEMO_SIGMA ) 
 
-        final_graph = (pynutil.insert("integer: \"") + graph@rule )
+        rule = pynini.cdrewrite(morpho_graph, pynini.closure(NEMO_HI_DIGIT), pynini.union("[EOS]", " "), NEMO_SIGMA)
+
+        final_graph = pynutil.insert("integer: \"") + graph @ rule
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
