@@ -49,6 +49,9 @@ class VerbalizeFst(GraphFst):
         decimal = DecimalFst(deterministic=deterministic)
         word = WordFst(deterministic=deterministic)
         fraction = FractionFst(deterministic=deterministic)
+
+
+
         # money = MoneyFst(decimal=decimal, deterministic=deterministic)
         # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
         # time = TimeFst(deterministic=deterministic)
