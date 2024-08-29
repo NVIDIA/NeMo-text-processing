@@ -28,8 +28,4 @@ class WordFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
         word = pynutil.insert("name: \"") + NEMO_NOT_SPACE + pynutil.insert("\"")
-<<<<<<< HEAD
         self.fst = word.optimize()
-=======
-        self.fst = word.optimize()
->>>>>>> 03c25c6 (updates for space removal)
