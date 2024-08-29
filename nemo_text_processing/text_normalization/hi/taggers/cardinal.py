@@ -61,15 +61,12 @@ class CardinalFst(GraphFst):
         graph_hundreds.optimize()
         self.graph_hundreds = graph_hundreds
 
-
         # Transducer for eleven hundred -> 1100 or twenty one hundred eleven -> 2111
         graph_hundreds_as_thousand = create_graph_suffix(teens_and_ties, suffix_hundreds, 2)  
         graph_hundreds_as_thousand |= create_larger_number_graph(teens_and_ties, suffix_hundreds, 1, digit)
         graph_hundreds_as_thousand |= create_larger_number_graph(teens_and_ties, suffix_hundreds, 0, teens_ties)
         self.graph_hundreds_as_thousand = graph_hundreds_as_thousand
 
-        
-        
         #Thousands and Ten thousands graph 
         suffix_thousands = pynutil.insert(" हज़ार")
         graph_thousands = create_graph_suffix(digit, suffix_thousands, 3)
@@ -302,5 +299,4 @@ class CardinalFst(GraphFst):
         self.final_graph = final_graph.optimize()
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.final_graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
-        self.fst = final_graph
-               
+        self.fst = final_graph               
