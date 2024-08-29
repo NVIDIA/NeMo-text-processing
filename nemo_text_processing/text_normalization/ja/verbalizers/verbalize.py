@@ -57,6 +57,11 @@ class VerbalizeFst(GraphFst):
         word = WordFst(deterministic=deterministic)
         fraction = FractionFst(deterministic=deterministic)
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> b512e290 (updates for post_processing and verbalizer)
         # money = MoneyFst(decimal=decimal, deterministic=deterministic)
         # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
         time = TimeFst(deterministic=deterministic)
