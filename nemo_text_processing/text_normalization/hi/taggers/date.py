@@ -71,5 +71,4 @@ class DateFst(GraphFst):
         
         self.final_graph = final_graph.optimize()
         
-        self.fst = self.add_tokens(self.final_graph)
-        
+        self.fst = self.add_tokens(self.final_graph)        
