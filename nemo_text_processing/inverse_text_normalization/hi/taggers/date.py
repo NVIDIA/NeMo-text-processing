@@ -12,16 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pynini 
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
+import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
+    NEMO_HI_DIGIT,
     GraphFst,
     delete_extra_space,
-    insert_space,
     delete_space,
-    NEMO_HI_DIGIT
-) 
-from pynini.lib import pynutil
+    insert_space,
+)
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
 class DateFst(GraphFst):
@@ -33,20 +34,20 @@ class DateFst(GraphFst):
         cardinal: CardinalFst
         date: DateFst
     """
+
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="date", kind="classify")
-        
-        graph_year = pynutil.add_weight(pynini.compose(cardinal.graph, pynini.closure(NEMO_HI_DIGIT, 1,4)), 0.03)
-        
+
+        graph_year = pynutil.add_weight(pynini.compose(cardinal.graph, pynini.closure(NEMO_HI_DIGIT, 1, 4)), 0.03)
+
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
         graph_date_days = pynini.string_file(get_abs_path("data/date/date_days.tsv")).invert()
-        
-        
+
         self.day = pynutil.insert("day: \"") + graph_date_days + pynutil.insert("\" ")
         self.month = pynutil.insert("month: \"") + month_graph + pynutil.insert("\" ")
         self.year = pynutil.insert("year: \"") + graph_year + pynutil.insert("\" ")
         insert_comma = pynutil.insert(", ")
-        
+
         graph_day_month = self.day + delete_space + self.month
         graph_month_day = self.month + delete_space + self.day
         graph_month_day += pynutil.insert(" preserve_order: true")
@@ -55,10 +56,9 @@ class DateFst(GraphFst):
         graph_month_day_year += pynutil.insert(" preserve_order: true")
         graph_month_year = self.month + delete_space + self.year
         graph_saal = self.year
-        
 
         graph = graph_day_month | graph_month_day | graph_day_month_year | graph_month_day_year | graph_month_year
         self.graph = graph.optimize()
-        
+
         final_graph = self.add_tokens(graph)
         self.fst = final_graph

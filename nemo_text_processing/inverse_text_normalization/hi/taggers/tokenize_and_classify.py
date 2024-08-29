@@ -17,17 +17,7 @@ import logging
 import os
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.hi.taggers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.hi.taggers.decimal import DecimalFst 
-from nemo_text_processing.inverse_text_normalization.hi.taggers.fraction import FractionFst 
-from nemo_text_processing.inverse_text_normalization.hi.taggers.date import DateFst 
-from nemo_text_processing.inverse_text_normalization.hi.taggers.time import TimeFst 
-
-
-from nemo_text_processing.inverse_text_normalization.hi.verbalizers.whitelist import WhiteListFst
-from nemo_text_processing.inverse_text_normalization.hi.taggers.punctuation import PunctuationFst
-from nemo_text_processing.inverse_text_normalization.hi.taggers.word import WordFst
+from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     GraphFst,
@@ -35,7 +25,15 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     delete_space,
     generator_main,
 )
-from pynini.lib import pynutil
+from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.punctuation import PunctuationFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.word import WordFst
+from nemo_text_processing.inverse_text_normalization.hi.verbalizers.whitelist import WhiteListFst
 
 
 class ClassifyFst(GraphFst):
@@ -52,11 +50,7 @@ class ClassifyFst(GraphFst):
     """
 
     def __init__(
-        self,
-        cache_dir: str = None,
-        overwrite_cache: bool = False,
-        whitelist: str = None,
-        input_case: str = None,
+        self, cache_dir: str = None, overwrite_cache: bool = False, whitelist: str = None, input_case: str = None,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -82,11 +76,10 @@ class ClassifyFst(GraphFst):
             time = TimeFst()
             time_graph = time.fst
             punct_graph = PunctuationFst().fst
-            #whitelist_graph = WhiteListFst(input_file=whitelist).fst
+            # whitelist_graph = WhiteListFst(input_file=whitelist).fst
             word_graph = WordFst().fst
 
             classify = (
-
                 pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
@@ -94,7 +87,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
-                #|  pynutil.add_weight(whitelist_graph, 1.01)
+                # |  pynutil.add_weight(whitelist_graph, 1.01)
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")

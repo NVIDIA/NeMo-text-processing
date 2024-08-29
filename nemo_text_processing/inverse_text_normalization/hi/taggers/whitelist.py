@@ -17,7 +17,8 @@
 import os
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
@@ -25,8 +26,8 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     convert_space,
     string_map_cased,
 )
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.utils import load_labels
-from pynini.lib import pynutil
 
 
 class WhiteListFst(GraphFst):

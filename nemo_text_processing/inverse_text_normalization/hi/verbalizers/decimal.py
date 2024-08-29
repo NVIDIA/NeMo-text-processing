@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class DecimalFst(GraphFst):
@@ -22,7 +23,7 @@ class DecimalFst(GraphFst):
     Finite state transducer for verbalizing decimal, e.g.
         decimal { negative: "true" integer_part: "१२"  fractional_part: "५००६" quantity: "अरब" } -> -१२.५००६ अरब
     """
-    
+
     def __init__(self):
         super().__init__(name="decimal", kind="verbalize")
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)

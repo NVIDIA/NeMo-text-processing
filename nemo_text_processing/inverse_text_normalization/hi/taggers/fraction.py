@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pynini 
+import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -27,9 +29,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     capitalized_input_graph,
     delete_extra_space,
     delete_space,
-) 
+)
 from nemo_text_processing.text_normalization.en.utils import load_labels
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -46,21 +47,21 @@ class FractionFst(GraphFst):
         cardinal: CardinalFst
         fraction: FractionFst
     """
+
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="fraction", kind="classify")
         # integer_part # numerator # denominator
         graph_cardinal = cardinal.graph_no_exception
-        
+
         integer = pynutil.insert("integer_part: \"") + graph_cardinal + pynutil.insert("\" ")
         integer += delete_space
-        delete_bata = pynutil.delete(" बटा ") # used to demarcate integer and fractional parts
+        delete_bata = pynutil.delete(" बटा ")  # used to demarcate integer and fractional parts
 
-        
         numerator = pynini.closure(pynutil.insert("numerator: \"") + graph_cardinal + pynutil.insert("\""))
         denominator = pynini.closure((pynutil.insert(" denominator: \"") + graph_cardinal + pynutil.insert("\"")))
         graph_fraction = numerator + delete_bata + denominator
- 
-        graph = graph_fraction 
+
+        graph = graph_fraction
         self.graph = graph.optimize()
         self.final_graph_wo_negative = graph
         optional_graph_negative = pynini.closure(

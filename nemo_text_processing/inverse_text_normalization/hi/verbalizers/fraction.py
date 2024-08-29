@@ -14,8 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
 
 
 class FractionFst(GraphFst):
