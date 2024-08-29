@@ -59,3 +59,4 @@ class FractionFst(GraphFst):
         graph = self.graph
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()
+        

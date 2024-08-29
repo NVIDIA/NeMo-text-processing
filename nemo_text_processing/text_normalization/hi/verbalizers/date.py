@@ -70,5 +70,5 @@ class DateFst(GraphFst):
         final_graph = self.graph
 
         delete_tokens = self.delete_tokens(final_graph)
-
         self.fst = delete_tokens.optimize()
+        
