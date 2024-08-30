@@ -23,29 +23,29 @@ runtest () {
   done < "$input"
 }
 
-# testTNTimeText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_time.txt
-#   runtest $input
-# }
-# testTNCardinalText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_cardinal.txt
-#   runtest $input
-# }
-# testTNOrdinalText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_ordinal.txt
-#   runtest $input
-# }
-# testTNDecimalalText() {
-#  input=$PROJECT_DIR/zh/data_text_normalization/test_cases_decimal.txt
-#   runtest $input
-# }
-#testTNFractionText() {
-#  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_fraction.txt
-#  runtest $input
-#}
+testTNTimeText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
+testTNCardinalText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_cardinal.txt
+  runtest $input
+}
+testTNOrdinalText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
+testTNDecimalalText() {
+ input=$PROJECT_DIR/ja/data_text_normalization/test_cases_decimal.txt
+  runtest $input
+}
+testTNFractionText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
 testTNDateText() {
-   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_date.txt
-   runtest $input
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_date.txt
+  runtest $input
 }
 # testTNMoneyText() {
 #   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_money.txt
