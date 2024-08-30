@@ -29,7 +29,7 @@ from nemo_text_processing.text_normalization.ja.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.ja.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ja.taggers.punctuation import PunctuationFst
 
-# from nemo_text_processing.text_normalization.ja.taggers.time import TimeFst
+from nemo_text_processing.text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.taggers.word import WordFst
 
@@ -70,7 +70,7 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst(deterministic=deterministic)
             date = DateFst(cardinal, deterministic=deterministic)
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
-            # time = TimeFst(deterministic=deterministic)
+            time = TimeFst(cardinal=cardinal, deterministic=deterministic)
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
             # money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
             # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
@@ -84,7 +84,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(fraction.fst, 1.0),
                 # pynutil.add_weight(money.fst, 1.1),
                 # pynutil.add_weight(measure.fst, 1.05),
-                # pynutil.add_weight(time.fst, 1.1),
+                pynutil.add_weight(time.fst, 1.1),
                 pynutil.add_weight(whitelist.fst, 1.1),
                 pynutil.add_weight(cardinal.fst, 1.1),
                 pynutil.add_weight(decimal.fst, 3.05),
@@ -94,7 +94,7 @@ class ClassifyFst(GraphFst):
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-            tagger = pynini.closure(token, 1)
+            tagger = pynini.closure(token, 1) + pynini.closure(pynutil.delete(" "))
 
             self.fst = tagger
 
