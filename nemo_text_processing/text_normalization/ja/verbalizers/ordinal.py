@@ -33,9 +33,7 @@ class OrdinalFst(GraphFst):
             pynutil.delete("integer:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(moephemes, 0, 1)
             + pynini.closure(NEMO_NOT_QUOTE)
-            + pynini.closure(moephemes, 0, 1)
             + pynutil.delete("\"")
         )
 
