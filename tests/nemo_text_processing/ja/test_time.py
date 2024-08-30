@@ -40,4 +40,7 @@ class TestCardinal:
     def test_denorm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
+<<<<<<< HEAD
 
+=======
+>>>>>>> e2133bf (add test for date tn, fraction tn, and time tn)
