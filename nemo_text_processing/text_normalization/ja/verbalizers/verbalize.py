@@ -25,7 +25,7 @@ from nemo_text_processing.text_normalization.ja.verbalizers.fraction import Frac
 # from nemo_text_processing.text_normalization.ja.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
 
-# from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst
+from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
 
@@ -50,11 +50,9 @@ class VerbalizeFst(GraphFst):
         word = WordFst(deterministic=deterministic)
         fraction = FractionFst(deterministic=deterministic)
 
-
-
         # money = MoneyFst(decimal=decimal, deterministic=deterministic)
         # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
-        # time = TimeFst(deterministic=deterministic)
+        time = TimeFst(deterministic=deterministic)
         whitelist = WhiteListFst(deterministic=deterministic)
 
         graph = pynini.union(
@@ -66,7 +64,7 @@ class VerbalizeFst(GraphFst):
             word.fst,
             #   money.fst,
             #   measure.fst,
-            #   time.fst,
+            time.fst,
             whitelist.fst,
         )
         graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
