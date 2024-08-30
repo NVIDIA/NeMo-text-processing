@@ -43,9 +43,7 @@ class DateFst(GraphFst):
             + pynini.closure(pynutil.delete(" ") + week_component, 0, 1)
         ) | month_component + pynutil.delete(" ") + week_component
 
-
-
-        final_graph = graph_basic_date 
+        final_graph = graph_basic_date
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
