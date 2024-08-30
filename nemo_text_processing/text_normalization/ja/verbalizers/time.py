@@ -45,4 +45,8 @@ class TimeFst(GraphFst):
         final_graph = graph_basic_time
 
         delete_tokens = self.delete_tokens(final_graph)
+<<<<<<< HEAD
         self.fst = delete_tokens.optimize()
+=======
+        self.fst = delete_tokens.optimize()
+>>>>>>> 72b5702 (date add month+week component, ordinal needed update to not delete ordinal morphemes, postprocessing not change, verbalizer ad time verbalizer)
