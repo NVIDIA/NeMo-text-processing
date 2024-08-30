@@ -15,36 +15,19 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_SIGMA,
-    NEMO_SPACE,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, NEMO_SPACE
 from nemo_text_processing.text_normalization.es import LOCALIZATION
 from nemo_text_processing.text_normalization.es.utils import get_abs_path, load_labels
 
-digits = pynini.project(
-    pynini.string_file(get_abs_path("data/numbers/digit.tsv")), "input"
-)
-tens = pynini.project(
-    pynini.string_file(get_abs_path("data/numbers/ties.tsv")), "input"
-)
-teens = pynini.project(
-    pynini.string_file(get_abs_path("data/numbers/teen.tsv")), "input"
-)
-twenties = pynini.project(
-    pynini.string_file(get_abs_path("data/numbers/twenties.tsv")), "input"
-)
-hundreds = pynini.project(
-    pynini.string_file(get_abs_path("data/numbers/hundreds.tsv")), "input"
-)
+digits = pynini.project(pynini.string_file(get_abs_path("data/numbers/digit.tsv")), "input")
+tens = pynini.project(pynini.string_file(get_abs_path("data/numbers/ties.tsv")), "input")
+teens = pynini.project(pynini.string_file(get_abs_path("data/numbers/teen.tsv")), "input")
+twenties = pynini.project(pynini.string_file(get_abs_path("data/numbers/twenties.tsv")), "input")
+hundreds = pynini.project(pynini.string_file(get_abs_path("data/numbers/hundreds.tsv")), "input")
 
-accents = pynini.string_map(
-    [("á", "a"), ("é", "e"), ("í", "i"), ("ó", "o"), ("ú", "u")]
-)
+accents = pynini.string_map([("á", "a"), ("é", "e"), ("í", "i"), ("ó", "o"), ("ú", "u")])
 
-if (
-    LOCALIZATION == "am"
-):  # Setting localization for central and northern america formatting
+if LOCALIZATION == "am":  # Setting localization for central and northern america formatting
     cardinal_separator = pynini.string_map([",", NEMO_SPACE])
     decimal_separator = pynini.accep(".")
 else:
@@ -52,15 +35,9 @@ else:
     decimal_separator = pynini.accep(",")
 
 ones = pynini.union("un", "ún")
-fem_ones = pynini.union(
-    pynini.cross("un", "una"), pynini.cross("ún", "una"), pynini.cross("uno", "una")
-)
-one_to_one_hundred = pynini.union(
-    digits, "uno", tens, teens, twenties, tens + pynini.accep(" y ") + digits
-)
-fem_hundreds = hundreds @ pynini.cdrewrite(
-    pynini.cross("ientos", "ientas"), "", "", NEMO_SIGMA
-)
+fem_ones = pynini.union(pynini.cross("un", "una"), pynini.cross("ún", "una"), pynini.cross("uno", "una"))
+one_to_one_hundred = pynini.union(digits, "uno", tens, teens, twenties, tens + pynini.accep(" y ") + digits)
+fem_hundreds = hundreds @ pynini.cdrewrite(pynini.cross("ientos", "ientas"), "", "", NEMO_SIGMA)
 
 
 ES_MINUS = pynini.union("menos", "Menos", "MENOS").optimize()
@@ -101,16 +78,12 @@ def shift_cardinal_gender(fst: "pynini.FstLike") -> "pynini.FstLike":
         + pynini.closure(NEMO_SPACE + one_to_one_hundred, 0, 1)
         + pynini.union(pynini.accep("[EOS]"), pynini.accep('"'), decimal_separator)
     )
-    before_double_digits = pynini.closure(
-        NEMO_SPACE + one_to_one_hundred, 0, 1
-    ) + pynini.union(pynini.accep("[EOS]"), pynini.accep('"'))
+    before_double_digits = pynini.closure(NEMO_SPACE + one_to_one_hundred, 0, 1) + pynini.union(
+        pynini.accep("[EOS]"), pynini.accep('"')
+    )
 
-    fem_allign = pynini.cdrewrite(
-        fem_hundreds, "", before_mil, NEMO_SIGMA
-    )  # doscientas mil dosciento
-    fem_allign @= pynini.cdrewrite(
-        fem_hundreds, "", before_double_digits, NEMO_SIGMA
-    )  # doscientas mil doscienta
+    fem_allign = pynini.cdrewrite(fem_hundreds, "", before_mil, NEMO_SIGMA)  # doscientas mil dosciento
+    fem_allign @= pynini.cdrewrite(fem_hundreds, "", before_double_digits, NEMO_SIGMA)  # doscientas mil doscienta
 
     fem_allign @= pynini.cdrewrite(
         fem_ones, "", pynini.union("[EOS]", '"', decimal_separator), NEMO_SIGMA
@@ -134,10 +107,7 @@ def shift_number_gender(fst: "pynini.FstLike") -> "pynini.FstLike":
     """
     fem_allign = pynini.cdrewrite(fem_hundreds, "", "", NEMO_SIGMA)
     fem_allign @= pynini.cdrewrite(
-        fem_ones,
-        "",
-        pynini.union(NEMO_SPACE, pynini.accep("[EOS]"), pynini.accep('"')),
-        NEMO_SIGMA,
+        fem_ones, "", pynini.union(NEMO_SPACE, pynini.accep("[EOS]"), pynini.accep('"')), NEMO_SIGMA,
     )  # If before a quote or EOS, we know it's the end of a string
 
     return fst @ fem_allign
@@ -212,10 +182,7 @@ def roman_to_int(fst: "pynini.FstLike") -> "pynini.FstLike":
         (digit_upper | digit_lower)
         | (
             (ties_upper + (digit_upper | pynutil.add_weight(pynutil.insert("0"), 0.01)))
-            | (
-                ties_lower
-                + (digit_lower | pynutil.add_weight(pynutil.insert("0"), 0.01))
-            )
+            | (ties_lower + (digit_lower | pynutil.add_weight(pynutil.insert("0"), 0.01)))
         )
         | (
             (
