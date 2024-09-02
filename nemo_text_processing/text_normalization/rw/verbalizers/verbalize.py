@@ -1,5 +1,6 @@
 # Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 # Copyright (c) 2024, DIGITAL UMUGANDA
+# Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.rw.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.rw.verbalizers.time import VerbalizeTimeFst
 from nemo_text_processing.text_normalization.en.verbalizers.cardinal import CardinalFst
 

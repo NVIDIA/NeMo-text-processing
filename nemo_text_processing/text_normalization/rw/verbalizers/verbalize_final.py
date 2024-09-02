@@ -1,5 +1,6 @@
 # Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 # Copyright (c) 2024, DIGITAL UMUGANDA
+# Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,11 +17,14 @@ import pynini
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.rw.graph_utils import (
     GraphFst,
     delete_extra_space,
+    delete_space_or_punct,
     delete_space,
+    NEMO_PUNCT,
     generator_main,
+    delete_space
 )
 import os
 
@@ -34,20 +38,20 @@ class VerbalizeFinalFst(GraphFst):
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
         else:
-            verbalize = VerbalizeFst().fst
-            word = WordFst().fst
-		    
+            verbalize = VerbalizeFst(deterministic=deterministic).fst
+            word = WordFst(deterministic=deterministic).fst
             types = verbalize | word
             graph = (
-		        pynutil.delete("tokens")
-		        + delete_space
-		        + pynutil.delete("{")
-		        + delete_space
-		        + types
-		        + delete_space
-		        + pynutil.delete("}")
-		    )
-            graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
+                pynutil.delete("tokens")
+                + delete_space
+                + pynutil.delete("{")
+                + delete_space
+                + types
+                + delete_space
+                + pynutil.delete("}")
+            )
+            graph = delete_space + pynini.closure(graph + delete_space) + graph + delete_space
+
 
 
             self.fst = graph

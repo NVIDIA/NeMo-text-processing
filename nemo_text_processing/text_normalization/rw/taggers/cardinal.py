@@ -1,5 +1,6 @@
 # Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 # Copyright (c) 2024, DIGITAL UMUGANDA
+# Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,189 +16,40 @@
 
 import pynini
 from pynini.lib import pynutil
-import string
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst,NEMO_CHAR,insert_space
+from nemo_text_processing.text_normalization.rw.graph_utils import GraphFst,NEMO_CHAR,insert_space,NEMO_DIGIT,NEMO_ALPHA,NEMO_CONSONANTS,NEMO_VOWELS,delete_extra_space,delete_space
 from nemo_text_processing.text_normalization.rw.utils import get_abs_path
 
-def apply_fst(text, fst):
-    try:
-        print(pynini.shortestpath(text @ fst).string())
-        print(len(pynini.shortestpath(text @ fst).string()))
-
-    except pynini.FstOpError:
-        print(f"Error: no valid output with given'input: '{text}'")
 
 class CardinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
-        alphabet = string.ascii_letters
-        rewrite_na_fst = pynini.cdrewrite(pynini.cross(" "," na "),pynini.union(*"aeiouAEIOU "),pynini.union(*"BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz"),NEMO_CHAR.closure())
-        rewrite_n_fst = pynini.cdrewrite(pynini.cross(" "," n'"),pynini.union(*"aeiouAEIOU "),pynini.union(*"aeiouAEIOU"),NEMO_CHAR.closure())
-        remove_underscore_fst = pynini.cdrewrite(pynini.cross("_"," "),pynini.union(*alphabet),pynini.union(*alphabet),NEMO_CHAR.closure())
-        remove_extra_space_fst = pynini.cdrewrite(pynini.cross("  "," "),pynini.union(*alphabet),pynini.union(*alphabet),NEMO_CHAR.closure())
-        remove_trailing_space_fst = pynini.cdrewrite(pynini.cross(pynini.accep(' ').closure(),''),pynini.union(*alphabet).closure(),'[EOS]',NEMO_CHAR.closure())
+        vowels_or_space = NEMO_VOWELS | " "
+        rewrite_na_fst = pynini.cdrewrite(pynini.cross(" "," na "),vowels_or_space,NEMO_CONSONANTS,NEMO_CHAR.closure())
+        rewrite_n_fst = pynini.cdrewrite(pynini.cross(" "," n'"),vowels_or_space,NEMO_VOWELS,NEMO_CHAR.closure())
+        remove_underscore_fst = pynini.cdrewrite(pynini.cross("_"," "),pynini.union(NEMO_ALPHA),pynini.union(NEMO_ALPHA),NEMO_CHAR.closure())
+        remove_extra_space_fst = pynini.cdrewrite(delete_extra_space,pynini.union(NEMO_ALPHA),pynini.union(NEMO_ALPHA),NEMO_CHAR.closure())
+        remove_trailing_space_fst = pynini.cdrewrite(delete_space,pynini.union(NEMO_ALPHA).closure(),'[EOS]',NEMO_CHAR.closure())
 
         rewrite_add_separator_fst = pynini.compose(rewrite_na_fst,rewrite_n_fst)
         ten_thousand = pynini.string_map([("ibihumbi_icumi","10")])
         ten = pynini.string_map([("icumi","10")])
-        digits = pynini.string_map([
-            ("rimwe","1"),
-            ("kabiri","2"),
-            ("gatatu","3"),
-            ("kane","4"),
-            ("gatanu","5"),
-            ("gatandatu","6"),
-            ("karindwi","7"),
-            ("umunani","8"),
-            ("icyenda","9"),
-        ])
-        digits_for_thousands = pynini.string_map([
-            ("","0"),
-            ("kimwe","1"),
-            ("bibiri","2"),
-            ("bitatu","3"),
-            ("bine","4"),
-            ("bitanu","5"),
-            ("bitandatu","6"),
-            ("birindwi","7"),
-            ("umunani","8"),
-            ("icyenda","9")
-        ]) 
-        digits_millions_trillions= pynini.string_map([
-            ("","0"),
-            ("imwe","1"),
-            ("ebyiri","2"),
-            ("eshatu","3"),
-            ("enye","4"),
-            ("eshanu","5"),
-            ("esheshatu","6"),
-            ("zirindwi","7"),
-            ("umunani","8"),
-            ("icyenda","9")
-        ]) 
-        tens = pynini.string_map([
-            (" ","0"),
-            ("makumyabiri","2"),
-            ("mirongo_itatu","3"),
-            ("mirongo_ine","4"),
-            ("mirongo_itanu","5"),
-            ("mirongo_itandatu","6"),
-            ("mirongo_irindwi","7"),
-            ("mirongo_inani","8"),
-            ("mirongo_icyenda","9")
-        ])
+        digits = pynini.string_file(get_abs_path("data/cardinal/digits.tsv"))
+        digits_for_thousands = pynini.string_file(get_abs_path("data/cardinal/digits_for_thousands.tsv")) 
+        digits_millions_trillions= pynini.string_file(get_abs_path("data/cardinal/digits_millions_trillions.tsv")) 
+        tens = pynini.string_file(get_abs_path("data/cardinal/tens.tsv"))
         tens_for_ends = pynini.string_map([("icumi","1")])|tens 
         tens_for_beginnings= pynini.string_map([("cumi","1")])|tens
-        hundreds = pynini.string_map([
-            ("ijana","1"),
-            ("magana_abiri","2"),
-            ("magana_atatu","3"),
-            ("magana_ane","4"),
-            ("magana_atanu","5"),
-            ("magana_atandatu","6"),
-            ("magana_arindwi","7"),
-            ("magana_inani","8"),
-            ("magana_cyenda","9")
-        ])
-        thousands = pynini.string_map([
-            ("igihumbi","1"),
-            ("ibihumbi_bibiri","2"),
-            ("ibihumbi_bitatu","3"),
-            ("ibihumbi_bine","4"),
-            ("ibihumbi_bitanu","5"),
-            ("ibihumbi_bitandatu","6"),
-            ("ibihumbi_birindwi","7"),
-            ("ibihumbi_umunani","8"),
-            ("ibihumbi_icyenda","9")
-        ])
-        tens_of_thousands = pynini.string_map([
-            ("ibihumbi_cumi","1"),
-            ("ibihumbi_makumyabiri","2"),
-            ("ibihumbi_mirongo_itatu","3"),
-            ("ibihumbi_mirongo_ine","4"),
-            ("ibihumbi_mirongo_itanu","5"),
-            ("ibihumbi_mirongo_itandatatu","6"),
-            ("ibihumbi_mirongo_irindwi","7"),
-            ("ibihumbi_mirongo_inani","8"),
-            ("ibihumbi_mirongo_icyenda","9")
-        ])
-        hundreds_of_thousands = pynini.string_map([
-            ("ibihumbi_ijana","1"),
-            ("ibihumbi_magana_abiri","2"),
-            ("ibihumbi_magana_atatu","3"),
-            ("ibihumbi_magana_ane","4"),
-            ("ibihumbi_magana_atanu","5"),
-            ("ibihumbi_magana_atandatu","6"),
-            ("ibihumbi_magana_arindwi","7"),
-            ("ibihumbi_magana_inani","8"),
-            ("ibihumbi_magana_cyenda","9")
-        ])
-        millions = pynini.string_map([
-            ("miliyoni","1"),
-            ("miliyoni_ebyiri","2"),
-            ("miliyoni_eshatu","3"),
-            ("miliyoni_enye","4"),
-            ("miliyoni_eshanu","5"),
-            ("miliyoni_esheshatu","6"),
-            ("miliyoni_zirindwi","7"),
-            ("miliyoni_umunani","8"),
-            ("miliyoni_icyenda","9")
-        ])
-        tens_of_millions = pynini.string_map([
-            ("miliyoni_cumi","1"),
-            ("miliyoni_makumyabiri","2"),
-            ("miliyoni_mirongo_itatu","3"),
-            ("miliyoni_mirongo_ine","4"),
-            ("miliyoni_mirongo_itanu","5"),
-            ("miliyoni_mirongo_itandatatu","6"),
-            ("miliyoni_mirongo_irindwi","7"),
-            ("miliyoni_mirongo_inani","8"),
-            ("miliyoni_mirongo_icyenda","9")
-        ])
-        hundreds_of_millions = pynini.string_map([
-            ("miliyoni_ijana","1"),
-            ("miliyoni_magana_abiri","2"),
-            ("miliyoni_magana_atatu","3"),
-            ("miliyoni_magana_ane","4"),
-            ("miliyoni_magana_atanu","5"),
-            ("miliyoni_magana_atandatu","6"),
-            ("miliyoni_magana_arindwi","7"),
-            ("miliyoni_magana_inani","8"),
-            ("miliyoni_magana_cyenda","9")
-        ])
-        trillions = pynini.string_map([
-            ("tiriyoni","1"),
-            ("tiriyoni_ebyiri","2"),
-            ("tiriyoni_eshatu","3"),
-            ("tiriyoni_enye","4"),
-            ("tiriyoni_eshanu","5"),
-            ("tiriyoni_esheshatu","6"),
-            ("tiriyoni_zirindwi","7"),
-            ("tiriyoni_umunani","8"),
-            ("tiriyoni_icyenda","9")
-        ])
-        tens_of_trillions = pynini.string_map([
-            ("tiriyoni_icumi","1"),
-            ("tiriyoni_makumyabiri","2"),
-            ("tiriyoni_mirongo_itatu","3"),
-            ("tiriyoni_mirongo_ine","4"),
-            ("tiriyoni_mirongo_itanu","5"),
-            ("tiriyoni_mirongo_itandatatu","6"),
-            ("tiriyoni_mirongo_irindwi","7"),
-            ("tiriyoni_mirongo_inani","8"),
-            ("tiriyoni_mirongo_icyenda","9")
-        ])
-        hundreds_of_trillions = pynini.string_map([
-            ("tiriyoni_ijana","1"),
-            ("tiriyoni_magana_abiri","2"),
-            ("tiriyoni_magana_atatu","3"),
-            ("tiriyoni_magana_ane","4"),
-            ("tiriyoni_magana_atanu","5"),
-            ("tiriyoni_magana_atandatu","6"),
-            ("tiriyoni_magana_arindwi","7"),
-            ("tiriyoni_magana_inani","8"),
-            ("tiriyoni_magana_cyenda","9")
-        ])
+        hundreds = pynini.string_file(get_abs_path("data/cardinal/hundreds.tsv"))
+        thousands = pynini.string_file(get_abs_path("data/cardinal/thousands.tsv"))
+        tens_of_thousands = pynini.string_file(get_abs_path("data/cardinal/tens_of_thousands.tsv"))
+        hundreds_of_thousands = pynini.string_file(get_abs_path("data/cardinal/hundreds_of_thousands.tsv"))
+        millions = pynini.string_file(get_abs_path("data/cardinal/millions.tsv"))
+        tens_of_millions = pynini.string_file(get_abs_path("data/cardinal/tens_of_millions.tsv"))
+        hundreds_of_millions = pynini.string_file(get_abs_path("data/cardinal/hundreds_of_millions.tsv"))
+        trillions = pynini.string_file(get_abs_path("data/cardinal/trillions.tsv"))
+        tens_of_trillions = pynini.string_file(get_abs_path("data/cardinal/tens_of_trillions.tsv"))
+        hundreds_of_trillions = pynini.string_file(get_abs_path("data/cardinal/hundreds_of_trillions.tsv"))
+
         THREE_ZEROS = "000"
         FOUR_ZEROS = "0000"
         FIVE_ZEROS = "00000"
@@ -208,7 +60,7 @@ class CardinalFst(GraphFst):
         NINE_ZEROS = "000000000"
 
         zero = pynini.string_map([("zeru","0")])
-        rewrite_remove_comma_fst = pynini.cdrewrite(pynini.cross(",",""),pynini.union(*"0123456789"),pynini.union(*"0123456789"),NEMO_CHAR.closure())
+        rewrite_remove_comma_fst = pynini.cdrewrite(pynini.cross(",",""),pynini.union(NEMO_DIGIT),pynini.union(NEMO_DIGIT),NEMO_CHAR.closure())
         single_digits_graph = pynini.invert(digits | zero)
         single_digits_graph = single_digits_graph + pynini.closure(insert_space + single_digits_graph)
         remove_comma = rewrite_remove_comma_fst@single_digits_graph

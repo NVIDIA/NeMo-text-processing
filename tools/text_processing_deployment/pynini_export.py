@@ -1,4 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, DIGITAL UMUGANDA
 # Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +21,7 @@ from argparse import ArgumentParser
 
 import pynini
 
-from nemo_text_processing.text_normalization.en.graph_utils import generator_main
+from nemo_text_processing.text_normalization.rw.graph_utils import generator_main
 
 # This script exports compiled grammars inside nemo_text_processing into OpenFst finite state archive files
 # tokenize_and_classify.far and verbalize.far for production purposes
@@ -270,7 +271,7 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
-	elif args.language == 'rw':
+    elif args.language == 'rw':
         from nemo_text_processing.text_normalization.rw.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
