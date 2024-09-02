@@ -28,7 +28,7 @@ from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_pat
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal
-        e.g. thirteenth -> ordinal { integer: "13" }
+        e.g. तेरहवां -> ordinal { integer: "१३" }
 
     Args:
         cardinal: CardinalFst

@@ -27,7 +27,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
 class WordFst(GraphFst):
     """
     Finite state transducer for verbalizing plain tokens
-        e.g. tokens { name: "sleep" } -> sleep
+        e.g. tokens { name: "नींद" } -> नींद
     """
 
     def __init__(self):

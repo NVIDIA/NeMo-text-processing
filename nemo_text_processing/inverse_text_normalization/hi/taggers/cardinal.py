@@ -32,8 +32,7 @@ from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_pat
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
-        e.g. minus twenty three -> cardinal { integer: "23" negative: "-" } }
-    Numbers below thirteen are not converted.
+        e.g. ऋण तेईस -> cardinal { integer: "२३" negative: "-" }
 
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
@@ -150,7 +149,7 @@ class CardinalFst(GraphFst):
             "०",
         )
 
-        labels_exception = ["शून्य", "एक", "दो", "तीन"]
+        labels_exception = [pynini.string_file(get_abs_path("data/numbers/labels_exception.tsv"))]
 
         graph_exception = pynini.union(*labels_exception).optimize()
 

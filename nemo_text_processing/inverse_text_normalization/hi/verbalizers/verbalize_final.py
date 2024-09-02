@@ -24,7 +24,7 @@ from nemo_text_processing.inverse_text_normalization.hi.verbalizers.word import 
 class VerbalizeFinalFst(GraphFst):
     """
     Finite state transducer that verbalizes an entire sentence, e.g. 
-    tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
+    tokens { name: "अब" } tokens { time { hours: "१२" minutes: "३०" } } tokens { name: "बज" } tokens { name: "गए" } tokens { name: "हैं" } -> अब १२:३० बज गए हैं
     """
 
     def __init__(self):

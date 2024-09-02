@@ -28,9 +28,8 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time, e.g.
-        time { hours: "12" minutes: "30" } -> 12:30
-        time { hours: "1" minutes: "12" } -> 01:12
-        time { hours: "2" suffix: "a.m." } -> 02:00 a.m.
+        e.g. एक बजके सात मिनट -> time { hours: "१" minutes: "७" }
+        e.g. चार बजे चवालीस मिनट -> time { hours: "४" minutes: "४४" }
     """
 
     def __init__(self):

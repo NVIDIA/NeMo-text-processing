@@ -22,7 +22,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_
 class WordFst(GraphFst):
     """
     Finite state transducer for classifying plain tokens, that do not belong to any special class. This can be considered as the default class.
-        e.g. sleep -> tokens { name: "sleep" }
+        e.g. नींद -> tokens { name: "नींद" }
     """
 
     def __init__(self):

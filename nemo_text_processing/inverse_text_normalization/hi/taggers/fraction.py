@@ -42,7 +42,7 @@ class FractionFst(GraphFst):
 
  
         The fractional rule assumes that fractions can be pronounced as:
-        (a cardinal) + ('बटा') plus (a cardinal, excluding 'zero')
+        (a cardinal) + ('बटा') plus (a cardinal, excluding 'शून्य')
     Args:
         cardinal: CardinalFst
         fraction: FractionFst

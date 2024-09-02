@@ -33,7 +33,7 @@ from nemo_text_processing.text_normalization.en.utils import load_labels
 class WhiteListFst(GraphFst):
     """
     Finite state transducer for classifying whitelisted tokens
-        e.g. misses -> tokens { name: "mrs." }
+        e.g. श्रीमती -> tokens { name: "श्रीमती" }
     This class has highest priority among all classifier grammars.
     Whitelisted tokens are defined and loaded from "data/whitelist.tsv" (unless input_file specified).
 
