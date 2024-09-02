@@ -22,7 +22,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import Graph
 class PunctuationFst(GraphFst):
     """
     Finite state transducer for classifying punctuation
-        e.g. a, -> tokens { name: "a" } tokens { name: "," }
+        e.g. आ, -> tokens { name: "आ" } tokens { name: "," }
     """
 
     def __init__(self):

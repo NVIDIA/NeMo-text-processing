@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOT
 class FractionFst(GraphFst):
     """
     Finite state transducer for verbalizing fractions
-        e.g. fraction { numerator: "8" denominator: "3" } -> "8/3"
+        e.g. fraction { numerator: "८" denominator: "३" } -> "८/३"
     """
 
     def __init__(self):

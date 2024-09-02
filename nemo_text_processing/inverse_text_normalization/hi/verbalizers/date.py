@@ -26,8 +26,8 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
 class DateFst(GraphFst):
     """
     Finite state transducer for verbalizing date, e.g.
-        date { month: "january" day: "5" year: "2012" preserve_order: true } -> february 5 2012
-        date { day: "5" month: "january" year: "2012" preserve_order: true } -> 5 february 2012
+        date { month: "जनवरी" day: "५" year: "२०१२" preserve_order: true } -> जनवरी ५ २०१२
+        date { day: "५" month: "जनवरी" year: "२०१२" preserve_order: true } -> ५ जनवरी २०१२
     """
 
     def __init__(self):

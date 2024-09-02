@@ -22,7 +22,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for verbalizing ordinal, e.g.
-       ordinal { integer: "13" } -> 13th
+       ordinal { integer: "१३" } -> १३वां
     """
 
     def __init__(self):

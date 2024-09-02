@@ -23,7 +23,7 @@ class TimeFst(GraphFst):
     """
         Finite state transducer for classifying time, 
         e.g. एक बजके सात मिनट -> time { hours: "१" minutes: "७" }
-        e.g. चार बजे चवालीस मिनट -> time { hours: "४" minutes: "४४" }     
+        e.g. चार बजे चवालीस मिनट -> time { hours: "४" minutes: "४४" }    
     Args:
         cardinal: CardinalFst
         time: TimeFst
@@ -33,8 +33,8 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify")
 
         hour_graph = pynini.string_file(get_abs_path("data/time/hour.tsv")).invert()
-        minute_graph = pynini.string_file(get_abs_path("data/time/minute.tsv")).invert()
-        second_graph = pynini.string_file(get_abs_path("data/time/second.tsv")).invert()
+        minute_graph = pynini.string_file(get_abs_path("data/time/minute_and_second.tsv")).invert()
+        second_graph = pynini.string_file(get_abs_path("data/time/minute_and_second.tsv")).invert()
 
         delete_baje = pynini.union(
             pynutil.delete("बजके") | pynutil.delete("बजकर") | pynutil.delete("बजे") | pynutil.delete("घंटा")

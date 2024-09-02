@@ -21,7 +21,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_
 class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal
-        e.g. cardinal { integer: "23" negative: "-" } -> -23
+        e.g. ऋण तेईस -> cardinal { integer: "२३" negative: "-" } -> -२३
     """
 
     def __init__(self):

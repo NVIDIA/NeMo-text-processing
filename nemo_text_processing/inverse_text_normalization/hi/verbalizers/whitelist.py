@@ -28,7 +28,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
 class WhiteListFst(GraphFst):
     """
     Finite state transducer for verbalizing whitelist
-        e.g. tokens { name: "mrs." } -> mrs.
+        e.g. tokens { name: "श्रीमती" } -> श्रीमती
     """
 
     def __init__(self):

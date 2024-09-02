@@ -49,7 +49,8 @@ def get_quantity(
     numbers = cardinal_up_to_hundred @ (
         pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
     )
-    suffix = pynini.union("हजार", "लाख", "करोड़", "अरब", "खरब", "नील", "पद्म", "शंख",)
+
+    suffix = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
     res = (
         pynutil.insert("integer_part: \"")
         + numbers
@@ -67,16 +68,16 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal
         Decimal point "." is determined by "दशमलव"
-            e.g. ऋण एक दशमलव दो छह -> decimal { negative: "true" integer_part: "1" morphosyntactic_features: "." fractional_part: "26" }
+            e.g. ऋण एक दशमलव दो छह -> decimal { negative: "true" integer_part: "१" morphosyntactic_features: "." fractional_part: "२६" }
 
  
         This decimal rule assumes that decimals can be pronounced as:
-        (a cardinal) + ('दशमलव') plus (any sequence of cardinals <1000, including 'zero')
+        (a cardinal) + ('दशमलव') plus (any sequence of cardinals <१०००, including 'शून्य')
  
         Also writes large numbers in shortened form, e.g. 
-            e.g. एक दशमलव दो छह लाख -> decimal { negative: "false" integer_part: "1" morphosyntactic_features: "." fractional_part: "26" quantity: "million" }
-            e.g. दो लाख -> decimal { negative: "false" integer_part: "2" quantity: "million" }
-            e.g. एक अरब आठ सौ चौबीस लाख -> decimal { negative: "false" integer_part: "1824" quantity: "million" }
+            e.g. एक दशमलव दो छह लाख -> decimal { negative: "false" integer_part: "१" morphosyntactic_features: "." fractional_part: "२६" quantity: "लाख" }
+            e.g. दो लाख -> decimal { negative: "false" integer_part: "२" quantity: "लाख" }
+            e.g. एक अरब आठ सौ चौबीस लाख -> decimal { negative: "false" integer_part: "१८२४" quantity: "लाख" }
     Args:
         cardinal: CardinalFst
  
