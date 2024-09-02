@@ -1,5 +1,4 @@
 # log and data files
-*.model
 *.pkl
 #*.ipynb
 .ipynb_checkpoints/
