@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_DIGIT, GraphFst, NEMO_NARROW_NON_BREAK_SPACE, NEMO_NON_BREAKING_SPACE
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
 
@@ -69,6 +69,7 @@ class DateFst(GraphFst):
 
         signs = pynutil.delete("/") | pynutil.delete(".") | pynutil.delete("-")
         words = pynini.accep("年") | pynini.accep("月") | pynini.accep("日")
+        delete_spaces = pynini.closure(pynutil.delete(" ") | pynutil.delete(NEMO_NARROW_NON_BREAK_SPACE) | pynutil.delete(NEMO_NON_BREAKING_SPACE))
 
         era_component = pynutil.insert("era: \"") + era + pynutil.insert("\"")
         era_abbrev_component = pynutil.insert("era: \"") + era_abbrev + pynutil.insert("\"")
@@ -76,8 +77,8 @@ class DateFst(GraphFst):
         month_component = pynutil.insert("month: \"") + month + pynutil.insert("月") + pynutil.insert("\"")
         day_component = pynutil.insert("day: \"") + day + pynutil.insert("日") + pynutil.insert("\"")
 
-        front_bracket = pynutil.delete("(") | pynutil.delete("（") | pynutil.delete("（")
-        preceding_bracket = pynutil.delete(")") | pynutil.delete("）") | pynutil.delete("）")
+        front_bracket = (pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete("(") + pynini.closure(pynutil.delete(delete_spaces))) | (pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete("（") + pynini.closure(pynutil.delete(delete_spaces))) | (pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete("（") + pynini.closure(pynutil.delete(delete_spaces)))
+        preceding_bracket = (pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete(")")+ pynini.closure(pynutil.delete(delete_spaces))) | (pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete("）") + pynini.closure(pynutil.delete(delete_spaces))) | (pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete("）") + pynini.closure(pynutil.delete(delete_spaces)) )
         # this graph optionally accepts () around weekday to accomodate to inputs like (月〜金), thus being longer
         
         week_component = (
