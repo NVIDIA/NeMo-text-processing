@@ -1,17 +1,3 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import pynini
 from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
@@ -73,24 +59,37 @@ class DateFst(GraphFst):
         )
 
         month_names = _get_month_name_graph()
-        all_month_graph = pynini.string_file(get_abs_path("data/months_all.tsv"))
-        all_month_graph = pynini.invert(all_month_graph)
-        all_month_graph = pynutil.insert("month: \"") + all_month_graph + pynutil.insert("\"")
         month_names_graph = pynutil.insert("month: \"") + month_names + pynutil.insert("\"")
+
+        month_name2number = pynini.string_file(get_abs_path("data/months_name2number.tsv"))
+        month_name2number_graph = pynutil.insert("month: \"") + pynini.invert(month_name2number) + pynutil.insert("\"")
+
+        month_number2number = pynini.string_file(get_abs_path("data/months_number2number.tsv"))
+        month_number2number_graph = pynutil.insert("month: \"") + pynini.invert(month_number2number) + pynutil.insert(
+            "\"")
+
+        all_month_graph = month_name2number_graph | month_number2number_graph
+
         month_prefix_graph = pynutil.insert("month_prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space
         optional_month_prefix_graph = pynini.closure(month_prefix_graph, 0, 1)
 
         year_graph = _get_year_graph(two_digits_graph, cardinal.graph_thousands)
-        year_graph = pynutil.add_weight(year_graph, 0.001)
 
         graph_year = (
             delete_extra_space
             + pynutil.insert("year: \"")
-            + pynutil.add_weight(year_graph, -0.001)
+            + year_graph
             + pynutil.insert("\"")
         )
 
-        optional_graph_year = pynini.closure(graph_year, 0, 1,)
+        graph_dm = (
+            optional_day_prefix_graph
+            + day_graph
+            + insert_space
+            + delete_space
+            + optional_month_prefix_graph
+            + month_name2number_graph
+        )
 
         graph_dmy = (
             optional_day_prefix_graph
@@ -99,7 +98,7 @@ class DateFst(GraphFst):
             + delete_space
             + month_prefix_graph
             + all_month_graph
-            + optional_graph_year
+            + graph_year
         )
 
         graph_my = (
@@ -108,7 +107,9 @@ class DateFst(GraphFst):
             + graph_year
         )
 
-        year_only_prefix = pynini.accep("בשנת")
+        optional_prefix_graph = pynini.closure(prefix_graph, 0, 1)
+        year_only_prefix = optional_prefix_graph + pynini.union("שנה", "שנת")
+
         graph_y_only = (
             pynutil.insert("year_only_prefix: \"")
             + year_only_prefix
@@ -116,7 +117,7 @@ class DateFst(GraphFst):
             + graph_year
         )
 
-        final_graph = graph_dmy | graph_my | graph_y_only
+        final_graph = graph_dm | graph_dmy | graph_my | graph_y_only
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
 

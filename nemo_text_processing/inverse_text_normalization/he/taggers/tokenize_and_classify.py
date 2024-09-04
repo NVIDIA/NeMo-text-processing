@@ -1,17 +1,3 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import os
 import pynini
 import logging
@@ -27,10 +13,10 @@ from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import 
 from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.he.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.he.taggers.punctuation import PunctuationFst
-# from nemo_text_processing.inverse_text_normalization.he.taggers.money import MoneyFst
-# from nemo_text_processing.inverse_text_normalization.he.taggers.electronic import ElectronicFst
-# from nemo_text_processing.inverse_text_normalization.he.taggers.telephone import TelephoneFst
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst, delete_extra_space, delete_space, generator_main
+
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
+    GraphFst, delete_extra_space, delete_space, generator_main
+)
 
 
 class ClassifyFst(GraphFst):
@@ -73,9 +59,6 @@ class ClassifyFst(GraphFst):
             time_graph = TimeFst().fst
             whitelist_graph = WhiteListFst(input_file=whitelist).fst
             punct_graph = PunctuationFst().fst
-            # electronic_graph = ElectronicFst().fst
-            # telephone_graph = TelephoneFst(cardinal).fst
-            # money_graph = MoneyFst(cardinal=cardinal, decimal=decimal).fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
@@ -85,9 +68,6 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
-                # | pynutil.add_weight(money_graph, 1.1)
-                # | pynutil.add_weight(telephone_graph, 1.1)
-                # | pynutil.add_weight(electronic_graph, 1.1)
                 # NOTE: we convert ordinals in Hebrew only if it is a part of a date!
                 # this is why it is commented out.
                 # | pynutil.add_weight(ordinal_graph, 1.09)
