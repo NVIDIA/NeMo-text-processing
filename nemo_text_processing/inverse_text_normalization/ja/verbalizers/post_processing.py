@@ -23,10 +23,10 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     NEMO_NARROW_NON_BREAK_SPACE,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
+    NEMO_SPACE,
     NEMO_SPACES_AND_ALHPANUMERICS,
     delete_space,
     generator_main,
-    NEMO_SPACE,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -112,7 +112,7 @@ class PostProcessingFst:
             NEMO_NOT_SPACE,
             NEMO_NOT_SPACE,
             NEMO_SPACES_AND_ALHPANUMERICS,
-        ) # this graph is only for fraction grammar verbalizer which inserted a narrow nbs. 
+        )  # this graph is only for fraction grammar verbalizer which inserted a narrow nbs.
 
         remove_space_around_single_quote = delete_fraction_space | delete_regular_space
 
