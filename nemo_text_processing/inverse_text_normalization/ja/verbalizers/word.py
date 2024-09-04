@@ -40,7 +40,7 @@ class WordFst(GraphFst):
 >>>>>>> 8a7e28e (Zh tn bug 240712 (#187))
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
-        graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
+
         self.fst = graph.optimize()
 <<<<<<< HEAD
 =======
