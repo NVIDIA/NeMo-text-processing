@@ -53,5 +53,11 @@ testITNTime() {
   runtest $input
 }
 
+testITNMeasure() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_measure.txt
+  runtest $input
+}
+
+
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2
