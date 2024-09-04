@@ -18,10 +18,16 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     NEMO_NARROW_NON_BREAK_SPACE,
+    NEMO_NON_BREAKING_SPACE,
     NEMO_NOT_QUOTE,
     GraphFst,
 )
 
+<<<<<<< HEAD
+=======
+test = '\u0020'
+
+>>>>>>> 76c9124 ([pre-commit.ci] auto fixes from pre-commit.com hooks)
 
 class FractionFst(GraphFst):
     def __init__(self):
