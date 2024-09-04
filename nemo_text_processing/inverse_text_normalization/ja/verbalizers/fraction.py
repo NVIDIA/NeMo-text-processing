@@ -23,7 +23,6 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     NEMO_NON_BREAKING_SPACE,
 )
 
-test = '\u0020'
 class FractionFst(GraphFst):
     def __init__(self):
         """
