@@ -74,7 +74,9 @@ NEMO_LOWER_NOT_A = pynini.union(
     "y",
     "z",
 ).optimize()
-NEMO_SPACES_AND_ALHPANUMERICS = pynini.union(NEMO_SIGMA, NEMO_SPACE, NEMO_NON_BREAKING_SPACE, NEMO_DIGIT, NEMO_WHITE_SPACE).optimize()
+NEMO_SPACES_AND_ALHPANUMERICS = pynini.union(
+    NEMO_SIGMA, NEMO_SPACE, NEMO_NON_BREAKING_SPACE, NEMO_DIGIT, NEMO_WHITE_SPACE
+).optimize()
 
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
