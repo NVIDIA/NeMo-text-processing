@@ -26,11 +26,7 @@ pipeline {
     IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-22-24-0'
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
-<<<<<<< HEAD
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-15-24-0'
-=======
-    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-23-24-0'
->>>>>>> 7a29d75 (Jekins update for jp itn)
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
