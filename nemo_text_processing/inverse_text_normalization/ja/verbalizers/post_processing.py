@@ -16,6 +16,7 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     NEMO_DIGIT,
@@ -25,6 +26,8 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     NEMO_SPACES_AND_ALHPANUMERICS,
     delete_space,
     generator_main,
+    NEMO_SPACE,
+    NEMO_NON_BREAKING_SPACE,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -111,14 +114,15 @@ class PostProcessingFst:
             By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
 >>>>>>> 0a4a21c (Jp itn 20240221 (#141))
         """
-        delete_regular_space = pynini.cdrewrite(pynutil.delete(" "), NEMO_NOT_SPACE, NEMO_NOT_SPACE, NEMO_SIGMA)
+        delete_regular_space = pynini.cdrewrite(pynutil.delete(NEMO_SPACE), NEMO_NOT_SPACE, NEMO_NOT_SPACE, NEMO_SIGMA)
         delete_fraction_space = pynini.cdrewrite(
-            pynutil.delete(NEMO_NARROW_NON_BREAK_SPACE) + pynutil.insert(" "),
+            pynini.cross(NEMO_NARROW_NON_BREAK_SPACE, " "),
             NEMO_NOT_SPACE,
             NEMO_NOT_SPACE,
             NEMO_SPACES_AND_ALHPANUMERICS,
-        )
+        ) # this graph is only for fraction grammar verbalizer which inserted a narrow nbs. 
 
+        #remove_space_around_single_quote = delete_regular_space
         remove_space_around_single_quote = delete_fraction_space | delete_regular_space
 
         # this works if spaces in between (good)
