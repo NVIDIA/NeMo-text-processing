@@ -36,7 +36,8 @@ class VerbalizeFst(GraphFst):
         cardinal = CardinalFst()
         cardinal_graph = cardinal.fst
         ordinal_graph = OrdinalFst().fst
-        decimal_graph = DecimalFst().fst
+        decimal = DecimalFst()
+        decimal_graph = decimal.fst
         fraction_graph = FractionFst().fst
         date_graph = DateFst().fst
         time_graph = TimeFst().fst
