@@ -40,7 +40,7 @@ class VerbalizeFst(GraphFst):
         fraction_graph = FractionFst().fst
         date_graph = DateFst().fst
         time_graph = TimeFst().fst
-        measure_graph = MeasureFst().fst
+        measure_graph = MeasureFst(cardinal, decimal).fst
 
         whitelist_graph = WhiteListFst().fst
 

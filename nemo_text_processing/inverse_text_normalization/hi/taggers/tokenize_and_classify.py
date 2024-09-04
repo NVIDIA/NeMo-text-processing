@@ -69,14 +69,15 @@ class ClassifyFst(GraphFst):
 
             ordinal = OrdinalFst(cardinal)
             ordinal_graph = ordinal.fst
-            decimal_graph = DecimalFst(cardinal).fst
+            decimal = DecimalFst(cardinal)
+            decimal_graph = decimal.fst
             fraction = FractionFst(cardinal)
             fraction_graph = fraction.fst
             date = DateFst(cardinal)
             date_graph = date.fst
             time = TimeFst()
             time_graph = time.fst
-            measure = MeasureFst(decimal)
+            measure = MeasureFst(cardinal, decimal)
             measure_graph = measure.fst
             punct_graph = PunctuationFst().fst
             # whitelist_graph = WhiteListFst(input_file=whitelist).fst
