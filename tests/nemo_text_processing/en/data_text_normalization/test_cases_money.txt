@@ -58,7 +58,7 @@ $18129~eighteen thousand one hundred and twenty nine dollars
 £1.20~one pound twenty pence
 £1.111~one point one one one pounds
 £2.01~two pounds one penny
-$50.00-$100.00~fifty dollars - one hundred dollars
+$50.00-$100.00~fifty dollars to one hundred dollars
 $1,925.21~one thousand nine hundred and twenty five dollars twenty one cents
 $1,234.123~one thousand two hundred and thirty four point one two three dollars
 US $76.3 trillion~US seventy six point three trillion dollars

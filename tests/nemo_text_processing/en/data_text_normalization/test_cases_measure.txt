@@ -17,3 +17,5 @@ covid-19.5~covid- nineteen point five
 1234-123kg~one thousand two hundred and thirty four to one hundred and twenty three kilograms
 45º&C~forty five degree and C
 41,459.00 km³~forty one thousand four hundred and fifty nine point zero zero cubic kilometers
+Nancy lived on 1428 Elm St.~Nancy lived on fourteen twenty eight Elm Street
+Nancy lived on 1428 Elm St. It was a strange place.~Nancy lived on fourteen twenty eight Elm Street. It was a strange place.
