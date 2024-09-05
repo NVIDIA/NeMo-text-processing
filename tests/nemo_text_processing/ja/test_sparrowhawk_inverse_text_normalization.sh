@@ -21,7 +21,10 @@ runtest () {
     assertEquals "$spoken" "$written" "$denorm_pred"
   done < "$input"
 }
-
+testITNFractionText() {
+  input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
 testITNCardinalText() {
   input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_cardinal.txt
   runtest $input
@@ -36,10 +39,6 @@ testITNDateText() {
 }
 testITNDecimalText() {
   input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_decimal.txt
-  runtest $input
-}
-testITNFractionText() {
-  input=$TEST_DIR/ja/data_inverse_text_normalization/test_cases_fraction.txt
   runtest $input
 }
 testITNTimeText() {
