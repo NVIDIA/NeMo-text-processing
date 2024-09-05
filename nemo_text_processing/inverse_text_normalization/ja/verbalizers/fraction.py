@@ -17,7 +17,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
-    NEMO_NARROW_NON_BREAK_SPACE,
     NEMO_NON_BREAKING_SPACE,
     NEMO_NOT_QUOTE,
     GraphFst,
