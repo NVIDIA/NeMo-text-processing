@@ -64,7 +64,6 @@ class FractionFst(GraphFst):
         regular_graph = (
             pynini.closure((sign_component + pynutil.delete(" ")), 0, 1)
             + pynini.closure(integer_component + pynutil.delete(" ") + pynutil.insert(NEMO_NON_BREAKING_SPACE))
-            #+ pynini.closure(integer_component + pynutil.delete(" ") + pynutil.insert(" "))
             + numerator_component
             + pynutil.delete(" ")
             + pynutil.insert("/")
