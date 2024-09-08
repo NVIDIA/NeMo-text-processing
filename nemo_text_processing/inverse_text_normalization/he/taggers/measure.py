@@ -1,3 +1,17 @@
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import pynini
 from pynini.lib import pynutil
 
@@ -92,17 +106,3 @@ class MeasureFst(GraphFst):
         final_graph = optional_prefix_graph + optional_graph_negative + number_unit_graph + delete_zero_or_one_space
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-
-
-if __name__ == '__main__':
-
-    from nemo_text_processing.inverse_text_normalization.he.graph_utils import apply_fst
-    from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
-    from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
-
-    cardinal = CardinalFst()
-    decimal = DecimalFst(cardinal)
-    g = MeasureFst(cardinal, decimal).fst
-
-    # To test this FST, remove comment out and change the input text
-    # apply_fst('טקסט לבדיקה כאן', g)
