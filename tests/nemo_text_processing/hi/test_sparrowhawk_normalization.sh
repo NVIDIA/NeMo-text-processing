@@ -82,15 +82,15 @@ testTNFraction() {
 #  runtest $input
 #}
 
-#testTNTime() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_time.txt
-#  runtest $input
-#}
+testTNTime() {
+  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
 
-#testTNMeasure() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_measure.txt
-#  runtest $input
-#}
+testTNMeasure() {
+  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_measure.txt
+  runtest $input
+}
 
 #testTNWhitelist() {
 #  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_whitelist.txt
