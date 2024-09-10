@@ -35,9 +35,15 @@ class DateFst(GraphFst):
         day_component = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         week_component = (
             pynutil.delete("weekday: \"")
+<<<<<<< HEAD
             + pynini.closure(delete_space)
             + pynini.closure(NEMO_NOT_QUOTE)
             + pynini.closure(delete_space)
+=======
+            + pynini.closure(pynutil.delete(" "))
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynini.closure(pynutil.delete(" "))
+>>>>>>> 937ed0e7 (development)
             + pynutil.delete("\"")
         )
 
