@@ -256,6 +256,10 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+        from nemo_text_processing.text_normalization.hy.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'ja':
         from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
