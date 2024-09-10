@@ -86,7 +86,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr', 'ja'],
+        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr', 'ja', 'he'],
         type=str,
         default='en',
     )
@@ -256,6 +256,10 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+        from nemo_text_processing.text_normalization.hy.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'ja':
         from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -266,10 +270,13 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
-        from nemo_text_processing.text_normalization.hy.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
+    elif args.language == 'he':
+        from nemo_text_processing.inverse_text_normalization.he.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.inverse_text_normalization.he.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
