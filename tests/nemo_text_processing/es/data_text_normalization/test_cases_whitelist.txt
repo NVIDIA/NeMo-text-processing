@@ -2,6 +2,6 @@ el dr.~el doctor
 sr. rodriguez~señor rodriguez
 182 esq. toledo~ciento ochenta y dos esquina toledo
 da. ana pérez~doña ana pérez
-ee. uu.~estados unidos
 pza.~plaza
 c.º b.~camino bajo
+ee. uu.~estados unidos

@@ -22,4 +22,4 @@ cuarto para las cero~las 23:45
 cuarto para las veinticuatro~las 23:45
 diez para las doce~las 11:50
 dos y media de la tarde~2:30 p.m.
-la una de la tarde u t c más cuatro~la 1:00 p.m. utc+4
+la una de la tarde u t c más cuatro~la 1:00 p.m. UTC+4

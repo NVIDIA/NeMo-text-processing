@@ -1,2 +1,11 @@
 /ea	each
-/dozen
+/dozen	per dozen
+/sec	per second
+/min	per minute
+/hr	per hour
+/h	per hour
+/d	per day
+/wk	per week
+/mo	per month
+/yr	per year
+/svc	per service
