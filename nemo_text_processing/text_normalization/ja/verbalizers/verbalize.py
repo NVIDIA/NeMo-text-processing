@@ -16,7 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space, NEMO_NARROW_NON_BREAK_SPACE, NEMO_NON_BREAKING_SPACE
+from nemo_text_processing.text_normalization.ja.graph_utils import (
+    NEMO_NARROW_NON_BREAK_SPACE,
+    NEMO_NON_BREAKING_SPACE,
+    GraphFst,
+    delete_space,
+)
 from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
@@ -25,7 +30,6 @@ from nemo_text_processing.text_normalization.ja.verbalizers.fraction import Frac
 # from nemo_text_processing.text_normalization.ja.verbalizers.measure import MeasureFst
 # from nemo_text_processing.text_normalization.ja.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
-
 from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
@@ -70,6 +74,6 @@ class VerbalizeFst(GraphFst):
             time.fst,
             whitelist.fst,
         )
-        graph = (pynini.closure(delete_space) | pynini.closure(pynutil.delete(space))) + graph + (pynini.closure(delete_space) | pynini.closure(pynutil.delete(space)))
+        graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
 
         self.fst = graph.optimize()

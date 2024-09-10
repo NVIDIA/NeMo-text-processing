@@ -33,7 +33,13 @@ class DateFst(GraphFst):
         year_component = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         month_component = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         day_component = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        week_component = pynutil.delete("weekday: \"") + pynini.closure(pynutil.delete(" ")) + pynini.closure(NEMO_NOT_QUOTE) + pynini.closure(pynutil.delete(" ")) + pynutil.delete("\"")
+        week_component = (
+            pynutil.delete("weekday: \"")
+            + pynini.closure(pynutil.delete(" "))
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynini.closure(pynutil.delete(" "))
+            + pynutil.delete("\"")
+        )
 
         graph_basic_date = (
             pynini.closure(era_component + pynutil.delete(" "), 0, 1)
