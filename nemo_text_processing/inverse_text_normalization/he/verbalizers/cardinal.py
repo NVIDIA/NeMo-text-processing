@@ -14,8 +14,12 @@
 
 import pynini
 from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    NEMO_DIGIT, NEMO_ALPHA, GraphFst, delete_space
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    GraphFst,
+    delete_space,
 )
 
 

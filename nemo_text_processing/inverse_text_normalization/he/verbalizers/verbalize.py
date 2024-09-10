@@ -13,12 +13,12 @@
 # limitations under the License.
 
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.date import DateFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.he.verbalizers.whitelist import WhiteListFst
 
 

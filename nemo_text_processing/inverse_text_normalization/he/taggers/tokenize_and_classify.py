@@ -12,25 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import pynini
 import logging
+import os
 
+import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.taggers.date import DateFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.measure import MeasureFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.whitelist import WhiteListFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.punctuation import PunctuationFst
-
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    GraphFst, delete_extra_space, delete_space, generator_main
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
 )
+from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.punctuation import PunctuationFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.word import WordFst
 
 
 class ClassifyFst(GraphFst):

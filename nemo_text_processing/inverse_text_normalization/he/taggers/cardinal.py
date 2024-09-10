@@ -15,20 +15,18 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    delete_space,
     delete_and,
     delete_optional_and,
+    delete_space,
     insert_space,
 )
-
-from nemo_text_processing.inverse_text_normalization.he.utils import load_labels
+from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path, load_labels
 
 
 class CardinalFst(GraphFst):

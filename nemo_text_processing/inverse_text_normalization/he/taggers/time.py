@@ -14,17 +14,18 @@
 
 import pynini
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
+    NEMO_DIGIT,
+    GraphFst,
+    delete_and,
+    delete_extra_space,
+    delete_space,
+    delete_zero_or_one_space,
+    insert_space,
+)
 from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path, integer_to_text
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_zero_or_one_space,
-    delete_space,
-    insert_space,
-    NEMO_DIGIT,
-    delete_and,
-)
 
 
 class TimeFst(GraphFst):
