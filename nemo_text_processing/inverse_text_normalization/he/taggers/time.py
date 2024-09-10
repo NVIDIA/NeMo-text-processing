@@ -214,5 +214,4 @@ class TimeFst(GraphFst):
         final_graph |= final_graph_midnight
 
         final_graph = self.add_tokens(final_graph.optimize())
-
         self.fst = final_graph.optimize()
