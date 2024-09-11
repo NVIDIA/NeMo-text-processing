@@ -13,15 +13,11 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hi.graph_utils import (
-    NEMO_NOT_QUOTE,
-    MINUS,
-    GraphFst,
-    insert_space,
-)
+from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.hi.graph_utils import MINUS, NEMO_NOT_QUOTE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.utils import apply_fst
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -39,8 +35,8 @@ class FractionFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
 
-        optional_sign = pynini.closure(pynini.cross("negative: \"true\"", MINUS ) + pynutil.delete(" "), 0, 1)
-        
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\"", MINUS) + pynutil.delete(" "), 0, 1)
+
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
         numerator = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
         denominator = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
@@ -50,7 +46,7 @@ class FractionFst(GraphFst):
 
         self.graph = optional_sign + pynini.closure(pynini.closure(integer, 0, 1) + insert_space) + fraction_default
 
-        graph = self.graph 
+        graph = self.graph
 
         delete_tokens = self.delete_tokens(graph)
-        self.fst = delete_tokens.optimize()        
+        self.fst = delete_tokens.optimize()

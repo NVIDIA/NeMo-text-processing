@@ -16,15 +16,16 @@ import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.hi.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main
+    generator_main,
 )
 from nemo_text_processing.text_normalization.hi.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.text_normalization.hi.verbalizers.word import WordFst
-from pynini.lib import pynutil
 
 
 class VerbalizeFinalFst(GraphFst):

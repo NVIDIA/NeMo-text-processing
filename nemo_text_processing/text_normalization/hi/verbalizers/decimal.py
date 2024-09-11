@@ -13,16 +13,17 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hi.taggers.decimal import quantities
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path, apply_fst
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.hi.graph_utils import (
+    MINUS,
     NEMO_NOT_QUOTE,
     GraphFst,
-    MINUS,
     delete_space,
     insert_space,
 )
-from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.hi.taggers.decimal import quantities
+from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class DecimalFst(GraphFst):

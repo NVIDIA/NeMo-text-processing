@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
@@ -30,7 +32,6 @@ from nemo_text_processing.text_normalization.en.utils import (
     get_abs_path,
     load_labels,
 )
-from pynini.lib import pynutil
 
 
 class WhiteListFst(GraphFst):
