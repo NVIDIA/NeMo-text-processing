@@ -14,18 +14,21 @@
 
 import pynini
 from pynini.lib import pynutil, rewrite
+
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path, apply_fst
+from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 hours_graph = pynini.string_file(get_abs_path("data/time/hours.tsv"))
 minutes_graph = pynini.string_file(get_abs_path("data/time/minutes.tsv"))
 seconds_graph = pynini.string_file(get_abs_path("data/time/seconds.tsv"))
 
+
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
-        १२:३०  -> time { hours: "बारह" minutes: "तीस" }
+        १२:३०:३०  -> time { hours: "बारह" minutes: "तीस" seconds: "तीस" }
         १:४०  -> time { hours: "एक" minutes: "चालीस" }
+        १:००  -> time { hours: "एक" }
          
     Args:
         time: GraphFst
@@ -37,24 +40,23 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify")
 
         delete_colon = pynutil.delete(":")
-        
-        self.hours = pynutil.insert("hours: \"") + hours_graph + pynutil.insert("\" ") 
-        self.minutes = pynutil.insert("minutes: \"") + minutes_graph + pynutil.insert("\" ") 
-        self.seconds = pynutil.insert("seconds: \"") + seconds_graph + pynutil.insert("\" ") 
 
-        #hour minute seconds
-        graph_hms = self.hours + delete_colon + insert_space + self.minutes + delete_colon + insert_space + self.seconds 
+        self.hours = pynutil.insert("hours: \"") + hours_graph + pynutil.insert("\" ")
+        self.minutes = pynutil.insert("minutes: \"") + minutes_graph + pynutil.insert("\" ")
+        self.seconds = pynutil.insert("seconds: \"") + seconds_graph + pynutil.insert("\" ")
 
-        #hour minute 
-        graph_hm = self.hours + delete_colon + insert_space + self.minutes 
-        
-        final_graph = graph_hms | graph_hm
-    
+        # hour minute seconds
+        graph_hms = (
+            self.hours + delete_colon + insert_space + self.minutes + delete_colon + insert_space + self.seconds
+        )
+
+        # hour minute
+        graph_hm = self.hours + delete_colon + insert_space + self.minutes
+
+        # hour
+        graph_h = self.hours + delete_colon + pynutil.delete("००")
+
+        final_graph = graph_hms | graph_hm | graph_h
+
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-
-
-#input_text = "१२:१०:१०"
-input_text = "७:४०"     
-output = apply_fst(input_text, TimeFst().fst) 
-print(output)
