@@ -58,21 +58,12 @@ class FractionFst(GraphFst):
         )
         integer_component_with_char = (
             pynutil.insert('integer_part: \"')
-<<<<<<< HEAD
             + ((cardinal | (root + cardinal) | decimal_number | (root + decimal_number)) + (pynini.accep("と") | pynini.accep("荷")))
             + pynutil.insert("\"")
             + pynutil.insert(NEMO_SPACE)
            # + pynutil.insert("morphosyntactic_features: \"")
            # + (pynini.accep("と") | pynini.accep("荷"))
            # + pynutil.insert("\"")
-=======
-            + (cardinal | (root + cardinal) | decimal_number | (root + decimal_number))
-            + pynutil.insert("\"")
-            + pynutil.insert(NEMO_SPACE)
-            + pynutil.insert("morphosyntactic_features: \"")
-            + (pynini.accep("と") | pynini.accep("荷"))
-            + pynutil.insert("\"")
->>>>>>> 937ed0e7 (development)
         )
         denominator_component = (
             pynutil.insert("denominator: \"")
@@ -129,8 +120,4 @@ class FractionFst(GraphFst):
         graph = graph_fraction_slash_sigh  # |
 
         final_graph = self.add_tokens(graph)
-<<<<<<< HEAD
         self.fst = final_graph.optimize()
-=======
-        self.fst = final_graph.optimize()
->>>>>>> 937ed0e7 (development)
