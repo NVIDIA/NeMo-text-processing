@@ -66,7 +66,8 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"_{input_case}_it_tn_{deterministic}_deterministic{whitelist_file}.far",
+                cache_dir,
+                f"_{input_case}_it_tn_{deterministic}_deterministic{whitelist_file}.far",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -88,10 +89,18 @@ class ClassifyFst(GraphFst):
             self.electronic = ElectronicFst(deterministic=deterministic)
             electronic_graph = self.electronic.fst
 
-            self.measure = MeasureFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic,)
+            self.measure = MeasureFst(
+                cardinal=self.cardinal,
+                decimal=self.decimal,
+                deterministic=deterministic,
+            )
             measure_graph = self.measure.fst
 
-            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic,)
+            self.money = MoneyFst(
+                cardinal=self.cardinal,
+                decimal=self.decimal,
+                deterministic=deterministic,
+            )
             money_graph = self.money.fst
 
             self.time = TimeFst(deterministic=deterministic)

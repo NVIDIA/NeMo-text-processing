@@ -22,7 +22,7 @@ from nemo_text_processing.inverse_text_normalization.ja.utils import get_abs_pat
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, e.g., 
+    Finite state transducer for classifying date, e.g.,
     一日 -> 1日 date { day: "1" }
     五から九日 -> (5~9日) date { day: "5~9" }
     一月 -> 1月 date { month: "1" }

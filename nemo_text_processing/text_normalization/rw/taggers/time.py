@@ -14,21 +14,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.rw.graph_utils import GraphFst
 import pynini
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.rw.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.rw.utils import get_abs_path
 
 
 class TimeFst(GraphFst):
     def __init__(self):
         super().__init__(name="time", kind="classify")
-        
+
         hours = pynini.string_file(get_abs_path("data/time/hours.tsv"))
-        
+
         minutes = pynini.string_file(get_abs_path("data/time/minutes.tsv"))
-        
-        final_graph = pynutil.insert("hours:\"")+hours+pynutil.insert("\"")+pynutil.delete(":")+pynutil.insert(" minutes:\"")+minutes+pynutil.insert("\"")
+
+        final_graph = (
+            pynutil.insert("hours:\"")
+            + hours
+            + pynutil.insert("\"")
+            + pynutil.delete(":")
+            + pynutil.insert(" minutes:\"")
+            + minutes
+            + pynutil.insert("\"")
+        )
         final_graph = self.add_tokens(final_graph)
 
         self.fst = final_graph.optimize()

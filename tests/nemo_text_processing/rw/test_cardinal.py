@@ -24,11 +24,9 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 class TestCardinal:
 
-    
     normalizer_rw = Normalizer(
         input_case='cased', lang='rw', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
     )
-    
 
     @parameterized.expand(parse_test_case_file('rw/data_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
@@ -37,5 +35,3 @@ class TestCardinal:
         pred = self.normalizer_rw.normalize(test_input, verbose=False, punct_post_process=False)
         assert pred == expected, f"input: {test_input}"
         print(pred)
-
-       

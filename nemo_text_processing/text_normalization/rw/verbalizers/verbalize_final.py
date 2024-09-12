@@ -13,24 +13,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pynini
-from pynini.lib import pynutil
-from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst
-from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.rw.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_space_or_punct,
-    delete_space,
-    NEMO_PUNCT,
-    generator_main,
-    delete_space
-)
 import os
 
+import pynini
+from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
+from nemo_text_processing.text_normalization.rw.graph_utils import (
+    NEMO_PUNCT,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    delete_space_or_punct,
+    generator_main,
+)
+from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst
+
+
 class VerbalizeFinalFst(GraphFst):
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False,deterministic: bool = True):
-        super().__init__(name="verbalize_final", kind="verbalize",deterministic=deterministic)
+    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, deterministic: bool = True):
+        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
@@ -52,9 +54,7 @@ class VerbalizeFinalFst(GraphFst):
             )
             graph = delete_space + pynini.closure(graph + delete_space) + graph + delete_space
 
-
-
             self.fst = graph
 
             if far_file:
-                generator_main(far_file, {"ALL":self.fst,'REDUP': pynini.accep("REDUP")})
+                generator_main(far_file, {"ALL": self.fst, 'REDUP': pynini.accep("REDUP")})

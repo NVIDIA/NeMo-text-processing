@@ -13,21 +13,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from nemo_text_processing.text_normalization.en.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.rw.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.rw.verbalizers.time import VerbalizeTimeFst
-from nemo_text_processing.text_normalization.en.verbalizers.cardinal import CardinalFst
+
 
 class VerbalizeFst(GraphFst):
-    def __init__(self,deterministic: bool = True):
-        super().__init__(name="verbalize", kind="verbalize",deterministic=deterministic)
+    def __init__(self, deterministic: bool = True):
+        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
         cardinal = CardinalFst()
         cardinal_graph = cardinal.fst
         time = VerbalizeTimeFst().fst
 
-        graph = (
-            cardinal_graph
-           | time
-        )
+        graph = cardinal_graph | time
         self.fst = graph
-        
-

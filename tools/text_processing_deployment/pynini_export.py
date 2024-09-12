@@ -87,7 +87,25 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "pt", "ru", 'fr', 'hu', 'sv', 'vi', 'zh', 'ar', 'it', 'es_en', 'hy', 'mr', 'ja','rw'],
+        choices=[
+            "en",
+            "de",
+            "es",
+            "pt",
+            "ru",
+            'fr',
+            'hu',
+            'sv',
+            'vi',
+            'zh',
+            'ar',
+            'it',
+            'es_en',
+            'hy',
+            'mr',
+            'ja',
+            'rw',
+        ],
         type=str,
         default='en',
     )
@@ -275,9 +293,7 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.rw.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,

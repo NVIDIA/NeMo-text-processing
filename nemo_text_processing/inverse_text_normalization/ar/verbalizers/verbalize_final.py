@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst, del
 
 class VerbalizeFinalFst(GraphFst):
     """
-    Finite state transducer that verbalizes an entire sentence, e.g. 
+    Finite state transducer that verbalizes an entire sentence, e.g.
     tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
     """
 

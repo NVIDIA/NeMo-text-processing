@@ -52,7 +52,7 @@ class CardinalFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        exactly_three_digits = NEMO_DIGIT ** 3
+        exactly_three_digits = NEMO_DIGIT**3
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         group_by_threes = at_most_three_digits + (pynutil.insert(",") + exactly_three_digits).closure()

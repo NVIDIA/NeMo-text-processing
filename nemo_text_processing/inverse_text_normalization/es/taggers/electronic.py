@@ -36,7 +36,7 @@ class ElectronicFst(GraphFst):
     and URLS (which get converted to a "protocol" field).
         e.g. c d f uno arroba a b c punto e d u -> tokens { electronic { username: "cdf1" domain: "abc.edu" } }
         e.g. doble ve doble ve doble ve a b c punto e d u -> tokens { electronic { protocol: "www.abc.edu" } }
-    
+
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
     """
@@ -136,7 +136,13 @@ class ElectronicFst(GraphFst):
             delete_extra_space
             + symbols
             + delete_extra_space
-            + (domain | pynini.closure(accepted_username + delete_extra_space,) + accepted_username)
+            + (
+                domain
+                | pynini.closure(
+                    accepted_username + delete_extra_space,
+                )
+                + accepted_username
+            )
         )
 
         protocol_default = (

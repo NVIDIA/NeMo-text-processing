@@ -23,7 +23,7 @@ class FractionFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         """
         Fitite state transducer for classifying fractions
-        e.g., 
+        e.g.,
         四分の三 -> fraction { denominator: "4" numerator: "3" }
         一と四分の三 -> fraction { integer: "1" denominator: "4" numerator: "3" }
         一荷四分の三 -> fraction { integer: "1" denominator: "4" numerator: "3" }
@@ -36,7 +36,9 @@ class FractionFst(GraphFst):
         cardinal = cardinal.just_cardinals
         decimal = decimal.just_decimal
 
-        fraction_word = pynutil.delete("分の") | pynutil.delete(" 分 の　") | pynutil.delete("分 の　") | pynutil.delete("分 の")
+        fraction_word = (
+            pynutil.delete("分の") | pynutil.delete(" 分 の　") | pynutil.delete("分 の　") | pynutil.delete("分 の")
+        )
         inetegr_word = pynutil.delete("と") | pynutil.delete("荷")
         optional_sign = (
             pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")

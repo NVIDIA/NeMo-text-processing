@@ -23,7 +23,7 @@ from nemo_text_processing.inverse_text_normalization.ja.utils import get_abs_pat
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
-        e.g. 二十三 -> cardinal { integer: "23" } 
+        e.g. 二十三 -> cardinal { integer: "23" }
         e.g. にじゅうさん -> cardinal { integer: "23" }
     """
 
@@ -39,7 +39,10 @@ class CardinalFst(GraphFst):
 
         hundred = pynutil.delete("百") | pynutil.delete("ひゃく") | pynutil.delete("びゃく") | pynutil.delete("ぴゃく")
         hundred_alt = (
-            pynini.cross("百", "1") | pynini.cross("ひゃく", "1") | pynini.cross("びゃく", "1") | pynini.cross("ぴゃく", "1")
+            pynini.cross("百", "1")
+            | pynini.cross("ひゃく", "1")
+            | pynini.cross("びゃく", "1")
+            | pynini.cross("ぴゃく", "1")
         )
         graph_hundred_component = pynini.union(((graph_digit + hundred) | hundred_alt), pynutil.insert("0"))
         graph_hundred_component += pynini.union(

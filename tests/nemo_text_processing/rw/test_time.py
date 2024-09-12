@@ -24,7 +24,6 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 class TestTime:
 
-    
     normalizer_rw = Normalizer(input_case='cased', lang='rw', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('rw/data_text_normalization/test_cases_time.txt'))
@@ -33,5 +32,3 @@ class TestTime:
     def test_norm(self, test_input, expected):
         pred = self.normalizer_rw.normalize(test_input, verbose=False)
         assert pred == expected
-
-        

@@ -45,21 +45,21 @@ class TimeFst(GraphFst):
         e.g. cuarto para las dos -> time { minutes: "45" hours: "la 1" }
 
     Note that times on the hour (e.g. "las dos" i.e. "two o'clock") do not get
-    converted into a time format. This is to avoid converting phrases that are 
+    converted into a time format. This is to avoid converting phrases that are
     not part of a time phrase (e.g. "las dos personas" i.e. "the two people")
         e.g. las dos -> tokens { name: "las" } tokens { name: "dos" }
-    However, if a time on the hour is followed by a suffix (indicating 'a.m.' 
+    However, if a time on the hour is followed by a suffix (indicating 'a.m.'
     or 'p.m.'), it will be converted.
         e.g. las dos pe eme -> time { hours: "las 2" minutes: "00" suffix: "p.m." }
-    
-    In the same way, times without a preceding article are not converted. This is 
+
+    In the same way, times without a preceding article are not converted. This is
     to avoid converting ranges or complex fractions
         e.g. dos y media -> tokens { name: "dos" } tokens { name: "y" } tokens { name: "media" }
-    However, if a time without an article is followed by a suffix (indicating 'a.m.' 
+    However, if a time without an article is followed by a suffix (indicating 'a.m.'
     or 'p.m.'), it will be converted.
         e.g. dos y media p m -> time { hours: "2" minutes: "30" suffix: "p.m." }
 
-    Note that although the TimeFst verbalizer can accept 'zone' (timezone) fields, 
+    Note that although the TimeFst verbalizer can accept 'zone' (timezone) fields,
     so far the rules have not been added to the TimeFst tagger to process
     timezones (to keep the rules simple, and because timezones are not very
     often specified in Spanish.)

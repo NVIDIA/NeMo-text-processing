@@ -77,7 +77,7 @@ NEMO_LOWER_NOT_A = pynini.union(
 ).optimize()
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
-delete_space_or_punct = NEMO_PUNCT | delete_space 
+delete_space_or_punct = NEMO_PUNCT | delete_space
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
@@ -107,14 +107,36 @@ www = "www"
 suppletive = pynini.string_file(get_abs_path("data/suppletive.tsv"))
 # _v = pynini.union("a", "e", "i", "o", "u")
 _c = pynini.union(
-    "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z",
+    "b",
+    "c",
+    "d",
+    "f",
+    "g",
+    "h",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
 )
 _ies = NEMO_SIGMA + _c + pynini.cross("y", "ies")
 _es = NEMO_SIGMA + pynini.union("s", "sh", "ch", "x", "z") + pynutil.insert("es")
 _s = NEMO_SIGMA + pynutil.insert("s")
 
 graph_plural = plurals._priority_union(
-    suppletive, plurals._priority_union(_ies, plurals._priority_union(_es, _s, NEMO_SIGMA), NEMO_SIGMA), NEMO_SIGMA,
+    suppletive,
+    plurals._priority_union(_ies, plurals._priority_union(_es, _s, NEMO_SIGMA), NEMO_SIGMA),
+    NEMO_SIGMA,
 ).optimize()
 
 SINGULAR_TO_PLURAL = graph_plural
@@ -129,7 +151,9 @@ MINUS = pynini.union("minus", "Minus").optimize()
 
 
 def capitalized_input_graph(
-    graph: "pynini.FstLike", original_graph_weight: float = None, capitalized_graph_weight: float = None,
+    graph: "pynini.FstLike",
+    original_graph_weight: float = None,
+    capitalized_graph_weight: float = None,
 ) -> "pynini.FstLike":
     """
     Allow graph input to be capitalized, e.g. for ITN)
@@ -202,7 +226,6 @@ def convert_space(fst) -> "pynini.FstLike":
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
-
 
 
 class GraphFst:

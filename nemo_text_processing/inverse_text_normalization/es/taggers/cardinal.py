@@ -31,10 +31,10 @@ from nemo_text_processing.text_normalization.es.graph_utils import ES_MINUS
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
-        e.g. menos veintitrés -> cardinal { negative: "-" integer: "23"} 
+        e.g. menos veintitrés -> cardinal { negative: "-" integer: "23"}
     This class converts cardinals up to (but not including) "un cuatrillón",
     i.e up to "one septillion" in English (10^{24}).
-    Cardinals below ten are not converted (in order to avoid 
+    Cardinals below ten are not converted (in order to avoid
     "vivo en una casa" --> "vivo en 1 casa" and any other odd conversions.)
 
     Although technically Spanish grammar requires that "y" only comes after
@@ -160,18 +160,13 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph.optimize()
 
         # save self.numbers_up_to_thousand for use in DecimalFst
-        digits_up_to_thousand = NEMO_DIGIT | (NEMO_DIGIT ** 2) | (NEMO_DIGIT ** 3)
+        digits_up_to_thousand = NEMO_DIGIT | (NEMO_DIGIT**2) | (NEMO_DIGIT**3)
         numbers_up_to_thousand = pynini.compose(self.graph_no_exception, digits_up_to_thousand).optimize()
         self.numbers_up_to_thousand = numbers_up_to_thousand.optimize()
 
         # save self.numbers_up_to_million for use in DecimalFst
         digits_up_to_million = (
-            NEMO_DIGIT
-            | (NEMO_DIGIT ** 2)
-            | (NEMO_DIGIT ** 3)
-            | (NEMO_DIGIT ** 4)
-            | (NEMO_DIGIT ** 5)
-            | (NEMO_DIGIT ** 6)
+            NEMO_DIGIT | (NEMO_DIGIT**2) | (NEMO_DIGIT**3) | (NEMO_DIGIT**4) | (NEMO_DIGIT**5) | (NEMO_DIGIT**6)
         )
         numbers_up_to_million = pynini.compose(graph, digits_up_to_million).optimize()
         self.numbers_up_to_million = numbers_up_to_million.optimize()
@@ -199,7 +194,7 @@ class CardinalFst(GraphFst):
         self.fst = final_graph.optimize()
 
     def delete_word(self, word: str):
-        """ Capitalizes word for `cased` input"""
+        """Capitalizes word for `cased` input"""
         delete_graph = pynutil.delete(word).optimize()
         if self.input_case == INPUT_CASED:
             if len(word) > 0:
