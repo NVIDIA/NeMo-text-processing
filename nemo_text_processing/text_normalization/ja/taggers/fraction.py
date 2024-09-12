@@ -58,12 +58,12 @@ class FractionFst(GraphFst):
         )
         integer_component_with_char = (
             pynutil.insert('integer_part: \"')
-            + (cardinal | (root + cardinal) | decimal_number | (root + decimal_number))
+            + ((cardinal | (root + cardinal) | decimal_number | (root + decimal_number)) + (pynini.accep("と") | pynini.accep("荷")))
             + pynutil.insert("\"")
             + pynutil.insert(NEMO_SPACE)
-            + pynutil.insert("morphosyntactic_features: \"")
-            + (pynini.accep("と") | pynini.accep("荷"))
-            + pynutil.insert("\"")
+           # + pynutil.insert("morphosyntactic_features: \"")
+           # + (pynini.accep("と") | pynini.accep("荷"))
+           # + pynutil.insert("\"")
         )
         denominator_component = (
             pynutil.insert("denominator: \"")
