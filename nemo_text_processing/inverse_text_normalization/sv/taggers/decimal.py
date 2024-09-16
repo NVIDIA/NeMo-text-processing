@@ -49,15 +49,7 @@ class DecimalFst(GraphFst):
         self.final_graph_wo_sign = final_graph_wo_sign
 
         self.final_graph_wo_negative = (
-            final_graph_wo_sign
-            | get_quantity(
-                final_graph_wo_sign,
-                None,
-                hundreds_no_one,
-                None,
-                False,
-                True,
-            )
+            final_graph_wo_sign | get_quantity(final_graph_wo_sign, None, hundreds_no_one, None, False, True,)
         ).optimize()
 
         optional_minus_graph = pynini.closure(pynini.cross("minus ", "negative: \"true\" "), 0, 1)

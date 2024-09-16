@@ -57,9 +57,7 @@ class MoneyFst(GraphFst):
 
         # yuan major plus minor
         major_symbol = pynini.accep("块") | pynini.cross("塊", "块")
-        tencent = pynini.accep("毛") | pynini.accep(
-            "角",
-        )
+        tencent = pynini.accep("毛") | pynini.accep("角",)
         cent = pynini.accep("分")
         graph_kuai = (
             graph_integer_component

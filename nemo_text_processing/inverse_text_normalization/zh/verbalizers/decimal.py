@@ -28,7 +28,7 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="verbalize")
 
         # group numbers by three
-        exactly_three_digits = NEMO_DIGIT**3
+        exactly_three_digits = NEMO_DIGIT ** 3
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # insert a "," for every three numbers before decimal point

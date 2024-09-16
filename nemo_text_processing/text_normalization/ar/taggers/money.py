@@ -142,10 +142,7 @@ class MoneyFst(GraphFst):
             )
 
             graph_with_no_minor_curr = integer_plus_maj
-            graph_with_no_minor_curr |= pynutil.add_weight(
-                integer_plus_maj,
-                weight=0.0001,
-            )
+            graph_with_no_minor_curr |= pynutil.add_weight(integer_plus_maj, weight=0.0001,)
 
             graph_with_no_minor_curr = pynutil.delete(curr_symbol) + graph_with_no_minor_curr + preserve_order
 

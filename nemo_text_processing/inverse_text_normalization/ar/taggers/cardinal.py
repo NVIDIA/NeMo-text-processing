@@ -33,9 +33,7 @@ class CardinalFst(GraphFst):
         self.graph = pynini.invert(tn_cardinal.cardinal_numbers).optimize()
 
         optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("سالب", '"-"') + NEMO_SPACE,
-            0,
-            1,
+            pynutil.insert("negative: ") + pynini.cross("سالب", '"-"') + NEMO_SPACE, 0, 1,
         )
 
         final_graph = optional_minus_graph + pynutil.insert('integer: "') + self.graph + pynutil.insert('"')

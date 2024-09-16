@@ -207,10 +207,7 @@ class CardinalFst(GraphFst):
             + graph_in_thousands
         )
 
-        graph = pynini.union(
-            (graph_int | graph_ind) + delete_space + graph_hundreds,
-            graph_zero,
-        )
+        graph = pynini.union((graph_int | graph_ind) + delete_space + graph_hundreds, graph_zero,)
 
         graph = graph @ pynini.union(
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"

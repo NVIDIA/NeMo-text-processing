@@ -45,7 +45,7 @@ class TelephoneFst(GraphFst):
 
         numbers_with_single_digits = pynini.closure(graph_digit + insert_space) + graph_digit
 
-        two_digit_and_zero = (NEMO_DIGIT**2 @ cardinal.two_digit_non_zero) | graph_zero
+        two_digit_and_zero = (NEMO_DIGIT ** 2 @ cardinal.two_digit_non_zero) | graph_zero
         # def add_space_after_two_digit():
         #     return pynini.closure(two_digit_and_zero + insert_space) + (
         #         two_digit_and_zero

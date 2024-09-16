@@ -71,7 +71,7 @@ class SerialFst(GraphFst):
             num_graph |= pynini.compose(num_graph, NEMO_SIGMA + pynutil.delete("hundred ") + NEMO_SIGMA)
             # also allow double digits to be pronounced as integer in serial number
             num_graph |= pynutil.add_weight(
-                NEMO_DIGIT**2 @ cardinal.graph_hundred_component_at_least_one_none_zero_digit, weight=0.0001
+                NEMO_DIGIT ** 2 @ cardinal.graph_hundred_component_at_least_one_none_zero_digit, weight=0.0001
             )
 
         # add space between letter and digit/symbol

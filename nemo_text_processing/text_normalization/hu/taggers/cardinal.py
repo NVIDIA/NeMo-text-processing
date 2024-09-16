@@ -62,7 +62,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
         fst: A pynini.FstLike object
     """
     cardinal_separator = pynini.string_map([".", NEMO_SPACE])
-    exactly_three_digits = NEMO_DIGIT**3  # for blocks of three
+    exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
     up_to_three_digits = up_to_three_digits - "000" - "00" - "0"
 
@@ -246,7 +246,7 @@ class CardinalFst(GraphFst):
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT**24
+            @ NEMO_DIGIT ** 24
             @ graph
             @ clean_output
         )
@@ -257,12 +257,12 @@ class CardinalFst(GraphFst):
             zero_space + digit,
         ).optimize()
         self.three_digits_read = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit,
-            zero_space + ((NEMO_DIGIT**2) @ graph_tens),
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2)) @ self.graph_hundreds_component_at_least_one_non_zero_digit,
+            zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
             zero_space + zero_space + digit,
         ).optimize()
         self.four_digits_read = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT**3)) @ self.graph, zero_space + self.three_digits_read
+            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 3)) @ self.graph, zero_space + self.three_digits_read
         ).optimize()
 
         self.graph |= graph_zero

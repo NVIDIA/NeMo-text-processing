@@ -36,9 +36,7 @@ class FractionFst(GraphFst):
         cardinal = cardinal.just_cardinals
         decimal = decimal.just_decimal
 
-        fraction_word = (
-            pynutil.delete("分の") | pynutil.delete(" 分 の　") | pynutil.delete("分 の　") | pynutil.delete("分 の")
-        )
+        fraction_word = pynutil.delete("分の") | pynutil.delete(" 分 の　") | pynutil.delete("分 の　") | pynutil.delete("分 の")
         integer_word = pynini.accep("と") | pynini.accep("荷")
         optional_sign = (
             pynutil.insert("negative: \"") + (pynini.accep("-") | pynini.cross("マイナス", "-")) + pynutil.insert("\"")

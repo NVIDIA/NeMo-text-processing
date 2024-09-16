@@ -40,7 +40,7 @@ def get_serial_number(cardinal):
     """
 
     digit = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT)
-    two_digit = pynutil.add_weight(pynini.compose(cardinal.graph_two_digit, NEMO_DIGIT**2), 0.002)
+    two_digit = pynutil.add_weight(pynini.compose(cardinal.graph_two_digit, NEMO_DIGIT ** 2), 0.002)
     character = digit | two_digit | NEMO_ALPHA
     sequence = (NEMO_LOWER_NOT_A | digit) + pynini.closure(pynutil.delete(" ") + character, 2)
     sequence |= character + pynini.closure(pynutil.delete(" ") + (digit | NEMO_ALPHA), 2)
@@ -116,7 +116,7 @@ class TelephoneFst(GraphFst):
         triple_digit.invert()
 
         # to handle cases like "one twenty three"
-        two_digit_cardinal = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT**2)
+        two_digit_cardinal = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT ** 2)
         double_digit_to_digit = (
             pynini.compose(double_digit, str_to_digit + pynutil.delete(" ") + str_to_digit) | two_digit_cardinal
         )
@@ -139,7 +139,7 @@ class TelephoneFst(GraphFst):
 
         number_part = pynini.compose(
             single_double_or_triple_digit,
-            NEMO_DIGIT**3 + pynutil.insert("-") + NEMO_DIGIT**3 + pynutil.insert("-") + NEMO_DIGIT**4,
+            NEMO_DIGIT ** 3 + pynutil.insert("-") + NEMO_DIGIT ** 3 + pynutil.insert("-") + NEMO_DIGIT ** 4,
         ).optimize()
         number_part = pynutil.insert("number_part: \"") + number_part.optimize() + pynutil.insert("\"")
 
@@ -156,16 +156,16 @@ class TelephoneFst(GraphFst):
         graph = optional_country_code + number_part
 
         # credit card number
-        space_four_digits = insert_space + NEMO_DIGIT**4
+        space_four_digits = insert_space + NEMO_DIGIT ** 4
         space_five_digits = space_four_digits + NEMO_DIGIT
         space_six_digits = space_five_digits + NEMO_DIGIT
         credit_card_graph = pynini.compose(
             single_double_or_triple_digit,
-            NEMO_DIGIT**4 + (space_six_digits | (space_four_digits**2)) + space_four_digits,
+            NEMO_DIGIT ** 4 + (space_six_digits | (space_four_digits ** 2)) + space_four_digits,
         ).optimize()
 
         credit_card_graph |= pynini.compose(
-            single_double_or_triple_digit, NEMO_DIGIT**4 + space_six_digits + space_five_digits
+            single_double_or_triple_digit, NEMO_DIGIT ** 4 + space_six_digits + space_five_digits
         ).optimize()
 
         graph |= pynutil.insert("number_part: \"") + credit_card_graph.optimize() + pynutil.insert("\"")
@@ -173,7 +173,7 @@ class TelephoneFst(GraphFst):
         # SSN
         ssn_graph = pynini.compose(
             single_double_or_triple_digit,
-            NEMO_DIGIT**3 + pynutil.insert("-") + NEMO_DIGIT**2 + pynutil.insert("-") + NEMO_DIGIT**4,
+            NEMO_DIGIT ** 3 + pynutil.insert("-") + NEMO_DIGIT ** 2 + pynutil.insert("-") + NEMO_DIGIT ** 4,
         ).optimize()
         graph |= pynutil.insert("number_part: \"") + ssn_graph.optimize() + pynutil.insert("\"")
 

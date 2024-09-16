@@ -36,11 +36,7 @@ class PostProcessor(GraphFst):
     '''
 
     def __init__(
-        self,
-        remove_puncts: bool = False,
-        to_upper: bool = False,
-        to_lower: bool = False,
-        tag_oov: bool = False,
+        self, remove_puncts: bool = False, to_upper: bool = False, to_lower: bool = False, tag_oov: bool = False,
     ):
         super().__init__(name="PostProcessor", kind="processor")
 

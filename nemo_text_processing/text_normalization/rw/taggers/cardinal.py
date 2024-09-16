@@ -73,7 +73,6 @@ class CardinalFst(GraphFst):
         FOUR_ZEROS = "0000"
         FIVE_ZEROS = "00000"
         SIX_ZEROS = "000000"
-        SIX_ZEROS = "000000"
         SEVEN_ZEROS = "0000000"
         EIGHT_ZEROS = "00000000"
         NINE_ZEROS = "000000000"

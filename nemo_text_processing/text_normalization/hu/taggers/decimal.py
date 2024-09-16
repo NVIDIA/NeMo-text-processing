@@ -101,7 +101,7 @@ class DecimalFst(GraphFst):
         ]:
             for modifier in ["", "tíz", "száz"]:
                 decimal_number |= (
-                    (NEMO_DIGIT**order + (NEMO_DIGIT - "0"))
+                    (NEMO_DIGIT ** order + (NEMO_DIGIT - "0"))
                     @ pynini.cdrewrite(pynini.cross("0", ""), "[BOS]", "", NEMO_SIGMA)
                     @ cardinal_graph
                     + final_zero

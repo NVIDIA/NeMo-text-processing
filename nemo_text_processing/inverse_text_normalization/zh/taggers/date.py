@@ -61,9 +61,7 @@ class DateFst(GraphFst):
         # graph_date = graph_year | graph_month | graph_day
 
         # grammar for optional prefix ad or bc
-        graph_bc_prefix = (
-            pynini.closure("紀元前", 0, 1) | pynini.closure("公元前", 0, 1) | pynini.closure("纪元前", 0, 1)
-        )
+        graph_bc_prefix = pynini.closure("紀元前", 0, 1) | pynini.closure("公元前", 0, 1) | pynini.closure("纪元前", 0, 1)
         graph_bc = pynutil.delete(graph_bc_prefix)
 
         graph_ad_prefix = (

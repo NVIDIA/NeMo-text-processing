@@ -248,13 +248,18 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph.optimize()
 
         # save self.numbers_up_to_thousand for use in DecimalFst
-        digits_up_to_thousand = NEMO_DIGIT | (NEMO_DIGIT**2) | (NEMO_DIGIT**3)
+        digits_up_to_thousand = NEMO_DIGIT | (NEMO_DIGIT ** 2) | (NEMO_DIGIT ** 3)
         numbers_up_to_thousand = pynini.compose(graph, digits_up_to_thousand).optimize()
         self.numbers_up_to_thousand = numbers_up_to_thousand
 
         # save self.numbers_up_to_million for use in DecimalFst
         digits_up_to_million = (
-            NEMO_DIGIT | (NEMO_DIGIT**2) | (NEMO_DIGIT**3) | (NEMO_DIGIT**4) | (NEMO_DIGIT**5) | (NEMO_DIGIT**6)
+            NEMO_DIGIT
+            | (NEMO_DIGIT ** 2)
+            | (NEMO_DIGIT ** 3)
+            | (NEMO_DIGIT ** 4)
+            | (NEMO_DIGIT ** 5)
+            | (NEMO_DIGIT ** 6)
         )
         numbers_up_to_million = pynini.compose(graph, digits_up_to_million).optimize()
         self.numbers_up_to_million = numbers_up_to_million

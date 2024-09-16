@@ -110,12 +110,7 @@ class CardinalFst(GraphFst):
                 + graph_hundreds_complex
             )
             | (graph_hundreds_complex + delete_ten_thousands + pynini.cross(pynini.closure("零"), "00") + graph_all)
-            | (
-                graph_hundreds_complex
-                + delete_ten_thousands
-                + pynini.cross(pynini.closure("零"), "000")
-                + graph_digits
-            )
+            | (graph_hundreds_complex + delete_ten_thousands + pynini.cross(pynini.closure("零"), "000") + graph_digits)
         )
         graph_millions = (
             pynutil.add_weight(graph_millions_simple, -1.0) | graph_millions_complex | pynutil.insert("0000000")

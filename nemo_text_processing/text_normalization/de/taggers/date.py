@@ -42,7 +42,7 @@ def get_year_graph(cardinal: GraphFst) -> 'pynini.FstLike':
         cardinal: cardinal GraphFst
     """
 
-    year_gt_2000 = (pynini.union("21", "20") + NEMO_DIGIT**2) @ cardinal.graph
+    year_gt_2000 = (pynini.union("21", "20") + NEMO_DIGIT ** 2) @ cardinal.graph
 
     graph_two_digit = delete_leading_zero @ cardinal.two_digit_non_zero
     hundred = pynutil.insert("hundert")

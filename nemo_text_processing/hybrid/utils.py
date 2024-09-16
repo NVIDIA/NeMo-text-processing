@@ -515,11 +515,7 @@ def get_alternative_label(pred: str, targets: List[str]) -> bool:
     return acceptable
 
 
-def get_labels(
-    targets: List[str],
-    norm_texts_weights: List[Tuple[str, str]],
-    lang="en",
-) -> List[List[str]]:
+def get_labels(targets: List[str], norm_texts_weights: List[Tuple[str, str]], lang="en",) -> List[List[str]]:
     """
     Assign labels to generated normalization options (1 - for ground truth, 0 - other options)
     Args:
@@ -609,14 +605,7 @@ def print_df(df):
     prints data frame
     """
     with pd.option_context(
-        "display.max_rows",
-        None,
-        "display.max_columns",
-        None,
-        "display.width",
-        1000,
-        "display.max_colwidth",
-        400,
+        "display.max_rows", None, "display.max_columns", None, "display.width", 1000, "display.max_colwidth", 400,
     ):
         print(df)
 

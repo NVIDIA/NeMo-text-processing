@@ -53,11 +53,7 @@ class MeasureFst(GraphFst):
     """
 
     def __init__(
-        self,
-        cardinal: GraphFst,
-        decimal: GraphFst,
-        fraction: GraphFst,
-        deterministic: bool = True,
+        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True,
     ):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph_with_and | self.get_range(cardinal.graph_with_and)
@@ -67,8 +63,7 @@ class MeasureFst(GraphFst):
             graph_unit |= pynini.string_file(get_abs_path("data/measure/unit_alternatives.tsv"))
 
         graph_unit |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (NEMO_ALPHA | TO_LOWER) + pynini.closure(NEMO_ALPHA | TO_LOWER),
-            graph_unit,
+            pynini.closure(TO_LOWER, 1) + (NEMO_ALPHA | TO_LOWER) + pynini.closure(NEMO_ALPHA | TO_LOWER), graph_unit,
         ).optimize()
 
         graph_unit_plural = convert_space(graph_unit @ SINGULAR_TO_PLURAL)
@@ -81,9 +76,7 @@ class MeasureFst(GraphFst):
         )
 
         optional_graph_unit2 = pynini.closure(
-            delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2,
-            0,
-            1,
+            delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2, 0, 1,
         )
 
         unit_plural = (
@@ -257,12 +250,11 @@ class MeasureFst(GraphFst):
         ordinal_verbalizer = OrdinalVerbalizer().graph
         ordinal_tagger = OrdinalTagger(cardinal=cardinal).graph
         ordinal_num = pynini.compose(
-            pynutil.insert('integer: "') + ordinal_tagger + pynutil.insert('"'),
-            ordinal_verbalizer,
+            pynutil.insert('integer: "') + ordinal_tagger + pynutil.insert('"'), ordinal_verbalizer,
         )
 
         address_num = NEMO_DIGIT ** (1, 2) @ cardinal.graph_hundred_component_at_least_one_none_zero_digit
-        address_num += insert_space + NEMO_DIGIT**2 @ (
+        address_num += insert_space + NEMO_DIGIT ** 2 @ (
             pynini.closure(pynini.cross("0", "zero "), 0, 1)
             + cardinal.graph_hundred_component_at_least_one_none_zero_digit
         )
@@ -300,12 +292,8 @@ class MeasureFst(GraphFst):
         state = pynini.invert(state_graph)
         state = pynini.closure(pynini.accep(",") + pynini.accep(NEMO_SPACE) + state, 0, 1)
 
-        zip_code = pynini.compose(NEMO_DIGIT**5, cardinal.single_digits_graph)
-        zip_code = pynini.closure(
-            pynini.closure(pynini.accep(","), 0, 1) + pynini.accep(NEMO_SPACE) + zip_code,
-            0,
-            1,
-        )
+        zip_code = pynini.compose(NEMO_DIGIT ** 5, cardinal.single_digits_graph)
+        zip_code = pynini.closure(pynini.closure(pynini.accep(","), 0, 1) + pynini.accep(NEMO_SPACE) + zip_code, 0, 1,)
 
         address = address_num + direction + address_words + pynini.closure(city + state + zip_code, 0, 1)
 

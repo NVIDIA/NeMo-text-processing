@@ -48,13 +48,13 @@ class TelephoneFst(GraphFst):
         optional_country_code = pynini.closure(country_code + insert_space, 0, 1)
 
         number_part = (
-            NEMO_DIGIT**3 @ number
+            NEMO_DIGIT ** 3 @ number
             + separator
-            + NEMO_DIGIT**3 @ number
+            + NEMO_DIGIT ** 3 @ number
             + separator
-            + NEMO_DIGIT**2 @ number
+            + NEMO_DIGIT ** 2 @ number
             + separator
-            + NEMO_DIGIT**2 @ (pynini.closure(pynini.cross("0", "ноль ")) + number)
+            + NEMO_DIGIT ** 2 @ (pynini.closure(pynini.cross("0", "ноль ")) + number)
         )
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
         tagger_graph = (optional_country_code + number_part).optimize()

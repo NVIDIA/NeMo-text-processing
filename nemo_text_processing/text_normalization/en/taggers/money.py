@@ -112,8 +112,7 @@ class MoneyFst(GraphFst):
             integer_plus_maj |= graph_integer_one + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
 
             integer_plus_maj_with_comma = pynini.compose(
-                NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | pynutil.delete(",")),
-                integer_plus_maj,
+                NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | pynutil.delete(",")), integer_plus_maj,
             )
             integer_plus_maj = pynini.compose(pynini.closure(NEMO_DIGIT) - "0", integer_plus_maj)
             integer_plus_maj |= integer_plus_maj_with_comma
@@ -190,8 +189,7 @@ class MoneyFst(GraphFst):
             final_graph |= integer_graph_reordered | decimal_default_reordered
             # to handle "$2.00" cases
             final_graph |= pynini.compose(
-                NEMO_SIGMA + pynutil.delete(".") + pynini.closure(pynutil.delete("0"), 1),
-                integer_graph_reordered,
+                NEMO_SIGMA + pynutil.delete(".") + pynini.closure(pynutil.delete("0"), 1), integer_graph_reordered,
             )
 
         final_graph += graph_per_units.ques

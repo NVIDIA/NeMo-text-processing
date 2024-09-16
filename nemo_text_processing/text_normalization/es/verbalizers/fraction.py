@@ -141,8 +141,7 @@ class FractionFst(GraphFst):
 
             fraction_with_one_fem = numerator_one_fem + delete_space + insert_space
             fraction_with_one_fem += pynini.union(
-                denominator_singular_fem @ merge_stem,
-                denominator_singular_fem @ merge_into_single_word,
+                denominator_singular_fem @ merge_stem, denominator_singular_fem @ merge_into_single_word,
             )  # Both forms exists
             fraction_with_one_fem += pynutil.insert(" parte")
             fraction_with_one_fem @= pynini.cdrewrite(
@@ -151,8 +150,7 @@ class FractionFst(GraphFst):
 
             fraction_default_fem = numerator_fem + delete_space + insert_space
             fraction_default_fem += pynini.union(
-                denominator_plural_fem @ merge_stem,
-                denominator_plural_fem @ merge_into_single_word,
+                denominator_plural_fem @ merge_stem, denominator_plural_fem @ merge_into_single_word,
             )
             fraction_default_fem += pynutil.insert(" partes")
 

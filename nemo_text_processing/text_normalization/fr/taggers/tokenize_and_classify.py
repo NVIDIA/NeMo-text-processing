@@ -62,8 +62,7 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir,
-                f"_{input_case}_fr_tn_{deterministic}_deterministic{whitelist_file}.far",
+                cache_dir, f"_{input_case}_fr_tn_{deterministic}_deterministic{whitelist_file}.far",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -80,11 +79,7 @@ class ClassifyFst(GraphFst):
             self.decimal = DecimalFst(cardinal=self.cardinal, deterministic=deterministic)
             decimal_graph = self.decimal.fst
 
-            self.fraction = FractionFst(
-                cardinal=self.cardinal,
-                ordinal=self.ordinal,
-                deterministic=deterministic,
-            )
+            self.fraction = FractionFst(cardinal=self.cardinal, ordinal=self.ordinal, deterministic=deterministic,)
             fraction_graph = self.fraction.fst
             word_graph = WordFst(deterministic=deterministic).fst
             self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)

@@ -110,10 +110,7 @@ class TelephoneFst(GraphFst):
         # Denormalized phone numbers are grouped in sets of 3 or 4 digits
         group_of_two = pynini.union(doubled_digit, digit_twice, double_digits)
 
-        group_of_three = pynini.union(
-            tripled_digit,
-            single_digits + pynutil.delete(" ") + group_of_two,
-        )
+        group_of_three = pynini.union(tripled_digit, single_digits + pynutil.delete(" ") + group_of_two,)
 
         group_of_four = pynini.union(
             group_of_two + pynutil.delete(" ") + group_of_two,

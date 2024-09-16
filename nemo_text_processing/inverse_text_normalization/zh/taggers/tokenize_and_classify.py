@@ -48,11 +48,7 @@ class ClassifyFst(GraphFst):
     """
 
     def __init__(
-        self,
-        input_case: str,
-        cache_dir: str = None,
-        whitelist: str = None,
-        overwrite_cache: bool = False,
+        self, input_case: str, cache_dir: str = None, whitelist: str = None, overwrite_cache: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 

@@ -126,11 +126,11 @@ def _get_year_graph(cardinal_graph, deterministic: bool = True):
     123 A.D., 4200 B.C
     """
     graph = get_four_digit_year_graph(deterministic)
-    graph = (pynini.union("1", "2") + (NEMO_DIGIT**3) + pynini.closure(pynini.cross(" s", "s") | "s", 0, 1)) @ graph
+    graph = (pynini.union("1", "2") + (NEMO_DIGIT ** 3) + pynini.closure(pynini.cross(" s", "s") | "s", 0, 1)) @ graph
 
     graph |= _get_two_digit_year_with_s_graph()
 
-    three_digit_year = (NEMO_DIGIT @ cardinal_graph) + insert_space + (NEMO_DIGIT**2) @ cardinal_graph
+    three_digit_year = (NEMO_DIGIT @ cardinal_graph) + insert_space + (NEMO_DIGIT ** 2) @ cardinal_graph
     year_with_suffix = (
         (get_four_digit_year_graph(deterministic=True) | three_digit_year) + delete_space + insert_space + year_suffix
     )
@@ -270,7 +270,7 @@ class DateFst(GraphFst):
             )
 
         graph_dmy = day_graph + delete_extra_space + month_graph + optional_graph_year
-        day_ex_month = (NEMO_DIGIT**2 - pynini.project(month_numbers_graph, "input")) @ day_graph
+        day_ex_month = (NEMO_DIGIT ** 2 - pynini.project(month_numbers_graph, "input")) @ day_graph
         for x in ["-", "/", "."]:
             delete_sep = pynutil.delete(x)
             graph_dmy |= (

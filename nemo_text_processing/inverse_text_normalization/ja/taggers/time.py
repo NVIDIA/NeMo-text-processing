@@ -38,18 +38,14 @@ class TimeFst(GraphFst):
         minutes_seconds = pynini.string_file(get_abs_path("data/time_minutes_seconds.tsv"))
 
         hour_component = (
-            pynutil.insert("hours: \"")
-            + ((hours + pynutil.delete("時")) | pynini.accep("正午"))
-            + pynutil.insert("\"")
+            pynutil.insert("hours: \"") + ((hours + pynutil.delete("時")) | pynini.accep("正午")) + pynutil.insert("\"")
         )
         minute_component = (
             pynutil.insert("minutes: \"")
             + ((minutes_seconds + pynutil.delete("分")) | pynini.accep("半"))
             + pynutil.insert("\"")
         )
-        second_component = (
-            pynutil.insert("seconds: \"") + minutes_seconds + pynutil.delete("秒") + pynutil.insert("\"")
-        )
+        second_component = pynutil.insert("seconds: \"") + minutes_seconds + pynutil.delete("秒") + pynutil.insert("\"")
 
         graph_regular = (
             pynini.closure(hour_component + insert_space + minute_component + insert_space + second_component)
