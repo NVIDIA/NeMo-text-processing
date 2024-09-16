@@ -97,6 +97,7 @@ class ElectronicFst(GraphFst):
             + protocol
             + pynutil.insert(double_quotes)
         )
+
         url = protocol + pynutil.insert(NEMO_SPACE) + (domain_graph)
 
         graph = url | domain_graph | email | tag

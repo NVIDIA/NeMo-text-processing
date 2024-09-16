@@ -1,2 +1,70 @@
 /ea	each
-/dozen
+/dozen	per dozen
+/sec	per second
+/min	per minute
+/hr	per hour
+/h	per hour
+/d	per day
+/wk	per week
+/mo	per month
+/yr	per year
+/svc	per service
+/L	per liter
+/l	per liter
+/gal	per gallon
+/gallon	per gallon
+/kg	per kilogram
+/g	per gram
+/lb	per pound
+/pound	per pound
+/oz	per ounce
+/ounce	per ounce
+/unit	per unit
+/ft	per foot
+/foot	per foot
+/'	per foot
+/in	per inch
+/inch	per inch
+/"	per inch
+/m	per meter
+/meter	per meter
+/yard	per yard
+/yd	per yard
+/mile	per mile
+/mi	per mile
+/square meter	per square meter
+/sq meter	per square meter
+/sq m	per square meter
+/m²	per square meter
+/square foot	per square foot
+/sq foot	per square foot
+/sq ft	per square foot
+/ft²	per square foot
+/cubic foot	per cubic foot
+/cu foot	per cubic foot
+/cu ft	per cubic foot
+/ft³	per cubic foot
+/cubic meter	per cubic meter
+/cu meter	per cubic meter
+/cu m	per cubic meter
+/m³	per cubic meter
+/visit	per visit
+/page	per page
+/pg	per page
+/usr	per user
+/user	per user
+/night	per night
+/passenger	per passenger
+/word	per word
+/wd	per word
+/GB	per gigabyte
+/MB	per megabyte
+/TB	per terrabyte
+/cycle	per cycle
+/load	per load
+/person	per person
+/task	per task
+/shift	per shift
+/project	per project
+/class	per class
+/session	per session
