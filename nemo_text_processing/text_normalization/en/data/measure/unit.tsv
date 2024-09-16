@@ -125,3 +125,11 @@ s	S
 tb	TB
 tb	YB
 zb	ZB
+sec	second
+min	minute
+hr	hour
+d	day
+wk	week
+mo	month
+yr	year
+svc	service
