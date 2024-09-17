@@ -105,7 +105,6 @@ def parse_args():
             'mr',
             'ja',
             'rw',
-            'hi',
         ],
         type=str,
         default='en',
@@ -298,6 +297,11 @@ if __name__ == '__main__':
             PostProcessingFst as TNPostProcessingFst,
         )
         from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+    elif args.language == 'rw':
+        from nemo_text_processing.text_normalization.hy.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+        from nemo_text_processing.text_normalization.rw.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
     elif args.language == 'rw':
         from nemo_text_processing.text_normalization.rw.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
