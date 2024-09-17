@@ -45,7 +45,7 @@ class MeasureFst(GraphFst):
     """
     Finite state transducer for classifying measure,  e.g.
         "2,4 g" -> measure { cardinal { integer_part: "due" fractional_part: "quattro" units: "grammi" preserve_order: true } }
-        
+
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst

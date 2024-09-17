@@ -35,9 +35,9 @@ def rewrite(cardinal: 'pynini.FstLike') -> 'pynini.FstLike':
     In cases where original orthography is current, or string is mixture of two orthographies,
     will render invalid form that will not pass through CardinalFst
     e.g. deux-mille cent-vingt-trois -> "deux##vingt-trois" ('#' is not accepted in cardinal FST and will fail to convert.)
-    e.g. deux 
+    e.g. deux
 
-    Args: 
+    Args:
         cardinal: cardinal FST
     """
 
@@ -90,13 +90,13 @@ def rewrite(cardinal: 'pynini.FstLike') -> 'pynini.FstLike':
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
-        e.g. mois vingt-trois -> cardinal { negative: "-" integer: "23"} 
+        e.g. mois vingt-trois -> cardinal { negative: "-" integer: "23"}
     This class converts cardinals up to (but not including) "un-quatrillion",
     i.e up to "one septillion" in English (10^{24}).
-    Cardinals below nine are not converted (in order to avoid 
+    Cardinals below nine are not converted (in order to avoid
     "j'ai un pomme." --> "j'ai 1 pomme" and any other odd conversions.)
     This transducer accomodates both traditional hyphenation of numbers ('-' for most numbers <100)
-    and current hyphenation (all elements of number are hyphenated), prioritizing the latter. 
+    and current hyphenation (all elements of number are hyphenated), prioritizing the latter.
     e.g cent cinquante et un -> cardinal { integer: "151"}
         cent-cinquante-et-un -> cardinal { integer: "151"}
     This is done through a context dependent rewrite that attempts to map old spelling to new.

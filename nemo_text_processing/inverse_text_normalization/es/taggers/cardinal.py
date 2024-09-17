@@ -31,10 +31,10 @@ from nemo_text_processing.text_normalization.es.graph_utils import ES_MINUS
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
-        e.g. menos veintitrés -> cardinal { negative: "-" integer: "23"} 
+        e.g. menos veintitrés -> cardinal { negative: "-" integer: "23"}
     This class converts cardinals up to (but not including) "un cuatrillón",
     i.e up to "one septillion" in English (10^{24}).
-    Cardinals below ten are not converted (in order to avoid 
+    Cardinals below ten are not converted (in order to avoid
     "vivo en una casa" --> "vivo en 1 casa" and any other odd conversions.)
 
     Although technically Spanish grammar requires that "y" only comes after
@@ -199,7 +199,7 @@ class CardinalFst(GraphFst):
         self.fst = final_graph.optimize()
 
     def delete_word(self, word: str):
-        """ Capitalizes word for `cased` input"""
+        """Capitalizes word for `cased` input"""
         delete_graph = pynutil.delete(word).optimize()
         if self.input_case == INPUT_CASED:
             if len(word) > 0:

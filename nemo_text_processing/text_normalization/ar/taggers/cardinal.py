@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g. 
+    Finite state transducer for classifying cardinals, e.g.
         "9837" ->  cardinal { integer: "تسعة اَلاف وثمان مئة وسبعة وثلاثون" }
 
     Args:

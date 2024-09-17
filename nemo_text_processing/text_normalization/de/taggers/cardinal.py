@@ -66,7 +66,7 @@ def get_ties_digit(digit_path: str, tie_path: str) -> 'pynini.FstLike':
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g. 
+    Finite state transducer for classifying cardinals, e.g.
         "101" ->  cardinal { integer: "ein hundert und zehn" }
 
     Args:
