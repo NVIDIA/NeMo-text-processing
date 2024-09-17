@@ -61,7 +61,7 @@ def get_serial_number(cardinal):
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone numbers, e.g. 
+    Finite state transducer for classifying telephone numbers, e.g.
         one two three one two three five six seven eight -> { number_part: "123-123-5678" }
 
     This class also support card number and IP format.

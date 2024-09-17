@@ -22,8 +22,8 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
         e.g. سالب تسعة وتسعون  -> cardinal { integer: "99" negative: "-" } }
-    Numbers below thirteen are not converted. 
-    Args: 
+    Numbers below thirteen are not converted.
+    Args:
         tn_cardinal: cardinal FST for TN
     """
 
