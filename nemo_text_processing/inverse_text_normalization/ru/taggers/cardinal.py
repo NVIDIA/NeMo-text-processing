@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, G
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g. 
+    Finite state transducer for classifying cardinals, e.g.
        "тысяча один" ->  cardinal { integer: "1 001" }
 
     Args:
