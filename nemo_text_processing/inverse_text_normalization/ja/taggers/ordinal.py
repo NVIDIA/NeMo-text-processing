@@ -22,7 +22,7 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import Graph
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
-        e.g. 第二十三 -> cardinal { morphsyntactic_feature: "第" integer: "23" } 
+        e.g. 第二十三 -> cardinal { morphsyntactic_feature: "第" integer: "23" }
         e.g. 百番目 -> cardinal { integer: "100" morphsyntactic_feature:"番目" }
     """
 

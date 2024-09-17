@@ -28,10 +28,10 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, 
+    Finite state transducer for classifying date,
         e.g. primero de enero -> date { day: "1" month: "enero" }
         e.g. uno de enero -> date { day: "1" month: "enero" }
-    
+
     Args:
         cardinal: CardinalFst
         input_case: accepting either "lower_cased" or "cased" input.

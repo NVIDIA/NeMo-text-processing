@@ -24,9 +24,7 @@ from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import Ver
 
 
 class VerbalizeFinalFst(GraphFst):
-    """
-
-    """
+    """ """
 
     def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
         super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)

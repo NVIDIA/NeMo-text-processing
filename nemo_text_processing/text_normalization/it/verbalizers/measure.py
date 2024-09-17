@@ -27,7 +27,7 @@ class MeasureFst(GraphFst):
     """
     Finite state transducer for verbalizing measure, e.g.
         measure { cardinal { integer: "due" units: "grammi" } } -> "due grammi"
-    
+
     Args:
         decimal: decimal GraphFst
         cardinal: cardinal GraphFst
