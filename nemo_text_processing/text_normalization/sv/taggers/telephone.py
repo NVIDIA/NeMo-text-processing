@@ -50,8 +50,8 @@ class TelephoneFst(GraphFst):
         https://codegolf.stackexchange.com/questions/195787/format-a-swedish-phone-number
 
     Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
+                deterministic: if True will provide a single transduction option,
+                        for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True):

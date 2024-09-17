@@ -29,10 +29,10 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 class PostProcessor(GraphFst):
     '''
-        Postprocessing of TN, now contains:
-            1. punctuation removal
-            2. letter case conversion
-            3. oov tagger
+    Postprocessing of TN, now contains:
+        1. punctuation removal
+        2. letter case conversion
+        3. oov tagger
     '''
 
     def __init__(

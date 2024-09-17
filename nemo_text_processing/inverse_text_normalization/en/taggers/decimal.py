@@ -41,7 +41,7 @@ def get_quantity(
     e.g. one million -> integer_part: "1" quantity: "million"
     e.g. one point five million -> integer_part: "1" fractional_part: "5" quantity: "million"
 
-    Args: 
+    Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
         input_case: accepting either "lower_cased" or "cased" input.

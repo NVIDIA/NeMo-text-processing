@@ -64,7 +64,7 @@ def get_year_graph(cardinal: GraphFst) -> 'pynini.FstLike':
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, e.g. 
+    Finite state transducer for classifying date, e.g.
         "01.04.2010" -> date { day: "erster" month: "april" year: "zwei tausend zehn" preserve_order: true }
         "1994" -> date { year: "neunzehn vier und neuzig" }
         "1900" -> date { year: "neunzehn hundert" }

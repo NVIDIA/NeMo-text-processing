@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOT
 
 class WhiteListFst(GraphFst):
     '''
-        tokens { whitelist: "ATM" } -> A T M
+    tokens { whitelist: "ATM" } -> A T M
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):

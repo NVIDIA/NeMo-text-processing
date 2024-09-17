@@ -29,7 +29,7 @@ from nemo_text_processing.text_normalization.ru.utils import get_abs_path
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, e.g. 
+    Finite state transducer for classifying date, e.g.
         "01.05" -> tokens { date { day: "первое мая" } }
 
     Args:
