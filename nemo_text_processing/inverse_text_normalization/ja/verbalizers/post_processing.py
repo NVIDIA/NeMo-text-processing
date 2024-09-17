@@ -96,10 +96,10 @@ class PostProcessingFst:
 
     def get_punct_postprocess_graph(self):
         """
-            Returns graph to post process punctuation marks.
+        Returns graph to post process punctuation marks.
 
-            {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
-            By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
+        {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
+        By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
         """
 
         remove_space_around_single_quote = pynini.cdrewrite(

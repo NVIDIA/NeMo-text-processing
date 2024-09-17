@@ -31,8 +31,8 @@ def get_quantity(decimal):
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal
-        e.g. 一点五 -> decimnl { integer_part: "1" fractional_part: "5" } 
-        e.g. 一点五万 -> decimal { integer_part: "1" fractional_part: "5" quantity: "万" } 
+        e.g. 一点五 -> decimnl { integer_part: "1" fractional_part: "5" }
+        e.g. 一点五万 -> decimal { integer_part: "1" fractional_part: "5" quantity: "万" }
     """
 
     def __init__(self, cardinal: GraphFst):

@@ -40,7 +40,7 @@ class MoneyFst(GraphFst):
     Finite state transducer for verbalizing money, e.g.
         money { currency_maj: "euro" integer_part: "un"} -> "un euro"
         money { integer_part: "quattro" currency_maj: "sterline" fractional_part: "venti" currency_min: "penny" preserve_order: true } -> "quattro sterline venti penny"
-        
+
     Args:
         decimal: GraphFst
         deterministic: if True will provide a single transduction option,

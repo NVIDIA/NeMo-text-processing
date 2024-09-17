@@ -62,7 +62,7 @@ class TimeFst(GraphFst):
         e.g. klockan tretton tio -> time { hours: "kl. 13" minutes: "10" }
         e.g. kvart i tolv -> time { minutes: "45" hours: "11" }
         e.g. kvart över tolv -> time { minutes: "15" hours: "12" }
-    
+
     Args:
         tn_cardinal_tagger: TN cardinal verbalizer
     """

@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOT
 
 class WordFst(GraphFst):
     '''
-        tokens { char: "一" } -> 一
+    tokens { char: "一" } -> 一
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
