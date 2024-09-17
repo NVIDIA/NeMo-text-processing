@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOT
 
 class MeasureFst(GraphFst):
     '''
-        tokens { measure { cardinal: "一" } units: "千克" } } ->  一千克
+    tokens { measure { cardinal: "一" } units: "千克" } } ->  一千克
     '''
 
     def __init__(

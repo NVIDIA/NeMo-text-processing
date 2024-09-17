@@ -38,7 +38,7 @@ def get_quantity(
     e.g. one million -> integer_part: "1" quantity: "million"
     e.g. one point five million -> integer_part: "1" fractional_part: "5" quantity: "million"
 
-    Args: 
+    Args:
         decimal: decimal FST
         cardinal_up_to_million: cardinal FST
         input_case: accepting either "lower_cased" or "cased" input.
@@ -87,7 +87,7 @@ class DecimalFst(GraphFst):
         This decimal rule assumes that decimals can be pronounced as:
         (a cardinal) + ('coma' or 'punto') plus (any sequence of cardinals <1000, including 'zero')
 
-        Also writes large numbers in shortened form, e.g. 
+        Also writes large numbers in shortened form, e.g.
             e.g. uno coma dos seis millón -> decimal { negative: "false" integer_part: "1" morphosyntactic_features: "," fractional_part: "26" quantity: "millón" }
             e.g. dos millones -> decimal { negative: "false" integer_part: "2" quantity: "millones" }
             e.g. mil ochocientos veinticuatro millones -> decimal { negative: "false" integer_part: "1824" quantity: "millones" }

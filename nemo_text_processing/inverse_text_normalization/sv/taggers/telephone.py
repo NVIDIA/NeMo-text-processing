@@ -20,9 +20,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, G
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone numbers, e.g. 
+    Finite state transducer for classifying telephone numbers, e.g.
         noll åtta sjuhundraåttionio femtiotvå tjugofem -> tokens { name: "08-789 52 25" }
-    
+
     Args:
         tn_cardinal_tagger: TN Cardinal Tagger
     """
