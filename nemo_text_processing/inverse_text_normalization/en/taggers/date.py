@@ -137,7 +137,7 @@ def _get_year_graph(input_case: str):
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, 
+    Finite state transducer for classifying date,
         e.g. january fifth twenty twelve -> date { month: "january" day: "5" year: "2012" preserve_order: true }
         e.g. the fifth of january twenty twelve -> date { day: "5" month: "january" year: "2012" preserve_order: true }
         e.g. twenty twenty -> date { year: "2012" preserve_order: true }

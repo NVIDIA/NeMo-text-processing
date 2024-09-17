@@ -31,7 +31,7 @@ class OrdinalFst(GraphFst):
         vigésimo primero -> ordinal { integer: "21" morphosyntactic_features: "o" }
     This class converts ordinal up to "millesímo" (one thousandth) exclusive.
 
-    Cardinals below ten are not converted (in order to avoid 
+    Cardinals below ten are not converted (in order to avoid
     e.g. "primero hice ..." -> "1.º hice...", "segunda guerra mundial" -> "2.ª guerra mundial"
     and any other odd conversions.)
 

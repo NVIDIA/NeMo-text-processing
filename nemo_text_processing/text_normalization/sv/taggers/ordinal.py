@@ -32,7 +32,7 @@ from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal
-        	"21:a" -> ordinal { integer: "tjugoförsta" }
+                "21:a" -> ordinal { integer: "tjugoförsta" }
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,

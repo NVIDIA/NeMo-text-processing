@@ -26,8 +26,8 @@ from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
 
 class NumberParser(GraphFst):
     """
-    Finite state transducer for parsing strings of digis. Breaks up digit strings into groups of three for 
-	strings of digits of four or more (inclusive). Groupings are separated by non-breaking space.
+    Finite state transducer for parsing strings of digis. Breaks up digit strings into groups of three for
+        strings of digits of four or more (inclusive). Groupings are separated by non-breaking space.
     e.g. '1000' -> '1 000'
     e.g. '1000,33333' -> '1 000,333 33
     """
