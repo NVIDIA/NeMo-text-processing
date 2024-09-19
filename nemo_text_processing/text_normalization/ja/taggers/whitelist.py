@@ -34,7 +34,7 @@ class WhiteListFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
 
-        whitelist = pynini.string_file(get_abs_path("data/whitelist-nano.tsv"))
+        whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv"))
         graph = (pynutil.insert('name: "')) + (whitelist) + pynutil.insert('"')
 
         self.fst = graph.optimize()
