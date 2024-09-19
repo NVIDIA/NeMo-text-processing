@@ -40,4 +40,3 @@ class TestCardinal:
     def test_denorm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
-
