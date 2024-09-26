@@ -199,11 +199,7 @@ class CardinalFst(GraphFst):
         self.fst = final_graph.optimize()
 
     def delete_word(self, word: str):
-<<<<<<< HEAD
         """Capitalizes word for `cased` input"""
-=======
-        """ Capitalizes word for `cased` input"""
->>>>>>> 5246add (es and es_en changes for unified models (#143))
         delete_graph = pynutil.delete(word).optimize()
         if self.input_case == INPUT_CASED:
             if len(word) > 0:

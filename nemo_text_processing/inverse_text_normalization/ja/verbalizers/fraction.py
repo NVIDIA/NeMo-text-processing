@@ -22,21 +22,12 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
     GraphFst,
 )
 
-<<<<<<< HEAD
-=======
-test = '\u0020'
-
->>>>>>> 76c9124 ([pre-commit.ci] auto fixes from pre-commit.com hooks)
 
 class FractionFst(GraphFst):
     def __init__(self):
         """
         Fitite state transducer for classifying fractions
-<<<<<<< HEAD
         e.g.,
-=======
-        e.g., 
->>>>>>> 0a4a21c (Jp itn 20240221 (#141))
         fraction { denominator: "4" numerator: "3" } -> 3/4
         fraction { integer: "1" denominator: "4" numerator: "3" } -> 1 3/4
         fraction { integer: "1" denominator: "4" numerator: "3" } -> 1 3/4
@@ -70,4 +61,5 @@ class FractionFst(GraphFst):
         )
 
         final_graph = self.delete_tokens(regular_graph)
+
         self.fst = final_graph.optimize()

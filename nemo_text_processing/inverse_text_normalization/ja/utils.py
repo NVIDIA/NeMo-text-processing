@@ -22,10 +22,14 @@ def get_abs_path(rel_path):
     Args:
         rel_path: relative path to this file
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
         
 >>>>>>> 0a4a21c (Jp itn 20240221 (#141))
+=======
+
+>>>>>>> 59f46198ab4c8880c6a5fb88f3cbee9530156498
     Returns absolute path
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path

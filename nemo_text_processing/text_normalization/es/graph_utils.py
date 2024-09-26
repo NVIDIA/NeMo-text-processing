@@ -44,11 +44,7 @@ ES_MINUS = pynini.union("menos", "Menos", "MENOS").optimize()
 ES_PLUS = pynini.union("más", "Más", "MÁS").optimize()
 
 
-<<<<<<< HEAD
 def strip_accent(fst: "pynini.FstLike") -> "pynini.FstLike":
-=======
-def strip_accent(fst: 'pynini.FstLike') -> 'pynini.FstLike':
->>>>>>> 5246add (es and es_en changes for unified models (#143))
     """
     Converts all accented vowels to non-accented equivalents
 

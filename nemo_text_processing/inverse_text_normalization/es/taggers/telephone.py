@@ -37,11 +37,7 @@ class TelephoneFst(GraphFst):
             "twelve thirty four" = "1234".
 
         (we ignore more complicated cases such as "three hundred and two" or "three nines").
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 5246add (es and es_en changes for unified models (#143))
         Args:
             input_case: accepting either "lower_cased" or "cased" input.
     """
