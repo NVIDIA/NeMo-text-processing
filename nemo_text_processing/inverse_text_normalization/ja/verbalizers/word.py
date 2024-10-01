@@ -21,12 +21,12 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOT
 
 class WordFst(GraphFst):
     '''
-    tokens { char: "一" } -> 一
+    tokens { name: "一" } -> 一
     '''
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="char", kind="verbalize", deterministic=deterministic)
+        super().__init__(name="word", kind="verbalize", deterministic=deterministic)
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
-        graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
+
         self.fst = graph.optimize()
