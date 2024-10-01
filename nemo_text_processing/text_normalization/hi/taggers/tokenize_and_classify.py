@@ -31,6 +31,7 @@ from nemo_text_processing.text_normalization.hi.taggers.date import DateFst
 from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.hi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFst
+from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
@@ -102,7 +103,12 @@ class ClassifyFst(GraphFst):
             start_time = time.time()
             measure = MeasureFst(cardinal=cardinal, decimal=decimal)
             measure_graph = measure.fst
-            logging.debug(f"time: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
+            logging.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
+
+            start_time = time.time()
+            money = MoneyFst(cardinal=cardinal, decimal=decimal)
+            money_graph = money.fst
+            logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 
             start_time = time.time()
             punctuation = PunctuationFst(deterministic=deterministic)
@@ -116,6 +122,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
+                | pynutil.add_weight(money_graph, 1.1)
             )
 
             start_time = time.time()
