@@ -67,10 +67,10 @@ testTNFraction() {
   runtest $input
 }
 
-#testTNMoney() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_money.txt
-#  runtest $input
-#}
+testTNMoney() {
+  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_money.txt
+  runtest $input
+}
 
 #testTNOrdinal() {
 #  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_ordinal.txt
