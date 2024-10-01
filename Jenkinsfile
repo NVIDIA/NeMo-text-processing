@@ -27,7 +27,6 @@ pipeline {
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-27-24-0'
-    HI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-29-24-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -91,6 +90,74 @@ pipeline {
           }
         }
 
+      }
+    }
+    stage('L0: Create HI TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: Hi TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
+          }
+        }
+        
+      }
+    }
+    stage('L0: Create HI TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: Hi TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
+          }
+        }
+        
+      }
+    }
+    stage('L0: Create HI TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: Hi TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
+          }
+        }
+        
+      }
+    }
+    stage('L0: Create HI TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: Hi TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
+          }
+        }
+        
       }
     }
     stage('L0: Create HI TN/ITN Grammars') {
