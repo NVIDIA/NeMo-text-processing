@@ -16,11 +16,14 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_NARROW_NON_BREAK_SPACE,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
-    delete_space,
+    NEMO_SPACE,
     generator_main,
 )
 from nemo_text_processing.utils.logging import logger
@@ -102,9 +105,25 @@ class PostProcessingFst:
         By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
         """
 
-        remove_space_around_single_quote = pynini.cdrewrite(
-            delete_space, NEMO_NOT_SPACE, NEMO_NOT_SPACE, pynini.closure(NEMO_SIGMA)
+        apply_narrow_space = pynini.cdrewrite(
+            pynini.cross(NEMO_SPACE, NEMO_NARROW_NON_BREAK_SPACE),
+            NEMO_DIGIT,
+            (pynini.closure(NEMO_DIGIT, 1) + pynini.accep("/") + pynini.closure(NEMO_DIGIT, 1)),
+            NEMO_SIGMA,
         )
+        # converting space between digit and digit/digit to narow space
+        delete_regular_space = pynini.cdrewrite(pynutil.delete(NEMO_SPACE), NEMO_NOT_SPACE, NEMO_NOT_SPACE, NEMO_SIGMA)
+        # deleting all normal spaces
+        reapply_regular_space = pynini.cdrewrite(
+            pynini.cross(NEMO_NARROW_NON_BREAK_SPACE, NEMO_SPACE),
+            NEMO_DIGIT,
+            (pynini.closure(NEMO_DIGIT, 1) + pynini.accep("/") + pynini.closure(NEMO_DIGIT, 1)),
+            NEMO_SIGMA,
+        )
+        # convert narrow space to normal space
+
+        remove_space_around_single_quote = apply_narrow_space @ delete_regular_space @ reapply_regular_space
+
         # this works if spaces in between (good)
         # delete space between 2 NEMO_NOT_SPACE（left and right to the space) that are with in a content of NEMO_SIGMA
 
