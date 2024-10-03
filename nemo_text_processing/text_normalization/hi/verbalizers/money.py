@@ -66,16 +66,3 @@ class MoneyFst(GraphFst):
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
-
-
-# cardinal = CardinalFst()
-# decimal = DecimalFst(cardinal)
-# money = MoneyFst(cardinal, decimal)
-# input_text = 'money { currency: "रुपए"  integer_part: "उन्नीस"  }'
-# input_text = 'money { integer_part: "उन्नीस" currency: "रुपए"  }'
-# input_text = 'money { currency: "रुपए"  integer_part: "दो हज़ार"  fractional_part: "उन्नीस"  }'
-# input_text = 'money { integer_part: "दो हज़ार" currency: "रुपए"  fractional_part: "उन्नीस"  }'
-# input_text = 'money { currency: "पाउंड"  integer_part: "दो हज़ार" fractional_part: "उन्नीस"  }'
-# input_text = 'money { integer_part: "दो हज़ार" currency: "पाउंड"  fractional_part: "उन्नीस" }'
-# output = apply_fst(input_text, money.fst)
-# print(output)
