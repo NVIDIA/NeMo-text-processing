@@ -63,18 +63,3 @@ class MoneyFst(GraphFst):
         self.graph = graph.optimize()
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
-
-
-# cardinal = CardinalFst()
-# decimal = DecimalFst(cardinal)
-# money = MoneyFst(cardinal, decimal)
-# input_text = "₹१९"
-# input_text = "₹२०००.१९"
-# input_text = "£१९"
-# input_text = "£२०००.१९"
-# input_text = "৳१९"
-# input_text = "৳२०००.१९"
-# input_text = "$१९"
-# input_text = "$२०००.१९"
-# output = apply_fst(input_text, money.fst)
-# print(output)
