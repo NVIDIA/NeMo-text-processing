@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.de.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
+    NEMO_ALPHA,
     NEMO_SPACE,
     GraphFst,
     delete_preserve_order,
@@ -39,38 +40,84 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
+        super().__init__(
+            name="electronic", kind="verbalize", deterministic=deterministic
+        )
         graph_digit_no_zero = pynini.invert(
             pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         ).optimize() | pynini.cross("1", "eins")
-        graph_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv"))).optimize()
+        graph_zero = pynini.invert(
+            pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        ).optimize()
         graph_digit = graph_digit_no_zero | graph_zero
-        graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).optimize()
-        server_common = pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
+        graph_symbols = pynini.string_file(
+            get_abs_path("data/electronic/symbols.tsv")
+        ).optimize()
+        server_common = pynini.string_file(
+            get_abs_path("data/electronic/server_name.tsv")
+        )
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
+        abbreviations = pynini.string_file(
+            get_abs_path("data/electronic/abbreviations.tsv")
+        )
 
         def add_space_after_char():
             return pynini.closure(NEMO_NOT_QUOTE - pynini.accep(" ") + insert_space) + (
                 NEMO_NOT_QUOTE - pynini.accep(" ")
             )
 
-        verbalize_characters = pynini.cdrewrite(graph_symbols | graph_digit, "", "", NEMO_SIGMA)
+        verbalize_characters = pynini.cdrewrite(
+            graph_symbols | graph_digit, "", "", NEMO_SIGMA
+        )
 
-        user_name = pynutil.delete('username: "') + add_space_after_char() + pynutil.delete('"')
+        user_name = (
+            pynutil.delete('username: "') + add_space_after_char() + pynutil.delete('"')
+        )
         user_name @= verbalize_characters
 
-        convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | domain_common | server_common
+        convert_defaults = (
+            pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001)
+            | domain_common
+            | server_common
+        )
         domain = convert_defaults + pynini.closure(insert_space + convert_defaults)
         domain @= verbalize_characters
+
+        # Vebalizes common hyphenated nominal compounds (e.g. 3D-Drucker)
+        verbalized_abbreviations = pynini.project(abbreviations, "output")
+        DE_CHARS = pynini.union(*"äöüß")
+        compound_b_sigma_star = pynini.closure((NEMO_ALPHA | DE_CHARS), 1)
+        compound_a = (
+            pynutil.delete("fragment_id:")
+            + pynutil.delete(NEMO_SPACE)
+            + pynutil.delete('"')
+            + verbalized_abbreviations
+            + pynutil.delete('"')
+        )
+        compound_b = (
+            pynutil.delete("fragment_id:")
+            + pynutil.delete(NEMO_SPACE)
+            + pynutil.delete('"')
+            + compound_b_sigma_star
+            + pynutil.delete('"')
+        )
+        graph_compound = compound_a + pynini.accep("-") + compound_b
 
         domain = pynutil.delete('domain: "') + domain + pynutil.delete('"')
         protocol = (
             pynutil.delete('protocol: "')
-            + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
+            + add_space_after_char()
+            @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + pynutil.delete('"')
         )
-        self.graph = (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain) | (
-            user_name + NEMO_SPACE + pynutil.insert("at ") + domain | (pynutil.insert("at ") + user_name)
+        self.graph = (
+            (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain)
+            | (
+                user_name + NEMO_SPACE + pynutil.insert("at ") + domain
+                | (pynutil.insert("at ") + user_name)
+            )
+            | graph_compound
         )
+
         delete_tokens = self.delete_tokens(self.graph + delete_preserve_order)
         self.fst = delete_tokens.optimize()
