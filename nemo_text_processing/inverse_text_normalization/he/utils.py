@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import csv
 import os
+import csv
+
 
 ####################
 # HEBREW CONSTANTS #
@@ -28,7 +29,6 @@ tens_dict = {"2": "עשרים", "3": "שלושים", "4": "ארבעים", "5": "
              "8": "שמונים", "9": "תשעים"}
 
 ten = {"short": "עשר", "long": "עשרה"}  # double pronunciation: short is 'eser' and 'asar', long is 'esre' and 'asara'
-
 
 #############
 # FUNCTIONS #
