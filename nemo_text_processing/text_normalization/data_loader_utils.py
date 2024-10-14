@@ -17,12 +17,14 @@ import json
 import re
 import string
 import sys
+import unicodedata
 from collections import defaultdict, namedtuple
 from typing import Dict, List, Optional, Set, Tuple
 from unicodedata import category
 
 from nemo_text_processing.utils.logging import logger
 
+NFC = 'NFC'
 EOS_TYPE = "EOS"
 PUNCT_TYPE = "PUNCT"
 PLAIN_TYPE = "PLAIN"
@@ -187,8 +189,13 @@ def training_data_to_sentences(data: List[Instance]) -> Tuple[List[str], List[st
         else:
             sentence.append(instance)
             sentence_categories.update([instance.token_type])
-    un_normalized = [" ".join([instance.un_normalized for instance in sentence]) for sentence in sentences]
-    normalized = [" ".join([instance.normalized for instance in sentence]) for sentence in sentences]
+    un_normalized = [
+        " ".join([unicodedata.normalize(NFC, instance.un_normalized) for instance in sentence])
+        for sentence in sentences
+    ]
+    normalized = [
+        " ".join([unicodedata.normalize(NFC, instance.normalized) for instance in sentence]) for sentence in sentences
+    ]
     return un_normalized, normalized, categories
 
 
