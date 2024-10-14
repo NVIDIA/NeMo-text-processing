@@ -55,7 +55,7 @@ class FractionFst(GraphFst):
 
         integer = pynutil.insert("integer_part: \"") + graph_cardinal + pynutil.insert("\" ")
         integer += delete_space
-        delete_bata = pynutil.delete(" बटा ")  # used to demarcate integer and fractional parts
+        delete_bata = pynini.union(pynutil.delete(" बटा ") | pynutil.delete(" बटे "))
 
         numerator = pynini.closure(pynutil.insert("numerator: \"") + graph_cardinal + pynutil.insert("\""))
         denominator = pynini.closure((pynutil.insert(" denominator: \"") + graph_cardinal + pynutil.insert("\"")))

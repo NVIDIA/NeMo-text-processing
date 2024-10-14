@@ -129,15 +129,16 @@ class CardinalFst(GraphFst):
             + delete_space
             + graph_in_thousands
         )
-        graph_no_prefix = pynini.union(
-            pynini.cross("सौ", "१००")
-            | pynini.cross("हज़ार", "१०००")
-            | pynini.cross("लाख", "१०००००")
-            | pynini.cross("करोड़", "१०००००००"),
-            pynutil.insert("graph_no_prefix", weight=2),
+        graph_no_prefix = pynutil.add_weight(
+            (
+                pynini.cross("सौ", "१००")
+                | pynini.cross("हज़ार", "१०००")
+                | pynini.cross("लाख", "१०००००")
+                | pynini.cross("करोड़", "१०००००००")
+            ),
+            2,
         )
 
-        # self.graph_year = pynini.union(graph_in_thousands + delete_space + self.graph_hundreds, graph_zero, graph_no_prefix)
         graph = pynini.union(
             graph_ind + delete_space + self.graph_hundreds, graph_zero, graph_no_prefix
         )  # graph_digit_plus_hundred,
