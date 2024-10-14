@@ -36,7 +36,7 @@ class MoneyFst(GraphFst):
         "$1,99" -> money { integer_part: "سبعة" currency_maj: "دولار" fractional_part: "تسعة وتسعون"  currency_min: "سنت" preserve_order: true}
         "$0,10" -> money { fractional_part: "عشرة"  currency_min: "بنسات" preserve_order: true }
         "$9" -> money { integer_part: "تسعة" currency_maj: "دولار" preserve_order: true}
-        
+
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
