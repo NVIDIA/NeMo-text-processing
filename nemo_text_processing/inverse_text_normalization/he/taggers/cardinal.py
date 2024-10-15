@@ -47,15 +47,16 @@ class CardinalFst(GraphFst):
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         graph_two_digit = pynini.union(
-            graph_teen,
-            (graph_ties + (delete_space + delete_and + graph_digit | pynutil.insert("0")))
+            graph_teen, (graph_ties + (delete_space + delete_and + graph_digit | pynutil.insert("0")))
         )
         self.graph_two_digit = graph_two_digit | graph_digit
 
         # hundreds
         hundred = pynini.string_map([("מאה", "1"), ("מאתיים", "2")])
         delete_hundred = pynini.cross("מאות", "")
-        graph_hundred = delete_optional_and + (hundred | graph_digit + delete_space + delete_hundred | pynutil.insert("0"))
+        graph_hundred = delete_optional_and + (
+            hundred | graph_digit + delete_space + delete_hundred | pynutil.insert("0")
+        )
         graph_hundred += delete_space
         graph_hundred += pynini.union(
             delete_optional_and + graph_two_digit,
@@ -73,21 +74,19 @@ class CardinalFst(GraphFst):
         thousand_digit = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
 
         delete_thousand = pynutil.delete("אלפים") | pynutil.delete("אלף", weight=0.001)
-        large_number_prefix = graph_hundred | (pynutil.insert("0") + graph_two_digit) | (pynutil.insert("00") + thousand_digit)
+        large_number_prefix = (
+            graph_hundred | (pynutil.insert("0") + graph_two_digit) | (pynutil.insert("00") + thousand_digit)
+        )
         many_thousands = pynini.union(large_number_prefix, pynutil.insert("00")) + delete_space + delete_thousand
 
-        graph_thousands = (delete_optional_and + pynini.union((pynutil.insert("00") + thousand) | many_thousands, pynutil.insert("000", weight=0.001)) | pynutil.insert("000"))
+        graph_thousands = delete_optional_and + pynini.union(
+            (pynutil.insert("00") + thousand) | many_thousands, pynutil.insert("000", weight=0.001)
+        ) | pynutil.insert("000")
 
-        self.graph_thousands = pynini.union(
-            graph_thousands
-            + delete_space
-            + graph_hundred,
-            graph_zero
-        )
+        self.graph_thousands = pynini.union(graph_thousands + delete_space + graph_hundred, graph_zero)
         self.graph_thousands @= pynini.union(
-                pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT),
-                "0"
-            )
+            pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"
+        )
         # millions
         million = pynini.string_map([("מיליון", "1")])
         delete_millions = pynutil.delete("מיליונים") | pynutil.delete("מיליון", weight=0.001)
@@ -96,12 +95,7 @@ class CardinalFst(GraphFst):
         graph_millions = pynini.union(million | many_millions, pynutil.insert("000", weight=0.001))
 
         graph = pynini.union(
-            graph_millions
-            + delete_space
-            + graph_thousands
-            + delete_space
-            + graph_hundred,
-            graph_zero
+            graph_millions + delete_space + graph_thousands + delete_space + graph_hundred, graph_zero
         )
 
         graph = graph @ pynini.union(
@@ -133,24 +127,14 @@ class CardinalFst(GraphFst):
         self.graph_wo_viable_hours = (pynini.project(graph, "input") - viable_hours_exception.arcsort()) @ graph
 
         small_number_with_minus = (
-            insert_space
-            + minus_graph
-            + pynutil.insert("integer: \"")
-            + self.graph_no_exception
-            + pynutil.insert("\"")
+            insert_space + minus_graph + pynutil.insert("integer: \"") + self.graph_no_exception + pynutil.insert("\"")
         )
 
         big_number_with_optional_minus = (
-            optional_minus_graph
-            + pynutil.insert("integer: \"")
-            + graph_wo_small_digits
-            + pynutil.insert("\"")
+            optional_minus_graph + pynutil.insert("integer: \"") + graph_wo_small_digits + pynutil.insert("\"")
         )
 
-        graph = (
-                optional_prefix_graph
-                + (small_number_with_minus | big_number_with_optional_minus)
-        )
+        graph = optional_prefix_graph + (small_number_with_minus | big_number_with_optional_minus)
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

@@ -49,12 +49,6 @@ class VerbalizeFst(GraphFst):
         whitelist_graph = WhiteListFst().fst
 
         graph = (
-            time_graph
-            | date_graph
-            | measure_graph
-            | ordinal_graph
-            | decimal_graph
-            | cardinal_graph
-            | whitelist_graph
+            time_graph | date_graph | measure_graph | ordinal_graph | decimal_graph | cardinal_graph | whitelist_graph
         )
         self.fst = graph

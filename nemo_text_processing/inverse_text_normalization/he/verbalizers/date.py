@@ -34,12 +34,12 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="verbalize")
 
         day_prefix = (
-                pynutil.delete("day_prefix:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_NOT_QUOTE, 1)
-                + pynutil.insert('-')
-                + pynutil.delete("\"")
+            pynutil.delete("day_prefix:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.insert('-')
+            + pynutil.delete("\"")
         )
 
         day = (
@@ -53,21 +53,21 @@ class DateFst(GraphFst):
         )
 
         month_prefix_ignore = (
-                pynutil.delete("month_prefix:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynutil.delete(NEMO_NOT_QUOTE, 1)
-                + pynutil.delete("\"")
-                + delete_space
+            pynutil.delete("month_prefix:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynutil.delete(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+            + delete_space
         )
 
         month_prefix_keep = (
-                pynutil.delete("month_prefix:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_NOT_QUOTE, 1)
-                + pynutil.delete("\"")
-                + delete_space
+            pynutil.delete("month_prefix:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+            + delete_space
         )
 
         month = (
@@ -79,12 +79,12 @@ class DateFst(GraphFst):
         )
 
         year_only_prefix = (
-                pynutil.delete("year_only_prefix:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_NOT_QUOTE, 3)
-                + pynutil.delete("\"")
-                + delete_space
+            pynutil.delete("year_only_prefix:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 3)
+            + pynutil.delete("\"")
+            + delete_space
         )
 
         year = (
@@ -101,27 +101,24 @@ class DateFst(GraphFst):
 
         # day and month only
         graph_dm = (
-            pynini.closure(day_prefix + delete_zero_or_one_space, 0, 1) +
-            day +
-            pynini.closure(month_prefix_ignore + delete_zero_or_one_space, 0, 1) +
-            month +
-            delete_zero_or_one_space
+            pynini.closure(day_prefix + delete_zero_or_one_space, 0, 1)
+            + day
+            + pynini.closure(month_prefix_ignore + delete_zero_or_one_space, 0, 1)
+            + month
+            + delete_zero_or_one_space
         )
 
         # day month and year
         graph_dmy = (
-            graph_dm +
-            delete_space +
-            pynutil.insert('.') +
-            pynini.closure(delete_zero_or_one_space + year, 0, 1)
+            graph_dm + delete_space + pynutil.insert('.') + pynini.closure(delete_zero_or_one_space + year, 0, 1)
         )
 
         # only month and year
         graph_my = (
-            pynini.closure(month_prefix_keep + delete_zero_or_one_space, 0, 1) +
-            month +
-            pynutil.insert(' ') +
-            pynini.closure(delete_zero_or_one_space + year, 0, 1)
+            pynini.closure(month_prefix_keep + delete_zero_or_one_space, 0, 1)
+            + month
+            + pynutil.insert(' ')
+            + pynini.closure(delete_zero_or_one_space + year, 0, 1)
         )
 
         # only year

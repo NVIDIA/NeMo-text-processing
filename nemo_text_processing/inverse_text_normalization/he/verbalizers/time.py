@@ -38,37 +38,27 @@ class TimeFst(GraphFst):
     def __init__(self):
         super().__init__(name="time", kind="verbalize")
 
-        hour_to_noon = pynini.string_map([
-            ("12", "12"),
-            ("1", "13"),
-            ("2", "14"),
-            ("3", "15"),
-            ("4", "16"),
-            ("5", "17"),
-            ("6", "18"),
-        ])
+        hour_to_noon = pynini.string_map(
+            [("12", "12"), ("1", "13"), ("2", "14"), ("3", "15"), ("4", "16"), ("5", "17"), ("6", "18"),]
+        )
 
-        hour_to_evening = pynini.string_map([
-            ("5", "17"),
-            ("6", "18"),
-            ("7", "19"),
-            ("8", "20"),
-            ("9", "21"),
-            ("10", "22"),
-            ("11", "23"),
-        ])
+        hour_to_evening = pynini.string_map(
+            [("5", "17"), ("6", "18"), ("7", "19"), ("8", "20"), ("9", "21"), ("10", "22"), ("11", "23"),]
+        )
 
-        hour_to_night = pynini.string_map([
-            ("8", "20"),
-            ("9", "21"),
-            ("10", "22"),
-            ("11", "23"),
-            ("12", "0"),
-            ("1", "1"),
-            ("2", "2"),
-            ("3", "3"),
-            ("4", "4"),
-        ])
+        hour_to_night = pynini.string_map(
+            [
+                ("8", "20"),
+                ("9", "21"),
+                ("10", "22"),
+                ("11", "23"),
+                ("12", "0"),
+                ("1", "1"),
+                ("2", "2"),
+                ("3", "3"),
+                ("4", "4"),
+            ]
+        )
 
         day_suffixes = (
             insert_space
@@ -78,25 +68,20 @@ class TimeFst(GraphFst):
         )
 
         noon_suffixes = (
-                insert_space
-                + pynutil.delete("suffix: \"")
-                + (pynini.accep("בצהריים") | pynini.accep("אחרי הצהריים") | pynini.accep("אחר הצהריים"))
-                + pynutil.delete("\"")
+            insert_space
+            + pynutil.delete("suffix: \"")
+            + (pynini.accep("בצהריים") | pynini.accep("אחרי הצהריים") | pynini.accep("אחר הצהריים"))
+            + pynutil.delete("\"")
         )
 
         evening_suffixes = (
-                insert_space
-                + pynutil.delete("suffix: \"")
-                + (pynini.accep("בערב") | pynini.accep("לפנות ערב"))
-                + pynutil.delete("\"")
+            insert_space
+            + pynutil.delete("suffix: \"")
+            + (pynini.accep("בערב") | pynini.accep("לפנות ערב"))
+            + pynutil.delete("\"")
         )
 
-        night_suffixes = (
-                insert_space
-                + pynutil.delete("suffix: \"")
-                + pynini.accep("בלילה")
-                + pynutil.delete("\"")
-        )
+        night_suffixes = insert_space + pynutil.delete("suffix: \"") + pynini.accep("בלילה") + pynutil.delete("\"")
 
         hour = (
             pynutil.delete("hours:")
@@ -127,15 +112,10 @@ class TimeFst(GraphFst):
         optional_suffix = pynini.closure(delete_space + day_suffixes, 0, 1)
         graph = hour + delete_space + pynutil.insert(":") + minute + optional_suffix
 
-        for hour_to, suffix in zip([hour_to_noon, hour_to_evening, hour_to_night], [noon_suffixes, evening_suffixes, night_suffixes]):
-            graph |= (
-                hour @ hour_to
-                + delete_space
-                + pynutil.insert(":")
-                + minute
-                + delete_space
-                + suffix
-            )
+        for hour_to, suffix in zip(
+            [hour_to_noon, hour_to_evening, hour_to_night], [noon_suffixes, evening_suffixes, night_suffixes]
+        ):
+            graph |= hour @ hour_to + delete_space + pynutil.insert(":") + minute + delete_space + suffix
 
         graph |= optional_prefix + graph
         delete_tokens = self.delete_tokens(graph)

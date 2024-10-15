@@ -111,28 +111,19 @@ class DecimalFst(GraphFst):
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
 
         # integer could be an hour, but minutes are cannot: convert to decimal
-        viable_hour_unviable_minutes = (
-            graph_integer
-            + delete_extra_space
-            + fractions_wo_minutes
-        )
+        viable_hour_unviable_minutes = graph_integer + delete_extra_space + fractions_wo_minutes
 
         # integer cannot be an hour, but minutes can: convert to decimal
         unviable_hour_viable_minutes = (
-                pynutil.insert("integer_part: \"")
-                + cardinal.graph_wo_viable_hours
-                + pynutil.insert("\"")
-                + delete_extra_space
-                + fractions_graph
-        )
-
-        # minus sign followed by ambiguous decimal: convert to decimal, there is no negative time
-        negative_viable_time = (
-            graph_negative
-            + graph_integer
+            pynutil.insert("integer_part: \"")
+            + cardinal.graph_wo_viable_hours
+            + pynutil.insert("\"")
             + delete_extra_space
             + fractions_graph
         )
+
+        # minus sign followed by ambiguous decimal: convert to decimal, there is no negative time
+        negative_viable_time = graph_negative + graph_integer + delete_extra_space + fractions_graph
 
         # all decimals with fractions, not excluding anything (used in other FSTs)
         all_decimals_wo_point = graph_integer + delete_extra_space + fractions_graph

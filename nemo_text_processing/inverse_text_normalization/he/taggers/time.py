@@ -50,34 +50,26 @@ class TimeFst(GraphFst):
         suffix_graph = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
 
         time_prefix = pynini.string_file(get_abs_path("data/prefix.tsv"))
-        time_prefix_graph = (
-            pynutil.insert("prefix: \"")
-            + time_prefix
-            + pynutil.insert("\"")
-            + insert_space
-        )
+        time_prefix_graph = pynutil.insert("prefix: \"") + time_prefix + pynutil.insert("\"") + insert_space
 
         optional_time_prefix_graph = pynini.closure(time_prefix_graph, 0, 1)
 
-        graph_minute_verbose = pynini.string_map([
-            ("שלושת רבעי", "45"),
-            ("חצי", "30"),
-            ("רבע", "15"),
-            ("עשרים", "20"),
-            ("עשרה", "10"),
-            ("חמישה", "05"),
-            ("דקה", "01"),
-            ("שתי", "02"),
-            ])
+        graph_minute_verbose = pynini.string_map(
+            [
+                ("שלושת רבעי", "45"),
+                ("חצי", "30"),
+                ("רבע", "15"),
+                ("עשרים", "20"),
+                ("עשרה", "10"),
+                ("חמישה", "05"),
+                ("דקה", "01"),
+                ("שתי", "02"),
+            ]
+        )
 
-        graph_minute_to_verbose = pynini.string_map([
-            ("רבע", "45"),
-            ("עשרה", "50"),
-            ("חמישה", "55"),
-            ("עשרים", "40"),
-            ("עשרים וחמישה", "35"),
-            ("דקה", "59"),
-        ])
+        graph_minute_to_verbose = pynini.string_map(
+            [("רבע", "45"), ("עשרה", "50"), ("חמישה", "55"), ("עשרים", "40"), ("עשרים וחמישה", "35"), ("דקה", "59"),]
+        )
 
         # only used for < 1000 thousand -> 0 weight
         cardinal = pynutil.add_weight(CardinalFst().graph_no_exception, weight=-0.7)
@@ -93,17 +85,9 @@ class TimeFst(GraphFst):
         graph_minute_single = pynini.union(*labels_minute_single) @ cardinal @ add_leading_zero_to_double_digit
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
 
-        final_graph_hour = (
-            pynutil.insert("hours: \"") +
-            graph_hour +
-            pynutil.insert("\"")
-        )
+        final_graph_hour = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
 
-        graph_minute = pynini.union(
-            pynutil.insert("00"),
-            graph_minute_single,
-            graph_minute_double
-        )
+        graph_minute = pynini.union(pynutil.insert("00"), graph_minute_single, graph_minute_double)
 
         final_suffix = pynutil.insert("suffix: \"") + suffix_graph + pynutil.insert("\"")
         final_suffix = delete_space + insert_space + final_suffix
@@ -168,16 +152,16 @@ class TimeFst(GraphFst):
         )
 
         graph_midnight_and_m = (
-                pynutil.insert("hours: \"")
-                + midnight
-                + pynutil.insert("\"")
-                + delete_space
-                + delete_and
-                + insert_space
-                + pynutil.insert("minutes: \"")
-                + pynini.union(graph_minute_single, graph_minute_double, graph_minute_verbose)
-                + pynutil.insert("\"")
-                + (pynini.closure(delete_space + pynutil.delete("דקות"), 0, 1))
+            pynutil.insert("hours: \"")
+            + midnight
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_and
+            + insert_space
+            + pynutil.insert("minutes: \"")
+            + pynini.union(graph_minute_single, graph_minute_double, graph_minute_verbose)
+            + pynutil.insert("\"")
+            + (pynini.closure(delete_space + pynutil.delete("דקות"), 0, 1))
         )
 
         to_midnight_verbose_graph = (
@@ -193,22 +177,29 @@ class TimeFst(GraphFst):
         )
 
         graph_m_to_midnight = (
-                pynutil.insert("minutes: \"")
-                + pynini.union(graph_minute_single, graph_minute_double) @ minute_to_graph
-                + pynutil.insert("\"")
-                + pynini.closure(delete_space + pynutil.delete("דקות"), 0, 1)
-                + delete_space
-                + pynutil.delete("ל")
-                + insert_space
-                + pynutil.insert("hours: \"")
-                + to_hour_graph
-                + pynutil.insert("\"")
+            pynutil.insert("minutes: \"")
+            + pynini.union(graph_minute_single, graph_minute_double) @ minute_to_graph
+            + pynutil.insert("\"")
+            + pynini.closure(delete_space + pynutil.delete("דקות"), 0, 1)
+            + delete_space
+            + pynutil.delete("ל")
+            + insert_space
+            + pynutil.insert("hours: \"")
+            + to_hour_graph
+            + pynutil.insert("\"")
         )
 
-        final_graph_midnight = optional_time_prefix_graph + delete_zero_or_one_space + (midnight_graph | to_midnight_verbose_graph | graph_m_to_midnight | graph_midnight_and_m)
+        final_graph_midnight = (
+            optional_time_prefix_graph
+            + delete_zero_or_one_space
+            + (midnight_graph | to_midnight_verbose_graph | graph_m_to_midnight | graph_midnight_and_m)
+        )
 
         final_graph = (
-            optional_time_prefix_graph + delete_zero_or_one_space + (graph_h_and_m | graph_special_m_to_h_suffix_time | graph_m_to_h_suffix_time) + final_suffix
+            optional_time_prefix_graph
+            + delete_zero_or_one_space
+            + (graph_h_and_m | graph_special_m_to_h_suffix_time | graph_m_to_h_suffix_time)
+            + final_suffix
         )
         final_graph |= graph_h
         final_graph |= final_graph_midnight
