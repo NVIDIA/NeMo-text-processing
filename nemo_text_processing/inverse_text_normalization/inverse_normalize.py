@@ -127,6 +127,12 @@ class InverseNormalizer(Normalizer):
                 VerbalizeFinalFst,
             )
 
+        elif lang == 'he':  # Hebrew
+            from nemo_text_processing.inverse_text_normalization.he.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.he.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
+
         self.tagger = ClassifyFst(
             cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case
         )
@@ -170,7 +176,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh', 'hy', 'mr', 'ja'],
+        choices=['en', 'de', 'es', 'pt', 'ru', 'fr', 'sv', 'vi', 'ar', 'es_en', 'zh', 'hy', 'mr', 'ja', 'he'],
         default="en",
         type=str,
     )
