@@ -16,8 +16,6 @@
 import pynini
 
 from nemo_text_processing.text_normalization.ja.graph_utils import (
-    NEMO_NARROW_NON_BREAK_SPACE,
-    NEMO_NON_BREAKING_SPACE,
     GraphFst,
     delete_space,
 )

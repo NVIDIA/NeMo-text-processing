@@ -19,7 +19,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import (
-    INPUT_LOWER_CASED,
     GraphFst,
     generator_main,
 )
