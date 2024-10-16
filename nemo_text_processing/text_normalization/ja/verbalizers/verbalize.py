@@ -14,7 +14,6 @@
 
 
 import pynini
-from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import (
     NEMO_NARROW_NON_BREAK_SPACE,
@@ -47,8 +46,6 @@ class VerbalizeFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-
-        space = pynini.closure(NEMO_NARROW_NON_BREAK_SPACE) | pynini.closure(NEMO_NON_BREAKING_SPACE)
 
         date = DateFst(deterministic=deterministic)
         cardinal = CardinalFst(deterministic=deterministic)

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 
-import logging
 import os
 
 import pynini
@@ -22,8 +21,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ja.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
-    delete_extra_space,
-    delete_space,
     generator_main,
 )
 from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst

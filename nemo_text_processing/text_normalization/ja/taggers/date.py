@@ -17,7 +17,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import (
-    NEMO_DIGIT,
     NEMO_NARROW_NON_BREAK_SPACE,
     NEMO_NON_BREAKING_SPACE,
     GraphFst,
@@ -73,7 +72,6 @@ class DateFst(GraphFst):
         era_abbrev = pynini.string_file(get_abs_path("data/date/era_abbrev.tsv"))
 
         signs = pynutil.delete("/") | pynutil.delete(".") | pynutil.delete("-")
-        words = pynini.accep("年") | pynini.accep("月") | pynini.accep("日")
         delete_spaces = pynini.closure(
             pynutil.delete(" ") | pynutil.delete(NEMO_NARROW_NON_BREAK_SPACE) | pynutil.delete(NEMO_NON_BREAKING_SPACE)
         )

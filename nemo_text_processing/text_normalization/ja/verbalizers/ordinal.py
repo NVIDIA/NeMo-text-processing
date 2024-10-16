@@ -28,7 +28,6 @@ class OrdinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
-        moephemes = pynutil.delete('第') | pynutil.delete('番目')
         graph_integer = (
             pynutil.delete("integer:")
             + delete_space
