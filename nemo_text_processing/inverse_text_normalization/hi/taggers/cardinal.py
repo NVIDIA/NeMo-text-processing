@@ -130,12 +130,10 @@ class CardinalFst(GraphFst):
             + graph_in_thousands
         )
         graph_no_prefix = pynutil.add_weight(
-            (
-                pynini.cross("सौ", "१००")
-                | pynini.cross("हज़ार", "१०००")
-                | pynini.cross("लाख", "१०००००")
-                | pynini.cross("करोड़", "१०००००००")
-            ),
+            pynini.cross("सौ", "१००")
+            | pynini.cross("हज़ार", "१०००")
+            | pynini.cross("लाख", "१०००००")
+            | pynini.cross("करोड़", "१०००००००"),
             2,
         )
 
