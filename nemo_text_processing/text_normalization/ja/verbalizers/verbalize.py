@@ -15,10 +15,7 @@
 
 import pynini
 
-from nemo_text_processing.text_normalization.ja.graph_utils import (
-    GraphFst,
-    delete_space,
-)
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space
 from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
