@@ -57,8 +57,8 @@ class FractionFst(GraphFst):
         integer += delete_space
         delete_bata = pynini.union(pynutil.delete(" बटा ") | pynutil.delete(" बटे "))
 
-        numerator = pynini.closure(pynutil.insert("numerator: \"") + graph_cardinal + pynutil.insert("\""))
-        denominator = pynini.closure((pynutil.insert(" denominator: \"") + graph_cardinal + pynutil.insert("\"")))
+        numerator = pynutil.insert("numerator: \"") + graph_cardinal + pynutil.insert("\"")
+        denominator = pynutil.insert(" denominator: \"") + graph_cardinal + pynutil.insert("\"")
         graph_fraction = numerator + delete_bata + denominator
 
         graph = graph_fraction
