@@ -18,14 +18,10 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-<<<<<<< HEAD
 from nemo_text_processing.text_normalization.ja.graph_utils import (
     GraphFst,
     generator_main,
 )
-=======
-from nemo_text_processing.text_normalization.ja.graph_utils import INPUT_LOWER_CASED, GraphFst, generator_main
->>>>>>> f2c1959ff449fd645024b750f7fe99c6ae7b15e4
 from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ja.taggers.decimal import DecimalFst
