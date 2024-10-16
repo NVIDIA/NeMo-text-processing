@@ -17,12 +17,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import (
+    NEMO_CHAR,
     NEMO_DIGIT,
     NEMO_NOT_QUOTE,
     NEMO_SPACE,
     GraphFst,
     delete_space,
-    NEMO_CHAR
 )
 
 

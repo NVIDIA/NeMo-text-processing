@@ -18,8 +18,6 @@ from cdifflib import CSequenceMatcher
 
 from nemo_text_processing.utils.logging import logger
 
-from nemo_text_processing.utils.logging import logger
-
 MATCH = "match"
 NONMATCH = "non-match"
 SEMIOTIC_TAG = "[SEMIOTIC_SPAN]"
