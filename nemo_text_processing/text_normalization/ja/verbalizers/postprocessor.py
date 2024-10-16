@@ -24,7 +24,7 @@ from nemo_text_processing.text_normalization.ja.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
 )
-from nemo_text_processing.text_normalization.ja.utils import get_abs_pat
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
 
 class PostProcessor(GraphFst):
