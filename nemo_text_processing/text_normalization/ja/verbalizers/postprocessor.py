@@ -16,29 +16,15 @@
 import pynini
 from pynini.lib import pynutil, utf8
 
-<<<<<<< HEAD
-from nemo_text_processing.text_normalization.zh.graph_utils import (
+from nemo_text_processing.text_normalization.ja.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_PUNCT,
     NEMO_SIGMA,
     NEMO_WHITE_SPACE,
     GraphFst,
-    =======,
-    >>>>>>>,
-    b268357a9b8b9d32698a65007ad11d5961817070,
-    from,
-    import,
-    nemo_text_processing.text_normalization.ja.graph_utils,
 )
-
-<<<<<<< HEAD
-from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-
-=======
-from nemo_text_processing.text_normalization.ja.utils import get_abs_path
-
->>>>>>> b268357a9b8b9d32698a65007ad11d5961817070
+from nemo_text_processing.text_normalization.ja.utils import get_abs_pat
 
 
 class PostProcessor(GraphFst):
