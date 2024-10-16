@@ -18,11 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import (
-    GraphFst,
-    generator_main,
-)
-
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, generator_main
 from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ja.taggers.decimal import DecimalFst
