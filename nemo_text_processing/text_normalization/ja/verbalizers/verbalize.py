@@ -76,4 +76,8 @@ class VerbalizeFst(GraphFst):
         )
         graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
 
+<<<<<<< HEAD
         self.fst = graph.optimize()
+=======
+        self.fst = graph.optimize()
+>>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc

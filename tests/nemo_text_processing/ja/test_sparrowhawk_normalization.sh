@@ -66,4 +66,8 @@ testTNDateText() {
 
 # Load shUnit2
 #. $PROJECT_DIR/../shunit2/shunit2
+<<<<<<< HEAD
 . /workspace/shunit2/shunit2
+=======
+. /workspace/shunit2/shunit2
+>>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc

@@ -226,4 +226,8 @@ class DateFst(GraphFst):
         final_graph = graph_all_date
 
         final_graph = self.add_tokens(final_graph)
+<<<<<<< HEAD
         self.fst = final_graph.optimize()
+=======
+        self.fst = final_graph.optimize()
+>>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc

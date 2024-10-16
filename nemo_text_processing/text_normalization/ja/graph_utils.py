@@ -294,4 +294,8 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
+<<<<<<< HEAD
         return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+=======
+        return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+>>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc
