@@ -37,8 +37,4 @@ class WhiteListFst(GraphFst):
         whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv"))
         graph = (pynutil.insert('name: "')) + (whitelist) + pynutil.insert('"')
 
-<<<<<<< HEAD
         self.fst = graph.optimize()
-=======
-        self.fst = graph.optimize()
->>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc

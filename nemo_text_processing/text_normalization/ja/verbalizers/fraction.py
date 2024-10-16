@@ -114,8 +114,4 @@ class FractionFst(GraphFst):
         # graph = pynini.closure(graph_optional_sign, 0, 1) + graph_fractions
 
         final_graph = self.delete_tokens(graph)
-<<<<<<< HEAD
         self.fst = final_graph.optimize()
-=======
-        self.fst = final_graph.optimize()
->>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc

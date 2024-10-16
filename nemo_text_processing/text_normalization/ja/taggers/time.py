@@ -93,8 +93,4 @@ class TimeFst(GraphFst):
         graph = graph_individual_time | graph_clock
 
         graph_final = self.add_tokens(graph)
-<<<<<<< HEAD
         self.fst = graph_final.optimize()
-=======
-        self.fst = graph_final.optimize()
->>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc

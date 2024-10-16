@@ -65,8 +65,4 @@ class PunctuationFst(GraphFst):
         range_component = pynini.cross("〜", "から") | pynini.accep("から")  # forcing this conversion for special tilde
 
         self.graph = punct | pynutil.add_weight(range_component, -1.0)
-<<<<<<< HEAD
         self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
-=======
-        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
->>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc

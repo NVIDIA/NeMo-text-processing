@@ -39,8 +39,4 @@ class OrdinalFst(GraphFst):
         final_graph = pynutil.insert("integer: \"") + graph_ordinal + pynutil.insert("\"")
 
         graph_ordinal_final = self.add_tokens(final_graph)
-<<<<<<< HEAD
         self.fst = graph_ordinal_final.optimize()
-=======
-        self.fst = graph_ordinal_final.optimize()
->>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc

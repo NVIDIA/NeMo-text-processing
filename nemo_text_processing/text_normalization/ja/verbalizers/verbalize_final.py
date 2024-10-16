@@ -55,8 +55,4 @@ class VerbalizeFinalFst(GraphFst):
 
             postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
 
-<<<<<<< HEAD
             self.fst = (verbalizer @ postprocessor.fst).optimize()
-=======
-            self.fst = (verbalizer @ postprocessor.fst).optimize()
->>>>>>> 9ba0b2d9aa8af55b2ae639c5d17742be4b5a5fcc
