@@ -50,14 +50,16 @@ class FractionFst(GraphFst):
         )
 
         denominator_component = (
-            pynutil.delete('denominator: \"')
-            + pynini.closure(NEMO_NOT_QUOTE - "√")
-            + pynutil.delete("\"")
+            pynutil.delete('denominator: \"') + pynini.closure(NEMO_NOT_QUOTE - "√") + pynutil.delete("\"")
         )
-        numerator_component = pynutil.delete('numerator: \"') + pynini.closure(NEMO_NOT_QUOTE- "√") + pynutil.delete("\"")
+        numerator_component = (
+            pynutil.delete('numerator: \"') + pynini.closure(NEMO_NOT_QUOTE - "√") + pynutil.delete("\"")
+        )
 
         # 1/3
-        graph_regular_fraction = denominator_component + pynutil.delete(NEMO_SPACE) + pynutil.insert("分の") + numerator_component
+        graph_regular_fraction = (
+            denominator_component + pynutil.delete(NEMO_SPACE) + pynutil.insert("分の") + numerator_component
+        )
 
         denominator_component_root = (
             pynutil.delete('denominator: \"')
@@ -72,18 +74,32 @@ class FractionFst(GraphFst):
             + pynutil.delete("\"")
         )
         # √3/1
-        graph_regular_fraction_root = (denominator_component_root | denominator_component) + pynutil.delete(NEMO_SPACE) + pynutil.insert("分の") + (numerator_component_root | numerator_component)
-        
-        # 3分の1
-        graph_regular_fraction_char = (denominator_component | denominator_component_root) + pynutil.delete(NEMO_SPACE) + pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + pynutil.delete(NEMO_SPACE) + (numerator_component | numerator_component_root)
+        graph_regular_fraction_root = (
+            (denominator_component_root | denominator_component)
+            + pynutil.delete(NEMO_SPACE)
+            + pynutil.insert("分の")
+            + (numerator_component_root | numerator_component)
+        )
 
+        # 3分の1
+        graph_regular_fraction_char = (
+            (denominator_component | denominator_component_root)
+            + pynutil.delete(NEMO_SPACE)
+            + pynutil.delete("morphosyntactic_features: \"")
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+            + pynutil.delete(NEMO_SPACE)
+            + (numerator_component | numerator_component_root)
+        )
 
         graph_integer = (
             pynutil.delete("integer_part:")
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(pynini.cross("√", "ルート"), 0, 1)
-            + pynini.closure(NEMO_NOT_QUOTE - pynini.union("荷", "と", "√")) # had to remove these 3 items fron nemo_not _quote so the root is properly converted in a deterministic way. 
+            + pynini.closure(
+                NEMO_NOT_QUOTE - pynini.union("荷", "と", "√")
+            )  # had to remove these 3 items fron nemo_not _quote so the root is properly converted in a deterministic way.
             + pynutil.insert("荷")
             + pynutil.delete("\"")
         )
@@ -98,7 +114,11 @@ class FractionFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        graph_regular_integer = (graph_integer | graph_integer_with_char) + delete_space + (graph_regular_fraction | graph_regular_fraction_root | graph_regular_fraction_char)
+        graph_regular_integer = (
+            (graph_integer | graph_integer_with_char)
+            + delete_space
+            + (graph_regular_fraction | graph_regular_fraction_root | graph_regular_fraction_char)
+        )
 
         optional_sign = (
             pynutil.delete("negative:")
@@ -109,7 +129,9 @@ class FractionFst(GraphFst):
             + delete_space
         )
 
-        graph = pynini.closure(optional_sign, 0, 1) + (graph_regular_integer | graph_regular_fraction | graph_regular_fraction_root | graph_regular_fraction_char)
+        graph = pynini.closure(optional_sign, 0, 1) + (
+            graph_regular_integer | graph_regular_fraction | graph_regular_fraction_root | graph_regular_fraction_char
+        )
 
         # graph = pynini.closure(graph_optional_sign, 0, 1) + graph_fractions
 
