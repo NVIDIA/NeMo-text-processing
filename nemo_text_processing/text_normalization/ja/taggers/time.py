@@ -23,6 +23,8 @@ from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
+        1時30分 -> time { hours: "一" minutes: "三十" }
+        今夜0時 -> time { suffix: "今夜" hours: "零" }
     
     Args:
         cardinal: CardinalFst
