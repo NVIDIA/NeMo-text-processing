@@ -14,6 +14,7 @@
 
 
 import os
+import logging
 
 import pynini
 from pynini.lib import pynutil
