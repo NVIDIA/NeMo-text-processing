@@ -20,9 +20,6 @@ from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import Card
 from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ja.verbalizers.fraction import FractionFst
-
-# from nemo_text_processing.text_normalization.ja.verbalizers.measure import MeasureFst
-# from nemo_text_processing.text_normalization.ja.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.verbalizers.whitelist import WhiteListFst
@@ -61,8 +58,6 @@ class VerbalizeFst(GraphFst):
             decimal.fst,
             fraction.fst,
             word.fst,
-            #   money.fst,
-            #   measure.fst,
             time.fst,
             whitelist.fst,
         )
