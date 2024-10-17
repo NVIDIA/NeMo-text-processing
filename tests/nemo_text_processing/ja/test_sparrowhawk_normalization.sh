@@ -46,22 +46,6 @@ testTNDateText() {
   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_date.txt
   runtest $input
 }
-# testTNMoneyText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_money.txt
-#   runtest $input
-# }
-# testTNWordText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_word.txt
-#   runtest $input
-# }
-# testTNWhitelistText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_whitelist.txt
-#   runtest $input
-# }
-# testTNMeasureText() {
-#   input=$PROJECT_DIR/zh/data_text_normalization/test_cases_measure.txt
-#   runtest $input
-# }
 
 
 # Load shUnit2
