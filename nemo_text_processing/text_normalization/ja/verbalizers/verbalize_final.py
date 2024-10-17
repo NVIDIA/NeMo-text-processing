@@ -13,8 +13,8 @@
 # limitations under the License.
 
 
-import os
 import logging
+import os
 
 import pynini
 from pynini.lib import pynutil
