@@ -52,14 +52,7 @@ class VerbalizeFst(GraphFst):
         whitelist = WhiteListFst(deterministic=deterministic)
 
         graph = pynini.union(
-            date.fst,
-            cardinal.fst,
-            ordinal.fst,
-            decimal.fst,
-            fraction.fst,
-            word.fst,
-            time.fst,
-            whitelist.fst,
+            date.fst, cardinal.fst, ordinal.fst, decimal.fst, fraction.fst, word.fst, time.fst, whitelist.fst,
         )
         graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
 
