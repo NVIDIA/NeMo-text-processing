@@ -19,7 +19,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space, generator_main
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space
 from nemo_text_processing.text_normalization.ja.verbalizers.postprocessor import PostProcessor
 from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst
 
