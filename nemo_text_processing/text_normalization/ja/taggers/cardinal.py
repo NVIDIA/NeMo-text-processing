@@ -31,7 +31,8 @@ class CardinalFst(GraphFst):
 
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        graph_digit_alt = pynini.string_file(get_abs_path("data/numbers/digit_alt.tsv"))
+        #graph_digit_alt = pynini.string_file(get_abs_path("data/numbers/digit_alt.tsv"))
+        graph_digit_alt = pynini.difference(graph_digit, "1")
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
 
