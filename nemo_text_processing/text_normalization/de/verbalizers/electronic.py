@@ -59,7 +59,7 @@ class ElectronicFst(GraphFst):
         user_name = pynutil.delete('username: "') + add_space_after_char() + pynutil.delete('"')
         user_name @= verbalize_characters
 
-        convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | domain_common | server_common
+        convert_defaults = (pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | server_common) | domain_common
         domain = convert_defaults + pynini.closure(insert_space + convert_defaults)
         domain @= verbalize_characters
 
@@ -72,5 +72,10 @@ class ElectronicFst(GraphFst):
         self.graph = (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain) | (
             user_name + NEMO_SPACE + pynutil.insert("at ") + domain | (pynutil.insert("at ") + user_name)
         )
+
+        # normalizes sentence-final periods following URLs
         delete_tokens = self.delete_tokens(self.graph + delete_preserve_order)
+        preserve_final_period = pynini.cdrewrite(pynini.cross(" punkt", "."), "", "[EOS]", NEMO_SIGMA)
+
+        delete_tokens = delete_tokens @ preserve_final_period
         self.fst = delete_tokens.optimize()
