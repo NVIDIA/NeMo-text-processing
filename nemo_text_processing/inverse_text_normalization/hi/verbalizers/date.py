@@ -66,11 +66,7 @@ class DateFst(GraphFst):
         graph_mdy = month + delete_extra_space + day + pynutil.insert(",") + delete_extra_space + year
 
         # (day) month year
-        graph_dmy = (
-            day
-            + pynini.closure(delete_extra_space + month, 0, 1)
-            + pynini.closure(pynutil.insert(",") + delete_extra_space + year, 0, 1)
-        )
+        graph_dmy = day + delete_extra_space + month + pynutil.insert(",") + delete_extra_space + year
 
         # month year
         graph_my = month + pynini.closure(delete_extra_space + year, 0, 1)
