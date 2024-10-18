@@ -32,7 +32,7 @@ class CardinalFst(GraphFst):
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
-        no_one = pynini.difference(NEMO_DIGIT, "1") 
+        no_one = pynini.difference(NEMO_DIGIT, "1")
         no_zero_and_one = pynini.difference(no_one, "0")
 
         graph_digit_alt = no_zero_and_one @ graph_digit
