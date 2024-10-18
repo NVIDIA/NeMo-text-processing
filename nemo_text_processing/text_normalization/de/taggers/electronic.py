@@ -93,30 +93,7 @@ class ElectronicFst(GraphFst):
         protocol = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
         url = protocol + insert_space + (domain_graph)
 
-        # Implements a graph for commonly-used hyphenated compound nouns (e.g. 3D-Drucker, 2D-Mammogram)
-        graph_abbreviation = pynini.string_file(
-            get_abs_path("data/electronic/abbreviations.tsv")
-        )
-        hyphen_accep = pynini.accep("-")
-        graph_compound_a = (
-            pynutil.insert("fragment_id:")
-            + pynutil.insert(NEMO_SPACE)
-            + pynutil.insert('"')
-            + graph_abbreviation
-            + pynutil.insert('"')
-        )
-        DE_CHARS = pynini.union(*"äöüß")
-        compound_b_sigma_star = pynini.closure((NEMO_ALPHA | DE_CHARS), 1)
-        graph_compound_b = (
-            pynutil.insert("fragment_id:")
-            + pynutil.insert(NEMO_SPACE)
-            + pynutil.insert('"')
-            + compound_b_sigma_star
-            + pynutil.insert('"')
-        )
-        graph_whole_compound = graph_compound_a + hyphen_accep + graph_compound_b
-
-        graph = url | domain_graph | email | tag | graph_whole_compound
+        graph = url | domain_graph | email | tag
         self.graph = graph
 
         final_graph = self.add_tokens(
