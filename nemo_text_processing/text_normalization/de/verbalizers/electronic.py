@@ -17,6 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.de.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_ALPHA,
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
     NEMO_SPACE,
@@ -48,6 +49,7 @@ class ElectronicFst(GraphFst):
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).optimize()
         server_common = pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
         domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
+        abbreviations = pynini.string_file(get_abs_path("data/electronic/abbreviations.tsv"))
 
         def add_space_after_char():
             return pynini.closure(NEMO_NOT_QUOTE - pynini.accep(" ") + insert_space) + (
