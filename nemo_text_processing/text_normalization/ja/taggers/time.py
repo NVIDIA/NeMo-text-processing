@@ -35,7 +35,7 @@ class TimeFst(GraphFst):
 
         graph_cardinal = cardinal.just_cardinals
 
-        hour_clock = p pynini.string_file(get_abs_path("data/time/hour.tsv"))
+        hour_clock = pynini.string_file(get_abs_path("data/time/hour.tsv"))
         minute_clock = pynini.string_file(get_abs_path("data/time/minute.tsv"))
         second_clock = pynini.string_file(get_abs_path("data/time/second.tsv"))
         division = pynini.string_file(get_abs_path("data/time/division.tsv"))
