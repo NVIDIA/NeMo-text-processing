@@ -74,12 +74,22 @@ class TimeFst(GraphFst):
         )
 
         colon = pynutil.delete(":")
-        hour_clock_component = pynutil.insert("hours: \"") + pynutil.delete("0") + hour_clock + pynutil.insert("時") + pynutil.insert("\"")
+        hour_clock_component = (
+            pynutil.insert("hours: \"") + pynutil.delete("0") + hour_clock + pynutil.insert("時") + pynutil.insert("\"")
+        )
         minute_clock_component = (
-            pynutil.insert("minutes: \"") + pynutil.delete("0") + minute_clock + pynutil.insert("分") + pynutil.insert("\"")
+            pynutil.insert("minutes: \"")
+            + pynutil.delete("0")
+            + minute_clock
+            + pynutil.insert("分")
+            + pynutil.insert("\"")
         )
         second_clock_component = (
-            pynutil.insert("seconds: \"") + pynutil.delete("0") + second_clock + pynutil.insert("秒") + pynutil.insert("\"")
+            pynutil.insert("seconds: \"")
+            + pynutil.delete("0")
+            + second_clock
+            + pynutil.insert("秒")
+            + pynutil.insert("\"")
         )
 
         graph_clock = (
