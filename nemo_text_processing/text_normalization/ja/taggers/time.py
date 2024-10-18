@@ -35,7 +35,7 @@ class TimeFst(GraphFst):
 
         graph_cardinal = cardinal.just_cardinals
 
-        hour_clock = pynini.string_file(get_abs_path("data/time/hour.tsv"))
+        hour_clock = p pynini.string_file(get_abs_path("data/time/hour.tsv"))
         minute_clock = pynini.string_file(get_abs_path("data/time/minute.tsv"))
         second_clock = pynini.string_file(get_abs_path("data/time/second.tsv"))
         division = pynini.string_file(get_abs_path("data/time/division.tsv"))
@@ -74,12 +74,12 @@ class TimeFst(GraphFst):
         )
 
         colon = pynutil.delete(":")
-        hour_clock_component = pynutil.insert("hours: \"") + hour_clock + pynutil.insert("時") + pynutil.insert("\"")
+        hour_clock_component = pynutil.insert("hours: \"") + pynutil.delete("0") + hour_clock + pynutil.insert("時") + pynutil.insert("\"")
         minute_clock_component = (
-            pynutil.insert("minutes: \"") + minute_clock + pynutil.insert("分") + pynutil.insert("\"")
+            pynutil.insert("minutes: \"") + pynutil.delete("0") + minute_clock + pynutil.insert("分") + pynutil.insert("\"")
         )
         second_clock_component = (
-            pynutil.insert("seconds: \"") + second_clock + pynutil.insert("秒") + pynutil.insert("\"")
+            pynutil.insert("seconds: \"") + pynutil.delete("0") + second_clock + pynutil.insert("秒") + pynutil.insert("\"")
         )
 
         graph_clock = (
