@@ -65,7 +65,7 @@ class DateFst(GraphFst):
 
         graph_cardinal = cardinal.just_cardinals
 
-        #month = pynini.string_file(get_abs_path("data/date/month.tsv"))
+        # month = pynini.string_file(get_abs_path("data/date/month.tsv"))
         month = pynutil.delete("0") + pynini.string_file(get_abs_path("data/date/month.tsv"))
         day = pynini.string_file(get_abs_path("data/date/day.tsv"))
         week = pynini.string_file(get_abs_path("data/date/week.tsv"))
