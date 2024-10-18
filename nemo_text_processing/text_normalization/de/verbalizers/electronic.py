@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.de.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
+    NEMO_ALPHA,
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
     NEMO_SPACE,
@@ -81,26 +82,6 @@ class ElectronicFst(GraphFst):
         domain = convert_defaults + pynini.closure(insert_space + convert_defaults)
         domain @= verbalize_characters
 
-        # Vebalizes common hyphenated nominal compounds (e.g. 3D-Drucker)
-        verbalized_abbreviations = pynini.project(abbreviations, "output")
-        DE_CHARS = pynini.union(*"äöüß")
-        compound_b_sigma_star = pynini.closure((NEMO_ALPHA | DE_CHARS), 1)
-        compound_a = (
-            pynutil.delete("fragment_id:")
-            + pynutil.delete(NEMO_SPACE)
-            + pynutil.delete('"')
-            + verbalized_abbreviations
-            + pynutil.delete('"')
-        )
-        compound_b = (
-            pynutil.delete("fragment_id:")
-            + pynutil.delete(NEMO_SPACE)
-            + pynutil.delete('"')
-            + compound_b_sigma_star
-            + pynutil.delete('"')
-        )
-        graph_compound = compound_a + pynini.accep("-") + compound_b
-
         domain = pynutil.delete('domain: "') + domain + pynutil.delete('"')
         protocol = (
             pynutil.delete('protocol: "')
@@ -108,13 +89,9 @@ class ElectronicFst(GraphFst):
             @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + pynutil.delete('"')
         )
-        self.graph = (
-            (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain)
-            | (
-                user_name + NEMO_SPACE + pynutil.insert("at ") + domain
-                | (pynutil.insert("at ") + user_name)
-            )
-            | graph_compound
+        self.graph = (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain) | (
+            user_name + NEMO_SPACE + pynutil.insert("at ") + domain
+            | (pynutil.insert("at ") + user_name)
         )
 
         # normalizes sentence-final periods following URLs
