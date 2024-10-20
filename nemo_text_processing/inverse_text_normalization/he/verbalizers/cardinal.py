@@ -36,10 +36,7 @@ class CardinalFst(GraphFst):
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # Thousands separator
-        group_by_threes = (
-            at_most_three_digits +
-            (pynutil.insert(",") + exactly_three_digits).closure()
-        )
+        group_by_threes = at_most_three_digits + (pynutil.insert(",") + exactly_three_digits).closure()
 
         # Keep the prefix if exists and add a dash
         optional_prefix = pynini.closure(
@@ -68,11 +65,11 @@ class CardinalFst(GraphFst):
 
         # removes integer aspect
         graph = (
-                pynutil.delete("integer:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_DIGIT, 1)  # Accepts at least one digit
-                + pynutil.delete("\"")
+            pynutil.delete("integer:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_DIGIT, 1)  # Accepts at least one digit
+            + pynutil.delete("\"")
         )
 
         # Add thousands separator

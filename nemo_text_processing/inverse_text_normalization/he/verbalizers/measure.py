@@ -46,7 +46,7 @@ class MeasureFst(GraphFst):
             + pynutil.delete("\"")
             + delete_space,
             0,
-            1
+            1,
         )
 
         # Removes the negative attribute and leaves the sign if occurs
@@ -62,49 +62,36 @@ class MeasureFst(GraphFst):
         )
 
         graph_decimal = (
-            pynutil.delete("decimal {")
-            + delete_space
-            + decimal.numbers
-            + delete_space
-            + pynutil.delete("}")
+            pynutil.delete("decimal {") + delete_space + decimal.numbers + delete_space + pynutil.delete("}")
         )
 
         graph_cardinal = (
-            pynutil.delete("cardinal {")
-            + delete_space
-            + cardinal.numbers
-            + delete_space
-            + pynutil.delete("}")
+            pynutil.delete("cardinal {") + delete_space + cardinal.numbers + delete_space + pynutil.delete("}")
         )
 
         unit = (
-                pynutil.delete("units:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_CHAR - " ", 1)
-                + pynutil.delete("\"")
-                + delete_space
+            pynutil.delete("units:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynutil.delete("\"")
+            + delete_space
         )
 
         spaced_unit = (
-                pynutil.delete("spaced_units:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.closure(NEMO_CHAR - " ", 1)
-                + pynutil.delete("\"")
-                + delete_space
+            pynutil.delete("spaced_units:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynutil.delete("\"")
+            + delete_space
         )
 
         numbers_units = delete_space + (unit | pynutil.insert(" ") + spaced_unit)
         numbers_graph = (graph_cardinal | graph_decimal) + numbers_units
 
         one_units = unit | (pynutil.insert(" ") + spaced_unit)
-        one_graph = (
-            delete_space
-            + pynutil.insert("1")
-            + one_units
-            + pynutil.delete("cardinal { integer: \"1\" }")
-        )
+        one_graph = delete_space + pynutil.insert("1") + one_units + pynutil.delete("cardinal { integer: \"1\" }")
 
         graph = optional_prefix + optional_sign + (numbers_graph | one_graph)
         delete_tokens = self.delete_tokens(graph)

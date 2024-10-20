@@ -37,8 +37,7 @@ def _get_year_graph(graph_two_digits, graph_thousands):
     Transducer for year, e.g. twenty twenty -> 2020
     """
     year_graph = pynini.union(
-        (graph_two_digits + delete_space + graph_two_digits),  # 20 19, 40 12, 20 20
-        graph_thousands
+        (graph_two_digits + delete_space + graph_two_digits), graph_thousands  # 20 19, 40 12, 20 20
     )  # 2012 - assuming no limit on the year
 
     year_graph.optimize()
@@ -80,8 +79,9 @@ class DateFst(GraphFst):
         month_name2number_graph = pynutil.insert("month: \"") + pynini.invert(month_name2number) + pynutil.insert("\"")
 
         month_number2number = pynini.string_file(get_abs_path("data/months_number2number.tsv"))
-        month_number2number_graph = pynutil.insert("month: \"") + pynini.invert(month_number2number) + pynutil.insert(
-            "\"")
+        month_number2number_graph = (
+            pynutil.insert("month: \"") + pynini.invert(month_number2number) + pynutil.insert("\"")
+        )
 
         all_month_graph = month_name2number_graph | month_number2number_graph
 
@@ -90,12 +90,7 @@ class DateFst(GraphFst):
 
         year_graph = _get_year_graph(two_digits_graph, cardinal.graph_thousands)
 
-        graph_year = (
-            delete_extra_space
-            + pynutil.insert("year: \"")
-            + year_graph
-            + pynutil.insert("\"")
-        )
+        graph_year = delete_extra_space + pynutil.insert("year: \"") + year_graph + pynutil.insert("\"")
 
         graph_dm = (
             optional_day_prefix_graph
@@ -116,21 +111,12 @@ class DateFst(GraphFst):
             + graph_year
         )
 
-        graph_my = (
-            optional_month_prefix_graph
-            + month_names_graph
-            + graph_year
-        )
+        graph_my = optional_month_prefix_graph + month_names_graph + graph_year
 
         optional_prefix_graph = pynini.closure(prefix_graph, 0, 1)
         year_only_prefix = optional_prefix_graph + pynini.union("שנה", "שנת")
 
-        graph_y_only = (
-            pynutil.insert("year_only_prefix: \"")
-            + year_only_prefix
-            + pynutil.insert("\"")
-            + graph_year
-        )
+        graph_y_only = pynutil.insert("year_only_prefix: \"") + year_only_prefix + pynutil.insert("\"") + graph_year
 
         final_graph = graph_dm | graph_dmy | graph_my | graph_y_only
         final_graph = self.add_tokens(final_graph)

@@ -61,10 +61,7 @@ class MeasureFst(GraphFst):
 
         # Let singular apply to values > 1 as they could be part of an adjective phrase (e.g. 14 foot tall building)
         subgraph_decimal = (
-            pynutil.insert("decimal { ")
-            + decimal.final_graph_wo_sign
-            + pynutil.insert(" }")
-            + delete_extra_space
+            pynutil.insert("decimal { ") + decimal.final_graph_wo_sign + pynutil.insert(" }") + delete_extra_space
         )
 
         subgraph_cardinal = (
@@ -92,12 +89,12 @@ class MeasureFst(GraphFst):
         # We say "ten percent" for 10% but "percent one" for 1%
         one = pynini.string_map([("אחד", "1")])
         one_graph = (
-                insert_space
-                + pynutil.insert("cardinal { ")
-                + pynutil.insert("integer: \"")
-                + one
-                + pynutil.insert("\"")
-                + pynutil.insert(" }")
+            insert_space
+            + pynutil.insert("cardinal { ")
+            + pynutil.insert("integer: \"")
+            + one
+            + pynutil.insert("\"")
+            + pynutil.insert(" }")
         )
 
         number_graph = subgraph_decimal | subgraph_cardinal

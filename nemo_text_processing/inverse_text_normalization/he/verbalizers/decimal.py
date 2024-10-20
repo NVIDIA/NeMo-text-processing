@@ -37,10 +37,7 @@ class DecimalFst(GraphFst):
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # Thousands separator
-        group_by_threes = (
-            at_most_three_digits +
-            (pynutil.insert(",") + exactly_three_digits).closure()
-        )
+        group_by_threes = at_most_three_digits + (pynutil.insert(",") + exactly_three_digits).closure()
 
         integer = (
             pynutil.delete("integer_part:")
