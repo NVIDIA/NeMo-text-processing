@@ -21,7 +21,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_preserve_order,
 )
-
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
 
 per_units = pynini.string_file(get_abs_path("data/money/per_unit.tsv"))

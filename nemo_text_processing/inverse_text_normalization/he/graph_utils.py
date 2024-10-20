@@ -12,76 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
-import string
 from pathlib import Path
-from typing import Dict
 
 import pynini
 from pynini import Far
-from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
-from nemo_text_processing.inverse_text_normalization.he.utils import load_labels
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, delete_space
+from nemo_text_processing.text_normalization.en.utils import load_labels
 
-NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
-NEMO_DIGIT = byte.DIGIT
 NEMO_ALPHA = pynini.union(*"אבגדהוזחטיכלמםנןסעפףצץקרשת").optimize()
-NEMO_ALNUM = pynini.union(NEMO_DIGIT, NEMO_ALPHA).optimize()
-NEMO_NON_BREAKING_SPACE = u"\u00A0"
-NEMO_SPACE = " "
-NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00A0").optimize()
-NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
-NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 
-NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
-NEMO_GRAPH = pynini.union(NEMO_ALNUM, NEMO_PUNCT).optimize()
-
-NEMO_SIGMA = pynini.closure(NEMO_CHAR)
-
-delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_optional_and = pynini.closure(pynutil.delete("ו"))
 delete_and = pynini.cross("ו", "")
 
 ####################
-delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
-insert_space = pynutil.insert(" ")
-delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
-
 MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 MINUS = pynini.union("מינוס").optimize()
-
-
-def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
-    """
-    Exports graph as OpenFst finite state archive (FAR) file with given file name and rule name.
-
-    Args:
-        file_name: exported file name
-        graphs: Mapping of a rule name and Pynini WFST graph to be exported
-    """
-    exporter = export.Exporter(file_name)
-    for rule, graph in graphs.items():
-        exporter[rule] = graph.optimize()
-    exporter.close()
-    logging.info(f'Created {file_name}')
-
-
-def convert_space(fst) -> 'pynini.FstLike':
-    """
-    Converts space to nonbreaking space.
-    Used only in tagger grammars for transducing token values within quotes, e.g. name: "hello kitty"
-    This is making transducer significantly slower, so only use when there could be potential spaces within quotes, otherwise leave it.
-
-    Args:
-        fst: input fst
-
-    Returns output fst where breaking spaces are converted to non breaking spaces
-    """
-    return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
 
 
 def string_map_cased(input_file: str):

@@ -17,16 +17,20 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_SIGMA,
-    NEMO_SPACE,
     GraphFst,
     delete_and,
     delete_optional_and,
-    delete_space,
-    insert_space,
 )
-from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path, load_labels
+from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
+
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    insert_space,
+    delete_space,
+)
+from nemo_text_processing.text_normalization.en.utils import load_labels
 
 
 class CardinalFst(GraphFst):
@@ -88,6 +92,7 @@ class CardinalFst(GraphFst):
                 pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT),
                 "0"
             )
+
         # millions
         million = pynini.string_map([("מיליון", "1")])
         delete_millions = pynutil.delete("מיליונים") | pynutil.delete("מיליון", weight=0.001)

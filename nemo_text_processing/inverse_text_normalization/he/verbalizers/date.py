@@ -15,9 +15,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
-    GraphFst,
     delete_space,
     delete_zero_or_one_space,
     insert_space,

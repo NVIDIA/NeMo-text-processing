@@ -15,12 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    NEMO_CHAR,
-    NEMO_SIGMA,
-    GraphFst,
-    delete_space,
-)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_SIGMA, delete_space
 
 
 class WordFst(GraphFst):

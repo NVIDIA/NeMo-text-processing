@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import csv
 import os
 
 ####################
@@ -42,20 +41,6 @@ def get_abs_path(rel_path):
     Returns absolute path
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
-
-
-def load_labels(abs_path):
-    """
-    loads relative path file as dictionary
-
-    Args:
-        abs_path: absolute path
-
-    Returns dictionary of mappings
-    """
-    label_tsv = open(abs_path, encoding="utf-8")
-    labels = list(csv.reader(label_tsv, delimiter="\t"))
-    return labels
 
 
 def augment_labels_with_punct_at_end(labels):
