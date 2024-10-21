@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_ALPHA, GraphFst
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_ALPHA_HE, GraphFst
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, delete_space
 
 
@@ -43,7 +43,7 @@ class CardinalFst(GraphFst):
             pynutil.delete("prefix:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(NEMO_ALPHA, 1)
+            + pynini.closure(NEMO_ALPHA_HE, 1)
             + pynutil.insert("-")
             + pynutil.delete("\"")
             + delete_space,

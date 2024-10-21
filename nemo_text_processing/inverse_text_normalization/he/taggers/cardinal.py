@@ -16,7 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    NEMO_ALPHA,
+    NEMO_ALPHA_HE,
     GraphFst,
     delete_and,
     delete_optional_and,
@@ -99,11 +99,14 @@ class CardinalFst(GraphFst):
         graph_millions = pynini.union(million | many_millions, pynutil.insert("000", weight=0.001))
 
         graph = pynini.union(
-            graph_millions + delete_space + graph_thousands + delete_space + graph_hundred, graph_zero
+            graph_millions + delete_space + graph_thousands + delete_space + graph_hundred,
+            graph_zero
         )
 
         graph = graph @ pynini.union(
-            pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"
+            pynutil.delete(pynini.closure("0"))
+            + pynini.difference(NEMO_DIGIT, "0")
+            + pynini.closure(NEMO_DIGIT), "0"
         )
 
         labels_exception = load_labels(get_abs_path("data/numbers/digit.tsv"))
@@ -111,7 +114,7 @@ class CardinalFst(GraphFst):
         labels_exception += ["ו" + label for label in labels_exception]
         graph_exception = pynini.union(*labels_exception).optimize()
 
-        graph = ((NEMO_ALPHA + NEMO_SIGMA) @ graph).optimize()
+        graph = ((NEMO_ALPHA_HE + NEMO_SIGMA) @ graph).optimize()
 
         self.graph_no_exception = graph
 

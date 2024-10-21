@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, d
 from nemo_text_processing.text_normalization.en.utils import load_labels
 
 
-NEMO_ALPHA = pynini.union(*"אבגדהוזחטיכלמםנןסעפףצץקרשת").optimize()
+NEMO_ALPHA_HE = pynini.union(*"אבגדהוזחטיכלמםנןסעפףצץקרשת").optimize()
 
 delete_optional_and = pynini.closure(pynutil.delete("ו"))
 delete_and = pynini.cross("ו", "")

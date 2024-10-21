@@ -82,9 +82,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
-                # NOTE: we convert ordinals in Hebrew only if it is a part of a date!
-                # this is why it is commented out.
-                # | pynutil.add_weight(ordinal_graph, 1.09)
+                # NOTE: we convert ordinals in Hebrew only if it is a part of a date! this is why it is missing.
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")

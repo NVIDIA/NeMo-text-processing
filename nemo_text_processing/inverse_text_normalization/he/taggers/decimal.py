@@ -112,7 +112,7 @@ class DecimalFst(GraphFst):
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
 
-        # integer could be an hour, but minutes are cannot: convert to decimal
+        # integer could be an hour, but minutes cannot: convert to decimal
         viable_hour_unviable_minutes = graph_integer + delete_extra_space + fractions_wo_minutes
 
         # integer cannot be an hour, but minutes can: convert to decimal
