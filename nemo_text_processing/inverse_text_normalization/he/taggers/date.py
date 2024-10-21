@@ -24,14 +24,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 
 
-def _get_month_name_graph():
-    """
-    Transducer for month, e.g. march -> march
-    """
-    month_graph = pynini.string_file(get_abs_path("data/months.tsv"))
-    return month_graph
-
-
 def _get_year_graph(graph_two_digits, graph_thousands):
     """
     Transducer for year, e.g. twenty twenty -> 2020
@@ -72,7 +64,7 @@ class DateFst(GraphFst):
             pynutil.insert("day_prefix: \"") + prefix_graph + pynutil.insert("\"") + insert_space, 0, 1
         )
 
-        month_names = _get_month_name_graph()
+        month_names = pynini.string_file(get_abs_path("data/months.tsv"))
         month_names_graph = pynutil.insert("month: \"") + month_names + pynutil.insert("\"")
 
         month_name2number = pynini.string_file(get_abs_path("data/months_name2number.tsv"))
