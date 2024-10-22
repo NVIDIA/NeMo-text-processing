@@ -64,7 +64,8 @@ if __name__ == "__main__":
     normalizer = Normalizer(input_case=args.input_case, lang=args.lang)
 
     print("Loading training data: " + file_path)
-    training_data = load_files([file_path])
+    to_lower = args.input_case == "lower_cased"
+    training_data = load_files([file_path], to_lower=to_lower)
 
     if args.filter:
         training_data = filter_loaded_data(training_data)
