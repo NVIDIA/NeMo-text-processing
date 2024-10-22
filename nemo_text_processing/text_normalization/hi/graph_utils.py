@@ -20,18 +20,19 @@ from pathlib import Path
 from typing import Dict
 
 import pynini
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
 from pynini import Far
 from pynini.examples import plurals
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
+
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
 NEMO_DIGIT = byte.DIGIT
 
-NEMO_HI_DIGIT = pynini.union("०","१","२", "३", "४", "५", "६", "७", "८", "९").optimize()
-NEMO_HI_NON_ZERO = pynini.union("१","२", "३", "४", "५", "६", "७", "८", "९").optimize()
+NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
+NEMO_HI_NON_ZERO = pynini.union("१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_ZERO = "०"
 
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()

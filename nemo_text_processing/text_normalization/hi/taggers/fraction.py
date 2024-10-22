@@ -13,14 +13,11 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hi.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    insert_space,
-)
+from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.utils import apply_fst
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -40,7 +37,7 @@ class FractionFst(GraphFst):
 
     def __init__(self, cardinal, deterministic: bool = True):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
-        
+
         cardinal_graph = cardinal.final_graph
 
         self.optional_graph_negative = pynini.closure(
@@ -59,6 +56,6 @@ class FractionFst(GraphFst):
             + self.denominator
         )
 
-        graph = self.graph 
+        graph = self.graph
         final_graph = self.add_tokens(graph)
-        self.fst = final_graph.optimize()        
+        self.fst = final_graph.optimize()

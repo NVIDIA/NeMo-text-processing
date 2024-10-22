@@ -13,15 +13,17 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path, apply_fst
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
+from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 quantities = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
 
+
 def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike') -> 'pynini.FstLike':
-    
+
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. १ लाख -> integer_part: "एक" quantity: "लाख"
@@ -31,7 +33,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
-    numbers = cardinal_up_to_hundred 
+    numbers = cardinal_up_to_hundred
 
     res = (
         pynutil.insert("integer_part: \"")
@@ -62,23 +64,23 @@ class DecimalFst(GraphFst):
         graph_digit |= pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
 
         cardinal_graph = cardinal.final_graph
-        
+
         self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
-        
+
         point = pynutil.delete(".")
-            
-        optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,)
-     
+
+        optional_graph_negative = pynini.closure(
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
+        )
+
         self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
         self.graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
 
         final_graph_wo_sign = self.graph_integer + point + insert_space + self.graph_fractional
 
-        self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal_graph
-        )
-        
+        self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(final_graph_wo_sign, cardinal_graph)
+
         final_graph = optional_graph_negative + self.final_graph_wo_negative
-        
+
         final_graph = self.add_tokens(final_graph)
-        self.fst = final_graph.optimize()               
+        self.fst = final_graph.optimize()
