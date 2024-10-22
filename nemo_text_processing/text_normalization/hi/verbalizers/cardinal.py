@@ -13,10 +13,11 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space 
-from nemo_text_processing.text_normalization.hi.utils import apply_fst 
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst 
 from pynini.lib import pynutil, rewrite
+
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hi.utils import apply_fst
 
 
 class CardinalFst(GraphFst):
@@ -46,4 +47,5 @@ class CardinalFst(GraphFst):
 
         self.numbers = self.optional_sign + integer
         delete_tokens = self.delete_tokens(self.numbers)
+
         self.fst = delete_tokens.optimize()
