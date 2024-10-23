@@ -13,3 +13,7 @@ h t t p s doppelpunkt slash slash w w w punkt a b c punkt com slash a b fragezei
 at j e n s e n~@jensen
 at j e n s e n punkt m e~@jensen.me
 at w e z y r eins neun acht sechs~@wezyr1986
+zwei-D-Mammogram~2D-Mammogram
+zwei-D-Mammogram~2-D-Mammogram
+drei-D-Drucker~3D-Drucker
+drei-D-Drucker~3-D-Drucker
