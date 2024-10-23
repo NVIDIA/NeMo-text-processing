@@ -25,7 +25,7 @@ class CardinalFst(GraphFst):
         Fitite state transducer for classifying cardinals (e.g., 负五十 -> cardinal { negative: "-" integer: "50" })
         This class converts cardinals up to hundred millions (i.e., (10**10))
         Single unit digits are not converted (e.g., 五 -> 五)
-        Numbers less than 20 are not converted. 
+        Numbers less than 20 are not converted.
         二十 (2 characters/logograms) is kept as it is but 二十一 (3 characters/logograms) would become 21
         """
         super().__init__(name="cardinal", kind="classify")

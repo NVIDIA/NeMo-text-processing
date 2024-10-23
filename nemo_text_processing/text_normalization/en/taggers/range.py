@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, G
 class RangeFst(GraphFst):
     """
     This class is a composite class of two other class instances
-    
+
     Args:
         time: composed tagger and verbalizer
         date: composed tagger and verbalizer

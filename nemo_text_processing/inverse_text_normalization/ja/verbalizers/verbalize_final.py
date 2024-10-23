@@ -26,9 +26,7 @@ from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize im
 
 
 class VerbalizeFinalFst(GraphFst):
-    """
-
-    """
+    """ """
 
     def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
         super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)

@@ -21,8 +21,8 @@ from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g. 
-    321.7 --> ثلاث مئة وواحد وعشرون وسبعة من عشرة 
+    Finite state transducer for classifying decimal, e.g.
+    321.7 --> ثلاث مئة وواحد وعشرون وسبعة من عشرة
     -321.7  -> decimal { negative: "true" integer_part: "321"  fractional_part: ".7" }
     cardinal: CardinalFst
     """

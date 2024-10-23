@@ -31,7 +31,7 @@ from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_
 class SerialFst(GraphFst):
     """
     This class is a composite class of two other class instances
-    
+
     Args:
         time: composed tagger and verbalizer
         date: composed tagger and verbalizer

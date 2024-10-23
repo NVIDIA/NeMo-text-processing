@@ -27,7 +27,7 @@ from nemo_text_processing.text_normalization.es.graph_utils import ES_PLUS
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone numbers, e.g. 
+    Finite state transducer for classifying telephone numbers, e.g.
         uno dos tres uno dos tres cinco seis siete ocho -> { number_part: "123-123-5678" }.
         If 10 digits are spoken, they are grouped as 3+3+4 (eg. 123-456-7890).
         If 9 digits are spoken, they are grouped as 3+3+3 (eg. 123-456-789).
@@ -37,7 +37,7 @@ class TelephoneFst(GraphFst):
             "twelve thirty four" = "1234".
 
         (we ignore more complicated cases such as "three hundred and two" or "three nines").
-    
+
         Args:
             input_case: accepting either "lower_cased" or "cased" input.
     """

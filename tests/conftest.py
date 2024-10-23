@@ -62,7 +62,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def device(request):
-    """ Simple fixture returning string denoting the device [CPU | GPU] """
+    """Simple fixture returning string denoting the device [CPU | GPU]"""
     if request.config.getoption("--cpu"):
         return "CPU"
     else:
@@ -104,7 +104,7 @@ def cleanup_local_folder():
 
 @pytest.fixture
 def test_data_dir():
-    """ Fixture returns test_data_dir. """
+    """Fixture returns test_data_dir."""
     # Test dir.
     test_data_dir_ = join(dirname(__file__), __TEST_DATA_SUBDIR)
     return test_data_dir_

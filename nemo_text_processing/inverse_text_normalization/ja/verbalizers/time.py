@@ -22,11 +22,11 @@ from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time, e.g.,
-    time { hours: "1" minutes: "0" } -> 1時30分 -> 
+    time { hours: "1" minutes: "0" } -> 1時30分 ->
     time { hours: "5" minutes: "20" suffix: "過ぎ" } -> 5時20分
     time { hours: "8" minutes: "半" suffix: "頃" } -> 8時半頃
-    time { hours: "10" minutes: "25" suffix: "前" } -> 10時5分前 
-    time { hours: "正午" minutes: "1" suffix: "前" } -> 正午1分前 
+    time { hours: "10" minutes: "25" suffix: "前" } -> 10時5分前
+    time { hours: "正午" minutes: "1" suffix: "前" } -> 正午1分前
     time { hours: "正午" minutes: "10" suffix: "過ぎ" } -> 正午10分過ぎ
     """
 
