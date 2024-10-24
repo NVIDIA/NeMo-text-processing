@@ -29,6 +29,7 @@ import pynini
 import regex
 import tqdm
 from joblib import Parallel, delayed
+
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -112,8 +113,8 @@ class Normalizer:
         self.post_processor = None
 
         if lang == "en":
-            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
             from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst
+            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
@@ -700,7 +701,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "hi" ,"hu", "sv", "zh", "ar", "it", "hy", "ja"],
+        choices=["en", "de", "es", "hi", "hu", "sv", "zh", "ar", "it", "hy", "ja"],
         default="en",
         type=str,
     )
