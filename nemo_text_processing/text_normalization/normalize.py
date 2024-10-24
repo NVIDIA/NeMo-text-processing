@@ -166,9 +166,6 @@ class Normalizer:
         elif lang == 'ja':
             from nemo_text_processing.text_normalization.ja.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.ja.verbalizers.verbalize_final import VerbalizeFinalFst
-        elif lang == 'hi':
-            from nemo_text_processing.text_normalization.hi.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.hi.verbalizers.verbalize_final import VerbalizeFinalFst
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
@@ -514,7 +511,7 @@ class Normalizer:
         Args:
             text: text
             additional_split_symbols: Symbols to split sentences if eos sentence split resulted in a long sequence.
-                Use '|' as a separator between symbols, for example: ';|:'. Use '\s' to split by space.
+                Use '|' as a separator between symbols, for example: ';|:'. Use '\\s' to split by space.
 
         Returns list of sentences
         """
