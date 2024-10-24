@@ -698,7 +698,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it", "hy", "hi", "ja"],
+        choices=["en", "de", "es", "fr", "hi", "hu", "sv", "zh", "ar", "it", "hy", "ja"],
         default="en",
         type=str,
     )
