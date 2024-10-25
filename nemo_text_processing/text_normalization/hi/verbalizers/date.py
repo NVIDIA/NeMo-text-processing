@@ -47,6 +47,10 @@ class DateFst(GraphFst):
 
         graph_dd_mm_yyyy = day + NEMO_SPACE + month + NEMO_SPACE + year
 
+        graph_mm_dd_yyyy = month + NEMO_SPACE + day + NEMO_SPACE + year
+
+        graph_mm_yyyy = month + NEMO_SPACE + year
+
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
             | pynutil.delete("field_order:")
@@ -66,4 +70,5 @@ class DateFst(GraphFst):
         final_graph = self.graph
 
         delete_tokens = self.delete_tokens(final_graph)
+
         self.fst = delete_tokens.optimize()
