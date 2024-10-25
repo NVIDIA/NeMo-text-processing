@@ -101,6 +101,11 @@ class ClassifyFst(GraphFst):
             logging.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
 
             start_time = time.time()
+            measure = MeasureFst(cardinal=cardinal, decimal=decimal)
+            measure_graph = measure.fst
+            logging.debug(f"time: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
+
+            start_time = time.time()
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
             logging.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
