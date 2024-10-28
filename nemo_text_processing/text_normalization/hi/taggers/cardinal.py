@@ -18,7 +18,7 @@ from pynini.lib import pynutil, rewrite
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
 from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
- 
+
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g. 
