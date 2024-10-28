@@ -26,9 +26,8 @@ seconds_graph = pynini.string_file(get_abs_path("data/time/seconds.tsv"))
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
-        १२:३०:३०  -> time { hours: "बारह" minutes: "तीस" seconds: "तीस" }
+        १२:३०  -> time { hours: "बारह" minutes: "तीस" }
         १:४०  -> time { hours: "एक" minutes: "चालीस" }
-        १:००  -> time { hours: "एक" }
          
     Args:
         time: GraphFst
@@ -53,10 +52,14 @@ class TimeFst(GraphFst):
         # hour minute
         graph_hm = self.hours + delete_colon + insert_space + self.minutes
 
-        # hour
-        graph_h = self.hours + delete_colon + pynutil.delete("००")
-
-        final_graph = graph_hms | graph_hm | graph_h
+        final_graph = graph_hms | graph_hm
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
+
+
+# input_text = "१:१०:१०"
+input_text = "११:४०"
+output = rewrite.rewrites(input_text, TimeFst().fst)
+output = apply_fst(input_text, TimeFst().fst)
+print(output)
