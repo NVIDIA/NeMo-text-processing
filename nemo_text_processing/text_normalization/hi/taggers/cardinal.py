@@ -298,6 +298,7 @@ class CardinalFst(GraphFst):
             | zero
             | teens_and_ties
             | graph_hundreds
+            | graph_hundreds_as_thousand
             | graph_thousands
             | graph_ten_thousands
             | graph_lakhs

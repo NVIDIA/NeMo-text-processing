@@ -34,7 +34,7 @@ class DateFst(GraphFst):
     Finite state transducer for classifying date, e.g.
         "०१-०४-२०२४" -> date { day: "एक" month: "अप्रैल" year: "दो हज़ार चौबीस" }
         "०४-०१-२०२४" -> date { month: "अप्रैल" day: "एक" year: "दो हज़ार चौबीस" }
-        
+        "२०२४-०१-०४" -> date { year: "दो हज़ार चौबीस" day: "एक" month: "अप्रैल" }
 
     Args:
         cardinal: cardinal GraphFst
@@ -48,26 +48,24 @@ class DateFst(GraphFst):
         graph_year_thousands = pynini.compose(
             (NEMO_HI_DIGIT + NEMO_HI_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_thousands
         )
-        graph_year_hundreds_as_thousands = pynini.compose(
+        hundreds_as_thousand = pynini.compose(
             (NEMO_HI_DIGIT + NEMO_HI_NON_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_hundreds_as_thousand
         )
-
-        graph_year = graph_year_thousands | graph_year_hundreds_as_thousands
+        graph_years = graph_year_thousands | hundreds_as_thousand
 
         delete_dash = pynutil.delete("-")
+
         delete_slash = pynutil.delete("/")
 
         days_graph = pynutil.insert("day: \"") + days + pynutil.insert("\"") + insert_space
 
         months_graph = pynutil.insert("month: \"") + months + pynutil.insert("\"") + insert_space
 
-        years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
+        years_graph = pynutil.insert("year: \"") + graph_years + pynutil.insert("\"") + insert_space
 
         graph_dd_mm = days_graph + delete_dash + months_graph
 
         graph_mm_dd = months_graph + delete_dash + days_graph
-
-        graph_mm_dd += pynutil.insert(" preserve_order: true ")
 
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
@@ -77,18 +75,17 @@ class DateFst(GraphFst):
             months_graph + (delete_dash | delete_slash) + days_graph + (delete_dash | delete_slash) + years_graph
         )
 
-        graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
-
         graph_mm_yyyy = months_graph + delete_dash + years_graph
 
+        graph_yyyy = years_graph
         # default assume dd_mm_yyyy
-
         final_graph = (
             pynutil.add_weight(graph_dd_mm, -0.001)
             | graph_mm_dd
             | pynutil.add_weight(graph_dd_mm_yyyy, -0.001)
             | graph_mm_dd_yyyy
             | graph_mm_yyyy
+            | graph_yyyy
         )
 
         self.final_graph = final_graph.optimize()
