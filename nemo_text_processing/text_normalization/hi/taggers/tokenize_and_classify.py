@@ -31,7 +31,6 @@ from nemo_text_processing.text_normalization.hi.taggers.date import DateFst
 from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.hi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFst
-from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
@@ -117,7 +116,6 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
-                | pynutil.add_weight(money_graph, 1.1)
             )
 
             start_time = time.time()
