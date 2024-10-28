@@ -57,6 +57,16 @@ class DateFst(GraphFst):
         delete_dash = pynutil.delete("-")
         delete_slash = pynutil.delete("/")
 
+        days_graph = pynutil.insert("day: \"") + days + pynutil.insert("\"") + insert_space
+
+        months_graph = pynutil.insert("month: \"") + months + pynutil.insert("\"") + insert_space
+
+        years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
+
+        graph_dd_mm = days_graph + delete_dash + months_graph
+
+        graph_mm_dd = months_graph + delete_dash + days_graph
+
         graph_mm_dd += pynutil.insert(" preserve_order: true ")
 
         graph_dd_mm_yyyy = (
