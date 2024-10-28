@@ -302,6 +302,10 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.rw.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
+    elif args.language == 'rw':
+        from nemo_text_processing.text_normalization.rw.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
