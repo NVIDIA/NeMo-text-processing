@@ -57,15 +57,7 @@ class DateFst(GraphFst):
         delete_dash = pynutil.delete("-")
         delete_slash = pynutil.delete("/")
 
-        days_graph = pynutil.insert("day: \"") + days + pynutil.insert("\"") + insert_space
-
-        months_graph = pynutil.insert("month: \"") + months + pynutil.insert("\"") + insert_space
-
-        years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
-
-        graph_dd_mm = days_graph + delete_dash + months_graph
-
-        graph_mm_dd = months_graph + delete_dash + days_graph
+        graph_mm_dd += pynutil.insert(" preserve_order: true ")
 
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
@@ -75,20 +67,20 @@ class DateFst(GraphFst):
             months_graph + (delete_dash | delete_slash) + days_graph + (delete_dash | delete_slash) + years_graph
         )
 
+        graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
+
         graph_mm_yyyy = months_graph + delete_dash + years_graph
 
-        graph_yyyy = years_graph
         # default assume dd_mm_yyyy
+
         final_graph = (
             pynutil.add_weight(graph_dd_mm, -0.001)
             | graph_mm_dd
             | pynutil.add_weight(graph_dd_mm_yyyy, -0.001)
             | graph_mm_dd_yyyy
             | graph_mm_yyyy
-            | graph_yyyy
         )
 
         self.final_graph = final_graph.optimize()
 
         self.fst = self.add_tokens(self.final_graph)
-
