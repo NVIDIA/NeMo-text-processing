@@ -12,9 +12,9 @@ pipeline {
   environment {
 
     AR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-24-24-0'
-    DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-24-0'
-    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-22-24-0'
-    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
+    DE_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-23-24-0'
+    EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-04-24-0'
+    ES_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-25-24-0'
     ES_EN_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-30-24-0'
     FR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-04-24-0'
     HU_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/07-16-24-0'
@@ -26,7 +26,7 @@ pipeline {
     IT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-22-24-0'
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
-    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/09-27-24-0'
+    JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-17-24-1'
     HI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/08-29-24-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
@@ -94,69 +94,23 @@ pipeline {
       }
     }
     stage('L0: Create HI TN/ITN Grammars') {
-      when {
+    when {
         anyOf {
-          branch 'main'
-          changeRequest target: 'main'
+            branch 'main'
+            changeRequest target: 'main'
         }
-      }
-      failFast true
-      parallel {
-        stage('L0: Hi TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
-          }
-        }
-        
-      }
     }
-    stage('L0: Create HI TN/ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
+    failFast true
+    parallel {
         stage('L0: Hi TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
-          }
+            steps {
+                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
+            }
         }
-        
-      }
-    }
-    stage('L0: Create HI TN/ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-        stage('L0: Hi TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
-          }
-        }
-        
-      }
-    }
-    stage('L0: Create HI TN/ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-        stage('L0: Hi TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
-          }
+        stage('L0: Hi ITN grammars') {
+            steps {
+                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
+            }
         }
         
       }
