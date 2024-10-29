@@ -1,4 +1,5 @@
 # log and data files
+*.model
 *.pkl
 #*.ipynb
 .ipynb_checkpoints/
@@ -167,6 +168,8 @@ wandb
 dump.py
 
 docs/sources/source/test_build/
+tools/text_processing_deployment/hi_tn_grammars_lower_cased/*.far
+typescript
 
 # Checkpoints, config files and temporary files created in tutorials.
 examples/neural_graphs/*.chkpt
