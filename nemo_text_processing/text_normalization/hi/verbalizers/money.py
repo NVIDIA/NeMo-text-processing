@@ -16,6 +16,9 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class MoneyFst(GraphFst):
@@ -54,11 +57,13 @@ class MoneyFst(GraphFst):
         )
 
         graph_integer = integer_part + delete_space + currency
+        # graph_integer |= currency + delete_space + integer_part
 
         # Graph for rupee currency
         rupee_graph = (
             integer_part + delete_space + rupee_currency + delete_space + fractional_part + delete_space + insert_paise
         )
+        # graph_interger_fraction |= currency + delete_space + integer_part + delete_space + fractional_part + delete_space + insert_paise
 
         # Graph for other currencies
         other_currency_graph = (
