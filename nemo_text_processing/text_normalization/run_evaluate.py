@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument(
         "--lang",
         help="language",
-        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh', 'hy'],
+        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh', 'hy', 'hi'],
         default="en",
         type=str,
     )
@@ -64,7 +64,8 @@ if __name__ == "__main__":
     normalizer = Normalizer(input_case=args.input_case, lang=args.lang)
 
     print("Loading training data: " + file_path)
-    training_data = load_files([file_path])
+    to_lower = args.input_case == "lower_cased"
+    training_data = load_files([file_path], to_lower=to_lower)
 
     if args.filter:
         training_data = filter_loaded_data(training_data)
@@ -74,6 +75,9 @@ if __name__ == "__main__":
         sentences_un_normalized, sentences_normalized, _ = training_data_to_sentences(training_data)
         print("- Data: " + str(len(sentences_normalized)) + " sentences")
         sentences_prediction = normalizer.normalize_list(sentences_un_normalized)
+        with open('result.log', 'w') as ofp:
+            for inp, out in zip(sentences_normalized, sentences_prediction):
+                ofp.write(f'{inp==out}; {inp}\t{out}\n')
         print("- Normalized. Evaluating...")
         sentences_accuracy = evaluate(
             preds=sentences_prediction, labels=sentences_normalized, input=sentences_un_normalized
