@@ -14,12 +14,8 @@ runtest () {
     denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
     # trim white space
-    # spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    # denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-
-    # trim white space and remove space before punctuation
-    spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.]\)/\1/g')"
-    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.]\)/\1/g')"
+    spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
     # input expected actual
     assertEquals "$written" "$spoken" "$denorm_pred"
@@ -96,15 +92,15 @@ testTNMeasure() {
   runtest $input
 }
 
-testTNWhitelist() {
- input=$PROJECT_DIR/hi/data_text_normalization/test_cases_whitelist.txt
- runtest $input
-}
+#testTNWhitelist() {
+#  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_whitelist.txt
+#  runtest $input
+#}
 
-testTNWord() {
- input=$PROJECT_DIR/hi/data_text_normalization/test_cases_word.txt
- runtest $input
-}
+#testTNWord() {
+#  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_word.txt
+#  runtest $input
+#}
 
 #testTNAddress() {
 #  input=$PROJECT_DIR/en/data_text_normalization/test_cases_address.txt

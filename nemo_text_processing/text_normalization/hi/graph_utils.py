@@ -21,26 +21,25 @@ from typing import Dict
 
 import pynini
 from pynini import Far
+from pynini.examples import plurals
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
+
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
+
 NEMO_DIGIT = byte.DIGIT
 
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_NON_ZERO = pynini.union("१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_ZERO = "०"
-NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
-NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
-NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00A0"
 NEMO_SPACE = " "
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00A0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
-TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)])
-TO_UPPER = pynini.invert(TO_LOWER)
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 
 
@@ -99,6 +98,30 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     logging.info(f'Created {file_name}')
 
 
+def get_plurals(fst):
+    """
+    Given singular returns plurals
+
+    Args:
+        fst: Fst
+
+    Returns plurals to given singular forms
+    """
+    return SINGULAR_TO_PLURAL @ fst
+
+
+def get_singulars(fst):
+    """
+    Given plural returns singulars
+
+    Args:
+        fst: Fst
+
+    Returns singulars to given plural forms
+    """
+    return PLURAL_TO_SINGULAR @ fst
+
+
 def convert_space(fst) -> 'pynini.FstLike':
     """
     Converts space to nonbreaking space.
@@ -111,6 +134,44 @@ def convert_space(fst) -> 'pynini.FstLike':
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
+
+
+def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
+    labels = load_labels(input_file)
+
+    if input_case == INPUT_CASED:
+        additional_labels = []
+        for written, spoken, *weight in labels:
+            written_capitalized = written[0].upper() + written[1:]
+            additional_labels.extend(
+                [
+                    [written_capitalized, spoken.capitalize()],  # first letter capitalized
+                    [
+                        written_capitalized,
+                        spoken.upper().replace(" AND ", " and "),
+                    ],  # # add pairs with the all letters capitalized
+                ]
+            )
+
+            spoken_no_space = spoken.replace(" ", "")
+            # add abbreviations without spaces (both lower and upper case), i.e. "BMW" not "B M W"
+            if len(spoken) == (2 * len(spoken_no_space) - 1):
+                logging.debug(f"This is weight {weight}")
+                if len(weight) == 0:
+                    additional_labels.extend(
+                        [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]
+                    )
+                else:
+                    additional_labels.extend(
+                        [
+                            [written, spoken_no_space, weight[0]],
+                            [written_capitalized, spoken_no_space.upper(), weight[0]],
+                        ]
+                    )
+        labels += additional_labels
+
+    whitelist = pynini.string_map(labels).invert().optimize()
+    return whitelist
 
 
 class GraphFst:
