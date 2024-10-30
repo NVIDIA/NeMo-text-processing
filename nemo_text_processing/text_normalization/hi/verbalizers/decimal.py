@@ -19,11 +19,9 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     MINUS,
     NEMO_NOT_QUOTE,
     GraphFst,
-    delete_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.hi.taggers.decimal import quantities
-from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class DecimalFst(GraphFst):
