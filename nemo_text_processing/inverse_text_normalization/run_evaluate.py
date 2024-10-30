@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument(
         "--lang",
         help="language",
-        choices=["ar", "de", "en", "es", "es_en", "fr", "hy", "mr", "pt", "ru", "sv", "vi", "zh", 'ja'],
+        choices=["ar", "de", "en", "es", "es_en", "fr", "hi", "hy", "mr", "pt", "ru", "sv", "vi", "zh", 'ja'],
         default="en",
         type=str,
     )
@@ -78,6 +78,10 @@ if __name__ == "__main__":
         sentences_un_normalized, sentences_normalized, _ = training_data_to_sentences(training_data)
         print("- Data: " + str(len(sentences_normalized)) + " sentences")
         sentences_prediction = inverse_normalizer.inverse_normalize_list(sentences_normalized)
+        with open('result.log', 'w') as ofp:
+            for inp, out in zip(sentences_un_normalized, sentences_prediction):
+                ofp.write(f'{inp==out}; {inp}\t{out}\n')
+
         print("- Denormalized. Evaluating...")
         sentences_accuracy = evaluate(
             preds=sentences_prediction, labels=sentences_un_normalized, input=sentences_normalized
