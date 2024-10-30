@@ -21,9 +21,9 @@ from nemo_text_processing.text_normalization.ru.alphabet import RU_ALPHA_OR_SPAC
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone, which includes country code, number part and extension 
+    Finite state transducer for classifying telephone, which includes country code, number part and extension
 
-    E.g 
+    E.g
     "8-913-983-56-01" -> telephone { number_part: "восемь девятьсот тринадцать девятьсот восемьдесят три пятьдесят шесть ноль один" }
 
     Args:
