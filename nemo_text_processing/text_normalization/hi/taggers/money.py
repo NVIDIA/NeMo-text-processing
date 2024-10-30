@@ -15,8 +15,10 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 currency_graph = pynini.string_file(get_abs_path("data/money/currency.tsv"))
 
@@ -24,11 +26,9 @@ currency_graph = pynini.string_file(get_abs_path("data/money/currency.tsv"))
 class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money, suppletive aware, e.g.
-        ₹५० -> money { money { currency_maj: "रुपए" integer_part: "पचास" }
-        ₹५०.५० -> money { currency_maj: "रुपए" integer_part: "पचास" fractional_part: "पचास" currency_min: "centiles" }
-        ₹०.५० -> money { currency_maj: "रुपए" integer_part: "शून्य" fractional_part: "पचास" currency_min: "centiles" }
-    Note that the 'centiles' string is a placeholder to handle by the verbalizer by applying the corresponding minor currency denomination
-
+        ₹1 -> money { currency: "रुपए" integer_part: "एक" }
+        ₹1.2 -> money { currency: "रुपए" integer_part: "एक" fractional_part: "दो" }
+        
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
@@ -36,23 +36,30 @@ class MoneyFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="money", kind="classify")
 
         cardinal_graph = cardinal.final_graph
+        decimal_graph = decimal.final_graph_wo_negative
 
-        currency_major = pynutil.insert('currency_maj: "') + currency_graph + pynutil.insert('"')
-        integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"')
-        fraction = pynutil.insert('fractional_part: "') + cardinal_graph + pynutil.insert('"')
-        currency_minor = pynutil.insert('currency_min: "') + pynutil.insert("centiles") + pynutil.insert('"')
-
-        graph_major_only = currency_major + insert_space + integer
-        graph_major_and_minor = (
-            currency_major + insert_space + integer + pynini.cross(".", " ") + fraction + insert_space + currency_minor
+        optional_graph_negative = pynini.closure(
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
         )
+        self.currency = pynutil.insert("currency: \"") + currency_graph + pynutil.insert("\" ")
+        self.interger = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\" ")
+        self.fraction = pynutil.insert("fractional_part: \"") + cardinal_graph + pynutil.insert("\" ")
 
-        graph_currencies = graph_major_only | graph_major_and_minor
-
-        graph = graph_currencies.optimize()
+        graph_currencies = optional_graph_negative + self.currency + insert_space + self.interger
+        graph_currencies |= (
+            optional_graph_negative
+            + self.currency
+            + insert_space
+            + self.interger
+            + pynutil.delete(".")
+            + insert_space
+            + self.fraction
+        )
+        graph = graph_currencies
+        self.graph = graph.optimize()
         final_graph = self.add_tokens(graph)
         self.fst = final_graph

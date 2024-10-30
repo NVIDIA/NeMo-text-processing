@@ -55,7 +55,7 @@ class VerbalizeFst(GraphFst):
         measure = MeasureFst(cardinal=cardinal, decimal=decimal)
         measure_graph = measure.fst
 
-        money = MoneyFst()
+        money = MoneyFst(cardinal=cardinal, decimal=decimal)
         money_graph = money.fst
 
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
@@ -70,5 +70,9 @@ class VerbalizeFst(GraphFst):
             | money_graph
             | whitelist_graph
         )
+
+        if not deterministic:
+            abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst
+            graph |= abbreviation_graph
 
         self.fst = graph
