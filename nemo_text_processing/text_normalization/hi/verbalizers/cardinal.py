@@ -13,11 +13,9 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil, rewrite
+from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.hi.utils import apply_fst
 
 
 class CardinalFst(GraphFst):
