@@ -1,4 +1,4 @@
-# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,50 +13,79 @@
 # limitations under the License.
 
 import pynini
+from pynini.examples import plurals
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
+    NEMO_ALPHA,
+    NEMO_DIGIT,
     NEMO_NOT_SPACE,
+    NEMO_SIGMA,
     GraphFst,
     convert_space,
+    get_abs_path,
 )
-from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 
 
 class WordFst(GraphFst):
     """
-    Finite state transducer for classifying Hindi words.
-        e.g. सोना -> tokens { name: "सोना" }
+    Finite state transducer for classifying word. Considers sentence boundary exceptions.
+        e.g. sleep -> tokens { name: "sleep" }
 
     Args:
         punctuation: PunctuationFst
         deterministic: if True will provide a single transduction option,
-            for False multiple transductions are generated (used for audio-based normalization)
+            for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, punctuation: PunctuationFst, deterministic: bool = True):
+    def __init__(self, punctuation: GraphFst, deterministic: bool = True):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
 
-        # Define Hindi characters and symbols using pynini.union
-        HINDI_CHAR = pynini.union(
-            *[chr(i) for i in range(ord("ऀ"), ord("ः") + 1)],  # Hindi vowels and consonants
-            *[chr(i) for i in range(ord("अ"), ord("ह") + 1)],  # More Hindi characters
-            *[chr(i) for i in range(ord("ा"), ord("्") + 1)],  # Hindi diacritics
-            *[chr(i) for i in range(ord("०"), ord("९") + 1)],  # Hindi digits
-        ).optimize()
-
-        # Include punctuation in the graph
-        punct = punctuation.graph
+        punct = PunctuationFst().graph
         default_graph = pynini.closure(pynini.difference(NEMO_NOT_SPACE, punct.project("input")), 1)
-        symbols_to_exclude = (pynini.union("$", "€", "₩", "£", "¥", "#", "%") | punct).optimize()
-
-        # Use HINDI_CHAR in the graph
-        graph = pynini.closure(pynini.difference(HINDI_CHAR, symbols_to_exclude), 1)
+        symbols_to_exclude = (pynini.union("$", "€", "₩", "£", "¥", "#", "%") | NEMO_DIGIT).optimize()
+        graph = pynini.closure(pynini.difference(NEMO_NOT_SPACE, symbols_to_exclude), 1)
         graph = pynutil.add_weight(graph, MIN_NEG_WEIGHT) | default_graph
 
-        # Ensure no spaces around punctuation
-        graph = pynini.closure(graph + pynini.closure(punct + graph, 0, 1))
+        # leave phones of format [HH AH0 L OW1] untouched
+        phoneme_unit = pynini.closure(NEMO_ALPHA, 1) + pynini.closure(NEMO_DIGIT)
+        phoneme = (
+            pynini.accep(pynini.escape("["))
+            + pynini.closure(phoneme_unit + pynini.accep(" "))
+            + phoneme_unit
+            + pynini.accep(pynini.escape("]"))
+        )
 
-        self.graph = convert_space(graph)
+        # leave IPA phones of format [ˈdoʊv] untouched, single words and sentences with punctuation marks allowed
+        punct_marks = pynini.union(*punctuation.punct_marks).optimize()
+        stress = pynini.union("ˈ", "'", "ˌ")
+        ipa_phoneme_unit = pynini.string_file(get_abs_path("data/whitelist/ipa_symbols.tsv"))
+        # word in ipa form
+        ipa_phonemes = (
+            pynini.closure(stress, 0, 1)
+            + pynini.closure(ipa_phoneme_unit, 1)
+            + pynini.closure(stress | ipa_phoneme_unit)
+        )
+        # allow sentences of words in IPA format separated with spaces or punct marks
+        delim = (punct_marks | pynini.accep(" ")) ** (1, ...)
+        ipa_phonemes = ipa_phonemes + pynini.closure(delim + ipa_phonemes) + pynini.closure(delim, 0, 1)
+        ipa_phonemes = (pynini.accep(pynini.escape("[")) + ipa_phonemes + pynini.accep(pynini.escape("]"))).optimize()
+
+        if not deterministic:
+            phoneme = (
+                pynini.accep(pynini.escape("["))
+                + pynini.closure(pynini.accep(" "), 0, 1)
+                + pynini.closure(phoneme_unit + pynini.accep(" "))
+                + phoneme_unit
+                + pynini.closure(pynini.accep(" "), 0, 1)
+                + pynini.accep(pynini.escape("]"))
+            ).optimize()
+            ipa_phonemes = (
+                pynini.accep(pynini.escape("[")) + ipa_phonemes + pynini.accep(pynini.escape("]"))
+            ).optimize()
+
+        phoneme |= ipa_phonemes
+        self.graph = plurals._priority_union(convert_space(phoneme.optimize()), graph, NEMO_SIGMA)
         self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
