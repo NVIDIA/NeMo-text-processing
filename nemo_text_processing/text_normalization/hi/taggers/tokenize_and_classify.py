@@ -34,7 +34,6 @@ from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
 
 
@@ -43,7 +42,7 @@ class ClassifyFst(GraphFst):
     Final class that composes all other classification grammars. This class can process an entire sentence including punctuation.
     For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
     More details to deployment at NeMo/tools/text_processing_deployment.
-
+    
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
         deterministic: if True will provide a single transduction option,
@@ -68,11 +67,11 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"hi_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
+                cache_dir, f"en_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far"
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logging.info(f'ClassifyFst.fst was restored from {far_file}.')
         else:
             logging.info(f"Creating ClassifyFst grammars.")
 
@@ -107,15 +106,9 @@ class ClassifyFst(GraphFst):
             logging.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
 
             start_time = time.time()
-            money = MoneyFst(cardinal=cardinal)
+            money = MoneyFst(cardinal=cardinal, decimal=decimal)
             money_graph = money.fst
             logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
-
-            start_time = time.time()
-            whitelist_graph = WhiteListFst(
-                input_case=input_case, deterministic=deterministic, input_file=whitelist
-            ).fst
-            logging.debug(f"whitelist: {time.time() - start_time: .2f}s -- {whitelist_graph.num_states()} nodes")
 
             start_time = time.time()
             punctuation = PunctuationFst(deterministic=deterministic)
@@ -123,8 +116,7 @@ class ClassifyFst(GraphFst):
             logging.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
 
             classify = (
-                pynutil.add_weight(whitelist_graph, 1.01)
-                | pynutil.add_weight(cardinal_graph, 1.1)
+                pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.1)
