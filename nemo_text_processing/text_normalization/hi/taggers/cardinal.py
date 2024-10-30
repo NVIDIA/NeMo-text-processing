@@ -35,8 +35,8 @@ class CardinalFst(GraphFst):
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
-        hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
-        thousand = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
+        # hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
+        # thousand = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
         teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
         def create_graph_suffix(digit_graph, suffix, zeros_counts):
