@@ -38,7 +38,7 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="classify")
 
         cardinal_graph = cardinal.final_graph
-        decimal_graph = decimal.final_graph_wo_negative
+        # decimal_graph = decimal.final_graph_wo_negative
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
