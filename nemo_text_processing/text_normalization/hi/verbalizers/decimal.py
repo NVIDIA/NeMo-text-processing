@@ -15,8 +15,15 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import MINUS, NEMO_NOT_QUOTE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    MINUS,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hi.taggers.decimal import quantities
+from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class DecimalFst(GraphFst):
@@ -44,21 +51,10 @@ class DecimalFst(GraphFst):
         )
         self.optional_quantity = pynini.closure(self.quantity, 0, 1)
 
-        weighted_decimal_exceptions = [
-            pynini.cross(exception_key, exception_value)
-            for exception_key, exception_value in [
-                ("एक दशमलव पाँच", "डेढ़"),
-                ("दो दशमलव पाँच", "ढाई"),
-                # (".५", "साढ़े"),
-                # (".२५", "सवा"),
-                # (".७५", "पौने"),
-            ]
-        ]
-
         graph = self.optional_sign + (
             self.integer + self.quantity | self.integer + delete_space + self.fractional + self.optional_quantity
         )
 
-        self.numbers = graph | pynini.union(*weighted_decimal_exceptions)
+        self.numbers = graph
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

@@ -25,7 +25,10 @@ from pynini.examples import plurals
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
+
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
+
 NEMO_DIGIT = byte.DIGIT
 
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
@@ -42,6 +45,7 @@ NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)])
 TO_UPPER = pynini.invert(TO_LOWER)
+
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 
 

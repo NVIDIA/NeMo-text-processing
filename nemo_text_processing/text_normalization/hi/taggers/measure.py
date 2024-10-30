@@ -16,7 +16,9 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, delete_space, insert_space
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path
+from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class MeasureFst(GraphFst):
@@ -44,17 +46,7 @@ class MeasureFst(GraphFst):
         )
 
         # Define the unit handling
-        unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
-
-        # Handling symbols like x, X, *, -
-        symbol_graph = pynini.string_map(
-            [
-                ("x", "बाई"),
-                ("X", "बाई"),
-                ("*", "बाई"),
-                # ("-", "से")
-            ]
-        )
+        self.unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
 
         graph_measurements = (
             pynutil.insert("decimal { ")
@@ -72,27 +64,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + delete_space
-            + unit
-        )
-
-        # Handling cardinal clubbed with symbol as single token
-        graph_measurements |= (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + cardinal_graph
-            + pynutil.insert("\"")
-            + pynutil.insert(" }")
-            + pynutil.insert(" units: \"")
-            + symbol_graph
-            + pynutil.insert("\" ")
-            + pynutil.insert("} }")
-            + insert_space
-            + pynutil.insert("tokens { cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + cardinal_graph
-            + pynutil.insert("\"")
+            + self.unit
         )
 
         graph = graph_measurements
