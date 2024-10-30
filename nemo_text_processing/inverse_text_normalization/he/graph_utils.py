@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pynini
 from pynini import Far
-from pynini.lib import byte, pynutil, utf8
+from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, delete_space
 from nemo_text_processing.text_normalization.en.utils import load_labels

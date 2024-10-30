@@ -57,9 +57,9 @@ class CardinalFst(GraphFst):
 
         # hundreds
         hundred = pynini.string_map([("מאה", "1"), ("מאתיים", "2")])
-        delete_hundred = pynini.cross("מאות", "")
+        delete_hundred = pynutil.delete(pynini.closure("מאות"))
         graph_hundred = delete_optional_and + (
-            hundred | graph_digit + delete_space + delete_hundred | pynutil.insert("0")
+            hundred | (graph_digit + delete_space + delete_hundred) | pynutil.insert("0")
         )
         graph_hundred += delete_space
         graph_hundred += pynini.union(
