@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import pynutil, rewrite
+from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
 class CardinalFst(GraphFst):
