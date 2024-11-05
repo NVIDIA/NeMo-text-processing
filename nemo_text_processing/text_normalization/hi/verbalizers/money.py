@@ -52,12 +52,10 @@ class MoneyFst(GraphFst):
         )
 
         graph_integer = integer_part + delete_space + currency
-        # graph_integer |= currency + delete_space + integer_part
 
         graph_interger_fraction = (
             integer_part + delete_space + currency + delete_space + fractional_part + delete_space + insert_paise
         )
-        # graph_interger_fraction |= currency + delete_space + integer_part + delete_space + fractional_part + delete_space + insert_paise
 
         graph = graph_integer | graph_interger_fraction
 
