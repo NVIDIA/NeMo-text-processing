@@ -67,24 +67,24 @@ class WhiteListFst(GraphFst):
             graph = pynini.string_map(whitelist)
             return graph
 
-        graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist/tts.tsv"))
-        graph |= pynini.compose(
-            pynini.difference(NEMO_SIGMA, pynini.accep("/")).optimize(),
-            _get_whitelist_graph(input_case, get_abs_path("data/whitelist/symbol.tsv")),
-        ).optimize()
+        # graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist/tts.tsv"))
+        # graph |= pynini.compose(
+        #     pynini.difference(NEMO_SIGMA, pynini.accep("/")).optimize(),
+        #     _get_whitelist_graph(input_case, get_abs_path("data/whitelist/symbol.tsv")),
+        # ).optimize()
 
-        if deterministic:
-            names = get_names()
-            graph |= (
-                pynini.cross(pynini.union("st", "St", "ST"), "Saint")
-                + pynini.closure(pynutil.delete("."))
-                + pynini.accep(" ")
-                + names
-            )
-        else:
-            graph |= _get_whitelist_graph(
-                input_case, get_abs_path("data/whitelist/alternatives.tsv"), keep_punct_add_end=True
-            )
+        # if deterministic:
+        #     names = get_names()
+        #     graph |= (
+        #         pynini.cross(pynini.union("st", "St", "ST"), "Saint")
+        #         + pynini.closure(pynutil.delete("."))
+        #         + pynini.accep(" ")
+        #         + names
+        #     )
+        # else:
+        #     graph |= _get_whitelist_graph(
+        #         input_case, get_abs_path("data/whitelist/alternatives.tsv"), keep_punct_add_end=True
+        #     )
 
         for x in [".", ". "]:
             graph |= (
@@ -93,32 +93,32 @@ class WhiteListFst(GraphFst):
                 + pynini.closure(pynutil.delete("."), 0, 1)
             )
 
-        if not deterministic:
-            multiple_forms_whitelist_graph = get_formats(get_abs_path("data/whitelist/alternatives_all_format.tsv"))
-            graph |= multiple_forms_whitelist_graph
+        # if not deterministic:
+        #     multiple_forms_whitelist_graph = get_formats(get_abs_path("data/whitelist/alternatives_all_format.tsv"))
+        #     graph |= multiple_forms_whitelist_graph
 
-            graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv")) | pynini.string_file(
-                get_abs_path("data/measure/unit_alternatives.tsv")
-            )
-            graph_unit_plural = graph_unit @ SINGULAR_TO_PLURAL
-            units_graph = pynini.compose(NEMO_CHAR ** (3, ...), convert_space(graph_unit | graph_unit_plural))
-            graph |= units_graph
+        #     graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv")) | pynini.string_file(
+        #         get_abs_path("data/measure/unit_alternatives.tsv")
+        #     )
+        #     graph_unit_plural = graph_unit @ SINGULAR_TO_PLURAL
+        #     units_graph = pynini.compose(NEMO_CHAR ** (3, ...), convert_space(graph_unit | graph_unit_plural))
+        #     graph |= units_graph
 
         # convert to states only if comma is present before the abbreviation to avoid converting all caps words,
         # e.g. "IN", "OH", "OK"
         # TODO or only exclude above?
-        states = load_labels(get_abs_path("data/address/state.tsv"))
-        additional_options = []
-        for x, y in states:
-            if input_case == INPUT_LOWER_CASED:
-                x = x.lower()
-            additional_options.append((x, f"{y[0]}.{y[1:]}"))
-            if not deterministic:
-                additional_options.append((x, f"{y[0]}.{y[1:]}."))
+        # states = load_labels(get_abs_path("data/address/state.tsv"))
+        # additional_options = []
+        # for x, y in states:
+        #     if input_case == INPUT_LOWER_CASED:
+        #         x = x.lower()
+        #     additional_options.append((x, f"{y[0]}.{y[1:]}"))
+        #     if not deterministic:
+        #         additional_options.append((x, f"{y[0]}.{y[1:]}."))
 
-        states.extend(additional_options)
-        state_graph = pynini.string_map(states)
-        graph |= pynini.closure(NEMO_NOT_SPACE, 1) + pynini.union(", ", ",") + pynini.invert(state_graph).optimize()
+        # states.extend(additional_options)
+        # state_graph = pynini.string_map(states)
+        # graph |= pynini.closure(NEMO_NOT_SPACE, 1) + pynini.union(", ", ",") + pynini.invert(state_graph).optimize()
 
         if input_file:
             whitelist_provided = _get_whitelist_graph(input_case, input_file)
@@ -132,22 +132,22 @@ class WhiteListFst(GraphFst):
         self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
 
 
-def get_formats(input_f, input_case=INPUT_CASED, is_default=True):
-    """
-    Adds various abbreviation format options to the list of acceptable input forms
-    """
-    multiple_formats = load_labels(input_f)
-    additional_options = []
-    for x, y in multiple_formats:
-        if input_case == INPUT_LOWER_CASED:
-            x = x.lower()
-        additional_options.append((f"{x}.", y))  # default "dr" -> doctor, this includes period "dr." -> doctor
-        additional_options.append((f"{x[0].upper() + x[1:]}", f"{y[0].upper() + y[1:]}"))  # "Dr" -> Doctor
-        additional_options.append((f"{x[0].upper() + x[1:]}.", f"{y[0].upper() + y[1:]}"))  # "Dr." -> Doctor
-    multiple_formats.extend(additional_options)
+# def get_formats(input_f, input_case=INPUT_CASED, is_default=True):
+#     """
+#     Adds various abbreviation format options to the list of acceptable input forms
+#     """
+#     multiple_formats = load_labels(input_f)
+#     additional_options = []
+#     for x, y in multiple_formats:
+#         if input_case == INPUT_LOWER_CASED:
+#             x = x.lower()
+#         additional_options.append((f"{x}.", y))  # default "dr" -> doctor, this includes period "dr." -> doctor
+#         additional_options.append((f"{x[0].upper() + x[1:]}", f"{y[0].upper() + y[1:]}"))  # "Dr" -> Doctor
+#         additional_options.append((f"{x[0].upper() + x[1:]}.", f"{y[0].upper() + y[1:]}"))  # "Dr." -> Doctor
+#     multiple_formats.extend(additional_options)
 
-    if not is_default:
-        multiple_formats = [(x, f"|raw_start|{x}|raw_end||norm_start|{y}|norm_end|") for (x, y) in multiple_formats]
+#     if not is_default:
+#         multiple_formats = [(x, f"|raw_start|{x}|raw_end||norm_start|{y}|norm_end|") for (x, y) in multiple_formats]
 
-    multiple_formats = pynini.string_map(multiple_formats)
-    return multiple_formats
+#     multiple_formats = pynini.string_map(multiple_formats)
+#     return multiple_formats
