@@ -106,7 +106,6 @@ def parse_args():
             'mr',
             'ja',
             'rw',
-            'hi',
         ],
         type=str,
         default='en',
@@ -211,6 +210,12 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.hi.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+        from nemo_text_processing.text_normalization.hi.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.hi.verbalizers.verbalize import (
+            VerbalizeFst as TNVerbalizeFst,
+        )
     elif args.language == 'hu':
         from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
@@ -306,11 +311,6 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
-    elif args.language == 'hi':
-        from nemo_text_processing.text_normalization.hi.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.hi.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
