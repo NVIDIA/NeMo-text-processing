@@ -15,9 +15,11 @@
 import pytest
 from parameterized import parameterized
 
-from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+from nemo_text_processing.text_normalization.normalize import Normalizer
+
 from ..utils import CACHE_DIR, parse_test_case_file
+
 
 class TestDate:
     normalizer = Normalizer(input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
