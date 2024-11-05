@@ -57,13 +57,11 @@ class MoneyFst(GraphFst):
         )
 
         graph_integer = integer_part + delete_space + currency
-        # graph_integer |= currency + delete_space + integer_part
 
         # Graph for rupee currency
         rupee_graph = (
             integer_part + delete_space + rupee_currency + delete_space + fractional_part + delete_space + insert_paise
         )
-        # graph_interger_fraction |= currency + delete_space + integer_part + delete_space + fractional_part + delete_space + insert_paise
 
         # Graph for other currencies
         other_currency_graph = (
