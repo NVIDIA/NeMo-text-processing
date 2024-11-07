@@ -71,8 +71,4 @@ class VerbalizeFst(GraphFst):
             | whitelist_graph
         )
 
-        if not deterministic:
-            abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst
-            graph |= abbreviation_graph
-
         self.fst = graph
