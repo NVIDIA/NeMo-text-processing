@@ -34,12 +34,17 @@ NEMO_DIGIT = byte.DIGIT
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_NON_ZERO = pynini.union("१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_ZERO = "०"
+NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
+NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
+NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00A0"
 NEMO_SPACE = " "
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00A0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
+TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)])
+TO_UPPER = pynini.invert(TO_LOWER)
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 
 
