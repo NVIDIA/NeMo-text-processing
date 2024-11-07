@@ -92,15 +92,15 @@ testTNMeasure() {
   runtest $input
 }
 
-#testTNWhitelist() {
-#  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_whitelist.txt
-#  runtest $input
-#}
+testTNWhitelist() {
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_whitelist.txt
+ runtest $input
+}
 
-#testTNWord() {
-#  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_word.txt
-#  runtest $input
-#}
+testTNWord() {
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_word.txt
+ runtest $input
+}
 
 #testTNAddress() {
 #  input=$PROJECT_DIR/en/data_text_normalization/test_cases_address.txt
