@@ -23,7 +23,8 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 
 class TestDecimal:
-    normalizer = Normalizer(input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
+    normalizer = Normalizer(input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=False)
+    inverse_normalizer = InverseNormalizer(lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('hi/data_text_normalization/test_cases_decimal.txt'))
     @pytest.mark.run_only_on('CPU')
