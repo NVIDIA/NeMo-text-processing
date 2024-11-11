@@ -102,30 +102,6 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     logging.info(f'Created {file_name}')
 
 
-def get_plurals(fst):
-    """
-    Given singular returns plurals
-
-    Args:
-        fst: Fst
-
-    Returns plurals to given singular forms
-    """
-    return SINGULAR_TO_PLURAL @ fst
-
-
-def get_singulars(fst):
-    """
-    Given plural returns singulars
-
-    Args:
-        fst: Fst
-
-    Returns singulars to given plural forms
-    """
-    return PLURAL_TO_SINGULAR @ fst
-
-
 def convert_space(fst) -> 'pynini.FstLike':
     """
     Converts space to nonbreaking space.
@@ -138,44 +114,6 @@ def convert_space(fst) -> 'pynini.FstLike':
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
-
-
-def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
-    labels = load_labels(input_file)
-
-    if input_case == INPUT_CASED:
-        additional_labels = []
-        for written, spoken, *weight in labels:
-            written_capitalized = written[0].upper() + written[1:]
-            additional_labels.extend(
-                [
-                    [written_capitalized, spoken.capitalize()],  # first letter capitalized
-                    [
-                        written_capitalized,
-                        spoken.upper().replace(" AND ", " and "),
-                    ],  # # add pairs with the all letters capitalized
-                ]
-            )
-
-            spoken_no_space = spoken.replace(" ", "")
-            # add abbreviations without spaces (both lower and upper case), i.e. "BMW" not "B M W"
-            if len(spoken) == (2 * len(spoken_no_space) - 1):
-                logging.debug(f"This is weight {weight}")
-                if len(weight) == 0:
-                    additional_labels.extend(
-                        [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]
-                    )
-                else:
-                    additional_labels.extend(
-                        [
-                            [written, spoken_no_space, weight[0]],
-                            [written_capitalized, spoken_no_space.upper(), weight[0]],
-                        ]
-                    )
-        labels += additional_labels
-
-    whitelist = pynini.string_map(labels).invert().optimize()
-    return whitelist
 
 
 class GraphFst:
