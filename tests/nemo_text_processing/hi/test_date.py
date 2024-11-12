@@ -22,7 +22,9 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestDate:
-    normalizer = Normalizer(input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=False)
+    normalizer = Normalizer(
+        input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=False
+    )
     inverse_normalizer = InverseNormalizer(lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('hi/data_text_normalization/test_cases_date.txt'))
