@@ -31,4 +31,3 @@ class TestWhitelist:
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred.strip() == expected.strip()
-
