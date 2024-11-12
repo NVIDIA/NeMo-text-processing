@@ -18,7 +18,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.hi.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_NOT_SPACE,
-    NEMO_SIGMA,
     GraphFst,
     convert_space,
 )
