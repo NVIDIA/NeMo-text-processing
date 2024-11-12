@@ -25,19 +25,6 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
 
 
-import pynini
-from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.hi.graph_utils import (
-    MIN_NEG_WEIGHT,
-    NEMO_NOT_SPACE,
-    NEMO_SIGMA,
-    GraphFst,
-    convert_space,
-)
-from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
-
-
 class WordFst(GraphFst):
     """
     Finite state transducer for classifying Hindi words.
@@ -64,7 +51,7 @@ class WordFst(GraphFst):
         punct = punctuation.graph
         default_graph = pynini.closure(pynini.difference(NEMO_NOT_SPACE, punct.project("input")), 1)
         symbols_to_exclude = (pynini.union("$", "€", "₩", "£", "¥", "#", "%") | punct).optimize()
-        
+
         # Use HINDI_CHAR in the graph
         graph = pynini.closure(pynini.difference(HINDI_CHAR, symbols_to_exclude), 1)
         graph = pynutil.add_weight(graph, MIN_NEG_WEIGHT) | default_graph
