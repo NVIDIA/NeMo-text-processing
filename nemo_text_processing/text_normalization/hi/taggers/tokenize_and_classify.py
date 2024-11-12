@@ -34,8 +34,8 @@ from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
 from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
 
 
 class ClassifyFst(GraphFst):
