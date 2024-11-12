@@ -107,11 +107,11 @@ pipeline {
                 sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
             }
         }
-        stage('L0: Hi ITN grammars') {
-            steps {
-                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
-            }
-        }
+        // stage('L0: Hi ITN grammars') {
+        //     steps {
+        //         sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
+        //     }
+        // }
         
       }
     }
