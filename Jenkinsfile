@@ -27,7 +27,7 @@ pipeline {
     HY_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-17-24-1'
-    HI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/11-12-24-0'
+    HI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/11-13-24-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -104,14 +104,14 @@ pipeline {
     parallel {
         stage('L0: Hi TN grammars') {
             steps {
-                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="१" --cache_dir ${HI_TN_CACHE}'
+                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hi --text="१" --cache_dir ${HI_TN_CACHE}'
             }
         }
-        // stage('L0: Hi ITN grammars') {
-        //     steps {
-        //         sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
-        //     }
-        // }
+        stage('L0: Hi ITN grammars') {
+            steps {
+                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
+            }
+        }
         
       }
     } 
