@@ -17,9 +17,8 @@ import pytest
 from parameterized import parameterized
 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
-from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestOrdinal:
