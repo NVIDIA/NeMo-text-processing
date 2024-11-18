@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pytest
 from parameterized import parameterized
 
@@ -28,9 +27,16 @@ class TestTime:
     )
     inverse_normalizer = InverseNormalizer(lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
 
+    @parameterized.expand(parse_test_case_file('hi/data_text_normalization/test_cases_time.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm(self, test_input, expected):
+        pred = self.normalizer.normalize(test_input, verbose=False)
+        assert pred.strip() == expected.strip()
+
     @parameterized.expand(parse_test_case_file('hi/data_inverse_text_normalization/test_cases_time.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
-        assert pred == expected
+        assert pred.strip() == expected.strip()
