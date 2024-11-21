@@ -30,7 +30,7 @@ from nemo_text_processing.text_normalization.en.utils import get_abs_path
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g. 
+    Finite state transducer for classifying cardinals, e.g.
         -23 -> cardinal { negative: "true"  integer: "twenty three" } }
 
     Args:

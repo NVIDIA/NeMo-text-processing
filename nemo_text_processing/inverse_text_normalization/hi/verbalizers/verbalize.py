@@ -45,7 +45,6 @@ class VerbalizeFst(GraphFst):
         time_graph = TimeFst().fst
         measure_graph = MeasureFst(cardinal, decimal).fst
         money_graph = MoneyFst(cardinal, decimal).fst
-
         word_graph = WordFst().fst
         whitelist_graph = WhiteListFst().fst
 

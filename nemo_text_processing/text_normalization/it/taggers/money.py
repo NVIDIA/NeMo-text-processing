@@ -40,7 +40,7 @@ class MoneyFst(GraphFst):
         "€1" -> money { currency_maj: "euro" integer_part: "un"}
         "€1,000" -> money { currency_maj: "euro" integer_part: "un" }
         "4,2 £" -> money { integer_part: "quattro" currency_maj: "sterline" fractional_part: "venti" currency_min: "penny" preserve_order: true }
-        
+
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
