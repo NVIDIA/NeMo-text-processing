@@ -86,9 +86,7 @@ def export_grammars(output_dir, grammars):
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument(
-        "--output_dir", help="output directory for grammars", required=True, type=str
-    )
+    parser.add_argument("--output_dir", help="output directory for grammars", required=True, type=str)
     parser.add_argument(
         "--language",
         help="language",
@@ -116,18 +114,10 @@ def parse_args():
         default="en",
     )
     parser.add_argument(
-        "--grammars",
-        help="grammars to be exported",
-        choices=["tn_grammars", "itn_grammars"],
-        type=str,
-        required=True,
+        "--grammars", help="grammars to be exported", choices=["tn_grammars", "itn_grammars"], type=str, required=True,
     )
     parser.add_argument(
-        "--input_case",
-        help="input capitalization",
-        choices=["lower_cased", "cased"],
-        default="cased",
-        type=str,
+        "--input_case", help="input capitalization", choices=["lower_cased", "cased"], default="cased", type=str,
     )
     parser.add_argument(
         "--whitelist",
@@ -138,9 +128,7 @@ def parse_args():
         type=lambda x: None if x == "None" else x,
     )
     parser.add_argument(
-        "--overwrite_cache",
-        help="set to True to re-create .far grammar files",
-        action="store_true",
+        "--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true",
     )
     parser.add_argument(
         "--cache_dir",
@@ -154,13 +142,8 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
 
-    if (
-        args.language in ["pt", "ru", "vi", "es_en", "mr"]
-        and args.grammars == "tn_grammars"
-    ):
-        raise ValueError(
-            "Only ITN grammars could be deployed in Sparrowhawk for the selected languages."
-        )
+    if args.language in ["pt", "ru", "vi", "es_en", "mr"] and args.grammars == "tn_grammars":
+        raise ValueError("Only ITN grammars could be deployed in Sparrowhawk for the selected languages.")
     TNPostProcessingFst = None
     ITNPostProcessingFst = None
     if args.language == "en":
@@ -176,9 +159,7 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.en.verbalizers.post_processing import (
             PostProcessingFst as TNPostProcessingFst,
         )
-        from nemo_text_processing.text_normalization.en.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.en.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
 
     elif args.language == "de":
         from nemo_text_processing.inverse_text_normalization.de.taggers.tokenize_and_classify import (
@@ -190,9 +171,7 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.de.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.de.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.de.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "ru":
         from nemo_text_processing.inverse_text_normalization.ru.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -210,9 +189,7 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.es.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.es.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "pt":
         from nemo_text_processing.inverse_text_normalization.pt.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -230,9 +207,7 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.fr.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.fr.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.fr.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "hi":
         from nemo_text_processing.inverse_text_normalization.hi.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -246,16 +221,12 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.hi.verbalizers.post_processing import (
             PostProcessingFst as TNPostProcessingFst,
         )
-        from nemo_text_processing.text_normalization.hi.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.hi.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "hu":
         from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.hu.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.hu.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "sv":
         from nemo_text_processing.inverse_text_normalization.sv.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -266,9 +237,7 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.sv.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.sv.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.sv.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "vi":
         from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -289,9 +258,7 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.zh.verbalizers.post_processing import (
             PostProcessingFst as TNPostProcessingFst,
         )
-        from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "ar":
         from nemo_text_processing.inverse_text_normalization.ar.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -306,9 +273,7 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.it.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.it.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "es_en":
         from nemo_text_processing.inverse_text_normalization.es_en.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -346,19 +311,13 @@ if __name__ == "__main__":
         from nemo_text_processing.text_normalization.ja.verbalizers.post_processing import (
             PostProcessingFst as TNPostProcessingFst,
         )
-        from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
+        from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == "rw":
         from nemo_text_processing.text_normalization.rw.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
-    output_dir = os.path.join(
-        args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}"
-    )
+        from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+    output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
         grammars=locals()[args.grammars](
