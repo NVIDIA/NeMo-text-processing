@@ -51,7 +51,7 @@ class MeasureFst(GraphFst):
             ("x", "बाई"),
             ("X", "बाई"),
             ("*", "बाई"),
-            ("-", "से")
+            # ("-", "से")
         ])
 
         graph_measurements = (
