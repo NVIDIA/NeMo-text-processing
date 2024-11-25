@@ -44,7 +44,15 @@ class MeasureFst(GraphFst):
         )
 
         # Define the unit handling
-        self.unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
+        unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
+
+        # Handling symbols like x, X, *, -
+        symbol_graph = pynini.string_map([
+            ("x", "बाई"),
+            ("X", "बाई"),
+            ("*", "बाई"),
+            # ("-", "से")
+        ])
 
         graph_measurements = (
             pynutil.insert("decimal { ")
