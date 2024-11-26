@@ -35,6 +35,7 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="verbalize")
 
         insert_paise = pynutil.insert("पैसे")
+        insert_cents = pynutil.insert("सेंट्स")
 
         currency = (
             pynutil.delete('currency: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('" ') + insert_space
@@ -44,6 +45,7 @@ class MoneyFst(GraphFst):
             pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('" ') + insert_space
         )
 
+        rupee_currency = pynutil.insert("रुपए")
         fractional_part = (
             pynutil.delete('fractional_part: "')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
@@ -53,11 +55,17 @@ class MoneyFst(GraphFst):
 
         graph_integer = integer_part + delete_space + currency
 
-        graph_interger_fraction = (
-            integer_part + delete_space + currency + delete_space + fractional_part + delete_space + insert_paise
+        # Graph for rupee currency
+        rupee_graph = (
+            integer_part + delete_space + rupee_currency + delete_space + fractional_part + delete_space + insert_paise
         )
 
-        graph = graph_integer | graph_interger_fraction
+        # Graph for other currencies
+        other_currency_graph = (
+            integer_part + delete_space + currency + delete_space + fractional_part + delete_space + insert_cents
+        )
+
+        graph = graph_integer | rupee_graph | other_currency_graph
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
