@@ -53,11 +53,7 @@ class ClassifyFst(GraphFst):
     """
 
     def __init__(
-        self,
-        cache_dir: str = None,
-        overwrite_cache: bool = False,
-        whitelist: str = None,
-        input_case: str = None,
+        self, cache_dir: str = None, overwrite_cache: bool = False, whitelist: str = None, input_case: str = None,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -79,9 +75,9 @@ class ClassifyFst(GraphFst):
             decimal_graph = decimal.fst
             fraction = FractionFst(cardinal)
             fraction_graph = fraction.fst
-            date = DateFst(cardinal)
+            date = DateFst(cardinal, ordinal)
             date_graph = date.fst
-            time = TimeFst()
+            time = TimeFst(cardinal)
             time_graph = time.fst
             measure = MeasureFst(cardinal, decimal)
             measure_graph = measure.fst
