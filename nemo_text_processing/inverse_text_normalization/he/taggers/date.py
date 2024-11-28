@@ -68,12 +68,10 @@ class DateFst(GraphFst):
         month_names_graph = pynutil.insert("month: \"") + month_names + pynutil.insert("\"")
 
         month_name2number = pynini.string_file(get_abs_path("data/months_name2number.tsv"))
-        month_name2number_graph = pynutil.insert("month: \"") + pynini.invert(month_name2number) + pynutil.insert("\"")
+        month_name2number_graph = pynutil.insert("month: \"") + month_name2number + pynutil.insert("\"")
 
-        month_number2number = pynini.string_file(get_abs_path("data/months_number2number.tsv"))
-        month_number2number_graph = (
-            pynutil.insert("month: \"") + pynini.invert(month_number2number) + pynutil.insert("\"")
-        )
+        month_number2number = pynini.string_file(get_abs_path("data/months_ordinal2number.tsv"))
+        month_number2number_graph = (pynutil.insert("month: \"") + month_number2number + pynutil.insert("\""))
 
         all_month_graph = month_name2number_graph | month_number2number_graph
 
