@@ -34,8 +34,8 @@ from nemo_text_processing.inverse_text_normalization.hi.taggers.money import Mon
 from nemo_text_processing.inverse_text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.hi.verbalizers.whitelist import WhiteListFst
 
 
 class ClassifyFst(GraphFst):
@@ -83,7 +83,7 @@ class ClassifyFst(GraphFst):
             money = MoneyFst(cardinal, decimal)
             money_graph = money.fst
             punct_graph = PunctuationFst().fst
-            # whitelist_graph = WhiteListFst(input_file=whitelist).fst
+            whitelist_graph = WhiteListFst().fst
             word_graph = WordFst().fst
 
             classify = (
@@ -96,7 +96,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
-                # |  pynutil.add_weight(whitelist_graph, 1.01)
+                | pynutil.add_weight(whitelist_graph, 1.01)
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
