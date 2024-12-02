@@ -47,7 +47,7 @@ class WhiteListFst(GraphFst):
         super().__init__(name="whitelist", kind="classify")
 
         if input_file is None:
-            input_file = get_abs_path("data/whitelist.tsv")
+            input_file = get_abs_path("data/whitelist/whitelist.tsv")
 
         if not os.path.exists(input_file):
             raise ValueError(f"Whitelist file {input_file} not found")
