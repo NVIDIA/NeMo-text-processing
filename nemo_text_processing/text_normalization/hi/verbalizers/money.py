@@ -16,16 +16,13 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class MoneyFst(GraphFst):
     """
     Finite state transducer for verbalizing money, e.g.
         money { integer_part: "बारह" currency: "रुपए" } -> बारह रुपए
-        money { integer_part: "बारह" currency: "रुपए" fractional_part: "पचास" currency: "पैसे" } -> बारह रुपए पचास पैसे
+        money { integer_part: "बारह" currency: "रुपए" fractional_part: "पचास" minor: "पैसे" } -> बारह रुपए पचास पैसे
 
     Args:
         cardinal: CardinalFst
@@ -37,9 +34,6 @@ class MoneyFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="money", kind="verbalize")
 
-        insert_paise = pynutil.insert("पैसे")
-        insert_cents = pynutil.insert("सेंट्स")
-
         currency = (
             pynutil.delete('currency: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('" ') + insert_space
         )
@@ -48,7 +42,6 @@ class MoneyFst(GraphFst):
             pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('" ') + insert_space
         )
 
-        rupee_currency = pynutil.insert("रुपए")
         fractional_part = (
             pynutil.delete('fractional_part: "')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
@@ -56,19 +49,17 @@ class MoneyFst(GraphFst):
             + insert_space
         )
 
+        minor = (
+            pynutil.delete('minor: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('" ') + insert_space
+        )
+
         graph_integer = integer_part + delete_space + currency
 
-        # Graph for rupee currency
-        rupee_graph = (
-            integer_part + delete_space + rupee_currency + delete_space + fractional_part + delete_space + insert_paise
+        graph_fractional = (
+            integer_part + delete_space + currency + delete_space + fractional_part + delete_space + minor
         )
 
-        # Graph for other currencies
-        other_currency_graph = (
-            integer_part + delete_space + currency + delete_space + fractional_part + delete_space + insert_cents
-        )
-
-        graph = graph_integer | rupee_graph | other_currency_graph
+        graph = graph_integer | graph_fractional
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
