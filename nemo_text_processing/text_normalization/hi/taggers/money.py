@@ -15,10 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, delete_space, insert_space
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 currency_graph = pynini.string_file(get_abs_path("data/money/currency.tsv"))
 
@@ -41,24 +39,30 @@ class MoneyFst(GraphFst):
 
         cardinal_graph = cardinal.final_graph
 
+        insert_paise = pynutil.insert("पैसे")
+        insert_cents = pynutil.insert("सेंट्स")
+
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
         )
-        self.currency = pynutil.insert("currency: \"") + currency_graph + pynutil.insert("\" ")
-        self.interger = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\" ")
-        self.fraction = pynutil.insert("fractional_part: \"") + cardinal_graph + pynutil.insert("\" ")
+        currency = pynutil.insert("currency: \"") + currency_graph + pynutil.insert("\" ")
+        integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\" ")
+        fraction = pynutil.insert("fractional_part: \"") + cardinal_graph + pynutil.insert("\" ")
+        minor = pynutil.insert("minor: \"") + insert_paise + pynutil.insert("\" ")
 
-        graph_currencies = optional_graph_negative + self.currency + insert_space + self.interger
+        graph_currencies = optional_graph_negative + currency + insert_space + integer
         graph_currencies |= (
             optional_graph_negative
-            + self.currency
+            + currency
             + insert_space
-            + self.interger
+            + integer
             + pynutil.delete(".")
             + insert_space
-            + self.fraction
+            + fraction
+            + insert_space
+            + minor
         )
-        graph = graph_currencies
-        self.graph = graph.optimize()
+
+        graph = graph_currencies.optimize()
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
