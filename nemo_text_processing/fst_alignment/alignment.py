@@ -107,22 +107,20 @@ def get_word_segments(text: str) -> List[List[int]]:
     """
     Returns word segments from given text based on white space in form of list of index spans.
     """
-    spans = []
-    cur_span = [0]
+    spans, cur_span = [], []
     for idx, ch in enumerate(text):
-        if len(cur_span) == 0 and ch != " ":
+        if ch == ' ' and len(cur_span) == 1:
             cur_span.append(idx)
-        elif ch == " ":
-            cur_span.append(idx)
-            assert len(cur_span) == 2
-            spans.append(cur_span)
+            spans.append(tuple(cur_span))
             cur_span = []
-        elif idx == len(text) - 1:
-            idx += 1
+        elif ch != ' ' and len(cur_span) == 0:
             cur_span.append(idx)
-            assert len(cur_span) == 2
-            spans.append(cur_span)
+    
+    if len(cur_span) > 0:
+        cur_span.append(len(text))
+        spans.append(tuple(cur_span))
     return spans
+
 
 
 def create_symbol_table() -> pynini.SymbolTable:
