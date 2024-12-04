@@ -18,7 +18,6 @@ from nemo_text_processing.fst_alignment.alignment import get_word_segments
 
 
 class TestFSTAlignmentUtils:
-
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_get_word_segments(self):
@@ -30,10 +29,8 @@ class TestFSTAlignmentUtils:
         words = ["a", "hello", "world", "b", "ccc", "d", "e"]
         for text in [text1, text2, text3, text4, text5]:
             segments = get_word_segments(text)
-            assert ' '.join(text[s:e] for s,e in segments) == ' '.join(words)
-        
+            assert ' '.join(text[s:e] for s, e in segments) == ' '.join(words)
+
         empty_text = ""
         segments = get_word_segments(empty_text)
         assert segments == []
-
-

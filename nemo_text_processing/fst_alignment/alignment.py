@@ -115,12 +115,11 @@ def get_word_segments(text: str) -> List[List[int]]:
             cur_span = []
         elif ch != ' ' and len(cur_span) == 0:
             cur_span.append(idx)
-    
+
     if len(cur_span) > 0:
         cur_span.append(len(text))
         spans.append(tuple(cur_span))
     return spans
-
 
 
 def create_symbol_table() -> pynini.SymbolTable:
