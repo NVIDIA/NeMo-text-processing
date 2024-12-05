@@ -15,14 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import (
-    NEMO_NOT_QUOTE,
-    NEMO_SPACE,
-    GraphFst,
-)
-from nemo_text_processing.text_normalization.hi.data.money.major_minor_currencies import (
-    major_minor_currencies,
-)
+from nemo_text_processing.text_normalization.hi.data.money.major_minor_currencies import major_minor_currencies
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst
 
 
 class MoneyFst(GraphFst):
@@ -42,22 +36,12 @@ class MoneyFst(GraphFst):
     def __init__(self):
         super().__init__(name="money", kind="verbalize")
 
-        currency_major = (
-            pynutil.delete('currency_maj: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-        )
+        currency_major = pynutil.delete('currency_maj: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
 
-        integer_part = (
-            pynutil.delete('integer_part: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-        )
+        integer_part = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
 
         fractional_part = (
-            pynutil.delete('fractional_part: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
+            pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         )
 
         # Handles major denominations only
@@ -71,16 +55,8 @@ class MoneyFst(GraphFst):
 
         # Logic for handling minor denominations
         for major, minor in major_minor_currencies.items():
-            graph_major = (
-                pynutil.delete('currency_maj: "')
-                + pynini.accep(major)
-                + pynutil.delete('"')
-            )
-            graph_minor = (
-                pynutil.delete('currency_min: "')
-                + pynini.cross("centiles", minor)
-                + pynutil.delete('"')
-            )
+            graph_major = pynutil.delete('currency_maj: "') + pynini.accep(major) + pynutil.delete('"')
+            graph_minor = pynutil.delete('currency_min: "') + pynini.cross("centiles", minor) + pynutil.delete('"')
             graph_major_minor_partial = (
                 integer_part
                 + pynini.accep(NEMO_SPACE)
@@ -108,11 +84,7 @@ class MoneyFst(GraphFst):
         graph_major_minor = pynini.union(*major_minor_graphs)
         graph_minor_only = pynini.union(*minor_graphs)
 
-        graph = (
-            graph_major_only
-            | graph_major_minor
-            | pynutil.add_weight(graph_minor_only, -0.1)
-        )
+        graph = graph_major_only | graph_major_minor | pynutil.add_weight(graph_minor_only, -0.1)
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

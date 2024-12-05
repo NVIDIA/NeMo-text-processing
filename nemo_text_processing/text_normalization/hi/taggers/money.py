@@ -15,10 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import (
-    GraphFst,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 currency_graph = pynini.string_file(get_abs_path("data/money/currency.tsv"))
@@ -44,30 +41,14 @@ class MoneyFst(GraphFst):
 
         cardinal_graph = cardinal.final_graph
 
-        currency_major = (
-            pynutil.insert('currency_maj: "') + currency_graph + pynutil.insert('"')
-        )
-        integer = (
-            pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"')
-        )
-        fraction = (
-            pynutil.insert('fractional_part: "') + cardinal_graph + pynutil.insert('"')
-        )
-        currency_minor = (
-            pynutil.insert('currency_min: "')
-            + pynutil.insert("centiles")
-            + pynutil.insert('"')
-        )
+        currency_major = pynutil.insert('currency_maj: "') + currency_graph + pynutil.insert('"')
+        integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"')
+        fraction = pynutil.insert('fractional_part: "') + cardinal_graph + pynutil.insert('"')
+        currency_minor = pynutil.insert('currency_min: "') + pynutil.insert("centiles") + pynutil.insert('"')
 
         graph_major_only = currency_major + insert_space + integer
         graph_major_and_minor = (
-            currency_major
-            + insert_space
-            + integer
-            + pynini.cross(".", " ")
-            + fraction
-            + insert_space
-            + currency_minor
+            currency_major + insert_space + integer + pynini.cross(".", " ") + fraction + insert_space + currency_minor
         )
 
         graph_currencies = graph_major_only | graph_major_and_minor

@@ -20,9 +20,7 @@ from nemo_text_processing.text_normalization.hi.verbalizers.fraction import Frac
 from nemo_text_processing.text_normalization.hi.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hi.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.hi.verbalizers.whitelist import (
-    WhiteListFst,
-)
+from nemo_text_processing.text_normalization.hi.verbalizers.whitelist import WhiteListFst
 
 
 class VerbalizeFst(GraphFst):
@@ -37,9 +35,7 @@ class VerbalizeFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(
-            name="verbalize", kind="verbalize", deterministic=deterministic
-        )
+        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
 
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
