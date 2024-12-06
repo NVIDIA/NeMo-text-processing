@@ -67,13 +67,7 @@ class DecimalFst(GraphFst):
 
         # Define exceptions for common fractional cases
         self.fractional_exceptions = pynini.string_map(
-            [
-                (".५", "साढ़े"),
-                ("१.५", "डेढ़"),
-                ("२.५", "ढाई"),
-                (".२५", "सवा"),
-                (".७५", "पौने"),
-            ]
+            [(".५", "साढ़े"), ("१.५", "डेढ़"), ("२.५", "ढाई"), (".२५", "सवा"), (".७५", "पौने"),]
         )
 
         # Generic fractional part graph
