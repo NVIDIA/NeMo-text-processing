@@ -16,8 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 quantities = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
 
@@ -50,7 +49,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g.
+    Finite state transducer for classifying decimal, e.g. 
         -१२.५००६ अरब -> decimal { negative: "true" integer_part: "बारह"  fractional_part: "पाँच शून्य शून्य छह" quantity: "अरब" }
         १ अरब -> decimal { integer_part: "एक" quantity: "अरब" }
 
@@ -65,40 +64,22 @@ class DecimalFst(GraphFst):
 
         cardinal_graph = cardinal.final_graph
 
-        # Define exceptions for common fractional cases
-        self.fractional_exceptions = pynini.string_map(
-            [(".५", "साढ़े"), ("१.५", "डेढ़"), ("२.५", "ढाई"), (".२५", "सवा"), (".७५", "पौने"),]
-        )
-
-        # Generic fractional part graph
         self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
 
         point = pynutil.delete(".")
 
-        # Optional negative graph
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
         )
 
-        # Integer part graph
+        self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
         self.graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
 
-        # Fractional part graph including exceptions
-        self.graph_fractional = (
-            pynutil.insert("fractional_part: \"")
-            + (self.fractional_exceptions | self.graph)  # Use exceptions first
-            + pynutil.insert("\"")
-        )
-
-        # Final graph without sign
         final_graph_wo_sign = self.graph_integer + point + insert_space + self.graph_fractional
 
-        # Add quantities (e.g., लाख, करोड़) where applicable
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(final_graph_wo_sign, cardinal_graph)
 
-        # Combine with optional negative
         final_graph = optional_graph_negative + self.final_graph_wo_negative
 
         final_graph = self.add_tokens(final_graph)
-
         self.fst = final_graph.optimize()
