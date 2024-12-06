@@ -94,7 +94,7 @@ pipeline {
       }
     }
     stage('L0: Create HI TN/ITN Grammars') {
-    when {
+      when {
         anyOf {
             branch 'main'
             changeRequest target: 'main'
@@ -109,13 +109,13 @@ pipeline {
         }
         stage('L0: Hi ITN grammars') {
             steps {
-                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
+                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --language hi --text="बीस" --cache_dir ${HI_TN_CACHE}'
             }
         }
         
       }
     }
-
+ 
     stage('L0: Create DE/ES TN/ITN Grammars') {
       when {
         anyOf {
