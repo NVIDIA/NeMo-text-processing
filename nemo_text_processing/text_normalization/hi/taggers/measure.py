@@ -16,9 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, delete_space, insert_space
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
 class MeasureFst(GraphFst):
@@ -49,43 +47,12 @@ class MeasureFst(GraphFst):
         unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
 
         # Handling symbols like x, X, *, -
-        symbol_graph = pynini.string_map(
-            [
-                ("x", "बाई"),
-                ("X", "बाई"),
-                ("*", "बाई"),
-                # ("-", "से")
-            ]
-        )
-
-        # Units requiring special fractional handling
-        dynamic_units = pynini.string_map(
-            [
-                ("हफ़्ता", "हफ़्ता"),
-                ("month", "महीना"),
-                ("months", "महीने"),
-                ("yr", "साल"),
-                ("doz", "दर्जन"),
-                ("सप्ताह", "सप्ताह"),
-                ("min", "मिनट"),
-                ("s", "सेकंड"),
-                ("d", "दिन"),
-            ]
-        )
-
-        # Fractional exceptions with dynamic units
-        fractional_exceptions_with_units = (
-            pynutil.insert("measure { decimal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer_part: \"")
-            + decimal.fractional_exceptions  # Apply fractional exceptions
-            + pynutil.insert("\" } units: \"")
-            + dynamic_units
-            + pynutil.insert("\" }")
-        )
-
-        print(decimal.fractional_exceptions)
-        print(apply_fst(decimal.fractional_exceptions, "१.५"))
+        symbol_graph = pynini.string_map([
+            ("x", "बाई"),
+            ("X", "बाई"),
+            ("*", "बाई"),
+            # ("-", "से")
+        ])
 
         graph_measurements = (
             pynutil.insert("decimal { ")
@@ -107,7 +74,7 @@ class MeasureFst(GraphFst):
             + unit
         )
 
-        # Handling cardinal clubbed with symbol as single token
+        # Handling cardinal clubbed with symbol as single token 
         graph_measurements |= (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
@@ -115,9 +82,7 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" }")
-            + pynutil.insert(" units: \"")
-            + symbol_graph
-            + pynutil.insert("\" ")
+            + pynutil.insert(" units: \"") + symbol_graph + pynutil.insert("\" ")
             + pynutil.insert("} }")
             + insert_space
             + pynutil.insert("tokens { cardinal { ")
@@ -127,7 +92,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        graph = fractional_exceptions_with_units | graph_measurements
+        graph = graph_measurements
         self.graph = graph.optimize()
 
         final_graph = self.add_tokens(graph)
