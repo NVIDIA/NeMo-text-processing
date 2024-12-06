@@ -94,7 +94,7 @@ pipeline {
       }
     }
     stage('L0: Create HI TN/ITN Grammars') {
-      when {
+    when {
         anyOf {
             branch 'main'
             changeRequest target: 'main'
@@ -115,7 +115,7 @@ pipeline {
         
       }
     }
- 
+
     stage('L0: Create DE/ES TN/ITN Grammars') {
       when {
         anyOf {
