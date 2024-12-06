@@ -34,10 +34,9 @@ class TestMeasure:
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred.strip() == expected.strip()
 
-
     @parameterized.expand(parse_test_case_file('hi/data_inverse_text_normalization/test_cases_measure.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
-        assert pred == expected
+        assert pred.strip() == expected.strip()
