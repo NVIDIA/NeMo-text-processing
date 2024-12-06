@@ -34,7 +34,6 @@ class TestCardinal:
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred.strip() == expected.strip()
 
-
     @parameterized.expand(parse_test_case_file('hi/data_inverse_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
