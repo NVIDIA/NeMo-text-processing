@@ -58,6 +58,35 @@ class MeasureFst(GraphFst):
             ]
         )
 
+        # Units requiring special fractional handling
+        dynamic_units = pynini.string_map(
+            [
+                ("हफ़्ता", "हफ़्ता"),
+                ("month", "महीना"),
+                ("months", "महीने"),
+                ("yr", "साल"),
+                ("doz", "दर्जन"),
+                ("सप्ताह", "सप्ताह"),
+                ("min", "मिनट"),
+                ("s", "सेकंड"),
+                ("d", "दिन"),
+            ]
+        )
+
+        # Fractional exceptions with dynamic units
+        fractional_exceptions_with_units = (
+            pynutil.insert("measure { decimal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer_part: \"")
+            + decimal.fractional_exceptions  # Apply fractional exceptions
+            + pynutil.insert("\" } units: \"")
+            + dynamic_units
+            + pynutil.insert("\" }")
+        )
+
+        print(decimal.fractional_exceptions)
+        print(apply_fst(decimal.fractional_exceptions, "१.५"))
+
         graph_measurements = (
             pynutil.insert("decimal { ")
             + optional_graph_negative
@@ -98,7 +127,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        graph = graph_measurements
+        graph = fractional_exceptions_with_units | graph_measurements
         self.graph = graph.optimize()
 
         final_graph = self.add_tokens(graph)
