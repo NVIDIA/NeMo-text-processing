@@ -1,6 +1,6 @@
 # Contributions are welcome!
 
-We do all of NeMo-text-processing's development in the open. Contributions from the open-source community are welcome.
+We do all of NeMo-Text-Processing's development in the open. Contributions from the open-source community are welcome.
 
 
 # Pull Requests (PR) Guidelines
@@ -23,23 +23,23 @@ We do all of NeMo-text-processing's development in the open. Contributions from 
 12) Send your PR and request a review
 
 # Notes for Language Contribution
-1) `en/graph_utils.py` is the de facto parent for all other `graph_util` functions. Please refrain from duplicating code logics into new `graph_utils.py` files and default to imports from `en/graph_utils.py` instead. `LANG/graph_utils.py` files should only contain new methods and variables. Not all new languages will require a submodule specific `graph_utils.py` file.
+1) `en/graph_utils.py` and `en/utils.py` are the de facto parents for all other `graph_util` and `utils` functions, respectively. Please refrain from duplicating code logics into new `graph_utils.py` and `utils.py` files and default to imports from `en/graph_utils.py` and `en/utils.py` instead. `LANG/graph_utils.py` and `LANG/utils.py` files should only contain new methods and variables. Not all new languages will require a submodule specific `graph_utils.py` or `utils.py` file.
 
-2) When writing taggers for semiotic classes, you may need to tag additional token properties (e.g. grammatical gender, case) for accurate verbalization. For example, the Spanish ordinal `21.º` carries masculine gender and is verbalized with a specific spelling. As such, it would be desired for the TN tagger to tokenize the string with gender the gender property included:
+2) NeMo-Text-Processing allows creation of FST graphs through two backends: the Python based library itself (via [Pynini](https://www.opengrm.org/twiki/bin/view/GRM/Pynini) backend) and C++ based [Sparrowhawk](https://github.com/google/sparrowhawk/tree/master) in an upstream repo. Due to the typical tradeoffs between these Python and C++ development [languages](https://www.youtube.com/watch?v=VioxsWYzoJk), the NeMo-Text-Processing library assumes development to be performed with the Python library for final deployment in Sparrowhawk/C++. This dual framework approach can lead to issues in development, notably in the case of tagging additional properties during tokenization.
 
-`"21.º" -> ordinal { integer: "vigésimo primero" gender: "masc" }`
+When writing taggers for semiotic classes, you may need to tag additional token properties (e.g. grammatical gender, case) for accurate verbalization. For example, the Spanish ordinal `21.º` carries masculine gender and is verbalized with a specific spelling. As such, it would be desired for the TN tagger to tokenize the string with the gender property included. 
 
-While the NeMo Text Processing library will permit any custom string in the tagger (provided proper parsing in the verbalizer), upstream Sparrowhawk support limits permissable strings, and will fail with custom token properties. As such, tagged properties should be limited to Sparrowhawk supported strings. 
+Naively, one may be tempted to simply include the property string `gender: "masc"` and check for this string during the verbalization phase. **This is not advised.** While the NeMo-Text-Processing library itself will permit any custom string in the tagger, Sparrowhawk limits permissible strings, and will fail with custom property strings. Given the performance loss in not providing Sparrowhawk support, we cannot integrate new graphs that cause Sparrowhawk failure. As such, tagged properties should be limited to Sparrowhawk supported strings. 
 
-For all classes, Sparrowhawk support the `morphosyntactic_features` property, and it is recommended to default to this property for tagging additional features.
+For all classes, Sparrowhawk support the `morphosyntactic_features` property, and it is recommended to default to this property for tagging additional features. For example:
 
 `21.º" -> ordinal { integer: "vigésimo primero" morphosyntactic_features: "masc" }`
 
-For a list of all Sparrowhawk supported properties by class, see [here](https://github.com/yzhang123/sparrowhawk/blob/test/src/proto/semiotic_classes.proto)
+For additional Sparrowhawk supported properties by class, see [here](https://github.com/yzhang123/sparrowhawk/blob/test/src/proto/semiotic_classes.proto)
 
 N.B. The same limitation applies for novel semiotic classes as well. Only predefined classes are supported in Sparrowhawk.
 
-3) Between the tagging and verbalizing stages, both the NeMo Text-Processing and Sparrowhawk engines permute order of tagged properties. That is, assuming the tagger parsed `1ᵉʳ juillet` as:
+3) Between the tagging and verbalizing stages, both the NeMo-Text-Processing and Sparrowhawk engines permute order of tagged properties. That is, assuming the tagger parsed `1ᵉʳ juillet` as:
 
 `date { month: "juillet" day: "1" } }`
 
