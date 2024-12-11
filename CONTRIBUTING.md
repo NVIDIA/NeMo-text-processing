@@ -31,7 +31,7 @@ When writing taggers for semiotic classes, you may need to tag additional token 
 
 Naively, one may be tempted to simply include the property string `gender: "masc"` and check for this string during the verbalization phase. **This is not advised.** While the NeMo-Text-Processing library itself will permit any custom string in the tagger, Sparrowhawk limits permissible strings, and will fail with custom property strings. Given the performance loss in not providing Sparrowhawk support, we cannot integrate new graphs that cause Sparrowhawk failure. As such, tagged properties should be limited to Sparrowhawk supported strings. 
 
-For all classes, Sparrowhawk support the `morphosyntactic_features` property, and it is recommended to default to this property for tagging additional features. For example:
+For all classes, Sparrowhawk supports the `morphosyntactic_features` property, and it is recommended to default to this property for tagging additional features. For example:
 
 `21.º" -> ordinal { integer: "vigésimo primero" morphosyntactic_features: "masc" }`
 
