@@ -21,6 +21,7 @@ from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
+    delete_zero_or_one_space,
     generator_main,
 )
 from nemo_text_processing.inverse_text_normalization.zh.taggers.cardinal import CardinalFst
@@ -92,12 +93,12 @@ class ClassifyFst(GraphFst):
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
-            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
             token_plus_punct = (
                 pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
             )
 
-            graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
+            graph = token_plus_punct + pynini.closure(delete_zero_or_one_space + token_plus_punct)
             graph = delete_space + graph + delete_space
 
             self.fst = graph.optimize()
