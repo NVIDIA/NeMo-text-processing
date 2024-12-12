@@ -30,7 +30,7 @@ class DateFst(GraphFst):
         date { day: "५" month: "जनवरी" year: "२०१२" preserve_order: true } -> ५ जनवरी २०१२
     """
 
-    def __init__(self):
+    def __init__(self, cardinal: GraphFst, ordinal: GraphFst):
         super().__init__(name="date", kind="verbalize")
         month = (
             pynutil.delete("month:")
@@ -61,6 +61,21 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
+        era = (
+            pynutil.delete("era:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
+        morpho_features = (
+            pynutil.delete("morphosyntactic_features:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
+        
         graph_fy = year
         graph_fy |= period + delete_space + year
 
@@ -99,6 +114,12 @@ class DateFst(GraphFst):
 
         # year range
         graph_year_range = year
+        
+        # ordinal century
+        graph_ordinal_century = era + delete_space + morpho_features + delete_extra_space + period
+        
+        #graph_ordinal_range = graph_ordinal + delete_extra_space + period
+        
 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
@@ -122,6 +143,7 @@ class DateFst(GraphFst):
                 | graph_dmyc
                 | graph_myc
                 | graph_year_range
+                | graph_ordinal_century
             )
             + delete_space
             + optional_preserve_order
