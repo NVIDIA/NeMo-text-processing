@@ -65,18 +65,22 @@ class DateFst(GraphFst):
         )
         graph_fy = year
         graph_fy |= period + delete_space + year
+        
         #century
         graph_century = year + delete_extra_space + period
+        
         # month (day) year
         graph_mdy = month + delete_extra_space + day + pynutil.insert(",") + delete_extra_space + year
  
         # (day) month year
         graph_dmy = day + delete_extra_space + month + pynutil.insert(",") + delete_extra_space + year
+        
         # day month year century
         graph_dmyc = day + delete_extra_space + month + pynutil.insert(",") + delete_extra_space + year + delete_extra_space + period
  
         # month year
         graph_my = month + pynini.closure(delete_extra_space + year, 0, 1)
+        
         # month year century
         graph_myc = month + pynutil.insert(",") + delete_extra_space + year + delete_extra_space + period
  
@@ -85,9 +89,12 @@ class DateFst(GraphFst):
  
         # day month
         graph_dm = day + pynini.closure(delete_extra_space + month, 0, 1)
-        # date range
-        graph_year_range = year + delete_extra_space + pynutil.insert("-") + delete_extra_space + year
- 
+        
+        # year range
+        graph_year_range = year
+        
+        # date exceptions
+        #graph_date_exceptions = day + delete_extra_space + pynutil.insert("की") + delete_extra_space + month
  
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
@@ -107,7 +114,8 @@ class DateFst(GraphFst):
  
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
-date = DateFst()
+        
+#date = DateFst()
 #input_text = 'date { period: "सन " year: "२०१९"  }'
 #input_text = 'date { day: "१७"month: "अप्रैल"year: "२००२" }'
 #input_text = 'date { day: "२५" month: "मार्च" year: "२०१०"  }'
@@ -116,6 +124,7 @@ date = DateFst()
 #input_text = 'date { year: "४४००" text: "ईस्वी" }'
 #input_text = 'date { year: "४४००" text: "ई. पू."  }'
 #input_text = 'date { day: "२५" month: "मार्च" year: "२०१०" text: "ई. पू." }'
-input_text = 'date { year: "१९२०" year: "१९२६" }'
-output = apply_fst(input_text, date.fst)
-print(output)
+#input_text = 'date { year: "१९२०-२६" }'
+#input_text = 'date { month: "फ़रवरी" day: "२०" }'
+#output = apply_fst(input_text, date.fst)
+#print(output)
