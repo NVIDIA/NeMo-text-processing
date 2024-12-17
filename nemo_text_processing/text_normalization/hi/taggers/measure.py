@@ -62,8 +62,9 @@ class MeasureFst(GraphFst):
             + decimal_graph
             + pynutil.insert(" }")
             + delete_space
-            + self.unit
+            + unit
         )
+
         graph_measurements |= (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
