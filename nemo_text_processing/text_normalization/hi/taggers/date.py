@@ -27,6 +27,7 @@ days = pynini.string_file(get_abs_path("data/date/days.tsv"))
 months = pynini.string_file(get_abs_path("data/date/months.tsv"))
 year_suffix = pynini.string_file(get_abs_path("data/date/year_suffix.tsv"))
 
+
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g.
