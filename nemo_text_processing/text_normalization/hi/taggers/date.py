@@ -14,7 +14,6 @@
 
 import pynini
 from pynini.lib import pynutil
-
 from nemo_text_processing.text_normalization.hi.graph_utils import (
     NEMO_HI_DIGIT,
     NEMO_HI_NON_ZERO,
@@ -22,12 +21,11 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     GraphFst,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 days = pynini.string_file(get_abs_path("data/date/days.tsv"))
 months = pynini.string_file(get_abs_path("data/date/months.tsv"))
-
+year_suffix = pynini.string_file(get_abs_path("data/date/year_suffix.tsv"))
 
 class DateFst(GraphFst):
     """
@@ -69,6 +67,9 @@ class DateFst(GraphFst):
 
         graph_mm_dd += pynutil.insert(" preserve_order: true ")
 
+        # Graph for era
+        era_graph = pynutil.insert("era: \"") + year_suffix + pynutil.insert("\"") + insert_space
+
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
         )
@@ -81,6 +82,10 @@ class DateFst(GraphFst):
 
         graph_mm_yyyy = months_graph + delete_dash + years_graph
 
+        graph_year_suffix = era_graph
+
+        graph_range = pynini.cross("-", " से ")
+
         # default assume dd_mm_yyyy
 
         final_graph = (
@@ -89,6 +94,8 @@ class DateFst(GraphFst):
             | pynutil.add_weight(graph_dd_mm_yyyy, -0.001)
             | graph_mm_dd_yyyy
             | graph_mm_yyyy
+            | pynutil.add_weight(graph_year_suffix, -0.001)
+            # | pynutil.add_weight(graph_range, -0.001)
         )
 
         self.final_graph = final_graph.optimize()
