@@ -44,7 +44,10 @@ class MeasureFst(GraphFst):
         )
 
         # Define the unit handling
-        self.unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
+        unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
+
+        # Handling symbols like x, X, *
+        symbol_graph = pynini.string_map([("x", "बाई"), ("X", "बाई"), ("*", "बाई"),])
 
         graph_measurements = (
             pynutil.insert("decimal { ")
@@ -52,8 +55,9 @@ class MeasureFst(GraphFst):
             + decimal_graph
             + pynutil.insert(" }")
             + delete_space
-            + self.unit
+            + unit
         )
+
         graph_measurements |= (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
@@ -62,7 +66,27 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + delete_space
-            + self.unit
+            + unit
+        )
+
+        # Handling cardinal clubbed with symbol as single token
+        graph_measurements |= (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(" }")
+            + pynutil.insert(" units: \"")
+            + symbol_graph
+            + pynutil.insert("\" ")
+            + pynutil.insert("} }")
+            + insert_space
+            + pynutil.insert("tokens { cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
         )
 
         graph = graph_measurements

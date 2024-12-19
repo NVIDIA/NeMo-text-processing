@@ -16,6 +16,8 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class DateFst(GraphFst):
@@ -39,6 +41,8 @@ class DateFst(GraphFst):
 
         year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
+        era = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+
         graph_dd_mm = day + NEMO_SPACE + month
 
         graph_mm_dd = month + NEMO_SPACE + day
@@ -48,6 +52,8 @@ class DateFst(GraphFst):
         graph_mm_dd_yyyy = month + NEMO_SPACE + day + NEMO_SPACE + year
 
         graph_mm_yyyy = month + NEMO_SPACE + year
+
+        graph_era = era
 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
@@ -60,7 +66,7 @@ class DateFst(GraphFst):
         )
 
         self.graph = (
-            (graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy)
+            (graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy | graph_era)
             + delete_space
             + optional_preserve_order
         )
