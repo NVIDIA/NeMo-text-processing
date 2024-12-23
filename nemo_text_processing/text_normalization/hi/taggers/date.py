@@ -71,6 +71,8 @@ class DateFst(GraphFst):
         # Graph for era
         era_graph = pynutil.insert("era: \"") + year_suffix + pynutil.insert("\"") + insert_space
 
+        range_graph = pynini.cross("-", "से")
+
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
         )
@@ -85,7 +87,15 @@ class DateFst(GraphFst):
 
         graph_year_suffix = era_graph
 
-        graph_range = pynini.cross("-", " से ")
+        graph_range = (
+            pynutil.insert("text: \"")
+            + (cardinal.final_graph | graph_year)
+            + insert_space 
+            + range_graph
+            + insert_space
+            + (cardinal.final_graph | graph_year)
+            + pynutil.insert("\"")
+        )
 
         # default assume dd_mm_yyyy
 
@@ -96,7 +106,7 @@ class DateFst(GraphFst):
             | graph_mm_dd_yyyy
             | graph_mm_yyyy
             | pynutil.add_weight(graph_year_suffix, -0.001)
-            # | pynutil.add_weight(graph_range, -0.001)
+            | pynutil.add_weight(graph_range, -0.001)
         )
 
         self.final_graph = final_graph.optimize()
