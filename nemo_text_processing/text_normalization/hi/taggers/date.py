@@ -90,7 +90,7 @@ class DateFst(GraphFst):
         graph_range = (
             pynutil.insert("text: \"")
             + (cardinal.final_graph | graph_year)
-            + insert_space 
+            + insert_space
             + range_graph
             + insert_space
             + (cardinal.final_graph | graph_year)
