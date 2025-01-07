@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, NEMO_CHAR
+from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_CHAR, NEMO_DIGIT, NEMO_SIGMA, GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
 
 
@@ -360,8 +360,12 @@ class CardinalFst(GraphFst):
         # delete unnecessary leading zero
         delete_leading_zeros = pynutil.delete(pynini.closure("0"))
         stop_at_non_zero = pynini.difference(NEMO_DIGIT, "0")
-        rest_of_cardinal = (pynini.closure(NEMO_DIGIT) + pynini.closure(NEMO_CHAR, 1)) | (pynini.closure(NEMO_DIGIT)) # general use cases for other graphs
-        rest_of_cardinal_2 = (pynini.closure(NEMO_DIGIT) + pynini.closure(NEMO_CHAR, 1)) | (pynini.closure(NEMO_DIGIT, 2)) # for normal cardinal graph
+        rest_of_cardinal = (pynini.closure(NEMO_DIGIT) + pynini.closure(NEMO_CHAR, 1)) | (
+            pynini.closure(NEMO_DIGIT)
+        )  # general use cases for other graphs
+        rest_of_cardinal_2 = (pynini.closure(NEMO_DIGIT) + pynini.closure(NEMO_CHAR, 1)) | (
+            pynini.closure(NEMO_DIGIT, 2)
+        )  # for normal cardinal graph
 
         # output for cardinal grammar without leading zero
         clean_cardinal = delete_leading_zeros + stop_at_non_zero + rest_of_cardinal
@@ -382,6 +386,11 @@ class CardinalFst(GraphFst):
         optional_minus_graph = (pynini.closure(pynutil.insert("negative: ") + pynini.cross("负", '"-"'))) | (
             pynini.closure(pynutil.insert("negative: ") + pynini.cross("負", '"-"'))
         )
-        final_graph = optional_minus_graph + pynutil.insert('integer: "') +  ((graph | zero) @ clean_cardinal_2) + pynutil.insert('"')
+        final_graph = (
+            optional_minus_graph
+            + pynutil.insert('integer: "')
+            + ((graph | zero) @ clean_cardinal_2)
+            + pynutil.insert('"')
+        )
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
