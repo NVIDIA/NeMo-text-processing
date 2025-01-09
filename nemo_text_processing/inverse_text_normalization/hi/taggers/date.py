@@ -69,7 +69,6 @@ class DateFst(GraphFst):
         graph_date_exceptions = self.month + delete_space + pynutil.delete("की") + delete_space + self.day
         graph_date_exceptions += pynutil.insert("preserve_order: true")
 
-        
         graph = (graph_day_month | graph_month_day | graph_day_month_year | graph_month_day_year | graph_month_year | graph_saal | graph_AD_BC | graph_day_month_year_century | graph_month_year_century | graph_year_range | graph_date_exceptions)
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
