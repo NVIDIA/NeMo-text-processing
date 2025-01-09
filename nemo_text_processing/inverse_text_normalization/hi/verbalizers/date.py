@@ -21,9 +21,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     delete_extra_space,
     delete_space,
 )
- 
-from nemo_text_processing.inverse_text_normalization.hi.utils import apply_fst
- 
+  
  
 class DateFst(GraphFst):
     """
@@ -93,9 +91,6 @@ class DateFst(GraphFst):
         # year range
         graph_year_range = year
         
-        # date exceptions
-        #graph_date_exceptions = day + delete_extra_space + pynutil.insert("की") + delete_extra_space + month
- 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
             | pynutil.delete("field_order:")
@@ -105,7 +100,7 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
             + delete_space
         )
- 
+
         final_graph = (
             (graph_fy | graph_mdy | graph_dmy | graph_my | graph_md | graph_dm | graph_century | graph_dmyc | graph_myc | graph_year_range)
             + delete_space
@@ -114,17 +109,3 @@ class DateFst(GraphFst):
  
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()
-        
-#date = DateFst()
-#input_text = 'date { period: "सन " year: "२०१९"  }'
-#input_text = 'date { day: "१७"month: "अप्रैल"year: "२००२" }'
-#input_text = 'date { day: "२५" month: "मार्च" year: "२०१०"  }'
-#input_text = 'date { day: "१७" month: "अक्टूबर" year: "२०१९"  }'
-#input_text = 'date { year: "४४००"  }'
-#input_text = 'date { year: "४४००" text: "ईस्वी" }'
-#input_text = 'date { year: "४४००" text: "ई. पू."  }'
-#input_text = 'date { day: "२५" month: "मार्च" year: "२०१०" text: "ई. पू." }'
-#input_text = 'date { year: "१९२०-२६" }'
-#input_text = 'date { month: "फ़रवरी" day: "२०" }'
-#output = apply_fst(input_text, date.fst)
-#print(output)
