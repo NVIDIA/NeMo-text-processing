@@ -16,22 +16,25 @@
 # Dockerfile for C++ (inverse) text normalization backend Sparrowhawk https://github.com/google/sparrowhawk
 
 # set base image (host OS)
-FROM conda/miniconda3
+FROM continuumio/miniconda3 
+
 
 # set the working directory in the container
 WORKDIR /workspace
 
 # install dependencies
 RUN echo "deb http://archive.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list
+RUN apt-get update &&  apt-get upgrade -y &&   apt-get install -y --reinstall build-essential pkg-config  git make  wget
 RUN conda install conda-build -y
-RUN apt-get update &&     apt-get install -y --reinstall build-essential pkg-config &&     apt-get upgrade -y &&     apt-get install -y git &&     apt-get install make
+RUN conda install -c conda-forge thrax=1.3.4 -y
 RUN git clone https://github.com/google/re2 
 RUN cd re2 && git checkout tags/2022-02-01 && make && make install
-RUN apt-get install build-essential -y && apt-get install wget -y
 RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
 RUN tar xzvf protobuf-2.5.0.tar.gz
 RUN cd protobuf-2.5.0 && ./configure && make && make install && ldconfig
-RUN conda install -c conda-forge thrax=1.3.4 -y
+RUN printf  "# Conda lib path \n/opt/conda/lib" > /etc/ld.so.conf.d/conda.so.conf
+ENV CPPFLAGS="-I/opt/conda/include"
+ENV LDFLAGS="-L/opt/conda/lib"
 RUN git clone https://github.com/anand-nv/sparrowhawk.git && cd sparrowhawk &&  git checkout nemo_tests &&   apt-get install -y autoconf &&     bash autoreconf && ./configure && make && make install && ldconfig
 RUN git clone https://github.com/kward/shunit2.git
 RUN echo "DONE"
