@@ -62,9 +62,9 @@ class DateFst(GraphFst):
 
         years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
 
-        graph_dd_mm = days_graph + delete_dash + months_graph
+        graph_dd_mm = days_graph + (delete_dash | pynini.accep("")) + months_graph
 
-        graph_mm_dd = months_graph + delete_dash + days_graph
+        graph_mm_dd = months_graph + (delete_dash | pynini.accep("")) + days_graph
 
         graph_mm_dd += pynutil.insert(" preserve_order: true ")
 
@@ -83,7 +83,7 @@ class DateFst(GraphFst):
 
         graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
 
-        graph_mm_yyyy = months_graph + delete_dash + years_graph
+        graph_mm_yyyy = months_graph + (delete_dash | pynini.accep("")) + years_graph + pynutil.insert(" preserve_order: true ")
 
         graph_year_suffix = era_graph
 
@@ -95,6 +95,7 @@ class DateFst(GraphFst):
             + insert_space
             + (cardinal.final_graph | graph_year)
             + pynutil.insert("\"")
+            + pynutil.insert(" preserve_order: true ")
         )
 
         # default assume dd_mm_yyyy
@@ -106,7 +107,7 @@ class DateFst(GraphFst):
             | graph_mm_dd_yyyy
             | graph_mm_yyyy
             | pynutil.add_weight(graph_year_suffix, -0.001)
-            | pynutil.add_weight(graph_range, -0.001)
+            | pynutil.add_weight(graph_range, -0.005)
         )
 
         self.final_graph = final_graph.optimize()
