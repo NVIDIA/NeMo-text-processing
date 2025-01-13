@@ -1,4 +1,4 @@
-cdifflib
+cdifflib==1.2.6  # versions 1.2.7 and 1.2.8 use deprecated `ext-modules`
 editdistance
 inflect
 joblib
