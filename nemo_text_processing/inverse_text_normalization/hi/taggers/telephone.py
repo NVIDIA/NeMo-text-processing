@@ -22,7 +22,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.inverse_text_normalization.hi.utils import apply_fst, get_abs_path
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
 class TelephoneFst(GraphFst):
@@ -132,21 +132,3 @@ class TelephoneFst(GraphFst):
         )
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
-
-
-# from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-# cardinal = CardinalFst()
-# telephone = TelephoneFst(cardinal)
-# input_text = "प्लस इक्यानवे nine four one one one two three four one two"
-# input_text = "प्लस इक्यानवे नौ आठ सात छह पांच चार तीन दो एक शून्य"
-# input_text = "plus nine eight zero nine four one one one two three four one"
-# input_text = "plus sixty two nine four one one one two three"
-# input_text = "प्लस  नौ एक नौ आठ सात छह पांच चार तीन दो एक शून्य"
-# input_text = 'Plus ninety one नौ सात छह चार एक zero five eight two three'
-# input_text = "plus eleven nine four one one one two three"
-# input_text = "zero eight zero two nine four one one one two" #landline example of bangalore
-# input_text = "zero eleven two nine four one one one two" #Delhi
-# input_text = "zero four zero two seven eight one eight three nine" #hyd
-# input_text = "शून्य सात नौ एक नौ आठ सात छह पांच चार"
-# output = apply_fst(input_text, telephone.fst)
-# print(output)

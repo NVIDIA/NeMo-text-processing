@@ -1,7 +1,6 @@
 प्लस इक्यानवे nine four one one one two three four one two~+९१ ९४१११२३४१२
 प्लस इक्यानवे नौ आठ सात छह पांच चार तीन दो एक शून्य~+९१ ९८७६५४३२१०
 plus nine eight nine four one one one two three four zero one~+९८ ९४१११२३४०१
-plus sixty two nine four one one one two three~+६२ ९४१११२३
 प्लस  नौ एक नौ आठ सात छह पांच चार तीन दो एक शून्य~+९१ ९८७६५४३२१०
 plus eleven nine four one one one two three~+११ ९४१११२३
 zero eleven nine four one one one two three~०११ ९४१११२३
@@ -23,3 +22,4 @@ ZERO seven three चार पाँच छह सात आठ नौ शून
 शून्य चार शून्य पाँच चार एक दो सात तीन आठ~०४० ५४१२७३८
 ZERO seven three four five six seven eight nine zero~०७३ ४५६७८९०
 zero two eight seven six five four three two seven~०२८ ७६५४३२७
+PLUS eighty one nine seven four seven two zero zero one one eight~+८१ ९७४७२००११८
