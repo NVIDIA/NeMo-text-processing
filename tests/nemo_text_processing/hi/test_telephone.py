@@ -23,6 +23,7 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 class TestTelephone:
     inverse_normalizer = InverseNormalizer(lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
+
     @parameterized.expand(parse_test_case_file('hi/data_inverse_text_normalization/test_cases_telephone.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit

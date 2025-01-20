@@ -33,8 +33,8 @@ from nemo_text_processing.inverse_text_normalization.hi.taggers.measure import M
 from nemo_text_processing.inverse_text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.punctuation import PunctuationFst
-from nemo_text_processing.inverse_text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.telephone import TelephoneFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.word import WordFst
 

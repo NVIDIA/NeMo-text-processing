@@ -16,8 +16,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.hi.utils import apply_fst
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class TelephoneFst(GraphFst):
@@ -54,20 +54,21 @@ class TelephoneFst(GraphFst):
         delete_tokens = self.delete_tokens(optional_country_code + number_part)
         delete_tokens |= self.delete_tokens(optional_city_code + number_part)
         self.fst = delete_tokens.optimize()
-        
-#from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-#cardinal = CardinalFst()
-#telephone = TelephoneFst(cardinal)
-#input_text = 'telephone { country_code: "९१" number_part: "९८७६५४३२१०"  }'
-#input_text = 'telephone { country_code: "९१" number_part: "९४१११२३४१२"  }'
-#input_text = 'telephone { country_code: "९१" number_part: "९४२२२२२२२"  }'
-#input_text = 'telephone{ country_code: "९१" number_part: "११२३४५६७८९" }'
-#input_text = 'telephone{ country_code: "९१" number_part: "९८७६५४३२११" }'
-#input_text = 'telephone{ country_code: "९१" number_part: "९४५६७८९०१२" }'
-#input_text = 'telephone{ country_code: "९१" number_part: "९५६७८९०१२३" }'
-#input_text = 'telephone { city_code: "७९" number_part: "१९८७६५४"  }'
-#input_text = 'telephone { city_code: "४०" number_part: "२७८१८३९"  }'
-#input_text = 'telephone { city_code: "११" number_part: "२९४१११२"  }'
-#input_text = 'telephone { city_code: "८०" number_part: "२९४१११२"  }'
-#output = apply_fst(input_text, telephone.fst)
-#print(output)
+
+
+# from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
+# cardinal = CardinalFst()
+# telephone = TelephoneFst(cardinal)
+# input_text = 'telephone { country_code: "९१" number_part: "९८७६५४३२१०"  }'
+# input_text = 'telephone { country_code: "९१" number_part: "९४१११२३४१२"  }'
+# input_text = 'telephone { country_code: "९१" number_part: "९४२२२२२२२"  }'
+# input_text = 'telephone{ country_code: "९१" number_part: "११२३४५६७८९" }'
+# input_text = 'telephone{ country_code: "९१" number_part: "९८७६५४३२११" }'
+# input_text = 'telephone{ country_code: "९१" number_part: "९४५६७८९०१२" }'
+# input_text = 'telephone{ country_code: "९१" number_part: "९५६७८९०१२३" }'
+# input_text = 'telephone { city_code: "७९" number_part: "१९८७६५४"  }'
+# input_text = 'telephone { city_code: "४०" number_part: "२७८१८३९"  }'
+# input_text = 'telephone { city_code: "११" number_part: "२९४१११२"  }'
+# input_text = 'telephone { city_code: "८०" number_part: "२९४१११२"  }'
+# output = apply_fst(input_text, telephone.fst)
+# print(output)
