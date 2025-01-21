@@ -70,6 +70,14 @@ else
   WHITELIST=""
 fi
 
+# check if WHITELIST file exists
+if [[ ${WHITELIST} != "" ]] && [[ -f $WHITELIST ]]; then
+  WHITELIST="--whitelist=${WHITELIST} "
+  echo "[I] Whitelist file wasn't provided or doesn't exist, using default"
+else
+  WHITELIST=""
+fi
+
 if [[ ${OVERWRITE_CACHE,,} == "true" ]] ; then
   OVERWRITE_CACHE="--overwrite_cache "
 else
