@@ -18,7 +18,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.hi.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_NOT_SPACE,
-    NEMO_SIGMA,
     GraphFst,
     convert_space,
 )
@@ -44,7 +43,6 @@ class WordFst(GraphFst):
             *[chr(i) for i in range(ord("ऀ"), ord("ः") + 1)],  # Hindi vowels and consonants
             *[chr(i) for i in range(ord("अ"), ord("ह") + 1)],  # More Hindi characters
             *[chr(i) for i in range(ord("ा"), ord("्") + 1)],  # Hindi diacritics
-            *[chr(i) for i in range(ord("०"), ord("९") + 1)],  # Hindi digits
         ).optimize()
 
         # Include punctuation in the graph

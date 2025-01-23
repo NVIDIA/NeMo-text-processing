@@ -16,8 +16,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
-from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class DateFst(GraphFst):

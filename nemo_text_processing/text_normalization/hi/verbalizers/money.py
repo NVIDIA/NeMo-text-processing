@@ -15,7 +15,17 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.data.money.major_minor_currencies import major_minor_currencies
+major_minor_currencies = {
+    "रुपए": "पैसे",
+    "पाउंड": "पेंस",
+    "वॉन": "जिओन",
+    "डॉलर": "सेंट",
+    "लीरा": "कुरस",
+    "टका": "पैसे",
+    "येन": "सेन",
+    "नाइरा": "कोबो",
+    "यूरो": "सेंट",
+}
 from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst
 
 

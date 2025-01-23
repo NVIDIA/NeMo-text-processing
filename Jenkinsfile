@@ -104,7 +104,7 @@ pipeline {
     parallel {
         stage('L0: Hi TN grammars') {
             steps {
-                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang="hi" --text="१" --cache_dir ${HI_TN_CACHE}'
+                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hi --text="१" --cache_dir ${HI_TN_CACHE}'
             }
         }
         stage('L0: Hi ITN grammars') {
