@@ -26,6 +26,7 @@ from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 days = pynini.string_file(get_abs_path("data/date/days.tsv"))
 months = pynini.string_file(get_abs_path("data/date/months.tsv"))
+year_suffix = pynini.string_file(get_abs_path("data/date/year_suffix.tsv"))
 
 
 class DateFst(GraphFst):
@@ -62,11 +63,16 @@ class DateFst(GraphFst):
 
         years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
 
-        graph_dd_mm = days_graph + delete_dash + months_graph
+        graph_dd_mm = days_graph + (delete_dash | pynini.accep("")) + months_graph
 
-        graph_mm_dd = months_graph + delete_dash + days_graph
+        graph_mm_dd = months_graph + (delete_dash | pynini.accep("")) + days_graph
 
         graph_mm_dd += pynutil.insert(" preserve_order: true ")
+
+        # Graph for era
+        era_graph = pynutil.insert("era: \"") + year_suffix + pynutil.insert("\"") + insert_space
+
+        range_graph = pynini.cross("-", "से")
 
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
@@ -78,7 +84,22 @@ class DateFst(GraphFst):
 
         graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
 
-        graph_mm_yyyy = months_graph + delete_dash + years_graph
+        graph_mm_yyyy = (
+            months_graph + (delete_dash | pynini.accep("")) + years_graph + pynutil.insert(" preserve_order: true ")
+        )
+
+        graph_year_suffix = era_graph
+
+        graph_range = (
+            pynutil.insert("text: \"")
+            + (cardinal.final_graph | graph_year)
+            + insert_space
+            + range_graph
+            + insert_space
+            + (cardinal.final_graph | graph_year)
+            + pynutil.insert("\"")
+            + pynutil.insert(" preserve_order: true ")
+        )
 
         # default assume dd_mm_yyyy
 
@@ -88,6 +109,8 @@ class DateFst(GraphFst):
             | pynutil.add_weight(graph_dd_mm_yyyy, -0.001)
             | graph_mm_dd_yyyy
             | graph_mm_yyyy
+            | pynutil.add_weight(graph_year_suffix, -0.001)
+            | pynutil.add_weight(graph_range, -0.005)
         )
 
         self.final_graph = final_graph.optimize()
