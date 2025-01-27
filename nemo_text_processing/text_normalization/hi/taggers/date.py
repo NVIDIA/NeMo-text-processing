@@ -92,9 +92,7 @@ class DateFst(GraphFst):
 
         graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
 
-        graph_mm_yyyy = (
-            months_graph + delete_dash + insert_space + years_graph
-        )
+        graph_mm_yyyy = months_graph + delete_dash + insert_space + years_graph
 
         graph_year_suffix = era_graph
 
