@@ -15,10 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
-    GraphFst,
-    delete_space,
-)
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
@@ -87,7 +84,7 @@ class TelephoneFst(GraphFst):
             + pynini.closure(english_digit_graph + delete_space, 2, 5)
             + pynutil.insert("\" ")
         )
- 
+
         self.city_extension = self.city_code_hindi | self.city_code_english
 
         # 7-digit landline graph in hindi and english digits
@@ -101,7 +98,7 @@ class TelephoneFst(GraphFst):
             + pynini.closure(english_digit_graph + delete_space, 7)
             + pynutil.insert("\" ")
         )
-        
+
         self.landline = self.landline_hindi | self.landline_english
 
         self.pincode_in_hindi = (
@@ -143,15 +140,11 @@ class TelephoneFst(GraphFst):
         )
         graph_number_with_english_digit = delete_plus + delete_space + self.country_code + self.english_digit
 
-        graph_landline_with_extension = (
-            delete_zero + delete_space + self.city_extension + delete_space + self.landline
-        )
+        graph_landline_with_extension = delete_zero + delete_space + self.city_extension + delete_space + self.landline
 
         graph_pincode = self.pincode_in_hindi | self.pincode_in_english
 
-        graph_credit_card_last_digits = (
-            self.credit_card_last_digits_hindi | self.credit_card_last_digits_english
-        )
+        graph_credit_card_last_digits = self.credit_card_last_digits_hindi | self.credit_card_last_digits_english
 
         graph = (
             graph_number_with_hindi_digit
