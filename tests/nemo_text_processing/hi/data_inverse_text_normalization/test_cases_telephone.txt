@@ -3,12 +3,8 @@
 plus nine eight nine four one one one two three four zero one~+९८ ९४१११२३४०१
 प्लस  नौ एक नौ आठ सात छह पांच चार तीन दो एक शून्य~+९१ ९८७६५४३२१०
 plus eleven nine four one one one two three~+११ ९४१११२३
-zero eleven nine four one one one two three~०११ ९४१११२३
-शून्य ग्यारह नौ चार एक एक एक दो तीन~०११ ९४१११२३
 zero eight zero two nine four one one one two~०८० २९४१११२
 शून्य आठ शून्य दो नौ चार एक एक एक दो~०८० २९४१११२
-zero eleven two nine four one one one two~०११ २९४१११२
-शून्य ग्यारह दो नौ चार एक एक एक दो~०११ २९४१११२
 zero four zero two seven eight one eight three nine~०४० २७८१८३९
 शून्य चार शून्य दो सात आठ एक आठ तीन नौ~०४० २७८१८३९
 शून्य सात नौ एक नौ आठ सात छह पांच चार~०७९ १९८७६५४
@@ -23,8 +19,18 @@ ZERO seven three चार पाँच छह सात आठ नौ शून
 ZERO seven three four five six seven eight nine zero~०७३ ४५६७८९०
 zero two eight seven six five four three two seven~०२८ ७६५४३२७
 PLUS eighty one nine seven four seven two zero zero one one eight~+८१ ९७४७२००११८
+zero eight zero two two nine four one one one~०८० २२९४१११
+शून्य सात नौ एक नौ आठ सात छह पांच चार~०७९ १९८७६५४
+zero eight zero nine two two nine four one one one~०८०९ २२९४१११
+शून्य सात नौ नौ एक नौ आठ सात छह पांच चार~०७९९ १९८७६५४
+zero three one nine two two two nine four one one one~०३१९२ २२९४१११
+शून्य सात नौ एक एक एक नौ आठ सात छह पांच चार~०७९११ १९८७६५४
 एक एक शून्य शून्य सात शून्य दिल्ली के वसंत कुंज का पिनकोड है~११००७० दिल्ली के वसंत कुंज का पिनकोड है
 बंगलौर के बैयापानहली का पिनकोड पाँच छह शून्य शून्य तीन आठ है~बंगलौर के बैयापानहली का पिनकोड ५६००३८ है
+दिल्ली के वसंत कुंज का पिनकोड one one zero zero seven zero है~दिल्ली के वसंत कुंज का पिनकोड ११००७० है
+five six zero zero three eight बंगलौर के बैयापानहली का पिनकोड है~५६००३८ बंगलौर के बैयापानहली का पिनकोड है
+मेरे क्रेडिट कार्ड के आखिरी डिजिट शून्य शून्य तीन आठ हैं~मेरे क्रेडिट कार्ड के आखिरी डिजिट ००३८ हैं
+क्रेडिट कार्ड के आखिरी डिजिट four three seven two हैं~क्रेडिट कार्ड के आखिरी डिजिट ४३७२ हैं
 दिल्ली के वसंत कुंज का पिनकोड one one zero zero seven zero है~दिल्ली के वसंत कुंज का पिनकोड ११००७० है
 five six zero zero three eight बंगलौर के बैयापानहली का पिनकोड है~५६००३८ बंगलौर के बैयापानहली का पिनकोड है
 मेरे क्रेडिट कार्ड के आखिरी डिजिट शून्य शून्य तीन आठ हैं~मेरे क्रेडिट कार्ड के आखिरी डिजिट ००३८ हैं

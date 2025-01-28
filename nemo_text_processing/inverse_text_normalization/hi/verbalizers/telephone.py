@@ -16,7 +16,6 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.utils import apply_fst
 from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
@@ -54,13 +53,3 @@ class TelephoneFst(GraphFst):
         delete_tokens = self.delete_tokens(optional_country_code + number_part)
         delete_tokens |= self.delete_tokens(optional_city_code + number_part)
         self.fst = delete_tokens.optimize()
-
-
-# from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-# cardinal = CardinalFst()
-# telephone = TelephoneFst(cardinal)
-# input_text = 'telephone { number_part: "१९८७६५"  }'
-# input_text ='telephone { number_part: "३४०१"  }'
-# input_text = 'telephone { number_part: "०७९१"  }'
-# output = apply_fst(input_text, telephone.fst)
-# print(output)

@@ -16,13 +16,10 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
-    NEMO_HI_DIGIT,
     GraphFst,
-    delete_extra_space,
     delete_space,
-    insert_space,
 )
-from nemo_text_processing.inverse_text_normalization.hi.utils import apply_fst, get_abs_path
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
 class TelephoneFst(GraphFst):
@@ -80,80 +77,32 @@ class TelephoneFst(GraphFst):
         self.country_code = self.country_code_with_single_digits | self.country_code_with_double_digits
 
         # two, three, four-digit extension code with zero
-        self.city_two_digit_code_hindi = (
+        self.city_code_hindi = (
             pynutil.insert("extension: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 0, 2)
+            + pynini.closure(hindi_digit_graph + delete_space, 2, 5)
             + pynutil.insert("\" ")
         )
-        self.city_two_digit_code_english = (
+        self.city_code_english = (
             pynutil.insert("extension: \"")
-            + pynini.closure(english_digit_graph + delete_space, 0, 2)
+            + pynini.closure(english_digit_graph + delete_space, 2, 5)
             + pynutil.insert("\" ")
         )
-        self.city_three_digit_code_hindi = (
-            pynutil.insert("extension: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 0, 3)
-            + pynutil.insert("\" ")
-        )
-        self.city_three_digit_code_english = (
-            pynutil.insert("extension: \"")
-            + pynini.closure(english_digit_graph + delete_space, 0, 3)
-            + pynutil.insert("\" ")
-        )
-        self.city_four_digit_code_hindi = (
-            pynutil.insert("extension: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 0, 4)
-            + pynutil.insert("\" ")
-        )
-        self.city_four_digit_code_english = (
-            pynutil.insert("extension: \"")
-            + pynini.closure(english_digit_graph + delete_space, 0, 4)
-            + pynutil.insert("\" ")
-        )
+ 
+        self.city_extension = self.city_code_hindi | self.city_code_english
 
-        # concise extensions graphs - 2,3,4-digit
-        self.city_two_digit_extension = self.city_two_digit_code_hindi | self.city_two_digit_code_english
-        self.city_three_digit_extension = self.city_three_digit_code_hindi | self.city_three_digit_code_english
-        self.city_four_digit_extension = self.city_four_digit_code_hindi | self.city_four_digit_code_english
-
-        # 7-digit landline graph for 2-digit extension in hindi and english digits
-        self.landline_with_extension_two_hindi = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 6)
-            + pynutil.insert("\" ")
-        )
-        self.landline_with_extension_two_english = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(english_digit_graph + delete_space, 6)
-            + pynutil.insert("\" ")
-        )
-        self.landline_two = self.landline_with_extension_two_hindi | self.landline_with_extension_two_english
-
-        # 7-digit landline graph for 3-digit extension in hindi and english digits
-        self.landline_with_extension_three_hindi = (
+        # 7-digit landline graph in hindi and english digits
+        self.landline_hindi = (
             pynutil.insert("number_part: \"")
             + pynini.closure(hindi_digit_graph + delete_space, 7)
             + pynutil.insert("\" ")
         )
-        self.landline_with_extension_three_english = (
+        self.landline_english = (
             pynutil.insert("number_part: \"")
             + pynini.closure(english_digit_graph + delete_space, 7)
             + pynutil.insert("\" ")
         )
-        self.landline_three = self.landline_with_extension_three_hindi | self.landline_with_extension_three_english
-
-        # 7-digit landline graph for 4-digit extension in hindi and english digits
-        self.landline_with_extension_four_hindi = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 8)
-            + pynutil.insert("\" ")
-        )
-        self.landline_with_extension_four_english = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(english_digit_graph + delete_space, 8)
-            + pynutil.insert("\" ")
-        )
-        self.landline_four = self.landline_with_extension_four_hindi | self.landline_with_extension_four_english
+        
+        self.landline = self.landline_hindi | self.landline_english
 
         self.pincode_in_hindi = (
             pynutil.insert("number_part: \"")
@@ -168,13 +117,13 @@ class TelephoneFst(GraphFst):
             + pynutil.insert("\" ")
         )
 
-        self.credit_card_last_four_digits_in_hindi = (
+        self.credit_card_last_digits_hindi = (
             pynutil.insert("number_part: \"")
             + pynini.closure(hindi_digit_graph + delete_space, 0, 3)
             + hindi_digit_graph
             + pynutil.insert("\" ")
         )
-        self.credit_card_last_four_digits_in_english = (
+        self.credit_card_last_digits_english = (
             pynutil.insert("number_part: \"")
             + pynini.closure(english_digit_graph + delete_space, 0, 3)
             + english_digit_graph
@@ -194,47 +143,23 @@ class TelephoneFst(GraphFst):
         )
         graph_number_with_english_digit = delete_plus + delete_space + self.country_code + self.english_digit
 
-        graph_landline_with_two_digit_extension = (
-            delete_zero + delete_space + self.city_two_digit_extension + delete_space + self.landline_two
-        )
-        graph_landline_with_three_digit_extension = (
-            delete_zero + delete_space + self.city_three_digit_extension + delete_space + self.landline_three
-        )
-        graph_landline_with_four_digit_extension = (
-            delete_zero + delete_space + self.city_four_digit_extension + delete_space + self.landline_four
+        graph_landline_with_extension = (
+            delete_zero + delete_space + self.city_extension + delete_space + self.landline
         )
 
         graph_pincode = self.pincode_in_hindi | self.pincode_in_english
 
-        graph_credit_card_last_four_digits = (
-            self.credit_card_last_four_digits_in_hindi | self.credit_card_last_four_digits_in_english
+        graph_credit_card_last_digits = (
+            self.credit_card_last_digits_hindi | self.credit_card_last_digits_english
         )
 
         graph = (
             graph_number_with_hindi_digit
             | graph_number_with_english_digit
-            | graph_landline_with_two_digit_extension
-            | graph_landline_with_three_digit_extension
-            | graph_landline_with_three_digit_extension
+            | graph_landline_with_extension
             | graph_pincode
-            | graph_credit_card_last_four_digits
+            | graph_credit_card_last_digits
         )
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
-
-
-# from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-# cardinal = CardinalFst()
-# telephone = TelephoneFst(cardinal)
-
-# input_text = "zero eight zero two two nine four one one one" # zero+ two digit extension + landline in english
-# input_text = "zero eight zero nine two two nine four one one one" # zero + three digit extension + landline in english
-# input_text = "zero eight zero nine one two two nine four one one one" #zero + four digit extension + landline in english
-
-# input_text = "शून्य सात नौ एक नौ आठ सात छह पांच चार" #zero + two digit extension + landline in hindi
-# input_text = "शून्य सात नौ नौ एक नौ आठ सात छह पांच चार" #zero + three digit extension + landline in hindi
-# input_text = "शून्य सात नौ एक एक एक नौ आठ सात छह पांच चार" #zero+ four digit digit extension + landline in hindi
-
-# output = apply_fst(input_text, telephone.fst)
-# print(output)
