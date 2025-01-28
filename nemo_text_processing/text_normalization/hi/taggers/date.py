@@ -71,9 +71,9 @@ class DateFst(GraphFst):
 
         years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
 
-        graph_dd_mm = days_graph + (delete_dash | pynini.accep("")) + months_graph
+        graph_dd_mm = days_graph + delete_dash  + months_graph
 
-        graph_mm_dd = months_graph + (delete_dash | pynini.accep("")) + days_graph
+        graph_mm_dd = months_graph + delete_dash  + days_graph
 
         graph_mm_dd += pynutil.insert(" preserve_order: true ")
 
