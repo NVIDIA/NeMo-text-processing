@@ -90,12 +90,12 @@ class TelephoneFst(GraphFst):
         # 7-digit landline graph in hindi and english digits
         self.landline_hindi = (
             pynutil.insert("number_part: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 7)
+            + pynini.closure(hindi_digit_graph + delete_space, 7, 7)
             + pynutil.insert("\" ")
         )
         self.landline_english = (
             pynutil.insert("number_part: \"")
-            + pynini.closure(english_digit_graph + delete_space, 7)
+            + pynini.closure(english_digit_graph + delete_space, 7, 7)
             + pynutil.insert("\" ")
         )
 
