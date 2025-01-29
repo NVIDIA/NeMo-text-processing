@@ -41,14 +41,17 @@ class MoneyFst(GraphFst):
 
         cardinal_graph = cardinal.final_graph
 
+        optional_graph_negative = pynini.closure(
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
+        )
         currency_major = pynutil.insert('currency_maj: "') + currency_graph + pynutil.insert('"')
         integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"')
         fraction = pynutil.insert('fractional_part: "') + cardinal_graph + pynutil.insert('"')
         currency_minor = pynutil.insert('currency_min: "') + pynutil.insert("centiles") + pynutil.insert('"')
 
-        graph_major_only = currency_major + insert_space + integer
+        graph_major_only = optional_graph_negative + currency_major + insert_space + integer
         graph_major_and_minor = (
-            currency_major + insert_space + integer + pynini.cross(".", " ") + fraction + insert_space + currency_minor
+            optional_graph_negative + currency_major + insert_space + integer + pynini.cross(".", " ") + fraction + insert_space + currency_minor
         )
 
         graph_currencies = graph_major_only | graph_major_and_minor
