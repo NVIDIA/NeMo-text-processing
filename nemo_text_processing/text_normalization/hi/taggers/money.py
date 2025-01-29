@@ -51,7 +51,14 @@ class MoneyFst(GraphFst):
 
         graph_major_only = optional_graph_negative + currency_major + insert_space + integer
         graph_major_and_minor = (
-            optional_graph_negative + currency_major + insert_space + integer + pynini.cross(".", " ") + fraction + insert_space + currency_minor
+            optional_graph_negative
+            + currency_major
+            + insert_space
+            + integer
+            + pynini.cross(".", " ")
+            + fraction
+            + insert_space
+            + currency_minor
         )
 
         graph_currencies = graph_major_only | graph_major_and_minor
