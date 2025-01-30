@@ -63,6 +63,11 @@ testITNMoney() {
   runtest $input
 }
 
+testITNTelephone() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_telephone.txt
+  runtest $input
+}
+
 testITNWord() {
   input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_word.txt
   runtest $input
