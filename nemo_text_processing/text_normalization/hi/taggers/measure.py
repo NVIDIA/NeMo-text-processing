@@ -19,6 +19,11 @@ from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, del
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
+digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
+
+
 class MeasureFst(GraphFst):
     """
     Finite state transducer for classifying measure, suppletive aware, e.g. 
@@ -35,7 +40,7 @@ class MeasureFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="measure", kind="classify")
 
-        cardinal_graph = cardinal.final_graph
+        cardinal_graph = digit | teens_and_ties | cardinal.graph_hundreds | cardinal.graph_thousands
         decimal_graph = decimal.final_graph_wo_negative
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
 
@@ -44,7 +49,10 @@ class MeasureFst(GraphFst):
         )
 
         # Define the unit handling
-        self.unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
+        unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
+
+        # Handling symbols like x, X, *
+        symbol_graph = pynini.string_map([("x", "बाई"), ("X", "बाई"), ("*", "बाई"),])
 
         graph_measurements = (
             pynutil.insert("decimal { ")
@@ -52,8 +60,9 @@ class MeasureFst(GraphFst):
             + decimal_graph
             + pynutil.insert(" }")
             + delete_space
-            + self.unit
+            + unit
         )
+
         graph_measurements |= (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
@@ -62,7 +71,27 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
             + pynutil.insert(" }")
             + delete_space
-            + self.unit
+            + unit
+        )
+
+        # Handling cardinal clubbed with symbol as single token
+        graph_measurements |= (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(" }")
+            + pynutil.insert(" units: \"")
+            + symbol_graph
+            + pynutil.insert("\" ")
+            + pynutil.insert("} }")
+            + insert_space
+            + pynutil.insert("tokens { cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
         )
 
         graph = graph_measurements
