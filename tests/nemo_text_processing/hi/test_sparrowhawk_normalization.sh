@@ -81,10 +81,10 @@ testTNMoney() {
 #  runtest $input
 #}
 
-#testTNTelephone() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_telephone.txt
-#  runtest $input
-#}
+testTNTelephone() {
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_telephone.txt
+ runtest $input
+}
 
 testTNTime() {
   input=$PROJECT_DIR/hi/data_text_normalization/test_cases_time.txt

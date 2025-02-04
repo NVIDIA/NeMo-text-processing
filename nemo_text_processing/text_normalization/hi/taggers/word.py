@@ -43,7 +43,7 @@ class WordFst(GraphFst):
             *[chr(i) for i in range(ord("ऀ"), ord("ः") + 1)],  # Hindi vowels and consonants
             *[chr(i) for i in range(ord("अ"), ord("ह") + 1)],  # More Hindi characters
             *[chr(i) for i in range(ord("ा"), ord("्") + 1)],  # Hindi diacritics
-            *[chr(i) for i in range(ord("०"), ord("९") + 1)],  # Hindi digits
+            # *[chr(i) for i in range(ord("०"), ord("९") + 1)],  # Hindi digits
         ).optimize()
 
         # Include punctuation in the graph
