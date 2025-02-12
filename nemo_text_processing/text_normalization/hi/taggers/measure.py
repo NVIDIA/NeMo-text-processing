@@ -41,7 +41,8 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="classify")
 
         cardinal_graph = digit | teens_and_ties | cardinal.graph_hundreds | cardinal.graph_thousands
-        decimal_graph = decimal.final_graph_wo_negative
+        point = pynutil.delete(".")
+        decimal_graph = decimal.graph_integer + point + insert_space + decimal.graph_fractional
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
 
         optional_graph_negative = pynini.closure(
