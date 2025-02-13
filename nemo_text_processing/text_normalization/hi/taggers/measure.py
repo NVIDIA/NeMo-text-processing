@@ -40,10 +40,18 @@ class MeasureFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="measure", kind="classify")
 
-        cardinal_graph = digit | teens_and_ties | cardinal.graph_hundreds | cardinal.graph_thousands | cardinal.graph_ten_thousands | cardinal.graph_lakhs | cardinal.graph_ten_lakhs
+        cardinal_graph = (
+            digit
+            | teens_and_ties
+            | cardinal.graph_hundreds
+            | cardinal.graph_thousands
+            | cardinal.graph_ten_thousands
+            | cardinal.graph_lakhs
+            | cardinal.graph_ten_lakhs
+        )
         point = pynutil.delete(".")
         decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional        
+        decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
         quarterly_units_graph = pynini.string_file(get_abs_path("data/measure/quarterly_units.tsv"))
 
