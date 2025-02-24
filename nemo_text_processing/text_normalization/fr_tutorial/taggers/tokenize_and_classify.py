@@ -31,7 +31,6 @@ from nemo_text_processing.text_normalization.fr.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.fr.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.fr.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.fr.taggers.word import WordFst
-from nemo_text_processing.text_normalization.fr.taggers.date import DateFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -86,13 +85,9 @@ class ClassifyFst(GraphFst):
             self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             whitelist_graph = self.whitelist.fst
             punct_graph = PunctuationFst(deterministic=deterministic).fst
-            
-            self.date = DateFst(self.cardinal, deterministic=deterministic)
-            date_graph = self.date.fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
-                | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.09)
                 | pynutil.add_weight(ordinal_graph, 1.1)

@@ -17,7 +17,6 @@ from nemo_text_processing.text_normalization.fr.verbalizers.cardinal import Card
 from nemo_text_processing.text_normalization.fr.verbalizers.decimals import DecimalFst
 from nemo_text_processing.text_normalization.fr.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.fr.verbalizers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.fr.verbalizers.date import DateFst
 
 
 class VerbalizeFst(GraphFst):
@@ -41,8 +40,6 @@ class VerbalizeFst(GraphFst):
         fraction = FractionFst(ordinal=ordinal, deterministic=deterministic)
         fraction_graph = fraction.fst
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
-        date = DateFst(deterministic=deterministic)
-        date_graph = date.fst
 
-        graph = cardinal_graph | decimal_graph | ordinal_graph | fraction_graph | whitelist_graph | date_graph
+        graph = cardinal_graph | decimal_graph | ordinal_graph | fraction_graph | whitelist_graph
         self.fst = graph
