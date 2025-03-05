@@ -39,7 +39,7 @@ class DateFst(GraphFst):
         day = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         month = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        decade = pynutil.delete("decade: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        decade = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         graph_dmy = day + NEMO_SPACE + month + pynini.closure(NEMO_SPACE + year, 0, 1) + delete_preserve_order
         graph_my = month + NEMO_SPACE + year + delete_preserve_order
@@ -60,5 +60,5 @@ def apply_fst(text, fst):
 if __name__ == "__main__":
     fst = DateFst()
 
-    # tagger output for "les 17/18/19 juin"
-    apply_fst('date { day: "les dix-sept dix-huit dix-neuf" month: "juin" preserve_order: true }', fst.fst)
+    # tagger output for "eighties"
+    apply_fst('date { year: "eighties" preserve_order: true }', fst.fst)

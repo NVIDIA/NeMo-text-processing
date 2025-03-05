@@ -71,7 +71,7 @@ class DateFst(GraphFst):
         )
 
         # Accepts "70s", "80s", etc
-        self.fst |= pynutil.insert("date { decade: \"") + eras + pynutil.insert("\" preserve_order: true }")
+        self.fst |= pynutil.insert("date { year: \"") + eras + pynutil.insert("\" preserve_order: true }")
 
 
         # Accepts date ranges, "17-18-19 juin"  -> date { day: "17" day: "18": day: "19"}
