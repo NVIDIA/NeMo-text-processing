@@ -52,7 +52,7 @@ testTNWord() {
   runtest $input
 }
 
-testTNWord() {
+testTNDate() {
   input=$PROJECT_DIR/fr/data_text_normalization/test_cases_date.txt
   runtest $input
 }
