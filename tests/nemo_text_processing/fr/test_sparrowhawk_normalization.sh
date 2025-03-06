@@ -1,7 +1,7 @@
 #! /bin/sh
 
 GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
-PROJECT_DIR=${2:-"/workspace/tests/en"}
+PROJECT_DIR=${2:-"/workspace/tests"}
 
 runtest () {
   input=$1
@@ -49,6 +49,11 @@ testTNWhitelist() {
 
 testTNWord() {
   input=$PROJECT_DIR/fr/data_text_normalization/test_cases_word.txt
+  runtest $input
+}
+
+testTNWord() {
+  input=$PROJECT_DIR/fr/data_text_normalization/test_cases_date.txt
   runtest $input
 }
 
