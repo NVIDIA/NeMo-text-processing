@@ -1,20 +1,23 @@
 import pynini
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.fr.utils import get_abs_path
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, NEMO_DIGIT
-
-
-# TODO: add articles? 'le...' 
+# TODO: add articles? 'le...'
 
 month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))
 eras = pynini.string_file(get_abs_path("data/dates/eras.tsv"))
-delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT #reminder, NEMO_DIGIT = filter on digits
+delete_leading_zero = (
+    pynutil.delete("0") | (NEMO_DIGIT - "0")
+) + NEMO_DIGIT  # reminder, NEMO_DIGIT = filter on digits
+
 
 class DateFst(GraphFst):
     ''' Finite state transducer for classyfing dates, e.g.:
         '02.03.2003' -> date {day: 'deux' month: 'mai' year: 'deux mille trois' preserve order: true} 
     '''
+
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="dates", kind="classify")
 
@@ -23,10 +26,10 @@ class DateFst(GraphFst):
         # 'le' -> 'le', 'les' -> 'les'
         le_determiner = pynini.accep("le ") | pynini.accep("les ")
         self.optional_le = pynini.closure(le_determiner, 0, 1)
-        
-        # '01' -> 'un' 
+
+        # '01' -> 'un'
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
-        valid_day_number = pynini.union(*[str(x) for x in range(1,32)]) 
+        valid_day_number = pynini.union(*[str(x) for x in range(1, 32)])
         premier = pynini.string_map([("1", "premier")])
         day_number_to_word = premier | cardinal_graph
 
@@ -59,7 +62,7 @@ class DateFst(GraphFst):
             )
 
         # Accepts "janvier", "février", etc
-        month_name_graph = pynutil.insert("month: \"") +  month_numbers.project("output") + pynutil.insert("\"")
+        month_name_graph = pynutil.insert("month: \"") + month_numbers.project("output") + pynutil.insert("\"")
 
         self.fst |= (
             pynutil.insert("date { ")
@@ -73,9 +76,8 @@ class DateFst(GraphFst):
         # Accepts "70s", "80s", etc
         self.fst |= pynutil.insert("date { year: \"") + eras + pynutil.insert("\" preserve_order: true }")
 
-
         # Accepts date ranges, "17-18-19 juin"  -> date { day: "17" day: "18": day: "19"}
-        for separator in ["-", "/"]: 
+        for separator in ["-", "/"]:
             day_range_graph = (
                 pynutil.insert("day: \"")
                 + pynini.closure(digit_to_day + pynutil.delete(separator) + pynutil.insert(" "), 1)
@@ -95,7 +97,6 @@ class DateFst(GraphFst):
         self.fst = self.fst.optimize()
 
 
-
 def apply_fst(text, fst):
     try:
         output = pynini.shortestpath(text @ fst).string()
@@ -103,8 +104,10 @@ def apply_fst(text, fst):
     except pynini.FstOpError:
         print(f"Error: No valid output with given input: '{text}'")
 
+
 if __name__ == "__main__":
     from nemo_text_processing.text_normalization.fr.taggers.cardinal import CardinalFst
+
     fst = DateFst(CardinalFst())
 
     print('DETERMINER')
@@ -132,7 +135,7 @@ if __name__ == "__main__":
     apply_fst("02/03/2003", fst.fst)
     apply_fst("02-03-2003", fst.fst)
     apply_fst("le 02.03.2003", fst.fst)
-    
+
     apply_fst("02.03", fst.fst)
     apply_fst("17 janvier", fst.fst)
     apply_fst("10 mars 2023", fst.fst)
@@ -142,4 +145,6 @@ if __name__ == "__main__":
     apply_fst("80s", fst.fst)
 
     print("\nDATE RANGES")
-    apply_fst("les 17/18/19 juin", fst.fst) # returns: date { day: "les dix-sept" day: "dix-huit" day: "dix-neuf" month: "juin" preserve_order: true }
+    apply_fst(
+        "les 17/18/19 juin", fst.fst
+    )  # returns: date { day: "les dix-sept" day: "dix-huit" day: "dix-neuf" month: "juin" preserve_order: true }

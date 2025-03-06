@@ -19,8 +19,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SPACE,
     GraphFst,
-    delete_preserve_order
+    delete_preserve_order,
 )
+
 
 class DateFst(GraphFst):
     """
@@ -50,12 +51,14 @@ class DateFst(GraphFst):
         delete_tokens = self.delete_tokens(self.graph)
         self.fst = delete_tokens.optimize()
 
+
 def apply_fst(text, fst):
     try:
         output = pynini.shortestpath(text @ fst).string()
         print(f"'{text}' --> '{output}'")
     except pynini.FstOpError:
         print(f"Error: No valid output with given input: '{text}'")
+
 
 if __name__ == "__main__":
     fst = DateFst()
