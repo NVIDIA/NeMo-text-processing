@@ -98,8 +98,6 @@ class DateFst(GraphFst):
             months_graph + (delete_dash | delete_slash) + days_graph + (delete_dash | delete_slash) + years_graph
         )
 
-        graph_yyyy = pynutil.insert("text: \"") + pynini.compose(pynini.closure(NEMO_HI_DIGIT, 1), cardinal_graph) + pynutil.insert("\"") + insert_space + pynutil.insert(" preserve_order: true ")
-
         graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
 
         graph_mm_yyyy = months_graph + delete_dash + insert_space + years_graph
@@ -128,7 +126,6 @@ class DateFst(GraphFst):
             | pynutil.add_weight(graph_year_suffix, -0.001)
             | pynutil.add_weight(graph_range, -0.005)
             | pynutil.add_weight(century_text, -0.001)
-            | pynutil.add_weight(graph_yyyy, -0.01)
         )
 
         self.final_graph = final_graph.optimize()
