@@ -56,11 +56,7 @@ class DateFst(GraphFst):
         )
 
         cardinal_graph = (
-            digit
-            | teens_and_ties
-            | cardinal.graph_hundreds
-            | graph_year_thousands
-            | graph_year_hundreds_as_thousands
+            digit | teens_and_ties | cardinal.graph_hundreds | graph_year_thousands | graph_year_hundreds_as_thousands
         )
 
         graph_year = graph_year_thousands | graph_year_hundreds_as_thousands
