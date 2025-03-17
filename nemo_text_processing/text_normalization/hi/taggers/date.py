@@ -82,9 +82,13 @@ class DateFst(GraphFst):
 
         range_graph = pynini.cross("-", "से")
 
-        # Graph for century
+        # Graph for year
         century_number = pynini.compose(pynini.closure(NEMO_HI_DIGIT, 1), cardinal_graph) + pynini.accep("वीं")
         century_text = pynutil.insert("text: \"") + century_number + pynutil.insert("\"") + insert_space
+
+        # Graph for year
+        year_number = pynini.compose(pynini.closure(NEMO_HI_DIGIT, 1), cardinal_graph) + pynini.accep(" में")
+        year_text = pynutil.insert("text: \"") + year_number + pynutil.insert("\"") + insert_space
 
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
@@ -122,6 +126,7 @@ class DateFst(GraphFst):
             | pynutil.add_weight(graph_year_suffix, -0.001)
             | pynutil.add_weight(graph_range, -0.005)
             | pynutil.add_weight(century_text, -0.001)
+            | pynutil.add_weight(year_text, -0.001)
         )
 
         self.final_graph = final_graph.optimize()
