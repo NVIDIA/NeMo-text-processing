@@ -114,6 +114,8 @@ class DateFst(GraphFst):
 
         graph_year_suffix = era_graph
 
+        comma_graph = pynutil.insert("text: \"") + delete_comma + insert_space + graph_year + pynutil.insert("\"")
+
         graph_range = (
             pynutil.insert("text: \"")
             + (cardinal.final_graph | graph_year)
@@ -138,6 +140,7 @@ class DateFst(GraphFst):
             | pynutil.add_weight(century_text, -0.001)
             | pynutil.add_weight(year_text, -0.001)
             | year_prefix
+            | comma_graph
         )
 
         self.final_graph = final_graph.optimize()
