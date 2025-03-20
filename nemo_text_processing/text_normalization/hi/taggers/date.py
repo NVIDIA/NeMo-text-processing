@@ -92,6 +92,8 @@ class DateFst(GraphFst):
         )
         year_text = pynutil.insert("text: \"") + year_number + pynutil.insert("\"") + insert_space
 
+        year_prefix = pynutil.insert("text: \"") + pynini.union("सन् ", "सन ", "साल ") + insert_space + graph_year + pynutil.insert("\"")
+
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
         )
@@ -129,6 +131,7 @@ class DateFst(GraphFst):
             | pynutil.add_weight(graph_range, -0.005)
             | pynutil.add_weight(century_text, -0.001)
             | pynutil.add_weight(year_text, -0.001)
+            | year_prefix
         )
 
         self.final_graph = final_graph.optimize()
