@@ -87,7 +87,7 @@ class DateFst(GraphFst):
         century_text = pynutil.insert("text: \"") + century_number + pynutil.insert("\"") + insert_space
 
         # Graph for year
-        year_number = pynini.compose(pynini.closure(NEMO_HI_DIGIT, 1), cardinal_graph) + pynini.union(
+        year_number = graph_year + pynini.union(
             " में", " का", " की", " के", " से", " तक"
         )
         year_text = pynutil.insert("text: \"") + year_number + pynutil.insert("\"") + insert_space
@@ -118,11 +118,11 @@ class DateFst(GraphFst):
 
         graph_range = (
             pynutil.insert("text: \"")
-            + (cardinal.final_graph | graph_year)
+            + cardinal_graph
             + insert_space
             + range_graph
             + insert_space
-            + (cardinal.final_graph | graph_year)
+            + cardinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" preserve_order: true ")
         )
@@ -139,7 +139,7 @@ class DateFst(GraphFst):
             | pynutil.add_weight(graph_range, -0.005)
             | pynutil.add_weight(century_text, -0.001)
             | pynutil.add_weight(year_text, -0.001)
-            | year_prefix
+            | pynutil.add_weight(year_prefix, -0.009)
             | comma_graph
         )
 
