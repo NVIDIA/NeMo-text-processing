@@ -87,7 +87,9 @@ class DateFst(GraphFst):
         century_text = pynutil.insert("text: \"") + century_number + pynutil.insert("\"") + insert_space
 
         # Graph for year
-        year_number = graph_year + pynini.union(" में", " का", " की", " के", " से", " तक", " ईस्वी", " शताब्दी", " दशक", " सदी")
+        year_number = graph_year + pynini.union(
+            " में", " का", " की", " के", " से", " तक", " ईस्वी", " शताब्दी", " दशक", " सदी"
+        )
         year_text = pynutil.insert("text: \"") + year_number + pynutil.insert("\"") + insert_space
 
         year_prefix = (
