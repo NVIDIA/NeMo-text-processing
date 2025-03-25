@@ -43,7 +43,11 @@ class FractionFst(GraphFst):
 
         fraction_default = numerator + insert_bata + denominator
 
-        self.graph = optional_sign + pynini.closure(pynini.closure(integer, 0, 1) + insert_space + insert_aur) + fraction_default
+        self.graph = (
+            optional_sign
+            + pynini.closure(pynini.closure(integer, 0, 1) + insert_space + insert_aur)
+            + fraction_default
+        )
 
         graph = self.graph
 
