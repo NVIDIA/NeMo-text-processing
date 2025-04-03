@@ -53,18 +53,24 @@ class MeasureFst(GraphFst):
         decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
+        quarterly_units_graph = pynini.string_file(get_abs_path("data/measure/quarterly_units.tsv"))
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
         )
 
+        # Define the quarterly measurements
+        quarter = pynini.string_map([(".५", "साढ़े"), ("१.५", "डेढ़"), ("२.५", "ढाई"),])
+        quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\" ")
+
         # Define the unit handling
         unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
+        units = pynutil.insert(" units: \"") + quarterly_units_graph + pynutil.insert("\" ")
 
         # Handling symbols like x, X, *
         symbol_graph = pynini.string_map([("x", "बाई"), ("X", "बाई"), ("*", "बाई"),])
 
-        graph_measurements = (
+        graph_decimal = (
             pynutil.insert("decimal { ")
             + optional_graph_negative
             + decimal_graph
@@ -73,7 +79,16 @@ class MeasureFst(GraphFst):
             + unit
         )
 
-        graph_measurements |= (
+        graph_quarter = (
+            pynutil.insert("decimal { ")
+            + optional_graph_negative
+            + quarter_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + units
+        )
+
+        graph_cardinal = (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + pynutil.insert("integer: \"")
@@ -85,7 +100,7 @@ class MeasureFst(GraphFst):
         )
 
         # Handling cardinal clubbed with symbol as single token
-        graph_measurements |= (
+        graph_exceptions = (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + pynutil.insert("integer: \"")
@@ -104,7 +119,12 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        graph = graph_measurements
+        graph = (
+            pynutil.add_weight(graph_decimal, 0.01)
+            | pynutil.add_weight(graph_quarter, 0.001)
+            | pynutil.add_weight(graph_cardinal, 0.01)
+            | pynutil.add_weight(graph_exceptions, 0.01)
+        )
         self.graph = graph.optimize()
 
         final_graph = self.add_tokens(graph)
