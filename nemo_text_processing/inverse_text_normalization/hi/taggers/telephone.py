@@ -23,7 +23,7 @@ class TelephoneFst(GraphFst):
     """
     Finite state transducer for classifying telephone numbers, e.g.
     e.g. प्लस इक्यानवे नौ आठ सात छह पांच चार तीन दो एक शून्य => tokens { name: "+९१ ९८७६५ ४३२१०" }
-
+    
     Args:
         Cardinal: CardinalFst
     """
