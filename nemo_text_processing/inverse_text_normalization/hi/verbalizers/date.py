@@ -61,21 +61,44 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        graph_fy = period + delete_space + year
+        graph_fy = year
+        graph_fy |= period + delete_space + year
+
+        # century
+        graph_century = year + delete_extra_space + period
+
         # month (day) year
         graph_mdy = month + delete_extra_space + day + pynutil.insert(",") + delete_extra_space + year
 
         # (day) month year
         graph_dmy = day + delete_extra_space + month + pynutil.insert(",") + delete_extra_space + year
 
+        # day month year century
+        graph_dmyc = (
+            day
+            + delete_extra_space
+            + month
+            + pynutil.insert(",")
+            + delete_extra_space
+            + year
+            + delete_extra_space
+            + period
+        )
+
         # month year
         graph_my = month + pynini.closure(delete_extra_space + year, 0, 1)
+
+        # month year century
+        graph_myc = month + pynutil.insert(",") + delete_extra_space + year + delete_extra_space + period
 
         # month day
         graph_md = month + pynini.closure(delete_extra_space + day, 0, 1)
 
         # day month
         graph_dm = day + pynini.closure(delete_extra_space + month, 0, 1)
+
+        # year range
+        graph_year_range = year
 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
@@ -88,7 +111,18 @@ class DateFst(GraphFst):
         )
 
         final_graph = (
-            (graph_fy | graph_mdy | graph_dmy | graph_my | graph_md | graph_dm)
+            (
+                graph_fy
+                | graph_mdy
+                | graph_dmy
+                | graph_my
+                | graph_md
+                | graph_dm
+                | graph_century
+                | graph_dmyc
+                | graph_myc
+                | graph_year_range
+            )
             + delete_space
             + optional_preserve_order
         )
