@@ -44,10 +44,22 @@ class DateFst(GraphFst):
 
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
         graph_date_days = pynini.string_file(get_abs_path("data/date/date_days.tsv")).invert()
+        graph_century = pynini.string_file(get_abs_path("data/date/century.tsv")).invert()
 
         self.day = pynutil.insert("day: \"") + graph_date_days + pynutil.insert("\" ")
         self.month = pynutil.insert("month: \"") + month_graph + pynutil.insert("\" ")
         self.year = pynutil.insert("year: \"") + graph_year + pynutil.insert("\" ")
+        self.year_range = (
+            pynutil.insert("year: \"")
+            + graph_year
+            + delete_space
+            + pynini.cross("से", "-")
+            + delete_space
+            + graph_year
+            + delete_space
+            + pynutil.insert("\" ")
+        )
+        self.century = pynutil.insert("text: \"") + graph_century + pynutil.insert("\" ")
         insert_comma = pynutil.insert(", ")
 
         graph_day_month = self.day + delete_space + self.month
@@ -58,9 +70,28 @@ class DateFst(GraphFst):
         graph_month_day_year += pynutil.insert(" preserve_order: true")
         graph_month_year = self.month + delete_space + self.year
         graph_saal = self.year
+        graph_AD_BC = self.year + delete_space + self.century
+        graph_day_month_year_century = (
+            self.day + delete_space + self.month + delete_space + self.year + delete_space + self.century
+        )
+        graph_month_year_century = self.month + delete_space + self.year + delete_space + self.century
+        graph_year_range = self.year_range
 
-        graph = graph_day_month | graph_month_day | graph_day_month_year | graph_month_day_year | graph_month_year
-        self.graph = graph.optimize()
+        graph_date_exceptions = self.month + delete_space + pynutil.delete("की") + delete_space + self.day
+        graph_date_exceptions += pynutil.insert("preserve_order: true")
 
+        graph = (
+            graph_day_month
+            | graph_month_day
+            | graph_day_month_year
+            | graph_month_day_year
+            | graph_month_year
+            | graph_saal
+            | graph_AD_BC
+            | graph_day_month_year_century
+            | graph_month_year_century
+            | graph_year_range
+            | graph_date_exceptions
+        )
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
