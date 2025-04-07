@@ -27,6 +27,11 @@ testTNCardinal() {
   runtest $input
 }
 
+testTNDate() {
+  input=$PROJECT_DIR/fr/data_text_normalization/test_cases_date.txt
+  runtest $input
+}
+
 testTNDecimal() {
   input=$PROJECT_DIR/fr/data_text_normalization/test_cases_decimal.txt
   runtest $input
