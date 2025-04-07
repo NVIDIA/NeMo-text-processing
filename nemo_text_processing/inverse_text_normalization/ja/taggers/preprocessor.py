@@ -32,7 +32,9 @@ class PreProcessorFst(GraphFst):
     '''
 
     def __init__(
-        self, remove_interjections: bool = True, fullwidth_to_halfwidth: bool = True,
+        self,
+        remove_interjections: bool = True,
+        fullwidth_to_halfwidth: bool = True,
     ):
         super().__init__(name="PreProcessor", kind="processor")
 

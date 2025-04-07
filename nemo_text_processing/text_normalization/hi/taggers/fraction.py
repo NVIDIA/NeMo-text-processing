@@ -25,7 +25,7 @@ class FractionFst(GraphFst):
     fraction { integer: "तेईस" numerator: "चार" denominator: "छः"}
     ४/६" ->
     fraction { numerator: "चार" denominator: "छः"}
-    
+
 
     Args:
         cardinal: cardinal GraphFst

@@ -58,7 +58,9 @@ class MeasureFst(GraphFst):
         graph_unit_plural = pynini.compose(casing_graph, graph_unit_plural).optimize()
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space,
+            0,
+            1,
         )
 
         unit_singular = convert_space(graph_unit_singular)

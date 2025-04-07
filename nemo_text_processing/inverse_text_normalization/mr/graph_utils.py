@@ -28,13 +28,13 @@ from nemo_text_processing.inverse_text_normalization.mr.utils import load_labels
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 NEMO_MARATHI_DIGITS = (
-    "\u0966" + "\u0967" + "\u0968" + "\u0969" + "\u096A" + "\u096B" + "\u096C" + "\u096D" + "\u096E" + "\u096F"
+    "\u0966" + "\u0967" + "\u0968" + "\u0969" + "\u096a" + "\u096b" + "\u096c" + "\u096d" + "\u096e" + "\u096f"
 )
 NEMO_DIGIT = pynini.union(*NEMO_MARATHI_DIGITS).optimize()
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
-NEMO_NON_BREAKING_SPACE = u"\u00A0"
+NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_SPACE = " "
-NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00A0").optimize()
+NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00a0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 
@@ -191,4 +191,4 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
-        return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+        return res @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)

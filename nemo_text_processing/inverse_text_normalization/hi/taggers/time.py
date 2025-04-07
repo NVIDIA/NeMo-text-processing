@@ -21,9 +21,9 @@ from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_pat
 
 class TimeFst(GraphFst):
     """
-        Finite state transducer for classifying time, 
+        Finite state transducer for classifying time,
         e.g. एक बजके सात मिनट -> time { hours: "१" minutes: "७" }
-        e.g. चार बजे चवालीस मिनट -> time { hours: "४" minutes: "४४" }    
+        e.g. चार बजे चवालीस मिनट -> time { hours: "४" minutes: "४४" }
     Args:
         cardinal: CardinalFst
         time: TimeFst

@@ -71,14 +71,32 @@ class TimeFst(GraphFst):
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
 
         graph_minute_verbose = pynini.cross("half", "30") | pynini.cross("quarter", "15")
-        oclock = pynini.cross(pynini.union("o' clock", "o clock", "o'clock", "oclock", "hundred hours",), "",)
+        oclock = pynini.cross(
+            pynini.union(
+                "o' clock",
+                "o clock",
+                "o'clock",
+                "oclock",
+                "hundred hours",
+            ),
+            "",
+        )
 
         if input_case == INPUT_CASED:
             minute_to_graph = capitalized_input_graph(minute_to_graph)
             graph_minute_single = capitalized_input_graph(graph_minute_single)
             graph_minute_double = capitalized_input_graph(graph_minute_double)
             graph_minute_verbose |= pynini.cross("Half", "30") | pynini.cross("Quarter", "15")
-            oclock |= pynini.cross(pynini.union("O' clock", "O clock", "O'clock", "Oclock", "Hundred hours",), "",)
+            oclock |= pynini.cross(
+                pynini.union(
+                    "O' clock",
+                    "O clock",
+                    "O'clock",
+                    "Oclock",
+                    "Hundred hours",
+                ),
+                "",
+            )
 
         final_graph_hour = pynutil.insert("hours: \"") + graph_hour + pynutil.insert("\"")
         graph_minute = (

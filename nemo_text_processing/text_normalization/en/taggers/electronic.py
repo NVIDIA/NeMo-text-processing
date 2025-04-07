@@ -49,9 +49,15 @@ class ElectronicFst(GraphFst):
         else:
             numbers = pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" ")
 
-        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
+        cc_cues = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")),
+            MIN_NEG_WEIGHT,
+        )
 
-        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
+        cc_cues = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")),
+            MIN_NEG_WEIGHT,
+        )
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
 
@@ -59,10 +65,14 @@ class ElectronicFst(GraphFst):
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
         )
 
-        dict_words = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/words.tsv")), MIN_NEG_WEIGHT,)
+        dict_words = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/words.tsv")),
+            MIN_NEG_WEIGHT,
+        )
 
         dict_words_without_delimiter = dict_words + pynini.closure(
-            pynutil.add_weight(pynutil.insert(" ") + dict_words, MIN_NEG_WEIGHT), 1,
+            pynutil.add_weight(pynutil.insert(" ") + dict_words, MIN_NEG_WEIGHT),
+            1,
         )
         dict_words_graph = dict_words_without_delimiter | dict_words
 
