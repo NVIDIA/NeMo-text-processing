@@ -52,7 +52,17 @@ class MeasureFst(GraphFst):
         graph_decimal = (
             pynutil.delete("decimal {") + delete_space + decimal.numbers + delete_space + pynutil.delete("}")
         )
+        graph_exception_bai = (
+            pynutil.delete("cardinal {")
+            + delete_space
+            + optional_sign
+            + delete_space
+            + cardinal.numbers
+            + delete_space
+            + pynutil.delete("}")
+        )
         graph = (graph_cardinal | graph_decimal) + delete_space + pynutil.insert(" ") + unit
+        graph |= graph_exception_bai + pynini.closure(delete_space + pynutil.insert(" ") + unit)
         delete_tokens = self.delete_tokens(graph)
         self.decimal = graph_decimal
         self.fst = delete_tokens.optimize()
