@@ -31,7 +31,8 @@ class DateFst(GraphFst):
     """
 
     def __init__(
-        self, tn_date_tagger: GraphFst,
+        self,
+        tn_date_tagger: GraphFst,
     ):
         super().__init__(name="date", kind="classify")
 
