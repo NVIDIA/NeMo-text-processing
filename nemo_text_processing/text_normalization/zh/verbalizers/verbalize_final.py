@@ -42,6 +42,11 @@ class VerbalizeFinalFst(GraphFst):
             )
             verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
 
-            postprocessor = PostProcessor(remove_puncts=False, to_upper=False, to_lower=False, tag_oov=False,)
+            postprocessor = PostProcessor(
+                remove_puncts=False,
+                to_upper=False,
+                to_lower=False,
+                tag_oov=False,
+            )
 
             self.fst = (verbalizer @ postprocessor.fst).optimize()

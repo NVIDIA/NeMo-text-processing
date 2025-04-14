@@ -29,7 +29,7 @@ class TimeFst(GraphFst):
         १२:३०:३०  -> time { hours: "बारह" minutes: "तीस" seconds: "तीस" }
         १:४०  -> time { hours: "एक" minutes: "चालीस" }
         १:००  -> time { hours: "एक" }
-         
+
     Args:
         time: GraphFst
         deterministic: if True will provide a single transduction option,

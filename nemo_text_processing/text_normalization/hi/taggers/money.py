@@ -26,7 +26,7 @@ class MoneyFst(GraphFst):
     Finite state transducer for classifying money, suppletive aware, e.g.
         ₹1 -> money { currency: "रुपए" integer_part: "एक" }
         ₹1.2 -> money { currency: "रुपए" integer_part: "एक" fractional_part: "दो" }
-        
+
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
@@ -40,7 +40,9 @@ class MoneyFst(GraphFst):
         cardinal_graph = cardinal.final_graph
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
+            0,
+            1,
         )
         self.currency = pynutil.insert("currency: \"") + currency_graph + pynutil.insert("\" ")
         self.interger = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\" ")
