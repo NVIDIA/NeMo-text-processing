@@ -45,7 +45,9 @@ class MeasureFst(GraphFst):
         decimal_graph = decimal.final_graph_wo_negative
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("ऋण", "\"true\"") + delete_extra_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("ऋण", "\"true\"") + delete_extra_space,
+            0,
+            1,
         )
 
         measurements_graph = pynini.string_file(get_abs_path("data/measure/measurements.tsv")).invert()

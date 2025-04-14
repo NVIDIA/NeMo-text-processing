@@ -540,8 +540,8 @@ class Normalizer:
         upper_case_unicode = ""
 
         if self.lang == "ru":
-            lower_case_unicode = '\u0430-\u04FF'
-            upper_case_unicode = '\u0410-\u042F'
+            lower_case_unicode = '\u0430-\u04ff'
+            upper_case_unicode = '\u0410-\u042f'
 
         # end of quoted speech - to be able to split sentences by full stop
         text = re.sub(r"([\.\?\!])([\"\'])", r"\g<2>\g<1> ", text)

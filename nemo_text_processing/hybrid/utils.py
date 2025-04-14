@@ -482,7 +482,7 @@ def remove_punctuation(text: str, remove_spaces=True, do_lower=True, lang="en", 
 
     text = re.sub(r" +", " ", text)
     if remove_spaces:
-        text = text.replace(" ", "").replace("\u00A0", "").strip()
+        text = text.replace(" ", "").replace("\u00a0", "").strip()
 
     if do_lower:
         text = text.lower()
@@ -515,7 +515,11 @@ def get_alternative_label(pred: str, targets: List[str]) -> bool:
     return acceptable
 
 
-def get_labels(targets: List[str], norm_texts_weights: List[Tuple[str, str]], lang="en",) -> List[List[str]]:
+def get_labels(
+    targets: List[str],
+    norm_texts_weights: List[Tuple[str, str]],
+    lang="en",
+) -> List[List[str]]:
     """
     Assign labels to generated normalization options (1 - for ground truth, 0 - other options)
     Args:
@@ -605,7 +609,14 @@ def print_df(df):
     prints data frame
     """
     with pd.option_context(
-        "display.max_rows", None, "display.max_columns", None, "display.width", 1000, "display.max_colwidth", 400,
+        "display.max_rows",
+        None,
+        "display.max_columns",
+        None,
+        "display.width",
+        1000,
+        "display.max_colwidth",
+        400,
     ):
         print(df)
 

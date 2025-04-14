@@ -180,7 +180,11 @@ class TimeFst(GraphFst):
         final_time_zone = (
             pynini.accep(" ") + pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
         )
-        final_time_zone_optional = pynini.closure(final_time_zone, 0, 1,)
+        final_time_zone_optional = pynini.closure(
+            final_time_zone,
+            0,
+            1,
+        )
 
         # This might be better as just the inflected forms
         hour_only_delimited = (

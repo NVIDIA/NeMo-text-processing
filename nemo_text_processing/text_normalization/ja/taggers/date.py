@@ -38,24 +38,24 @@ class DateFst(GraphFst):
         M.5 -> date { era: "明治" "year: "五年" }
         21日月曜日 -> tokens { date { day: "二十一日" weekday: "月曜日" } }
         70年代 -> date { year: "七十年代" }
-        西暦794年 -> tokens { date { era: "西暦" year: "七百九十四年" } } 
-        1月1日(月)〜3日(水) 
-            -> tokens { date { month: "一月" day: "一日" weekday: "月曜日" } } tokens { name: "から" } tokens { date { day: "三日" weekday: "水曜日" } } 
+        西暦794年 -> tokens { date { era: "西暦" year: "七百九十四年" } }
+        1月1日(月)〜3日(水)
+            -> tokens { date { month: "一月" day: "一日" weekday: "月曜日" } } tokens { name: "から" } tokens { date { day: "三日" weekday: "水曜日" } }
         70〜80年代
             -> tokens { cardinal { integer: "七十" } } tokens { name: "から" } tokens { date { year: "八十年代" } }
         7月5〜9日(月〜金)
-            -> tokens { date { month: "七月" } } tokens { cardinal { integer: "五" } } tokens { name: "から" } tokens { date { day: "九日" weekday: "月曜日" } } tokens { name: "から" } tokens { date { weekday: "金曜日" } } 
+            -> tokens { date { month: "七月" } } tokens { cardinal { integer: "五" } } tokens { name: "から" } tokens { date { day: "九日" weekday: "月曜日" } } tokens { name: "から" } tokens { date { weekday: "金曜日" } }
         7月初旬〜9月中旬
-            -> tokens { date { month: "七月" } } tokens { name: "初" } tokens { name: "旬" } tokens { name: "から" } tokens { date { month: "九月" } } tokens { name: "中" } tokens { name: "旬" } 
+            -> tokens { date { month: "七月" } } tokens { name: "初" } tokens { name: "旬" } tokens { name: "から" } tokens { date { month: "九月" } } tokens { name: "中" } tokens { name: "旬" }
         3〜4月
             -> tokens { cardinal { integer: "三" } } tokens { name: "から" } tokens { date { month: "四月" } }
-        2023年3月1日(水)〜6月12日(火) 
-            -> tokens { date { year: "二千二十三年" month: "三月" day: "一日" weekday: "水曜日" } } tokens { name: "から" } tokens { date { month: "六月" day: "十二日" weekday: "火曜日" } } 
+        2023年3月1日(水)〜6月12日(火)
+            -> tokens { date { year: "二千二十三年" month: "三月" day: "一日" weekday: "水曜日" } } tokens { name: "から" } tokens { date { month: "六月" day: "十二日" weekday: "火曜日" } }
         10月中旬〜11月上旬
             -> tokens { date { month: "十月" } } tokens { date { month: "中旬" } } tokens { name: "から" } tokens { date { month: "十一月" } } tokens { date { month: "上旬" } }
-        1976年7月17日〜8月1日 
-            -> tokens { date { year: "千九百七十六年" month: "七月" day: "十七日" } } tokens { name: "から" } tokens { date { month: "八月" day: "一日" } } 
-    
+        1976年7月17日〜8月1日
+            -> tokens { date { year: "千九百七十六年" month: "七月" day: "十七日" } } tokens { name: "から" } tokens { date { month: "八月" day: "一日" } }
+
     Args:
         cardinal: CardinalFst
     """

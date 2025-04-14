@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 class MeasureFst(GraphFst):
     """
-    Finite state transducer for classifying measure, suppletive aware, e.g. 
+    Finite state transducer for classifying measure, suppletive aware, e.g.
         -१२kg -> measure { negative: "true" cardinal { integer: "बारह" } units: "किलोग्राम" }
         -१२.२kg -> measure { decimal { negative: "true"  integer_part: "बारह"  fractional_part: "दो"} units: "किलोग्राम" }
 
@@ -40,7 +40,9 @@ class MeasureFst(GraphFst):
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
+            0,
+            1,
         )
 
         # Define the unit handling

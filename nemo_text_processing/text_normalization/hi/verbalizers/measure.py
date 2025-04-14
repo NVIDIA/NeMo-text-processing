@@ -23,8 +23,8 @@ class MeasureFst(GraphFst):
     Finite state transducer for verbalizing measure, e.g.
         measure { negative: "true" cardinal { integer: "बारह" } units: "किलोग्राम" } -> ऋणात्मक बारह किलोग्राम
         measure { decimal { integer_part: "बारह" fractional_part: "दो" } units: "किलोग्राम" } -> बारह दशमलव दो किलोग्राम
-        
-    
+
+
     Args:
         decimal: DecimalFst
         cardinal: CardinalFs
@@ -36,7 +36,9 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="verbalize")
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
+            0,
+            1,
         )
 
         unit = pynutil.delete("units: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"") + delete_space
