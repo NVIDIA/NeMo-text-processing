@@ -31,6 +31,15 @@ digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
 teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
+# Read suffixes from file into a list
+with open(get_abs_path("data/date/suffixes.tsv"), "r", encoding="utf-8") as f:
+    suffixes_list = f.read().splitlines()
+with open(get_abs_path("data/date/prefixes.tsv"), "r", encoding="utf-8") as f:
+    prefixes_list = f.read().splitlines()
+
+# Create union of suffixes and prefixes
+suffix_union = pynini.union(*suffixes_list)
+prefix_union = pynini.union(*prefixes_list)
 
 class DateFst(GraphFst):
     """
@@ -86,15 +95,14 @@ class DateFst(GraphFst):
         century_number = pynini.compose(pynini.closure(NEMO_HI_DIGIT, 1), cardinal_graph) + pynini.accep("वीं")
         century_text = pynutil.insert("text: \"") + century_number + pynutil.insert("\"") + insert_space
 
-        # Graph for year
-        year_number = graph_year + pynini.union(
-            " में", " का", " की", " के", " से", " तक", " ईस्वी", " शताब्दी", " दशक", " सदी"
-        )
+        # Updated logic to use suffix_union
+        year_number = graph_year + suffix_union 
         year_text = pynutil.insert("text: \"") + year_number + pynutil.insert("\"") + insert_space
 
+        # Updated logic to use prefix_union
         year_prefix = (
             pynutil.insert("text: \"")
-            + pynini.union("सन् ", "सन ", "साल ")
+            + prefix_union
             + insert_space
             + graph_year
             + pynutil.insert("\"")

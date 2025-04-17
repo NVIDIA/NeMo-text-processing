@@ -61,11 +61,11 @@ class MeasureFst(GraphFst):
 
         # Define the quarterly measurements
         quarter = pynini.string_map([(".५", "साढ़े"), ("१.५", "डेढ़"), ("२.५", "ढाई"),])
-        quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\" ")
+        quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\"")
 
         # Define the unit handling
         unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
-        units = pynutil.insert(" units: \"") + quarterly_units_graph + pynutil.insert("\" ")
+        units = pynutil.insert("units: \"") + quarterly_units_graph + pynutil.insert("\" ")
 
         # Handling symbols like x, X, *
         symbol_graph = pynini.string_map([("x", "बाई"), ("X", "बाई"), ("*", "बाई"),])
@@ -80,7 +80,7 @@ class MeasureFst(GraphFst):
         )
 
         graph_quarter = (
-            pynutil.insert("decimal { ")
+            pynutil.insert("cardinal { ")
             + optional_graph_negative
             + quarter_graph
             + pynutil.insert(" }")
@@ -121,7 +121,7 @@ class MeasureFst(GraphFst):
 
         graph = (
             pynutil.add_weight(graph_decimal, 0.01)
-            | pynutil.add_weight(graph_quarter, 0.001)
+            | pynutil.add_weight(graph_quarter, 0.005)
             | pynutil.add_weight(graph_cardinal, 0.01)
             | pynutil.add_weight(graph_exceptions, 0.01)
         )
