@@ -41,6 +41,7 @@ with open(get_abs_path("data/date/prefixes.tsv"), "r", encoding="utf-8") as f:
 suffix_union = pynini.union(*suffixes_list)
 prefix_union = pynini.union(*prefixes_list)
 
+
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g.
@@ -96,17 +97,11 @@ class DateFst(GraphFst):
         century_text = pynutil.insert("text: \"") + century_number + pynutil.insert("\"") + insert_space
 
         # Updated logic to use suffix_union
-        year_number = graph_year + suffix_union 
+        year_number = graph_year + suffix_union
         year_text = pynutil.insert("text: \"") + year_number + pynutil.insert("\"") + insert_space
 
         # Updated logic to use prefix_union
-        year_prefix = (
-            pynutil.insert("text: \"")
-            + prefix_union
-            + insert_space
-            + graph_year
-            + pynutil.insert("\"")
-        )
+        year_prefix = pynutil.insert("text: \"") + prefix_union + insert_space + graph_year + pynutil.insert("\"")
 
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
