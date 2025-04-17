@@ -76,7 +76,7 @@ class MoneyFst(GraphFst):
         graph_saade_lakh = pynutil.add_weight(pynutil.delete("साढ़े") + delete_space + self.integer_quarterly_measures + delete_space + pynutil.insert("५००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency, 0.01)
         graph_sava_lakh = pynutil.add_weight(pynutil.delete("सवा") + delete_space + self.integer_quarterly_measures + delete_space + pynutil.insert("२५०००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency, 0.01)
         graph_paune_lakh = pynutil.delete("पौने") + delete_space + self.integer_paune + delete_space + pynutil.insert("७५०००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency
-        graph_dedh_lakh = pynutil.delete("डेढ़") + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("१५००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency
+        graph_dedh_lakh = pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("१५००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency
         graph_dhaai_lakh = pynutil.delete("ढाई") + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("२५००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency
         graph_exceptions_lakhs = graph_saade_lakh | graph_sava_lakh | graph_paune_lakh | graph_dedh_lakh | graph_dhaai_lakh
         
@@ -85,7 +85,7 @@ class MoneyFst(GraphFst):
         graph_sava_crore = pynutil.delete("सवा") + delete_space + self.integer_quarterly_measures + delete_space + pynutil.insert("२५०००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_crore + delete_extra_space + self.currency
         graph_paune_crore = pynutil.delete("पौने") + delete_space + self.integer_paune + delete_space + pynutil.insert("७५०००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_crore + delete_extra_space + self.currency
         graph_dhaai_crore = pynutil.delete("ढाई") + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("२५००००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_crore + delete_extra_space + self.currency
-        graph_dedh_crore = pynutil.delete("डेढ़") + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("१५००००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_crore + delete_extra_space + self.currency
+        graph_dedh_crore = pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("१५००००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_crore + delete_extra_space + self.currency
         graph_exceptions_crores = graph_saade_crore | graph_sava_crore | graph_paune_crore | graph_dedh_crore | graph_dhaai_crore
         
         

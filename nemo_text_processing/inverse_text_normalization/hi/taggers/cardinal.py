@@ -73,7 +73,7 @@ class CardinalFst(GraphFst):
         graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("साढ़े") + delete_space + graph_digit + pynutil.insert("५००", weight=-0.1) + delete_space + delete_thousand, -0.1)
         graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("सवा") + delete_space + graph_digit + pynutil.insert("२५०", weight=-0.1) + delete_space + delete_thousand, -0.1)
         graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("पौने") + delete_space + graph_paune + pynutil.insert("७५०", weight=-0.1) + delete_space + delete_thousand, -0.1)
-        graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("डेढ़") + delete_space + pynutil.insert("१५००", weight=-0.1) + delete_space + delete_thousand, -0.1)
+        graph_hundred_as_thousand |= pynutil.add_weight(pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))+ delete_space + pynutil.insert("१५००", weight=-0.1) + delete_space + delete_thousand, -0.1)
         graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("ढाई") + delete_space + pynutil.insert("२५००", weight=-0.1) + delete_space + delete_thousand, -0.1)
 
         graph_in_hundreds = pynutil.add_weight(pynutil.delete("साढ़े") + delete_space + (graph_digit | self.graph_two_digit) + pynutil.insert("५०", weight=-0.1) + delete_space + delete_hundred, -0.1)
