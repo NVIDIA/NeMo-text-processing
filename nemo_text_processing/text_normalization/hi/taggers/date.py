@@ -94,14 +94,14 @@ class DateFst(GraphFst):
 
         # Graph for year
         century_number = pynini.compose(pynini.closure(NEMO_HI_DIGIT, 1), cardinal_graph) + pynini.accep("वीं")
-        century_text = pynutil.insert("text: \"") + century_number + pynutil.insert("\"") + insert_space
+        century_text = pynutil.insert("era: \"") + century_number + pynutil.insert("\"") + insert_space
 
         # Updated logic to use suffix_union
         year_number = graph_year + suffix_union
-        year_text = pynutil.insert("text: \"") + year_number + pynutil.insert("\"") + insert_space
+        year_text = pynutil.insert("era: \"") + year_number + pynutil.insert("\"") + insert_space
 
         # Updated logic to use prefix_union
-        year_prefix = pynutil.insert("text: \"") + prefix_union + insert_space + graph_year + pynutil.insert("\"")
+        year_prefix = pynutil.insert("era: \"") + prefix_union + insert_space + graph_year + pynutil.insert("\"")
 
         graph_dd_mm_yyyy = (
             days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
@@ -117,10 +117,8 @@ class DateFst(GraphFst):
 
         graph_year_suffix = era_graph
 
-        comma_graph = pynutil.insert("text: \"") + delete_comma + insert_space + graph_year + pynutil.insert("\"")
-
         graph_range = (
-            pynutil.insert("text: \"")
+            pynutil.insert("era: \"")
             + cardinal_graph
             + insert_space
             + range_graph
@@ -143,7 +141,6 @@ class DateFst(GraphFst):
             | pynutil.add_weight(century_text, -0.001)
             | pynutil.add_weight(year_text, -0.001)
             | pynutil.add_weight(year_prefix, -0.009)
-            | comma_graph
         )
 
         self.final_graph = final_graph.optimize()
