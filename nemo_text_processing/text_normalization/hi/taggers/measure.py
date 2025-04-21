@@ -66,8 +66,8 @@ class MeasureFst(GraphFst):
         quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\"")
 
         # Define the unit handling
-        unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\" ")
-        units = pynutil.insert("units: \"") + quarterly_units_graph + pynutil.insert("\" ")
+        unit = pynutil.insert(" units: \"") + unit_graph + pynutil.insert("\" ")
+        units = pynutil.insert(" units: \"") + quarterly_units_graph + pynutil.insert("\" ")
 
         # Handling symbols like x, X, *
         symbol_graph = pynini.string_map([("x", "बाई"), ("X", "बाई"), ("*", "बाई"),])
