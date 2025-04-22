@@ -23,7 +23,7 @@ class DateFst(GraphFst):
     Finite state transducer for verbalizing date, e.g.
         date { day: "एक" month: "अप्रैल" year: "दो हज़ार चौबीस" } -> "एक अप्रैल दो हज़ार चौबीस"
         date { month: "अप्रैल" day: "एक" year: "दो हज़ार चौबीस" } -> "अप्रैल एक दो हज़ार चौबीस"
-        
+
 
     Args:
         deterministic: if True will provide a single transduction option,

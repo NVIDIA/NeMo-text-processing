@@ -21,12 +21,12 @@ from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g. 
-        -२३ -> cardinal { negative: "true"  integer: "तेइस" } }
-  s
-    Args:
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
+      Finite state transducer for classifying cardinals, e.g.
+          -२३ -> cardinal { negative: "true"  integer: "तेइस" } }
+    s
+      Args:
+          deterministic: if True will provide a single transduction option,
+              for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
@@ -42,7 +42,7 @@ class CardinalFst(GraphFst):
             if zeros_counts == 0:
                 return digit_graph + suffix
 
-            return digit_graph + (zero ** zeros_counts) + suffix
+            return digit_graph + (zero**zeros_counts) + suffix
 
         def create_larger_number_graph(digit_graph, suffix, zeros_counts, sub_graph):
             insert_space = pynutil.insert(" ")
@@ -50,7 +50,7 @@ class CardinalFst(GraphFst):
             if zeros_counts == 0:
                 return digit_graph + suffix + insert_space + sub_graph
 
-            return digit_graph + suffix + (zero ** zeros_counts) + insert_space + sub_graph
+            return digit_graph + suffix + (zero**zeros_counts) + insert_space + sub_graph
 
         # Hundred graph
         suffix_hundreds = pynutil.insert(" सौ")
