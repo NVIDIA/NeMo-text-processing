@@ -73,7 +73,6 @@ class DateFst(GraphFst):
 
         delete_dash = pynutil.delete("-")
         delete_slash = pynutil.delete("/")
-        delete_comma = pynutil.delete(",")
 
         days_graph = pynutil.insert("day: \"") + days + pynutil.insert("\"") + insert_space
 
