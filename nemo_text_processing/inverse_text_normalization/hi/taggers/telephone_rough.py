@@ -78,7 +78,7 @@ class TelephoneFst(GraphFst):
             pynutil.delete("शून्य") | pynutil.delete("zero") | pynutil.delete("Zero") | pynutil.delete("ZERO")
         )
  
-        graph_landline_with_extension = delete_zero + pynini.closure(self.city_extension + delete_space + self.landline, 11)
+        graph_landline_with_extension = pynini.closure(self.city_extension + delete_space + self.landline, 11)
 
         graph = graph_landline_with_extension
 
@@ -88,7 +88,7 @@ class TelephoneFst(GraphFst):
 from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
 cardinal = CardinalFst()
 telephone = TelephoneFst(cardinal)
-input_text = "zero one six three four two eight one eight three one" #Abohar city code(first five digits) + landline in english
-#input_text = "शून्य एक छह तीन चार दो आठ एक आठ तीन एक" #Abohar city code(first five digits) + landline in hindi
+#input_text = "zero one six three four two eight one eight three one" #Abohar city code(first five digits) + landline in english
+input_text = "शून्य एक छह तीन चार दो आठ एक आठ तीन एक" #Abohar city code(first five digits) + landline in hindi
 output = apply_fst(input_text, telephone.fst)
 print(output)

@@ -87,7 +87,7 @@ class TimeFst(GraphFst):
         graph_saade = pynutil.add_weight(pynutil.delete("साढ़े") + delete_space + self.hour + delete_space + pynutil.insert(" minutes: \"३०\"") + delete_space + pynini.closure(delete_baje), 0.01)
         graph_sava = pynutil.add_weight(pynutil.delete("सवा") + delete_space + self.hour + delete_space + pynutil.insert(" minutes: \"१५\"") + delete_space + pynini.closure(delete_baje), 0.01)
         graph_paune = pynutil.add_weight(pynutil.delete("पौने") + delete_space + self.paune_hour + delete_space + pynutil.insert(" minutes: \"४५\"") + delete_space + pynini.closure(delete_baje), 0.01)
-        graph_dedh = pynutil.add_weight(pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + delete_baje + pynutil.insert("hours: \"१\"") + delete_space + pynutil.insert(" minutes: \"३०\""), 0.01)
+        graph_dedh = pynutil.add_weight(pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + delete_baje + pynutil.insert("hours: \"१\"") + delete_space + pynutil.insert(" minutes: \"३०\""), 0.01)
         graph_dhaai = pynutil.add_weight(pynutil.delete("ढाई") + delete_space + delete_baje + pynutil.insert("hours: \"२\"") + delete_space + pynutil.insert(" minutes: \"३०\""), 0.01)
         graph_quarterly_measures = (graph_dedh | graph_dhaai | ((graph_saade | graph_sava | graph_paune) + pynini.closure(delete_space + delete_baje)))
 
