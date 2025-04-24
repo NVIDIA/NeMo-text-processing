@@ -39,6 +39,8 @@ class DateFst(GraphFst):
 
         year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
+        graph_era = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+
         graph_dd_mm = day + NEMO_SPACE + month
 
         graph_mm_dd = month + NEMO_SPACE + day
@@ -60,7 +62,7 @@ class DateFst(GraphFst):
         )
 
         self.graph = (
-            (graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy)
+            (graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy | graph_era)
             + delete_space
             + optional_preserve_order
         )
