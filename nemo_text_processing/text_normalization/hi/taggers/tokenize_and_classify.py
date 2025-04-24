@@ -81,7 +81,7 @@ class ClassifyFst(GraphFst):
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f'ClassifyFst.fst was restored from {far_file}.')
+            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logging.info(f"Creating ClassifyFst grammars.")
 
@@ -116,7 +116,7 @@ class ClassifyFst(GraphFst):
             logging.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
 
             start_time = time.time()
-            money = MoneyFst(cardinal=cardinal, decimal=decimal, project_input=project_input)
+            money = MoneyFst(cardinal=cardinal, project_input=project_input)
             money_graph = money.fst
             logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 

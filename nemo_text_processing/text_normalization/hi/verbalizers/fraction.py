@@ -44,10 +44,15 @@ class FractionFst(GraphFst):
         numerator = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")
         denominator = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         insert_bata = pynutil.insert(" बटा ")
+        insert_aur = pynutil.insert(" और ")
 
         fraction_default = numerator + insert_bata + denominator
 
-        self.graph = optional_sign + pynini.closure(pynini.closure(integer, 0, 1) + insert_space) + fraction_default
+        self.graph = (
+            optional_sign
+            + pynini.closure(pynini.closure(integer, 0, 1) + insert_space + insert_aur)
+            + fraction_default
+        )
 
         graph = self.graph
 
