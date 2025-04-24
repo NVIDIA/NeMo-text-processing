@@ -24,8 +24,10 @@ currency_graph = pynini.string_file(get_abs_path("data/money/currency.tsv"))
 class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money, suppletive aware, e.g.
-        ₹1 -> money { currency: "रुपए" integer_part: "एक" }
-        ₹1.2 -> money { currency: "रुपए" integer_part: "एक" fractional_part: "दो" }
+        ₹५० -> money { money { currency_maj: "रुपए" integer_part: "पचास" }
+        ₹५०.५० -> money { currency_maj: "रुपए" integer_part: "पचास" fractional_part: "पचास" currency_min: "centiles" }
+        ₹०.५० -> money { currency_maj: "रुपए" integer_part: "शून्य" fractional_part: "पचास" currency_min: "centiles" }
+    Note that the 'centiles' string is a placeholder to handle by the verbalizer by applying the corresponding minor currency denomination
 
     Args:
         cardinal: CardinalFst
