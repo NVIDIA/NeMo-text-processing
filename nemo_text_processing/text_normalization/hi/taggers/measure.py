@@ -26,7 +26,7 @@ teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
 class MeasureFst(GraphFst):
     """
-    Finite state transducer for classifying measure, suppletive aware, e.g. 
+    Finite state transducer for classifying measure, suppletive aware, e.g.
         -१२kg -> measure { negative: "true" cardinal { integer: "बारह" } units: "किलोग्राम" }
         -१२.२kg -> measure { decimal { negative: "true"  integer_part: "बारह"  fractional_part: "दो"} units: "किलोग्राम" }
 
@@ -56,11 +56,19 @@ class MeasureFst(GraphFst):
         quarterly_units_graph = pynini.string_file(get_abs_path("data/measure/quarterly_units.tsv"))
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
+            0,
+            1,
         )
 
         # Define the quarterly measurements
-        quarter = pynini.string_map([(".५", "साढ़े"), ("१.५", "डेढ़"), ("२.५", "ढाई"),])
+        quarter = pynini.string_map(
+            [
+                (".५", "साढ़े"),
+                ("१.५", "डेढ़"),
+                ("२.५", "ढाई"),
+            ]
+        )
         quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\"")
 
         # Define the unit handling
@@ -68,7 +76,13 @@ class MeasureFst(GraphFst):
         units = pynutil.insert(" units: \"") + quarterly_units_graph + pynutil.insert("\" ")
 
         # Handling symbols like x, X, *
-        symbol_graph = pynini.string_map([("x", "बाई"), ("X", "बाई"), ("*", "बाई"),])
+        symbol_graph = pynini.string_map(
+            [
+                ("x", "बाई"),
+                ("X", "बाई"),
+                ("*", "बाई"),
+            ]
+        )
 
         graph_decimal = (
             pynutil.insert("decimal { ")

@@ -23,7 +23,7 @@ class FractionFst(GraphFst):
     Finite state transducer for verbalizing fraction
         e.g. fraction { integer: "तेईस" numerator: "चार" denominator: "छः" }-> तेईस चार बटा छः
         e.g. fraction { numerator: "चार" denominator: "छः" } -> चार बटा छः
-        
+
 
     Args:
         deterministic: if True will provide a single transduction option,
