@@ -68,6 +68,13 @@ class MoneyFst(GraphFst):
             + delete_extra_space
             + pynutil.delete(currency_graph)
         )
+        #cases for saade,sava with teens and ties
+        graph_saade_teens_ties = pynutil.delete("साढ़े") + delete_space + self.integer_quarterly_measures +  pynutil.insert("\"") + delete_space + pynutil.insert(" fractional_part: \"५०\"") + delete_extra_space + self.currency
+        graph_sava_teens_ties = pynutil.delete("सवा") + delete_space + self.integer_quarterly_measures +  pynutil.insert("\"") + delete_space + pynutil.insert(" fractional_part: \"२५\"") + delete_extra_space + self.currency
+        graph_dedh = pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + pynutil.insert("integer_part: \"१\"") + delete_space + pynutil.insert(" fractional_part: \"५०\"") + delete_extra_space + self.currency
+        graph_dhaai = pynutil.delete("ढाई") + delete_space + pynutil.insert("integer_part: \"२\"") + delete_space + pynutil.insert(" fractional_part: \"५०\"") + delete_extra_space + self.currency
+        
+        graph_exceptions_teens_ties = graph_saade_teens_ties | graph_sava_teens_ties | graph_dedh | graph_dhaai
         
         #cases for saade,sava,paune,dedh and dhaai with hundreds and thousands
         graph_exceptions = self.integer + delete_extra_space + self.currency
@@ -78,6 +85,7 @@ class MoneyFst(GraphFst):
         graph_paune_lakh = pynutil.delete("पौने") + delete_space + self.integer_paune + delete_space + pynutil.insert("७५०००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency
         graph_dedh_lakh = pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("१५००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency
         graph_dhaai_lakh = pynutil.delete("ढाई") + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("२५००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_lakh + delete_extra_space + self.currency
+        
         graph_exceptions_lakhs = graph_saade_lakh | graph_sava_lakh | graph_paune_lakh | graph_dedh_lakh | graph_dhaai_lakh
         
         # exceptions with crores
@@ -86,10 +94,11 @@ class MoneyFst(GraphFst):
         graph_paune_crore = pynutil.delete("पौने") + delete_space + self.integer_paune + delete_space + pynutil.insert("७५०००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_crore + delete_extra_space + self.currency
         graph_dhaai_crore = pynutil.delete("ढाई") + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("२५००००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_crore + delete_extra_space + self.currency
         graph_dedh_crore = pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + pynutil.insert("integer_part: \"") + pynutil.insert("१५००००००", weight=-0.1) + pynutil.insert("\"") + delete_space + delete_crore + delete_extra_space + self.currency
+        
         graph_exceptions_crores = graph_saade_crore | graph_sava_crore | graph_paune_crore | graph_dedh_crore | graph_dhaai_crore
         
         
-        graph_quarterly_measures = graph_exceptions | graph_exceptions_lakhs | graph_exceptions_crores
+        graph_quarterly_measures = graph_exceptions_teens_ties | graph_exceptions | graph_exceptions_lakhs | graph_exceptions_crores
         
         graph = graph_currency_decimal | graph_currency_cardinal | graph_rupay_and_paisa | graph_quarterly_measures
         self.graph = graph.optimize()

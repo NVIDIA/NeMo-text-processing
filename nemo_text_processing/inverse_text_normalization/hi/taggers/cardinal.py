@@ -79,7 +79,7 @@ class CardinalFst(GraphFst):
         graph_in_hundreds = pynutil.add_weight(pynutil.delete("साढ़े") + delete_space + (graph_digit | self.graph_two_digit) + pynutil.insert("५०", weight=-0.1) + delete_space + delete_hundred, -0.1)
         graph_in_hundreds |= pynutil.add_weight(pynutil.delete("सवा") + delete_space + (graph_digit | self.graph_two_digit) + pynutil.insert("२५", weight=-0.1) + delete_space + delete_hundred, -0.1)
         graph_in_hundreds |= pynutil.add_weight(pynutil.delete("पौने") + delete_space + graph_paune + pynutil.insert("७५", weight=-0.1) + delete_space + delete_hundred, -0.1)
-        graph_in_hundreds |= pynutil.add_weight(pynutil.delete("डेढ़") + delete_space + pynutil.insert("१५०", weight=-0.1) + delete_space + delete_hundred, -0.1)
+        graph_in_hundreds |= pynutil.add_weight(pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + pynutil.insert("१५०", weight=-0.1) + delete_space + delete_hundred, -0.1)
         graph_in_hundreds |= pynutil.add_weight(pynutil.delete("ढाई") + delete_space + pynutil.insert("२५०", weight=-0.1) + delete_space + delete_hundred, -0.1)
         self.graph_hundreds = graph_hundred_component | graph_hundred_as_thousand | graph_in_hundreds
 
@@ -155,6 +155,7 @@ class CardinalFst(GraphFst):
         graph_no_prefix = pynutil.add_weight(
             pynini.cross("सौ", "१००")
             | pynini.cross("हज़ार", "१०००")
+            | pynini.cross ("हजार", "१०००") 
             | pynini.cross("लाख", "१०००००")
             | pynini.cross("करोड़", "१०००००००"),
             2,
