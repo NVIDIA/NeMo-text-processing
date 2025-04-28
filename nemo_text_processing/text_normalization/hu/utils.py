@@ -38,9 +38,9 @@ def load_labels(abs_path):
 
     Returns dictionary of mappings
     """
-    with open(abs_path) as label_tsv:
+    with open(abs_path, encoding="utf-8") as label_tsv:
         labels = list(csv.reader(label_tsv, delimiter="\t"))
-        return labels
+    return labels
 
 
 def load_inflection(abs_path):
@@ -53,7 +53,7 @@ def load_inflection(abs_path):
     Returns dictionary of mappings of word endings to
     lists of case endings.
     """
-    with open(abs_path) as inflection_tsv:
+    with open(abs_path, encoding="utf-8") as inflection_tsv:
         items = list(csv.reader(inflection_tsv, delimiter="\t"))
         inflections = {k[0]: k[1].split(" ") for k in items}
         return inflections
