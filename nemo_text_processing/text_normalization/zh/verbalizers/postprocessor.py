@@ -69,7 +69,11 @@ class PostProcessor(GraphFst):
             en_charset = NEMO_DIGIT | NEMO_ALPHA | NEMO_PUNCT | NEMO_WHITE_SPACE
             charset = zh_charset | en_charset
 
-            with open(get_abs_path("data/char/oov_tags.tsv"), "r", encoding="utf-8",) as f:
+            with open(
+                get_abs_path("data/char/oov_tags.tsv"),
+                "r",
+                encoding="utf-8",
+            ) as f:
                 tags = f.readline().strip().split('\t')
                 assert len(tags) == 2
                 ltag, rtag = tags
