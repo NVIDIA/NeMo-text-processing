@@ -511,7 +511,7 @@ if __name__ == "__main__":
         )
         start = perf_counter()
         if os.path.exists(args.text):
-            with open(args.text, 'r') as f:
+            with open(args.text, 'r', encoding='utf-8') as f:
                 args.text = f.read().strip()
 
         options = normalizer.normalize(
