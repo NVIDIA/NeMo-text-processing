@@ -77,9 +77,6 @@ class TelephoneFst(GraphFst):
  
         graph_landline_with_extension = pynini.closure(delete_zero + delete_space + self.city_extension + delete_space + self.landline, 10)
         
-        #graph_extension = delete_zero + delete_space + self.city_extension
-        #graph = graph_extension
-
         graph = graph_landline_with_extension
 
         final_graph = self.add_tokens(graph)
