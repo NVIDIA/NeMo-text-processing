@@ -41,33 +41,43 @@ class TelephoneFst(GraphFst):
         
         landline_operator_graph = pynini.string_file(get_abs_path("data/telephone/landline_operator_digits_eng.tsv")).invert()
         landline_operator_graph |= pynini.string_file(get_abs_path("data/telephone/landline_operator_digits_hin.tsv")).invert()
+        
+        self.hindi_digit_graph = (
+            pynutil.insert("number_part: \"")
+            + pynini.closure(hindi_digit_graph + delete_space, 3, 8)
+            + hindi_digit_graph
+            + pynutil.insert("\" ")
+        )
+        self.english_digit_graph = (
+            pynutil.insert("number_part: \"")
+            + pynini.closure(english_digit_graph + delete_space, 3, 8)
+            + english_digit_graph
+            + delete_space
+            + pynutil.insert("\" ")
+        )
 
         # two, three, four-digit extension code with zero
         self.city_code = (
             pynutil.insert("extension: \"")
-            + std_graph 
+            + pynini.closure(std_graph + delete_space, 2, 7)
             + delete_space
             + pynutil.insert("\" ")
         )
         
-        self.city_extension = pynini.closure(self.city_code, 3, 7)
+        self.city_extension = self.city_code
         
         # landline graph in hindi and english digits
         self.landline_hindi = (
             pynutil.insert("number_part: \"")
             + delete_space
-            + landline_operator_graph
-            + delete_space
-            + hindi_digit_graph
+            + self.hindi_digit_graph
             + delete_space
             + pynutil.insert("\" ")
         )
         self.landline_english = (
             pynutil.insert("number_part: \"")
             + delete_space
-            + landline_operator_graph
-            + delete_space
-            + english_digit_graph
+            + self.english_digit_graph
             + delete_space
             + pynutil.insert("\" ")
         )
@@ -78,7 +88,10 @@ class TelephoneFst(GraphFst):
             pynutil.delete("शून्य") | pynutil.delete("zero") | pynutil.delete("Zero") | pynutil.delete("ZERO")
         )
  
-        graph_landline_with_extension = pynini.closure(self.city_extension + delete_space + self.landline, 11)
+        graph_landline_with_extension = pynini.closure(delete_zero + delete_space + self.city_extension + delete_space + self.landline, 5)
+        
+        #graph_extension = delete_zero + delete_space + self.city_extension
+        #graph = graph_extension
 
         graph = graph_landline_with_extension
 
@@ -88,7 +101,8 @@ class TelephoneFst(GraphFst):
 from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
 cardinal = CardinalFst()
 telephone = TelephoneFst(cardinal)
-input_text = "zero one six three four two eight one eight three one" #Abohar city code(first five digits) + landline in english
+input_text = "zero one six three four two eight one eight three one" #Abohar city code(first four digits 0164) + landline in english 281831. this landline should only start with the numbers 2,3,4,6. anything else should not be accepted.
+
 #input_text = "शून्य एक छह तीन चार दो आठ एक आठ तीन एक" #Abohar city code(first five digits) + landline in hindi
 output = apply_fst(input_text, telephone.fst)
 print(output)
