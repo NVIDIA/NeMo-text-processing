@@ -43,10 +43,10 @@ class TelephoneFst(GraphFst):
         landline_operator_graph |= pynini.string_file(get_abs_path("data/telephone/landline_operator_digits_hin.tsv")).invert()
         
 
-        # two, three, four-digit extension code with zero
+        # extension code with zero
         self.city_code = (
             pynutil.insert("extension: \"")
-            + pynini.closure(std_graph + delete_space, 2, 7)
+            + pynini.closure(std_graph, 2, 7)
             + delete_space
             + pynutil.insert("\" ")
         )
@@ -57,14 +57,14 @@ class TelephoneFst(GraphFst):
         self.landline_hindi = (
             pynutil.insert("number_part: \"")
             + delete_space
-            + pynini.closure(hindi_digit_graph + delete_space, 3, 8)
+            + pynini.closure(hindi_digit_graph, 3, 8)
             + delete_space
             + pynutil.insert("\" ")
         )
         self.landline_english = (
             pynutil.insert("number_part: \"")
             + delete_space
-            + pynini.closure(english_digit_graph + delete_space, 3, 8)
+            + pynini.closure(english_digit_graph, 3, 8)
             + delete_space
             + pynutil.insert("\" ")
         )
