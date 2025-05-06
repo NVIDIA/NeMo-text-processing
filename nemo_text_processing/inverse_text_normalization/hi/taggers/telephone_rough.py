@@ -42,19 +42,6 @@ class TelephoneFst(GraphFst):
         landline_operator_graph = pynini.string_file(get_abs_path("data/telephone/landline_operator_digits_eng.tsv")).invert()
         landline_operator_graph |= pynini.string_file(get_abs_path("data/telephone/landline_operator_digits_hin.tsv")).invert()
         
-        self.hindi_digit_graph = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 3, 8)
-            + hindi_digit_graph
-            + pynutil.insert("\" ")
-        )
-        self.english_digit_graph = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(english_digit_graph + delete_space, 3, 8)
-            + english_digit_graph
-            + delete_space
-            + pynutil.insert("\" ")
-        )
 
         # two, three, four-digit extension code with zero
         self.city_code = (
@@ -70,14 +57,14 @@ class TelephoneFst(GraphFst):
         self.landline_hindi = (
             pynutil.insert("number_part: \"")
             + delete_space
-            + self.hindi_digit_graph
+            + pynini.closure(hindi_digit_graph + delete_space, 3, 8)
             + delete_space
             + pynutil.insert("\" ")
         )
         self.landline_english = (
             pynutil.insert("number_part: \"")
             + delete_space
-            + self.english_digit_graph
+            + pynini.closure(english_digit_graph + delete_space, 3, 8)
             + delete_space
             + pynutil.insert("\" ")
         )
@@ -88,7 +75,7 @@ class TelephoneFst(GraphFst):
             pynutil.delete("शून्य") | pynutil.delete("zero") | pynutil.delete("Zero") | pynutil.delete("ZERO")
         )
  
-        graph_landline_with_extension = pynini.closure(delete_zero + delete_space + self.city_extension + delete_space + self.landline, 5)
+        graph_landline_with_extension = pynini.closure(delete_zero + delete_space + self.city_extension + delete_space + self.landline, 10)
         
         #graph_extension = delete_zero + delete_space + self.city_extension
         #graph = graph_extension
