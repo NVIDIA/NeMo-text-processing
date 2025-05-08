@@ -22,7 +22,9 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestCardinal:
-    normalizer_ko = Normalizer(lang='ko', cache_dir='export/ko_tn_grammars_lower_cased', overwrite_cache=False, input_case='lower_cased')
+    normalizer_ko = Normalizer(
+        lang='ko', cache_dir='export/ko_tn_grammars_lower_cased', overwrite_cache=False, input_case='lower_cased'
+    )
 
     @parameterized.expand(parse_test_case_file('ko/data_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
@@ -30,4 +32,3 @@ class TestCardinal:
     def test_norm(self, test_input, expected):
         preds = self.normalizer_ko.normalize(test_input)
         assert expected == preds
-

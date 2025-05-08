@@ -50,27 +50,21 @@ class ClassifyFst(GraphFst):
         deterministic: bool = True,
         cache_dir: str = None,
         overwrite_cache: bool = False,
-        whitelist: str = None
+        whitelist: str = None,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(
-                cache_dir,
-                f"ko_tn_{deterministic}_tokenize.far"
-            )
+            far_file = os.path.join(cache_dir, f"ko_tn_{deterministic}_tokenize.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             cardinal = CardinalFst(deterministic=deterministic)
 
-            classify = pynini.union(
-
-                pynutil.add_weight(cardinal.fst, 1.1)
-            )
+            classify = pynini.union(pynutil.add_weight(cardinal.fst, 1.1))
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             tagger = pynini.closure(token, 1)
