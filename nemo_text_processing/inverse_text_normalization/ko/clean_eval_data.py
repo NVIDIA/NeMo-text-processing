@@ -282,41 +282,24 @@ def process_address_1(instance: Instance) -> Instance:
 
 
 filters = []
-filters.append(Filter(class_type="CARDINAL",
-               process_func=process_cardinal_1, filter_func=filter_cardinal_1))
-filters.append(Filter(class_type="ORDINAL",
-               process_func=process_ordinal_1, filter_func=filter_ordinal_1))
-filters.append(Filter(class_type="DECIMAL",
-               process_func=process_decimal_1, filter_func=filter_decimal_1))
-filters.append(Filter(class_type="MEASURE",
-               process_func=process_measure_1, filter_func=filter_measure_1))
-filters.append(Filter(class_type="MONEY",
-               process_func=process_money_1, filter_func=filter_money_1))
-filters.append(Filter(class_type="TIME",
-               process_func=process_time_1, filter_func=filter_time_1))
+filters.append(Filter(class_type="CARDINAL", process_func=process_cardinal_1, filter_func=filter_cardinal_1))
+filters.append(Filter(class_type="ORDINAL", process_func=process_ordinal_1, filter_func=filter_ordinal_1))
+filters.append(Filter(class_type="DECIMAL", process_func=process_decimal_1, filter_func=filter_decimal_1))
+filters.append(Filter(class_type="MEASURE", process_func=process_measure_1, filter_func=filter_measure_1))
+filters.append(Filter(class_type="MONEY", process_func=process_money_1, filter_func=filter_money_1))
+filters.append(Filter(class_type="TIME", process_func=process_time_1, filter_func=filter_time_1))
 
-filters.append(Filter(class_type="DATE",
-               process_func=process_date_1, filter_func=filter_date_1))
-filters.append(Filter(class_type="PLAIN",
-               process_func=process_plain_1, filter_func=filter_plain_1))
-filters.append(Filter(class_type="PUNCT",
-               process_func=process_punct_1, filter_func=filter_punct_1))
-filters.append(Filter(class_type="LETTERS",
-               process_func=process_letters_1, filter_func=filter_letters_1))
-filters.append(Filter(class_type="VERBATIM",
-               process_func=process_verbatim_1, filter_func=filter_verbatim_1))
-filters.append(Filter(class_type="DIGIT",
-               process_func=process_digit_1, filter_func=filter_digit_1))
-filters.append(Filter(class_type="TELEPHONE",
-               process_func=process_telephone_1, filter_func=filter_telephone_1))
-filters.append(Filter(class_type="ELECTRONIC",
-               process_func=process_electronic_1, filter_func=filter_electronic_1))
-filters.append(Filter(class_type="FRACTION",
-               process_func=process_fraction_1, filter_func=filter_fraction_1))
-filters.append(Filter(class_type="ADDRESS",
-               process_func=process_address_1, filter_func=filter_address_1))
-filters.append(Filter(class_type=EOS_TYPE,
-               process_func=lambda x: x, filter_func=lambda x: True))
+filters.append(Filter(class_type="DATE", process_func=process_date_1, filter_func=filter_date_1))
+filters.append(Filter(class_type="PLAIN", process_func=process_plain_1, filter_func=filter_plain_1))
+filters.append(Filter(class_type="PUNCT", process_func=process_punct_1, filter_func=filter_punct_1))
+filters.append(Filter(class_type="LETTERS", process_func=process_letters_1, filter_func=filter_letters_1))
+filters.append(Filter(class_type="VERBATIM", process_func=process_verbatim_1, filter_func=filter_verbatim_1))
+filters.append(Filter(class_type="DIGIT", process_func=process_digit_1, filter_func=filter_digit_1))
+filters.append(Filter(class_type="TELEPHONE", process_func=process_telephone_1, filter_func=filter_telephone_1))
+filters.append(Filter(class_type="ELECTRONIC", process_func=process_electronic_1, filter_func=filter_electronic_1))
+filters.append(Filter(class_type="FRACTION", process_func=process_fraction_1, filter_func=filter_fraction_1))
+filters.append(Filter(class_type="ADDRESS", process_func=process_address_1, filter_func=filter_address_1))
+filters.append(Filter(class_type=EOS_TYPE, process_func=lambda x: x, filter_func=lambda x: True))
 
 
 def filter_loaded_data(data: List[Instance], verbose: bool = False) -> List[Instance]:
@@ -344,10 +327,8 @@ def filter_loaded_data(data: List[Instance], verbose: bool = False) -> List[Inst
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument("--input", help="input file path",
-                        type=str, default='./en_with_types/output-00001-of-00100')
-    parser.add_argument(
-        "--verbose", help="print filtered instances", action='store_true')
+    parser.add_argument("--input", help="input file path", type=str, default='./en_with_types/output-00001-of-00100')
+    parser.add_argument("--verbose", help="print filtered instances", action='store_true')
     return parser.parse_args()
 
 
