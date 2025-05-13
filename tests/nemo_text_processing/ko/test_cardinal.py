@@ -33,7 +33,5 @@ class TestCardinal:
         assert pred == expected
 
     normalizer_with_audio_ko = (
-        NormalizerWithAudio(lang='ko', cache_dir=CACHE_DIR, overwrite_cache=False)
-        if RUN_AUDIO_BASED_TESTS
-        else None
+        NormalizerWithAudio(lang='ko', cache_dir=CACHE_DIR, overwrite_cache=False) if RUN_AUDIO_BASED_TESTS else None
     )

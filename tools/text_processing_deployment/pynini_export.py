@@ -106,7 +106,7 @@ def parse_args():
             'mr',
             'ja',
             'rw',
-            'ko'
+            'ko',
         ],
         type=str,
         default='en',

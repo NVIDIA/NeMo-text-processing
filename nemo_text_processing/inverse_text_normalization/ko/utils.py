@@ -15,9 +15,6 @@
 import os
 
 
-
 def get_abs_path(rel_path):
 
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
-
-
