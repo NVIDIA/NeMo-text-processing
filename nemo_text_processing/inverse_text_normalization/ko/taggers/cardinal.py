@@ -31,13 +31,9 @@ class CardinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
 
-        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_zero = pynini.cross("영", "0")
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
-        graph_negative = pynini.cross("마이너스", "-")
-        graph_negative += delete_space
-        
         ten = pynutil.delete("십")
         ten_alt = pynini.cross("십", "1")
         ### Responsible for second digit of two digit number. ex) 20's 2
@@ -47,7 +43,7 @@ class CardinalFst(GraphFst):
         
         hundred = pynutil.delete("백")
         hundred_alt = pynini.cross("백", "1")
-        graph_hundred_component = pynini.union(((graph_digit + hundred) | hundred_alt), pynutil.insert("0"))
+        graph_hundred_component = pynini.union(((graph_digit + hundred | hundred_alt)), pynutil.insert("0"))
         graph_hundred_component += graph_ten_component
 
         thousand = pynutil.delete("천")
