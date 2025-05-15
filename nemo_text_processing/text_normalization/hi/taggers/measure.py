@@ -64,12 +64,11 @@ class MeasureFst(GraphFst):
         # Define the quarterly measurements
         quarter = pynini.string_map(
             [
-                (".५", "साढ़े"),
                 ("१.५", "डेढ़"),
                 ("२.५", "ढाई"),
             ]
         )
-        quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\"")
+        quarter_graph = pynutil.insert("integer: \"") + quarter + pynutil.insert("\"")
 
         # Define the unit handling
         unit = pynutil.insert(" units: \"") + unit_graph + pynutil.insert("\" ")
