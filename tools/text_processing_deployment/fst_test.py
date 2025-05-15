@@ -12,10 +12,7 @@ if __name__ == "__main__":
 
     print(f"[INFO] Loading normalizer with grammars from {args.grammars_dir}")
     normalizer = Normalizer(
-        input_case="lower_cased",
-        lang=args.language,
-        cache_dir=args.grammars_dir,
-        overwrite_cache=False
+        input_case="lower_cased", lang=args.language, cache_dir=args.grammars_dir, overwrite_cache=False
     )
 
     print(f"[INFO] Reading input test file: {args.input_data_file}")
