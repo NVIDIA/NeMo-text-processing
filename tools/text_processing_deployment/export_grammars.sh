@@ -88,7 +88,7 @@ fi
 
 if [[ ${OVERWRITE_CACHE} != "" ]] ; then
   echo "[I] Exporting grammars"
-  python3 "${SCRIPT_DIR}/pynini_export.py" --output_dir=${FAR_PATH} --grammars=${GRAMMARS} --input_case=${INPUT_CASE} \
+  python3 pynini_export.py --output_dir=${FAR_PATH} --grammars=${GRAMMARS} --input_case=${INPUT_CASE} \
   --language=${LANGUAGE} --cache_dir=${CACHE_DIR} ${WHITELIST} ${OVERWRITE_CACHE} || exit 1
 fi
 
