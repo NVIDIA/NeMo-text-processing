@@ -64,17 +64,18 @@ class TimeFst(GraphFst):
         )
 
         # hour minute and hour minute without "baje and minat"
-        graph_hm = (
+        graph_hm = pynutil.add_weight(
             self.hour
             + delete_space
             + pynini.closure(delete_baje, 0, 1)
             + delete_space
             + self.minute
             + pynini.closure(delete_space + delete_minute, 0, 1)
+            , 0.01
         )
 
         # hour second
-        graph_hs = self.hour + delete_space + delete_baje + delete_space + self.second + delete_space + delete_second
+        graph_hs = pynutil.add_weight(self.hour + delete_space + delete_baje + delete_space + self.second + delete_space + delete_second, 0.01)
 
         # minute second
         graph_ms = (
