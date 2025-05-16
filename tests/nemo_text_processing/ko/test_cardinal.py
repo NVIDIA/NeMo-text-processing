@@ -16,10 +16,8 @@ import pytest
 from parameterized import parameterized
 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
-from nemo_text_processing.text_normalization.normalize import Normalizer
-from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestCardinal:
@@ -31,9 +29,3 @@ class TestCardinal:
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_ko.inverse_normalize(test_input, verbose=False)
         assert pred == expected
-
-    normalizer_with_audio_ko = (
-        NormalizerWithAudio(lang='ko', cache_dir=CACHE_DIR, overwrite_cache=False)
-        if RUN_AUDIO_BASED_TESTS
-        else None
-    )

@@ -24,8 +24,6 @@ from nemo_text_processing.inverse_text_normalization.ko.taggers.word import Word
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import ( 
     INPUT_LOWER_CASED,
     GraphFst,
-    delete_extra_space,
-    delete_space,
     generator_main,
 )
 
