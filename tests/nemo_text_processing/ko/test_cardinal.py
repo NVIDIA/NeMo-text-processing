@@ -28,12 +28,4 @@ class TestCardinal:
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_ko.inverse_normalize(test_input, verbose=False)
-<<<<<<< HEAD
         assert pred == expected
-=======
-        assert pred == expected
-
-    normalizer_with_audio_ko = (
-        NormalizerWithAudio(lang='ko', cache_dir=CACHE_DIR, overwrite_cache=False) if RUN_AUDIO_BASED_TESTS else None
-    )
->>>>>>> 77da79d12b1378502cc2b382cd6933b02e7c2545

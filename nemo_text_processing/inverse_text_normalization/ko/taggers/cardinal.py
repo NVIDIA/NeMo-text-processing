@@ -19,7 +19,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
-
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
@@ -35,19 +34,13 @@ class CardinalFst(GraphFst):
         graph_zero = pynini.cross("영", "0")
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
-<<<<<<< HEAD
-=======
-        graph_negative = pynini.cross("마이너스", "-")
-        graph_negative += delete_space
-
->>>>>>> 77da79d12b1378502cc2b382cd6933b02e7c2545
         ten = pynutil.delete("십")
         ten_alt = pynini.cross("십", "1")
         ### Responsible for second digit of two digit number. ex) 20's 2
         graph_ten_component = pynini.union((graph_digit + ten) | ten_alt, pynutil.insert("0"))
         ### Responsible for the first digit of number. ex) 1,2,3,4,5,,,
         graph_ten_component += graph_digit | pynutil.insert("0")
-
+        
         hundred = pynutil.delete("백")
         hundred_alt = pynini.cross("백", "1")
         graph_hundred_component = pynini.union(((graph_digit + hundred) | hundred_alt), pynutil.insert("0"))
@@ -62,36 +55,29 @@ class CardinalFst(GraphFst):
         tenthousand_alt = pynini.cross("만", "1")
         ### "만" can express next four digits of numbers until the next unit "억", so insert "0000" to allocate four digit worth of space
         ### From "만", keep adding four digits and graph_thousand_component(0000-9999), because Korean units increase every four digits
-        graph_tenthousand_component = pynini.union(
-            ((graph_thousand_component + tenthousand) | tenthousand_alt), pynutil.insert("0000")
-        )
+        graph_tenthousand_component = pynini.union(((graph_thousand_component + tenthousand) | tenthousand_alt), pynutil.insert("0000"))
         graph_tenthousand_component += graph_thousand_component
 
         hundredmillion = pynutil.delete("억")
         hundredmillion_alt = pynini.cross("억", "1")
-        graph_hundredmillion_component = pynini.union(
-            ((graph_thousand_component + hundredmillion) | hundredmillion_alt), pynutil.insert("0000")
-        )
-        graph_hundredmillion_component += graph_tenthousand_component
-
+        graph_hundredmillion_component = pynini.union(((graph_thousand_component + hundredmillion) | hundredmillion_alt), pynutil.insert("0000"))
+        graph_hundredmillion_component +=  graph_tenthousand_component
+        
         trillion = pynutil.delete("조")
         trillion_alt = pynini.cross("조", "1")
-        graph_trillion_component = pynini.union(
-            ((graph_thousand_component + trillion) | trillion_alt), pynutil.insert("0000")
-        )
+        graph_trillion_component = pynini.union(((graph_thousand_component + trillion) | trillion_alt), pynutil.insert("0000"))
         graph_trillion_component += graph_hundredmillion_component
 
         tenquadrillion = pynutil.delete("경")
         tenquadrillion_alt = pynini.cross("경", "1")
-        graph_tenquadrillion_component = pynini.union(
-            ((graph_thousand_component + tenquadrillion) | tenquadrillion_alt), pynutil.insert("0000")
-        )
+        graph_tenquadrillion_component = pynini.union(((graph_thousand_component + tenquadrillion) | tenquadrillion_alt), pynutil.insert("0000"))
         graph_tenquadrillion_component += graph_trillion_component
 
+        
         graph = pynini.union(
             ### From biggest unit to smallest, everything is included
-            graph_tenquadrillion_component
-            | graph_zero
+            graph_tenquadrillion_component|
+            graph_zero
         )
 
         leading_zero = (
@@ -99,14 +85,12 @@ class CardinalFst(GraphFst):
         )
         graph_nonzero = graph @ leading_zero
         graph = pynini.union(graph_nonzero, graph_zero)
-
+        
         graph = graph @ leading_zero | graph_zero
 
         self.just_cardinals = graph
 
-        optional_sign = pynini.closure(
-            (pynini.cross("마이너스", 'negative: "-"') | pynini.cross("-", 'negative: "-"')) + delete_space, 0, 1
-        )
+        optional_sign = pynini.closure((pynini.cross("마이너스", 'negative: "-"') | pynini.cross("-", 'negative: "-"')) + delete_space,0, 1)
 
         final_graph = (
             optional_sign + pynutil.insert(" ") + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
