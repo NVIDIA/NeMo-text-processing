@@ -39,7 +39,7 @@ class CardinalFst(GraphFst):
         ten_alt = pynini.cross("십", "1")
         ### Responsible for second digit of two digit number. ex) 20's 2
         graph_ten_component = pynini.union((graph_digit + ten) | ten_alt, pynutil.insert("0"))
-        ### Responsible for the first digit of number. ex) 1,2,3,4,5,,,
+        ### Responsible for the first digit of number. ex) 1,2,3,4,5,6,,
         graph_ten_component += graph_digit | pynutil.insert("0")
 
         hundred = pynutil.delete("백")
