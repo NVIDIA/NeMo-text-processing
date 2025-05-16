@@ -11,3 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+<<<<<<< HEAD
+=======
+
+from nemo_text_processing.inverse_text_normalization.ko.taggers.tokenize_and_classify import ClassifyFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize_final import VerbalizeFinalFst
+>>>>>>> 77da79d12b1378502cc2b382cd6933b02e7c2545

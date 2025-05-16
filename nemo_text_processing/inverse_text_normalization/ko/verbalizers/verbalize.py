@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):
@@ -30,7 +30,6 @@ class VerbalizeFst(GraphFst):
         cardinal = CardinalFst()
         cardinal_graph = cardinal.fst
         word_graph = WordFst().fst
-        
-        graph = (cardinal_graph|word_graph)
+
+        graph = cardinal_graph | word_graph
         self.fst = graph
-        

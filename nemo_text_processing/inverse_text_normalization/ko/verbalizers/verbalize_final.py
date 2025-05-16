@@ -18,8 +18,13 @@ import os
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, delete_space, generator_main
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize import VerbalizeFst
+<<<<<<< HEAD
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, generator_main, delete_space
+=======
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
+>>>>>>> 77da79d12b1378502cc2b382cd6933b02e7c2545
 
 
 class VerbalizeFinalFst(GraphFst):
@@ -27,6 +32,7 @@ class VerbalizeFinalFst(GraphFst):
     Finite state transducer that verbalizes an entire sentence, e.g.
     tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
     """
+
     def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
         super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
         far_file = None
