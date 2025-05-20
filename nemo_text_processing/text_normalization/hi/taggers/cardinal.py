@@ -37,6 +37,10 @@ class CardinalFst(GraphFst):
         teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
         teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
+        self.digit = digit
+        self.zero = zero
+        self.teens_and_ties = teens_and_ties
+
         def create_graph_suffix(digit_graph, suffix, zeros_counts):
             zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
             if zeros_counts == 0:
@@ -323,3 +327,10 @@ class CardinalFst(GraphFst):
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.final_graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
+
+if __name__ == '__main__':
+    from nemo_text_processing.text_normalization.hi.utils import apply_fst
+
+    cardinal = CardinalFst()
+    input_text = "११०१११११११११११"
+    apply_fst(input_text, cardinal.fst) 
