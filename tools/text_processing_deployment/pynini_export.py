@@ -317,12 +317,10 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.ko.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
-        from nemo_text_processing.text_normalization.ko.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst,
-        )
         from nemo_text_processing.text_normalization.ko.verbalizers.post_processing import (
             PostProcessingFst as TNPostProcessingFst,
         )
+        from nemo_text_processing.text_normalization.ko.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
