@@ -71,11 +71,11 @@ class TimeFst(GraphFst):
             + delete_space
             + self.minute
             + pynini.closure(delete_space + delete_minute, 0, 1)
-            , 0.01
+            , 0.1
         )
 
         # hour second
-        graph_hs = pynutil.add_weight(self.hour + delete_space + delete_baje + delete_space + self.second + delete_space + delete_second, 0.01)
+        graph_hs = pynutil.add_weight(self.hour + delete_space + delete_baje + delete_space + self.second + delete_space + delete_second, 0.1)
 
         # minute second
         graph_ms = (
