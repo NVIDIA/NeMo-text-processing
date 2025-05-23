@@ -31,7 +31,7 @@ class CardinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
 
-        graph_zero = pynini.cross("영", "0")
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
         ten = pynutil.delete("십")
@@ -85,15 +85,13 @@ class CardinalFst(GraphFst):
         )
         graph_nonzero = graph @ leading_zero
         graph = pynini.union(graph_nonzero, graph_zero)
-        
-        graph = graph @ leading_zero | graph_zero
 
         self.just_cardinals = graph
 
-        optional_sign = pynini.closure((pynini.cross("마이너스", 'negative: "-"') | pynini.cross("-", 'negative: "-"')) + delete_space,0, 1)
+        negative_sign = pynini.closure((pynini.cross("마이너스", 'negative: "-"') | pynini.cross("-", 'negative: "-"')) + delete_space,0, 1)
 
         final_graph = (
-            optional_sign + pynutil.insert(" ") + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
+            negative_sign + pynutil.insert(" ") + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
         ) | (pynutil.insert("integer: \"") + graph + pynutil.insert("\""))
 
         final_graph = self.add_tokens(final_graph)
