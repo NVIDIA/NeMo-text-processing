@@ -29,25 +29,24 @@ class CardinalFst(GraphFst):
 
         digit_except_one = pynini.difference(NEMO_DIGIT, "1")
         digit_except_zero_one = pynini.difference(digit_except_one, "0")
-
-        graph_digit_alt = digit_except_zero_one @ graph_digit
-        graph_ty = pynini.string_file(get_abs_path("data/number/ty.tsv"))
-        graph_teen = pynini.string_file(get_abs_path("data/number/teen.tsv"))
+      
+        graph_digit_no_zero_one = digit_except_zero_one @ graph_digit
+        graph_ty = pynini.string_file(get_abs_path("data/number/ty.tsv"))       
 
         # Compose all basic number forms
-        graph_all = (graph_ty + (graph_digit | pynutil.delete('0'))) | graph_teen | graph_digit
+        graph_1_to_99 = (graph_ty + (graph_digit | pynutil.delete('0'))) | graph_digit
 
         hundreds = NEMO_DIGIT**3
-        graph_hundred_component = (pynini.cross('1', '백') | (graph_digit_alt + pynutil.insert('백'))) + pynini.union(
-            pynini.closure(pynutil.delete('0')), (pynini.closure(pynutil.delete('0')) + graph_all)
+        graph_hundred_component = (pynini.cross('1', '백') | (graph_digit_no_zero_one + pynutil.insert('백'))) + pynini.union(
+            pynini.closure(pynutil.delete('0')), (pynini.closure(pynutil.delete('0')) + graph_1_to_99)
         )
         graph_hundred = hundreds @ graph_hundred_component
 
         thousands = NEMO_DIGIT**4
-        graph_thousand_component = (pynini.cross('1', '천') | (graph_digit_alt + pynutil.insert('천'))) + pynini.union(
+        graph_thousand_component = (pynini.cross('1', '천') | (graph_digit_no_zero_one + pynutil.insert('천'))) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_hundred_component,
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_thousand = thousands @ graph_thousand_component
 
@@ -56,36 +55,35 @@ class CardinalFst(GraphFst):
             pynini.closure(pynutil.delete('0')),
             graph_thousand_component,
             (pynutil.delete('0') + graph_hundred_component),
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_ten_thousand = ten_thousands @ graph_ten_thousand_component
 
         hundred_thousands = NEMO_DIGIT**6
-        graph_hundred_thousand_component = ((NEMO_DIGIT**2 @ graph_all) + pynutil.insert('만')) + pynini.union(
+        
+        graph_hundred_thousand_component = ((NEMO_DIGIT ** 2 @ graph_1_to_99) + pynutil.insert('만')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_thousand_component,
             (pynutil.delete('0') + graph_hundred_component),
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_hundred_thousand = hundred_thousands @ graph_hundred_thousand_component
 
         millions = NEMO_DIGIT**7
-        graph_million_component = ((NEMO_DIGIT**3 @ graph_hundred_component) + pynutil.insert('만')) + pynini.union(
+        graph_million_component = ((graph_hundred) + pynutil.insert('만')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_thousand_component,
             (pynutil.delete('0') + graph_hundred_component),
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_million = millions @ graph_million_component
 
         ten_millions = NEMO_DIGIT**8
-        graph_ten_million_component = (
-            (NEMO_DIGIT**4 @ graph_thousand_component) + pynutil.insert('만')
-        ) + pynini.union(
+        graph_ten_million_component = ((graph_thousand) + pynutil.insert('만')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_thousand_component,
             (pynutil.delete('0') + graph_hundred_component),
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_ten_million = ten_millions @ graph_ten_million_component
 
@@ -98,12 +96,12 @@ class CardinalFst(GraphFst):
             (pynutil.delete('000') + graph_ten_thousand_component),
             (pynutil.delete('0000') + graph_thousand_component),
             ((pynutil.delete('00000') + graph_hundred_component)),
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_hundred_million = hundred_millions @ graph_hundred_million_component
 
         thousand_millions = NEMO_DIGIT**10
-        graph_thousand_million_component = ((NEMO_DIGIT**2 @ graph_all) + pynutil.insert('억')) + pynini.union(
+        graph_thousand_million_component = ((NEMO_DIGIT**2 @ graph_1_to_99) + pynutil.insert('억')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_ten_million_component,
             (pynutil.delete('0') + graph_million_component),
@@ -111,12 +109,12 @@ class CardinalFst(GraphFst):
             (pynutil.delete('000') + graph_ten_thousand_component),
             (pynutil.delete('0000') + graph_thousand_component),
             ((pynutil.delete('00000') + graph_hundred_component)),
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_thousand_million = thousand_millions @ graph_thousand_million_component
 
         billions = NEMO_DIGIT**11
-        graph_billions_component = ((NEMO_DIGIT**3 @ graph_hundred_component) + pynutil.insert('억')) + pynini.union(
+        graph_billions_component = ((graph_hundred) + pynutil.insert('억')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_ten_million_component,
             (pynutil.delete('0') + graph_million_component),
@@ -124,14 +122,12 @@ class CardinalFst(GraphFst):
             (pynutil.delete('000') + graph_ten_thousand_component),
             (pynutil.delete('0000') + graph_thousand_component),
             ((pynutil.delete('00000') + graph_hundred_component)),
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_billions = billions @ graph_billions_component
 
         ten_billions = NEMO_DIGIT**12
-        graph_ten_billions_component = (
-            (NEMO_DIGIT**4 @ graph_thousand_component) + pynutil.insert('억')
-        ) + pynini.union(
+        graph_ten_billions_component = ((graph_thousand) + pynutil.insert('억')) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_ten_million_component,
             (pynutil.delete('0') + graph_million_component),
@@ -139,7 +135,7 @@ class CardinalFst(GraphFst):
             (pynutil.delete('000') + graph_ten_thousand_component),
             (pynutil.delete('0000') + graph_thousand_component),
             ((pynutil.delete('00000') + graph_hundred_component)),
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_ten_billions = ten_billions @ graph_ten_billions_component
 
@@ -156,94 +152,82 @@ class CardinalFst(GraphFst):
             pynutil.delete('0000000') + graph_ten_thousand_component,
             pynutil.delete('00000000') + graph_thousand_component,
             pynutil.delete('000000000') + graph_hundred_component,
-            (pynini.closure(pynutil.delete('0')) + graph_all),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_hundred_billions = hundred_billions @ graph_hundred_billions_component
 
         trillion = NEMO_DIGIT**14
-        graph_trillion_component = (
-            (NEMO_DIGIT**2 @ graph_all)
-            + pynutil.insert('조')
-            + pynini.union(
-                pynini.closure(pynutil.delete('0')),
-                graph_ten_billions_component,
-                pynutil.delete('0') + graph_billions_component,
-                pynutil.delete('00') + graph_thousand_million_component,
-                pynutil.delete('000') + graph_hundred_million_component,
-                pynutil.delete('0000') + graph_ten_million_component,
-                pynutil.delete('00000') + graph_million_component,
-                pynutil.delete('000000') + graph_hundred_thousand_component,
-                pynutil.delete('0000000') + graph_ten_thousand_component,
-                pynutil.delete('00000000') + graph_thousand_component,
-                pynutil.delete('000000000') + graph_hundred_component,
-                (pynini.closure(pynutil.delete('0')) + graph_all),
+        graph_trillion_component = ((NEMO_DIGIT**2 @ graph_1_to_99) + pynutil.insert('조') + pynini.union(
+            pynini.closure(pynutil.delete('0')),
+            graph_ten_billions_component,
+            pynutil.delete('0') + graph_billions_component,
+            pynutil.delete('00') + graph_thousand_million_component,
+            pynutil.delete('000') + graph_hundred_million_component,
+            pynutil.delete('0000') + graph_ten_million_component,
+            pynutil.delete('00000') + graph_million_component,
+            pynutil.delete('000000') + graph_hundred_thousand_component,
+            pynutil.delete('0000000') + graph_ten_thousand_component,
+            pynutil.delete('00000000') + graph_thousand_component,
+            pynutil.delete('000000000') + graph_hundred_component,
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99)
             )
         )
         graph_trillions = trillion @ graph_trillion_component
 
         ten_trillions = NEMO_DIGIT**15
-        graph_ten_trillions_component = (
-            (NEMO_DIGIT**3 @ graph_hundred_component)
-            + pynutil.insert('조')
-            + pynini.union(
-                pynini.closure(pynutil.delete('0')),
-                graph_ten_billions_component,
-                pynutil.delete('0') + graph_billions_component,
-                pynutil.delete('00') + graph_thousand_million_component,
-                pynutil.delete('000') + graph_hundred_million_component,
-                pynutil.delete('0000') + graph_ten_million_component,
-                pynutil.delete('00000') + graph_million_component,
-                pynutil.delete('000000') + graph_hundred_thousand_component,
-                pynutil.delete('0000000') + graph_ten_thousand_component,
-                pynutil.delete('00000000') + graph_thousand_component,
-                pynutil.delete('000000000') + graph_hundred_component,
-                (pynini.closure(pynutil.delete('0')) + graph_all),
-            )
+        graph_ten_trillions_component = ((graph_hundred) + pynutil.insert('조') + pynini.union(
+            pynini.closure(pynutil.delete('0')),
+            graph_ten_billions_component,
+            pynutil.delete('0') + graph_billions_component,
+            pynutil.delete('00') + graph_thousand_million_component,
+            pynutil.delete('000') + graph_hundred_million_component,
+            pynutil.delete('0000') + graph_ten_million_component,
+            pynutil.delete('00000') + graph_million_component,
+            pynutil.delete('000000') + graph_hundred_thousand_component,
+            pynutil.delete('0000000') + graph_ten_thousand_component,
+            pynutil.delete('00000000') + graph_thousand_component,
+            pynutil.delete('000000000') + graph_hundred_component,
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99)
+            )       
         )
         graph_ten_trillions = ten_trillions @ graph_ten_trillions_component
 
         hundred_trillions = NEMO_DIGIT**16
-        graph_hundred_trillions_component = (
-            (NEMO_DIGIT**4 @ graph_thousand_component)
-            + pynutil.insert('조')
-            + pynini.union(
-                pynini.closure(pynutil.delete('0')),
-                graph_ten_billions_component,
-                pynutil.delete('0') + graph_billions_component,
-                pynutil.delete('00') + graph_thousand_million_component,
-                pynutil.delete('000') + graph_hundred_million_component,
-                pynutil.delete('0000') + graph_ten_million_component,
-                pynutil.delete('00000') + graph_million_component,
-                pynutil.delete('000000') + graph_hundred_thousand_component,
-                pynutil.delete('0000000') + graph_ten_thousand_component,
-                pynutil.delete('00000000') + graph_thousand_component,
-                pynutil.delete('000000000') + graph_hundred_component,
-                (pynini.closure(pynutil.delete('0')) + graph_all),
+        graph_hundred_trillions_component = ((graph_thousand) + pynutil.insert('조') + pynini.union(
+            pynini.closure(pynutil.delete('0')),
+            graph_ten_billions_component,
+            pynutil.delete('0') + graph_billions_component,
+            pynutil.delete('00') + graph_thousand_million_component,
+            pynutil.delete('000') + graph_hundred_million_component,
+            pynutil.delete('0000') + graph_ten_million_component,
+            pynutil.delete('00000') + graph_million_component,
+            pynutil.delete('000000') + graph_hundred_thousand_component,
+            pynutil.delete('0000000') + graph_ten_thousand_component,
+            pynutil.delete('00000000') + graph_thousand_component,
+            pynutil.delete('000000000') + graph_hundred_component,
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99)
             )
         )
         graph_hundred_trillions = hundred_trillions @ graph_hundred_trillions_component
 
         thousand_trillions = NEMO_DIGIT**17
-        graph_thousand_trillions_component = (
-            graph_digit
-            + pynutil.insert('경')
-            + pynini.union(
-                pynini.closure(pynutil.delete('0')),
-                graph_hundred_trillions_component,
-                pynutil.delete('0') + graph_ten_trillions_component,
-                pynutil.delete('00') + graph_trillion_component,
-                pynutil.delete('000') + graph_hundred_billions_component,
-                pynutil.delete('0000') + graph_ten_billions_component,
-                pynutil.delete('00000') + graph_billions_component,
-                pynutil.delete('000000') + graph_thousand_million_component,
-                pynutil.delete('0000000') + graph_hundred_million_component,
-                pynutil.delete('00000000') + graph_ten_million_component,
-                pynutil.delete('000000000') + graph_million_component,
-                pynutil.delete('0000000000') + graph_hundred_thousand_component,
-                pynutil.delete('00000000000') + graph_ten_thousand_component,
-                pynutil.delete('000000000000') + graph_thousand_component,
-                pynutil.delete('0000000000000') + graph_hundred_component,
-                (pynini.closure(pynutil.delete('0')) + graph_all),
+        graph_thousand_trillions_component = (graph_digit + pynutil.insert('경') + pynini.union(
+            pynini.closure(pynutil.delete('0')),
+            graph_hundred_trillions_component,
+            pynutil.delete('0') + graph_ten_trillions_component,
+            pynutil.delete('00') + graph_trillion_component,
+            pynutil.delete('000') + graph_hundred_billions_component,
+            pynutil.delete('0000') + graph_ten_billions_component,
+            pynutil.delete('00000') + graph_billions_component,
+            pynutil.delete('000000') + graph_thousand_million_component,
+            pynutil.delete('0000000') + graph_hundred_million_component,
+            pynutil.delete('00000000') + graph_ten_million_component,
+            pynutil.delete('000000000') + graph_million_component,
+            pynutil.delete('0000000000') + graph_hundred_thousand_component,
+            pynutil.delete('00000000000') + graph_ten_thousand_component,
+            pynutil.delete('000000000000') + graph_thousand_component,
+            pynutil.delete('0000000000000') + graph_hundred_component,
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99)
             )
         )
         graph_thousand_trillions = thousand_trillions @ graph_thousand_trillions_component
@@ -265,7 +249,7 @@ class CardinalFst(GraphFst):
             graph_ten_thousand,
             graph_thousand,
             graph_hundred,
-            graph_all,
+            graph_1_to_99,
             graph_zero,
         ).optimize()
 
