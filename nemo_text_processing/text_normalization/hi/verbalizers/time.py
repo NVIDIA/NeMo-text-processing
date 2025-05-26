@@ -63,7 +63,13 @@ class TimeFst(GraphFst):
             + insert_second
         )
 
-        graph_quarter = pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        graph_cardinal = (
+            pynutil.delete("cardinal {")
+            + delete_space
+            + cardinal.numbers
+            + delete_space
+            + pynutil.delete("}")
+        )
 
         # hour minute
         graph_hm = hour + delete_space + insert_bajkar + insert_space + minute + delete_space + insert_minute
@@ -71,7 +77,7 @@ class TimeFst(GraphFst):
         # hour
         graph_h = hour + delete_space + insert_baje
 
-        self.graph = graph_hms | graph_hm | graph_h | graph_quarter
+        self.graph = graph_hms | graph_hm | graph_h | graph_cardinal
 
         final_graph = self.graph
 

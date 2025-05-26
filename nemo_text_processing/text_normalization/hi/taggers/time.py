@@ -57,40 +57,41 @@ class TimeFst(GraphFst):
         # hour
         graph_h = self.hours + delete_colon + pynutil.delete("००")
 
-        dedh_dhai_graph = pynini.string_map([("१:३०", "डेढ़"), ("२:३०", "ढाई")])
+        dedh_dhai = pynini.string_map([("१:३०", "डेढ़"), ("२:३०", "ढाई")])
+        dedh_dhai_graph = pynutil.insert("integer: \"") + dedh_dhai + pynutil.insert("\"")
 
         savva_numbers = cardinal_graph + pynini.cross(":१५", "")
-        savva_graph = pynutil.insert("सवा ") + savva_numbers
+        savva_graph = pynutil.insert("integer: \"सवा ") + savva_numbers + pynutil.insert("\"")
 
         sadhe_numbers = cardinal_graph + pynini.cross(":३०", "")
-        sadhe_graph = pynutil.insert("साढ़े ") + sadhe_numbers
+        sadhe_graph = pynutil.insert("integer: \"साढ़े ") + sadhe_numbers + pynutil.insert("\"")
 
         paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
         paune_numbers = paune + pynini.cross(":४५", "")
-        paune_graph = pynutil.insert("पौने ") + paune_numbers
+        paune_graph = pynutil.insert("integer: \"पौने ") + paune_numbers + pynutil.insert("\"")
 
         graph_dedh_dhai = (
-            pynutil.insert("morphosyntactic_features: \"")
+            pynutil.insert("cardinal { ")
             + dedh_dhai_graph
-            + pynutil.insert("\" ")
+            + pynutil.insert(" }")
         )
 
         graph_savva = (
-            pynutil.insert("morphosyntactic_features: \"")
+            pynutil.insert("cardinal { ")
             + savva_graph
-            + pynutil.insert("\" ")
+            + pynutil.insert(" }")
         )
 
         graph_sadhe = (
-            pynutil.insert("morphosyntactic_features: \"")
+            pynutil.insert("cardinal { ")
             + sadhe_graph
-            + pynutil.insert("\" ")
+            + pynutil.insert(" }")
         )
 
         graph_paune = (
-            pynutil.insert("morphosyntactic_features: \"")
+            pynutil.insert("cardinal { ")
             + paune_graph
-            + pynutil.insert("\" ")
+            + pynutil.insert(" }")
         )
 
         final_graph = (
