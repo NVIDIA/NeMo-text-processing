@@ -16,7 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
-
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 class FractionFst(GraphFst):
     """
@@ -47,13 +47,64 @@ class FractionFst(GraphFst):
         )
         self.denominator = pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
 
-        self.graph = (
+        dedh_dhai = pynini.string_map([("१ १/२", "डेढ़"), ("२ १/२", "ढाई")])
+        dedh_dhai_graph = pynutil.insert("integer: \"") + dedh_dhai + pynutil.insert("\"")
+
+        savva_numbers = cardinal_graph + pynini.cross(" १/४", "")
+        savva_graph = pynutil.insert("integer: \"सवा ") + savva_numbers + pynutil.insert("\"")
+
+        sadhe_numbers = cardinal_graph + pynini.cross(" १/२", "")
+        sadhe_graph = pynutil.insert("integer: \"साढ़े ") + sadhe_numbers + pynutil.insert("\"")
+
+        paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
+        paune_numbers = paune + pynini.cross(" ३/४", "")
+        paune_graph = pynutil.insert("integer: \"पौने ") + paune_numbers + pynutil.insert("\"")
+        
+        graph_dedh_dhai = (
+            pynutil.insert("cardinal { ")
+            + self.optional_graph_negative
+            + dedh_dhai_graph
+            + pynutil.insert(" }")
+        )
+
+        graph_savva = (
+            pynutil.insert("cardinal { ")
+            + self.optional_graph_negative
+            + savva_graph
+            + pynutil.insert(" }")
+        )
+
+        graph_sadhe = (
+            pynutil.insert("cardinal { ")
+            + self.optional_graph_negative
+            + sadhe_graph
+            + pynutil.insert(" }")
+        )
+
+        graph_paune = (
+            pynutil.insert("cardinal { ")
+            + self.optional_graph_negative
+            + paune_graph
+            + pynutil.insert(" }")
+        )
+
+        final_graph = (
             self.optional_graph_negative
             + pynini.closure(self.integer + pynini.accep(" "), 0, 1)
             + self.numerator
             + self.denominator
         )
 
+        weighted_graph = (
+            final_graph
+            | pynutil.add_weight(graph_dedh_dhai, -0.2)
+            | pynutil.add_weight(graph_savva, -0.2)
+            | pynutil.add_weight(graph_sadhe, -0.2)
+            | pynutil.add_weight(graph_paune, 0.7)
+        )
+
+        self.graph = weighted_graph
+
         graph = self.graph
-        final_graph = self.add_tokens(graph)
-        self.fst = final_graph.optimize()
+        graph = self.add_tokens(graph)
+        self.fst = graph.optimize()

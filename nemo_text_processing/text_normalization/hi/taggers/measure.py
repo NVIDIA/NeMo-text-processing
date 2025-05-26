@@ -18,9 +18,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
-digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
-teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
 class MeasureFst(GraphFst):
     """
@@ -38,27 +35,141 @@ class MeasureFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="measure", kind="classify")
 
-        cardinal = cardinal.fst
-        decimal = decimal.fst
+        cardinal_graph = (
+            cardinal.zero
+            | cardinal.digit
+            | cardinal.teens_and_ties
+            | cardinal.graph_hundreds
+            | cardinal.graph_thousands
+            | cardinal.graph_ten_thousands
+            | cardinal.graph_lakhs
+            | cardinal.graph_ten_lakhs
+        )
+        point = pynutil.delete(".")
+        decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
+        decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
 
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
-        unit = pynutil.insert("units: \"") + unit_graph + pynutil.insert("\"")
+        quarterly_units_graph = pynini.string_file(get_abs_path("data/measure/quarterly_units.tsv"))
 
-        graph = (decimal | cardinal) + delete_space + insert_space + unit
-    
+        optional_graph_negative = pynini.closure(
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
+            0,
+            1,
+        )
+
+        # Define the unit handling
+        unit = pynutil.insert(" units: \"") + unit_graph + pynutil.insert("\" ")
+        units = pynutil.insert(" units: \"") + quarterly_units_graph + pynutil.insert("\" ")
+
+        # Handling symbols like x, X, *
+        symbol_graph = pynini.string_map(
+            [
+                ("x", "बाई"),
+                ("X", "बाई"),
+                ("*", "बाई"),
+            ]
+        )
+
+        graph_decimal = (
+            pynutil.insert("decimal { ")
+            + optional_graph_negative
+            + decimal_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + unit
+        )
+        
+        dedh_dhai = pynini.string_map([("१.५", "डेढ़"), ("२.५", "ढाई")])
+        dedh_dhai_graph = pynutil.insert("integer: \"") + dedh_dhai + pynutil.insert("\"")
+
+        savva_numbers = cardinal_graph + pynini.cross(".२५", "")
+        savva_graph = pynutil.insert("integer: \"सवा ") + savva_numbers + pynutil.insert("\"")
+
+        sadhe_numbers = cardinal_graph + pynini.cross(".५", "")
+        sadhe_graph = pynutil.insert("integer: \"साढ़े ") + sadhe_numbers + pynutil.insert("\"")
+
+        paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
+        paune_numbers = paune + pynini.cross(".७५", "")
+        paune_graph = pynutil.insert("integer: \"पौने ") + paune_numbers + pynutil.insert("\"")
+        
+        graph_dedh_dhai = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + dedh_dhai_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + units
+        )
+
+        graph_savva = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + savva_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + units
+        )
+
+        graph_sadhe = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + sadhe_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + units
+        )
+
+        graph_paune = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + paune_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + units
+        )
+
+        graph_cardinal = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(" }")
+            + delete_space
+            + unit
+        )
+
+        # Handling cardinal clubbed with symbol as single token
+        graph_exceptions = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(" }")
+            + pynutil.insert(" units: \"")
+            + symbol_graph
+            + pynutil.insert("\" ")
+            + pynutil.insert("} }")
+            + insert_space
+            + pynutil.insert("tokens { cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
+        )
+
+        graph = (
+            pynutil.add_weight(graph_decimal, 0.01)
+            | pynutil.add_weight(graph_cardinal, 0.01)
+            | pynutil.add_weight(graph_exceptions, 0.01)
+            | pynutil.add_weight(graph_dedh_dhai, 0.005)
+            | pynutil.add_weight(graph_savva, 0.005)
+            | pynutil.add_weight(graph_sadhe, 0.005)
+            | pynutil.add_weight(graph_paune, -0.2)
+        )
         self.graph = graph.optimize()
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph
-
-if __name__ == '__main__':
-    from decimal import DecimalFst
-    from cardinal import CardinalFst
-    from nemo_text_processing.text_normalization.hi.utils import apply_fst
-
-    cardinal = CardinalFst()
-    decimal = DecimalFst(cardinal=cardinal)
-    measure = MeasureFst(cardinal=cardinal, decimal=decimal)
-    input_text = "१५००० kg"
-    input_text = "१५० kg"
-    apply_fst(input_text, measure.fst)  

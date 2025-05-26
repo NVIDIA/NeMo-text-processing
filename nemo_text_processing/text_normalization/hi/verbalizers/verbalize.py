@@ -49,7 +49,23 @@ class VerbalizeFst(GraphFst):
         date = DateFst()
         date_graph = date.fst
 
-        time = TimeFst()
+        time = TimeFst(cardinal=cardinal
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       )
         time_graph = time.fst
 
         measure = MeasureFst(cardinal=cardinal, decimal=decimal)
