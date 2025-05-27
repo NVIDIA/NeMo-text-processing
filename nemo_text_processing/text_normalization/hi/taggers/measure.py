@@ -164,7 +164,7 @@ class MeasureFst(GraphFst):
             pynutil.add_weight(graph_decimal, 0.01)
             | pynutil.add_weight(graph_cardinal, 0.01)
             | pynutil.add_weight(graph_exceptions, 0.01)
-            | pynutil.add_weight(graph_dedh_dhai, 0.005)
+            | pynutil.add_weight(graph_dedh_dhai, 0.001)
             | pynutil.add_weight(graph_savva, 0.005)
             | pynutil.add_weight(graph_sadhe, 0.005)
             | pynutil.add_weight(graph_paune, -0.2)
