@@ -96,7 +96,9 @@ class CardinalFst(GraphFst):
 
         self.just_cardinals = graph
 
-        negative_sign = pynini.closure((pynini.cross("마이너스", 'negative: "-"') | pynini.cross("-", 'negative: "-"')) + delete_space,0, 1)
+        negative_sign = pynini.closure(
+            (pynini.cross("마이너스", 'negative: "-"') | pynini.cross("-", 'negative: "-"')) + delete_space, 0, 1
+        )
 
         final_graph = (
             negative_sign + pynutil.insert(" ") + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
