@@ -42,7 +42,9 @@ class MoneyFst(GraphFst):
         cardinal_graph = cardinal.final_graph
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
+            0,
+            1,
         )
         currency_major = pynutil.insert('currency_maj: "') + currency_graph + pynutil.insert('"')
         integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"')

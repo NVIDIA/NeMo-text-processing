@@ -23,7 +23,7 @@ class DateFst(GraphFst):
     Finite state transducer for verbalizing date, e.g.
         date { day: "एक" month: "अप्रैल" year: "दो हज़ार चौबीस" } -> "एक अप्रैल दो हज़ार चौबीस"
         date { month: "अप्रैल" day: "एक" year: "दो हज़ार चौबीस" } -> "अप्रैल एक दो हज़ार चौबीस"
-        
+
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -40,8 +40,6 @@ class DateFst(GraphFst):
         year = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         graph_era = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-
-        graph_range = pynutil.delete("text: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         graph_dd_mm = day + NEMO_SPACE + month
 
@@ -64,7 +62,7 @@ class DateFst(GraphFst):
         )
 
         self.graph = (
-            (graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy | graph_era | graph_range)
+            (graph_dd_mm | graph_mm_dd | graph_dd_mm_yyyy | graph_mm_dd_yyyy | graph_mm_yyyy | graph_era)
             + delete_space
             + optional_preserve_order
         )

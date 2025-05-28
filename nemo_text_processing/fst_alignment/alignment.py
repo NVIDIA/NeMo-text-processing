@@ -96,7 +96,7 @@ def parse_args():
 
 
 EPS = "<eps>"
-WHITE_SPACE = "\u23B5"
+WHITE_SPACE = "\u23b5"
 ITN_MODE = "itn"
 TN_MODE = "tn"
 tn_item_special_chars = ["$", "\\", ":", "+", "-", "="]

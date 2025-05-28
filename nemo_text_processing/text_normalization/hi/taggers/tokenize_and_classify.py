@@ -69,7 +69,8 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"hi_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
+                cache_dir,
+                f"hi_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -98,7 +99,7 @@ class ClassifyFst(GraphFst):
             logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
             start_time = time.time()
-            timefst = TimeFst()
+            timefst = TimeFst(cardinal=cardinal)
             time_graph = timefst.fst
             logging.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
 
