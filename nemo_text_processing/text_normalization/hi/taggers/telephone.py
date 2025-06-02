@@ -21,6 +21,10 @@ from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 #Load the number mappings from the TSV file
 digit_to_word = pynini.string_file(get_abs_path("data/telephone/number.tsv"))
+std_codes = pynini.string_file(get_abs_path("data/telephone/STD_codes.tsv"))
+country_codes = pynini.string_file(get_abs_path("data/telephone/country_codes.tsv"))
+landline_start_digit = pynini.string_file(get_abs_path("data/telephone/landline_digits.tsv"))
+mobile_start_digit = pynini.string_file(get_abs_path("data/telephone/mobile_digits.tsv"))
 
 class TelephoneFst(GraphFst):
     """
@@ -51,11 +55,31 @@ class TelephoneFst(GraphFst):
 
         number_part3 = pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 8) + delete_space
 
+        # STD code using validated TSV
+        std_code = (std_codes | pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 4)) + insert_space
+
+        # Landline number (6–8 digits)
+        landline_number = pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 8)
+
+        # Optional hyphen or space between STD and landline
+        separator = pynini.closure(pynini.accep("-") @ pynini.cross("-", " ") | delete_space, 0, 1)
+
+        delete_punctuation = pynutil.delete(".") | pynutil.delete("।")
+
+        # Combined STD & Landline as one number_part
+        std_landline = pynutil.insert("number_part: \"") + std_code + separator + landline_number + delete_punctuation + pynutil.insert("\" ") + delete_space
+
         number_part = pynutil.insert("number_part: \"") + pynini.closure(number_part1 | number_part1 + number_part2 | number_part1 + number_part2 + number_part3) + pynutil.insert("\" ")
 
         extension = pynutil.insert("extension: \"") + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3) + pynutil.insert("\" ") + delete_space
 
-        graph = number_part | country_code + number_part | country_code + number_part + extension | number_part + extension
+        graph = (
+            std_landline |
+            country_code + number_part + extension |
+            country_code + number_part |
+            number_part + extension |
+            number_part
+        )
 
         graph = graph.optimize()
         self.fst = self.add_tokens(graph)
