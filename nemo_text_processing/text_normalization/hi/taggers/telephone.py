@@ -19,6 +19,10 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, NEMO_DIGIT, delete_space, insert_space
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
+def load_column_from_tsv(filepath, column_index=1):
+    with open(filepath, encoding='utf-8') as tsv:
+        return [line.strip().split("\t")[column_index] for line in tsv if line.strip()]
+    
 #Load the number mappings from the TSV file
 digit_to_word = pynini.string_file(get_abs_path("data/telephone/number.tsv"))
 std_codes = pynini.string_file(get_abs_path("data/telephone/STD_codes.tsv"))
@@ -41,45 +45,68 @@ class TelephoneFst(GraphFst):
     def __init__(self):
         super().__init__(name="telephone", kind="classify")
 
-        country_code = pynini.closure(
-            pynutil.insert("country_code: \"") + 
-            pynini.closure(pynini.accep("+") @ pynini.cross("+", "प्लस") +
-            insert_space + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3)) +
-            pynutil.insert("\" ") + delete_space
+        country_code_optional = pynini.closure(
+            pynutil.insert("country_code: \"")
+            + pynini.cross("+", "प्लस")
+            + country_codes
+            + pynutil.insert("\" ") + delete_space
+            ,0,1
         )
 
-        # Replace the digits with Hindi words and add spaces between words
-        number_part1 = pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 12) + delete_space
 
-        number_part2 = pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 10) + delete_space
+        number_part = (
+            pynutil.insert("number_part: \"")
+            + mobile_start_digit + insert_space
+            + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 9, 9)
+            + pynutil.insert("\" ") 
+            + delete_space
+            )
 
-        number_part3 = pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 8) + delete_space
+        extension_optional = pynini.closure(
+            pynutil.insert("extension: \"") 
+            + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3) 
+            + pynutil.insert("\" ") 
+            + delete_space
+            ,0,1
+            )
 
-        # STD code using validated TSV
-        std_code = (std_codes | pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 4)) + insert_space
+        mobile_number = country_code_optional + number_part + extension_optional
 
-        # Landline number (6–8 digits)
-        landline_number = pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 8)
+        def generate_landline(std_list, std_length):
+            delete_zero = pynini.string_map([("0",""),("०","")])
+            insert_shunya = pynutil.insert('शून्य') + insert_space
+            
+            std_digits = pynini.union(*[std for std in std_list if len(std.strip()) == std_length])
+            std_graph = (
+                pynutil.insert("std_part: \"") 
+                + delete_zero + insert_shunya + std_digits @ std_codes + insert_space 
+                + pynutil.insert("\" ")
+                )
+            
+            landline_digits = pynini.closure(digit_to_word + insert_space, 1, 9-std_length) 
+            landline_graph = (
+                pynutil.insert("number_part: \"") 
+                + landline_start_digit + insert_space
+                + landline_digits 
+                + pynutil.insert("\" ")
+                )
+            
+            seperator_optional = pynini.closure(pynini.cross("-", " "), 0, 1)
 
-        # Optional hyphen or space between STD and landline
-        separator = pynini.closure(pynini.accep("-") @ pynini.cross("-", " ") | delete_space, 0, 1)
+            return std_graph + seperator_optional + delete_space + landline_graph
 
-        delete_punctuation = pynutil.delete(".") | pynutil.delete("।")
+        std_list = load_column_from_tsv(get_abs_path("data/telephone/STD_codes.tsv"),0)
 
-        # Combined STD & Landline as one number_part
-        std_landline = pynutil.insert("number_part: \"") + std_code + separator + landline_number + delete_punctuation + pynutil.insert("\" ") + delete_space
+        landline_graph = (
+            generate_landline(std_list, 2)
+            | generate_landline(std_list, 3)
+            | generate_landline(std_list, 4)
+            | generate_landline(std_list, 5)
+            | generate_landline(std_list, 6)
+            | generate_landline(std_list, 7)
+            )
 
-        number_part = pynutil.insert("number_part: \"") + pynini.closure(number_part1 | number_part1 + number_part2 | number_part1 + number_part2 + number_part3) + pynutil.insert("\" ")
-
-        extension = pynutil.insert("extension: \"") + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3) + pynutil.insert("\" ") + delete_space
-
-        graph = (
-            std_landline |
-            country_code + number_part + extension |
-            country_code + number_part |
-            number_part + extension |
-            number_part
-        )
-
+        graph = mobile_number | landline_graph
+        
         graph = graph.optimize()
         self.fst = self.add_tokens(graph)
