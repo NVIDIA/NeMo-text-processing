@@ -1,5 +1,4 @@
 ११	one one
-११९१	one nine one
 ११९१	one one nine one
 १२१	one two one
 १२२	one two two
@@ -10,7 +9,6 @@
 १२६४	one two six four
 १२७४	one two seven four
 १२९	one two nine
-१२९	one two nine
 १३२	one three two
 १३३२	one three three two
 १३३६	one three three six
@@ -18,7 +16,6 @@
 १३५	one three five
 १३६४	one three six four
 १३७४	one three seven four
-१४१	one four one
 १४१	one four one
 १४४	one four four
 १४५	one four five
@@ -31,15 +28,11 @@
 १५९२	one five nine two
 १६१	one six one
 १६२४	one six two four
-१६२४	one six two four
 १६२७	one six two seven
-१६२८	one six two eight
-१६२८	one six two eight
 १६२८	one six two eight
 १६३२	one six three two
 १६३४	one six three four
 १६३५	one six three five
-१६३६	one six three six
 १६३६	one six three six
 १६३८	one six three eight
 १६३९	one six three nine
@@ -50,7 +43,6 @@
 १६६९६	one six six nine six
 १६७२७२	one six seven two seven two
 १६७५	one six seven five
-१६७५	one six seven five
 १६७६	one six seven six
 १६७९	one six seven nine
 १६८२	one six eight two
@@ -58,24 +50,19 @@
 १६८९११	one six eight nine one one
 १७१	one seven one
 १७२	one seven two
-१७२	one seven two
 १७३२	one seven three two
 १७३३	one seven three three
-१७४२	one seven four two
 १७४२	one seven four two
 १७४४	one seven four four
 १७५	one seven five
 १७६२	one seven six two
 १७६३	one seven six three
-१७६३	one seven six three
 १७६४	one seven six four
-१७६५	one seven six five
 १७६५	one seven six five
 १७७	one seven seven
 १८१	one eight one
 १८३	one eight three
 १८४	one eight four
-१८५३	one eight five three
 १८५३	one eight five three
 १८६	one eight six
 १८७४	one eight seven four
@@ -110,7 +97,6 @@
 २३८२	two three eight two
 २३८५	two three eight five
 २४०	two four zero
-२४०	two four zero
 २४१	two four one
 २४२२	two four two two
 २४३१	two four three one
@@ -121,8 +107,6 @@
 २४८२	two four eight two
 २४८७	two four eight seven
 २५१	two five one
-२५१	two five one
-२५१	two five one
 २५२२	two five two two
 २५२६	two five two six
 २५३	two five three
@@ -132,15 +116,10 @@
 २५८२	two five eight two
 २५९१	two five nine one
 २६०	two six zero
-२६०	two six zero
-२६१	two six one
-२६१	two six one
-२६१	two six one
 २६१	two six one
 २६२२	two six two two
 २६२६	two six two six
 २६३१	two six three one
-२६३२	two six three two
 २६३२	two six three two
 २६३४	two six three four
 २६३७	two six three seven
@@ -155,7 +134,6 @@
 २६७६	two six seven six
 २६७७	two six seven seven
 २६८	two six eight
-२६८	two six eight
 २६९१	two six nine one
 २६९२	two six nine two
 २६९७	two six nine seven
@@ -169,7 +147,6 @@
 २७४४	two seven four four
 २७५२	two seven five two
 २७६२	two seven six two
-२७६४	two seven six four
 २७६४	two seven six four
 २७६५	two seven six five
 २७६६	two seven six six
@@ -188,7 +165,6 @@
 २८३३	two eight three three
 २८३४	two eight three four
 २८३६	two eight three six
-२८३६	two eight three six
 २८४४	two eight four four
 २८४५	two eight four five
 २८५	two eight five
@@ -196,35 +172,22 @@
 २८७६	two eight seven six
 २८७६८३३	two eight seven six eight three three
 २८९२	two eight nine two
-२८९२	two eight nine two
 २९१	two nine one
 २९३२	two nine three two
 २९४	two nine four
 २९९२	two nine nine two
-३१७४	three one seven four
 ३१७४	three one seven four
 ३१९२	three one nine two
 ३२२२	three two two two
 ३२२४	three two two four
 ३२४२	three two four two
 ३२६	three two six
-३२६	three two six
-३२६	three two six
-३३	three three
 ३३	three three
 ३४१	three four one
-३४१	three four one
-३४१	three four one
-३४१	three four one
-३४१	three four one
-३४१	three four one
-३४१	three four one
-३४२	three four two
 ३४२	three four two
 ३४३	three four three
 ३४६१	three four six one
 ३४६२	three four six two
-३४६३	three four six three
 ३४६३	three four six three
 ३४७२	three four seven two
 ३४८२	three four eight two
@@ -239,8 +202,6 @@
 ३५८२	three five eight two
 ३५९२	three five nine two
 ३६०	three six zero
-३६१	three six one
-३६१	three six one
 ३६१	three six one
 ३६४	three six four
 ३६५२	three six five two
@@ -260,47 +221,33 @@
 ३८६२	three eight six two
 ३८९	three eight nine
 ४०	four zero
-४०	four zero
-४०	four zero
 ४११२	four one one two
-४११४	four one one four
-४११४	four one one four
-४११४	four one one four
 ४११४	four one one four
 ४११६	four one one six
 ४११८	four one one eight
 ४११९	four one one nine
-४११९	four one one nine
 ४१३	four one three
-४१४२	four one four two
 ४१४२	four one four two
 ४१४४	four one four four
 ४१४६	four one four six
 ४१४७	four one four seven
 ४१४८	four one four eight
 ४१६	four one six
-४१६	four one six
-४१७२	four one seven two
 ४१७२	four one seven two
 ४१७३	four one seven three
-४१७४	four one seven four
 ४१७४	four one seven four
 ४१७५	four one seven five
 ४१७७	four one seven seven
 ४२१	four two one
 ४२२	four two two
-४२२	four two two
 ४२२८८	four two two eight eight
 ४२२८९	four two two eight nine
-४२३	four two three
 ४२३	four two three
 ४२४	four two four
 ४२५२	four two five two
 ४२५३८	four two five three eight
 ४२५५	four two five five
 ४२५६	four two five six
-४२५६	four two five six
-४२५७	four two five seven
 ४२५७	four two five seven
 ४२५८	four two five eight
 ४२५९	four two five nine
@@ -314,8 +261,6 @@
 ४२९५	four two nine five
 ४२९६	four two nine six
 ४३१	four three one
-४३१	four three one
-४३१	four three one
 ४३१८२	four three one eight two
 ४३१८३	four three one eight three
 ४३२३	four three two three
@@ -327,7 +272,6 @@
 ४३४२	four three four two
 ४३४४	four three four four
 ४३५	four three five
-४३५	four three five
 ४३६२	four three six two
 ४३६३	four three six three
 ४३६४	four three six four
@@ -337,19 +281,13 @@
 ४३७४	four three seven four
 ४४	four four
 ४५१	four five one
-४५१	four five one
-४५२	four five two
 ४५२	four five two
 ४५४२	four five four two
 ४५४५	four five four five
 ४५४६	four five four six
-४५४६	four five four six
 ४५४९	four five four nine
 ४५६१	four five six one
 ४५६२	four five six two
-४५६२	four five six two
-४५६२	four five six two
-४५६३	four five six three
 ४५६३	four five six three
 ४५६४	four five six four
 ४५६५	four five six five
@@ -357,11 +295,7 @@
 ४५६७	four five six seven
 ४५७३	four five seven three
 ४६१	four six one
-४६१	four six one
 ४६२	four six two
-४६२	four six two
-४६२	four six two
-४६३३	four six three three
 ४६३३	four six three three
 ४६३४	four six three four
 ४६३५	four six three five
@@ -369,96 +303,36 @@
 ४६३७	four six three seven
 ४६४६	four six four six
 ४६५२	four six five two
-४६५२	four six five two
-४७१	four seven one
-४७१	four seven one
 ४७१	four seven one
 ४७२	four seven two
 ४७३	four seven three
-४७३	four seven three
-४७३	four seven three
-४७४	four seven four
-४७४	four seven four
-४७४	four seven four
 ४७४	four seven four
 ४७५	four seven five
 ४७७	four seven seven
-४७७	four seven seven
-४७८	four seven eight
-४७८	four seven eight
 ४७८	four seven eight
 ४७९	four seven nine
-४७९	four seven nine
-४७९	four seven nine
 ४८१	four eight one
-४८१	four eight one
-४८१	four eight one
-४८२	four eight two
 ४८२	four eight two
 ४८२१	four eight two one
 ४८२९	four eight two nine
 ४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
-४८४	four eight four
 ४८४६२	four eight four six two
 ४८५	four eight five
-४८५	four eight five
-४८५	four eight five
-४८६२	four eight six two
 ४८६२	four eight six two
 ४८६५	four eight six five
 ४८७	four eight seven
-४८७	four eight seven
-४८७	four eight seven
-४८७	four eight seven
-४८७	four eight seven
-४८७	four eight seven
-४८७	four eight seven
-४८८	four eight eight
-४८८	four eight eight
-४८८	four eight eight
-४८८	four eight eight
-४८८	four eight eight
-४८८	four eight eight
-४८८	four eight eight
 ४८८	four eight eight
 ४८९२	four eight nine two
 ४८९६	four eight nine six
 ४९०	four nine zero
-४९०	four nine zero
-४९१	four nine one
 ४९१	four nine one
 ४९२	four nine two
-४९२	four nine two
-४९२	four nine two
-४९२	four nine two
-४९२	four nine two
 ४९३	four nine three
-४९३	four nine three
-४९३	four nine three
-४९३	four nine three
-४९३	four nine three
-४९४	four nine four
 ४९४	four nine four
 ४९५	four nine five
 ४९६	four nine six
 ४९७	four nine seven
-४९७	four nine seven
 ४९८	four nine eight
-४९९	four nine nine
-४९९	four nine nine
-४९९	four nine nine
 ४९९	four nine nine
 ५१२	five one two
 ५१७६	five one seven six
@@ -469,13 +343,9 @@
 ५२७८	five two seven eight
 ५२८२	five two eight two
 ५३२	five three two
-५३२	five three two
 ५३५	five three five
 ५३६२	five three six two
-५३६२	five three six two
 ५४१२	five four one two
-५४१४	five four one four
-५४१४	five four one four
 ५४१४	five four one four
 ५४२	five four two
 ५४४२	five four four two
@@ -510,7 +380,6 @@
 ६१२	six one two
 ६१८२	six one eight two
 ६१८४	six one eight four
-६१८४	six one eight four
 ६२१	six two one
 ६२२४	six two two four
 ६२४३	six two four three
@@ -525,7 +394,6 @@
 ६४५२	six four five two
 ६४५४	six four five four
 ६४५५	six four five five
-६५१	six five one
 ६५१	six five one
 ६५३२	six five three two
 ६५३४	six five three four
@@ -542,17 +410,14 @@
 ६६४६	six six four six
 ६६५२	six six five two
 ६७१	six seven one
-६७१	six seven one
 ६७१७९२	six seven one seven nine two
 ६७२२	six seven two two
 ६७२७	six seven two seven
-६७४	six seven four
 ६७४	six seven four
 ६७५४	six seven five four
 ६७६२	six seven six two
 ६७६४	six seven six four
 ६७६६	six seven six six
-६७६७	six seven six seven
 ६७६७	six seven six seven
 ६७६८	six seven six eight
 ६७८२	six seven eight two
@@ -609,7 +474,6 @@
 ७७८२	seven seven eight two
 ७८५३	seven eight five three
 ७८८	seven eight eight
-७८८	seven eight eight
 ७९	seven nine
 ७९८४	seven nine eight four
 ८०	eight zero
@@ -618,48 +482,34 @@
 ८११७	eight one one seven
 ८११९	eight one one nine
 ८१५२	eight one five two
-८१५२	eight one five two
 ८१५३	eight one five three
 ८१५५	eight one five five
 ८१५६	eight one five six
 ८१६	eight one six
-८१६	eight one six
 ८१७२	eight one seven two
 ८१८२	eight one eight two
-८१८२	eight one eight two
-८१९२	eight one nine two
 ८१९२	eight one nine two
 ८१९३	eight one nine three
 ८१९४	eight one nine four
-८२१	eight two one
 ८२१	eight two one
 ८२२१	eight two two one
 ८२२३	eight two two three
 ८२३२	eight two three two
 ८२३६	eight two three six
 ८२४	eight two four
-८२४	eight two four
-८२४	eight two four
-८२४	eight two four
-८२४	eight two four
 ८२४७	eight two four seven
 ८२५१	eight two five one
-८२५२	eight two five two
 ८२५२	eight two five two
 ८२५५	eight two five five
 ८२६२	eight two six two
 ८२७२	eight two seven two
 ८२७४	eight two seven four
-८२७४	eight two seven four
 ८३१	eight three one
-८३२	eight three two
-८३२	eight three two
 ८३२	eight three two
 ८३३८	eight three three eight
 ८३४७६०	eight three four seven six zero
 ८३५४	eight three five four
 ८३५५	eight three five five
-८३६	eight three six
 ८३६	eight three six
 ८३७२	eight three seven two
 ८३७३	eight three seven three
@@ -688,7 +538,6 @@
 ८५३९	eight five three nine
 ८५४०	eight five four zero
 ८५४३	eight five four three
-८५४३	eight five four three
 ८५४४	eight five four four
 ८५४६	eight five four six
 ८५४८	eight five four eight
@@ -698,31 +547,25 @@
 ८५५८	eight five five eight
 ८५६२	eight five six two
 ८५७४	eight five seven four
-८५७४	eight five seven four
 ८५७७	eight five seven seven
 ८५७८	eight five seven eight
 ८५९२	eight five nine two
 ८५९३	eight five nine three
 ८६१	eight six one
 ८६२४	eight six two four
-८६२४	eight six two four
 ८६२६	eight six two six
 ८६३	eight six three
 ८६४१	eight six four one
 ८६४४	eight six four four
-८६४४	eight six four four
 ८६४६	eight six four six
 ८६४७	eight six four seven
 ८६४८	eight six four eight
-८६६	eight six six
 ८६६	eight six six
 ८६७२	eight six seven two
 ८६७४	eight six seven four
 ८६७८	eight six seven eight
 ८६८२	eight six eight two
 ८६८३	eight six eight three
-८७१२	eight seven one two
-८७१२	eight seven one two
 ८७१२	eight seven one two
 ८७२२	eight seven two two
 ८७२८	eight seven two eight
@@ -732,26 +575,21 @@
 ८७४३	eight seven four three
 ८७४४	eight seven four four
 ८८१२	eight eight one two
-८८१२	eight eight one two
 ८८१४	eight eight one four
 ८८१६	eight eight one six
 ८८१७	eight eight one seven
 ८८१८	eight eight one eight
 ८८१९	eight eight one nine
-८८१९	eight eight one nine
 ८८३	eight eight three
 ८८३७	eight eight three seven
-८८४	eight eight four
 ८८४	eight eight four
 ८८५२	eight eight five two
 ८८५५	eight eight five five
 ८८५६	eight eight five six
 ८८५७	eight eight five seven
-८८५७	eight eight five seven
 ८९१	eight nine one
 ८९२४	eight nine two four
 ८९४२	eight nine four two
-८९४४	eight nine four four
 ८९४४	eight nine four four
 ९५२०	nine five two zero
 ९५२११४	nine five zero two one one four
