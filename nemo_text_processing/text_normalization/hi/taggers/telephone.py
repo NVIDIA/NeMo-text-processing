@@ -78,7 +78,7 @@ class TelephoneFst(GraphFst):
             
             std_digits = pynini.union(*[std for std in std_list if len(std.strip()) == std_length])
             std_graph = (
-                pynutil.insert("std_part: \"") 
+                pynutil.insert("number_part: \"") 
                 + delete_zero + insert_shunya + std_digits @ std_codes + insert_space 
                 + pynutil.insert("\" ")
                 )
