@@ -57,14 +57,14 @@ class TelephoneFst(GraphFst):
         number_part = (
             pynutil.insert("number_part: \"")
             + mobile_start_digit + insert_space
-            + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 9, 9)
+            + pynini.closure(digit_to_word + insert_space, 1, 9)
             + pynutil.insert("\" ") 
             + delete_space
             )
 
         extension_optional = pynini.closure(
             pynutil.insert("extension: \"") 
-            + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3) 
+            + pynini.closure(digit_to_word + insert_space, 1, 3) 
             + pynutil.insert("\" ") 
             + delete_space
             ,0,1
@@ -77,23 +77,14 @@ class TelephoneFst(GraphFst):
             insert_shunya = pynutil.insert('शून्य') + insert_space
             
             std_digits = pynini.union(*[std for std in std_list if len(std.strip()) == std_length])
-            std_graph = (
-                pynutil.insert("number_part: \"") 
-                + delete_zero + insert_shunya + std_digits @ std_codes + insert_space 
-                + pynutil.insert("\" ")
-                )
+            std_graph = delete_zero + insert_shunya + std_digits @ std_codes + insert_space
             
             landline_digits = pynini.closure(digit_to_word + insert_space, 1, 9-std_length) 
-            landline_graph = (
-                pynutil.insert("number_part: \"") 
-                + landline_start_digit + insert_space
-                + landline_digits 
-                + pynutil.insert("\" ")
-                )
+            landline_graph = landline_start_digit + insert_space + landline_digits
             
             seperator_optional = pynini.closure(pynini.cross("-", " "), 0, 1)
 
-            return std_graph + seperator_optional + delete_space + landline_graph
+            return pynutil.insert("number_part: \"") + std_graph + seperator_optional + delete_space + landline_graph + pynutil.insert("\" ")
 
         std_list = load_column_from_tsv(get_abs_path("data/telephone/STD_codes.tsv"),0)
 
@@ -106,7 +97,7 @@ class TelephoneFst(GraphFst):
             | generate_landline(std_list, 7)
             )
 
-        graph = mobile_number | landline_graph
+        graph = number_part | number_part + extension_optional | mobile_number | landline_graph
         
         graph = graph.optimize()
         self.fst = self.add_tokens(graph)
