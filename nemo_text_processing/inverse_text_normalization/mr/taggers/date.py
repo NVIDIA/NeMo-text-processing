@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.mr.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_extra_space, delete_space
 from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
 
 
@@ -30,8 +30,8 @@ class DateFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name='date', kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name='date', kind="classify", project_input=project_input)
         months = pynini.string_file(get_abs_path("data/date/months.tsv"))
         dates = pynini.string_file(get_abs_path("data/date/dates.tsv")).invert()
         prefixes = pynini.string_file(get_abs_path("data/date/prefixes.tsv"))

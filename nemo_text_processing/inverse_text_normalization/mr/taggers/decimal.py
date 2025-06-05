@@ -16,9 +16,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
-    MINUS,
-    NEMO_DIGIT,
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import MINUS, NEMO_DIGIT
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     delete_extra_space,
@@ -59,8 +58,8 @@ class DecimalFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="decimal", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="decimal", kind="classify", project_input=project_input)
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv")).invert()
         decimal_word = pynini.cross("पूर्णांक", "")
