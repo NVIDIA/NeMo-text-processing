@@ -28,8 +28,8 @@ class TimeFst(GraphFst):
         e.g. տասներեք անց կես -> time { hours: "12" minutes: "30" }
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="classify", project_input=project_input)
         graph_oclock = pynutil.delete("անց")
 
         graph_demi = pynini.cross("կես", "30")

@@ -24,8 +24,8 @@ class MoneyFst(GraphFst):
         e.g. money { integer_part: "2 руб." } -> "2 руб."
     """
 
-    def __init__(self):
-        super().__init__(name="money", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="money", kind="verbalize", project_input=project_input)
 
         graph = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         delete_tokens = self.delete_tokens(graph)

@@ -39,8 +39,13 @@ class DateFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool):
-        super().__init__(name="date", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool,
+        project_input: bool = False
+    ):
+        super().__init__(name="date", kind="classify", deterministic=deterministic, project_input=project_input)
 
         number_to_month = month_numbers.optimize()
         month_graph = pynini.project(number_to_month, "output")

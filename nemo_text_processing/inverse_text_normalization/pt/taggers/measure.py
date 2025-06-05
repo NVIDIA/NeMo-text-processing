@@ -35,8 +35,13 @@ class MeasureFst(GraphFst):
         decimal: DecimalFst
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
-        super().__init__(name="measure", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        project_input: bool = False
+    ):
+        super().__init__(name="measure", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.graph_no_exception
 

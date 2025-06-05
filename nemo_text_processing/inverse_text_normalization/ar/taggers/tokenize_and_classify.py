@@ -24,7 +24,7 @@ from nemo_text_processing.inverse_text_normalization.ar.taggers.measure import M
 from nemo_text_processing.inverse_text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.word import WordFst
-from nemo_text_processing.text_normalization.ar.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -54,6 +54,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None,
         input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -67,26 +68,27 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars.")
             tn_classify = TNClassifyFst(
-                input_case='cased', deterministic=True, cache_dir=cache_dir, overwrite_cache=True
+                input_case='cased', deterministic=True, project_input=project_input, cache_dir=cache_dir, overwrite_cache=True
             )
 
-            cardinal = CardinalFst(tn_cardinal=tn_classify.cardinal)
+            cardinal = CardinalFst(tn_cardinal=tn_classify.cardinal, project_input=project_input)
             cardinal_graph = cardinal.fst
-            decimal = DecimalFst(tn_decimal=tn_classify.decimal)
+            decimal = DecimalFst(tn_decimal=tn_classify.decimal, project_input=project_input)
             decimal_graph = decimal.fst
-            fraction = FractionFst(tn_cardinal=tn_classify.cardinal)
+            fraction = FractionFst(tn_cardinal=tn_classify.cardinal, project_input=project_input)
             fraction_graph = fraction.fst
-            money = MoneyFst(itn_cardinal_tagger=cardinal)
+            money = MoneyFst(itn_cardinal_tagger=cardinal, project_input=project_input)
             money_graph = money.fst
             measure = MeasureFst(
                 itn_cardinal_tagger=cardinal,
                 itn_decimal_tagger=decimal,
                 itn_fraction_tagger=fraction,
                 deterministic=True,
+                project_input=project_input,
             )
             measure_graph = measure.fst
-            word_graph = WordFst().fst
-            punct_graph = PunctuationFst().fst
+            word_graph = WordFst(project_input=project_input).fst
+            punct_graph = PunctuationFst(project_input=project_input).fst
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)

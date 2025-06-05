@@ -18,7 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, generator_main
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, generator_main
 from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ja.taggers.decimal import DecimalFst
@@ -49,9 +49,10 @@ class ClassifyFst(GraphFst):
         self,
         input_case: str,
         deterministic: bool = True,
+        project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = False,
-        whitelist: str = None,
+        whitelist: str = None
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
@@ -63,15 +64,15 @@ class ClassifyFst(GraphFst):
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
         else:
-            cardinal = CardinalFst(deterministic=deterministic)
-            date = DateFst(cardinal=cardinal, deterministic=deterministic)
-            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
-            time = TimeFst(cardinal=cardinal, deterministic=deterministic)
-            fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
-            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
-            whitelist = WhiteListFst(deterministic=deterministic)
-            word = WordFst(deterministic=deterministic)
-            punctuation = PunctuationFst(deterministic=deterministic)
+            cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
+            date = DateFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
+            time = TimeFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
+            fraction = FractionFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
+            whitelist = WhiteListFst(deterministic=deterministic, project_input=project_input)
+            word = WordFst(deterministic=deterministic, project_input=project_input)
+            punctuation = PunctuationFst(deterministic=deterministic, project_input=project_input)
 
             classify = pynini.union(
                 pynutil.add_weight(date.fst, 1.1),

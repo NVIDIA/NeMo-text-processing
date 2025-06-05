@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil, utf8
 
-from nemo_text_processing.text_normalization.ja.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_PUNCT,
@@ -36,7 +36,11 @@ class PostProcessor(GraphFst):
     '''
 
     def __init__(
-        self, remove_puncts: bool = False, to_upper: bool = False, to_lower: bool = False, tag_oov: bool = False,
+        self,
+        remove_puncts: bool = False,
+        to_upper: bool = False,
+        to_lower: bool = False,
+        tag_oov: bool = False,
     ):
         super().__init__(name="PostProcessor", kind="processor")
 

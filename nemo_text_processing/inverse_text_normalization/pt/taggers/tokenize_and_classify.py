@@ -58,6 +58,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None,
         input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -71,23 +72,23 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars.")
 
-            cardinal = CardinalFst(use_strict_e=True)
+            cardinal = CardinalFst(use_strict_e=True, project_input=project_input)
             cardinal_graph = cardinal.fst
 
-            ordinal_graph = OrdinalFst().fst
+            ordinal_graph = OrdinalFst(project_input=project_input).fst
 
-            decimal = DecimalFst(cardinal)
+            decimal = DecimalFst(cardinal, project_input=project_input)
             decimal_graph = decimal.fst
 
-            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal).fst
-            date_graph = DateFst(cardinal=cardinal).fst
-            word_graph = WordFst().fst
-            time_graph = TimeFst().fst
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal).fst
-            whitelist_graph = WhiteListFst(input_file=whitelist).fst
-            punct_graph = PunctuationFst().fst
-            electronic_graph = ElectronicFst().fst
-            telephone_graph = TelephoneFst().fst
+            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, project_input=project_input).fst
+            date_graph = DateFst(cardinal=cardinal, project_input=project_input).fst
+            word_graph = WordFst(project_input=project_input).fst
+            time_graph = TimeFst(project_input=project_input).fst
+            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, project_input=project_input).fst
+            whitelist_graph = WhiteListFst(input_file=whitelist, project_input=project_input).fst
+            punct_graph = PunctuationFst(project_input=project_input).fst
+            electronic_graph = ElectronicFst(project_input=project_input).fst
+            telephone_graph = TelephoneFst(project_input=project_input).fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)

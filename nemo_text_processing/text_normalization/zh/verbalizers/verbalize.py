@@ -15,7 +15,7 @@
 
 import pynini
 
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
 from nemo_text_processing.text_normalization.zh.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.zh.verbalizers.decimal import DecimalFst
@@ -38,8 +38,8 @@ class VerbalizeFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         date = DateFst(deterministic=deterministic)
         cardinal = CardinalFst(deterministic=deterministic)

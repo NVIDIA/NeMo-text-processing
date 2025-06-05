@@ -48,8 +48,8 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="time", kind="classify", deterministic=deterministic)
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="time", kind="classify", deterministic=deterministic, project_input=project_input)
         suffix_labels = load_labels(get_abs_path("data/time/suffix.tsv"))
         suffix_labels.extend(augment_labels_with_punct_at_end(suffix_labels))
         suffix_graph = pynini.string_map(suffix_labels)

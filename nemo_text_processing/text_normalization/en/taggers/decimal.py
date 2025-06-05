@@ -70,8 +70,8 @@ class DecimalFst(GraphFst):
     cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(self, cardinal: GraphFst, deterministic: bool, project_input: bool = False):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_graph = cardinal.graph_with_and
         cardinal_graph_hundred_component_at_least_one_none_zero_digit = (

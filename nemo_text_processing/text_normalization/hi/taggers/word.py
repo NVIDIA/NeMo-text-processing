@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_NOT_SPACE,
     GraphFst,
@@ -35,8 +35,13 @@ class WordFst(GraphFst):
             for False multiple transductions are generated (used for audio-based normalization)
     """
 
-    def __init__(self, punctuation: PunctuationFst, deterministic: bool = True):
-        super().__init__(name="word", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        punctuation: PunctuationFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="word", kind="classify", deterministic=deterministic, project_input=project_input)
 
         # Define Hindi characters and symbols using pynini.union
         HINDI_CHAR = pynini.union(

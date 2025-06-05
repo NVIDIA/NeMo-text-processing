@@ -15,8 +15,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst, flop_digits, insert_and, insert_space
+from nemo_text_processing.text_normalization.ar.graph_utils import flop_digits, insert_and
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
 
 
 class CardinalFst(GraphFst):
@@ -29,9 +30,9 @@ class CardinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
 
-        super().__init__(name="cardinal", kind="classify")
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
         # zero
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
 

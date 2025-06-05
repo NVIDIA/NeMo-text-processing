@@ -19,8 +19,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NE
 
 
 class WhiteListFst(GraphFst):
-    def __init__(self):
-        super().__init__(name="whitelist", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="whitelist", kind="verbalize", project_input=project_input)
         graph = (
             pynutil.delete("name:")
             + delete_space

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     NEMO_UPPER,
     GraphFst,
@@ -29,8 +29,14 @@ from nemo_text_processing.text_normalization.hi.utils import (
 
 
 class WhiteListFst(GraphFst):
-    def __init__(self, input_case: str, deterministic: bool = True, input_file: str = None):
-        super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        input_case: str,
+        deterministic: bool = True,
+        project_input: bool = False,
+        input_file: str = None
+    ):
+        super().__init__(name="whitelist", kind="classify", deterministic=deterministic, project_input=project_input)
 
         def _get_whitelist_graph(input_case, file, keep_punct_add_end: bool = False):
             whitelist = load_labels(file)

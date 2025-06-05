@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ja.utils import get_abs_path
 
 
@@ -37,8 +37,8 @@ class DateFst(GraphFst):
     今年はR六 -> { year: "今年は令和6" }
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="date", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         cardinal = cardinal.just_cardinals
         week = pynini.string_file(get_abs_path("data/date.tsv"))

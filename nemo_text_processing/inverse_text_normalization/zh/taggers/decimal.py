@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
 
 
@@ -66,8 +66,8 @@ def get_quantity(decimal, cardinal):
 
 
 class DecimalFst(GraphFst):
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="decimal", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="decimal", kind="classify", project_input=project_input)
 
         cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv")) | pynini.closure(
             pynini.cross("零", "0")

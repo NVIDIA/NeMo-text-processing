@@ -42,8 +42,8 @@ class TelephoneFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="telephone", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="telephone", kind="classify", deterministic=deterministic, project_input=project_input)
 
         add_separator = pynutil.insert(", ")  # between components
         zero = pynini.cross("0", "zero")

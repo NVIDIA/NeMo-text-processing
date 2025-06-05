@@ -24,8 +24,8 @@ class OrdinalFst(GraphFst):
         ordinal { integer: "13" morphosyntactic_features: "o" } -> 13º
     """
 
-    def __init__(self):
-        super().__init__(name="ordinal", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="ordinal", kind="verbalize", project_input=project_input)
         graph = (
             pynutil.delete("integer:")
             + delete_space

@@ -28,8 +28,13 @@ class ElectronicFst(GraphFst):
         tn_electronic_verbalizer: TN eletronic verbalizer
     """
 
-    def __init__(self, tn_electronic_tagger: GraphFst, tn_electronic_verbalizer: GraphFst):
-        super().__init__(name="electronic", kind="classify")
+    def __init__(
+        self,
+        tn_electronic_tagger: GraphFst,
+        tn_electronic_verbalizer: GraphFst,
+        project_input: bool = False
+    ):
+        super().__init__(name="electronic", kind="classify", project_input=project_input)
 
         tagger = pynini.invert(tn_electronic_verbalizer.graph).optimize()
         verbalizer = pynini.invert(tn_electronic_tagger.graph).optimize()

@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 
@@ -32,7 +32,9 @@ class PreProcessorFst(GraphFst):
     '''
 
     def __init__(
-        self, remove_interjections: bool = True, fullwidth_to_halfwidth: bool = True,
+        self,
+        remove_interjections: bool = True,
+        fullwidth_to_halfwidth: bool = True,
     ):
         super().__init__(name="PreProcessor", kind="processor")
 

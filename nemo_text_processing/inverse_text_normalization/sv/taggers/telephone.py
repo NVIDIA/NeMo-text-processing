@@ -27,8 +27,13 @@ class TelephoneFst(GraphFst):
         tn_cardinal_tagger: TN Cardinal Tagger
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst, tn_telephone_tagger: GraphFst):
-        super().__init__(name="telephone", kind="classify")
+    def __init__(
+        self,
+        tn_cardinal_tagger: GraphFst,
+        tn_telephone_tagger: GraphFst,
+        project_input: bool = False
+    ):
+        super().__init__(name="telephone", kind="classify", project_input=project_input)
         # country_plus_area_code = pynini.invert(tn_telephone_tagger.country_plus_area_code).optimize()
         area_codes = pynini.invert(tn_telephone_tagger.area_codes).optimize()
         # lead = (country_plus_area_code | area_codes) + pynini.cross(" ", "-")

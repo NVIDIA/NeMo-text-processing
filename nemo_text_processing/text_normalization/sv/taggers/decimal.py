@@ -120,8 +120,13 @@ class DecimalFst(GraphFst):
     cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool,
+        project_input: bool = False
+    ):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_graph = cardinal.graph
         cardinal_graph_en = cardinal.graph_en

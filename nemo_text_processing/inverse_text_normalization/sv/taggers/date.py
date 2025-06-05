@@ -30,9 +30,7 @@ class DateFst(GraphFst):
         tn_date_tagger: TN date tagger
     """
 
-    def __init__(
-        self, tn_date_tagger: GraphFst,
-    ):
+    def __init__(self, tn_date_tagger: GraphFst, project_input: bool = False):
         super().__init__(name="date", kind="classify")
 
         def force_double_digits(fst: GraphFst):

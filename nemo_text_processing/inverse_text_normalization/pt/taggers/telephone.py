@@ -32,8 +32,8 @@ class TelephoneFst(GraphFst):
             "meia sete vinte" = "6720".
     """
 
-    def __init__(self):
-        super().__init__(name="telephone", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="telephone", kind="classify", project_input=project_input)
 
         # create `single_digits` and `double_digits` graphs as these will be
         # the building blocks of possible telephone numbers

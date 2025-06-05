@@ -67,8 +67,8 @@ class TimeFst(GraphFst):
         tn_cardinal_tagger: TN cardinal verbalizer
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, tn_cardinal_tagger: GraphFst, project_input: bool = False):
+        super().__init__(name="time", kind="classify", project_input=project_input)
 
         suffixes = pynini.invert(pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv"))))
         self.suffixes = suffixes

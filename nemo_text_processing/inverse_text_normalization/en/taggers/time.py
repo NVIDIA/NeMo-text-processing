@@ -42,8 +42,8 @@ class TimeFst(GraphFst):
         e.g. half past two -> time { hours: "2" minutes: "30" }
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, project_input: bool = False):
+        super().__init__(name="time", kind="classify", project_input=project_input)
         # hours, minutes, seconds, suffix, zone, style, speak_period
 
         suffix_graph = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))

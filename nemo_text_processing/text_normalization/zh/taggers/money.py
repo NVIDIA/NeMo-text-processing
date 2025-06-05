@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 suffix = pynini.union(
@@ -60,8 +60,14 @@ class MoneyFst(GraphFst):
     '23美元' -> money { integer: "二十三" currency: "美元" }
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="money", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
+    ):
+        super().__init__(name="money", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal = cardinal.just_cardinals
 

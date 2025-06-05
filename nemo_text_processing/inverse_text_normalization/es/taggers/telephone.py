@@ -42,8 +42,8 @@ class TelephoneFst(GraphFst):
             input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="telephone", kind="classify")
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, project_input: bool = False):
+        super().__init__(name="telephone", kind="classify", project_input=project_input)
 
         # create `single_digits` and `double_digits` graphs as these will be
         # the building blocks of possible telephone numbers

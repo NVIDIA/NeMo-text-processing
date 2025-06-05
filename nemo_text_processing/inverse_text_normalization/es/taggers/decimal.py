@@ -97,8 +97,13 @@ class DecimalFst(GraphFst):
 
     """
 
-    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="decimal", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
+    ):
+        super().__init__(name="decimal", kind="classify", project_input=project_input)
 
         # number after decimal point can be any series of cardinals <1000, including 'zero'
         graph_decimal = cardinal.numbers_up_to_thousand

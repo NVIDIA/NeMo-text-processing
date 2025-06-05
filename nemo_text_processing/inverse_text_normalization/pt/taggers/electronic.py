@@ -28,8 +28,8 @@ class ElectronicFst(GraphFst):
         e.g. dáblio dáblio dáblio a b c ponto e d u -> tokens { electronic { protocol: "www.abc.edu" } }
     """
 
-    def __init__(self):
-        super().__init__(name="electronic", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="electronic", kind="classify", project_input=project_input)
 
         delete_extra_space = pynutil.delete(" ")
         alpha_num = (

@@ -31,8 +31,8 @@ class DateFst(GraphFst):
         date { day: "1" month: "enero" preserve_order: true } -> 1 de enero
     """
 
-    def __init__(self):
-        super().__init__(name="date", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="date", kind="verbalize", project_input=project_input)
         graph_month = pynini.string_file(get_abs_path("data/dates/months.tsv"))
         graph_month |= pynini.string_file(get_abs_path("data/dates/months_cased.tsv"))
 

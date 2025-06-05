@@ -24,8 +24,8 @@ class MeasureFst(GraphFst):
         e.g. measure { cardinal { integer: "2 кг" } } -> "2 кг"
     """
 
-    def __init__(self):
-        super().__init__(name="measure", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="measure", kind="verbalize", project_input=project_input)
 
         graph = (
             pynutil.delete(" cardinal { integer: \"")

@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
 from nemo_text_processing.inverse_text_normalization.ja.utils import get_abs_path
 
 
@@ -31,8 +31,8 @@ class TimeFst(GraphFst):
     正午十分過ぎ -> time { hours: "正午" minutes: "10" suffix: "過ぎ" }
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="classify", project_input=project_input)
 
         hours = pynini.string_file(get_abs_path("data/time_hours.tsv"))
         minutes_seconds = pynini.string_file(get_abs_path("data/time_minutes_seconds.tsv"))

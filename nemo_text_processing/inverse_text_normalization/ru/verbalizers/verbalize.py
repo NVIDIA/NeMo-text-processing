@@ -32,21 +32,21 @@ class VerbalizeFst(GraphFst):
     More details to deployment at NeMo/tools/text_processing_deployment.
     """
 
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize")
-        cardinal = CardinalFst()
+        cardinal = CardinalFst(project_input=project_input)
         cardinal_graph = cardinal.fst
-        ordinal = OrdinalFst()
+        ordinal = OrdinalFst(project_input=project_input)
         ordinal_graph = ordinal.fst
-        decimal = DecimalFst()
+        decimal = DecimalFst(project_input=project_input)
         decimal_graph = decimal.fst
-        whitelist_graph = WhiteListFst().fst
-        electronic_graph = ElectronicFst().fst
-        money_graph = MoneyFst().fst
-        date_graph = DateFst().fst
-        measure_graph = MeasureFst().fst
-        telephone_graph = TelephoneFst().fst
-        time_graph = TimeFst().fst
+        whitelist_graph = WhiteListFst(project_input=project_input).fst
+        electronic_graph = ElectronicFst(project_input=project_input).fst
+        money_graph = MoneyFst(project_input=project_input).fst
+        date_graph = DateFst(project_input=project_input).fst
+        measure_graph = MeasureFst(project_input=project_input).fst
+        telephone_graph = TelephoneFst(project_input=project_input).fst
+        time_graph = TimeFst(project_input=project_input).fst
 
         graph = (
             whitelist_graph

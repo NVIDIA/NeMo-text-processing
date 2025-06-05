@@ -35,8 +35,8 @@ class PunctuationFst(GraphFst):
 
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="punctuation", kind="classify", deterministic=deterministic, project_input=project_input)
         s = "!#%&\'()*+,-/:;<=>?@^_`{|}~\"。，；-《》“”"
 
         punct_symbols_to_exclude = ["[", "]"]

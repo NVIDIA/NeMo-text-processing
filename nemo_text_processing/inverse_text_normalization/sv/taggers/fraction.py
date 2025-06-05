@@ -31,8 +31,13 @@ class FractionFst(GraphFst):
         tn_fraction_verbalizer: TN fraction verbalizer
     """
 
-    def __init__(self, itn_cardinal_tagger: GraphFst, tn_fraction_tagger: GraphFst):
-        super().__init__(name="fraction", kind="classify")
+    def __init__(
+        self,
+        itn_cardinal_tagger: GraphFst,
+        tn_fraction_tagger: GraphFst,
+        project_input: bool = False
+    ):
+        super().__init__(name="fraction", kind="classify", project_input=project_input)
         cardinal = itn_cardinal_tagger.graph_no_exception
         fractions = tn_fraction_tagger.fractions_any.invert().optimize()
 

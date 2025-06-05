@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_extra_space, delete_space
 from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
 
 graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv")).optimize()
@@ -118,8 +118,8 @@ class DateFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="date", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.graph_no_exception
         year_graph = _get_year_graph()

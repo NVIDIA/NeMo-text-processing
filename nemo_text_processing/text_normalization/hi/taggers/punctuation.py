@@ -5,7 +5,7 @@ import pynini
 from pynini.examples import plurals
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
 
 
 class PunctuationFst(GraphFst):
@@ -18,8 +18,8 @@ class PunctuationFst(GraphFst):
             for False multiple transductions are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="punctuation", kind="classify", deterministic=deterministic, project_input=project_input)
         s = "!#%&\'()*+,-./:;<=>?@^_`{|}~\""
 
         punct_symbols_to_exclude = ["[", "]"]

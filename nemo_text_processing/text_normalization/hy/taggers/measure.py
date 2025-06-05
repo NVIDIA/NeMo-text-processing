@@ -35,8 +35,14 @@ class MeasureFst(GraphFst):
         decimal: DecimalFst
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="measure", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
+    ):
+        super().__init__(name="measure", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.all_nums_no_tokens
 

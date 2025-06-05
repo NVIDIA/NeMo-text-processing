@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_SIGMA,
     GraphFst,
@@ -29,8 +29,8 @@ class WordFst(GraphFst):
         e.g. tokens { name: "sleep" } -> sleep
     """
 
-    def __init__(self):
-        super().__init__(name="word", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="word", kind="verbalize", project_input=project_input)
         chars = pynini.closure(NEMO_CHAR - " ", 1)
         char = pynutil.delete("name:") + delete_space + pynutil.delete('"') + chars + pynutil.delete('"')
         graph = char @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)

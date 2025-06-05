@@ -15,19 +15,19 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
 
 
 class DateFst(GraphFst):
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         """
         Finite state transducer for classifying date
         1798年五月三十日 -> date { year: "1798" month: "5" day: "30" }
         五月三十日 -> date { month: "5" day: "30" }
         一六七二年 -> date { year: "1672" }
         """
-        super().__init__(name="date", kind="classify")
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         digits = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))  # imported for year-component
         months = pynini.string_file(get_abs_path("data/date/months.tsv"))  # imported for month-component

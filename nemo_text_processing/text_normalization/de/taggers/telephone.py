@@ -34,8 +34,13 @@ class TelephoneFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="telephone", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="telephone", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph_zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv"))).optimize()
         graph_digit_no_zero = pynini.invert(

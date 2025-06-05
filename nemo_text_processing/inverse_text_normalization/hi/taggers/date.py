@@ -15,13 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
-    NEMO_HI_DIGIT,
+from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
     insert_space,
 )
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_HI_DIGIT
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
@@ -35,8 +35,8 @@ class DateFst(GraphFst):
         date: DateFst
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="date", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         graph_year = pynutil.add_weight(
             pynini.compose(cardinal.graph_no_exception, pynini.closure(NEMO_HI_DIGIT, 1, 4)), 0.03

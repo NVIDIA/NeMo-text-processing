@@ -31,8 +31,8 @@ class FractionFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal, deterministic: bool = True):
-        super().__init__(name="fraction", kind="classify", deterministic=deterministic)
+    def __init__(self, cardinal, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="fraction", kind="classify", deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.graph
 
         integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")

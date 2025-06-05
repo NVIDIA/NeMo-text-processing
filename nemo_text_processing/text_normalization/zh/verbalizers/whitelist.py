@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class Whitelist(GraphFst):
@@ -24,8 +24,13 @@ class Whitelist(GraphFst):
     tokens { whitelist: "ATM" } -> A T M
     '''
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
+    ):
+        super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic, project_input=project_input)
         remove_erhua = pynutil.delete("erhua: \"") + pynutil.delete("儿") + pynutil.delete("\"")
         whitelist = pynutil.delete("name: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         graph = remove_erhua | whitelist

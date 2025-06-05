@@ -15,13 +15,18 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
 
 
 class MoneyFst(GraphFst):
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
-        super().__init__(name="money", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        project_input: bool = False
+    ):
+        super().__init__(name="money", kind="classify", project_input=project_input)
 
         # imports
         major_currency = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))

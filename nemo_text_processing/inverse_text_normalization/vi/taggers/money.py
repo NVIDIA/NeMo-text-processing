@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
     convert_space,
@@ -36,8 +36,13 @@ class MoneyFst(GraphFst):
         decimal: DecimalFst
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
-        super().__init__(name="money", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        project_input: bool = False
+    ):
+        super().__init__(name="money", kind="classify", project_input=project_input)
         # quantity, integer_part, fractional_part, currency
 
         cardinal_graph = cardinal.graph_no_exception

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst, convert_space, delete_extra_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space, delete_extra_space
 from nemo_text_processing.text_normalization.ar.taggers.measure import unit_singular
 
 
@@ -36,6 +36,7 @@ class MeasureFst(GraphFst):
         itn_decimal_tagger: GraphFst,
         itn_fraction_tagger: GraphFst,
         deterministic: bool = True,
+        project_input: bool = False
     ):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
 

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class FractionFst(GraphFst):
@@ -33,8 +33,13 @@ class FractionFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal, deterministic: bool = True):
-        super().__init__(name="fraction", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="fraction", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_graph = cardinal.final_graph
 

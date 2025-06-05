@@ -17,7 +17,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.rw.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_CHAR,
     NEMO_CONSONANTS,
@@ -32,8 +32,8 @@ from nemo_text_processing.text_normalization.rw.utils import get_abs_path
 
 
 class CardinalFst(GraphFst):
-    def __init__(self):
-        super().__init__(name="cardinal", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
         vowels_or_space = NEMO_VOWELS | " "
         rewrite_na_fst = pynini.cdrewrite(
             pynini.cross(" ", " na "), vowels_or_space, NEMO_CONSONANTS, NEMO_CHAR.closure()

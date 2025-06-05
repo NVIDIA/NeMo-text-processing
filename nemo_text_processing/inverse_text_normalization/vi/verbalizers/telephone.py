@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class TelephoneFst(GraphFst):
@@ -26,8 +26,8 @@ class TelephoneFst(GraphFst):
         -> 1231235678
     """
 
-    def __init__(self):
-        super().__init__(name="telephone", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="telephone", kind="verbalize", project_input=project_input)
 
         number_part = pynutil.delete('number_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         delete_tokens = self.delete_tokens(number_part)

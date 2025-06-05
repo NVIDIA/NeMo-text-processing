@@ -41,8 +41,13 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="time", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="time", kind="classify", deterministic=deterministic, project_input=project_input)
 
         delete_time_delimiter = pynutil.delete(pynini.union(".", ":"))
 

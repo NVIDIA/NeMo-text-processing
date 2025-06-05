@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class DateFst(GraphFst):
@@ -25,8 +25,8 @@ class DateFst(GraphFst):
         date { day: "5" month: "10" year: "2021" preserve_order: true } -> 5 tháng 10 năm 2021
     """
 
-    def __init__(self):
-        super().__init__(name="date", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="date", kind="verbalize", project_input=project_input)
         day = (
             pynutil.delete("day:")
             + delete_space

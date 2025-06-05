@@ -34,8 +34,13 @@ class FractionFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
+    ):
+        super().__init__(name="fraction", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "mínusz "), 0, 1)
 

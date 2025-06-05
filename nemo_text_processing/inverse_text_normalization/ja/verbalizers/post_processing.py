@@ -18,14 +18,14 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
-    NEMO_NARROW_NON_BREAK_SPACE,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
     NEMO_SPACE,
     generator_main,
 )
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NARROW_NON_BREAK_SPACE
 from nemo_text_processing.utils.logging import logger
 
 
@@ -39,12 +39,16 @@ class PostProcessingFst:
         overwrite_cache: set to True to overwrite .far files
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False):
+    def __init__(
+        self,
+        cache_dir: str = None,
+        overwrite_cache: bool = False,
+    ):
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, "zh_tn_post_processing.far")
+            far_file = os.path.join(cache_dir, "ja_tn_post_processing.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["post_process_graph"]
             logger.info(f'Post processing graph was restored from {far_file}.')

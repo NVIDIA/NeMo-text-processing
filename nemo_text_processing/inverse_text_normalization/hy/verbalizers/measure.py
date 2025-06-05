@@ -29,8 +29,13 @@ class MeasureFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, decimal: GraphFst, cardinal: GraphFst):
-        super().__init__(name="measure", kind="verbalize")
+    def __init__(
+        self,
+        decimal: GraphFst,
+        cardinal: GraphFst,
+        project_input: bool = False
+    ):
+        super().__init__(name="measure", kind="verbalize", project_input=project_input)
         unit = (
             pynutil.delete("units:")
             + delete_space

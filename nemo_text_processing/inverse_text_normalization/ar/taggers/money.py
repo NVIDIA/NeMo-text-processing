@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
     GraphFst,
@@ -37,8 +37,13 @@ class MoneyFst(GraphFst):
         itn_cardinal_tagger: ITN Cardinal Tagger
     """
 
-    def __init__(self, itn_cardinal_tagger: GraphFst, deterministic: bool = True):
-        super().__init__(name="money", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        itn_cardinal_tagger: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="money", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_graph = itn_cardinal_tagger.graph
 

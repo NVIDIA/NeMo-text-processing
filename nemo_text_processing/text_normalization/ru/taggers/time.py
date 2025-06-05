@@ -31,8 +31,13 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, number_names: dict, deterministic: bool = True):
-        super().__init__(name="time", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        number_names: dict,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="time", kind="classify", deterministic=deterministic, project_input=project_input)
 
         increment_hour_ordinal = pynini.string_file(get_abs_path("data/time/increment_hour_ordinal.tsv"))
         increment_hour_cardinal = pynini.string_file(get_abs_path("data/time/increment_hour_cardinal.tsv"))

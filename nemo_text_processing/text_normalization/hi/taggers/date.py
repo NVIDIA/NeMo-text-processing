@@ -15,12 +15,11 @@
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
 from nemo_text_processing.text_normalization.hi.graph_utils import (
     NEMO_HI_DIGIT,
     NEMO_HI_NON_ZERO,
     NEMO_HI_ZERO,
-    GraphFst,
-    insert_space,
 )
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
@@ -41,8 +40,8 @@ class DateFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="date", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         graph_year_thousands = pynini.compose(
             (NEMO_HI_DIGIT + NEMO_HI_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_thousands

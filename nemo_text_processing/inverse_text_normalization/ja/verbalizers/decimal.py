@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class DecimalFst(GraphFst):
@@ -26,8 +26,8 @@ class DecimalFst(GraphFst):
         e.g.  decimal { integer_part: "1" fractional_part: "5" quantity: "万" } -> 1.5万
     """
 
-    def __init__(self):
-        super().__init__(name="decimal", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="decimal", kind="verbalize", project_input=project_input)
 
         decimal_point = pynutil.insert(".")
         integer_component = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

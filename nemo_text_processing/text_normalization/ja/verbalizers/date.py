@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class DateFst(GraphFst):
@@ -26,8 +26,8 @@ class DateFst(GraphFst):
   
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="date", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="date", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         era_component = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         year_component = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

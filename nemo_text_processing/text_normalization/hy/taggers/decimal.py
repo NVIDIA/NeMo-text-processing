@@ -62,8 +62,13 @@ class DecimalFst(GraphFst):
         TODO make deterministic make sense
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph = cardinal.one_to_all_tens
 

@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 
@@ -35,8 +35,13 @@ class DateFst(GraphFst):
 
     """
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="date", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
+    ):
+        super().__init__(name="date", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))

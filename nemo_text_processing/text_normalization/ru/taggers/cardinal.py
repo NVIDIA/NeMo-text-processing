@@ -42,8 +42,14 @@ class CardinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, number_names: dict, alternative_formats: dict, deterministic: bool = False):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        number_names: dict,
+        alternative_formats: dict,
+        deterministic: bool = False,
+        project_input: bool = False
+    ):
+        super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         self.cardinal_numbers_default = self.get_cardinal_numbers(number_names, alternative_formats, mode="all")
         self.cardinal_numbers_nominative = self.get_cardinal_numbers(

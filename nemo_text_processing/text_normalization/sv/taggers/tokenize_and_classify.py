@@ -61,9 +61,10 @@ class ClassifyFst(GraphFst):
         self,
         input_case: str,
         deterministic: bool = True,
+        project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = False,
-        whitelist: str = None,
+        whitelist: str = None
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
@@ -81,63 +82,63 @@ class ClassifyFst(GraphFst):
             logger.info(f"Creating ClassifyFst grammars.")
 
             start_time = time.time()
-            cardinal = CardinalFst(deterministic=deterministic)
+            cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
             cardinal_graph = cardinal.fst
             logger.debug(f"cardinal: {time.time() - start_time: .2f}s -- {cardinal_graph.num_states()} nodes")
 
             start_time = time.time()
-            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
             ordinal_graph = ordinal.fst
             logger.debug(f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes")
 
             start_time = time.time()
-            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
             decimal_graph = decimal.fst
             logger.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
             start_time = time.time()
-            fraction = FractionFst(deterministic=deterministic, ordinal=ordinal, cardinal=cardinal)
+            fraction = FractionFst(deterministic=deterministic, ordinal=ordinal, cardinal=cardinal, project_input=project_input)
             fraction_graph = fraction.fst
             logger.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
             start_time = time.time()
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic, project_input=project_input)
             measure_graph = measure.fst
             logger.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
 
             start_time = time.time()
-            date_graph = DateFst(cardinal=cardinal, ordinal=ordinal, deterministic=deterministic).fst
+            date_graph = DateFst(cardinal=cardinal, ordinal=ordinal, deterministic=deterministic, project_input=project_input).fst
             logger.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
             start_time = time.time()
-            time_graph = TimeFst(cardinal=cardinal, deterministic=deterministic).fst
+            time_graph = TimeFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input).fst
             logger.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
 
             start_time = time.time()
-            telephone_graph = TelephoneFst(deterministic=deterministic).fst
+            telephone_graph = TelephoneFst(deterministic=deterministic, project_input=project_input).fst
             logger.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
 
             start_time = time.time()
-            electonic_graph = ElectronicFst(deterministic=deterministic).fst
+            electonic_graph = ElectronicFst(deterministic=deterministic, project_input=project_input).fst
             logger.debug(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
 
             start_time = time.time()
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic).fst
+            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic, project_input=project_input).fst
             logger.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 
             start_time = time.time()
             whitelist_graph = WhiteListFst(
-                input_case=input_case, deterministic=deterministic, input_file=whitelist
+                input_case=input_case, deterministic=deterministic, input_file=whitelist, project_input=project_input
             ).fst
             logger.debug(f"whitelist: {time.time() - start_time: .2f}s -- {whitelist_graph.num_states()} nodes")
 
             start_time = time.time()
-            punctuation = PunctuationFst(deterministic=deterministic)
+            punctuation = PunctuationFst(deterministic=deterministic, project_input=project_input)
             punct_graph = punctuation.fst
             logger.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
 
             start_time = time.time()
-            word_graph = WordFst(deterministic=deterministic).fst
+            word_graph = WordFst(deterministic=deterministic, project_input=project_input).fst
             logger.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
             classify = (
@@ -155,7 +156,7 @@ class ClassifyFst(GraphFst):
             )
 
             if not deterministic:
-                abbreviation_graph = AbbreviationFst(whitelist, deterministic=deterministic).fst
+                abbreviation_graph = AbbreviationFst(whitelist, deterministic=deterministic, project_input=project_input).fst
                 classify |= pynutil.add_weight(abbreviation_graph, 100)
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")

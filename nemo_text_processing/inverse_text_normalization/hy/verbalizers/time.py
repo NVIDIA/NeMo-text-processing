@@ -26,8 +26,8 @@ class TimeFst(GraphFst):
         tokens { time { hours: "1" minutes: "12" } } -> 01:12
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="verbalize", project_input=project_input)
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         hour = (
             pynutil.delete("hours:")

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_QUOTE,
     GraphFst,
@@ -24,8 +24,8 @@ from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
 
 
 class MoneyFst(GraphFst):
-    def __init__(self):
-        super().__init__(name="money", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="money", kind="verbalize", project_input=project_input)
 
         currency_unit = pynutil.delete('currency: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         number_unit = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')

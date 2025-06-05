@@ -68,8 +68,8 @@ class TimeFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, project_input: bool = False):
+        super().__init__(name="time", kind="classify", project_input=project_input)
 
         suffix_graph = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
         time_to_graph = pynini.string_file(get_abs_path("data/time/time_to.tsv"))

@@ -17,7 +17,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
     GraphFst,
@@ -54,9 +54,10 @@ class ClassifyFst(GraphFst):
         self,
         input_case: str,
         deterministic: bool = False,
+        project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = False,
-        whitelist: str = None,
+        whitelist: str = None
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
         far_file = None
@@ -74,20 +75,20 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars. This might take some time...")
 
-            self.cardinal = CardinalFst()
+            self.cardinal = CardinalFst(project_input=project_input)
             cardinal_graph = self.cardinal.fst
-            self.decimal = DecimalFst(cardinal=self.cardinal, deterministic=deterministic)
+            self.decimal = DecimalFst(cardinal=self.cardinal, deterministic=deterministic, project_input=project_input)
             decimal_graph = self.decimal.fst
-            self.fraction = FractionFst(cardinal=self.cardinal)
+            self.fraction = FractionFst(cardinal=self.cardinal, project_input=project_input)
             fraction_graph = self.fraction.fst
-            self.money = MoneyFst(cardinal=self.cardinal)
+            self.money = MoneyFst(cardinal=self.cardinal, project_input=project_input)
             money_graph = self.money.fst
             self.measure = MeasureFst(
-                cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic
+                cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic, project_input=project_input
             )
             measure_graph = self.measure.fst
-            word_graph = WordFst(deterministic=deterministic).fst
-            punct_graph = PunctuationFst(deterministic=deterministic).fst
+            word_graph = WordFst(deterministic=deterministic, project_input=project_input).fst
+            punct_graph = PunctuationFst(deterministic=deterministic, project_input=project_input).fst
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)

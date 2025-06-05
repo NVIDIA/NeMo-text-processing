@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_DIGIT, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 
 
 class TimeFst(GraphFst):
@@ -35,8 +35,8 @@ class TimeFst(GraphFst):
     time { hours: "五点" minutes: "一刻" } -> 5点1刻
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="verbalize", project_input=project_input)
         # add_leading_zero = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         token_hour = (
             pynutil.delete("hours:")

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import MINUS, NEMO_NOT_QUOTE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import MINUS, NEMO_NOT_QUOTE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.hi.taggers.decimal import quantities
 
 
@@ -27,8 +27,8 @@ class DecimalFst(GraphFst):
 
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         delete_space = pynutil.delete(" ")
         self.optional_sign = pynini.closure(pynini.cross("negative: \"true\"", MINUS) + delete_space, 0, 1)

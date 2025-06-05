@@ -68,8 +68,9 @@ class ClassifyFst(GraphFst):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         deterministic: bool = True,
+        project_input: bool = False,
         whitelist: str = None,
-        input_case: str = INPUT_LOWER_CASED,
+        input_case: str = INPUT_LOWER_CASED
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
@@ -82,43 +83,43 @@ class ClassifyFst(GraphFst):
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logger.info(f"Creating ClassifyFst grammars.")
-            tn_cardinal_tagger = TNCardinalTagger(deterministic=False)
-            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False)
-            tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
-            tn_ordinal_verbalizer = TNOrdinalVerbalizer(deterministic=False)
-            tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
-            tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, deterministic=False)
-            tn_date_verbalizer = TNDateVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
-            tn_electronic_tagger = TNElectronicTagger(deterministic=False)
-            tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
+            tn_cardinal_tagger = TNCardinalTagger(deterministic=False, project_input=project_input)
+            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False, project_input=project_input)
+            tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False, project_input=project_input)
+            tn_ordinal_verbalizer = TNOrdinalVerbalizer(deterministic=False, project_input=project_input)
+            tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False, project_input=project_input)
+            tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, deterministic=False, project_input=project_input)
+            tn_date_verbalizer = TNDateVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False, project_input=project_input)
+            tn_electronic_tagger = TNElectronicTagger(deterministic=False, project_input=project_input)
+            tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False, project_input=project_input)
             tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False, input_file=whitelist)
 
-            cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger)
+            cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger, project_input=project_input)
             cardinal_graph = cardinal.fst
 
-            ordinal = OrdinalFst(itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer)
+            ordinal = OrdinalFst(itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer, project_input=project_input)
             ordinal_graph = ordinal.fst
-            decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger)
+            decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger, project_input=project_input)
             decimal_graph = decimal.fst
 
-            fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_verbalizer=tn_fraction_verbalizer)
+            fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_verbalizer=tn_fraction_verbalizer, project_input=project_input)
             fraction_graph = fraction.fst
 
             measure_graph = MeasureFst(
-                itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, itn_fraction_tagger=fraction
+                itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, itn_fraction_tagger=fraction, project_input=project_input
             ).fst
             date_graph = DateFst(
-                itn_cardinal_tagger=cardinal, tn_date_verbalizer=tn_date_verbalizer, tn_date_tagger=tn_date_tagger
+                itn_cardinal_tagger=cardinal, tn_date_verbalizer=tn_date_verbalizer, tn_date_tagger=tn_date_tagger, project_input=project_input
             ).fst
-            word_graph = WordFst().fst
-            time_graph = TimeFst(tn_time_verbalizer=tn_time_verbalizer).fst
-            money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal).fst
-            whitelist_graph = WhiteListFst(tn_whitelist_tagger=tn_whitelist_tagger).fst
-            punct_graph = PunctuationFst().fst
+            word_graph = WordFst(project_input=project_input).fst
+            time_graph = TimeFst(tn_time_verbalizer=tn_time_verbalizer, project_input=project_input).fst
+            money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, project_input=project_input).fst
+            whitelist_graph = WhiteListFst(tn_whitelist_tagger=tn_whitelist_tagger, project_input=project_input).fst
+            punct_graph = PunctuationFst(project_input=project_input).fst
             electronic_graph = ElectronicFst(
-                tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer
+                tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer, project_input=project_input
             ).fst
-            telephone_graph = TelephoneFst(tn_cardinal_tagger=tn_cardinal_tagger).fst
+            telephone_graph = TelephoneFst(tn_cardinal_tagger=tn_cardinal_tagger, project_input=project_input).fst
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)

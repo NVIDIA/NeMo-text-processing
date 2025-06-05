@@ -45,6 +45,7 @@ class MeasureFst(GraphFst):
         itn_decimal_tagger: GraphFst,
         itn_fraction_tagger: GraphFst,
         deterministic: bool = True,
+        project_input: bool = False
     ):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
 

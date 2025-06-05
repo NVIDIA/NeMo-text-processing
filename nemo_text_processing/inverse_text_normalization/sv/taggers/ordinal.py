@@ -27,8 +27,8 @@ class OrdinalFst(GraphFst):
         tn_ordinal_verbalizer: TN Ordinal Verbalizer
     """
 
-    def __init__(self, tn_ordinal: GraphFst):
-        super().__init__(name="ordinal", kind="classify")
+    def __init__(self, tn_ordinal: GraphFst, project_input: bool = False):
+        super().__init__(name="ordinal", kind="classify", project_input=project_input)
 
         graph = pynini.arcmap(tn_ordinal.bare_ordinals, map_type="rmweight").invert().optimize()
         self.bare_ordinals = graph

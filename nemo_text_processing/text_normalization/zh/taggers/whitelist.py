@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path, load_labels
 
 
@@ -33,8 +33,13 @@ class WhiteListFst(GraphFst):
         input_file: path to a file with whitelist replacements
     """
 
-    def __init__(self, deterministic: bool = True, input_file: str = None):
-        super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        deterministic: bool = True,
+        project_input: bool = False,
+        input_file: str = None
+    ):
+        super().__init__(name="whitelist", kind="classify", deterministic=deterministic, project_input=project_input)
 
         def _get_whitelist_graph(file):
             whitelist = load_labels(file)

@@ -24,8 +24,8 @@ class PunctuationFst(GraphFst):
         e.g. a, -> tokens { name: "a" } tokens { name: "," }
     """
 
-    def __init__(self):
-        super().__init__(name="punctuation", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="punctuation", kind="classify", project_input=project_input)
 
         s = "!#$%&\'()*+,-./:;<=>?@^_`{|}~"
         punct = pynini.union(*s)

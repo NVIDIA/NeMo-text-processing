@@ -31,8 +31,8 @@ class FractionFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, lm: bool = False, project_input: bool = False):
+        super().__init__(name="fraction", kind="verbalize", deterministic=deterministic, project_input=project_input)
         suffix = OrdinalFst().suffix
 
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\" ")

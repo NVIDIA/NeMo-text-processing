@@ -31,8 +31,8 @@ class DecimalFst(GraphFst):
 
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         fractional_default = (

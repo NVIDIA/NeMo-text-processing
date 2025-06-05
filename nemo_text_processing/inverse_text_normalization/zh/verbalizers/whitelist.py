@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_SIGMA,
     GraphFst,
@@ -30,8 +30,8 @@ class WhiteListFst(GraphFst):
         e.g. tokens { name: "USB" } -> USB
     """
 
-    def __init__(self):
-        super().__init__(name="whitelist", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="whitelist", kind="verbalize", project_input=project_input)
         graph = (
             pynutil.delete("name:")
             + delete_space

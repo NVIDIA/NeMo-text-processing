@@ -45,11 +45,11 @@ class CardinalFst(GraphFst):
         e.g. "cento e uma" -> cardinal { integer: "101"}
     """
 
-    def __init__(self, use_strict_e=False):
+    def __init__(self, use_strict_e=False, project_input: bool = False):
         """
         :param use_strict_e: When True forces to have the separator "e" in the right places
         """
-        super().__init__(name="cardinal", kind="classify")
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))

@@ -25,8 +25,8 @@ class FractionFst(GraphFst):
         e.g. fraction { numerator: "८" denominator: "३" } -> "८/३"
     """
 
-    def __init__(self):
-        super().__init__(name="fraction", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="fraction", kind="verbalize", project_input=project_input)
 
         optional_negative = pynutil.delete("negative: \"") + pynini.cross("True", "-") + pynutil.delete("\"")
         optional_negative = pynini.closure(optional_negative + delete_space, 0, 1)

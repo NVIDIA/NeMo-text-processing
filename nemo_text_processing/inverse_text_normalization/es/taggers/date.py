@@ -37,8 +37,13 @@ class DateFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="date", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
+    ):
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))

@@ -25,8 +25,8 @@ class CardinalFst(GraphFst):
 
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         number = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         final_graph = number
