@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.zh.verbalizers.decimal import DecimalFst
@@ -30,20 +30,20 @@ class VerbalizeFst(GraphFst):
     More details to deployment at NeMo/tools/text_processing_deployment.
     """
 
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize")
-        cardinal = CardinalFst()
+        cardinal = CardinalFst(project_input=project_input)
         cardinal_graph = cardinal.fst
-        ordinal_graph = OrdinalFst().fst
-        decimal = DecimalFst()
+        ordinal_graph = OrdinalFst(project_input=project_input).fst
+        decimal = DecimalFst(project_input=project_input)
         decimal_graph = decimal.fst
-        fraction = FractionFst()
+        fraction = FractionFst(project_input=project_input)
         fraction_graph = fraction.fst
-        money = MoneyFst()
+        money = MoneyFst(project_input=project_input)
         money_graph = money.fst
-        time_graph = TimeFst().fst
-        date_graph = DateFst().fst
-        whitelist_graph = WhiteListFst().fst
+        time_graph = TimeFst(project_input=project_input).fst
+        date_graph = DateFst(project_input=project_input).fst
+        whitelist_graph = WhiteListFst(project_input=project_input).fst
 
         graph = (
             time_graph

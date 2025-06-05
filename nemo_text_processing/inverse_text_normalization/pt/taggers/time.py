@@ -37,8 +37,8 @@ class TimeFst(GraphFst):
         e.g. às três horas e trinta minutos -> time { hours: "3" minutes: "30" morphosyntactic_features: "às" }
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="classify", project_input=project_input)
 
         # graph_hour_to_am = pynini.string_file(get_abs_path("data/time/hour_to_am.tsv"))
         # graph_hour_to_pm = pynini.string_file(get_abs_path("data/time/hour_to_pm.tsv"))

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space, insert_space
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
@@ -29,8 +29,8 @@ class TimeFst(GraphFst):
         time: TimeFst
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="classify", project_input=project_input)
 
         hour_graph = pynini.string_file(get_abs_path("data/time/hour.tsv")).invert()
         minute_graph = pynini.string_file(get_abs_path("data/time/minute_and_second.tsv")).invert()

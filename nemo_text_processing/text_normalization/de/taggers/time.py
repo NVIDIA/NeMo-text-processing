@@ -33,8 +33,8 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="time", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="time", kind="classify", deterministic=deterministic, project_input=project_input)
 
         final_suffix = pynutil.delete(" ") + pynutil.delete("Uhr") | pynutil.delete("uhr")
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))

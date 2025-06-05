@@ -30,8 +30,8 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic, project_input=project_input)
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv")).invert()
         graph_ties = pynini.string_file(get_abs_path("data/ordinals/ties.tsv")).invert()
         graph_thousands = pynini.string_file(get_abs_path("data/ordinals/thousands.tsv")).invert()

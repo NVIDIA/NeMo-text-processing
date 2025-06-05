@@ -30,8 +30,8 @@ class AbbreviationFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, whitelist: 'pynini.FstLike', deterministic: bool = True):
-        super().__init__(name="abbreviation", kind="classify", deterministic=deterministic)
+    def __init__(self, whitelist: 'pynini.FstLike', deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="abbreviation", kind="classify", deterministic=deterministic, project_input=project_input)
 
         dot = pynini.accep(".")
         # A.B.C. -> A. B. C.

@@ -27,15 +27,15 @@ class VerbalizeFst(GraphFst):
     More details to deployment at NeMo/tools/text_processing_deployment.
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-        tn_cardinal_verbalizer = TNCardinalVerbalizer(deterministic=False)
+        tn_cardinal_verbalizer = TNCardinalVerbalizer(deterministic=False, project_input=project_input)
 
-        cardinal = CardinalFst(tn_cardinal_verbalizer=tn_cardinal_verbalizer)
+        cardinal = CardinalFst(tn_cardinal_verbalizer=tn_cardinal_verbalizer, project_input=project_input)
         cardinal_graph = cardinal.fst
-        date_graph = DateFst().fst
-        decimal = DecimalFst()
+        date_graph = DateFst(project_input=project_input).fst
+        decimal = DecimalFst(project_input=project_input)
         decimal_graph = decimal.fst
-        time_graph = TimeFst().fst
+        time_graph = TimeFst(project_input=project_input).fst
         graph = time_graph | decimal_graph | cardinal_graph | date_graph
         self.fst = graph

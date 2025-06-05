@@ -25,8 +25,8 @@ class CardinalFst(GraphFst):
         55 -> cardinal { integer: "հիսունհինգ" }
     """
 
-    def __init__(self):
-        super().__init__(name="cardinal", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
 
         zero = pynini.string_map([("0", "զրո")])
         digits = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()

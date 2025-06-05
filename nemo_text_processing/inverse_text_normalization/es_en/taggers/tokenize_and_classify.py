@@ -73,6 +73,7 @@ class ClassifyFst(GraphFst):
         whitelist: str = None,
         en_whitelist: str = None,
         input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -90,48 +91,48 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars.")
 
-            cardinal = CardinalFst(input_case=input_case)
+            cardinal = CardinalFst(input_case=input_case, project_input=project_input)
             cardinal_graph = cardinal.fst
 
-            ordinal = OrdinalFst(cardinal, input_case=input_case)
+            ordinal = OrdinalFst(cardinal, input_case=input_case, project_input=project_input)
             ordinal_graph = ordinal.fst
 
-            decimal = DecimalFst(cardinal, input_case=input_case)
+            decimal = DecimalFst(cardinal, input_case=input_case, project_input=project_input)
             decimal_graph = decimal.fst
 
-            fraction = FractionFst(cardinal, ordinal, input_case=input_case)
+            fraction = FractionFst(cardinal, ordinal, input_case=input_case, project_input=project_input)
             fraction_graph = fraction.fst
 
             measure_graph = MeasureFst(
-                cardinal=cardinal, decimal=decimal, fraction=fraction, input_case=input_case
+                cardinal=cardinal, decimal=decimal, fraction=fraction, input_case=input_case, project_input=project_input
             ).fst
-            date_graph = DateFst(cardinal, input_case=input_case).fst
-            word_graph = WordFst().fst
-            time_graph = TimeFst(input_case=input_case).fst
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, input_case=input_case).fst
-            whitelist_graph = WhiteListFst(input_file=whitelist).fst
-            punct_graph = PunctuationFst().fst
-            electronic_graph = ElectronicFst(input_case=input_case).fst
-            telephone_graph = TelephoneFst(input_case=input_case).fst
+            date_graph = DateFst(cardinal, input_case=input_case, project_input=project_input).fst
+            word_graph = WordFst(project_input=project_input).fst
+            time_graph = TimeFst(input_case=input_case, project_input=project_input).fst
+            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input).fst
+            whitelist_graph = WhiteListFst(input_file=whitelist, project_input=project_input).fst
+            punct_graph = PunctuationFst(project_input=project_input).fst
+            electronic_graph = ElectronicFst(input_case=input_case, project_input=project_input).fst
+            telephone_graph = TelephoneFst(input_case=input_case, project_input=project_input).fst
 
-            en_cardinal = EnCardinalFst(input_case=input_case)
+            en_cardinal = EnCardinalFst(input_case=input_case, project_input=project_input)
             en_cardinal_graph = en_cardinal.fst
 
-            en_ordinal = EnOrdinalFst(cardinal=en_cardinal, input_case=input_case)
+            en_ordinal = EnOrdinalFst(cardinal=en_cardinal, input_case=input_case, project_input=project_input)
             en_ordinal_graph = en_ordinal.fst
 
-            en_decimal = EnDecimalFst(cardinal=en_cardinal, input_case=input_case)
+            en_decimal = EnDecimalFst(cardinal=en_cardinal, input_case=input_case, project_input=project_input)
             en_decimal_graph = en_decimal.fst
 
-            en_measure_graph = EnMeasureFst(cardinal=en_cardinal, decimal=en_decimal, input_case=input_case).fst
-            en_date_graph = EnDateFst(ordinal=en_ordinal, input_case=input_case).fst
-            en_word_graph = EnWordFst().fst
-            en_time_graph = EnTimeFst(input_case=input_case).fst
-            en_money_graph = EnMoneyFst(cardinal=en_cardinal, decimal=en_decimal, input_case=input_case).fst
-            en_whitelist_graph = EnWhiteListFst(input_file=en_whitelist, input_case=input_case).fst
-            en_punct_graph = EnPunctuationFst().fst
-            en_electronic_graph = EnElectronicFst(input_case=input_case).fst
-            en_telephone_graph = EnTelephoneFst(cardinal=en_cardinal, input_case=input_case).fst
+            en_measure_graph = EnMeasureFst(cardinal=en_cardinal, decimal=en_decimal, input_case=input_case, project_input=project_input).fst
+            en_date_graph = EnDateFst(ordinal=en_ordinal, input_case=input_case, project_input=project_input).fst
+            en_word_graph = EnWordFst(project_input=project_input).fst
+            en_time_graph = EnTimeFst(input_case=input_case, project_input=project_input).fst
+            en_money_graph = EnMoneyFst(cardinal=en_cardinal, decimal=en_decimal, input_case=input_case, project_input=project_input).fst
+            en_whitelist_graph = EnWhiteListFst(input_file=en_whitelist, input_case=input_case, project_input=project_input).fst
+            en_punct_graph = EnPunctuationFst(project_input=project_input).fst
+            en_electronic_graph = EnElectronicFst(input_case=input_case, project_input=project_input).fst
+            en_telephone_graph = EnTelephoneFst(cardinal=en_cardinal, input_case=input_case, project_input=project_input).fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)

@@ -45,38 +45,38 @@ class VerbalizeFst(GraphFst):
     More details to deployment at NeMo/tools/text_processing_deployment.
     """
 
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize")
-        cardinal = CardinalFst()
+        cardinal = CardinalFst(project_input=project_input)
         cardinal_graph = cardinal.fst
 
-        decimal = DecimalFst()
+        decimal = DecimalFst(project_input=project_input)
         decimal_graph = decimal.fst
 
-        fraction = FractionFst()
+        fraction = FractionFst(project_input=project_input)
         fraction_graph = fraction.fst
 
-        ordinal_graph = OrdinalFst().fst
-        measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction).fst
-        money_graph = MoneyFst(decimal=decimal).fst
-        time_graph = TimeFst().fst
-        date_graph = DateFst().fst
-        whitelist_graph = WhiteListFst().fst
-        telephone_graph = TelephoneFst().fst
-        electronic_graph = ElectronicFst().fst
+        ordinal_graph = OrdinalFst(project_input=project_input).fst
+        measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, project_input=project_input).fst
+        money_graph = MoneyFst(decimal=decimal, project_input=project_input).fst
+        time_graph = TimeFst(project_input=project_input).fst
+        date_graph = DateFst(project_input=project_input).fst
+        whitelist_graph = WhiteListFst(project_input=project_input).fst
+        telephone_graph = TelephoneFst(project_input=project_input).fst
+        electronic_graph = ElectronicFst(project_input=project_input).fst
 
-        en_cardinal = EnCardinalFst()
+        en_cardinal = EnCardinalFst(project_input=project_input)
         en_cardinal_graph = en_cardinal.fst
-        en_ordinal_graph = EnOrdinalFst().fst
-        en_decimal = EnDecimalFst()
+        en_ordinal_graph = EnOrdinalFst(project_input=project_input).fst
+        en_decimal = EnDecimalFst(project_input=project_input)
         en_decimal_graph = en_decimal.fst
-        en_measure_graph = EnMeasureFst(decimal=en_decimal, cardinal=en_cardinal).fst
-        en_money_graph = EnMoneyFst(decimal=en_decimal).fst
-        en_date_graph = EnDateFst().fst
-        en_whitelist_graph = EnWhiteListFst().fst
-        en_telephone_graph = EnTelephoneFst().fst
-        en_time_graph = EnTimeFst().fst
-        en_electronic_graph = EnElectronicFst().fst
+        en_measure_graph = EnMeasureFst(decimal=en_decimal, cardinal=en_cardinal, project_input=project_input).fst
+        en_money_graph = EnMoneyFst(decimal=en_decimal, project_input=project_input).fst
+        en_date_graph = EnDateFst(project_input=project_input).fst
+        en_whitelist_graph = EnWhiteListFst(project_input=project_input).fst
+        en_telephone_graph = EnTelephoneFst(project_input=project_input).fst
+        en_time_graph = EnTimeFst(project_input=project_input).fst
+        en_electronic_graph = EnElectronicFst(project_input=project_input).fst
 
         graph = (
             en_time_graph

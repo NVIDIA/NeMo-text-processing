@@ -59,6 +59,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None,
         input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -72,26 +73,26 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars. This might take some time...")
             tn_classify = TNClassifyFst(
-                input_case='cased', deterministic=False, cache_dir=cache_dir, overwrite_cache=True
+                input_case='cased', deterministic=False, cache_dir=cache_dir, overwrite_cache=True, project_input=project_input
             )
-            cardinal = CardinalFst(tn_cardinal=tn_classify.cardinal)
+            cardinal = CardinalFst(tn_cardinal=tn_classify.cardinal, project_input=project_input)
             cardinal_graph = cardinal.fst
 
-            ordinal = OrdinalFst(tn_ordinal=tn_classify.ordinal)
+            ordinal = OrdinalFst(tn_ordinal=tn_classify.ordinal, project_input=project_input)
             ordinal_graph = ordinal.fst
 
-            decimal = DecimalFst(tn_decimal=tn_classify.decimal)
+            decimal = DecimalFst(tn_decimal=tn_classify.decimal, project_input=project_input)
             decimal_graph = decimal.fst
 
-            measure_graph = MeasureFst(tn_measure=tn_classify.measure).fst
-            date_graph = DateFst(tn_date=tn_classify.date).fst
-            word_graph = WordFst().fst
-            time_graph = TimeFst(tn_time=tn_classify.time).fst
-            money_graph = MoneyFst(tn_money=tn_classify.money).fst
-            whitelist_graph = WhiteListFst(input_file=whitelist).fst
-            punct_graph = PunctuationFst().fst
-            electronic_graph = ElectronicFst(tn_electronic=tn_classify.electronic).fst
-            telephone_graph = TelephoneFst(tn_telephone=tn_classify.telephone).fst
+            measure_graph = MeasureFst(tn_measure=tn_classify.measure, project_input=project_input).fst
+            date_graph = DateFst(tn_date=tn_classify.date, project_input=project_input).fst
+            word_graph = WordFst(project_input=project_input).fst
+            time_graph = TimeFst(tn_time=tn_classify.time, project_input=project_input).fst
+            money_graph = MoneyFst(tn_money=tn_classify.money, project_input=project_input).fst
+            whitelist_graph = WhiteListFst(input_file=whitelist, project_input=project_input).fst
+            punct_graph = PunctuationFst(project_input=project_input).fst
+            electronic_graph = ElectronicFst(tn_electronic=tn_classify.electronic, project_input=project_input).fst
+            telephone_graph = TelephoneFst(tn_telephone=tn_classify.telephone, project_input=project_input).fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)

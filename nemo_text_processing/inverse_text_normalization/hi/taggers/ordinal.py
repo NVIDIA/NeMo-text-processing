@@ -16,12 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
-    NEMO_HI_DIGIT,
     NEMO_SIGMA,
     GraphFst,
 )
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_HI_DIGIT
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
@@ -35,8 +35,8 @@ class OrdinalFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="ordinal", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="ordinal", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.graph_no_exception
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))

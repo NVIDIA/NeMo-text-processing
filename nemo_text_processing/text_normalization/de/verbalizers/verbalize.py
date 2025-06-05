@@ -38,27 +38,27 @@ class VerbalizeFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-        cardinal_tagger = CardinalTagger(deterministic=deterministic)
-        cardinal = CardinalFst(deterministic=deterministic)
+        cardinal_tagger = CardinalTagger(deterministic=deterministic, project_input=project_input)
+        cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.fst
-        ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal = OrdinalFst(deterministic=deterministic, project_input=project_input)
         ordinal_graph = ordinal.fst
-        decimal = DecimalFst(deterministic=deterministic)
+        decimal = DecimalFst(deterministic=deterministic, project_input=project_input)
         decimal_graph = decimal.fst
-        fraction = FractionFst(ordinal=ordinal, deterministic=deterministic)
+        fraction = FractionFst(ordinal=ordinal, deterministic=deterministic, project_input=project_input)
         fraction_graph = fraction.fst
-        date = DateFst(ordinal=ordinal)
+        date = DateFst(ordinal=ordinal, project_input=project_input)
         date_graph = date.fst
-        measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+        measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic, project_input=project_input)
         measure_graph = measure.fst
-        electronic = ElectronicFst(deterministic=deterministic)
+        electronic = ElectronicFst(deterministic=deterministic, project_input=project_input)
         electronic_graph = electronic.fst
-        whitelist_graph = WhiteListFst(deterministic=deterministic).fst
-        money_graph = MoneyFst(decimal=decimal).fst
-        telephone_graph = TelephoneFst(deterministic=deterministic).fst
-        time_graph = TimeFst(cardinal_tagger=cardinal_tagger, deterministic=deterministic).fst
+        whitelist_graph = WhiteListFst(deterministic=deterministic, project_input=project_input).fst
+        money_graph = MoneyFst(decimal=decimal, project_input=project_input).fst
+        telephone_graph = TelephoneFst(deterministic=deterministic, project_input=project_input).fst
+        time_graph = TimeFst(cardinal_tagger=cardinal_tagger, deterministic=deterministic, project_input=project_input).fst
 
         graph = (
             cardinal_graph

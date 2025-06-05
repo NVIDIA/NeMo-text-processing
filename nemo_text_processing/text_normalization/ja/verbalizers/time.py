@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class TimeFst(GraphFst):
@@ -26,8 +26,8 @@ class TimeFst(GraphFst):
   
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="time", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="time", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         hour_component = pynutil.delete("hours: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         minute_component = pynutil.delete("minutes: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

@@ -24,8 +24,8 @@ class ElectronicFst(GraphFst):
         e.g. tokens { electronic { username: "cdf1" domain: "abc.edu" } } -> cdf1@abc.edu
     """
 
-    def __init__(self):
-        super().__init__(name="electronic", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="electronic", kind="verbalize", project_input=project_input)
         user_name = (
             pynutil.delete("username:")
             + delete_space

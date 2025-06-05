@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_CHAR, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space
 
 
 class MoneyFst(GraphFst):
@@ -28,8 +28,8 @@ class MoneyFst(GraphFst):
         decimal: DecimalFst
     """
 
-    def __init__(self, decimal: GraphFst):
-        super().__init__(name="money", kind="verbalize")
+    def __init__(self, decimal: GraphFst, project_input: bool = False):
+        super().__init__(name="money", kind="verbalize", project_input=project_input)
         unit = (
             pynutil.delete("currency:")
             + delete_space

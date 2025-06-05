@@ -98,8 +98,8 @@ class CardinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
         zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
         digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
         teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))

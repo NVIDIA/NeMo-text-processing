@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class OrdinalFst(GraphFst):
@@ -26,8 +26,8 @@ class OrdinalFst(GraphFst):
         e.g. 百番目 -> cardinal { integer: "100" morphsyntactic_feature:"番目" }
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="ordinal", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="ordinal", kind="classify", project_input=project_input)
 
         cardinals = cardinal.just_cardinals
         ordinals = pynini.accep("第") | pynini.accep("番目")

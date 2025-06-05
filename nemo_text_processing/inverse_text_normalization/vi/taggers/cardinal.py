@@ -17,7 +17,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SPACE,
     GraphFst,
@@ -34,8 +34,8 @@ class CardinalFst(GraphFst):
     Numbers below ten are not converted.
     """
 
-    def __init__(self):
-        super().__init__(name="cardinal", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))

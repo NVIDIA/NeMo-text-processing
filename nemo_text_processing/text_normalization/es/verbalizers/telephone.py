@@ -28,8 +28,8 @@ class TelephoneFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="telephone", kind="verbalize")
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="telephone", kind="verbalize", project_input=project_input)
 
         optional_country_code = pynini.closure(
             pynutil.delete("country_code: \"")

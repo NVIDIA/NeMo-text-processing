@@ -14,16 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from nemo_text_processing.text_normalization.en.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.rw.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.rw.verbalizers.time import VerbalizeTimeFst
 
 
 class VerbalizeFst(GraphFst):
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-        cardinal = CardinalFst()
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        cardinal = CardinalFst(project_input=project_input)
         cardinal_graph = cardinal.fst
-        time = VerbalizeTimeFst().fst
+        time = VerbalizeTimeFst(project_input=project_input).fst
 
         graph = cardinal_graph | time
         self.fst = graph

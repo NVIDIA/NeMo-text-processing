@@ -16,11 +16,16 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class FractionFst(GraphFst):
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        project_input: bool = False
+    ):
         """
         Fitite state transducer for classifying fractions
         e.g.,
@@ -31,7 +36,7 @@ class FractionFst(GraphFst):
         一点六五分の五十 -> fraction { denominator: "1.65" numerator: "50" }
         二ルート六分の三 -> -> fraction { denominator: "2√6 " numerator: "3" }
         """
-        super().__init__(name="fraction", kind="classify")
+        super().__init__(name="fraction", kind="classify", project_input=project_input)
 
         cardinal = cardinal.just_cardinals
         decimal = decimal.just_decimal

@@ -25,8 +25,8 @@ class TimeFst(GraphFst):
         "15:52" -> time { hours: "տասնհինգ" minutes: "հիսուներկու" }
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="time", kind="classify")
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, project_input: bool = False):
+        super().__init__(name="time", kind="classify", project_input=project_input)
         hours = pynini.string_file(get_abs_path('data/time/hours.tsv')).invert()
         minutes = pynini.string_file(get_abs_path('data/time/minutes.tsv')).invert()
 

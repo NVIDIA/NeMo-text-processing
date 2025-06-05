@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ar.taggers.cardinal import CardinalFst as CardinalTagger
 from nemo_text_processing.text_normalization.ar.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ar.verbalizers.decimal import DecimalFst
@@ -32,18 +32,18 @@ class VerbalizeFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-        cardinal_tagger = CardinalTagger()
-        cardinal = CardinalFst()
+        cardinal_tagger = CardinalTagger(project_input=project_input)
+        cardinal = CardinalFst(project_input=project_input)
         cardinal_graph = cardinal.fst
-        decimal = DecimalFst()
+        decimal = DecimalFst(project_input=project_input)
         decimal_graph = decimal.fst
-        fraction = FractionFst()
+        fraction = FractionFst(project_input=project_input)
         fraction_graph = fraction.fst
-        money = MoneyFst()
+        money = MoneyFst(project_input=project_input)
         money_graph = money.fst
-        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
+        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic, project_input=project_input)
         measure_graph = measure.fst
 
         graph = cardinal_graph | decimal_graph | fraction_graph | money_graph | measure_graph

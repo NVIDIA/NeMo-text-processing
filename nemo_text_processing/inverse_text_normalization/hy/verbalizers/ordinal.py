@@ -25,8 +25,8 @@ class OrdinalFst(GraphFst):
        tokens { ordinal { integer: "3" } } -> 3-րդ
     """
 
-    def __init__(self):
-        super().__init__(name="ordinal", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="ordinal", kind="verbalize", project_input=project_input)
         graph = (
             pynutil.delete("integer:")
             + delete_space

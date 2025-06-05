@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_NON_BREAKING_SPACE,
@@ -40,8 +40,15 @@ class MeasureFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True):
-        super().__init__(name="measure", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        fraction: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="measure", kind="classify", deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.cardinal_numbers
         graph_unit = pynini.string_file(get_abs_path("data/measure/measurements.tsv"))
 

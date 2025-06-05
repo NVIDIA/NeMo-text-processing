@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
 
 
@@ -26,8 +26,8 @@ class TelephoneFst(GraphFst):
         một hai ba một hai ba năm sáu bảy tám -> { number_part: "1231235678" }
     """
 
-    def __init__(self):
-        super().__init__(name="telephone", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="telephone", kind="classify", project_input=project_input)
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         digit = graph_digit | graph_zero

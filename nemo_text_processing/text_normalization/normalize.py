@@ -20,10 +20,11 @@ import shutil
 import sys
 from argparse import ArgumentParser
 from collections import OrderedDict
+from copy import deepcopy
 from glob import glob
 from math import factorial
 from time import perf_counter
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 
 import pynini
 import regex
@@ -40,7 +41,7 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
     write_file,
 )
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
-from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
+from nemo_text_processing.text_normalization.token_parser import INPUT_KEY, PRESERVE_ORDER_KEY, TokenParser
 from nemo_text_processing.utils.logging import logger
 
 # this is to handle long input
@@ -106,6 +107,7 @@ class Normalizer:
         input_case: str,
         lang: str = 'en',
         deterministic: bool = True,
+        project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = False,
         whitelist: str = None,
@@ -186,8 +188,19 @@ class Normalizer:
             whitelist=whitelist,
         )
 
+        self.project_input = project_input
+        if self.project_input:
+            self.tagger_input_projector = ClassifyFst(
+                input_case=self.input_case,
+                deterministic=deterministic,
+                project_input=True,
+                cache_dir=cache_dir,
+                overwrite_cache=overwrite_cache,
+                whitelist=whitelist,
+            )
+
         self.verbalizer = VerbalizeFinalFst(
-            deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache
+            deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache, project_input=project_input
         )
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
         self.parser = TokenParser()
@@ -318,6 +331,56 @@ class Normalizer:
         assert sum([len(s) for s in splits]) == len(tokens)
         return splits
 
+    @staticmethod
+    def _merge_input_field(source: Any, target: Any) -> Any:
+        """
+        Copy the ``"input"`` value that exists in *source_with_input* into the
+        matching element of *target* (both arguments have the same 2-level layout).
+
+        The input key is added inside the semiotic class mapping (e.g., inside 
+        "cardinal", "time", etc.), not at the token level. The original structures are
+        **not** modified; a deep copy of *target* is returned.
+
+        Parameters
+        ----------
+        source_with_input : Any
+            Structure that already contains ``"input"`` values.
+        target : Any
+            Structure that must receive those ``"input"`` values.
+
+        Returns
+        -------
+        Any
+            A fresh structure equal to *target* but with the extra ``"input"``
+            entries.
+        """
+        merged = deepcopy(target)
+
+        # Walk the two-level list in lock-step.
+        for src_row, tgt_row in zip(source, merged):
+            for src_item, tgt_item in zip(src_row, tgt_row):
+                src_tokens: OrderedDict = src_item.get("tokens", OrderedDict())
+                tgt_tokens: OrderedDict = tgt_item.get("tokens", OrderedDict())
+
+                # Only copy if the key is present on the source side.
+                if INPUT_KEY in src_tokens:
+                    input_value = src_tokens[INPUT_KEY]
+                    
+                    # Find the semiotic class in target tokens and add input there
+                    for key, value in tgt_tokens.items():
+                        if isinstance(value, OrderedDict) and key != INPUT_KEY:
+                            # This is a semiotic class (cardinal, time, etc.)
+                            value[INPUT_KEY] = input_value
+                            break
+                    else:
+                        # If no semiotic class found, check if it's a simple name token
+                        if "name" in tgt_tokens:
+                            # For name tokens, append input to the name value with brackets
+                            original_name = tgt_tokens["name"]
+                            tgt_tokens["name"] = f"{original_name}[{input_value}]"
+
+        return merged
+
     def normalize(
         self, text: str, verbose: bool = False, punct_pre_process: bool = False, punct_post_process: bool = False
     ) -> str:
@@ -354,6 +417,17 @@ class Normalizer:
         self.parser(tagged_text)
         tokens = self.parser.parse()
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
+
+        if self.project_input:
+            tagged_lattice = self.find_input_tags(text)
+            tagged_text_input = Normalizer.select_tag(tagged_lattice)
+            logger.debug(tagged_text_input)
+
+            self.parser(tagged_text_input)
+            input_tokens = self.parser.parse()
+            split_input_tokens = self._split_tokens_to_reduce_number_of_permutations(input_tokens)
+            split_tokens = self._merge_input_field(split_input_tokens, split_tokens)
+
         output = ""
         for s in split_tokens:
             try:
@@ -361,6 +435,7 @@ class Normalizer:
                 verbalizer_lattice = None
                 for tagged_text in tags_reordered:
                     tagged_text = pynini.escape(tagged_text)
+                    logger.debug(tagged_text)
 
                     verbalizer_lattice = self.find_verbalizer(tagged_text)
                     if verbalizer_lattice.num_states() != 0:
@@ -562,32 +637,55 @@ class Normalizer:
 
     def _permute(self, d: OrderedDict) -> List[str]:
         """
-        Creates reorderings of dictionary elements and serializes as strings
+        Creates reorderings of dictionary elements and serialises them as strings.
 
-        Args:
-            d: (nested) dictionary of key value pairs
-
-        Return permutations of different string serializations of key value pairs
+        - Respects PRESERVE_ORDER_KEY (no shuffling when it is present).
+        - Forces RAW_KEY (if present) to be the *last* element, so the total
+        permutations drop from n! to (n-1)!.
+        - Fixes the earlier “extra }” bug by closing nested blocks with **one**
+        brace, not two.
         """
-        l = []
-        if PRESERVE_ORDER_KEY in d.keys():
-            d_permutations = [d.items()]
+        # ---------- validation --------------------------------------------------
+        if list(d.keys()).count(INPUT_KEY) > 1:
+            raise ValueError(f"`{INPUT_KEY}` must occur at most once in each dict")
+
+        # ---------- choose permutation source -----------------------------------
+        if PRESERVE_ORDER_KEY in d:
+            if INPUT_KEY in d and next(reversed(d)) != INPUT_KEY:
+                raise ValueError(
+                    f"When {PRESERVE_ORDER_KEY} is set, `{INPUT_KEY}` must already be last")
+            d_permutations = [tuple(d.items())]          # preserve order
         else:
-            d_permutations = itertools.permutations(d.items())
+            items = list(d.items())
+            if INPUT_KEY in d:
+                raw_item    = (INPUT_KEY, d[INPUT_KEY])
+                other_items = [kv for kv in items if kv[0] != INPUT_KEY]
+                d_permutations = [perm + (raw_item,)
+                                for perm in itertools.permutations(other_items)]
+            else:
+                d_permutations = itertools.permutations(items)
+
+        # ---------- render every selected permutation ---------------------------
+        serialisations: List[str] = []
         for perm in d_permutations:
             subl = [""]
             for k, v in perm:
                 if isinstance(v, str):
-                    subl = ["".join(x) for x in itertools.product(subl, [f"{k}: \"{v}\" "])]
+                    subl = ["".join(x) for x in itertools.product(
+                                subl, [f'{k}: "{v}" '])]
                 elif isinstance(v, OrderedDict):
                     rec = self._permute(v)
-                    subl = ["".join(x) for x in itertools.product(subl, [f" {k} {{ "], rec, [f" }} "])]
+                    # NOTE: single closing brace fixes the extra-`}` problem
+                    subl = ["".join(x) for x in itertools.product(
+                                subl, [f" {k} {{ "], rec, [" } "])]
                 elif isinstance(v, bool):
-                    subl = ["".join(x) for x in itertools.product(subl, [f"{k}: true "])]
+                    subl = ["".join(x) for x in itertools.product(
+                                subl, [f"{k}: true "])]
                 else:
-                    raise ValueError("Key: " + str(k) + " Value: " + str(v))
-            l.extend(subl)
-        return l
+                    raise ValueError(f"Key: {k!r}  Value: {v!r}")
+            serialisations.extend(subl)
+
+        return serialisations
 
     def generate_permutations(self, tokens: List[dict]):
         """
@@ -629,6 +727,18 @@ class Normalizer:
         Returns: tagged lattice
         """
         lattice = text @ self.tagger.fst
+        return lattice
+
+    def find_input_tags(self, text: str) -> 'pynini.FstLike':
+        """
+        Given text use tagger Fst to tag text
+
+        Args:
+            text: sentence
+
+        Returns: tagged lattice
+        """
+        lattice = text @ self.tagger_input_projector.fst
         return lattice
 
     @staticmethod
@@ -748,6 +858,11 @@ def parse_args():
         help="Add this flag to add spaces around square brackets, otherwise text between square brackets won't be normalized",
         action="store_true",
     )
+    parser.add_argument(
+        "--project_input",
+        help="Add this flag to project input text to TN output. This is useful for getting a mapping between input and output text.",
+        action="store_true",
+    )
     parser.add_argument("--overwrite_cache", help="Add this flag to re-create .far grammar files", action="store_true")
     parser.add_argument(
         "--whitelist",
@@ -785,6 +900,7 @@ if __name__ == "__main__":
         post_process=not args.no_post_process,
         cache_dir=args.cache_dir,
         overwrite_cache=args.overwrite_cache,
+        project_input=args.project_input,
         whitelist=whitelist,
         lang=args.language,
         max_number_of_permutations_per_split=args.max_number_of_permutations_per_split,
@@ -829,6 +945,8 @@ if __name__ == "__main__":
                 write_file(args.output_file, normalizer_prediction)
                 logger.info(f"- Normalized. Writing out to {args.output_file}")
             else:
+                if isinstance(normalizer_prediction, list):
+                    normalizer_prediction = "\n".join(normalizer_prediction)
                 logger.info(normalizer_prediction)
 
     logger.info(f"Execution time: {perf_counter() - start_time:.02f} sec")

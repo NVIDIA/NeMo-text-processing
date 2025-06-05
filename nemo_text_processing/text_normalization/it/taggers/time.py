@@ -31,8 +31,8 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="time", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="time", kind="classify", deterministic=deterministic, project_input=project_input)
 
         labels_hour = [str(x) for x in range(0, 25)]
         labels_minute_single = [str(x) for x in range(1, 10)]

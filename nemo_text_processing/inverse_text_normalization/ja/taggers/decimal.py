@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ja.utils import get_abs_path
 
 
@@ -35,8 +35,8 @@ class DecimalFst(GraphFst):
         e.g. 一点五万 -> decimal { integer_part: "1" fractional_part: "5" quantity: "万" }
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="decimal", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="decimal", kind="classify", project_input=project_input)
 
         cardinals = cardinal.just_cardinals
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))

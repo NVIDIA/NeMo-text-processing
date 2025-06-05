@@ -32,8 +32,8 @@ class DecimalFst(GraphFst):
 
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         delete_space = pynutil.delete(" ")
         self.optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "minus ") + delete_space, 0, 1)

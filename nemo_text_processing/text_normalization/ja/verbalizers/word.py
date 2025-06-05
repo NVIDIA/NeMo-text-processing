@@ -15,7 +15,7 @@
 
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class WordFst(GraphFst):
@@ -23,8 +23,8 @@ class WordFst(GraphFst):
         tokens { char: "文字" } -> 文字
     '''
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="char", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="char", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
 

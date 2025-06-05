@@ -33,21 +33,21 @@ class VerbalizeFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-        cardinal = CardinalFst(deterministic=deterministic)
+        cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.fst
-        decimal = DecimalFst(deterministic=deterministic)
+        decimal = DecimalFst(deterministic=deterministic, project_input=project_input)
         decimal_graph = decimal.fst
-        electronic = ElectronicFst(deterministic=deterministic)
+        electronic = ElectronicFst(deterministic=deterministic, project_input=project_input)
         electronic_graph = electronic.fst
-        whitelist_graph = WhiteListFst(deterministic=deterministic).fst
-        measure = MeasureFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
+        whitelist_graph = WhiteListFst(deterministic=deterministic, project_input=project_input).fst
+        measure = MeasureFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic, project_input=project_input)
         measure_graph = measure.fst
-        money = MoneyFst(decimal=decimal, deterministic=deterministic)
+        money = MoneyFst(decimal=decimal, deterministic=deterministic, project_input=project_input)
         money_graph = money.fst
-        cardinal_tagger = CardinalTagger(deterministic=deterministic)
-        time = TimeFst(cardinal_tagger=cardinal_tagger, deterministic=deterministic)
+        cardinal_tagger = CardinalTagger(deterministic=deterministic, project_input=project_input)
+        time = TimeFst(cardinal_tagger=cardinal_tagger, deterministic=deterministic, project_input=project_input)
         time_graph = time.fst
 
         graph = (

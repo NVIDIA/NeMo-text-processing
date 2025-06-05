@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class MoneyFst(GraphFst):
@@ -27,8 +27,14 @@ class MoneyFst(GraphFst):
         tokens { money { currency: "$" integer: "二" } } -> 二美元
     """
 
-    def __init__(self, decimal: GraphFst, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="money", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        decimal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
+    ):
+        super().__init__(name="money", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         # components to combine to make graphs
         number_component = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

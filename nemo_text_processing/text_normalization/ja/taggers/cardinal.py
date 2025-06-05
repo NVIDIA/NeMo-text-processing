@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
 
@@ -26,8 +26,8 @@ class CardinalFst(GraphFst):
         e.g. 23 -> cardinal { integer: "二十三" } 
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))

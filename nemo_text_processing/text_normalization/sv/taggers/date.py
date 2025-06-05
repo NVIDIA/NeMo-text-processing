@@ -38,8 +38,14 @@ class DateFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="date", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        ordinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="date", kind="classify", deterministic=deterministic, project_input=project_input)
 
         delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
         month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))

@@ -36,8 +36,13 @@ class TimeFst(GraphFst):
         tn_time_verbalizer: TN time verbalizer
     """
 
-    def __init__(self, tn_time_verbalizer: GraphFst, deterministic: bool = True):
-        super().__init__(name="time", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        tn_time_verbalizer: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="time", kind="classify", deterministic=deterministic, project_input=project_input)
         # lazy way to make sure compounds work
         optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))
         graph = (tn_time_verbalizer.graph @ optional_delete_space).invert().optimize()

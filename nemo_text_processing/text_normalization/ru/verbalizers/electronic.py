@@ -29,8 +29,8 @@ class ElectronicFst(GraphFst):
         for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         graph = pynutil.delete("username: \"") + pynini.closure(RU_ALPHA | " ") + pynutil.delete("\"")
         delete_tokens = self.delete_tokens(graph)

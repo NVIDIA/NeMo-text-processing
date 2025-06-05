@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.decimal import DecimalFst
@@ -34,21 +34,21 @@ class VerbalizeFst(GraphFst):
     More details to deployment at NeMo/tools/text_processing_deployment.
     """
 
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize")
-        cardinal = CardinalFst()
+        cardinal = CardinalFst(project_input=project_input)
         cardinal_graph = cardinal.fst
-        ordinal_graph = OrdinalFst().fst
-        decimal = DecimalFst()
+        ordinal_graph = OrdinalFst(project_input=project_input).fst
+        decimal = DecimalFst(project_input=project_input)
         decimal_graph = decimal.fst
-        fraction_graph = FractionFst().fst
-        date_graph = DateFst().fst
-        time_graph = TimeFst().fst
-        measure_graph = MeasureFst(cardinal, decimal).fst
-        money_graph = MoneyFst(cardinal, decimal).fst
-        telephone_graph = TelephoneFst(cardinal).fst
-        word_graph = WordFst().fst
-        whitelist_graph = WhiteListFst().fst
+        fraction_graph = FractionFst(project_input=project_input).fst
+        date_graph = DateFst(project_input=project_input).fst
+        time_graph = TimeFst(project_input=project_input).fst
+        measure_graph = MeasureFst(cardinal, decimal, project_input=project_input).fst
+        money_graph = MoneyFst(cardinal, decimal, project_input=project_input).fst
+        telephone_graph = TelephoneFst(cardinal, project_input=project_input).fst
+        word_graph = WordFst(project_input=project_input).fst
+        whitelist_graph = WhiteListFst(project_input=project_input).fst
 
         graph = (
             cardinal_graph

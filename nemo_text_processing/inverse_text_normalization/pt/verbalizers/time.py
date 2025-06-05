@@ -31,8 +31,8 @@ class TimeFst(GraphFst):
         e.g. time { hours: "às 2" minutes: "45" } -> às 2:45
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="verbalize", project_input=project_input)
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
 
         prefix = (

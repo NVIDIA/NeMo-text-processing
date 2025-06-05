@@ -26,8 +26,8 @@ class DateFst(GraphFst):
         e.g. um de janeiro -> date { day: "1" month: "janeiro" }
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="date", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         digits_from_year = cardinal.digits_from_year
 

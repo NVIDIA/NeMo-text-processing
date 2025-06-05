@@ -41,8 +41,13 @@ class WhiteListFst(GraphFst):
         e.g. nemo_text_processing/inverse_text_normalization/es/data/whitelist.tsv
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None):
-        super().__init__(name="whitelist", kind="classify")
+    def __init__(
+        self,
+        input_case: str = INPUT_LOWER_CASED,
+        input_file: str = None,
+        project_input: bool = False
+    ):
+        super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         def get_whitelist_graph(input_file: str):
             labels = load_labels(input_file)

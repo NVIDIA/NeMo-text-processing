@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.hi.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.hi.verbalizers.decimal import DecimalFst
@@ -35,28 +35,28 @@ class VerbalizeFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
 
-        cardinal = CardinalFst(deterministic=deterministic)
+        cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.fst
 
-        decimal = DecimalFst(deterministic=deterministic)
+        decimal = DecimalFst(deterministic=deterministic, project_input=project_input)
         decimal_graph = decimal.fst
 
-        fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
+        fraction = FractionFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
         fraction_graph = fraction.fst
 
-        date = DateFst()
+        date = DateFst(project_input=project_input)
         date_graph = date.fst
 
-        time = TimeFst()
+        time = TimeFst(project_input=project_input)
         time_graph = time.fst
 
-        measure = MeasureFst(cardinal=cardinal, decimal=decimal)
+        measure = MeasureFst(cardinal=cardinal, decimal=decimal, project_input=project_input)
         measure_graph = measure.fst
 
-        money = MoneyFst(cardinal=cardinal, decimal=decimal)
+        money = MoneyFst(cardinal=cardinal, decimal=decimal, project_input=project_input)
         money_graph = money.fst
 
         # whitelist_graph = WhiteListFst(deterministic=deterministic).fst

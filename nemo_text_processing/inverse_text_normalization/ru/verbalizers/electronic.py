@@ -24,8 +24,8 @@ class ElectronicFst(GraphFst):
         e.g. electronic { username: "ab@nd.ru" } -> "ab@nd.ru"
     """
 
-    def __init__(self):
-        super().__init__(name="electronic", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="electronic", kind="verbalize", project_input=project_input)
 
         graph = pynutil.delete("username: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         delete_tokens = self.delete_tokens(graph)

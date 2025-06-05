@@ -46,6 +46,7 @@ class DateFst(GraphFst):
         tn_date_tagger: GraphFst,
         tn_date_verbalizer: GraphFst,
         deterministic: bool = True,
+        project_input: bool = False
     ):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
 

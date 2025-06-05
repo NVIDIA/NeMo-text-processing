@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class CardinalFst(GraphFst):
@@ -26,8 +26,8 @@ class CardinalFst(GraphFst):
     cardinal { negative: "-" integer: "二十三" } -> マイナス二十三
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         optional_sign = (
             pynutil.delete("negative:")

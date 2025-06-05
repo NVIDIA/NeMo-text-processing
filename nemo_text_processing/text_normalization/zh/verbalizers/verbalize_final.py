@@ -16,7 +16,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, delete_space, generator_main
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space, generator_main
 from nemo_text_processing.text_normalization.zh.verbalizers.postprocessor import PostProcessor
 from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst
 
@@ -26,8 +26,14 @@ from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import Ver
 class VerbalizeFinalFst(GraphFst):
     """ """
 
-    def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
-        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        deterministic: bool = True,
+        project_input: bool = False,
+        cache_dir: str = None,
+        overwrite_cache: bool = False
+    ):
+        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic, project_input=project_input)
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)

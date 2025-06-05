@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_space,
@@ -35,8 +35,8 @@ class FractionFst(GraphFst):
 
     """
 
-    def __init__(self, tn_cardinal: GraphFst):
-        super().__init__(name="fraction", kind="classify")
+    def __init__(self, tn_cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="fraction", kind="classify", project_input=project_input)
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("سالب", "\"true\" "), 0, 1

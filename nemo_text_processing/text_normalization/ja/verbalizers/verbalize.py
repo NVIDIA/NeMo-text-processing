@@ -15,7 +15,7 @@
 
 import pynini
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
 from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
@@ -36,20 +36,20 @@ class VerbalizeFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
 
-        date = DateFst(deterministic=deterministic)
-        cardinal = CardinalFst(deterministic=deterministic)
-        ordinal = OrdinalFst(deterministic=deterministic)
-        decimal = DecimalFst(deterministic=deterministic)
-        word = WordFst(deterministic=deterministic)
-        fraction = FractionFst(deterministic=deterministic)
+        date = DateFst(deterministic=deterministic, project_input=project_input)
+        cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
+        ordinal = OrdinalFst(deterministic=deterministic, project_input=project_input)
+        decimal = DecimalFst(deterministic=deterministic, project_input=project_input)
+        word = WordFst(deterministic=deterministic, project_input=project_input)
+        fraction = FractionFst(deterministic=deterministic, project_input=project_input)
 
         # money = MoneyFst(decimal=decimal, deterministic=deterministic)
         # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
-        time = TimeFst(deterministic=deterministic)
-        whitelist = WhiteListFst(deterministic=deterministic)
+        time = TimeFst(deterministic=deterministic, project_input=project_input)
+        whitelist = WhiteListFst(deterministic=deterministic, project_input=project_input)
 
         graph = pynini.union(
             date.fst, cardinal.fst, ordinal.fst, decimal.fst, fraction.fst, word.fst, time.fst, whitelist.fst,

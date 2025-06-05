@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, GraphFst
 
 
 class WordFst(GraphFst):
@@ -24,7 +24,7 @@ class WordFst(GraphFst):
         e.g. sleep -> tokens { name: "sleep" }
     """
 
-    def __init__(self):
-        super().__init__(name="word", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="word", kind="classify", project_input=project_input)
         word = pynutil.insert('name: "') + NEMO_NOT_SPACE + pynutil.insert('"')
         self.fst = word.optimize()

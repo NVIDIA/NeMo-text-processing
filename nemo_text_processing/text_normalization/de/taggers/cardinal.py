@@ -74,8 +74,8 @@ class CardinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = False):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = False, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digit_no_one = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()

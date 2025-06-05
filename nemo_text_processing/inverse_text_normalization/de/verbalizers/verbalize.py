@@ -29,17 +29,17 @@ class VerbalizeFst(GraphFst):
     More details to deployment at NeMo/tools/text_processing_deployment.
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-        tn_cardinal_verbalizer = TNCardinalVerbalizer(deterministic=False)
-        tn_decimal_verbalizer = TNDecimalVerbalizer(deterministic=False)
+        tn_cardinal_verbalizer = TNCardinalVerbalizer(deterministic=False, project_input=project_input)
+        tn_decimal_verbalizer = TNDecimalVerbalizer(deterministic=False, project_input=project_input)
 
-        cardinal = CardinalFst(tn_cardinal_verbalizer=tn_cardinal_verbalizer)
+        cardinal = CardinalFst(tn_cardinal_verbalizer=tn_cardinal_verbalizer, project_input=project_input)
         cardinal_graph = cardinal.fst
-        decimal = DecimalFst(tn_decimal_verbalizer=tn_decimal_verbalizer)
+        decimal = DecimalFst(tn_decimal_verbalizer=tn_decimal_verbalizer, project_input=project_input)
         decimal_graph = decimal.fst
-        measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal).fst
-        money_graph = MoneyFst(decimal=decimal).fst
-        time_graph = TimeFst().fst
+        measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal, project_input=project_input).fst
+        money_graph = MoneyFst(decimal=decimal, project_input=project_input).fst
+        time_graph = TimeFst(project_input=project_input).fst
         graph = time_graph | money_graph | measure_graph | decimal_graph | cardinal_graph
         self.fst = graph

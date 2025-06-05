@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_DIGIT, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 
 
 class FractionFst(GraphFst):
@@ -25,8 +25,8 @@ class FractionFst(GraphFst):
         e.g. tokens { fraction { integer_part: "1" denominator: "2" numerator: "1" } } -> 1又1/2
     """
 
-    def __init__(self):
-        super().__init__(name="fraction", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="fraction", kind="verbalize", project_input=project_input)
 
         integer_part = (
             pynutil.delete("integer_part:")

@@ -33,9 +33,15 @@ class RangeFst(GraphFst):
     """
 
     def __init__(
-        self, time: GraphFst, date: GraphFst, cardinal: GraphFst, deterministic: bool = True, lm: bool = False,
+        self,
+        time: GraphFst,
+        date: GraphFst,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
     ):
-        super().__init__(name="range", kind="classify", deterministic=deterministic)
+        super().__init__(name="range", kind="classify", deterministic=deterministic, project_input=project_input)
 
         delete_space = pynini.closure(pynutil.delete(" "), 0, 1)
 

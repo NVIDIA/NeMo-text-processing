@@ -53,8 +53,9 @@ class ClassifyFst(GraphFst):
         cache_dir: str = None,
         whitelist: str = None,
         deterministic: bool = False,
+        project_input: bool = False,
         overwrite_cache: bool = False,
-        input_case: str = INPUT_LOWER_CASED,
+        input_case: str = INPUT_LOWER_CASED
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -68,25 +69,25 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars.")
 
-            cardinal = CardinalFst()
+            cardinal = CardinalFst(project_input=project_input)
             cardinal_graph = cardinal.fst
 
-            ordinal = OrdinalFst(cardinal)
+            ordinal = OrdinalFst(cardinal, project_input=project_input)
             ordinal_graph = ordinal.fst
 
-            fraction = FractionFst(cardinal=cardinal, ordinal=ordinal)
+            fraction = FractionFst(cardinal=cardinal, ordinal=ordinal, project_input=project_input)
             fraction_graph = fraction.fst
 
-            decimal = DecimalFst(cardinal)
+            decimal = DecimalFst(cardinal, project_input=project_input)
             decimal_graph = decimal.fst
 
-            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal).fst
-            word_graph = WordFst().fst
-            time_graph = TimeFst().fst
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal).fst
-            punct_graph = PunctuationFst().fst
+            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, project_input=project_input).fst
+            word_graph = WordFst(project_input=project_input).fst
+            time_graph = TimeFst(project_input=project_input).fst
+            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, project_input=project_input).fst
+            punct_graph = PunctuationFst(project_input=project_input).fst
             whitelist_graph = WhiteListFst(
-                input_case=input_case, deterministic=deterministic, input_file=whitelist
+                input_case=input_case, deterministic=deterministic, input_file=whitelist, project_input=project_input
             ).fst
 
             classify = (

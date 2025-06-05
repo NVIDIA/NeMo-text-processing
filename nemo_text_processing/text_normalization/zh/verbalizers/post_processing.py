@@ -36,7 +36,11 @@ class PostProcessingFst:
         overwrite_cache: set to True to overwrite .far files
     """
 
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False):
+    def __init__(
+        self,
+        cache_dir: str = None,
+        overwrite_cache: bool = False,
+    ):
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":

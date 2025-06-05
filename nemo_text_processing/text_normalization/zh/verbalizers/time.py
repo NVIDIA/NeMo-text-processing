@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 
@@ -30,8 +30,8 @@ class TimeFst(GraphFst):
         tokens { time { affix: "am" hour: "一点" minute: "三分" } } -> 深夜一点三分
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="time", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="time", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         # data imported to process am/pm into mandarin
         alphabet_am = pynini.string_file(get_abs_path("data/time/AM.tsv"))

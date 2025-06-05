@@ -30,8 +30,8 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="ordinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_graph = cardinal.graph
         cardinal_format = pynini.closure(NEMO_DIGIT | pynini.accep(","))

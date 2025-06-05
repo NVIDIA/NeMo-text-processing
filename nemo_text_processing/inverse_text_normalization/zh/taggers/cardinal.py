@@ -15,12 +15,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
 
 
 class CardinalFst(GraphFst):
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         """
         Fitite state transducer for classifying cardinals (e.g., 负五十 -> cardinal { negative: "-" integer: "50" })
         This class converts cardinals up to hundred millions (i.e., (10**10))
@@ -28,7 +28,7 @@ class CardinalFst(GraphFst):
         Numbers less than 20 are not converted.
         二十 (2 characters/logograms) is kept as it is but 二十一 (3 characters/logograms) would become 21
         """
-        super().__init__(name="cardinal", kind="classify")
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
 
         # number of digits to be processed
         delete_hundreds = pynutil.delete("百") | pynutil.delete("佰")

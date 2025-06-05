@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 
 
@@ -27,8 +27,13 @@ class DecimalFst(GraphFst):
     cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool,
+        project_input: bool = False
+    ):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         integer_part = cardinal.cardinal_numbers
         cardinal_numbers_with_leading_zeros = cardinal.cardinal_numbers_with_leading_zeros

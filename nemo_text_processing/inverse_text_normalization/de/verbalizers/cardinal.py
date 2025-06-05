@@ -27,8 +27,13 @@ class CardinalFst(GraphFst):
         tn_cardinal_verbalizer: TN cardinal verbalizer
     """
 
-    def __init__(self, tn_cardinal_verbalizer: GraphFst, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        tn_cardinal_verbalizer: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic, project_input=project_input)
         self.numbers = tn_cardinal_verbalizer.numbers
         optional_sign = pynini.closure(pynutil.delete("negative: \"") + NEMO_NOT_QUOTE + pynutil.delete("\" "), 0, 1)
         graph = optional_sign + self.numbers

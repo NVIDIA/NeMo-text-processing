@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space
 
 
 class FractionFst(GraphFst):
@@ -26,8 +26,8 @@ class FractionFst(GraphFst):
 
     """
 
-    def __init__(self):
-        super().__init__(name="fraction", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="fraction", kind="verbalize", project_input=project_input)
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "سالب ") + pynutil.delete(" "), 0, 1)
 
         # create unions for special cases

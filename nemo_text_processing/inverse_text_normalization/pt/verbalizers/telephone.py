@@ -25,8 +25,8 @@ class TelephoneFst(GraphFst):
         -> 123-123-5678
     """
 
-    def __init__(self):
-        super().__init__(name="telephone", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="telephone", kind="verbalize", project_input=project_input)
 
         number_part = pynutil.delete("number_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         delete_tokens = self.delete_tokens(number_part)

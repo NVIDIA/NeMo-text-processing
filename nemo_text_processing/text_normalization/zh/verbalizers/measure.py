@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
 
 
 class MeasureFst(GraphFst):
@@ -25,9 +25,15 @@ class MeasureFst(GraphFst):
     '''
 
     def __init__(
-        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True, lm: bool = False
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        fraction: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
     ):
-        super().__init__(name="measure", kind="verbalize", deterministic=deterministic)
+        super().__init__(name="measure", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         cardinal = cardinal.numbers
         decimal = decimal.decimal_component

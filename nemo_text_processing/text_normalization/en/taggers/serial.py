@@ -41,8 +41,15 @@ class SerialFst(GraphFst):
         lm: whether to use for hybrid LM
     """
 
-    def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="integer", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        ordinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
+    ):
+        super().__init__(name="integer", kind="classify", deterministic=deterministic, project_input=project_input)
 
         """
         Finite state transducer for classifying serial (handles only cases without delimiters,

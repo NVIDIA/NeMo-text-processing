@@ -31,8 +31,14 @@ class MoneyFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True):
-        super().__init__(name="money", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="money", kind="classify", deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.cardinal_numbers_default
         decimal_graph = decimal.final_graph
 

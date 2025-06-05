@@ -39,8 +39,8 @@ class ElectronicFst(GraphFst):
         for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic, project_input=project_input)
         graph_digit_no_zero = pynini.invert(
             pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         ).optimize() | pynini.cross("1", "eins")

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
@@ -28,8 +28,8 @@ class TelephoneFst(GraphFst):
         Cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="telephone", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="telephone", kind="classify", project_input=project_input)
 
         hindi_digit_graph = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
         hindi_digit_graph |= pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()

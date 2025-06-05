@@ -27,10 +27,10 @@ class VerbalizeFinalFst(GraphFst):
     tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
     """
 
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="verbalize_final", kind="verbalize")
-        verbalize = VerbalizeFst().fst
-        word = WordFst().fst
+        verbalize = VerbalizeFst(project_input=project_input).fst
+        word = WordFst(project_input=project_input).fst
         types = verbalize | word
         graph = (
             pynutil.delete("tokens")

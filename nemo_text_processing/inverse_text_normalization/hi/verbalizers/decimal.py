@@ -24,8 +24,8 @@ class DecimalFst(GraphFst):
         decimal { negative: "true" integer_part: "१२"  fractional_part: "५००६" quantity: "अरब" } -> -१२.५००६ अरब
     """
 
-    def __init__(self):
-        super().__init__(name="decimal", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="decimal", kind="verbalize", project_input=project_input)
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)
         integer = (
             pynutil.delete("integer_part:")

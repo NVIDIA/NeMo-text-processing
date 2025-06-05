@@ -24,8 +24,14 @@ class FractionFst(GraphFst):
         "1/6" -> tokens { fraction { numerator: "մեկ" denominator: "վեցերորդ" } }
     """
 
-    def __init__(self, cardinal: GraphFst, ordinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="fraction", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        ordinal: GraphFst,
+        input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
+    ):
+        super().__init__(name="fraction", kind="classify", project_input=project_input)
         cardinal_graph = cardinal.all_nums_no_tokens
         ordinal_graph = ordinal.denominator_graph
 

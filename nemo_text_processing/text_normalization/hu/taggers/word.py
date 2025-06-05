@@ -27,7 +27,7 @@ class WordFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="word", kind="classify")
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="word", kind="classify", project_input=project_input)
         word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
         self.fst = word.optimize()

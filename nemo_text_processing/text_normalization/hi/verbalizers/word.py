@@ -14,7 +14,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 
 
 class WordFst(GraphFst):
@@ -27,8 +27,8 @@ class WordFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="word", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="word", kind="verbalize", deterministic=deterministic, project_input=project_input)
         chars = pynini.closure(NEMO_CHAR - " ", 1)
         punct = pynini.union("!", "?", ".", ",", "-", ":", ";", "।")  # Add other punctuation marks as needed
         char = pynutil.delete("name:") + delete_space + pynutil.delete("\"") + chars + pynutil.delete("\"")

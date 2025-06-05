@@ -28,8 +28,8 @@ class CardinalFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         self.optional_sign = pynini.cross("negative: \"true\"", "mínusz ")
         self.optional_sign = pynini.closure(self.optional_sign + delete_space, 0, 1)

@@ -28,8 +28,8 @@ class WhiteListFst(GraphFst):
     Whitelisted tokens are defined and loaded from "data/whitelist.tsv" (unless input_file specified).
     """
 
-    def __init__(self):
-        super().__init__(name="whitelist", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv")).invert()
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")

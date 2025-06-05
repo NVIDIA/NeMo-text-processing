@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 
@@ -69,8 +69,14 @@ class DecimalFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False,
+        lm: bool = False
+    ):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_before_decimal = cardinal.just_cardinals
         cardinal_after_decimal = pynini.string_file(get_abs_path("data/number/digit.tsv"))

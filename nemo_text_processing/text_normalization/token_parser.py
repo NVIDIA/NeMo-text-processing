@@ -16,6 +16,7 @@ import string
 from collections import OrderedDict
 from typing import Dict, List, Union
 
+INPUT_KEY = "input"
 PRESERVE_ORDER_KEY = "preserve_order"
 EOS = "<EOS>"
 

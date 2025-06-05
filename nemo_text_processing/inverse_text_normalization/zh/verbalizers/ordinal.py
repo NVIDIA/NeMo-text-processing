@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
     GraphFst,
@@ -24,8 +24,8 @@ from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
 
 
 class OrdinalFst(GraphFst):
-    def __init__(self):
-        super().__init__(name="ordinal", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="ordinal", kind="verbalize", project_input=project_input)
         graph_integer = (
             pynutil.delete("integer:")
             + delete_space

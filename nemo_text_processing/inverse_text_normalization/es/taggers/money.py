@@ -41,8 +41,14 @@ class MoneyFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="money", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
+    ):
+        super().__init__(name="money", kind="classify", project_input=project_input)
         # quantity, integer_part, fractional_part, currency
 
         cardinal_graph = cardinal.graph_no_exception

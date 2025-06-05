@@ -36,8 +36,8 @@ class OrdinalFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self):
-        super().__init__(name="ordinal", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="ordinal", kind="classify", project_input=project_input)
 
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/ordinals/ties.tsv"))

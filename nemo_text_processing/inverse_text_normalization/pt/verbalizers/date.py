@@ -30,8 +30,8 @@ class DateFst(GraphFst):
         date { day: "1" month: "enero" preserve_order: true } -> 1 de enero
     """
 
-    def __init__(self):
-        super().__init__(name="date", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="date", kind="verbalize", project_input=project_input)
         month = (
             pynutil.delete("month:")
             + delete_space

@@ -35,8 +35,14 @@ class FractionFst(GraphFst):
         tn_fraction_verbalizer: TN fraction verbalizer
     """
 
-    def __init__(self, itn_cardinal_tagger: GraphFst, tn_fraction_verbalizer: GraphFst, deterministic: bool = True):
-        super().__init__(name="fraction", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        itn_cardinal_tagger: GraphFst,
+        tn_fraction_verbalizer: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="fraction", kind="classify", deterministic=deterministic, project_input=project_input)
         tagger = tn_fraction_verbalizer.graph.invert().optimize()
 
         delete_optional_sign = pynini.closure(pynutil.delete("negative: ") + pynini.cross("\"true\" ", "-"), 0, 1)

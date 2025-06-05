@@ -35,8 +35,14 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, number_names: dict, alternative_formats: dict, deterministic=False):
-        super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        number_names: dict,
+        alternative_formats: dict,
+        deterministic=False,
+        project_input: bool = False
+    ):
+        super().__init__(name="ordinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         one_thousand_alternative = alternative_formats['one_thousand_alternative']
         separators = alternative_formats['separators']

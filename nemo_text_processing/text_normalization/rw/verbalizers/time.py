@@ -16,12 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.rw.graph_utils import NEMO_CHAR, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space
 
 
 class VerbalizeTimeFst(GraphFst):
-    def __init__(self):
-        super().__init__(name="time", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="verbalize", project_input=project_input)
         hour = (
             pynutil.delete("hours:")
             + delete_space

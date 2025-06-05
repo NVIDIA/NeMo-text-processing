@@ -39,8 +39,13 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="ordinal", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="ordinal", kind="classify", project_input=project_input)
 
         digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
         teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv")))

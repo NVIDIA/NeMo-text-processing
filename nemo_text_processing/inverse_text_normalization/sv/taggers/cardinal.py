@@ -30,8 +30,8 @@ class CardinalFst(GraphFst):
         tn_cardinal_tagger: TN cardinal tagger
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst):
-        super().__init__(name="cardinal", kind="classify")
+    def __init__(self, tn_cardinal_tagger: GraphFst, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
 
         graph = pynini.invert(pynini.arcmap(tn_cardinal_tagger.graph, map_type="rmweight")).optimize()
         graph = graph @ pynini.cdrewrite(pynini.cross(" ", ""), "", "", NEMO_SIGMA)

@@ -19,13 +19,19 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.rw.graph_utils import GraphFst, delete_space, generator_main
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space, generator_main
 from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst
 
 
 class VerbalizeFinalFst(GraphFst):
-    def __init__(self, cache_dir: str = None, overwrite_cache: bool = False, deterministic: bool = True):
-        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        cache_dir: str = None,
+        overwrite_cache: bool = False,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic, project_input=project_input)
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
@@ -33,8 +39,8 @@ class VerbalizeFinalFst(GraphFst):
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
         else:
-            verbalize = VerbalizeFst(deterministic=deterministic).fst
-            word = WordFst(deterministic=deterministic).fst
+            verbalize = VerbalizeFst(deterministic=deterministic, project_input=project_input).fst
+            word = WordFst(deterministic=deterministic, project_input=project_input).fst
             types = verbalize | word
             graph = (
                 pynutil.delete("tokens")

@@ -47,8 +47,8 @@ class TelephoneFst(GraphFst):
                         for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="telephone", kind="classify")
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="telephone", kind="classify", project_input=project_input)
 
         # create `single_digits` and `double_digits` graphs as these will be
         # the building blocks of possible telephone numbers

@@ -27,8 +27,8 @@ class CardinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic, project_input=project_input)
         optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", "meno "), 0, 1)
         self.optional_sign = optional_sign
         integer = pynini.closure(NEMO_NOT_QUOTE, 1)

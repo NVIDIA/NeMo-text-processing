@@ -24,8 +24,8 @@ class TimeFst(GraphFst):
         e.g. time { hours: "02:15" } -> "02:15"
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="verbalize", project_input=project_input)
         hour = (
             pynutil.delete("hours: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         )

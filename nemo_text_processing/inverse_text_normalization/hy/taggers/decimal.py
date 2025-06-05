@@ -75,8 +75,13 @@ class DecimalFst(GraphFst):
         TODO add cased input support
     """
 
-    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
-        super().__init__(name="decimal", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        input_case: str = INPUT_LOWER_CASED,
+        project_input: bool = False
+    ):
+        super().__init__(name="decimal", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.graph_no_exception
 

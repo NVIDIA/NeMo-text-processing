@@ -18,7 +18,7 @@ from nemo_text_processing.inverse_text_normalization.ar.verbalizers.decimal impo
 from nemo_text_processing.inverse_text_normalization.ar.verbalizers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.ar.verbalizers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.ar.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):
@@ -28,17 +28,17 @@ class VerbalizeFst(GraphFst):
     More details to deployment at NeMo/tools/text_processing_deployment.
     """
 
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize")
-        cardinal = CardinalFst()
+        cardinal = CardinalFst(project_input=project_input)
         cardinal_graph = cardinal.fst
-        decimal = DecimalFst()
+        decimal = DecimalFst(project_input=project_input)
         decimal_graph = decimal.fst
-        fraction = FractionFst()
+        fraction = FractionFst(project_input=project_input)
         fraction_graph = fraction.fst
-        money = MoneyFst(decimal, deterministic=True)
+        money = MoneyFst(decimal, deterministic=True, project_input=project_input)
         money_graph = money.fst
-        measure = MeasureFst(decimal=decimal, cardinal=cardinal, deterministic=True)
+        measure = MeasureFst(decimal=decimal, cardinal=cardinal, deterministic=True, project_input=project_input)
         measure_graph = measure.fst
         graph = cardinal_graph | decimal_graph | fraction_graph | money_graph | measure_graph
         self.fst = graph

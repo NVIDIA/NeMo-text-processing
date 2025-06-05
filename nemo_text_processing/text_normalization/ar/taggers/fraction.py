@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 
 
@@ -29,8 +29,8 @@ class FractionFst(GraphFst):
         cardinal: cardinal fst
     """
 
-    def __init__(self, cardinal):
-        super().__init__(name="fraction", kind="classify")
+    def __init__(self, cardinal, project_input: bool = False):
+        super().__init__(name="fraction", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.cardinal_numbers
         digit_one = pynini.accep("1")

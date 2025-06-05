@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ar.graph_utils import NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 
 
 class CardinalFst(GraphFst):
@@ -27,8 +27,8 @@ class CardinalFst(GraphFst):
         tn_cardinal: cardinal FST for TN
     """
 
-    def __init__(self, tn_cardinal):
-        super().__init__(name="cardinal", kind="classify")
+    def __init__(self, tn_cardinal, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
 
         self.graph = pynini.invert(tn_cardinal.cardinal_numbers).optimize()
 

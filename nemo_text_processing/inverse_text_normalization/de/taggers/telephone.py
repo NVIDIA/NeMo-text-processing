@@ -27,8 +27,13 @@ class TelephoneFst(GraphFst):
         tn_cardinal_tagger: TN Cardinal Tagger
     """
 
-    def __init__(self, tn_cardinal_tagger: GraphFst, deterministic: bool = True):
-        super().__init__(name="telephone", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        tn_cardinal_tagger: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="telephone", kind="classify", deterministic=deterministic, project_input=project_input)
         separator = pynini.accep(" ")  # between components
         digit = pynini.union(*list(map(str, range(1, 10)))) @ tn_cardinal_tagger.two_digit_non_zero
         zero = pynini.cross("0", "null")

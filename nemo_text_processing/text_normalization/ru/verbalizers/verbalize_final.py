@@ -39,8 +39,14 @@ class VerbalizeFinalFst(GraphFst):
         overwrite_cache: set to True to overwrite .far files
     """
 
-    def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
-        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        deterministic: bool = True,
+        project_input: bool = False,
+        cache_dir: str = None,
+        overwrite_cache: bool = False
+    ):
+        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":
@@ -51,8 +57,8 @@ class VerbalizeFinalFst(GraphFst):
             logger.info(f'VerbalizeFinalFst graph was restored from {far_file}.')
         else:
 
-            verbalize = VerbalizeFst().fst
-            word = WordFst().fst
+            verbalize = VerbalizeFst(project_input=project_input).fst
+            word = WordFst(project_input=project_input).fst
             types = verbalize | word
             graph = (
                 pynutil.delete("tokens")

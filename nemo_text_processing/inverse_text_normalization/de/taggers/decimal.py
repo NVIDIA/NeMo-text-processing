@@ -29,8 +29,14 @@ class DecimalFst(GraphFst):
         tn_decimal_tagger: TN decimal tagger
     """
 
-    def __init__(self, itn_cardinal_tagger: GraphFst, tn_decimal_tagger: GraphFst, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        itn_cardinal_tagger: GraphFst,
+        tn_decimal_tagger: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         self.graph = tn_decimal_tagger.graph.invert().optimize()
 
