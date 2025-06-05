@@ -16,14 +16,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.mr.graph_utils import (
-    MINUS,
-    NEMO_DIGIT,
+from nemo_text_processing.inverse_text_normalization.mr.graph_utils import MINUS, NEMO_DIGIT
+from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     delete_space,
 )
-from nemo_text_processing.inverse_text_normalization.mr.utils import get_abs_path
 
 
 class CardinalFst(GraphFst):
@@ -32,8 +31,8 @@ class CardinalFst(GraphFst):
         e.g. तेहतीस -> cardinal { integer: "३३" }
     """
 
-    def __init__(self):
-        super().__init__(name="cardinal", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv")).invert()
         graph_tens = pynini.string_file(get_abs_path("data/numbers/tens.tsv")).invert()

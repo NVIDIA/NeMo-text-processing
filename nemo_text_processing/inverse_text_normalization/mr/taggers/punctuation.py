@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.mr.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class PunctuationFst(GraphFst):
@@ -25,8 +25,8 @@ class PunctuationFst(GraphFst):
         e.g. a, -> tokens { name: "a" } tokens { name: "," }
     """
 
-    def __init__(self):
-        super().__init__(name="punctuation", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="punctuation", kind="classify", project_input=project_input)
 
         s = "!#$%&\'()*+,-./:;<=>?@^_`{|}~"
         punct = pynini.union(*s)
