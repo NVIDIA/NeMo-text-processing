@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import GraphFst, delete_extra_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_extra_space
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
 
 
@@ -33,8 +33,8 @@ class DateFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="date", kind="classify")
+    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         self.cardinal = cardinal.graph_no_exception
 

@@ -34,8 +34,13 @@ class FractionFst(GraphFst):
                     for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, ordinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        ordinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="fraction", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         numerator = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 

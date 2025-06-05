@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import NEMO_ALPHA, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, GraphFst, insert_space
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
 
 
@@ -28,8 +28,8 @@ class ElectronicFst(GraphFst):
         e.g. double vé double vé double vé a b c point e d u -> tokens { electronic { protocol: "www.abc.edu" } }
     """
 
-    def __init__(self):
-        super().__init__(name="electronic", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="electronic", kind="classify", project_input=project_input)
 
         delete_extra_space = pynutil.delete(" ")
         alpha_num = (

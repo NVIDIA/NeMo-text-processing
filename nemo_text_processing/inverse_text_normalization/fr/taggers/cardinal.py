@@ -17,12 +17,14 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     NEMO_CHAR,
+    NEMO_SIGMA,
+    delete_hyphen,
+)
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
-    NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    delete_hyphen,
 )
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
 
@@ -103,8 +105,8 @@ class CardinalFst(GraphFst):
     e.g. cent cinquante et un -> cent-cinquante-et-un
     """
 
-    def __init__(self):
-        super().__init__(name="cardinal", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_teens = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))

@@ -15,9 +15,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
+from nemo_text_processing.inverse_text_normalization.fr.graph_utils import delete_hyphen
+from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
-    delete_hyphen,
     delete_space,
     insert_space,
 )
@@ -35,8 +35,8 @@ class TelephoneFst(GraphFst):
     "une vingt-trois quatre-vingt zero six dix-sept" -> { number_part: "01 23 40 06 17" }
     """
 
-    def __init__(self):
-        super().__init__(name="telephone", kind="classify")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="telephone", kind="classify", project_input=project_input)
 
         # create `single_digits` and `double_digits` graphs as these will be
         # the building blocks of possible telephone numbers

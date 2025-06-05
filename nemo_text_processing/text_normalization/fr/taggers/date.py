@@ -18,8 +18,13 @@ class DateFst(GraphFst):
         '02.03.2003' -> date {day: 'deux' month: 'mai' year: 'deux mille trois' preserve order: true} 
     '''
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="dates", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="dates", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.all_nums_no_tokens
 

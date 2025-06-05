@@ -15,13 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
+from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
     delete_extra_space,
     delete_space,
 )
-from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
 
 
 class TimeFst(GraphFst):
@@ -32,8 +32,8 @@ class TimeFst(GraphFst):
         time { hours: "8" minutes: "30" suffix: "du soir"} -> 20 h 30
     """
 
-    def __init__(self):
-        super().__init__(name="time", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="time", kind="verbalize", project_input=project_input)
 
         hour_to_night = pynini.string_file(get_abs_path("data/time/hour_to_night.tsv"))
 

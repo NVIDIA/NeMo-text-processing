@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class ElectronicFst(GraphFst):
@@ -24,8 +24,8 @@ class ElectronicFst(GraphFst):
         e.g. tokens { electronic { username: "cdf1" domain: "abc.edu" } } -> cdf1@abc.edu
     """
 
-    def __init__(self):
-        super().__init__(name="electronic", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="electronic", kind="verbalize", project_input=project_input)
         user_name = (
             pynutil.delete("username:")
             + delete_space
