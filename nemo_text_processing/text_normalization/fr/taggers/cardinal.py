@@ -28,8 +28,8 @@ class CardinalFst(GraphFst):
     This grammar covers from single digits to hundreds of billions ("milliards" in French).
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         # Single digits
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))

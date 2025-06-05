@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -37,8 +37,14 @@ class MeasureFst(GraphFst):
         fraction: FractionFst
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst):
-        super().__init__(name="measure", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        fraction: GraphFst,
+        project_input: bool = False
+    ):
+        super().__init__(name="measure", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.graph_no_exception
 

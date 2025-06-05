@@ -30,18 +30,18 @@ class VerbalizeFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-        cardinal = CardinalFst(deterministic=deterministic)
+        cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.fst
-        ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal = OrdinalFst(deterministic=deterministic, project_input=project_input)
         ordinal_graph = ordinal.fst
-        decimal = DecimalFst(deterministic=deterministic)
+        decimal = DecimalFst(deterministic=deterministic, project_input=project_input)
         decimal_graph = decimal.fst
-        fraction = FractionFst(ordinal=ordinal, deterministic=deterministic)
+        fraction = FractionFst(ordinal=ordinal, deterministic=deterministic, project_input=project_input)
         fraction_graph = fraction.fst
-        whitelist_graph = WhiteListFst(deterministic=deterministic).fst
-        date = DateFst(deterministic=deterministic)
+        whitelist_graph = WhiteListFst(deterministic=deterministic, project_input=project_input).fst
+        date = DateFst(deterministic=deterministic, project_input=project_input)
         date_graph = date.fst
 
         graph = cardinal_graph | decimal_graph | ordinal_graph | fraction_graph | whitelist_graph | date_graph

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
+from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_NON_BREAKING_SPACE,
     NEMO_NOT_QUOTE,
@@ -32,8 +32,8 @@ class NumberParser(GraphFst):
     e.g. '1000,33333' -> '1 000,333 33
     """
 
-    def __init__(self):
-        super().__init__(name="parser", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="parser", kind="verbalize", project_input=project_input)
 
 
 class DecimalFst(GraphFst):
@@ -42,8 +42,8 @@ class DecimalFst(GraphFst):
         decimal { negative: "true" integer_part: "12"  fractional_part: "5006" quantity: "billion" } -> -12.5006 billion
     """
 
-    def __init__(self):
-        super().__init__(name="decimal", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="decimal", kind="verbalize", project_input=project_input)
 
         # Need parser to group digits by threes
         exactly_three_digits = NEMO_DIGIT ** 3

@@ -28,8 +28,13 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True, strip_dashes: bool = False):
-        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
+    def __init__(
+        self,
+        deterministic: bool = True,
+        project_input: bool = False,
+        strip_dashes: bool = False
+    ):
+        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         ones = pynini.cross("un", "prem")
 

@@ -32,8 +32,13 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="ordinal", kind="classify")
+    def __init__(
+        self,
+        cardinal: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False
+    ):
+        super().__init__(name="ordinal", kind="classify", project_input=project_input)
 
         numbers = cardinal.all_nums_no_tokens
         numbers_graph = pynutil.insert("integer: \"") + numbers + pynutil.insert("\"")

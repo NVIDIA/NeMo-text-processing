@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
 
 
@@ -31,8 +31,8 @@ class WhiteListFst(GraphFst):
         e.g. nemo_text_processing/inverse_text_normalization/fr/data/whitelist.tsv
     """
 
-    def __init__(self, input_file: str = None):
-        super().__init__(name="whitelist", kind="classify")
+    def __init__(self, input_file: str = None, project_input: bool = False):
+        super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         if input_file:
             whitelist = pynini.string_file(input_file).invert()

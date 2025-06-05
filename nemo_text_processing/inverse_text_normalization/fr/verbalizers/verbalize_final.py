@@ -15,9 +15,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import GraphFst, delete_extra_space, delete_space
 from nemo_text_processing.inverse_text_normalization.fr.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.inverse_text_normalization.fr.verbalizers.word import WordFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_extra_space, delete_space
 
 
 class VerbalizeFinalFst(GraphFst):
@@ -26,10 +26,10 @@ class VerbalizeFinalFst(GraphFst):
     tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
     """
 
-    def __init__(self):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="verbalize_final", kind="verbalize")
-        verbalize = VerbalizeFst().fst
-        word = WordFst().fst
+        verbalize = VerbalizeFst(project_input=project_input).fst
+        word = WordFst(project_input=project_input).fst
         types = verbalize | word
         graph = (
             pynutil.delete("tokens")
