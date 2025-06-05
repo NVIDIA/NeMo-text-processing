@@ -57,7 +57,7 @@ class TelephoneFst(GraphFst):
         number_part = (
             pynutil.insert("number_part: \"")
             + mobile_start_digit + insert_space
-            + pynini.closure(digit_to_word + insert_space, 1, 9)
+            + pynini.closure(digit_to_word + insert_space, 9)
             + pynutil.insert("\" ") 
             + delete_space
             )
@@ -77,7 +77,7 @@ class TelephoneFst(GraphFst):
             insert_shunya = pynutil.insert('शून्य') + insert_space
             
             std_digits = pynini.union(*[std for std in std_list if len(std.strip()) == std_length])
-            std_graph = delete_zero + insert_shunya + std_digits @ std_codes + insert_space
+            std_graph = insert_shunya + std_digits @ std_codes + insert_space
             
             landline_digits = pynini.closure(digit_to_word + insert_space, 1, 9-std_length) 
             landline_graph = landline_start_digit + insert_space + landline_digits
