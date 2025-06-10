@@ -28,6 +28,7 @@ pipeline {
     MR_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/10-17-24-1'
     HI_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/04-22-25-0'
+    KO_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-03-25-0'
     DEFAULT_TN_CACHE='/home/jenkinsci/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -318,6 +319,22 @@ pipeline {
         }
       }
     }
+    stage('L0: Create KO TN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          changeRequest target: 'main'
+        }
+      }   
+      failFast true
+      parallel {
+        stage('L0: KO TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ko --text="100" --cache_dir ${KO_TN_CACHE}'
+          }
+        }
+      }
+    }
 
 
 // L1 Tests starts here
@@ -404,6 +421,11 @@ pipeline {
         stage('L1: Run all HY TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/hy/ -m "not pleasefixme" --cpu --tn_cache_dir ${HY_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all KO TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ko/ -m "not pleasefixme" --cpu --tn_cache_dir ${KO_TN_CACHE}'
           }
         }
       }
