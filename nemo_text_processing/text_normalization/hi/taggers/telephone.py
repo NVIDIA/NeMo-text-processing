@@ -48,7 +48,7 @@ class TelephoneFst(GraphFst):
         country_code_optional = pynini.closure(
             pynutil.insert("country_code: \"")
             + pynini.cross("+", "प्लस")
-            + country_codes
+            + insert_space + country_codes
             + pynutil.insert("\" ") + delete_space
             ,0,1
         )
