@@ -73,11 +73,11 @@ class TelephoneFst(GraphFst):
         mobile_number = country_code_optional + number_part + extension_optional
 
         def generate_landline(std_list, std_length):
-            delete_zero = pynini.string_map([("0",""),("०","")])
+            delete_zero = pynini.closure(pynini.string_map([("0",""),("०","")]), 0, 1)
             insert_shunya = pynutil.insert('शून्य') + insert_space
             
             std_digits = pynini.union(*[std for std in std_list if len(std.strip()) == std_length])
-            std_graph = insert_shunya + std_digits @ std_codes + insert_space
+            std_graph = delete_zero + insert_shunya + std_digits @ std_codes + insert_space
             
             landline_digits = pynini.closure(digit_to_word + insert_space, 1, 9-std_length) 
             landline_graph = landline_start_digit + insert_space + landline_digits
