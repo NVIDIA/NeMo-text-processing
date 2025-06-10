@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pynini
+
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ko.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.ja.verbalizers.ordinal import OrdinalFst
 
 
 class VerbalizeFst(GraphFst):
@@ -31,6 +34,11 @@ class VerbalizeFst(GraphFst):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
 
         cardinal = CardinalFst(deterministic=deterministic)
-        cardinal_graph = cardinal.fst
-
-        self.fst = cardinal_graph.optimize()
+        ordinal = OrdinalFst(deterministic=deterministic)
+        
+        graph = pynini.union(
+            cardinal.fst,
+            ordinal.fst,
+        )
+        
+        self.fst = graph.optimize()

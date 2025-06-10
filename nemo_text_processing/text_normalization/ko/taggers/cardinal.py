@@ -272,3 +272,5 @@ class CardinalFst(GraphFst):
         final_graph = optional_sign + pynutil.insert('integer: "') + graph_num + pynutil.insert('"')
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
+        self.just_cardinals = graph_num.optimize()
+
