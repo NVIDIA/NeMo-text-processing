@@ -87,12 +87,11 @@ class CardinalFst(GraphFst):
             graph_tenquadrillion_component
             | graph_zero
         )
-
+        
         leading_zero = (
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
         )
-        graph_nonzero = graph @ leading_zero
-        graph = pynini.union(graph_nonzero, graph_zero)
+        graph = graph @ leading_zero | graph_zero
 
         self.just_cardinals = graph
 
