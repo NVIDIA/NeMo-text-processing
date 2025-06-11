@@ -60,7 +60,7 @@ class TelephoneFst(GraphFst):
             + pynini.closure(digit_to_word + insert_space, 9)
             + pynutil.insert("\" ") 
             + delete_space
-            )
+        )
 
         extension_optional = pynini.closure(
             pynutil.insert("extension: \"") 
@@ -68,9 +68,23 @@ class TelephoneFst(GraphFst):
             + pynutil.insert("\" ") 
             + delete_space
             ,0,1
-            )
+        )
 
         mobile_number = country_code_optional + number_part + extension_optional
+
+        credit_card = (
+            pynutil.insert("number_part: \"")
+            + pynini.closure(digit_to_word + insert_space, 1, 4)
+            + pynutil.insert("\" ") 
+            + delete_space
+        )
+
+        pincode = (
+            pynutil.insert("number_part: \"")
+            + pynini.closure(digit_to_word + insert_space, 1, 6)
+            + pynutil.insert("\" ") 
+            + delete_space
+        )
 
         def generate_landline(std_list, std_length):
             delete_zero = pynini.closure(pynini.string_map([("0",""),("०","")]), 0, 1)
@@ -97,7 +111,7 @@ class TelephoneFst(GraphFst):
             | generate_landline(std_list, 7)
             )
 
-        graph = number_part | number_part + extension_optional | mobile_number | landline_graph
+        graph = number_part | number_part + extension_optional | mobile_number | landline_graph | credit_card | pincode
         
         graph = graph.optimize()
         self.fst = self.add_tokens(graph)
