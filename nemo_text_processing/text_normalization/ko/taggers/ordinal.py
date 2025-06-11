@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
+
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying Korean ordinal expressions, e.g.
@@ -31,16 +32,14 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
         graph_ordinal_1to39 = pynini.string_file(get_abs_path("data/ordinal/digit_1to39.tsv")) + pynini.accep("번째")
-        
+
         graph_cardinal = cardinal.just_cardinals + pynini.accep("번째")
 
         graph_ordinal = (
-            pynutil.add_weight(graph_ordinal_1to39, 0.1)
-            | pynutil.add_weight(graph_cardinal, 1.0)
+            pynutil.add_weight(graph_ordinal_1to39, 0.1) | pynutil.add_weight(graph_cardinal, 1.0)
         ).optimize()
 
         final_graph = pynutil.insert('integer: "') + graph_ordinal + pynutil.insert('"')
-        
+
         graph_ordinal_final = self.add_tokens(final_graph)
         self.fst = graph_ordinal_final.optimize()
-

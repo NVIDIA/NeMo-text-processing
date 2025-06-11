@@ -273,4 +273,3 @@ class CardinalFst(GraphFst):
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
         self.just_cardinals = graph_num.optimize()
-

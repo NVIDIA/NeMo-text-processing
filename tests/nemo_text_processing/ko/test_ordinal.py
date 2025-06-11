@@ -21,11 +21,13 @@ from ..utils import parse_test_case_file
 
 
 class TestOrdinal:
-    normalizer_ko = Normalizer(lang='ko', cache_dir='export/ko_tn_grammars_lower_cased', overwrite_cache=False, input_case='lower_cased')
+    normalizer_ko = Normalizer(
+        lang='ko', cache_dir='export/ko_tn_grammars_lower_cased', overwrite_cache=False, input_case='lower_cased'
+    )
 
     @parameterized.expand(parse_test_case_file('ko/data_text_normalization/test_cases_ordinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm_date(self, test_input, expected):
-        preds = self.normalizer_ko.normalize(test_input, verbose = True)
+        preds = self.normalizer_ko.normalize(test_input, verbose=True)
         assert expected == preds

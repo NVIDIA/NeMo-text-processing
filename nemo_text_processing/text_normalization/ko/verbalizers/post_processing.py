@@ -45,5 +45,6 @@ class PostProcessingFst:
 
             if far_file:
                 generator_main(far_file, {"post_process_graph": self.fst})
+
     def get_postprocess_graph(self):
         return pynini.cdrewrite(pynini.cross("", ""), "", "", pynini.closure(NEMO_SIGMA)).optimize()
