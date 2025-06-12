@@ -240,7 +240,7 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.vi.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
-        
+
     elif args.language == 'zh':
         from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
