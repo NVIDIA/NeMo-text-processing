@@ -25,6 +25,7 @@ from nemo_text_processing.inverse_text_normalization.ko.taggers.word import Word
 from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 
 
+
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence, that is lower cased.
