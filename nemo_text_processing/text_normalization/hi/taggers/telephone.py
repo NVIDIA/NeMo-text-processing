@@ -74,21 +74,23 @@ class TelephoneFst(GraphFst):
 
         credit_card = (
             pynutil.insert("number_part: \"")
-            + pynini.closure(digit_to_word + insert_space, 1, 4)
+            + pynini.closure(digit_to_word + insert_space, 4)
             + pynutil.insert("\" ") 
             + delete_space
         )
 
         pincode = (
             pynutil.insert("number_part: \"")
-            + pynini.closure(digit_to_word + insert_space, 1, 6)
+            + pynini.closure(digit_to_word + insert_space, 6)
             + pynutil.insert("\" ") 
             + delete_space
         )
 
+        delete_zero = pynini.closure(pynini.string_map([("0",""),("०","")]), 0, 1)
+        insert_shunya = pynutil.insert('शून्य') + insert_space
+        default_mobile = delete_zero + insert_shunya + number_part
+
         def generate_landline(std_list, std_length):
-            delete_zero = pynini.closure(pynini.string_map([("0",""),("०","")]), 0, 1)
-            insert_shunya = pynutil.insert('शून्य') + insert_space
             
             std_digits = pynini.union(*[std for std in std_list if len(std.strip()) == std_length])
             std_graph = delete_zero + insert_shunya + std_digits @ std_codes + insert_space
@@ -109,9 +111,16 @@ class TelephoneFst(GraphFst):
             | generate_landline(std_list, 5)
             | generate_landline(std_list, 6)
             | generate_landline(std_list, 7)
-            )
+        )
 
-        graph = number_part | number_part + extension_optional | mobile_number | landline_graph | credit_card | pincode
+        graph = (
+            pynutil.add_weight(number_part, -0.009)
+            | pynutil.add_weight(default_mobile, 0.01)
+            | pynutil.add_weight(mobile_number, -0.05)
+            | landline_graph
+            | pynutil.add_weight(credit_card, -0.5)
+            | pynutil.add_weight(pincode, 0.02)
+        )
         
         graph = graph.optimize()
         self.fst = self.add_tokens(graph)
