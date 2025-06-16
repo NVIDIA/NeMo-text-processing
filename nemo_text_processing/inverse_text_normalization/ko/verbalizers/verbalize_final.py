@@ -13,13 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, delete_space, generator_main
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, delete_space, delete_extra_space
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
 class VerbalizeFinalFst(GraphFst):
@@ -28,22 +27,19 @@ class VerbalizeFinalFst(GraphFst):
     tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
     """
 
-    def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
-        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
-        far_file = None
-        if cache_dir is not None and cache_dir != "None":
-            os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"ko_tn_{deterministic}_deterministic_verbalizer.far")
-        if not overwrite_cache and far_file and os.path.exists(far_file):
-            self.fst = pynini.Far(far_file, mode="r")["verbalize"]
-        else:
-            # token_graph = VerbalizeFst(deterministic=deterministic)
-            token_graph = VerbalizeFst().fst
-            token_verbalizer = (
-                pynutil.delete("tokens {") + delete_space + token_graph + delete_space + pynutil.delete(" }")
-            )
-            verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
-
-            self.fst = (verbalizer).optimize()
-            if far_file:
-                generator_main(far_file, {"verbalize": self.fst})
+    def __init__(self):
+        super().__init__(name="verbalize_final", kind="verbalize")
+        verbalize = VerbalizeFst().fst
+        word = WordFst().fst
+        types = verbalize | word
+        graph = (
+            pynutil.delete("tokens")
+            + delete_space
+            + pynutil.delete("{")
+            + delete_space
+            + types
+            + delete_space
+            + pynutil.delete("}")
+        )
+        graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
+        self.fst = graph
