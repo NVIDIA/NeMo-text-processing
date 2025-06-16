@@ -175,4 +175,3 @@ examples/neural_graphs/*.yml
 .hydra/
 nemo_experiments/
 *.swp
-*.far
