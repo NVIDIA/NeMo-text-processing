@@ -115,11 +115,11 @@ class TelephoneFst(GraphFst):
 
         graph = (
             pynutil.add_weight(number_part, -0.009)
-            | pynutil.add_weight(default_mobile, 0.01)
+            | pynutil.add_weight(default_mobile, -0.002)
             | pynutil.add_weight(mobile_number, -0.05)
             | landline_graph
-            | pynutil.add_weight(credit_card, -0.5)
-            | pynutil.add_weight(pincode, 0.02)
+            | pynutil.add_weight(credit_card, -0.4)
+            | pynutil.add_weight(pincode, -0.6)
         )
         
         graph = graph.optimize()
