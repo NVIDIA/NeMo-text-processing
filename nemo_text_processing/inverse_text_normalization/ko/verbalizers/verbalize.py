@@ -16,6 +16,7 @@
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
 class VerbalizeFst(GraphFst):
