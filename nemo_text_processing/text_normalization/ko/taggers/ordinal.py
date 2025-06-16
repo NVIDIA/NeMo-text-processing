@@ -36,6 +36,7 @@ class OrdinalFst(GraphFst):
         graph_digit_excluding_1 = pynini.string_file(get_abs_path("data/ordinal/digit_excluding_1.tsv"))  
 
         # Specific override for "1" → "첫"
+        graph_zero = pynini.cross("0", "영")
         graph_one = pynini.cross("1", "첫")
         
         # Prefix components
@@ -55,6 +56,7 @@ class OrdinalFst(GraphFst):
         # Final graph for ordinals from 1 to 39
         graph_ordinal_1to39 = (
             graph_one |
+            graph_zero |
             graph_digit_excluding_1 |
             graph_ten_combined |
             graph_twenty_combined |
@@ -77,7 +79,7 @@ class OrdinalFst(GraphFst):
         # Only allow cardinal numbers that are 40 or more
         graph_cardinal_from40_filtered = pynini.compose(filter_inputs_from_40, cardinal.just_cardinals)
         
-        # 3. Add "번째" to the filtered cardinal graph.
+        # Add "번째" to the filtered cardinal graph.
         graph_ordinal_from40 = graph_cardinal_from40_filtered + pynini.accep("번째")
 
         graph_ordinal = (
