@@ -32,8 +32,24 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
         # Load base .tsv files
-        graph_digit = pynini.string_file(get_abs_path("data/ordinal/digit.tsv"))  
-        graph_digit_excluding_1 = pynini.string_file(get_abs_path("data/ordinal/digit_excluding_1.tsv"))  
+        graph_digit = pynini.string_file(get_abs_path("data/ordinal/digit.tsv"))
+        
+        # Create FST that accepts any digit input (0-9)
+        all_digit_inputs_acceptor = pynini.project(graph_digit, "input").optimize() 
+        # Create FST that accepts only "1" as input
+        one_input_acceptor = pynini.project(pynini.cross("1", "첫"), "input").optimize()
+        
+        # FST that accepts all digits EXCEPT "1"
+        inputs_excluding_1_acceptor = pynini.difference(
+            all_digit_inputs_acceptor, 
+            one_input_acceptor
+        ).optimize()
+        
+        # FST that converts digits (2-9) to words, but not "1"
+        graph_digit_excluding_1 = pynini.compose(
+            inputs_excluding_1_acceptor, 
+            graph_digit
+        ).optimize()
 
         # Specific override for "1" → "첫"
         graph_zero = pynini.cross("0", "영")
