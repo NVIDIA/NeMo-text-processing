@@ -24,7 +24,6 @@ from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
 
 
-
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence including punctuation.
