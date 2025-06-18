@@ -171,7 +171,7 @@ pipeline {
       }
     }
 
-    stage('L0: Create FR TN/ITN & VI ITN & HU TN & IT TN') {
+    stage('L0: Create FR TN/ITN & VI TN/ITN & HU TN & IT TN') {
       when {
         anyOf {
           branch 'main' 
@@ -195,6 +195,11 @@ pipeline {
         stage('L0: VI ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=vi --text="một ngàn " --cache_dir ${VI_TN_CACHE}'
+          }
+        }
+        stage('L0: VI TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=vi --text="100" --cache_dir ${VI_TN_CACHE}'
           }
         }
         stage('L0: HU TN grammars') {
