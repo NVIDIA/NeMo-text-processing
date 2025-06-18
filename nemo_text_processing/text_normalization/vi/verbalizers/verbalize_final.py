@@ -31,7 +31,7 @@ from nemo_text_processing.utils.logging import logger
 class VerbalizeFinalFst(GraphFst):
     """
     Finite state transducer that verbalizes an entire Vietnamese sentence, e.g.
-    tokens { name: "xin" } tokens { cardinal { integer: "một trăm" } } tokens { name: "chào" } 
+    tokens { name: "xin" } tokens { cardinal { integer: "một trăm" } } tokens { name: "chào" }
     -> xin một trăm chào
 
     Args:

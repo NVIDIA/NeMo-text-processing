@@ -45,7 +45,10 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"vi_tn_{deterministic}_deterministic_{input_case}_tokenize.far",)
+            far_file = os.path.join(
+                cache_dir,
+                f"vi_tn_{deterministic}_deterministic_{input_case}_tokenize.far",
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -72,9 +75,9 @@ class ClassifyFst(GraphFst):
             logger.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
             classify = (
-                pynutil.add_weight(whitelist_graph, 0.8)  
-                | pynutil.add_weight(cardinal_graph, 0.9) 
-                | pynutil.add_weight(word_graph, 100)  
+                pynutil.add_weight(whitelist_graph, 0.8)
+                | pynutil.add_weight(cardinal_graph, 0.9)
+                | pynutil.add_weight(word_graph, 100)
             )
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")

@@ -25,7 +25,7 @@ class VerbalizeFst(GraphFst):
         # Initialize verbalizers
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
-        
+
         whitelist = WhiteListFst(deterministic=deterministic)
         whitelist_graph = whitelist.fst
 
