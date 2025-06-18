@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class PunctuationFst(GraphFst):
@@ -28,27 +28,8 @@ class PunctuationFst(GraphFst):
 
         # Common punctuation marks
         # Use escape() for brackets since they are special regex chars
-        punct = (
-            pynini.accep(".")
-            | pynini.accep(",")
-            | pynini.accep("?")
-            | pynini.accep("!")
-            | pynini.accep(":")
-            | pynini.accep(";")
-            | pynini.accep("-")
-            | pynini.accep("–")
-            | pynini.accep("—")
-            | pynini.accep("(")
-            | pynini.accep(")")
-            | pynini.accep(pynini.escape("["))
-            | pynini.accep(pynini.escape("]"))
-            | pynini.accep(pynini.escape("{"))
-            | pynini.accep(pynini.escape("}"))
-            | pynini.accep('"')
-            | pynini.accep("'")
-            | pynini.accep("...")
-            | pynini.accep("…")
-        )
+        s = "!#$%&'()*+,-./:;<=>?@^_`{|}~–—――…»«„“›‹‚‘’⟨⟩"
+        punct = pynini.union(*s)
 
         # Create the punctuation transduction
         graph = pynutil.insert('name: "') + punct + pynutil.insert('"')

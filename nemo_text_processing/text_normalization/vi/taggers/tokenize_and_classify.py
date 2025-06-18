@@ -19,7 +19,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_WHITE_SPACE,
     GraphFst,
     delete_extra_space,
     delete_space,
