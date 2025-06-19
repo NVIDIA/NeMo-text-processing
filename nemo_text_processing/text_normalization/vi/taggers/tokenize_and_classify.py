@@ -28,6 +28,8 @@ from nemo_text_processing.text_normalization.vi.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.vi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.vi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.vi.taggers.word import WordFst
+from nemo_text_processing.text_normalization.vi.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.vi.taggers.decimal import DecimalFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -45,10 +47,7 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(
-                cache_dir,
-                f"vi_tn_{deterministic}_deterministic_{input_case}_tokenize.far",
-            )
+            far_file = os.path.join(cache_dir, f"vi_tn_{deterministic}_deterministic_{input_case}_tokenize.far",)
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -74,10 +73,22 @@ class ClassifyFst(GraphFst):
             word_graph = WordFst(deterministic=deterministic).fst
             logger.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
+            start_time = time.time()
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            ordinal_graph = ordinal.fst
+            logger.debug(f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes")
+
+            start_time = time.time()
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            decimal_graph = decimal.fst
+            logger.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
+            
             classify = (
-                pynutil.add_weight(whitelist_graph, 0.8)
-                | pynutil.add_weight(cardinal_graph, 0.9)
-                | pynutil.add_weight(word_graph, 100)
+                pynutil.add_weight(whitelist_graph, 0.8)  
+                | pynutil.add_weight(ordinal_graph, 0.81)  
+                | pynutil.add_weight(decimal_graph, 0.85)  
+                | pynutil.add_weight(cardinal_graph, 0.9) 
+                | pynutil.add_weight(word_graph, 100)  
             )
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
@@ -92,3 +103,4 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
+                
