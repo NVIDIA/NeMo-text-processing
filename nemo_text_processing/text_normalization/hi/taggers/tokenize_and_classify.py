@@ -138,7 +138,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
-                | pynutil.add_weight(telephone_graph, 1.5)
+                | pynutil.add_weight(telephone_graph, 1.61)
             )
 
             start_time = time.time()
