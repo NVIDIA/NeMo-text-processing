@@ -114,7 +114,7 @@ class TokenParser:
 
         Returns true if successful
         """
-        print(self.char == exp)
+        # assert self.char == exp
         self.read()
         return True
 
