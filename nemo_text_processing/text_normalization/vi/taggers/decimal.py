@@ -50,20 +50,30 @@ class DecimalFst(GraphFst):
         )
 
         integer_part = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        fractional_part = pynutil.insert("fractional_part: \"") + \
-                          (single_digit_map + pynini.closure(pynutil.insert(" ") + single_digit_map)) + \
-                          pynutil.insert("\"")
-        
-        decimal_pattern = pynini.closure(integer_part + pynutil.insert(" "), 0, 1) + \
-                         pynutil.delete(",") + pynutil.insert(" ") + fractional_part
-        
-        quantity_suffix = pynini.closure(pynutil.delete(" "), 0, 1) + \
-                         pynutil.insert(" quantity: \"") + quantity_units + pynutil.insert("\"")
-        
+        fractional_part = (
+            pynutil.insert("fractional_part: \"")
+            + (single_digit_map + pynini.closure(pynutil.insert(" ") + single_digit_map))
+            + pynutil.insert("\"")
+        )
+
+        decimal_pattern = (
+            pynini.closure(integer_part + pynutil.insert(" "), 0, 1)
+            + pynutil.delete(",")
+            + pynutil.insert(" ")
+            + fractional_part
+        )
+
+        quantity_suffix = (
+            pynini.closure(pynutil.delete(" "), 0, 1)
+            + pynutil.insert(" quantity: \"")
+            + quantity_units
+            + pynutil.insert("\"")
+        )
+
         decimal_with_quantity = decimal_pattern + quantity_suffix
         cardinal_with_quantity = integer_part + quantity_suffix
-        
+
         negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
         final_graph = negative + pynini.union(decimal_pattern, decimal_with_quantity, cardinal_with_quantity)
-        
+
         self.fst = self.add_tokens(final_graph).optimize()

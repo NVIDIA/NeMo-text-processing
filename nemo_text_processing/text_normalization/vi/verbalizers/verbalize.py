@@ -15,9 +15,9 @@
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
 from nemo_text_processing.text_normalization.vi.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.vi.verbalizers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.vi.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.vi.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.vi.verbalizers.whitelist import WhiteListFst
 
 
 class VerbalizeFst(GraphFst):
@@ -27,7 +27,7 @@ class VerbalizeFst(GraphFst):
         # Initialize verbalizers
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
-        
+
         whitelist = WhiteListFst(deterministic=deterministic)
         whitelist_graph = whitelist.fst
 
@@ -44,4 +44,3 @@ class VerbalizeFst(GraphFst):
         graph = cardinal_graph | whitelist_graph | word_graph | ordinal_graph | decimal_graph
 
         self.fst = graph
-        

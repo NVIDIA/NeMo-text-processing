@@ -37,23 +37,26 @@ class OrdinalFst(GraphFst):
 
         prefix = "thứ "
         number_pattern = pynini.closure(NEMO_DIGIT, 1)
-        
-        ordinal_exceptions = {row[0]: row[1] for row in load_labels(get_abs_path("data/ordinal/ordinal_exceptions.tsv"))}
-        
+
+        ordinal_exceptions = {
+            row[0]: row[1] for row in load_labels(get_abs_path("data/ordinal/ordinal_exceptions.tsv"))
+        }
+
         exception_patterns = []
         for digit, word in ordinal_exceptions.items():
             exception_patterns.append(pynini.cross(digit, word))
-        
+
         exception_graph = pynini.union(*exception_patterns) if exception_patterns else None
-        
+
         combined_graph = cardinal.graph
         if exception_graph:
-            combined_graph = pynini.union(
-                exception_graph,
-                cardinal.graph
-            )
-        
-        self.graph = pynutil.delete(prefix) + pynutil.insert("integer: \"") + \
-                     pynini.compose(number_pattern, combined_graph) + pynutil.insert("\"")
-        
+            combined_graph = pynini.union(exception_graph, cardinal.graph)
+
+        self.graph = (
+            pynutil.delete(prefix)
+            + pynutil.insert("integer: \"")
+            + pynini.compose(number_pattern, combined_graph)
+            + pynutil.insert("\"")
+        )
+
         self.fst = self.add_tokens(self.graph).optimize()

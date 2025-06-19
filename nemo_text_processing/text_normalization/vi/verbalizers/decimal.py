@@ -68,9 +68,9 @@ class DecimalFst(GraphFst):
         self.optional_quantity = pynini.closure(self.quantity, 0, 1)
 
         graph = self.optional_sign + (
-            self.integer  
-            | (self.integer + self.quantity)  
-            | (self.optional_integer + self.fractional + self.optional_quantity) 
+            self.integer
+            | (self.integer + self.quantity)
+            | (self.optional_integer + self.fractional + self.optional_quantity)
         )
 
         self.numbers = graph
