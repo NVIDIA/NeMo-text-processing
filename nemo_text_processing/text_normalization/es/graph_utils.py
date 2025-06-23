@@ -107,10 +107,7 @@ def shift_number_gender(fst: "pynini.FstLike") -> "pynini.FstLike":
     """
     fem_allign = pynini.cdrewrite(fem_hundreds, "", "", NEMO_SIGMA)
     fem_allign @= pynini.cdrewrite(
-        fem_ones,
-        "",
-        pynini.union(NEMO_SPACE, pynini.accep("[EOS]"), pynini.accep('"')),
-        NEMO_SIGMA,
+        fem_ones, "", pynini.union(NEMO_SPACE, pynini.accep("[EOS]"), pynini.accep('"')), NEMO_SIGMA,
     )  # If before a quote or EOS, we know it's the end of a string
 
     return fst @ fem_allign

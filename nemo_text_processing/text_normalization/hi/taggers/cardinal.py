@@ -21,12 +21,12 @@ from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 class CardinalFst(GraphFst):
     """
-      Finite state transducer for classifying cardinals, e.g.
-          -२३ -> cardinal { negative: "true"  integer: "तेइस" } }
-    s
-      Args:
-          deterministic: if True will provide a single transduction option,
-              for False multiple transduction are generated (used for audio-based normalization)
+    Finite state transducer for classifying cardinals, e.g. 
+        -२३ -> cardinal { negative: "true"  integer: "तेइस" }
+
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
@@ -37,16 +37,12 @@ class CardinalFst(GraphFst):
         teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
         teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
-        self.digit = digit
-        self.zero = zero
-        self.teens_and_ties = teens_and_ties
-
         def create_graph_suffix(digit_graph, suffix, zeros_counts):
             zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
             if zeros_counts == 0:
                 return digit_graph + suffix
 
-            return digit_graph + (zero**zeros_counts) + suffix
+            return digit_graph + (zero ** zeros_counts) + suffix
 
         def create_larger_number_graph(digit_graph, suffix, zeros_counts, sub_graph):
             insert_space = pynutil.insert(" ")
@@ -54,7 +50,7 @@ class CardinalFst(GraphFst):
             if zeros_counts == 0:
                 return digit_graph + suffix + insert_space + sub_graph
 
-            return digit_graph + suffix + (zero**zeros_counts) + insert_space + sub_graph
+            return digit_graph + suffix + (zero ** zeros_counts) + insert_space + sub_graph
 
         # Hundred graph
         suffix_hundreds = pynutil.insert(" सौ")
@@ -327,10 +323,3 @@ class CardinalFst(GraphFst):
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.final_graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
-
-if __name__ == '__main__':
-    from nemo_text_processing.text_normalization.hi.utils import apply_fst
-
-    cardinal = CardinalFst()
-    input_text = "११०१११११११११११"
-    apply_fst(input_text, cardinal.fst) 

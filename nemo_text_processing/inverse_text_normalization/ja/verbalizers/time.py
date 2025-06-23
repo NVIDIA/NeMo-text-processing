@@ -40,18 +40,12 @@ class TimeFst(GraphFst):
         hours_component |= hours_component_alt
 
         minutes_component = (
-            pynutil.delete("minutes: \"")
-            + pynini.closure(NEMO_NOT_QUOTE)
-            + pynutil.insert("分")
-            + pynutil.delete("\"")
+            pynutil.delete("minutes: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("分") + pynutil.delete("\"")
         )
         minutes_component_alt = pynutil.delete("minutes: \"") + pynini.accep("半") + pynutil.delete("\"")
         minutes_component |= minutes_component_alt
         second_component = (
-            pynutil.delete("seconds: \"")
-            + pynini.closure(NEMO_NOT_QUOTE)
-            + pynutil.insert("秒")
-            + pynutil.delete("\"")
+            pynutil.delete("seconds: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("秒") + pynutil.delete("\"")
         )
         suffix_component = pynutil.delete("suffix: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 

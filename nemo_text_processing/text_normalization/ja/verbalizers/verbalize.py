@@ -29,7 +29,7 @@ from nemo_text_processing.text_normalization.ja.verbalizers.word import WordFst
 class VerbalizeFst(GraphFst):
     """
     Composes other verbalizer grammars.
-    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File.
+    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File. 
     More details to deployment at NeMo/tools/text_processing_deployment.
     Args:
         deterministic: if True will provide a single transduction option,
@@ -52,14 +52,7 @@ class VerbalizeFst(GraphFst):
         whitelist = WhiteListFst(deterministic=deterministic)
 
         graph = pynini.union(
-            date.fst,
-            cardinal.fst,
-            ordinal.fst,
-            decimal.fst,
-            fraction.fst,
-            word.fst,
-            time.fst,
-            whitelist.fst,
+            date.fst, cardinal.fst, ordinal.fst, decimal.fst, fraction.fst, word.fst, time.fst, whitelist.fst,
         )
         graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
 

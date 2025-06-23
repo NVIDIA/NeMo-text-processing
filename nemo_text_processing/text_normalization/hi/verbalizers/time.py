@@ -30,7 +30,7 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self):
         super().__init__(name="time", kind="verbalize")
 
         hour = pynutil.delete("hours: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"") + insert_space
@@ -63,15 +63,13 @@ class TimeFst(GraphFst):
             + insert_second
         )
 
-        graph_quarter = pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-
         # hour minute
         graph_hm = hour + delete_space + insert_bajkar + insert_space + minute + delete_space + insert_minute
 
         # hour
         graph_h = hour + delete_space + insert_baje
 
-        self.graph = graph_hms | graph_hm | graph_h | graph_quarter
+        self.graph = graph_hms | graph_hm | graph_h
 
         final_graph = self.graph
 

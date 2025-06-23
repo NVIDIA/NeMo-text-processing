@@ -29,6 +29,6 @@ class WhiteListFst(GraphFst):
             + pynutil.delete("\"")
         )
         graph = graph @ pynini.cdrewrite(
-            pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA
+            pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA
         )  # Removes possible null token
         self.fst = graph.optimize()

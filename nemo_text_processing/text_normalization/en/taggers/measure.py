@@ -53,11 +53,7 @@ class MeasureFst(GraphFst):
     """
 
     def __init__(
-        self,
-        cardinal: GraphFst,
-        decimal: GraphFst,
-        fraction: GraphFst,
-        deterministic: bool = True,
+        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True,
     ):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph_with_and | self.get_range(cardinal.graph_with_and)
@@ -67,8 +63,7 @@ class MeasureFst(GraphFst):
             graph_unit |= pynini.string_file(get_abs_path("data/measure/unit_alternatives.tsv"))
 
         graph_unit |= pynini.compose(
-            pynini.closure(TO_LOWER, 1) + (NEMO_ALPHA | TO_LOWER) + pynini.closure(NEMO_ALPHA | TO_LOWER),
-            graph_unit,
+            pynini.closure(TO_LOWER, 1) + (NEMO_ALPHA | TO_LOWER) + pynini.closure(NEMO_ALPHA | TO_LOWER), graph_unit,
         ).optimize()
 
         graph_unit_plural = convert_space(graph_unit @ SINGULAR_TO_PLURAL)
@@ -257,8 +252,7 @@ class MeasureFst(GraphFst):
         ordinal_verbalizer = OrdinalVerbalizer().graph
         ordinal_tagger = OrdinalTagger(cardinal=cardinal).graph
         ordinal_num = pynini.compose(
-            pynutil.insert('integer: "') + ordinal_tagger + pynutil.insert('"'),
-            ordinal_verbalizer,
+            pynutil.insert('integer: "') + ordinal_tagger + pynutil.insert('"'), ordinal_verbalizer,
         )
 
         address_num = NEMO_DIGIT ** (1, 2) @ cardinal.graph_hundred_component_at_least_one_none_zero_digit

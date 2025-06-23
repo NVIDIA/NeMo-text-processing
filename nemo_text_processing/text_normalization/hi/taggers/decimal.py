@@ -27,7 +27,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
     e.g. १ लाख -> integer_part: "एक" quantity: "लाख"
     e.g. १.५ लाख -> integer_part: "एक" fractional_part: "पाँच" quantity: "लाख"
 
-    Args:
+    Args: 
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
@@ -48,7 +48,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g.
+    Finite state transducer for classifying decimal, e.g. 
         -१२.५००६ अरब -> decimal { negative: "true" integer_part: "बारह"  fractional_part: "पाँच शून्य शून्य छह" quantity: "अरब" }
         १ अरब -> decimal { integer_part: "एक" quantity: "अरब" }
 
@@ -58,7 +58,9 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-        graph_digit = cardinal.digit | cardinal.zero
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        graph_digit |= pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+
         cardinal_graph = cardinal.final_graph
 
         self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
@@ -66,9 +68,7 @@ class DecimalFst(GraphFst):
         point = pynutil.delete(".")
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
-            0,
-            1,
+            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,
         )
 
         self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
