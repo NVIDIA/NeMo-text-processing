@@ -17,6 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
 
+
 class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
@@ -24,7 +25,7 @@ class FractionFst(GraphFst):
     fraction { integer: "तेईस" numerator: "चार" denominator: "छः"}
     ४/६" ->
     fraction { numerator: "चार" denominator: "छः"}
-    
+
 
     Args:
         cardinal: cardinal GraphFst

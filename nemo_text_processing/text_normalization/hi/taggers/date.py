@@ -37,7 +37,7 @@ class DateFst(GraphFst):
     Finite state transducer for classifying date, e.g.
         "०१-०४-२०२४" -> date { day: "एक" month: "अप्रैल" year: "दो हज़ार चौबीस" }
         "०४-०१-२०२४" -> date { month: "अप्रैल" day: "एक" year: "दो हज़ार चौबीस" }
-        
+
 
     Args:
         cardinal: cardinal GraphFst

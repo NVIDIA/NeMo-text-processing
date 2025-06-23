@@ -160,7 +160,7 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph.optimize()
 
         # save self.numbers_up_to_thousand for use in DecimalFst
-        digits_up_to_thousand = NEMO_DIGIT | (NEMO_DIGIT ** 2) | (NEMO_DIGIT ** 3)
+        digits_up_to_thousand = NEMO_DIGIT | (NEMO_DIGIT**2) | (NEMO_DIGIT**3)
         numbers_up_to_thousand = pynini.compose(self.graph_no_exception, digits_up_to_thousand).optimize()
         self.numbers_up_to_thousand = numbers_up_to_thousand.optimize()
 

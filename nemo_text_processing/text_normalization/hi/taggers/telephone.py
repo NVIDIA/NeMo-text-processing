@@ -16,11 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, NEMO_DIGIT, delete_space, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_DIGIT, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
-#Load the number mappings from the TSV file
+# Load the number mappings from the TSV file
 digit_to_word = pynini.string_file(get_abs_path("data/telephone/number.tsv"))
+
 
 class TelephoneFst(GraphFst):
     """
@@ -28,7 +29,7 @@ class TelephoneFst(GraphFst):
         9876543210 -> telephone { number_part: "नौ आठ सात छह पाँच चार तीन दो एक शून्य" }
         +91 9876543210 -> telephone { country_code: "प्लस नौ एक", number_part: "नौ आठ सात छह पाँच चार तीन दो एक शून्य" }
         +91 9876543210 123 -> telephone { country_code: "प्लस नौ एक", number_part: "नौ आठ सात छह पाँच चार तीन दो एक शून्य", extension: "एक दो तीन" }
-    
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization
@@ -38,10 +39,14 @@ class TelephoneFst(GraphFst):
         super().__init__(name="telephone", kind="classify")
 
         country_code = pynini.closure(
-            pynutil.insert("country_code: \"") + 
-            pynini.closure(pynini.accep("+") @ pynini.cross("+", "प्लस") +
-            insert_space + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3)) +
-            pynutil.insert("\" ") + delete_space
+            pynutil.insert("country_code: \"")
+            + pynini.closure(
+                pynini.accep("+") @ pynini.cross("+", "प्लस")
+                + insert_space
+                + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3)
+            )
+            + pynutil.insert("\" ")
+            + delete_space
         )
 
         # Replace the digits with Hindi words and add spaces between words
@@ -51,11 +56,22 @@ class TelephoneFst(GraphFst):
 
         number_part3 = pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 8) + delete_space
 
-        number_part = pynutil.insert("number_part: \"") + pynini.closure(number_part1 | number_part1 + number_part2 | number_part1 + number_part2 + number_part3) + pynutil.insert("\" ")
+        number_part = (
+            pynutil.insert("number_part: \"")
+            + pynini.closure(number_part1 | number_part1 + number_part2 | number_part1 + number_part2 + number_part3)
+            + pynutil.insert("\" ")
+        )
 
-        extension = pynutil.insert("extension: \"") + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3) + pynutil.insert("\" ") + delete_space
+        extension = (
+            pynutil.insert("extension: \"")
+            + pynini.closure((NEMO_DIGIT @ digit_to_word) + insert_space, 1, 3)
+            + pynutil.insert("\" ")
+            + delete_space
+        )
 
-        graph = number_part | country_code + number_part | country_code + number_part + extension | number_part + extension
+        graph = (
+            number_part | country_code + number_part | country_code + number_part + extension | number_part + extension
+        )
 
         graph = graph.optimize()
         self.fst = self.add_tokens(graph)
