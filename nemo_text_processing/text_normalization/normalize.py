@@ -377,7 +377,7 @@ class Normalizer:
                         if "name" in tgt_tokens:
                             # For name tokens, append input to the name value with brackets
                             original_name = tgt_tokens["name"]
-                            tgt_tokens["name"] = f"{original_name}[{input_value}]"
+                            tgt_tokens["name"] = f"{original_name} input: {input_value}"
 
         return merged
 
