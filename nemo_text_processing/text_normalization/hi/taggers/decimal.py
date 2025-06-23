@@ -59,26 +59,51 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
         graph_digit = cardinal.digit | cardinal.zero
+        graph_tens = cardinal.teens_and_ties
+        
+        delete_decimal = pynutil.delete(".")
+
+        optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space, 0, 1,)
+
+        dedh_dhai = pynini.string_map([("१.५", "डेढ़"), ("२.५", "ढाई")])
+        dedh_dhai_graph = pynutil.insert("integer_part: \"") + dedh_dhai + pynutil.insert("\"")
+
+        delete_zeros = pynini.closure(pynutil.delete("०"), 0)
+        sadhe_numbers = (graph_digit | graph_tens) + pynini.cross(".५", "") + delete_zeros
+        sadhe_graph = pynutil.insert("integer_part: \"साढ़े ") + sadhe_numbers + pynutil.insert("\"")
+
+        savva_numbers = (graph_digit | graph_tens) + pynini.cross(".२५", "") + delete_zeros
+        savva_graph = pynutil.insert("integer_part: \"सवा ") + savva_numbers + pynutil.insert("\"")
+
         cardinal_graph = cardinal.final_graph
+        integer_graph = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
 
-        self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
+        fraction_digits = graph_digit + pynini.closure(insert_space + graph_digit, 0)
+        fractional_graph = pynutil.insert("fractional_part: \"") + fraction_digits + pynutil.insert("\"")
 
-        point = pynutil.delete(".")
+        integer_fraction_graph = integer_graph + delete_decimal + insert_space + fractional_graph
 
-        optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
-            0,
-            1,
+        weighted_graph = (
+            pynutil.add_weight(dedh_dhai_graph, 0.05) 
+            | pynutil.add_weight(sadhe_graph, 0.1) 
+            | pynutil.add_weight(savva_graph, 0.1) 
+            | pynutil.add_weight(integer_fraction_graph, 0.2)
         )
 
-        self.graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
-        self.graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
+        self.final_graph = optional_graph_negative + weighted_graph
+        
+        self.fst = self.add_tokens(self.final_graph).optimize()
 
-        final_graph_wo_sign = self.graph_integer + point + insert_space + self.graph_fractional
+if __name__ == '__main__':
+    from decimal import DecimalFst
+    from cardinal import CardinalFst
+    from nemo_text_processing.text_normalization.hi.utils import apply_fst
 
-        self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(final_graph_wo_sign, cardinal_graph)
-
-        final_graph = optional_graph_negative + self.final_graph_wo_negative
-
-        final_graph = self.add_tokens(final_graph)
-        self.fst = final_graph.optimize()
+    cardinal = CardinalFst()
+    decimal = DecimalFst(cardinal=cardinal)
+    input_text = "१००१११.५"
+    # input_text = "९०.५००"
+    # input_text = "९०.२५००"
+    # input_text = "५"
+    # input_text = "१००७.५"
+    apply_fst(input_text, decimal.fst)
