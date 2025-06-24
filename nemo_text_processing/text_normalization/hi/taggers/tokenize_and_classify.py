@@ -99,7 +99,7 @@ class ClassifyFst(GraphFst):
             logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
             start_time = time.time()
-            timefst = TimeFst()
+            timefst = TimeFst(cardinal=cardinal)
             time_graph = timefst.fst
             logging.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
 
@@ -138,7 +138,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
-                | pynutil.add_weight(telephone_graph, 1.1)
+                | pynutil.add_weight(telephone_graph, 1.61)
             )
 
             start_time = time.time()
