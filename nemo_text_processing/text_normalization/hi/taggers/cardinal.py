@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 class CardinalFst(GraphFst):
     """
       Finite state transducer for classifying cardinals, e.g.
-          -२३ -> cardinal { negative: "true"  integer: "तेइस" } }
-    s
+          -२३ -> cardinal { negative: "true"  integer: "तेइस" }
+
       Args:
           deterministic: if True will provide a single transduction option,
               for False multiple transduction are generated (used for audio-based normalization)

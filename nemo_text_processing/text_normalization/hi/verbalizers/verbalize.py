@@ -59,6 +59,9 @@ class VerbalizeFst(GraphFst):
         money = MoneyFst()
         money_graph = money.fst
 
+        telephone = TelephoneFst()
+        telephone_graph = telephone.fst
+
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
         graph = (
@@ -70,6 +73,7 @@ class VerbalizeFst(GraphFst):
             | measure_graph
             | money_graph
             | whitelist_graph
+            | telephone_graph
         )
 
         self.fst = graph
