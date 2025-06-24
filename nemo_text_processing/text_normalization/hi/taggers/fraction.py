@@ -59,30 +59,14 @@ class FractionFst(GraphFst):
         paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
         paune_numbers = paune + pynini.cross(" ३/४", "")
         paune_graph = pynutil.insert("पौने ") + paune_numbers
-        
-        graph_dedh_dhai = (
-            pynutil.insert("morphosyntactic_features: \"")
-            + dedh_dhai_graph
-            + pynutil.insert("\" ")
-        )
 
-        graph_savva = (
-            pynutil.insert("morphosyntactic_features: \"")
-            + savva_graph
-            + pynutil.insert("\" ")
-        )
+        graph_dedh_dhai = pynutil.insert("morphosyntactic_features: \"") + dedh_dhai_graph + pynutil.insert("\" ")
 
-        graph_sadhe = (
-            pynutil.insert("morphosyntactic_features: \"")
-            + sadhe_graph
-            + pynutil.insert("\" ")
-        )
+        graph_savva = pynutil.insert("morphosyntactic_features: \"") + savva_graph + pynutil.insert("\" ")
 
-        graph_paune = (
-            pynutil.insert("morphosyntactic_features: \"")
-            + paune_graph
-            + pynutil.insert("\" ")
-        )
+        graph_sadhe = pynutil.insert("morphosyntactic_features: \"") + sadhe_graph + pynutil.insert("\" ")
+
+        graph_paune = pynutil.insert("morphosyntactic_features: \"") + paune_graph + pynutil.insert("\" ")
 
         final_graph = (
             self.optional_graph_negative

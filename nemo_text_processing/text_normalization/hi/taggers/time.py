@@ -36,7 +36,7 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal:GraphFst):
+    def __init__(self, cardinal: GraphFst):
         super().__init__(name="time", kind="classify")
 
         delete_colon = pynutil.delete(":")
@@ -69,32 +69,16 @@ class TimeFst(GraphFst):
         paune_numbers = paune + pynini.cross(":४५", "")
         paune_graph = pynutil.insert("पौने ") + paune_numbers
 
-        graph_dedh_dhai = (
-            pynutil.insert("morphosyntactic_features: \"")
-            + dedh_dhai_graph
-            + pynutil.insert("\" ")
-        )
+        graph_dedh_dhai = pynutil.insert("morphosyntactic_features: \"") + dedh_dhai_graph + pynutil.insert("\" ")
 
-        graph_savva = (
-            pynutil.insert("morphosyntactic_features: \"")
-            + savva_graph
-            + pynutil.insert("\" ")
-        )
+        graph_savva = pynutil.insert("morphosyntactic_features: \"") + savva_graph + pynutil.insert("\" ")
 
-        graph_sadhe = (
-            pynutil.insert("morphosyntactic_features: \"")
-            + sadhe_graph
-            + pynutil.insert("\" ")
-        )
+        graph_sadhe = pynutil.insert("morphosyntactic_features: \"") + sadhe_graph + pynutil.insert("\" ")
 
-        graph_paune = (
-            pynutil.insert("morphosyntactic_features: \"")
-            + paune_graph
-            + pynutil.insert("\" ")
-        )
+        graph_paune = pynutil.insert("morphosyntactic_features: \"") + paune_graph + pynutil.insert("\" ")
 
         final_graph = (
-            graph_hms 
+            graph_hms
             | pynutil.add_weight(graph_hm, 0.01)
             | pynutil.add_weight(graph_h, 0.01)
             | pynutil.add_weight(graph_dedh_dhai, 0.001)

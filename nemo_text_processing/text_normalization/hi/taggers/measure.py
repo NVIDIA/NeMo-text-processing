@@ -79,7 +79,7 @@ class MeasureFst(GraphFst):
             + delete_space
             + unit
         )
-        
+
         dedh_dhai = pynini.string_map([("१.५", "डेढ़"), ("२.५", "ढाई")])
         dedh_dhai_graph = pynutil.insert("integer: \"") + dedh_dhai + pynutil.insert("\"")
 
@@ -92,7 +92,7 @@ class MeasureFst(GraphFst):
         paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
         paune_numbers = paune + pynini.cross(".७५", "")
         paune_graph = pynutil.insert("integer: \"पौने ") + paune_numbers + pynutil.insert("\"")
-        
+
         graph_dedh_dhai = (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
