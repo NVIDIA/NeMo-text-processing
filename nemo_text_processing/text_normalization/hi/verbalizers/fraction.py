@@ -15,7 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import MINUS, NEMO_NOT_QUOTE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    MINUS,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 
 
 class FractionFst(GraphFst):
@@ -40,6 +46,7 @@ class FractionFst(GraphFst):
         denominator = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         insert_bata = pynutil.insert(" बटा ")
         insert_aur = pynutil.insert(" और ")
+        graph_quarter = pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         fraction_default = numerator + insert_bata + denominator
 
@@ -47,7 +54,7 @@ class FractionFst(GraphFst):
             optional_sign
             + pynini.closure(pynini.closure(integer, 0, 1) + insert_space + insert_aur)
             + fraction_default
-        )
+        ) | graph_quarter
 
         graph = self.graph
 

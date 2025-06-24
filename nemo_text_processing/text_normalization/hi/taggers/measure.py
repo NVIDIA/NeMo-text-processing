@@ -19,11 +19,6 @@ from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, del
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
-digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
-teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
-
-
 class MeasureFst(GraphFst):
     """
     Finite state transducer for classifying measure, suppletive aware, e.g.
@@ -41,8 +36,9 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="classify")
 
         cardinal_graph = (
-            digit
-            | teens_and_ties
+            cardinal.zero
+            | cardinal.digit
+            | cardinal.teens_and_ties
             | cardinal.graph_hundreds
             | cardinal.graph_thousands
             | cardinal.graph_ten_thousands
@@ -52,6 +48,7 @@ class MeasureFst(GraphFst):
         point = pynutil.delete(".")
         decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
+
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
         quarterly_units_graph = pynini.string_file(get_abs_path("data/measure/quarterly_units.tsv"))
 
@@ -60,16 +57,6 @@ class MeasureFst(GraphFst):
             0,
             1,
         )
-
-        # Define the quarterly measurements
-        quarter = pynini.string_map(
-            [
-                (".५", "साढ़े"),
-                ("१.५", "डेढ़"),
-                ("२.५", "ढाई"),
-            ]
-        )
-        quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\"")
 
         # Define the unit handling
         unit = pynutil.insert(" units: \"") + unit_graph + pynutil.insert("\" ")
@@ -93,10 +80,50 @@ class MeasureFst(GraphFst):
             + unit
         )
 
-        graph_quarter = (
+        dedh_dhai = pynini.string_map([("१.५", "डेढ़"), ("२.५", "ढाई")])
+        dedh_dhai_graph = pynutil.insert("integer: \"") + dedh_dhai + pynutil.insert("\"")
+
+        savva_numbers = cardinal_graph + pynini.cross(".२५", "")
+        savva_graph = pynutil.insert("integer: \"सवा ") + savva_numbers + pynutil.insert("\"")
+
+        sadhe_numbers = cardinal_graph + pynini.cross(".५", "")
+        sadhe_graph = pynutil.insert("integer: \"साढ़े ") + sadhe_numbers + pynutil.insert("\"")
+
+        paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
+        paune_numbers = paune + pynini.cross(".७५", "")
+        paune_graph = pynutil.insert("integer: \"पौने ") + paune_numbers + pynutil.insert("\"")
+
+        graph_dedh_dhai = (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
-            + quarter_graph
+            + dedh_dhai_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + units
+        )
+
+        graph_savva = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + savva_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + units
+        )
+
+        graph_sadhe = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + sadhe_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + units
+        )
+
+        graph_paune = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + paune_graph
             + pynutil.insert(" }")
             + delete_space
             + units
@@ -135,9 +162,12 @@ class MeasureFst(GraphFst):
 
         graph = (
             pynutil.add_weight(graph_decimal, 0.01)
-            | pynutil.add_weight(graph_quarter, 0.005)
             | pynutil.add_weight(graph_cardinal, 0.01)
             | pynutil.add_weight(graph_exceptions, 0.01)
+            | pynutil.add_weight(graph_dedh_dhai, 0.001)
+            | pynutil.add_weight(graph_savva, 0.005)
+            | pynutil.add_weight(graph_sadhe, 0.005)
+            | pynutil.add_weight(graph_paune, -0.2)
         )
         self.graph = graph.optimize()
 
