@@ -34,14 +34,14 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify")
 
         cardinals = cardinal.just_cardinals
-        ordinals_suffix = pynini.accep("번째") #Korean ordinal's morphosyntactic feature
+        ordinals_suffix = pynini.accep("번째")  # Korean ordinal's morphosyntactic feature
 
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))  #1-9 in ordinals
         cardinal_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))  #1-9 in cardinals
 
-        graph_tens_prefix = pynini.cross("열", "1") #First digit for tens
-        graph_twenties_prefix = pynini.cross("스물", "2") #First digit for twenties
-        graph_thirties_prefix = pynini.cross("서른", "3") #First digit for thirties
+        graph_tens_prefix = pynini.cross("열", "1")  # First digit for tens
+        graph_twenties_prefix = pynini.cross("스물", "2")  # First digit for twenties
+        graph_thirties_prefix = pynini.cross("서른", "3")  # First digit for thirties
 
         graph_one = pynini.cross("한", "1")
         single_digits = pynini.project(graph_digit, "input").optimize()
@@ -55,7 +55,7 @@ class OrdinalFst(GraphFst):
 
         graph_ten = pynini.cross("열", "10")
         graph_tens = graph_ten | graph_tens_prefix + graph_digit
-        
+
         graph_twenty = pynini.cross("스무", "20")
         graph_twenties = graph_twenty | graph_twenties_prefix + graph_digit
 
@@ -63,10 +63,7 @@ class OrdinalFst(GraphFst):
         graph_thirties = graph_thirty | graph_thirties_prefix + graph_digit
 
         ordinals = pynini.union(
-            graph_single,      #1-9
-            graph_tens,        #10-19
-            graph_twenties,    #20-29 
-            graph_thirties     #30-39
+            graph_single, graph_tens, graph_twenties, graph_thirties  # 1-9  # 10-19  # 20-29  # 30-39
         ).optimize()
 
         cardinal_10_to_19 = pynini.cross("십", "10") | (pynini.accep("십") + cardinal_digit)
@@ -91,9 +88,7 @@ class OrdinalFst(GraphFst):
 
         ordinal_final = pynini.union(ordinals, cardinal_ordinal_suffix) # 1 to 39 in ordinal, everything else cardinal
 
-        ordinal_graph = (
-            pynutil.insert("integer: \"") + ((ordinal_final + ordinals_suffix)) + pynutil.insert("\"")
-        )
+        ordinal_graph = pynutil.insert("integer: \"") + ((ordinal_final + ordinals_suffix)) + pynutil.insert("\"")
 
         final_graph = self.add_tokens(ordinal_graph)
         self.fst = final_graph.optimize()
