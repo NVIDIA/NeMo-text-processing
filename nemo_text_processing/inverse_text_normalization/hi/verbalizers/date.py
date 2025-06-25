@@ -75,7 +75,7 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        
+
         graph_fy = year
         graph_fy |= period + delete_space + year
 
@@ -114,12 +114,11 @@ class DateFst(GraphFst):
 
         # year range
         graph_year_range = year
-        
+
         # ordinal century
         graph_ordinal_century = era + delete_space + morpho_features + delete_extra_space + period
-        
-        #graph_ordinal_range = graph_ordinal + delete_extra_space + period
-        
+
+        # graph_ordinal_range = graph_ordinal + delete_extra_space + period
 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space

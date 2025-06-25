@@ -61,11 +61,9 @@ def apply_fst(text, fst):
         print(pynini.shortestpath(text @ fst).string())
     except pynini.FstOpError:
         print(f"Error: No valid output with given input: '{text}'")
-        
+
 
 def load_column_from_tsv(filepath, column_index=1):
-    """
-    
-    """
+    """ """
     with open(filepath, encoding='utf-8') as tsv:
         return [line.strip().split("\t")[column_index] for line in tsv if line.strip()]

@@ -55,7 +55,6 @@ class CardinalFst(GraphFst):
         graph_hundred_component = pynini.union(graph_digit + delete_space + graph_hundred, pynutil.insert("०"))
         graph_hundred_component += delete_space
         graph_hundred_component += self.graph_two_digit | pynutil.insert("००")
-        
 
         graph_hundred_component_at_least_one_none_zero_digit = graph_hundred_component @ (
             pynini.closure(NEMO_HI_DIGIT) + (NEMO_HI_DIGIT - "०") + pynini.closure(NEMO_HI_DIGIT)
@@ -69,18 +68,90 @@ class CardinalFst(GraphFst):
             graph_teens_and_ties + delete_space + graph_hundred, pynutil.insert("०")
         )
         graph_hundred_as_thousand += delete_space
-        graph_hundred_as_thousand += (self.graph_two_digit | pynutil.insert("००"))
-        graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("साढ़े") + delete_space + graph_digit + pynutil.insert("५००", weight=-0.1) + delete_space + delete_thousand, -0.1)
-        graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("सवा") + delete_space + graph_digit + pynutil.insert("२५०", weight=-0.1) + delete_space + delete_thousand, -0.1)
-        graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("पौने") + delete_space + graph_paune + pynutil.insert("७५०", weight=-0.1) + delete_space + delete_thousand, -0.1)
-        graph_hundred_as_thousand |= pynutil.add_weight(pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))+ delete_space + pynutil.insert("१५००", weight=-0.1) + delete_space + delete_thousand, -0.1)
-        graph_hundred_as_thousand |= pynutil.add_weight(pynutil.delete("ढाई") + delete_space + pynutil.insert("२५००", weight=-0.1) + delete_space + delete_thousand, -0.1)
+        graph_hundred_as_thousand += self.graph_two_digit | pynutil.insert("००")
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynutil.delete("साढ़े")
+            + delete_space
+            + graph_digit
+            + pynutil.insert("५००", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynutil.delete("सवा")
+            + delete_space
+            + graph_digit
+            + pynutil.insert("२५०", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynutil.delete("पौने")
+            + delete_space
+            + graph_paune
+            + pynutil.insert("७५०", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))
+            + delete_space
+            + pynutil.insert("१५००", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynutil.delete("ढाई")
+            + delete_space
+            + pynutil.insert("२५००", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
 
-        graph_in_hundreds = pynutil.add_weight(pynutil.delete("साढ़े") + delete_space + (graph_digit | self.graph_two_digit) + pynutil.insert("५०", weight=-0.1) + delete_space + delete_hundred, -0.1)
-        graph_in_hundreds |= pynutil.add_weight(pynutil.delete("सवा") + delete_space + (graph_digit | self.graph_two_digit) + pynutil.insert("२५", weight=-0.1) + delete_space + delete_hundred, -0.1)
-        graph_in_hundreds |= pynutil.add_weight(pynutil.delete("पौने") + delete_space + graph_paune + pynutil.insert("७५", weight=-0.1) + delete_space + delete_hundred, -0.1)
-        graph_in_hundreds |= pynutil.add_weight(pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + pynutil.insert("१५०", weight=-0.1) + delete_space + delete_hundred, -0.1)
-        graph_in_hundreds |= pynutil.add_weight(pynutil.delete("ढाई") + delete_space + pynutil.insert("२५०", weight=-0.1) + delete_space + delete_hundred, -0.1)
+        graph_in_hundreds = pynutil.add_weight(
+            pynutil.delete("साढ़े")
+            + delete_space
+            + (graph_digit | self.graph_two_digit)
+            + pynutil.insert("५०", weight=-0.1)
+            + delete_space
+            + delete_hundred,
+            -0.1,
+        )
+        graph_in_hundreds |= pynutil.add_weight(
+            pynutil.delete("सवा")
+            + delete_space
+            + (graph_digit | self.graph_two_digit)
+            + pynutil.insert("२५", weight=-0.1)
+            + delete_space
+            + delete_hundred,
+            -0.1,
+        )
+        graph_in_hundreds |= pynutil.add_weight(
+            pynutil.delete("पौने")
+            + delete_space
+            + graph_paune
+            + pynutil.insert("७५", weight=-0.1)
+            + delete_space
+            + delete_hundred,
+            -0.1,
+        )
+        graph_in_hundreds |= pynutil.add_weight(
+            pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))
+            + delete_space
+            + pynutil.insert("१५०", weight=-0.1)
+            + delete_space
+            + delete_hundred,
+            -0.1,
+        )
+        graph_in_hundreds |= pynutil.add_weight(
+            pynutil.delete("ढाई") + delete_space + pynutil.insert("२५०", weight=-0.1) + delete_space + delete_hundred,
+            -0.1,
+        )
         self.graph_hundreds = graph_hundred_component | graph_hundred_as_thousand | graph_in_hundreds
 
         graph_teens_and_ties_component = pynini.union(
@@ -93,7 +164,7 @@ class CardinalFst(GraphFst):
 
         # %% Indian numeric format simple https://en.wikipedia.org/wiki/Indian_numbering_system
         # This only covers "standard format".
-        # Conventional format like thousand crores/lakh crores is yet to be implemented   
+        # Conventional format like thousand crores/lakh crores is yet to be implemented
         graph_in_thousands = pynini.union(
             self.graph_two_digit + delete_space + delete_thousand,
             pynutil.insert("००", weight=0.1),
@@ -155,7 +226,7 @@ class CardinalFst(GraphFst):
         graph_no_prefix = pynutil.add_weight(
             pynini.cross("सौ", "१००")
             | pynini.cross("हज़ार", "१०००")
-            | pynini.cross ("हजार", "१०००") 
+            | pynini.cross("हजार", "१०००")
             | pynini.cross("लाख", "१०००००")
             | pynini.cross("करोड़", "१०००००००"),
             2,
