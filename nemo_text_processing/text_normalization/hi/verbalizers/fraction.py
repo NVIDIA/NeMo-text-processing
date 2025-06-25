@@ -46,7 +46,9 @@ class FractionFst(GraphFst):
         denominator = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         insert_bata = pynutil.insert(" बटा ")
         insert_aur = pynutil.insert(" और ")
-        graph_quarter = pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        graph_quarter = (
+            pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        )
 
         fraction_default = numerator + insert_bata + denominator
 
