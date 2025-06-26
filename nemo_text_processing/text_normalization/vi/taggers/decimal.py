@@ -45,24 +45,26 @@ class DecimalFst(GraphFst):
             *[pynini.cross(k, v) for k, v in load_labels(get_abs_path("data/numbers/zero.tsv"))]
         )
 
-        quantity_units = pynini.union(
-            *[v for _, v in load_labels(get_abs_path("data/numbers/magnitudes.tsv"))]
-        )
+        quantity_units = pynini.union(*[v for _, v in load_labels(get_abs_path("data/numbers/magnitudes.tsv"))])
 
         integer_part = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        fractional_part = pynutil.insert("fractional_part: \"") + \
-                          (single_digit_map + pynini.closure(pynutil.insert(" ") + single_digit_map)) + \
-                          pynutil.insert("\"")
-        
-        decimal_pattern = (integer_part + pynutil.insert(" ")).ques + \
-                         pynutil.delete(",") + pynutil.insert(" ") + fractional_part
-        
-        quantity_suffix = pynutil.delete(" ").ques + \
-                         pynutil.insert(" quantity: \"") + quantity_units + pynutil.insert("\"")
-        
+        fractional_part = (
+            pynutil.insert("fractional_part: \"")
+            + (single_digit_map + pynini.closure(pynutil.insert(" ") + single_digit_map))
+            + pynutil.insert("\"")
+        )
+
+        decimal_pattern = (
+            (integer_part + pynutil.insert(" ")).ques + pynutil.delete(",") + pynutil.insert(" ") + fractional_part
+        )
+
+        quantity_suffix = (
+            pynutil.delete(" ").ques + pynutil.insert(" quantity: \"") + quantity_units + pynutil.insert("\"")
+        )
+
         decimal_with_quantity = decimal_pattern + quantity_suffix
         cardinal_with_quantity = integer_part + quantity_suffix
-        
+
         negative = (pynutil.insert("negative: ") + pynini.cross("-", "\"true\" ")).ques
         final_graph = negative + pynini.union(decimal_pattern, decimal_with_quantity, cardinal_with_quantity)
 
