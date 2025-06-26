@@ -25,6 +25,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.vi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.vi.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.vi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.vi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.vi.taggers.word import WordFst
@@ -74,8 +76,20 @@ class ClassifyFst(GraphFst):
             word_graph = WordFst(deterministic=deterministic).fst
             logger.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
+            start_time = time.time()
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            ordinal_graph = ordinal.fst
+            logger.debug(f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes")
+
+            start_time = time.time()
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            decimal_graph = decimal.fst
+            logger.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 0.8)
+                | pynutil.add_weight(ordinal_graph, 0.81)
+                | pynutil.add_weight(decimal_graph, 0.85)
                 | pynutil.add_weight(cardinal_graph, 0.9)
                 | pynutil.add_weight(word_graph, 100)
             )
