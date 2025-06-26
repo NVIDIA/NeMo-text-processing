@@ -33,15 +33,15 @@ testTNCardinal() {
 #   runtest $input
 # }
 
-# testTNDecimal() {
-#   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_decimal.txt
-#   runtest $input
-# }
+testTNDecimal() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_decimal.txt
+  runtest $input
+}
 
-# testTNOrdinal() {
-#   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_ordinal.txt
-#   runtest $input
-# }
+testTNOrdinal() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
 
 # testTNFraction() {
 #   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_fraction.txt
