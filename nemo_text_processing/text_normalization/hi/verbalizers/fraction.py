@@ -19,7 +19,6 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     MINUS,
     NEMO_NOT_QUOTE,
     GraphFst,
-    delete_space,
     insert_space,
 )
 
