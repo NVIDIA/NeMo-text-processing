@@ -22,9 +22,9 @@ from nemo_text_processing.text_normalization.vi.utils import get_abs_path, load_
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying Vietnamese decimal numbers, e.g.
-        -12.5 tỷ -> decimal { negative: "true" integer_part: "mười hai" fractional_part: "năm" quantity: "tỷ" }
-        818.303 -> decimal { integer_part: "tám trăm mười tám" fractional_part: "ba không ba" }
-        0.2 triệu -> decimal { integer_part: "không" fractional_part: "hai" quantity: "triệu" }
+        -12,5 tỷ -> decimal { negative: "true" integer_part: "mười hai" fractional_part: "năm" quantity: "tỷ" }
+        818,303 -> decimal { integer_part: "tám trăm mười tám" fractional_part: "ba không ba" }
+        0,2 triệu -> decimal { integer_part: "không" fractional_part: "hai" quantity: "triệu" }
 
     Args:
         cardinal: CardinalFst instance for processing integer parts
@@ -46,34 +46,24 @@ class DecimalFst(GraphFst):
         )
 
         quantity_units = pynini.union(
-            *[pynini.cross(v, v) for _, v in load_labels(get_abs_path("data/numbers/magnitudes.tsv"))]
+            *[v for _, v in load_labels(get_abs_path("data/numbers/magnitudes.tsv"))]
         )
 
         integer_part = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        fractional_part = (
-            pynutil.insert("fractional_part: \"")
-            + (single_digit_map + pynini.closure(pynutil.insert(" ") + single_digit_map))
-            + pynutil.insert("\"")
-        )
-
-        decimal_pattern = (
-            pynini.closure(integer_part + pynutil.insert(" "), 0, 1)
-            + pynutil.delete(",")
-            + pynutil.insert(" ")
-            + fractional_part
-        )
-
-        quantity_suffix = (
-            pynini.closure(pynutil.delete(" "), 0, 1)
-            + pynutil.insert(" quantity: \"")
-            + quantity_units
-            + pynutil.insert("\"")
-        )
-
+        fractional_part = pynutil.insert("fractional_part: \"") + \
+                          (single_digit_map + pynini.closure(pynutil.insert(" ") + single_digit_map)) + \
+                          pynutil.insert("\"")
+        
+        decimal_pattern = (integer_part + pynutil.insert(" ")).ques + \
+                         pynutil.delete(",") + pynutil.insert(" ") + fractional_part
+        
+        quantity_suffix = pynutil.delete(" ").ques + \
+                         pynutil.insert(" quantity: \"") + quantity_units + pynutil.insert("\"")
+        
         decimal_with_quantity = decimal_pattern + quantity_suffix
         cardinal_with_quantity = integer_part + quantity_suffix
-
-        negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
+        
+        negative = (pynutil.insert("negative: ") + pynini.cross("-", "\"true\" ")).ques
         final_graph = negative + pynini.union(decimal_pattern, decimal_with_quantity, cardinal_with_quantity)
 
         self.fst = self.add_tokens(final_graph).optimize()
