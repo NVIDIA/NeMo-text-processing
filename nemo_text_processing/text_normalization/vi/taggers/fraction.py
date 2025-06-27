@@ -45,10 +45,18 @@ class FractionFst(GraphFst):
         }
 
         denominator_exception_patterns = [pynini.cross(k, v) for k, v in denominator_exceptions.items()]
-        denominator_exception_graph = pynini.union(*denominator_exception_patterns) if denominator_exception_patterns else None
-        denominator_graph = pynini.union(denominator_exception_graph, cardinal_graph) if denominator_exception_graph else cardinal_graph
+        denominator_exception_graph = (
+            pynini.union(*denominator_exception_patterns) if denominator_exception_patterns else None
+        )
+        denominator_graph = (
+            pynini.union(denominator_exception_graph, cardinal_graph)
+            if denominator_exception_graph
+            else cardinal_graph
+        )
 
-        numerator = pynutil.insert("numerator: \"") + (number @ cardinal_graph) + pynutil.insert("\" ") + pynutil.delete("/")
+        numerator = (
+            pynutil.insert("numerator: \"") + (number @ cardinal_graph) + pynutil.insert("\" ") + pynutil.delete("/")
+        )
         denominator = pynutil.insert("denominator: \"") + (number @ denominator_graph) + pynutil.insert("\"")
         integer_part = pynutil.insert("integer_part: \"") + (number @ cardinal_graph) + pynutil.insert("\" ")
 

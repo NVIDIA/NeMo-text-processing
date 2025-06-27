@@ -16,8 +16,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
 from nemo_text_processing.text_normalization.vi.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.vi.verbalizers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.vi.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.vi.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.verbalizers.whitelist import WhiteListFst
 
 

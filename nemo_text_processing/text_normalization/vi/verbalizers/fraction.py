@@ -40,13 +40,13 @@ class FractionFst(GraphFst):
 
         part = pynini.closure(NEMO_NOT_QUOTE)
         delete_quotes = delete_space + pynutil.delete("\"") + part + pynutil.delete("\"")
-        
+
         integer_tagged = pynutil.delete("integer_part:") + delete_quotes
         numerator_tagged = pynutil.delete("numerator:") + delete_quotes
         denominator_tagged = pynutil.delete("denominator:") + delete_quotes
 
         fraction_part = numerator_tagged + delete_space + pynutil.insert(" phần ") + denominator_tagged
-        
+
         simple_fraction = fraction_part
         mixed_fraction = integer_tagged + delete_space + pynutil.insert(" và ") + fraction_part
 
