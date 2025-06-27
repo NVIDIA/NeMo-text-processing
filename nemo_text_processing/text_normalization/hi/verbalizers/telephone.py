@@ -33,6 +33,22 @@ class TelephoneFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="verbalize", deterministic=deterministic)
 
+        optional_context_before = pynini.closure(
+            pynutil.delete("context_before: \"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+            + delete_space
+            ,0, 1
+        )
+        optional_context_after = pynini.closure(
+            delete_space
+            + insert_space
+            + pynutil.delete("context_after: \"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1) 
+            + pynutil.delete("\""),
+            0, 1
+        )
+
         optional_country_code = pynini.closure(
             pynutil.delete("country_code: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
@@ -60,6 +76,6 @@ class TelephoneFst(GraphFst):
             1,
         )
 
-        graph = optional_country_code + number_part + optional_extension
+        graph = optional_context_before + optional_country_code + number_part + optional_extension + optional_context_after
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
