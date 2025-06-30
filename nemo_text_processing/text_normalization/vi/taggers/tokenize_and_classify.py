@@ -26,6 +26,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.vi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.vi.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.vi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.vi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.vi.taggers.whitelist import WhiteListFst
@@ -86,11 +87,17 @@ class ClassifyFst(GraphFst):
             decimal_graph = decimal.fst
             logger.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
+            start_time = time.time()
+            fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
+            fraction_graph = fraction.fst
+            logger.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 0.8)
                 | pynutil.add_weight(ordinal_graph, 0.81)
                 | pynutil.add_weight(decimal_graph, 0.85)
                 | pynutil.add_weight(cardinal_graph, 0.9)
+                | pynutil.add_weight(fraction_graph, 1.0)
                 | pynutil.add_weight(word_graph, 100)
             )
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
