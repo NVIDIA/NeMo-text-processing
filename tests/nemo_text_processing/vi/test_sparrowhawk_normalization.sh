@@ -43,10 +43,10 @@ testTNOrdinal() {
   runtest $input
 }
 
-# testTNFraction() {
-#   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_fraction.txt
-#   runtest $input
-# }
+testTNFraction() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
 
 # testTNTime() {
 #   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_time.txt
