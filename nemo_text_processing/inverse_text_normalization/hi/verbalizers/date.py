@@ -30,7 +30,7 @@ class DateFst(GraphFst):
         date { day: "५" month: "जनवरी" year: "२०१२" preserve_order: true } -> ५ जनवरी २०१२
     """
 
-    def __init__(self):
+    def __init__(self, cardinal: GraphFst, ordinal: GraphFst):
         super().__init__(name="date", kind="verbalize")
         month = (
             pynutil.delete("month:")
@@ -61,21 +61,65 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        graph_fy = period + delete_space + year
+        era = (
+            pynutil.delete("era:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
+        morpho_features = (
+            pynutil.delete("morphosyntactic_features:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
+        
+        graph_fy = year
+        graph_fy |= period + delete_space + year
+
+        # century
+        graph_century = year + delete_extra_space + period
+
         # month (day) year
         graph_mdy = month + delete_extra_space + day + pynutil.insert(",") + delete_extra_space + year
 
         # (day) month year
         graph_dmy = day + delete_extra_space + month + pynutil.insert(",") + delete_extra_space + year
 
+        # day month year century
+        graph_dmyc = (
+            day
+            + delete_extra_space
+            + month
+            + pynutil.insert(",")
+            + delete_extra_space
+            + year
+            + delete_extra_space
+            + period
+        )
+
         # month year
         graph_my = month + pynini.closure(delete_extra_space + year, 0, 1)
+
+        # month year century
+        graph_myc = month + pynutil.insert(",") + delete_extra_space + year + delete_extra_space + period
 
         # month day
         graph_md = month + pynini.closure(delete_extra_space + day, 0, 1)
 
         # day month
         graph_dm = day + pynini.closure(delete_extra_space + month, 0, 1)
+
+        # year range
+        graph_year_range = year
+        
+        # ordinal century
+        graph_ordinal_century = era + delete_space + morpho_features + delete_extra_space + period
+        
+        #graph_ordinal_range = graph_ordinal + delete_extra_space + period
+        
 
         optional_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
@@ -88,7 +132,19 @@ class DateFst(GraphFst):
         )
 
         final_graph = (
-            (graph_fy | graph_mdy | graph_dmy | graph_my | graph_md | graph_dm)
+            (
+                graph_fy
+                | graph_mdy
+                | graph_dmy
+                | graph_my
+                | graph_md
+                | graph_dm
+                | graph_century
+                | graph_dmyc
+                | graph_myc
+                | graph_year_range
+                | graph_ordinal_century
+            )
             + delete_space
             + optional_preserve_order
         )
