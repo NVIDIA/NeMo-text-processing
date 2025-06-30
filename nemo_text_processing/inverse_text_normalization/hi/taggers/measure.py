@@ -23,7 +23,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path, apply_fst
+from nemo_text_processing.inverse_text_normalization.hi.utils import apply_fst, get_abs_path
 
 
 class MeasureFst(GraphFst):
@@ -56,15 +56,55 @@ class MeasureFst(GraphFst):
         self.measurements = pynutil.insert("units: \"") + measurements_graph + pynutil.insert("\" ")
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         graph_integer_paune = pynutil.insert("integer_part: \"") + paune_graph + pynutil.insert("\"")
-        
-        graph_saade_single_digit = pynutil.add_weight(pynutil.delete("साढ़े") + delete_space + graph_integer + delete_space + pynutil.insert(" fractional_part: \"५\""), 0.1)
-        graph_sava_single_digit = pynutil.add_weight(pynutil.delete("सवा") + delete_space + graph_integer + delete_space + pynutil.insert(" fractional_part: \"२५\""), 0.1)
-        graph_paune_single_digit = pynutil.add_weight(pynutil.delete("पौने") + delete_space + graph_integer_paune + delete_space + pynutil.insert(" fractional_part: \"७५\""), 1)
-        graph_dedh_single_digit = pynutil.add_weight(pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़")) + delete_space + pynutil.insert("integer_part: \"१\"") + delete_space + pynutil.insert(" fractional_part: \"५\""), 0.1)
-        graph_dhaai_single_digit = pynutil.add_weight(pynutil.delete("ढाई") + delete_space + pynutil.insert("integer_part: \"२\"") + delete_space + pynutil.insert(" fractional_part: \"५\""), 1)
-        
-        graph_exceptions = graph_saade_single_digit | graph_sava_single_digit | graph_paune_single_digit | graph_dedh_single_digit | graph_dhaai_single_digit
-        
+
+        graph_saade_single_digit = pynutil.add_weight(
+            pynutil.delete("साढ़े")
+            + delete_space
+            + graph_integer
+            + delete_space
+            + pynutil.insert(" fractional_part: \"५\""),
+            0.1,
+        )
+        graph_sava_single_digit = pynutil.add_weight(
+            pynutil.delete("सवा")
+            + delete_space
+            + graph_integer
+            + delete_space
+            + pynutil.insert(" fractional_part: \"२५\""),
+            0.1,
+        )
+        graph_paune_single_digit = pynutil.add_weight(
+            pynutil.delete("पौने")
+            + delete_space
+            + graph_integer_paune
+            + delete_space
+            + pynutil.insert(" fractional_part: \"७५\""),
+            1,
+        )
+        graph_dedh_single_digit = pynutil.add_weight(
+            pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))
+            + delete_space
+            + pynutil.insert("integer_part: \"१\"")
+            + delete_space
+            + pynutil.insert(" fractional_part: \"५\""),
+            0.1,
+        )
+        graph_dhaai_single_digit = pynutil.add_weight(
+            pynutil.delete("ढाई")
+            + delete_space
+            + pynutil.insert("integer_part: \"२\"")
+            + delete_space
+            + pynutil.insert(" fractional_part: \"५\""),
+            1,
+        )
+
+        graph_exceptions = (
+            graph_saade_single_digit
+            | graph_sava_single_digit
+            | graph_paune_single_digit
+            | graph_dedh_single_digit
+            | graph_dhaai_single_digit
+        )
 
         graph_measurements = (
             pynutil.insert("decimal { ")
@@ -100,13 +140,12 @@ class MeasureFst(GraphFst):
             + delete_space
             + pynini.cross("बाई", "x")
             + delete_space
-            + cardinal_graph            
+            + cardinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" }")
-            + pynini.closure(delete_extra_space
-            + self.measurements)
+            + pynini.closure(delete_extra_space + self.measurements)
         )
-        
+
         graph = graph_measurements | graph_quarterly_measurements | graph_exception_bai
         self.graph = graph.optimize()
 

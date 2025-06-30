@@ -16,7 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, delete_extra_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+)
 
 
 class TelephoneFst(GraphFst):
@@ -49,7 +54,7 @@ class TelephoneFst(GraphFst):
             + pynutil.insert("-")
             + pynutil.delete("\" ")
         )
-        
+
         delete_tokens = self.delete_tokens(optional_country_code + number_part)
         delete_tokens |= self.delete_tokens(optional_city_code + number_part)
         self.fst = delete_tokens.optimize()
