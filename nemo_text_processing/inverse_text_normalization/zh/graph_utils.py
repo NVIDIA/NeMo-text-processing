@@ -27,9 +27,9 @@ from nemo_text_processing.inverse_text_normalization.zh.utils import load_labels
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 NEMO_DIGIT = byte.DIGIT
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
-NEMO_NON_BREAKING_SPACE = "\u00A0"
+NEMO_NON_BREAKING_SPACE = "\u00a0"
 NEMO_SPACE = " "
-NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", "\u00A0").optimize()
+NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", "\u00a0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
@@ -86,7 +86,10 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
             written_capitalized = written[0].upper() + written[1:]
             additional_labels.extend(
                 [
-                    [written_capitalized, spoken.capitalize(),],  # first letter capitalized
+                    [
+                        written_capitalized,
+                        spoken.capitalize(),
+                    ],  # first letter capitalized
                     [
                         written_capitalized,
                         spoken.upper().replace(" AND ", " and "),
@@ -100,7 +103,10 @@ def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
                 print(f"This is weight {weight}")
                 if len(weight) == 0:
                     additional_labels.extend(
-                        [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()],]
+                        [
+                            [written, spoken_no_space],
+                            [written_capitalized, spoken_no_space.upper()],
+                        ]
                     )
                 else:
                     additional_labels.extend(
@@ -181,4 +187,4 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
-        return res @ pynini.cdrewrite(pynini.cross("\u00A0", " "), "", "", NEMO_SIGMA)
+        return res @ pynini.cdrewrite(pynini.cross("\u00a0", " "), "", "", NEMO_SIGMA)

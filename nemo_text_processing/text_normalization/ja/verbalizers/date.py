@@ -23,7 +23,7 @@ class DateFst(GraphFst):
     """
     Finite state transducer for verbalizing date e.g.
     date { year: "二千二十四" month: "三" day: "四" } -> 二千二十四年三月四日
-  
+
     """
 
     def __init__(self, deterministic: bool = True):

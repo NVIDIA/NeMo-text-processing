@@ -91,7 +91,11 @@ class CardinalFst(GraphFst):
             graph_arabs + delete_space + graph_crores + delete_space + graph_lakhs + delete_space + graph_thousands
         )
 
-        graph = pynini.union(graph_higher_powers + delete_space + graph_hundreds, graph_hundred_unique, graph_zero,)
+        graph = pynini.union(
+            graph_higher_powers + delete_space + graph_hundreds,
+            graph_hundred_unique,
+            graph_zero,
+        )
 
         graph = graph @ pynini.union(
             pynutil.delete(pynini.closure("०")) + pynini.difference(NEMO_DIGIT, "०") + pynini.closure(NEMO_DIGIT), "०"

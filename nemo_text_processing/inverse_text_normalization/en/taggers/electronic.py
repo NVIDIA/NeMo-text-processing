@@ -106,7 +106,13 @@ class ElectronicFst(GraphFst):
             delete_extra_space
             + url_symbols
             + delete_extra_space
-            + (domain | pynini.closure(accepted_username + delete_extra_space,) + accepted_username)
+            + (
+                domain
+                | pynini.closure(
+                    accepted_username + delete_extra_space,
+                )
+                + accepted_username
+            )
         )
 
         protocol_default = (
