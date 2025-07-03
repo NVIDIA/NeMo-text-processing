@@ -19,9 +19,9 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, generator_main
 from nemo_text_processing.text_normalization.ko.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.ko.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
-from nemo_text_processing.text_normalization.ko.taggers.decimal import DecimalFst
 from nemo_text_processing.utils.logging import logger
 
 

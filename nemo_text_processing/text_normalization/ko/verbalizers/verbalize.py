@@ -14,11 +14,12 @@
 
 import pynini
 
-from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ko.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ko.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.verbalizers.word import WordFst
+
 
 class VerbalizeFst(GraphFst):
     """
@@ -39,11 +40,6 @@ class VerbalizeFst(GraphFst):
         decimal = DecimalFst(deterministic=deterministic)
         word = WordFst(deterministic=deterministic)
 
-        graph = pynini.union(
-            cardinal.fst,
-            ordinal.fst,
-            word.fst,
-            decimal.fst
-        )
+        graph = pynini.union(cardinal.fst, ordinal.fst, word.fst, decimal.fst)
 
         self.fst = graph.optimize()
