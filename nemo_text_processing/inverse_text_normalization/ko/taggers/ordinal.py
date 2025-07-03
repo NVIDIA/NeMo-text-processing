@@ -36,8 +36,8 @@ class OrdinalFst(GraphFst):
         cardinals = cardinal.just_cardinals
         ordinals_suffix = pynini.accep("번째")  # Korean ordinal's morphosyntactic feature
 
-        graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))  #1-9 in ordinals
-        cardinal_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))  #1-9 in cardinals
+        graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))  # 1-9 in ordinals
+        cardinal_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))  # 1-9 in cardinals
 
         graph_tens_prefix = pynini.cross("열", "1")  # First digit for tens
         graph_twenties_prefix = pynini.cross("스물", "2")  # First digit for twenties
@@ -46,7 +46,7 @@ class OrdinalFst(GraphFst):
         graph_one = pynini.cross("한", "1")
         single_digits = pynini.project(graph_digit, "input").optimize()
         graph_one_acceptor = pynini.project(graph_one, "input").optimize()
-        two_to_nine = pynini.difference(single_digits,graph_one_acceptor).optimize()
+        two_to_nine = pynini.difference(single_digits, graph_one_acceptor).optimize()
         graph_two_to_nine = two_to_nine @ graph_digit
         graph_first = pynini.cross("첫", "1")
         graph_single = graph_two_to_nine | graph_first
@@ -69,24 +69,25 @@ class OrdinalFst(GraphFst):
         cardinal_10_to_19 = pynini.cross("십", "10") | (pynini.accep("십") + cardinal_digit)
 
         cardinal_20_to_29 = pynini.cross("이십", "20") | (pynini.accep("이십") + cardinal_digit)
-    
+
         cardinal_30_to_39 = pynini.cross("삼십", "30") | (pynini.accep("삼십") + cardinal_digit)
 
         cardinal_below_40 = pynini.union(
-            cardinal_digit,
-            cardinal_10_to_19,
-            cardinal_20_to_29,
-            cardinal_30_to_39
+            cardinal_digit, cardinal_10_to_19, cardinal_20_to_29, cardinal_30_to_39
         ).optimize()
         # FST that include 1-39 in cardinal expression
 
-        cardinals_acceptor = pynini.project(cardinals, "input").optimize() #Input includes all cardinal expressions
-        cardinals_exception = pynini.project(cardinal_below_40, "input").optimize() #Input includes cardinal expression from 1 to 39
+        cardinals_acceptor = pynini.project(cardinals, "input").optimize()  # Input includes all cardinal expressions
+        cardinals_exception = pynini.project(
+            cardinal_below_40, "input"
+        ).optimize()  # Input includes cardinal expression from 1 to 39
 
-        cardinal_over_40 = pynini.difference(cardinals_acceptor,cardinals_exception).optimize() #All cardinal values except 1 to 39 cardinal values
+        cardinal_over_40 = pynini.difference(
+            cardinals_acceptor, cardinals_exception
+        ).optimize()  # All cardinal values except 1 to 39 cardinal values
         cardinal_ordinal_suffix = cardinal_over_40 @ cardinals
 
-        ordinal_final = pynini.union(ordinals, cardinal_ordinal_suffix) # 1 to 39 in ordinal, everything else cardinal
+        ordinal_final = pynini.union(ordinals, cardinal_ordinal_suffix)  # 1 to 39 in ordinal, everything else cardinal
 
         ordinal_graph = pynutil.insert("integer: \"") + ((ordinal_final + ordinals_suffix)) + pynutil.insert("\"")
 
