@@ -31,19 +31,12 @@ class DecimalFst(GraphFst):
 
         decimal_point = pynutil.insert(".")
         integer_part = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        fractional_part = (
-            pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        )
+        fractional_part = pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         quantity_part = pynutil.delete("quantity: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
         graph_decimal = integer_part + decimal_point + pynutil.delete(" ") + fractional_part
         graph_decimal_larger = (
-            integer_part
-            + decimal_point
-            + pynutil.delete(" ")
-            + fractional_part
-            + pynutil.delete(" ")
-            + quantity_part
+            integer_part + decimal_point + pynutil.delete(" ") + fractional_part + pynutil.delete(" ") + quantity_part
         )
 
         graph_sign = pynutil.delete("negative: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

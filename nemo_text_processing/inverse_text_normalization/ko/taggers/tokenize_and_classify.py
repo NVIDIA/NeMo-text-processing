@@ -21,9 +21,9 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import INPUT_LOWER_CASED, GraphFst, generator_main
 from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.ko.taggers.decimal import DecimalFst
 
 
 class ClassifyFst(GraphFst):
