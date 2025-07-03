@@ -21,9 +21,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOT
 class DateFst(GraphFst):
     """
     Finite state transducer for verbalizing Vietnamese dates, e.g.
-        date { day: "mười lăm" month: "một" year: "hai nghìn hai mươi tư" } 
+        date { day: "mười lăm" month: "một" year: "hai nghìn hai mươi tư" }
         -> ngày mười lăm tháng một năm hai nghìn hai mươi tư
-        
+
         date { month: "tư" year: "hai nghìn hai mươi tư" }
         -> tháng tư năm hai nghìn hai mươi tư
     """
@@ -40,12 +40,21 @@ class DateFst(GraphFst):
         insert_month = pynutil.insert("tháng ")
         insert_year = pynutil.insert("năm ")
         insert_space = pynutil.insert(" ")
-        
+
         date_graph = pynini.union(
-            insert_day + day + delete_space + insert_space + insert_month + month + delete_space + insert_space + insert_year + year,
+            insert_day
+            + day
+            + delete_space
+            + insert_space
+            + insert_month
+            + month
+            + delete_space
+            + insert_space
+            + insert_year
+            + year,
             insert_month + month + delete_space + insert_space + insert_year + year,
             insert_day + day + delete_space + insert_space + insert_month + month,
-            insert_year + year
+            insert_year + year,
         )
 
         self.fst = self.delete_tokens(date_graph).optimize()

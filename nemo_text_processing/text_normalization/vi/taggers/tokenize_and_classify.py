@@ -25,10 +25,10 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.vi.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.vi.taggers.date import DateFst
 from nemo_text_processing.text_normalization.vi.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.vi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.vi.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.vi.taggers.date import DateFst
 from nemo_text_processing.text_normalization.vi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.vi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.vi.taggers.word import WordFst
@@ -101,7 +101,7 @@ class ClassifyFst(GraphFst):
             classify = (
                 pynutil.add_weight(whitelist_graph, 0.8)
                 | pynutil.add_weight(ordinal_graph, 0.81)
-                | pynutil.add_weight(date_graph, 0.83)  
+                | pynutil.add_weight(date_graph, 0.83)
                 | pynutil.add_weight(decimal_graph, 0.85)
                 | pynutil.add_weight(cardinal_graph, 0.9)
                 | pynutil.add_weight(fraction_graph, 1.0)
