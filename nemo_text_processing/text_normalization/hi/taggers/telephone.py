@@ -96,7 +96,7 @@ def generate_landline():
 
 def wrap_context(graph, keywords):
     before, after = get_context(keywords)
-    return before + graph + after
+    return (before + graph) | (graph + after)
 
 def get_context(keywords: list):
     keywords = pynini.union(*keywords)
@@ -119,7 +119,7 @@ def get_context(keywords: list):
         + pynini.accep(" ")
         + window
         + pynutil.insert('" '),
-        0, 1
+        1
     )
 
     after = pynini.closure(
@@ -127,7 +127,7 @@ def get_context(keywords: list):
         + window
         + keywords
         + pynutil.insert('" '),
-        0, 1
+        1
     )
 
     return before.optimize(), after.optimize()
@@ -148,10 +148,7 @@ class TelephoneFst(GraphFst):
         super().__init__(name="telephone", kind="classify")
 
         mobile_number = generate_mobile()
-        mobile_number = wrap_context(mobile_number, ["नंबर", "मोबाइल", "फोन", "कॉन्टैक्ट"])
-
         landline = generate_landline()
-        landline = wrap_context(landline, ["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉन्टैक्ट"])
 
         credit_card = (
             pynutil.insert("number_part: \"")
@@ -159,15 +156,13 @@ class TelephoneFst(GraphFst):
             + pynutil.insert("\" ") 
             + delete_space
         )
-        credit_card = wrap_context(credit_card, ["नंबर", "कार्ड", "क्रेडिट"])
-
+        
         pincode = (
             pynutil.insert("number_part: \"")
             + pynini.closure(digit_to_word + insert_space, 6)
             + pynutil.insert("\" ") 
             + delete_space
         )
-        pincode = wrap_context(pincode, ["नंबर", "पिन", "कोड"])
 
         graph = (
             pynutil.add_weight(mobile_number, 0.7)
@@ -176,6 +171,96 @@ class TelephoneFst(GraphFst):
             | pynutil.add_weight(pincode, 1)
         )
 
-        self.final = graph.optimize()
-        self.fst = self.add_tokens(self.final)
+        context_mobile_number = wrap_context(mobile_number, ["नंबर", "मोबाइल", "फोन", "कॉन्टैक्ट"])
+        context_landline = wrap_context(landline, ["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉन्टैक्ट"])
+        context_credit_card = wrap_context(credit_card, ["नंबर", "कार्ड", "क्रेडिट"])
+        context_pincode = wrap_context(pincode, ["नंबर", "पिन", "कोड"])
 
+        context_graph = (
+            pynutil.add_weight(context_mobile_number, 0.7)
+            | pynutil.add_weight(context_landline, 0.8)
+            | pynutil.add_weight(context_credit_card, 0.9)
+            | pynutil.add_weight(context_pincode, 1)
+        )
+
+        self.final = graph.optimize()
+        self.context_final = context_graph.optimize()
+
+        self.fst = self.add_tokens(self.final)
+        self.context_fst = self.add_tokens(self.context_final)
+
+if __name__ == '__main__':
+    from nemo_text_processing.text_normalization.hi.taggers.telephone import TelephoneFst as TelephoneTagger
+    from nemo_text_processing.text_normalization.hi.verbalizers.telephone import TelephoneFst as TelephoneVerbaliser
+
+    def test_graph(graph, text):
+        print(f"Input: {text}")
+        try:
+            lattice = text @ graph
+            shortest = pynini.shortestpath(lattice, nshortest=1, unique=True)
+            print("✅ Match:", shortest.string())
+        except Exception as e:
+            print("❌ No match found:", str(e))   
+
+    def apply_fst(text, fst):
+        try:
+            return pynini.shortestpath(text @ fst).string()
+        except:
+            return
+
+    def run_test(tagger, verbalizer, inputs):
+        def print_result(result, status):
+            idx, written, tagged_output, expected_spoken, verbalized_output = result
+            print(f"\nTest {idx}:")
+            print(f"Input:    {written}")
+            print(f"Tagged   : {tagged_output}")
+            print(f"Expected : {expected_spoken}")
+            print(f"Output   : {verbalized_output}")
+            if status == 'pass':
+                print("✅ Test Passed")
+            else:
+                print("❌ Test Failed")
+        
+        pass_count, fail_count = 0, 0
+            
+        for idx, (written, expected_spoken) in enumerate(inputs.items(), start=1):
+            tagged_output = apply_fst(written, tagger.fst | tagger.context_fst)
+            verbalized_output = apply_fst(tagged_output, verbalizer.fst) 
+            result = [idx, written, tagged_output, expected_spoken, verbalized_output]
+            if verbalized_output is not None and verbalized_output == expected_spoken:
+                pass_count += 1
+                print_result(result, 'pass')         
+            else:
+                fail_count += 1
+                print_result(result, 'fail')
+                
+        print(f"\n📄 Summary: {pass_count} Tests Passed | {fail_count} Tests Failed")
+
+    test_cases = {
+        "०४५२-४८८८९९०": "शून्य चार पाँच दो चार आठ आठ आठ नौ नौ शून्य",
+
+        "नंबर था ९१५७११४००७": "नंबर था शून्य नौ एक पाँच सात एक एक चार शून्य शून्य सात",
+        "+९१ ७४४०४३१०८३ मेरे इस नंबर": "प्लस नौ एक सात चार चार शून्य चार तीन एक शून्य आठ तीन मेरे इस नंबर",
+        "०९१५७११४००७ मेरे इस नंबर": "शून्य नौ एक पाँच सात एक एक चार शून्य शून्य सात मेरे इस नंबर",
+        "नंबर ०९१५७११४००७": "नंबर शून्य नौ एक पाँच सात एक एक चार शून्य शून्य सात",
+        "नंबर पे कॉल करो ०४५२-४८८८९९०": "नंबर पे कॉल करो शून्य चार पाँच दो चार आठ आठ आठ नौ नौ शून्य",
+
+        "पिन ०११०२३": "पिन शून्य एक एक शून्य दो तीन",
+        "नंबर १२३४": "नंबर एक दो तीन चार",
+
+        "०९१५७११४००७": "शून्य नौ एक पाँच सात एक एक चार शून्य शून्य सात",
+        "९१५७११४००७": "शून्य नौ एक पाँच सात एक एक चार शून्य शून्य सात",
+        "+९१ ७४४०४३१०८३": "प्लस नौ एक सात चार चार शून्य चार तीन एक शून्य आठ तीन",
+        "०३८६२-३५१७९१": "शून्य तीन आठ छह दो तीन पाँच एक सात नौ एक",
+        "१३७४-३०९९८८": "शून्य एक तीन सात चार तीन शून्य नौ नौ आठ आठ",
+        "०१६८९११-४५७३": "शून्य एक छह आठ नौ एक एक चार पाँच सात तीन",
+        "+९१ ९२१०५१५६०६" :"प्लस नौ एक नौ दो एक शून्य पाँच एक पाँच छह शून्य छह" ,
+        "१२३४": "एक दो तीन चार",
+        "११००२३": "एक एक शून्य शून्य दो तीन" ,
+    }
+
+    # tagger = TelephoneTagger()
+    # verbalizer = TelephoneVerbaliser()
+    # run_test(tagger, verbalizer, test_cases)
+
+    test_graph(TelephoneFst().context_final, 'नंबर पे कॉल करो ०४५२-४८८८९९०')

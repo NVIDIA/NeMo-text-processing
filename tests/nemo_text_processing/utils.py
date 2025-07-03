@@ -39,7 +39,7 @@ def parse_test_case_file(file_name: str):
     Prepares tests pairs for ITN and TN tests
     """
     test_pairs = []
-    with open(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + file_name, 'r') as f:
+    with open(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + file_name, 'r', encoding='utf-8') as f:
         for line in f:
             components = line.strip("\n").split("~")
             spoken = components[0]

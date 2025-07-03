@@ -127,7 +127,12 @@ class ClassifyFst(GraphFst):
             start_time = time.time()
             telephone = TelephoneFst()
             telephone_graph = telephone.fst
+            context_telephone_graph = telephone.context_fst
             logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
+
+            start_time = time.time()
+            word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
+            logging.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
@@ -138,12 +143,10 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
+                | pynutil.add_weight(context_telephone_graph, 1.0)
                 | pynutil.add_weight(telephone_graph, 1.1)
+                | pynutil.add_weight(word_graph, 100)
             )
-
-            start_time = time.time()
-            word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
-            logging.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             punct = pynini.closure(
@@ -152,7 +155,6 @@ class ClassifyFst(GraphFst):
                 1,
             )
 
-            classify |= pynutil.add_weight(word_graph, 100)
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
                 pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
