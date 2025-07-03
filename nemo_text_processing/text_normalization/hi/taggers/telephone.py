@@ -123,7 +123,8 @@ def get_context(keywords: list):
     )
 
     after = pynini.closure(
-        pynutil.insert('context_after: "')
+        pynini.accep(" ")
+        + pynutil.insert('context_after: "')
         + window
         + keywords
         + pynutil.insert('" '),
@@ -263,4 +264,5 @@ if __name__ == '__main__':
     # verbalizer = TelephoneVerbaliser()
     # run_test(tagger, verbalizer, test_cases)
 
-    test_graph(TelephoneFst().context_final, 'नंबर पे कॉल करो ०४५२-४८८८९९०')
+    # test_graph(TelephoneFst().context_final, 'नंबर पे कॉल करो ०४५२-४८८८९९०')
+    test_graph(TelephoneFst().context_fst, '२१६८-३८२९७५ नंबर पे कॉल करो')
