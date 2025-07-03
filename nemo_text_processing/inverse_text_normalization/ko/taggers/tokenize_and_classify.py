@@ -23,6 +23,7 @@ from nemo_text_processing.inverse_text_normalization.ko.graph_utils import INPUT
 from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.decimal import DecimalFst
 
 
 class ClassifyFst(GraphFst):
@@ -63,11 +64,15 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal)
             ordinal_graph = ordinal.fst
 
+            decimal = DecimalFst(cardinal)
+            decimal_graph = decimal.fst
+
             word_graph = WordFst().fst
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
 
