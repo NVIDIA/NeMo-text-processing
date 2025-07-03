@@ -21,6 +21,7 @@ from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, gen
 from nemo_text_processing.text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
+from nemo_text_processing.text_normalization.ko.taggers.decimal import DecimalFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -60,10 +61,12 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst(deterministic=deterministic)
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
             word = WordFst(deterministic=deterministic)
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
 
             classify = pynini.union(
                 pynutil.add_weight(cardinal.fst, 1.1),
                 pynutil.add_weight(ordinal.fst, 1.1),
+                pynutil.add_weight(decimal.fst, 3.05),
                 pynutil.add_weight(word.fst, 100),
             )
 
