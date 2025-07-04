@@ -127,7 +127,6 @@ class ClassifyFst(GraphFst):
             start_time = time.time()
             telephone = TelephoneFst()
             telephone_graph = telephone.fst
-            context_telephone_graph = telephone.context_fst
             logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
 
             start_time = time.time()
@@ -143,7 +142,6 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
-                | pynutil.add_weight(context_telephone_graph, 1.0)
                 | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
