@@ -37,16 +37,12 @@ class OrdinalFst(GraphFst):
         graph_exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
         graph_tens = pynini.string_file(get_abs_path("data/ordinal/tens.tsv"))
         graph_tens_prefix = pynini.string_file(get_abs_path("data/ordinal/tens_prefix.tsv"))
-        
+
         graph_11_to_39 = (graph_tens_prefix + graph_digit).optimize()
 
         # Combine all ordinal forms from 1 to 39
         graph_ordinal_1to39 = (
-            graph_exceptions
-            | graph_digit
-            | graph_zero
-            | graph_tens
-            | graph_11_to_39
+            graph_exceptions | graph_digit | graph_zero | graph_tens | graph_11_to_39
         ).optimize() + pynini.accep("번째")
 
         # Accept tens digit 4–9
