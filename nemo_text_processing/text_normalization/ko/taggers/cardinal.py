@@ -31,10 +31,10 @@ class CardinalFst(GraphFst):
         digit_except_zero_one = pynini.difference(digit_except_one, "0")
 
         graph_digit_no_zero_one = digit_except_zero_one @ graph_digit
-        graph_ty = pynini.string_file(get_abs_path("data/number/ty.tsv"))
+        graph_tens = pynini.string_file(get_abs_path("data/number/tens.tsv"))
 
         # Compose all basic number forms
-        graph_1_to_99 = (graph_ty + (graph_digit | pynutil.delete('0'))) | graph_digit
+        graph_1_to_99 = (graph_tens + (graph_digit | pynutil.delete('0'))) | graph_digit
 
         hundreds = NEMO_DIGIT**3
         graph_hundred_component = (
@@ -272,4 +272,4 @@ class CardinalFst(GraphFst):
         final_graph = optional_sign + pynutil.insert('integer: "') + graph_num + pynutil.insert('"')
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-        self.just_cardinals = graph_num.optimize()
+        self.graph = graph_num.optimize()
