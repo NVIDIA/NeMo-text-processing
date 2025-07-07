@@ -175,10 +175,10 @@ class TelephoneFst(GraphFst):
     def __init__(self):
         super().__init__(name="telephone", kind="classify")
 
-        mobile_number = generate_mobile(["नंबर", "मोबाइल", "फोन", "कॉन्टैक्ट"])
-        landline = generate_landline(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉन्टैक्ट"])
+        mobile_number = generate_mobile(["नंबर", "मोबाइल", "फोन", "कॉल"])
+        landline = generate_landline(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉल"])
         credit_card = generate_credit(["नंबर", "कार्ड", "क्रेडिट"])
-        pincode = generate_pincode(["नंबर", "पिन", "कोड"])
+        pincode = generate_pincode(["नंबर", "पिन", "कोड", "पिनकोड"])
 
 
         graph = (
@@ -190,10 +190,3 @@ class TelephoneFst(GraphFst):
 
         self.final = graph.optimize()
         self.fst = self.add_tokens(self.final)
-
-if __name__ == '__main__':
-    from test import test_graph, test_tagger_verbalizer
- 
-
-    # test_graph(TelephoneFst().context_final, 'नंबर पे कॉल करो ०४५२-४८८८९९०')
-    # test_graph(TelephoneFst().fst, '२१६८-३८२९७५ कॉल करो नंबर')
