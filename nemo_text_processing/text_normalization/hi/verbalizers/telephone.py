@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOT
 class TelephoneFst(GraphFst):
     """
     Finite state transducer for verbalizing telephone numbers, e.g.
-        telephone { country_code: "प्लस नौ एक", number_part: "नौ आठ सात छह पाँच चार तीन दो एक शून्य", extension: "एक दो तीन" }
-        ->  प्लस नौ एक नौ आठ सात छह पाँच चार तीन दो एक शून्य एक दो तीन
+        telephone { country_code: "प्लस नौ एक", number_part: "नौ दो एक शून्य पाँच एक पाँच छह शून्य छह" } ->  प्लस नौ एक नौ दो एक शून्य पाँच एक पाँच छह शून्य छह
+        telephone { number_part: "शून्य एक तीन सात चार तीन शून्य नौ नौ आठ आठ" } -> शून्य एक तीन सात चार तीन शून्य नौ नौ आठ आठ
 
     Args:
         deterministic: if True will provide a single transduction option,
