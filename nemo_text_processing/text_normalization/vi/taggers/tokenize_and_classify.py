@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import time
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.vi.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -30,6 +30,7 @@ from nemo_text_processing.text_normalization.vi.taggers.decimal import DecimalFs
 from nemo_text_processing.text_normalization.vi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.vi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.vi.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.vi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.vi.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
@@ -98,16 +99,22 @@ class ClassifyFst(GraphFst):
             date_graph = date.fst
             logger.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
+            start_time = time.time()
+            roman = RomanFst(cardinal=cardinal, deterministic=deterministic)
+            roman_graph = roman.fst
+            logger.debug(f"roman: {time.time() - start_time: .2f}s -- {roman_graph.num_states()} nodes")
+            
             classify = (
-                pynutil.add_weight(whitelist_graph, 0.8)
-                | pynutil.add_weight(ordinal_graph, 0.81)
-                | pynutil.add_weight(date_graph, 0.83)
-                | pynutil.add_weight(decimal_graph, 0.85)
-                | pynutil.add_weight(cardinal_graph, 0.9)
-                | pynutil.add_weight(fraction_graph, 1.0)
+                pynutil.add_weight(whitelist_graph, 1.01)
+                | pynutil.add_weight(roman_graph, 1.1)
+                | pynutil.add_weight(date_graph, 1.09)
+                | pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
-            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
+            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, 1.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
                 pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)

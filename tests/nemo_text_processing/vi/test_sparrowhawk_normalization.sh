@@ -48,6 +48,11 @@ testTNFraction() {
   runtest $input
 }
 
+testTNRoman() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_roman.txt
+  runtest $input
+}
+
 # testTNTime() {
 #   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_time.txt
 #   runtest $input
