@@ -52,7 +52,6 @@ class FractionFst(GraphFst):
             + fraction_default
         ) | graph_quarter
 
-
         graph = self.graph
 
         delete_tokens = self.delete_tokens(graph)
