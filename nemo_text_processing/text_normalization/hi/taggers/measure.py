@@ -19,6 +19,11 @@ from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, del
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
+digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
+
+
 class MeasureFst(GraphFst):
     """
     Finite state transducer for classifying measure, suppletive aware, e.g.
@@ -57,6 +62,16 @@ class MeasureFst(GraphFst):
             0,
             1,
         )
+
+        # Define the quarterly measurements
+        quarter = pynini.string_map(
+            [
+                (".५", "साढ़े"),
+                ("१.५", "डेढ़"),
+                ("२.५", "ढाई"),
+            ]
+        )
+        quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\"")
 
         # Define the unit handling
         unit = pynutil.insert(" units: \"") + unit_graph + pynutil.insert("\" ")
