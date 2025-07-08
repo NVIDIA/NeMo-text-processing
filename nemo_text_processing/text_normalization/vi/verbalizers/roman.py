@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,17 +33,13 @@ class RomanFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="roman", kind="verbalize", deterministic=deterministic)
-
+        
         key_cardinal = pynutil.delete("key_cardinal: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-
         integer = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
         graph_with_key = key_cardinal + delete_space + pynutil.insert(" ") + integer
-
         graph_without_key = integer
-
         graph = pynini.union(graph_with_key, graph_without_key)
-
         delete_tokens = self.delete_tokens(graph)
 
         self.fst = delete_tokens.optimize()

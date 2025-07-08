@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pytest tests/nemo_text_processing/vi/test_decimal.py --cpu --cache-clear
 import pytest
 from parameterized import parameterized
 
