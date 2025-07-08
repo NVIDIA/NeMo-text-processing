@@ -33,7 +33,7 @@ class RomanFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="roman", kind="verbalize", deterministic=deterministic)
-        
+
         key_cardinal = pynutil.delete("key_cardinal: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         integer = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
