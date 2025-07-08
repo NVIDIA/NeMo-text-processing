@@ -103,7 +103,7 @@ class ClassifyFst(GraphFst):
             roman = RomanFst(cardinal=cardinal, deterministic=deterministic)
             roman_graph = roman.fst
             logger.debug(f"roman: {time.time() - start_time: .2f}s -- {roman_graph.num_states()} nodes")
-            
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(roman_graph, 1.1)

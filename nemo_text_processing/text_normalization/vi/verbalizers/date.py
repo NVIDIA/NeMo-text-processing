@@ -26,10 +26,10 @@ class DateFst(GraphFst):
 
         date { month: "tư" year: "hai nghìn hai mươi tư" }
         -> tháng tư năm hai nghìn hai mươi tư
-        
+
         date { year: "hai mươi" era: "sau công nguyên" }
         -> năm hai mươi sau công nguyên
-        
+
         date { ordinal: "mười" era: "trước công nguyên" }
         -> năm thứ mười trước công nguyên
     """
@@ -38,40 +38,34 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
 
         quoted_content = pynini.closure(NEMO_NOT_QUOTE)
-        
 
         day_expr = pynutil.delete("day: \"") + quoted_content + pynutil.delete("\"")
         day_with_prefix = pynutil.insert("ngày ") + day_expr
-        
+
         month_expr = pynutil.delete("month: \"") + quoted_content + pynutil.delete("\"")
         month_with_prefix = pynutil.insert("tháng ") + month_expr
-        
+
         year_expr = pynutil.delete("year: \"") + quoted_content + pynutil.delete("\"")
         year_with_prefix = pynutil.insert("năm ") + year_expr
-        
+
         era_expr = pynutil.delete("era: \"") + quoted_content + pynutil.delete("\"")
-        
+
         ordinal_expr = pynutil.delete("ordinal: \"") + quoted_content + pynutil.delete("\"")
         ordinal_with_prefix = pynutil.insert("năm thứ ") + ordinal_expr
-        
+
         date_graph = pynini.union(
-            day_with_prefix + delete_space + insert_space + 
-            month_with_prefix + delete_space + insert_space + 
+            day_with_prefix
+            + delete_space
+            + insert_space
+            + month_with_prefix
+            + delete_space
+            + insert_space
+            + year_with_prefix,
+            month_with_prefix + delete_space + insert_space + year_with_prefix,
+            day_with_prefix + delete_space + insert_space + month_with_prefix,
             year_with_prefix,
-            
-            month_with_prefix + delete_space + insert_space + 
-            year_with_prefix,
-            
-            day_with_prefix + delete_space + insert_space + 
-            month_with_prefix,
-            
-            year_with_prefix,
-            
-            year_with_prefix + delete_space + insert_space + 
-            era_expr,
-            
-            ordinal_with_prefix + delete_space + insert_space + 
-            era_expr,
+            year_with_prefix + delete_space + insert_space + era_expr,
+            ordinal_with_prefix + delete_space + insert_space + era_expr,
         )
 
         self.fst = self.delete_tokens(date_graph).optimize()

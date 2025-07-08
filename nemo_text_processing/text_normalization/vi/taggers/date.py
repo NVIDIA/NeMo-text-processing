@@ -15,8 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.utils import load_labels, get_abs_path
 from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.vi.utils import get_abs_path, load_labels
 
 
 class DateFst(GraphFst):
@@ -35,41 +35,40 @@ class DateFst(GraphFst):
         day_mappings = load_labels(get_abs_path("data/date/days.tsv"))
         month_mappings = load_labels(get_abs_path("data/date/months.tsv"))
         era_mappings = load_labels(get_abs_path("data/date/year_suffix.tsv"))
-        
-        day_digit = pynini.closure(NEMO_DIGIT, 1, 2)    
+
+        day_digit = pynini.closure(NEMO_DIGIT, 1, 2)
         month_digit = pynini.closure(NEMO_DIGIT, 1, 2)
-        year_digit = pynini.closure(NEMO_DIGIT, 1, 4)  
+        year_digit = pynini.closure(NEMO_DIGIT, 1, 4)
         separator = pynini.union("/", "-", ".")
-        
+
         day_convert = pynini.string_map([(k, v) for k, v in day_mappings])
         month_convert = pynini.string_map([(k, v) for k, v in month_mappings])
         year_convert = pynini.compose(year_digit, cardinal.graph)
-        
+
         era_to_full = {}
         for abbr, full_form in era_mappings:
             era_to_full[abbr.lower()] = full_form
             era_to_full[abbr.upper()] = full_form
-        
+
         era_convert = pynini.string_map([(k, v) for k, v in era_to_full.items()])
-        
+
         day_part = pynutil.insert("day: \"") + day_convert + pynutil.insert("\" ")
         month_part = pynutil.insert("month: \"") + month_convert + pynutil.insert("\" ")
         year_part = pynutil.insert("year: \"") + year_convert + pynutil.insert("\"")
         month_final = pynutil.insert("month: \"") + month_convert + pynutil.insert("\"")
         era_part = pynutil.insert("era: \"") + era_convert + pynutil.insert("\"")
-        
+
         patterns = []
 
         date_sep = day_part + pynutil.delete(separator) + month_part + pynutil.delete(separator) + year_part
-        patterns.append(pynini.compose(
-            day_digit + separator + month_digit + separator + year_digit, 
-            date_sep
-        ))
-        patterns.append(pynini.compose(
-            pynini.accep("ngày ") + day_digit + separator + month_digit + separator + year_digit,
-            pynutil.delete("ngày ") + date_sep
-        ))
-        
+        patterns.append(pynini.compose(day_digit + separator + month_digit + separator + year_digit, date_sep))
+        patterns.append(
+            pynini.compose(
+                pynini.accep("ngày ") + day_digit + separator + month_digit + separator + year_digit,
+                pynutil.delete("ngày ") + date_sep,
+            )
+        )
+
         for sep in [separator, pynini.accep(" ")]:
             patterns.append(
                 pynini.compose(
@@ -79,37 +78,57 @@ class DateFst(GraphFst):
             )
 
         day_month_sep = day_part + pynutil.delete(separator) + month_final
-        patterns.append(pynini.compose(
-            pynini.accep("ngày ") + day_digit + separator + month_digit,
-            pynutil.delete("ngày ") + day_month_sep
-        ))
-        
-        patterns.append(pynini.compose(
-            pynini.accep("ngày ") + day_digit + pynini.accep(" tháng ") + month_digit,
-            pynutil.delete("ngày ") + day_part + pynutil.delete(" tháng ") + month_final
-        ))
-        
-        patterns.append(pynini.compose(
-            pynini.accep("ngày ") + day_digit + pynini.accep(" tháng ") + month_digit + pynini.accep(" năm ") + year_digit,
-            pynutil.delete("ngày ") + day_part + pynutil.delete(" tháng ") + month_part + pynutil.delete(" năm ") + year_part
-        ))
-        
-        patterns.append(pynini.compose(
-            pynini.accep("năm ") + year_digit,
-            pynutil.delete("năm ") + year_part
-        ))
-        
+        patterns.append(
+            pynini.compose(
+                pynini.accep("ngày ") + day_digit + separator + month_digit, pynutil.delete("ngày ") + day_month_sep
+            )
+        )
+
+        patterns.append(
+            pynini.compose(
+                pynini.accep("ngày ") + day_digit + pynini.accep(" tháng ") + month_digit,
+                pynutil.delete("ngày ") + day_part + pynutil.delete(" tháng ") + month_final,
+            )
+        )
+
+        patterns.append(
+            pynini.compose(
+                pynini.accep("ngày ")
+                + day_digit
+                + pynini.accep(" tháng ")
+                + month_digit
+                + pynini.accep(" năm ")
+                + year_digit,
+                pynutil.delete("ngày ")
+                + day_part
+                + pynutil.delete(" tháng ")
+                + month_part
+                + pynutil.delete(" năm ")
+                + year_part,
+            )
+        )
+
+        patterns.append(pynini.compose(pynini.accep("năm ") + year_digit, pynutil.delete("năm ") + year_part))
+
         era_abbrs = list(era_to_full.keys())
         for era_abbr in era_abbrs:
-            patterns.append(pynini.compose(
-                pynini.accep("năm ") + year_digit + pynini.accep(" ") + pynini.accep(era_abbr),
-                pynutil.delete("năm ") + year_part + pynutil.delete(" ") + era_part
-            ))
-            
-            patterns.append(pynini.compose(
-                pynini.accep("năm thứ ") + year_digit + pynini.accep(" ") + pynini.accep(era_abbr),
-                pynutil.delete("năm thứ ") + pynutil.insert("ordinal: \"") + year_convert + pynutil.insert("\" ") + 
-                pynutil.delete(" ") + era_part
-            ))
-        
+            patterns.append(
+                pynini.compose(
+                    pynini.accep("năm ") + year_digit + pynini.accep(" ") + pynini.accep(era_abbr),
+                    pynutil.delete("năm ") + year_part + pynutil.delete(" ") + era_part,
+                )
+            )
+
+            patterns.append(
+                pynini.compose(
+                    pynini.accep("năm thứ ") + year_digit + pynini.accep(" ") + pynini.accep(era_abbr),
+                    pynutil.delete("năm thứ ")
+                    + pynutil.insert("ordinal: \"")
+                    + year_convert
+                    + pynutil.insert("\" ")
+                    + pynutil.delete(" ")
+                    + era_part,
+                )
+            )
+
         self.fst = self.add_tokens(pynini.union(*patterns))

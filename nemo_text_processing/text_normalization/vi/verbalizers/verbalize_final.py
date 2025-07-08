@@ -23,8 +23,8 @@ from nemo_text_processing.text_normalization.vi.graph_utils import (
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.vi.verbalizers.word import WordFst
 from nemo_text_processing.text_normalization.vi.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.text_normalization.vi.verbalizers.word import WordFst
 from nemo_text_processing.utils.logging import logger
 
 

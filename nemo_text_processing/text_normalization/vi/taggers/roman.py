@@ -41,51 +41,51 @@ class RomanFst(GraphFst):
         key_word_path = get_abs_path("data/roman/key_word.tsv")
         for k_word in load_labels(key_word_path):
             key_words.append(k_word[0])
-        
+
         key_words_fst = pynini.union(*[pynini.accep(word) for word in key_words]).optimize()
-        
+
         roman_numeral_path = get_abs_path("data/roman/roman_numerals.tsv")
         roman_numeral_pairs = load_labels(roman_numeral_path)
-        
+
         roman_to_arabic = {}
         for roman, value in roman_numeral_pairs:
             roman_to_arabic[roman] = value
             roman_to_arabic[roman.lower()] = value
-        
+
         self.arabic_to_roman = {}
         for roman, value in roman_numeral_pairs:
             self.arabic_to_roman[int(value)] = roman
-        
+
         valid_roman_pairs = []
         for i in range(1, 4000):
             roman_upper = self._int_to_roman(i)
             roman_lower = roman_upper.lower()
             valid_roman_pairs.append((roman_upper, str(i)))
             valid_roman_pairs.append((roman_lower, str(i)))
-        
+
         roman_to_arabic_fst = pynini.string_map(valid_roman_pairs).optimize()
-        
+
         cardinal_graph = cardinal.graph
-        
+
         graph = (
-            pynutil.insert("key_cardinal: \"") + 
-            key_words_fst + 
-            pynutil.insert("\"") +
-            pynini.accep(" ") +
-            pynutil.insert("integer: \"") + 
-            pynini.compose(roman_to_arabic_fst, cardinal_graph) + 
-            pynutil.insert("\"")
+            pynutil.insert("key_cardinal: \"")
+            + key_words_fst
+            + pynutil.insert("\"")
+            + pynini.accep(" ")
+            + pynutil.insert("integer: \"")
+            + pynini.compose(roman_to_arabic_fst, cardinal_graph)
+            + pynutil.insert("\"")
         ).optimize()
-        
+
         self.fst = self.add_tokens(graph).optimize()
-    
+
     def _int_to_roman(self, num):
         values = sorted(self.arabic_to_roman.keys(), reverse=True)
-        
+
         roman_num = ''
         for value in values:
             while num >= value:
                 roman_num += self.arabic_to_roman[value]
                 num -= value
-        
+
         return roman_num

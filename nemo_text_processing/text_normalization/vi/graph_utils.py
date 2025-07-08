@@ -48,6 +48,8 @@ delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
+
+
 def convert_space(fst) -> "pynini.FstLike":
     """
     Converts space to nonbreaking space.
@@ -60,6 +62,7 @@ def convert_space(fst) -> "pynini.FstLike":
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
+
 
 def generator_main(file_name: str, graphs: Dict[str, "pynini.FstLike"]):
     """
@@ -74,6 +77,7 @@ def generator_main(file_name: str, graphs: Dict[str, "pynini.FstLike"]):
         exporter[rule] = graph.optimize()
     exporter.close()
     logger.info(f"Created {file_name}")
+
 
 class GraphFst:
     """
