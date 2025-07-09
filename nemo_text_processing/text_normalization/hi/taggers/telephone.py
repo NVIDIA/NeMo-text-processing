@@ -91,21 +91,29 @@ def generate_mobile(context_keywords):
     return (number_with_country | number_without_country) + extension_optional
 
 
-def get_landline(std_list, std_length, context_keywords):
+def get_landline(std_length, context_keywords):
     context_before, context_after = get_context(context_keywords)
-    std_digits = pynini.union(*[std for std in std_list if len(std.strip()) == std_length])
-    std_graph = delete_zero_optional + insert_shunya + std_digits @ std_codes + insert_space
 
-    landline_digits = pynini.closure(digit_to_word + insert_space, 1, 9 - std_length)
-    landline_graph = landline_start_digit + insert_space + landline_digits
+    std_code_graph = (
+        delete_zero_optional
+        + insert_shunya
+        + pynini.closure(digit_to_word + insert_space, std_length, std_length)
+    )
 
-    seperator_optional = pynini.closure(pynini.cross("-", ""), 0, 1)
+    landline_digit_count = 9 - std_length
+    landline_graph = (
+        landline_start_digit
+        + insert_space
+        + pynini.closure(digit_to_word + insert_space, landline_digit_count, landline_digit_count)
+    )
+
+    separator_optional = pynini.closure(pynini.cross("-", ""), 0, 1)
 
     return (
         pynutil.insert("number_part: \"")
         + context_before
-        + std_graph
-        + seperator_optional
+        + std_code_graph
+        + separator_optional
         + delete_space
         + landline_graph
         + context_after
@@ -114,14 +122,13 @@ def get_landline(std_list, std_length, context_keywords):
 
 
 def generate_landline(context_keywords):
-    std_list = load_column_from_tsv(get_abs_path("data/telephone/STD_codes.tsv"), 0)
     graph = (
-        get_landline(std_list, 2, context_keywords)
-        | get_landline(std_list, 3, context_keywords)
-        | get_landline(std_list, 4, context_keywords)
-        | get_landline(std_list, 5, context_keywords)
-        | get_landline(std_list, 6, context_keywords)
-        | get_landline(std_list, 7, context_keywords)
+        get_landline(2, context_keywords)
+        | get_landline(3, context_keywords)
+        | get_landline(4, context_keywords)
+        | get_landline(5, context_keywords)
+        | get_landline(6, context_keywords)
+        | get_landline(7, context_keywords)
     )
 
     return graph
