@@ -95,9 +95,7 @@ def get_landline(std_length, context_keywords):
     context_before, context_after = get_context(context_keywords)
 
     std_code_graph = (
-        delete_zero_optional
-        + insert_shunya
-        + pynini.closure(digit_to_word + insert_space, std_length, std_length)
+        delete_zero_optional + insert_shunya + pynini.closure(digit_to_word + insert_space, std_length, std_length)
     )
 
     landline_digit_count = 9 - std_length
