@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
+from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.vi.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.vi.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.vi.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.vi.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.vi.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.vi.verbalizers.roman import RomanFst
 from nemo_text_processing.text_normalization.vi.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.vi.verbalizers.word import WordFst
 
 
 class VerbalizeFst(GraphFst):
@@ -44,7 +46,22 @@ class VerbalizeFst(GraphFst):
         fraction = FractionFst(deterministic=deterministic)
         fraction_graph = fraction.fst
 
+        date = DateFst(deterministic=deterministic)
+        date_graph = date.fst
+
+        roman = RomanFst(deterministic=deterministic)
+        roman_graph = roman.fst
+
         # Combine all verbalizers
-        graph = cardinal_graph | whitelist_graph | word_graph | ordinal_graph | decimal_graph | fraction_graph
+        graph = (
+            cardinal_graph
+            | whitelist_graph
+            | word_graph
+            | ordinal_graph
+            | decimal_graph
+            | fraction_graph
+            | date_graph
+            | roman_graph
+        )
 
         self.fst = graph

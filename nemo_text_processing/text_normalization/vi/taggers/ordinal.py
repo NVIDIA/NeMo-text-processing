@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path, load_labels
 
 
