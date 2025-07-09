@@ -19,12 +19,32 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_CHAR, GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
+
 def get_counter(ordinal):
-    suffix = pynini.union("개", "명", "병", "마리", "대", "송이", "포기", "사람", "자루", "채", "켤레", "그루", "벌", "잔", "장", "권", "살")
+    suffix = pynini.union(
+        "개",
+        "명",
+        "병",
+        "마리",
+        "대",
+        "송이",
+        "포기",
+        "사람",
+        "자루",
+        "채",
+        "켤레",
+        "그루",
+        "벌",
+        "잔",
+        "장",
+        "권",
+        "살",
+    )
     numbers = ordinal
-    res = numbers + pynutil.insert('" counter: "') + suffix 
+    res = numbers + pynutil.insert('" counter: "') + suffix
 
     return res
+
 
 class OrdinalFst(GraphFst):
     """
@@ -96,17 +116,15 @@ class OrdinalFst(GraphFst):
 
         ordinal_graph = pynutil.insert("integer: \"") + ((ordinal_final + ordinals_suffix)) + pynutil.insert("\"")
 
-        #Adding various counter suffix for ordinal
-        counters = pynini.union(
-            graph_digit, graph_tens, graph_twenties, graph_thirties
-        ).optimize()
+        # Adding various counter suffix for ordinal
+        counters = pynini.union(graph_digit, graph_tens, graph_twenties, graph_thirties).optimize()
         # For counting, Korean does not use the speical "첫" for 1. Instead the regular "한"
 
-        counter_final = (get_counter(counters) | get_counter(cardinal_ordinal_suffix))
+        counter_final = get_counter(counters) | get_counter(cardinal_ordinal_suffix)
 
         counter_graph = pynutil.insert("integer: \"") + counter_final + pynutil.insert("\"")
 
-        final_graph = (ordinal_graph | counter_graph)
+        final_graph = ordinal_graph | counter_graph
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
