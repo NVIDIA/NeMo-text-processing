@@ -18,10 +18,13 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, GraphFst, delete_space
 
 
-class WhiteListFst(GraphFst):
+class RomanFst(GraphFst):
     """
-    Finite state transducer for verbalizing whitelist for Vietnamese
-        e.g. tokens { name: "giờ" } -> giờ
+    Finite state transducer for verbalizing Roman numerals in Vietnamese
+        e.g. tokens { roman { key_cardinal: "thế kỉ" integer: "mười lăm" } } -> thế kỉ mười lăm
+        e.g. tokens { roman { key_cardinal: "thế kỷ" integer: "bốn" } } -> thế kỷ bốn
+        e.g. tokens { roman { key_cardinal: "thứ" integer: "bốn" } } -> thứ bốn
+        e.g. tokens { roman { integer: "mười lăm" } } -> mười lăm
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -29,14 +32,14 @@ class WhiteListFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True):
-        super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)
-        graph = (
-            pynutil.delete("name:")
-            + delete_space
-            + pynutil.delete("\"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
-        )
-        graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)
+        super().__init__(name="roman", kind="verbalize", deterministic=deterministic)
+
+        key_cardinal = pynutil.delete("key_cardinal: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        integer = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+
+        graph_with_key = key_cardinal + delete_space + pynutil.insert(" ") + integer
+        graph_without_key = integer
+        graph = pynini.union(graph_with_key, graph_without_key)
         delete_tokens = self.delete_tokens(graph)
+
         self.fst = delete_tokens.optimize()
