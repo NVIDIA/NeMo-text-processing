@@ -53,6 +53,7 @@ delete_preserve_order = pynini.closure(
     | (pynutil.delete(' field_order: "') + NEMO_NOT_QUOTE + pynutil.delete('"'))
 )
 
+
 def convert_space(fst) -> "pynini.FstLike":
     """
     Converts space to nonbreaking space.
