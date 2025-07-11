@@ -14,7 +14,6 @@
 
 from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.vi.verbalizers.cardinal import CardinalFst
-from nemo_text_processing.text_normalization.vi.taggers.cardinal import CardinalFst as CardinalTaggerFst
 from nemo_text_processing.text_normalization.vi.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.vi.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.vi.verbalizers.fraction import FractionFst
@@ -29,7 +28,6 @@ class VerbalizeFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
 
-        # Initialize verbalizers
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
 
@@ -57,7 +55,6 @@ class VerbalizeFst(GraphFst):
         time_fst = TimeFst(deterministic=deterministic)
         time_graph = time_fst.fst
 
-        # Combine all verbalizers
         graph = (
             cardinal_graph
             | whitelist_graph
