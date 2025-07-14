@@ -37,11 +37,6 @@ landline_start_digit = pynini.string_file(get_abs_path("data/telephone/landline_
 mobile_start_digit = pynini.string_file(get_abs_path("data/telephone/mobile_digits.tsv"))
 
 
-def load_column_from_tsv(filepath, column_index=1):
-    with open(filepath, encoding='utf-8') as tsv:
-        return [line.strip().split("\t")[column_index] for line in tsv if line.strip()]
-
-
 def generate_mobile(context_keywords):
     context_before, context_after = get_context(context_keywords)
     country_code = (
