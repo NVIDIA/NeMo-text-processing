@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
+
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal numbers in Korean, e.g.
@@ -36,23 +37,27 @@ class DecimalFst(GraphFst):
         zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
 
         graph_integer = pynutil.insert('integer_part: "') + cardinal_before_decimal + pynutil.insert('"')
-        graph_fractional = pynutil.insert('fractional_part: "') + pynini.closure(cardinal_after_decimal | zero, 1) + pynutil.insert('"')
+        graph_fractional = (
+            pynutil.insert('fractional_part: "')
+            + pynini.closure(cardinal_after_decimal | zero, 1)
+            + pynutil.insert('"')
+        )
 
         # Decimal without a sign (e.g., 2.5)
         graph_decimal_no_sign = graph_integer + pynutil.delete('.') + pynutil.insert(" ") + graph_fractional
 
         # Negative sign handling (e.g., -2.5 or 마이너스2.5)
         graph_with_negative = (
-            pynutil.insert('negative: "') +
-            (pynini.cross("-", "마이너스") | pynini.accep("마이너스")) +
-            pynutil.insert('"')
+            pynutil.insert('negative: "')
+            + (pynini.cross("-", "마이너스") | pynini.accep("마이너스"))
+            + pynutil.insert('"')
         )
 
         graph_decimal = graph_decimal_no_sign | (graph_with_negative + pynutil.insert(" ") + graph_decimal_no_sign)
 
         # For internal use without tokens
         self.just_decimal = graph_decimal_no_sign.optimize()
-        
+
         # Final graph with tokens
         final_graph = self.add_tokens(graph_decimal)
         self.fst = final_graph.optimize()

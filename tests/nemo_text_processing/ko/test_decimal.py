@@ -20,7 +20,9 @@ from ..utils import parse_test_case_file
 
 
 class TestDecimal:
-    normalizer_ko = Normalizer(lang='ko', cache_dir='export/ko_tn_grammars_lower_cased', overwrite_cache=False, input_case='lower_cased')
+    normalizer_ko = Normalizer(
+        lang='ko', cache_dir='export/ko_tn_grammars_lower_cased', overwrite_cache=False, input_case='lower_cased'
+    )
 
     @parameterized.expand(parse_test_case_file('ko/data_text_normalization/test_cases_decimal.txt'))
     @pytest.mark.run_only_on('CPU')

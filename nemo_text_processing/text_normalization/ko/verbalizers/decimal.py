@@ -23,18 +23,14 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
         # Extract integer part
-        integer_part = (
-            pynutil.delete('integer_part: "') +
-            pynini.closure(NEMO_NOT_QUOTE, 1) +
-            pynutil.delete('"')
-        )
+        integer_part = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
 
         # Extract fractional part and prepend "점"
         fractional_part = (
-            pynutil.delete('fractional_part: "') +
-            pynutil.insert("점") +
-            pynini.closure(NEMO_NOT_QUOTE, 1) +
-            pynutil.delete('"')
+            pynutil.delete('fractional_part: "')
+            + pynutil.insert("점")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
         )
 
         # Verbalize decimal number without sign
@@ -42,10 +38,7 @@ class DecimalFst(GraphFst):
 
         # Handle negative sign
         negative_sign = (
-            pynutil.delete('negative: "') +
-            pynini.accep("마이너스") +
-            pynutil.delete('"') +
-            pynutil.delete(" ")
+            pynutil.delete('negative: "') + pynini.accep("마이너스") + pynutil.delete('"') + pynutil.delete(" ")
         )
 
         # Combine positive and negative cases
@@ -53,4 +46,3 @@ class DecimalFst(GraphFst):
 
         delete_tokens = self.delete_tokens(decimal)
         self.fst = delete_tokens.optimize()
-
