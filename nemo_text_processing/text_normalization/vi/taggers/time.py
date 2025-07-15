@@ -62,41 +62,56 @@ class TimeFst(GraphFst):
         opt_zone_space = pynini.closure(pynini.accep(" ") + zone, 0, 1)
         opt_zone = pynini.closure(zone, 0, 1)
         preserve = pynutil.insert(" preserve_order: true")
-        
+
         # Define sub-patterns for better readability
         # Digital formats
         pattern_hour_minute = hour + pynutil.delete(":") + insert_space + minute + opt_zone_space
-        
+
         pattern_hour_minute_second = (
-            hour + pynutil.delete(":") + insert_space + minute + 
-            pynutil.delete(":") + insert_space + second + opt_zone_space + preserve
+            hour
+            + pynutil.delete(":")
+            + insert_space
+            + minute
+            + pynutil.delete(":")
+            + insert_space
+            + second
+            + opt_zone_space
+            + preserve
         )
-        
+
         # Abbreviated formats
         pattern_hour_suffix = hour + h_suffix + opt_zone_space
         pattern_hour_suffix_minute = hour + h_suffix + minute + opt_zone
         pattern_minute_p = minute + pynutil.delete("p")
         pattern_second_s = second + pynutil.delete("s")
         pattern_minute_p_second_s = minute + pynutil.delete("p") + insert_space + second + pynutil.delete("s")
-        
+
         # Vietnamese word formats
         pattern_hour_word = hour + h_word + opt_zone_space
-        
+
         pattern_hour_word_minute = hour + h_word + pynutil.delete(" ") + minute + m_word + opt_zone_space
-        
+
         pattern_hour_word_minute_second = (
-            hour + h_word + pynutil.delete(" ") + minute + m_word + 
-            pynutil.delete(" ") + second + s_word + opt_zone_space + preserve
+            hour
+            + h_word
+            + pynutil.delete(" ")
+            + minute
+            + m_word
+            + pynutil.delete(" ")
+            + second
+            + s_word
+            + opt_zone_space
+            + preserve
         )
-        
+
         pattern_minute_word = minute + m_word
         pattern_minute_word_second = minute + m_word + pynutil.delete(" ") + second + s_word
         pattern_second_word = second + s_word
-        
+
         # Time zone specific patterns
         pattern_hour_suffix_space_zone = hour + h_suffix + pynini.accep(" ") + zone
         pattern_hour_suffix_zone = hour + h_suffix + zone
-        
+
         patterns = [
             pattern_hour_minute,
             pattern_hour_minute_second,
@@ -112,7 +127,7 @@ class TimeFst(GraphFst):
             pattern_minute_word_second,
             pattern_second_word,
             pattern_hour_suffix_space_zone,
-            pattern_hour_suffix_zone
+            pattern_hour_suffix_zone,
         ]
 
         final_graph = pynini.union(*patterns).optimize()

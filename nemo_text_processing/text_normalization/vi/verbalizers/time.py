@@ -46,81 +46,93 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
 
         time_zone = convert_space(pynini.string_file(get_abs_path("data/time/time_zones.tsv")))
-        
+
         # Extract components
         hour_component = extract_field("hours")
         timezone_component = extract_field("zone") @ time_zone
-        
+
         # Handle zero and non-zero components
         zero_minute_component = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"không\"")
         zero_second_component = pynutil.delete("seconds:") + delete_space + pynutil.delete("\"không\"")
-        
-        non_zero_minute_component = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE - pynini.accep("không")) + pynutil.delete("\"")
-        non_zero_second_component = pynutil.delete("seconds:") + delete_space + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE - pynini.accep("không")) + pynutil.delete("\"")
-        
+
+        non_zero_minute_component = (
+            pynutil.delete("minutes:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE - pynini.accep("không"))
+            + pynutil.delete("\"")
+        )
+        non_zero_second_component = (
+            pynutil.delete("seconds:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE - pynini.accep("không"))
+            + pynutil.delete("\"")
+        )
+
         # Components with units
         hour_with_unit = hour_component + pynutil.insert(" giờ")
         minute_with_unit = non_zero_minute_component + pynutil.insert(" phút")
         second_with_unit = non_zero_second_component + pynutil.insert(" giây")
-        
+
         # Optional components
         optional_timezone = pynini.closure(delete_space + pynutil.insert(" ") + timezone_component, 0, 1)
         optional_preserve_order = pynini.closure(delete_space + delete_preserve_order, 0, 1)
-        
+
         # Pattern 1: hours + optional zero minutes/seconds + optional timezone
         pattern_hours_only = (
-            hour_with_unit 
-            + pynini.closure(delete_space + zero_minute_component, 0, 1) 
-            + pynini.closure(delete_space + zero_second_component, 0, 1) 
-            + optional_timezone 
+            hour_with_unit
+            + pynini.closure(delete_space + zero_minute_component, 0, 1)
+            + pynini.closure(delete_space + zero_second_component, 0, 1)
+            + optional_timezone
             + optional_preserve_order
         )
-        
+
         # Pattern 2: hours + minutes + optional zero seconds + optional timezone
         pattern_hours_minutes = (
-            hour_with_unit 
-            + delete_space 
-            + pynutil.insert(" ") 
-            + minute_with_unit 
-            + pynini.closure(delete_space + zero_second_component, 0, 1) 
-            + optional_timezone 
+            hour_with_unit
+            + delete_space
+            + pynutil.insert(" ")
+            + minute_with_unit
+            + pynini.closure(delete_space + zero_second_component, 0, 1)
+            + optional_timezone
             + optional_preserve_order
         )
-        
+
         # Pattern 3: hours + zero minutes + seconds + optional timezone
         pattern_hours_seconds = (
-            hour_with_unit 
-            + delete_space 
-            + zero_minute_component 
-            + delete_space 
-            + pynutil.insert(" ") 
-            + second_with_unit 
-            + optional_timezone 
+            hour_with_unit
+            + delete_space
+            + zero_minute_component
+            + delete_space
+            + pynutil.insert(" ")
+            + second_with_unit
+            + optional_timezone
             + optional_preserve_order
         )
-        
+
         # Pattern 4: hours + minutes + seconds + optional timezone
         pattern_hours_minutes_seconds = (
-            hour_with_unit 
-            + delete_space 
-            + pynutil.insert(" ") 
-            + minute_with_unit 
-            + delete_space 
-            + pynutil.insert(" ") 
-            + second_with_unit 
-            + optional_timezone 
+            hour_with_unit
+            + delete_space
+            + pynutil.insert(" ")
+            + minute_with_unit
+            + delete_space
+            + pynutil.insert(" ")
+            + second_with_unit
+            + optional_timezone
             + optional_preserve_order
         )
-        
+
         # Pattern 5: minutes only + optional zero seconds
         pattern_minutes_only = minute_with_unit + pynini.closure(delete_space + zero_second_component, 0, 1)
-        
+
         # Pattern 6: minutes + seconds
         pattern_minutes_seconds = minute_with_unit + delete_space + pynutil.insert(" ") + second_with_unit
-        
+
         # Pattern 7: seconds only
         pattern_seconds_only = second_with_unit
-        
+
         patterns = [
             pattern_hours_only,
             pattern_hours_minutes,
@@ -128,7 +140,7 @@ class TimeFst(GraphFst):
             pattern_hours_minutes_seconds,
             pattern_minutes_only,
             pattern_minutes_seconds,
-            pattern_seconds_only
+            pattern_seconds_only,
         ]
 
         final_graph = pynini.union(*patterns)

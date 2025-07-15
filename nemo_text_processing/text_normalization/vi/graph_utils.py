@@ -55,8 +55,10 @@ delete_preserve_order = pynini.closure(
 
 quoted_text = pynini.closure(NEMO_NOT_QUOTE)
 
-def extract_field(field_name): 
+
+def extract_field(field_name):
     return pynutil.delete(f"{field_name}:") + delete_space + pynutil.delete("\"") + quoted_text + pynutil.delete("\"")
+
 
 def convert_space(fst) -> "pynini.FstLike":
     """
