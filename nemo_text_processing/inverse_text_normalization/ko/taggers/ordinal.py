@@ -20,7 +20,7 @@ from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 def get_counter(ordinal):
-    suffix = pynini.union("개", "명", "병", "마리", "대", "송이", "포기", "사람", "자루", "채", "켤레", "그루", "벌", "잔", "장", "권", "살")
+    suffix = pynini.string_file(get_abs_path("data/ordinals/counter_suffix.tsv"))
     numbers = ordinal
     res = numbers + pynutil.insert('" counter: "') + suffix 
 
@@ -48,6 +48,8 @@ class OrdinalFst(GraphFst):
         graph_twenties_prefix = pynini.cross("스물", "2")  # First digit for twenties
         graph_thirties_prefix = pynini.cross("서른", "3")  # First digit for thirties
 
+        # Below exclude regular 1 in ordinal and replace with a special 1. Like "first" in English
+        # The special 1 is a unique ordinal case for Korean and does not repeat for 11, 21, 31
         graph_one = pynini.cross("한", "1")
         single_digits = pynini.project(graph_digit, "input").optimize()
         graph_one_acceptor = pynini.project(graph_one, "input").optimize()
@@ -55,8 +57,7 @@ class OrdinalFst(GraphFst):
         graph_two_to_nine = two_to_nine @ graph_digit
         graph_first = pynini.cross("첫", "1")
         graph_single = graph_two_to_nine | graph_first
-        # Line 46-52 exclude regular 1 in ordinal and replace with a special 1. Like "first" in English
-        # The special 1 is a unique ordinal case for Korean and does not repeat for 11, 21, 31
+
 
         graph_ten = pynini.cross("열", "10")
         graph_tens = graph_ten | graph_tens_prefix + graph_digit
@@ -77,31 +78,35 @@ class OrdinalFst(GraphFst):
 
         cardinal_30_to_39 = pynini.cross("삼십", "30") | (pynini.accep("삼십") + cardinal_digit)
 
+        # FST that include 1-39 in cardinal expression
         cardinal_below_40 = pynini.union(
             cardinal_digit, cardinal_10_to_19, cardinal_20_to_29, cardinal_30_to_39
         ).optimize()
-        # FST that include 1-39 in cardinal expression
 
-        cardinals_acceptor = pynini.project(cardinals, "input").optimize()  # Input includes all cardinal expressions
+        # Input includes all cardinal expressions
+        cardinals_acceptor = pynini.project(cardinals, "input").optimize()
+        # Input includes cardinal expression from 1 to 39
         cardinals_exception = pynini.project(
             cardinal_below_40, "input"
-        ).optimize()  # Input includes cardinal expression from 1 to 39
+        ).optimize()  
 
+        # All cardinal values except 1 to 39 cardinal values
         cardinal_over_40 = pynini.difference(
             cardinals_acceptor, cardinals_exception
-        ).optimize()  # All cardinal values except 1 to 39 cardinal values
+        ).optimize()  
         cardinal_ordinal_suffix = cardinal_over_40 @ cardinals
 
-        ordinal_final = pynini.union(ordinals, cardinal_ordinal_suffix)  # 1 to 39 in ordinal, everything else cardinal
+        # 1 to 39 in ordinal, everything else cardinal
+        ordinal_final = pynini.union(ordinals, cardinal_ordinal_suffix)  
 
         ordinal_graph = pynutil.insert("integer: \"") + ((ordinal_final + ordinals_suffix)) + pynutil.insert("\"")
 
         #Adding various counter suffix for ordinal
+        # For counting, Korean does not use the speical "첫" for 1. Instead the regular "한"
         counters = pynini.union(
             graph_digit, graph_tens, graph_twenties, graph_thirties
         ).optimize()
-        # For counting, Korean does not use the speical "첫" for 1. Instead the regular "한"
-
+        
         counter_final = (get_counter(counters) | get_counter(cardinal_ordinal_suffix))
 
         counter_graph = pynutil.insert("integer: \"") + counter_final + pynutil.insert("\"")
