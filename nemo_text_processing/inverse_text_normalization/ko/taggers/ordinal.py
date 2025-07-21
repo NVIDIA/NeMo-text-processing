@@ -19,12 +19,14 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_CHAR, GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
+
 def get_counter(ordinal):
     suffix = pynini.string_file(get_abs_path("data/ordinals/counter_suffix.tsv"))
     numbers = ordinal
-    res = numbers + pynutil.insert('" counter: "') + suffix 
+    res = numbers + pynutil.insert('" counter: "') + suffix
 
     return res
+
 
 class OrdinalFst(GraphFst):
     """
@@ -111,7 +113,7 @@ class OrdinalFst(GraphFst):
 
         counter_graph = pynutil.insert("integer: \"") + counter_final + pynutil.insert("\"")
 
-        final_graph = (ordinal_graph | counter_graph)
+        final_graph = ordinal_graph | counter_graph
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
