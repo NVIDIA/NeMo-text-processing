@@ -31,6 +31,7 @@ from nemo_text_processing.text_normalization.vi.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.vi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.vi.taggers.roman import RomanFst
+from nemo_text_processing.text_normalization.vi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.vi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.vi.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
@@ -104,6 +105,11 @@ class ClassifyFst(GraphFst):
             roman_graph = roman.fst
             logger.debug(f"roman: {time.time() - start_time: .2f}s -- {roman_graph.num_states()} nodes")
 
+            start_time = time.time()
+            time_fst = TimeFst(cardinal=cardinal, deterministic=deterministic)
+            time_graph = time_fst.fst
+            logger.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(roman_graph, 1.1)
@@ -112,6 +118,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
+                | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, 1.1) + pynutil.insert(" }")

@@ -48,6 +48,16 @@ delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
+delete_preserve_order = pynini.closure(
+    pynutil.delete(" preserve_order: true")
+    | (pynutil.delete(' field_order: "') + NEMO_NOT_QUOTE + pynutil.delete('"'))
+)
+
+quoted_text = pynini.closure(NEMO_NOT_QUOTE)
+
+
+def extract_field(field_name):
+    return pynutil.delete(f"{field_name}:") + delete_space + pynutil.delete("\"") + quoted_text + pynutil.delete("\"")
 
 
 def convert_space(fst) -> "pynini.FstLike":
