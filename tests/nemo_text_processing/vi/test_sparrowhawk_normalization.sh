@@ -53,10 +53,10 @@ testTNRoman() {
   runtest $input
 }
 
-# testTNTime() {
-#   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_time.txt
-#   runtest $input
-# }
+testTNTime() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
 
 # testTNMeasure() {
 #   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_measure.txt
