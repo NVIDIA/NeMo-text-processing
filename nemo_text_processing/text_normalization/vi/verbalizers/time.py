@@ -102,26 +102,26 @@ class TimeFst(GraphFst):
 
         # Pattern 3: hours + zero minutes + seconds + optional timezone
         pattern_hours_seconds = (
-            hour_with_unit 
-            + delete_space 
-            + zero_minute_component 
-            + delete_space 
-            + pynutil.insert(NEMO_SPACE) 
-            + second_with_unit 
-            + optional_timezone 
+            hour_with_unit
+            + delete_space
+            + zero_minute_component
+            + delete_space
+            + pynutil.insert(NEMO_SPACE)
+            + second_with_unit
+            + optional_timezone
             + optional_preserve_order
         )
 
         # Pattern 4: hours + minutes + seconds + optional timezone
         pattern_hours_minutes_seconds = (
-            hour_with_unit 
-            + delete_space 
-            + pynutil.insert(NEMO_SPACE) 
-            + minute_with_unit 
-            + delete_space 
-            + pynutil.insert(NEMO_SPACE) 
-            + second_with_unit 
-            + optional_timezone 
+            hour_with_unit
+            + delete_space
+            + pynutil.insert(NEMO_SPACE)
+            + minute_with_unit
+            + delete_space
+            + pynutil.insert(NEMO_SPACE)
+            + second_with_unit
+            + optional_timezone
             + optional_preserve_order
         )
 
