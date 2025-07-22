@@ -17,6 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.vi.graph_utils import (
     NEMO_NOT_QUOTE,
+    NEMO_SPACE,
     GraphFst,
     convert_space,
     delete_preserve_order,
@@ -64,7 +65,7 @@ class TimeFst(GraphFst):
         second_with_unit = non_zero_second_component + pynutil.insert(" giây")
         
         # Optional components
-        optional_timezone = pynini.closure(delete_space + pynutil.insert(" ") + timezone_component, 0, 1)
+        optional_timezone = pynini.closure(delete_space + pynutil.insert(NEMO_SPACE) + timezone_component, 0, 1)
         optional_preserve_order = pynini.closure(delete_space + delete_preserve_order, 0, 1)
         
         # Pattern 1: hours + optional zero minutes/seconds + optional timezone
@@ -80,7 +81,7 @@ class TimeFst(GraphFst):
         pattern_hours_minutes = (
             hour_with_unit 
             + delete_space 
-            + pynutil.insert(" ") 
+            + pynutil.insert(NEMO_SPACE) 
             + minute_with_unit 
             + pynini.closure(delete_space + zero_second_component, 0, 1) 
             + optional_timezone 
@@ -93,7 +94,7 @@ class TimeFst(GraphFst):
             + delete_space 
             + zero_minute_component 
             + delete_space 
-            + pynutil.insert(" ") 
+            + pynutil.insert(NEMO_SPACE) 
             + second_with_unit 
             + optional_timezone 
             + optional_preserve_order
@@ -103,10 +104,10 @@ class TimeFst(GraphFst):
         pattern_hours_minutes_seconds = (
             hour_with_unit 
             + delete_space 
-            + pynutil.insert(" ") 
+            + pynutil.insert(NEMO_SPACE) 
             + minute_with_unit 
             + delete_space 
-            + pynutil.insert(" ") 
+            + pynutil.insert(NEMO_SPACE) 
             + second_with_unit 
             + optional_timezone 
             + optional_preserve_order
@@ -116,7 +117,7 @@ class TimeFst(GraphFst):
         pattern_minutes_only = minute_with_unit + pynini.closure(delete_space + zero_second_component, 0, 1)
         
         # Pattern 6: minutes + seconds
-        pattern_minutes_seconds = minute_with_unit + delete_space + pynutil.insert(" ") + second_with_unit
+        pattern_minutes_seconds = minute_with_unit + delete_space + pynutil.insert(NEMO_SPACE) + second_with_unit
         
         # Pattern 7: seconds only
         pattern_seconds_only = second_with_unit
@@ -141,7 +142,7 @@ class TimeFst(GraphFst):
             half_hour_pattern = (
                 hour_with_unit
                 + delete_space
-                + pynutil.insert(" ")
+                + pynutil.insert(NEMO_SPACE)
                 + half_hour
                 + optional_timezone
                 + optional_preserve_order

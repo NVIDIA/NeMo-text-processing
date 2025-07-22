@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, GraphFst, convert_space, insert_space
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, convert_space, insert_space
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path
 
 
@@ -59,7 +59,7 @@ class TimeFst(GraphFst):
         m_word = pynutil.delete(" phút")
         s_word = pynutil.delete(" giây")
 
-        opt_zone_space = pynini.closure(pynini.accep(" ") + zone, 0, 1)
+        opt_zone_space = pynini.closure(pynini.accep(NEMO_SPACE) + zone, 0, 1)
         opt_zone = pynini.closure(zone, 0, 1)
         preserve = pynutil.insert(" preserve_order: true")
         
@@ -82,19 +82,19 @@ class TimeFst(GraphFst):
         # Vietnamese word formats
         pattern_hour_word = hour + h_word + opt_zone_space
         
-        pattern_hour_word_minute = hour + h_word + pynutil.delete(" ") + minute + m_word + opt_zone_space
+        pattern_hour_word_minute = hour + h_word + pynutil.delete(NEMO_SPACE) + minute + m_word + opt_zone_space
         
         pattern_hour_word_minute_second = (
-            hour + h_word + pynutil.delete(" ") + minute + m_word + 
-            pynutil.delete(" ") + second + s_word + opt_zone_space + preserve
+            hour + h_word + pynutil.delete(NEMO_SPACE) + minute + m_word + 
+            pynutil.delete(NEMO_SPACE) + second + s_word + opt_zone_space + preserve
         )
         
         pattern_minute_word = minute + m_word
-        pattern_minute_word_second = minute + m_word + pynutil.delete(" ") + second + s_word
+        pattern_minute_word_second = minute + m_word + pynutil.delete(NEMO_SPACE) + second + s_word
         pattern_second_word = second + s_word
         
         # Time zone specific patterns
-        pattern_hour_suffix_space_zone = hour + h_suffix + pynini.accep(" ") + zone
+        pattern_hour_suffix_space_zone = hour + h_suffix + pynini.accep(NEMO_SPACE) + zone
         pattern_hour_suffix_zone = hour + h_suffix + zone
         
         patterns = [
