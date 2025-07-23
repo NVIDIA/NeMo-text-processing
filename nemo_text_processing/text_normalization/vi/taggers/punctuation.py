@@ -26,13 +26,21 @@ class PunctuationFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
 
-        # Common punctuation marks
-        # Use escape() for brackets since they are special regex chars
-        s = "!#$%&'()*+,-./:;<=>?@^_`{|}~–—――…»«„“›‹‚‘’⟨⟩"
-        punct = pynini.union(*s)
+        # Common punctuation marks (excluding symbols that should be handled by other taggers)
+        s = "!#%&'()*+-./:;<=>?@^_`{|}~"
+        
+        # Exclude symbols that should be handled by specialized taggers
+        symbols_to_exclude = ["$", "€", "₩", "£", "¥", "¢", "₫", "đ", ","]  # comma is handled by money/decimal
+        
+        # Filter out excluded symbols
+        punct_marks = [p for p in s if p not in symbols_to_exclude]
+        self.punct_marks = punct_marks
+        
+        punct = pynini.union(*punct_marks)
 
         # Create the punctuation transduction
         graph = pynutil.insert('name: "') + punct + pynutil.insert('"')
+        self.graph = punct
 
         final_graph = pynutil.insert("punctuation { ") + graph + pynutil.insert(" }")
         self.fst = final_graph.optimize()

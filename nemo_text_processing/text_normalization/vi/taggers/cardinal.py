@@ -75,12 +75,47 @@ class CardinalFst(GraphFst):
 
         self.hundreds = pynini.closure(NEMO_DIGIT, 3, 3) @ self.hundreds_pattern
 
+        delete_dot_separator = pynutil.delete(".")
+
         self.thousand = self._build_magnitude_pattern("thousand", 4, 6, 3)
         self.million = self._build_magnitude_pattern("million", 7, 9, 6, self.thousand)
         self.billion = self._build_magnitude_pattern("billion", 10, 12, 9, self.million)
 
+        thousand_with_dot = (
+            (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 2) + delete_dot_separator + NEMO_DIGIT**3
+        )
+        
+        million_with_dot = (
+            (NEMO_DIGIT - "0") 
+            + pynini.closure(NEMO_DIGIT, 0, 2) 
+            + delete_dot_separator 
+            + NEMO_DIGIT**3 
+            + delete_dot_separator 
+            + NEMO_DIGIT**3
+        )
+        
+        billion_with_dot = (
+            (NEMO_DIGIT - "0") 
+            + pynini.closure(NEMO_DIGIT, 0, 2) 
+            + delete_dot_separator 
+            + NEMO_DIGIT**3 
+            + delete_dot_separator 
+            + NEMO_DIGIT**3 
+            + delete_dot_separator 
+            + NEMO_DIGIT**3
+        )
+
         self.graph = pynini.union(
-            self.billion, self.million, self.thousand, self.hundreds, self.two_digit, self.single_digit, self.zero
+            self.billion, 
+            self.million, 
+            self.thousand, 
+            self.hundreds, 
+            self.two_digit, 
+            self.single_digit, 
+            self.zero,
+            pynini.compose(thousand_with_dot, self.thousand),
+            pynini.compose(million_with_dot, self.million),
+            pynini.compose(billion_with_dot, self.billion)
         ).optimize()
 
         self.single_digits_graph = self.single_digit | self.zero
