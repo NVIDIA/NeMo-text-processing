@@ -31,10 +31,15 @@ insert_shunya = pynutil.insert('शून्य') + insert_space
 
 # Load the number mappings from the TSV file
 digit_to_word = pynini.string_file(get_abs_path("data/telephone/number.tsv"))
-std_codes = pynini.string_file(get_abs_path("data/telephone/STD_codes.tsv"))
+digits = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
 country_codes = pynini.string_file(get_abs_path("data/telephone/country_codes.tsv"))
 landline_start_digit = pynini.string_file(get_abs_path("data/telephone/landline_digits.tsv"))
 mobile_start_digit = pynini.string_file(get_abs_path("data/telephone/mobile_digits.tsv"))
+mobile_context = pynini.string_file(get_abs_path("data/telephone/mobile_context.tsv"))
+landline_context = pynini.string_file(get_abs_path("data/telephone/landline_context.tsv"))
+credit_context = pynini.string_file(get_abs_path("data/telephone/credit_context.tsv"))
+pincode_context = pynini.string_file(get_abs_path("data/telephone/pincode_context.tsv"))
 
 
 def generate_mobile(context_keywords):
@@ -51,7 +56,7 @@ def generate_mobile(context_keywords):
 
     extension_optional = pynini.closure(
         pynutil.insert("extension: \"")
-        + pynini.closure(digit_to_word + insert_space, 1, 3)
+        + pynini.closure((digit_to_word | digits | zero) + insert_space, 1, 3)
         + context_after
         + pynutil.insert("\" ")
         + delete_space,
@@ -66,7 +71,7 @@ def generate_mobile(context_keywords):
         + insert_shunya
         + mobile_start_digit
         + insert_space
-        + pynini.closure(digit_to_word + insert_space, 9)
+        + pynini.closure((digit_to_word | digits | zero) + insert_space, 9)
         + context_after
         + pynutil.insert("\" ")
         + delete_space
@@ -77,7 +82,7 @@ def generate_mobile(context_keywords):
         + pynutil.insert("number_part: \"")
         + mobile_start_digit
         + insert_space
-        + pynini.closure(digit_to_word + insert_space, 9)
+        + pynini.closure((digit_to_word | digits | zero) + insert_space, 9)
         + context_after
         + pynutil.insert("\" ")
         + delete_space
@@ -90,14 +95,14 @@ def get_landline(std_length, context_keywords):
     context_before, context_after = get_context(context_keywords)
 
     std_code_graph = (
-        delete_zero_optional + insert_shunya + pynini.closure(digit_to_word + insert_space, std_length, std_length)
+        delete_zero_optional + insert_shunya + pynini.closure((digit_to_word | digits | zero) + insert_space, std_length, std_length)
     )
 
     landline_digit_count = 9 - std_length
     landline_graph = (
         landline_start_digit
         + insert_space
-        + pynini.closure(digit_to_word + insert_space, landline_digit_count, landline_digit_count)
+        + pynini.closure((digit_to_word | digits | zero) + insert_space, landline_digit_count, landline_digit_count)
     )
 
     separator_optional = pynini.closure(pynini.cross("-", ""), 0, 1)
@@ -128,7 +133,6 @@ def generate_landline(context_keywords):
 
 
 def get_context(keywords: list):
-    keywords = pynini.union(*keywords)
 
     hindi_digits = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९")
     english_digits = pynini.union("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
@@ -151,7 +155,7 @@ def generate_credit(context_keywords):
     return (
         pynutil.insert("number_part: \"")
         + context_before
-        + pynini.closure(digit_to_word + insert_space, 4)
+        + pynini.closure((digit_to_word | digits | zero) + insert_space, 4)
         + context_after
         + pynutil.insert("\" ")
         + delete_space
@@ -163,7 +167,7 @@ def generate_pincode(context_keywords):
     return (
         pynutil.insert("number_part: \"")
         + context_before
-        + pynini.closure(digit_to_word + insert_space, 6)
+        + pynini.closure((digit_to_word | digits | zero) + insert_space, 6)
         + context_after
         + pynutil.insert("\" ")
         + delete_space
@@ -185,10 +189,10 @@ class TelephoneFst(GraphFst):
     def __init__(self):
         super().__init__(name="telephone", kind="classify")
 
-        mobile_number = generate_mobile(["नंबर", "मोबाइल", "फोन", "कॉल"])
-        landline = generate_landline(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉल"])
-        credit_card = generate_credit(["नंबर", "कार्ड", "क्रेडिट"])
-        pincode = generate_pincode(["नंबर", "पिन", "कोड", "पिनकोड"])
+        mobile_number = generate_mobile(mobile_context)
+        landline = generate_landline(landline_context)
+        credit_card = generate_credit(credit_context)
+        pincode = generate_pincode(pincode_context)
 
         graph = (
             pynutil.add_weight(mobile_number, 0.7)
