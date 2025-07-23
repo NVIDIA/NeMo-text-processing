@@ -21,6 +21,8 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import INPUT_LOWER_CASED, GraphFst, generator_main
 from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
 
 
@@ -55,10 +57,24 @@ class ClassifyFst(GraphFst):
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logging.info(f"Creating ClassifyFst grammars.")
+
             cardinal = CardinalFst()
             cardinal_graph = cardinal.fst
+
+            ordinal = OrdinalFst(cardinal)
+            ordinal_graph = ordinal.fst
+
+            decimal = DecimalFst(cardinal)
+            decimal_graph = decimal.fst
+
             word_graph = WordFst().fst
-            classify = pynutil.add_weight(cardinal_graph, 1.1) | pynutil.add_weight(word_graph, 100)
+
+            classify = (
+                pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(word_graph, 100)
+            )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
             tagger = pynini.closure(token, 1)

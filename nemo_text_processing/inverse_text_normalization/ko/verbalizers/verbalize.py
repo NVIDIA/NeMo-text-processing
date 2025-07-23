@@ -15,6 +15,8 @@
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
@@ -29,7 +31,12 @@ class VerbalizeFst(GraphFst):
         super().__init__(name="verbalize", kind="verbalize")
         cardinal = CardinalFst()
         cardinal_graph = cardinal.fst
-        word_graph = WordFst().fst
 
-        graph = cardinal_graph | word_graph
+        ordinal = OrdinalFst()
+        ordinal_graph = ordinal.fst
+
+        decimal = DecimalFst()
+        decimal_graph = decimal.fst
+
+        graph = cardinal_graph | ordinal_graph | decimal_graph
         self.fst = graph
