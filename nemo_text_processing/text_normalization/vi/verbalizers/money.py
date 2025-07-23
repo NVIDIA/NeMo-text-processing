@@ -16,11 +16,11 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.vi.graph_utils import (
+    NEMO_COMMA,
     NEMO_NOT_QUOTE,
     GraphFst,
-    delete_space,
     delete_preserve_order,
-    NEMO_COMMA,
+    delete_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path
@@ -37,59 +37,76 @@ class MoneyFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
-        
+
         integer_part = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
-        fractional_part = pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        fractional_part = (
+            pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        )
         quantity = pynutil.delete('quantity: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         currency_maj = pynutil.delete('currency_maj: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         currency_min = pynutil.delete('currency_min: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
-        
+
         # Following English prioritization pattern for better determinism
-        
+
         # 1. Minor only: fractional + minor (highest priority for fractional-only cases)
         graph_minor = fractional_part + delete_space + insert_space + currency_min + delete_preserve_order
-        
+
         # 2. Major + minor: integer + major + fractional + minor (for complete cases like 10,5$)
         graph_integer_with_minor = (
-            integer_part + delete_space + insert_space + currency_maj + 
-            delete_space + insert_space + fractional_part + delete_space + insert_space + currency_min + delete_preserve_order
+            integer_part
+            + delete_space
+            + insert_space
+            + currency_maj
+            + delete_space
+            + insert_space
+            + fractional_part
+            + delete_space
+            + insert_space
+            + currency_min
+            + delete_preserve_order
         )
-        
+
         # 3. Simple integer + currency (most common case)
         graph_integer = integer_part + delete_space + insert_space + currency_maj
-        
+
         # 4. With quantity: integer + quantity + currency
-        graph_with_quantity = integer_part + delete_space + insert_space + quantity + delete_space + insert_space + currency_maj
-        
+        graph_with_quantity = (
+            integer_part + delete_space + insert_space + quantity + delete_space + insert_space + currency_maj
+        )
+
         # 5. Decimal format (using "phẩy" for comma) - for cases like 10,5 đồng
         graph_decimal = (
-            integer_part + delete_space + insert_space + pynutil.insert(NEMO_COMMA) + insert_space + 
-            fractional_part + delete_space + insert_space + currency_maj
+            integer_part
+            + delete_space
+            + insert_space
+            + pynutil.insert(NEMO_COMMA)
+            + insert_space
+            + fractional_part
+            + delete_space
+            + insert_space
+            + currency_maj
         )
-                
+
         # Create main graph with proper priority order (similar to English)
         graph = (
-            graph_minor |              # Handle minor-only cases first
-            graph_integer_with_minor | # Handle major+minor cases  
-            graph_with_quantity |      # Handle quantity cases
-            graph_decimal |            # Handle decimal cases
-            graph_integer              # Handle simple cases (most common, lowest priority)
+            graph_minor  # Handle minor-only cases first
+            | graph_integer_with_minor  # Handle major+minor cases
+            | graph_with_quantity  # Handle quantity cases
+            | graph_decimal  # Handle decimal cases
+            | graph_integer  # Handle simple cases (most common, lowest priority)
         )
-        
+
         # Add per-unit support (following English pattern)
         per_units = pynini.string_file(get_abs_path("data/money/per_unit.tsv"))
         per_units_normalized = pynini.project(per_units, "output")
         per_unit_pattern = (
-            pynutil.delete(' morphosyntactic_features: "') +
-            insert_space +
-            per_units_normalized +
-            pynutil.delete('"')
+            pynutil.delete(' morphosyntactic_features: "') + insert_space + per_units_normalized + pynutil.delete('"')
         )
-        
+
         # Optional per-unit suffix
         graph += per_unit_pattern.ques
-        
+
         # Handle preserve_order deletion (should be last)
         graph += (delete_space + pynutil.delete("preserve_order: true")).ques
-        
-        self.fst = self.delete_tokens(graph).optimize() 
+
+        self.fst = self.delete_tokens(graph).optimize()

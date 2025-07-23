@@ -15,7 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space, NEMO_COMMA
+from nemo_text_processing.text_normalization.vi.graph_utils import (
+    NEMO_COMMA,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 
 
 class DecimalFst(GraphFst):
@@ -37,14 +43,20 @@ class DecimalFst(GraphFst):
         # Basic components
         integer = pynutil.delete("integer_part:") + cardinal.integer
         fractional = (
-            pynutil.delete("fractional_part:") + delete_space + pynutil.delete("\"") + 
-            pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+            pynutil.delete("fractional_part:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
         )
         quantity = (
-            pynutil.delete("quantity:") + delete_space + pynutil.delete("\"") + 
-            pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+            pynutil.delete("quantity:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
         )
-        
+
         # Negative handling
         negative = pynini.cross("negative: \"true\"", "âm ")
         if not deterministic:
@@ -53,26 +65,39 @@ class DecimalFst(GraphFst):
 
         # Simple patterns
         simple_integer = integer
-        
+
         integer_with_quantity = integer + delete_space + insert_space + quantity
-        
-        decimal_with_comma = integer + delete_space + insert_space + pynutil.insert(NEMO_COMMA) + insert_space + fractional
-        
-        decimal_with_quantity = integer + delete_space + insert_space + pynutil.insert(NEMO_COMMA) + insert_space + fractional + delete_space + insert_space + quantity
-        
-        fractional_only = pynini.closure(integer + delete_space + insert_space, 0, 1) + pynutil.insert(NEMO_COMMA) + insert_space + fractional
+
+        decimal_with_comma = (
+            integer + delete_space + insert_space + pynutil.insert(NEMO_COMMA) + insert_space + fractional
+        )
+
+        decimal_with_quantity = (
+            integer
+            + delete_space
+            + insert_space
+            + pynutil.insert(NEMO_COMMA)
+            + insert_space
+            + fractional
+            + delete_space
+            + insert_space
+            + quantity
+        )
+
+        fractional_only = (
+            pynini.closure(integer + delete_space + insert_space, 0, 1)
+            + pynutil.insert(NEMO_COMMA)
+            + insert_space
+            + fractional
+        )
 
         # Group all patterns
         all_patterns = pynini.union(
-            simple_integer,
-            integer_with_quantity,
-            decimal_with_comma,
-            decimal_with_quantity,
-            fractional_only
+            simple_integer, integer_with_quantity, decimal_with_comma, decimal_with_quantity, fractional_only
         )
 
         # Combine with negative handling
         graph = optional_negative + all_patterns
-        
+
         self.numbers = graph
         self.fst = self.delete_tokens(graph).optimize()

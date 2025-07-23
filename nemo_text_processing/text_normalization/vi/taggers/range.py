@@ -27,7 +27,7 @@ class RangeFst(GraphFst):
         10$-20$ -> tokens { name: "mười đô la đến hai mười đô la" }
 
     Args:
-        time: composed time tagger and verbalizer 
+        time: composed time tagger and verbalizer
         date: composed date tagger and verbalizer
         decimal: composed decimal tagger and verbalizer
         money: composed money tagger and verbalizer
@@ -38,7 +38,7 @@ class RangeFst(GraphFst):
     def __init__(
         self,
         time: GraphFst,
-        date: GraphFst, 
+        date: GraphFst,
         decimal: GraphFst,
         money: GraphFst,
         deterministic: bool = True,
@@ -62,4 +62,4 @@ class RangeFst(GraphFst):
         # Convert to final FST format
         self.graph = self.graph.optimize()
         graph = pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")
-        self.fst = graph.optimize() 
+        self.fst = graph.optimize()

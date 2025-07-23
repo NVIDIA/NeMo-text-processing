@@ -15,9 +15,9 @@
 import pytest
 from parameterized import parameterized
 
-from tests.nemo_text_processing.utils import parse_test_case_file
-
 from nemo_text_processing.text_normalization.normalize import Normalizer
+
+from tests.nemo_text_processing.utils import parse_test_case_file
 
 
 class TestRange:
@@ -27,4 +27,4 @@ class TestRange:
     @pytest.mark.run_only_on('CPU')
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input)
-        assert pred == expected, f"input: {test_input} assert {pred} == {expected}" 
+        assert pred == expected, f"input: {test_input} assert {pred} == {expected}"

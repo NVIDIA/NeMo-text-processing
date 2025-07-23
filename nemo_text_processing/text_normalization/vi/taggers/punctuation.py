@@ -28,14 +28,14 @@ class PunctuationFst(GraphFst):
 
         # Common punctuation marks (excluding symbols that should be handled by other taggers)
         s = "!#%&'()*+-./:;<=>?@^_`{|}~"
-        
+
         # Exclude symbols that should be handled by specialized taggers
         symbols_to_exclude = ["$", "€", "₩", "£", "¥", "¢", "₫", "đ", ","]  # comma is handled by money/decimal
-        
+
         # Filter out excluded symbols
         punct_marks = [p for p in s if p not in symbols_to_exclude]
         self.punct_marks = punct_marks
-        
+
         punct = pynini.union(*punct_marks)
 
         # Create the punctuation transduction

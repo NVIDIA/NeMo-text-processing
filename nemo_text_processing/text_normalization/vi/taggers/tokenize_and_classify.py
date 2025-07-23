@@ -28,12 +28,12 @@ from nemo_text_processing.text_normalization.vi.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.vi.taggers.date import DateFst
 from nemo_text_processing.text_normalization.vi.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.vi.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.vi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.vi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.vi.taggers.range import RangeFst
 from nemo_text_processing.text_normalization.vi.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.vi.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.vi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.vi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.vi.taggers.word import WordFst
 from nemo_text_processing.text_normalization.vi.verbalizers.cardinal import CardinalFst as VCardinalFst
@@ -127,27 +127,23 @@ class ClassifyFst(GraphFst):
             v_cardinal = VCardinalFst(deterministic=deterministic)
             v_date = VDateFst(deterministic=deterministic)
             date_final = pynini.compose(date_graph, v_date.fst)
-            
+
             v_decimal = VDecimalFst(v_cardinal, deterministic=deterministic)
             decimal_final = pynini.compose(decimal_graph, v_decimal.fst)
-            
+
             v_time = VTimeFst(deterministic=deterministic)
             time_final = pynini.compose(time_graph, v_time.fst)
-            
+
             v_money = VMoneyFst(deterministic=deterministic)
             money_final = pynini.compose(money_graph, v_money.fst)
-            
+
             # Create range graph
             range_fst = RangeFst(
-                time=time_final,
-                date=date_final,
-                decimal=decimal_final,
-                money=money_final,
-                deterministic=deterministic
+                time=time_final, date=date_final, decimal=decimal_final, money=money_final, deterministic=deterministic
             )
             range_graph = range_fst.fst
             logger.debug(f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes")
-            
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(money_graph, 1.09)  # Higher priority than cardinal/decimal
@@ -161,7 +157,9 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
-            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, 2.1) + pynutil.insert(" }")  # Lower priority than semantic classes
+            punct = (
+                pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, 2.1) + pynutil.insert(" }")
+            )  # Lower priority than semantic classes
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
                 pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
@@ -174,4 +172,3 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-

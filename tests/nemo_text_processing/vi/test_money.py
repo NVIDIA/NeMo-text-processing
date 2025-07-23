@@ -25,8 +25,8 @@ from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
 class TestMoney:
 
-    inverse_normalizer = InverseNormalizer(lang='vi', cache_dir=CACHE_DIR, overwrite_cache=False) 
-    
+    inverse_normalizer = InverseNormalizer(lang='vi', cache_dir=CACHE_DIR, overwrite_cache=False)
+
     @parameterized.expand(parse_test_case_file('vi/data_inverse_text_normalization/test_cases_money.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
@@ -34,8 +34,10 @@ class TestMoney:
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
-    normalizer = Normalizer(input_case='cased', lang='vi', cache_dir=CACHE_DIR, overwrite_cache=True, post_process=True)
-    
+    normalizer = Normalizer(
+        input_case='cased', lang='vi', cache_dir=CACHE_DIR, overwrite_cache=True, post_process=True
+    )
+
     normalizer_with_audio = (
         NormalizerWithAudio(input_case='cased', lang='vi', cache_dir=CACHE_DIR, overwrite_cache=False)
         if CACHE_DIR and RUN_AUDIO_BASED_TESTS
@@ -52,7 +54,7 @@ class TestMoney:
         print(f"Predicted: {pred}")
         print(f"Expected: {expected}")
         assert pred == expected, f"input: {test_input}"
-    
+
         if self.normalizer_with_audio:
             pred_non_deterministic = self.normalizer_with_audio.normalize(
                 test_input,
