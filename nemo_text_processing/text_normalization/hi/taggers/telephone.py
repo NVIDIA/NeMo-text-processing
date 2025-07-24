@@ -34,8 +34,6 @@ digit_to_word = pynini.string_file(get_abs_path("data/telephone/number.tsv"))
 digits = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
 country_codes = pynini.string_file(get_abs_path("data/telephone/country_codes.tsv"))
-landline_start_digit = pynini.string_file(get_abs_path("data/telephone/landline_digits.tsv"))
-mobile_start_digit = pynini.string_file(get_abs_path("data/telephone/mobile_digits.tsv"))
 mobile_context = pynini.string_file(get_abs_path("data/telephone/mobile_context.tsv"))
 landline_context = pynini.string_file(get_abs_path("data/telephone/landline_context.tsv"))
 credit_context = pynini.string_file(get_abs_path("data/telephone/credit_context.tsv"))
@@ -44,6 +42,12 @@ pincode_context = pynini.string_file(get_abs_path("data/telephone/pincode_contex
 
 def generate_mobile(context_keywords):
     context_before, context_after = get_context(context_keywords)
+
+    allowed_digits = pynini.union("६", "७", "८", "९", "6", "7", "8", "9")
+
+    # Filter cardinals to only include allowed digits
+    mobile_start_digit = allowed_digits @ digits | allowed_digits @ digit_to_word
+
     country_code = (
         pynutil.insert("country_code: \"")
         + context_before
@@ -93,6 +97,11 @@ def generate_mobile(context_keywords):
 
 def get_landline(std_length, context_keywords):
     context_before, context_after = get_context(context_keywords)
+
+    allowed_digits = pynini.union("२", "३", "४", "६", "2", "3", "4", "6")
+
+    # Filter cardinals to only include allowed digits
+    landline_start_digit = allowed_digits @ digits | allowed_digits @ digit_to_word
 
     std_code_graph = (
         delete_zero_optional
