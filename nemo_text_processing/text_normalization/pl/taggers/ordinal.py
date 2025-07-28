@@ -148,6 +148,15 @@ def make_graph_dict(filepath, invert=True, complete=False):
     return output_graph
 
 
+def all_to_graph(graph_dict, deterministic=False):
+    output_graph = graph_dict["mi_sg_nom"]
+    if not deterministic:
+        for key in graph_dict:
+            if key != "mi_sg_nom":
+                output_graph |= graph_dict[key]
+    return output_graph.optimize()
+
+
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g. 
@@ -169,16 +178,22 @@ class OrdinalFst(GraphFst):
         self.hundreds_all = make_graph_dict("data/ordinal/hundreds.tsv")
         two_digit_all = self.make_two_digit()
 
-        self.graph = (
-            (
-                pynini.closure(NEMO_DIGIT | pynini.accep("."))
-                + pynutil.delete(pynutil.add_weight(pynini.union(*endings), weight=0.0001) | pynini.accep("."))
-            )
-            @ cardinal_graph
-        ).optimize()
-        final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
-        final_graph = self.add_tokens(final_graph)
-        self.fst = final_graph.optimize()
+        digits_graph = all_to_graph(self.digits_all, deterministic=deterministic)
+        tens_graph = all_to_graph(self.tens_all, deterministic=deterministic)
+        teens_graph = all_to_graph(self.teens_all, deterministic=deterministic)
+        hundreds_graph = all_to_graph(self.hundreds_all, deterministic=deterministic)
+        two_digit_graph = all_to_graph(two_digit_all, deterministic=deterministic)
+
+        # self.graph = (
+        #     (
+        #         pynini.closure(NEMO_DIGIT | pynini.accep("."))
+        #         + pynutil.delete(pynutil.add_weight(pynini.union(*endings), weight=0.0001) | pynini.accep("."))
+        #     )
+        #     @ cardinal_graph
+        # ).optimize()
+        # final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        # final_graph = self.add_tokens(final_graph)
+        # self.fst = final_graph.optimize()
     
     def make_two_digit(self):
         two_digits = {}
@@ -192,10 +207,3 @@ class OrdinalFst(GraphFst):
                 two_digits[key] |= self.tens_all[key] + self.digits_all[key]
         return two_digits
 
-    def all_to_graph(self, graph_dict, deterministic=False):
-        output_graph = graph_dict["mi_sg_nom"]
-        if not deterministic:
-            for key in graph_dict:
-                if key != "mi_sg_nom":
-                    output_graph |= graph_dict[key]
-        return output_graph.optimize()
