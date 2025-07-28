@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ from nemo_text_processing.text_normalization.ar.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.ar.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ar.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ar.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.ar.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.ar.verbalizers.money import MoneyFst
 
 
@@ -42,6 +43,8 @@ class VerbalizeFst(GraphFst):
         fraction_graph = fraction.fst
         money = MoneyFst()
         money_graph = money.fst
+        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
+        measure_graph = measure.fst
 
-        graph = cardinal_graph | decimal_graph | fraction_graph | money_graph
+        graph = cardinal_graph | decimal_graph | fraction_graph | money_graph | measure_graph
         self.fst = graph

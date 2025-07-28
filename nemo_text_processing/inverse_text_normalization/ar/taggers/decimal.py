@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     delete_extra_space,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class DecimalFst(GraphFst):
@@ -35,7 +36,9 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify")
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("سالب", '"true"') + delete_extra_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("سالب", '"true"') + delete_extra_space,
+            0,
+            1,
         )
 
         graph_fractional_part = pynini.invert(tn_decimal.graph_fractional).optimize()
@@ -53,7 +56,7 @@ class DecimalFst(GraphFst):
         self.final_graph_wo_sign = (
             graph_integer + pynini.accep(NEMO_SPACE) + graph_fractional + optional_graph_quantity
         )
-        final_graph = optional_graph_negative + self.final_graph_wo_sign
+        self.final_graph_wo_negative = optional_graph_negative + self.final_graph_wo_sign
 
-        final_graph = self.add_tokens(final_graph)
+        final_graph = self.add_tokens(self.final_graph_wo_negative)
         self.fst = final_graph.optimize()

@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -25,7 +26,7 @@ class FractionFst(GraphFst):
     tokens { fraction { integer_part: "واحد" numerator: "واحد" denominator: "نص" } }
 
     Args:
-        cardinal: cardinal fst 
+        cardinal: cardinal fst
     """
 
     def __init__(self, cardinal):

@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NON_BREAKING_SPACE,
     NEMO_SIGMA,
@@ -24,12 +26,11 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, TO_LOWER
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class MeasureFst(GraphFst):
     """
-    Finite state transducer for classifying measure, suppletive aware, e.g. 
+    Finite state transducer for classifying measure, suppletive aware, e.g.
         -12kg -> measure { negative: "true" cardinal { integer: "tolv" } units: "kilogram" }
         1kg -> measure { cardinal { integer: "ett" } units: "kilogram" }
         ,5kg -> measure { decimal { fractional_part: "fem" } units: "kilogram" }
@@ -51,7 +52,7 @@ class MeasureFst(GraphFst):
         graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
         greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
-        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
+        greek_upper = pynutil.insert("stort ") + pynini.string_file(get_abs_path("data/measure/greek_upper.tsv"))
         greek = greek_lower | greek_upper
 
         graph_unit |= pynini.compose(
@@ -80,7 +81,9 @@ class MeasureFst(GraphFst):
         )
 
         optional_graph_unit2 = pynini.closure(
-            delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2, 0, 1,
+            delete_zero_or_one_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2,
+            0,
+            1,
         )
 
         unit_plural = (

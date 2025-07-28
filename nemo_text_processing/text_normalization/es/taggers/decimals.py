@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -26,7 +28,6 @@ from nemo_text_processing.text_normalization.es.graph_utils import (
     strip_cardinal_apocope,
 )
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
-from pynini.lib import pynutil
 
 quantities = pynini.string_file(get_abs_path("data/numbers/quantities.tsv"))
 digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
@@ -37,8 +38,7 @@ def get_quantity(decimal_graph: "pynini.FstLike", cardinal_graph: "pynini.FstLik
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. 2 millones -> integer_part: "dos" quantity: "millones"
-    e.g. 2,4 millones -> integer_part: "dos" fractional_part: "quatro" quantity: "millones"
-    e.g. 2,400 millones -> integer_part: "dos mil cuatrocientos" fractional_part: "quatro" quantity: "millones"
+    e.g. 2,4 millones -> integer_part: "dos" fractional_part: "cuatro" quantity: "millones"
 
     Args:
         decimal_graph: DecimalFST

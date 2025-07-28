@@ -4,7 +4,7 @@ a@hotmail.fr~a at hotmail dot FR
 a@hotmail.it~a at hotmail dot IT
 a@aol.it~a at aol dot IT
 a@msn.it~a at msn dot IT
-cdf@abc.edu~cdf at abc dot EDU
+cdf@abc.edu~cdf at abc dot edu
 abc@gmail.abc~abc at gmail dot ABC
 abc@abc.com~abc at abc dot com
 asdf123@abc.com~asdf one two three at abc dot com
@@ -13,9 +13,9 @@ ab3.sdd.3@gmail.com~ab three dot sdd dot three at gmail dot com
 email is abc1@gmail.com~email is abc one at gmail dot com
 abs@nvidia.com~abs at NVIDIA dot com
 email is a-1.b3_c&-d@gma4i-l.com test~email is a dash one dot b three underscore c ampersand dash d at gma four i dash l dot com test
-nvidia.com~NVIDIA dot com
+nvidia.com~nvidia dot com
 test.com~test dot com
-test.abc~test.abc
+test.abc~test dot abc
 http://www.ourdailynews.com.sm~HTTP colon slash slash WWW dot ourdailynews dot com dot SM
 https://www.ourdailynews.com.sm~HTTPS colon slash slash WWW dot ourdailynews dot com dot SM
 www.ourdailynews.com.sm~WWW dot ourdailynews dot com dot SM
@@ -24,8 +24,8 @@ sdf@gmail.com.sm~sdf at gmail dot com dot SM
 sdf@gmail.com/123-sm~sdf at gmail dot com slash one two three dash SM
 sdf@gmail.abc/123-sm~sdf at gmail dot ABC slash one two three dash SM
 sdf@gmail.abc/123456-sm~sdf at gmail dot ABC slash one two three four five six dash SM
-ourdailynews.com/12-sm~ourdailynews dot com slash one two dash SM
-ourdailynews.abc~ourdailynews.abc
+ourdailynews.com/12-sm~ourdailynews dot com slash one two dash sm
+ourdailynews.abc~ourdailynews dot abc
 file:///c/code/NeMo/docs/build/html/processing/intro.html~file colon slash slash slash c slash code slash nemo slash docs slash build slash html slash processing slash intro dot HTML
 file:///photos/image.jpg~file colon slash slash slash photos slash image dot jpeg
 electronic test.com and test2.uk~electronic test dot com and test two dot UK
@@ -38,3 +38,7 @@ rtxprohelp@exchange.nvidia.com~RTX pro help at exchange dot NVIDIA dot com
 enterpriseservices@nvidia.com~enterprise services at NVIDIA dot com
 enterprise-services@nvidia.com~enterprise dash services at NVIDIA dot com
 https://www.nvidia.com/dgx-basepod/~HTTPS colon slash slash WWW dot NVIDIA dot com slash DGX dash BASEPOD slash
+i can use your card ending in 8876~i can use your card ending in eight eight seven six
+upgrade/update~upgrade slash update
+upgrade / update~upgrade slash update
+upgrade/update/downgrade~upgrade slash update slash downgrade

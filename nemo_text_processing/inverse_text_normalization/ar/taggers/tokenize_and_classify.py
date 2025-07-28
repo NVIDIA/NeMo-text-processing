@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.ar.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.ar.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.word import WordFst
@@ -30,7 +32,7 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
 )
 from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst as TNClassifyFst
 from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED
-from pynini.lib import pynutil
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):
@@ -61,9 +63,9 @@ class ClassifyFst(GraphFst):
             far_file = os.path.join(cache_dir, f"ar_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info(f"Creating ClassifyFst grammars.")
+            logger.info(f"Creating ClassifyFst grammars.")
             tn_classify = TNClassifyFst(
                 input_case='cased', deterministic=True, cache_dir=cache_dir, overwrite_cache=True
             )
@@ -76,6 +78,13 @@ class ClassifyFst(GraphFst):
             fraction_graph = fraction.fst
             money = MoneyFst(itn_cardinal_tagger=cardinal)
             money_graph = money.fst
+            measure = MeasureFst(
+                itn_cardinal_tagger=cardinal,
+                itn_decimal_tagger=decimal,
+                itn_fraction_tagger=fraction,
+                deterministic=True,
+            )
+            measure_graph = measure.fst
             word_graph = WordFst().fst
             punct_graph = PunctuationFst().fst
 
@@ -84,6 +93,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
+                | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
 
@@ -100,4 +110,3 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")

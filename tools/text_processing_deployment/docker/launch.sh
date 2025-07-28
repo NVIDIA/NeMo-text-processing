@@ -14,13 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-MODE=${1:-"export"}
+# this script runs Sparrowhawk tests in a docker container "locally" (not in CI/CD pipeline)
+
+MODE=${1:-"interactive"}
 LANGUAGE=${2:-"en"}
 INPUT_CASE=${3:-"lower_cased"}
+GRAMMARS=${4:-"tn_grammars"} # tn_grammars or itn_grammars
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
-: ${CLASSIFY_DIR:="$SCRIPT_DIR/../$LANGUAGE/classify"}
-: ${VERBALIZE_DIR:="$SCRIPT_DIR/../$LANGUAGE/verbalize"}
-: ${CMD:=${4:-"/bin/bash"}}
+GRAMMAR_DIR=${5:-${SCRIPT_DIR}"/.."}
+CONFIG=${LANGUAGE}_${GRAMMARS}_${INPUT_CASE}
+
+: ${CLASSIFY_DIR:="$GRAMMAR_DIR/${CONFIG}/classify"}
+: ${VERBALIZE_DIR:="$GRAMMAR_DIR/${CONFIG}/verbalize"}
+: ${CMD:=${6:-"/bin/bash"}}
 
 MOUNTS=""
 MOUNTS+=" -v $CLASSIFY_DIR:/workspace/sparrowhawk/documentation/grammars/en_toy/classify"
@@ -44,7 +50,7 @@ elif [[ $MODE == "test_itn_grammars" ]]; then
 fi
 
 echo $MOUNTS
-docker run -it --rm \
+docker run -it -e LANG=C.UTF-8 -e LC_ALL=C.UTF-8 --rm \
   --shm-size=4g \
   --ulimit memlock=-1 \
   --ulimit stack=67108864 \

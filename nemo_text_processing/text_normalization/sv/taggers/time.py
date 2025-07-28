@@ -15,6 +15,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -26,7 +28,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -40,7 +41,7 @@ class TimeFst(GraphFst):
         02:00 -> time { hours: "två" }
         2:00 -> time { hours: "två" }
         10:00:05 e.m. -> time { hours: "tio" minutes: "noll" seconds: "fem" suffix: "eftermiddag" }
-    
+
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -105,7 +106,11 @@ class TimeFst(GraphFst):
         final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
         final_suffix_optional = pynini.closure(ensure_space + final_suffix, 0, 1)
         final_time_zone = pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
-        final_time_zone_optional = pynini.closure(NEMO_SPACE + final_time_zone, 0, 1,)
+        final_time_zone_optional = pynini.closure(
+            NEMO_SPACE + final_time_zone,
+            0,
+            1,
+        )
 
         # 2:30 pm, 02:30, 2:00
         graph_hm_kl = (

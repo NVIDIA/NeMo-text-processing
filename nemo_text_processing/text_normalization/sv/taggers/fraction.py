@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 from nemo_text_processing.text_normalization.sv.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -78,6 +79,7 @@ class FractionFst(GraphFst):
         fractions_pl = fractions @ pynini.cdrewrite(fractional_pl_endings, "", "[EOS]", NEMO_SIGMA)
         self.fractional_plural_endings = fractional_pl_endings
         self.fractions_plural = fractions_pl
+        self.fractions_any = self.fractions | self.fractions_plural
 
         integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         numerator = (

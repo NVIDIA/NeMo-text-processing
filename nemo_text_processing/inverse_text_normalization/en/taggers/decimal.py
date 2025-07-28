@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -29,7 +31,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.text_normalization.en.utils import load_labels
-from pynini.lib import pynutil
 
 
 def get_quantity(
@@ -40,7 +41,7 @@ def get_quantity(
     e.g. one million -> integer_part: "1" quantity: "million"
     e.g. one point five million -> integer_part: "1" fractional_part: "5" quantity: "million"
 
-    Args: 
+    Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
         input_case: accepting either "lower_cased" or "cased" input.
@@ -96,7 +97,9 @@ class DecimalFst(GraphFst):
         point = pynutil.delete("point")
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space,
+            0,
+            1,
         )
 
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")

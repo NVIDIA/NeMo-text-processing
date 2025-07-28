@@ -14,6 +14,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
@@ -26,7 +28,6 @@ from nemo_text_processing.text_normalization.en.utils import (
     get_abs_path,
     load_labels,
 )
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -40,7 +41,7 @@ class TimeFst(GraphFst):
         02:00 -> time { hours: "two" }
         2:00 -> time { hours: "two" }
         10:00:05 a.m. -> time { hours: "ten" minutes: "zero" seconds: "five" suffix: "a m" }
-    
+
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,

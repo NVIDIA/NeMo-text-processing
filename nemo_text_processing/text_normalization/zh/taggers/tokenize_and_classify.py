@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,29 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 import os
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.zh.taggers.cardinal import Cardinal
-from nemo_text_processing.text_normalization.zh.taggers.char import Char
-from nemo_text_processing.text_normalization.zh.taggers.date import Date
-from nemo_text_processing.text_normalization.zh.taggers.fraction import Fraction
-from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbol
-from nemo_text_processing.text_normalization.zh.taggers.measure import Measure
-from nemo_text_processing.text_normalization.zh.taggers.money import Money
-from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessor
-from nemo_text_processing.text_normalization.zh.taggers.time import Time
-from nemo_text_processing.text_normalization.zh.taggers.whitelist import Whitelist
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, generator_main
+from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
+from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
+from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.zh.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.zh.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
+from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
 
 
 class ClassifyFst(GraphFst):
     """
     Final class that composes all other classification grammars. This class can process an entire sentence including punctuation.
-    For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
+    For deployment, this grammar will be compiled and exported to OpenFst Finate State Archiv (FAR) File.
     More details to deployment at NeMo/tools/text_processing_deployment.
-    
+
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
         deterministic: if True will provide a single transduction option,
@@ -57,36 +61,40 @@ class ClassifyFst(GraphFst):
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
-            far_file = os.path.join(
-                cache_dir, f"zh_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far"
-            )
+            far_file = os.path.join(cache_dir, f"zh_tn_{deterministic}_deterministic_{whitelist_file}_tokenize.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
         else:
-            date = Date(deterministic=deterministic)
-            cardinal = Cardinal(deterministic=deterministic)
-            char = Char(deterministic=deterministic)
-            fraction = Fraction(deterministic=deterministic)
-            math_symbol = MathSymbol(deterministic=deterministic)
-            money = Money(deterministic=deterministic)
-            measure = Measure(deterministic=deterministic)
-            time = Time(deterministic=deterministic)
-            whitelist = Whitelist(deterministic=deterministic)
+            cardinal = CardinalFst(deterministic=deterministic)
+            date = DateFst(deterministic=deterministic)
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            time = TimeFst(deterministic=deterministic)
+            fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
+            money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
+            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            whitelist = WhiteListFst(deterministic=deterministic)
+            word = WordFst(deterministic=deterministic)
+            punctuation = PunctuationFst(deterministic=deterministic)
 
             classify = pynini.union(
-                pynutil.add_weight(date.fst, 1.02),
-                pynutil.add_weight(fraction.fst, 1.05),
-                pynutil.add_weight(money.fst, 1.05),
+                pynutil.add_weight(date.fst, 1.1),
+                pynutil.add_weight(fraction.fst, 1.0),
+                pynutil.add_weight(money.fst, 1.1),
                 pynutil.add_weight(measure.fst, 1.05),
-                pynutil.add_weight(time.fst, 1.05),
-                pynutil.add_weight(whitelist.fst, 1.03),
-                pynutil.add_weight(cardinal.fst, 1.06),
-                pynutil.add_weight(math_symbol.fst, 1.08),
-                pynutil.add_weight(char.fst, 100),
+                pynutil.add_weight(time.fst, 1.1),
+                pynutil.add_weight(whitelist.fst, 1.1),
+                pynutil.add_weight(cardinal.fst, 1.1),
+                pynutil.add_weight(decimal.fst, 3.05),
+                pynutil.add_weight(ordinal.fst, 1.1),
+                pynutil.add_weight(punctuation.fst, 1.0),
+                pynutil.add_weight(word.fst, 100),
             )
+
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
+            tagger = pynini.closure(token, 1)
 
-            tagger = token.optimize().star
+            self.fst = tagger
 
-            preprocessor = PreProcessor(remove_interjections=True, fullwidth_to_halfwidth=True,)
-            self.fst = preprocessor.fst @ tagger
+            if far_file:
+                generator_main(far_file, {"tokenize_and_classify": self.fst})

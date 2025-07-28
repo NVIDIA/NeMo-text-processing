@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -29,7 +31,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     get_singulars,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
@@ -52,7 +53,7 @@ class MoneyFst(GraphFst):
         # "one fifty" -> "one hundred fifty"
         with_hundred = pynini.compose(
             pynini.closure(NEMO_NOT_SPACE) + pynini.accep(" ") + pynutil.insert("hundred ") + NEMO_SIGMA,
-            pynini.compose(cardinal_graph, NEMO_DIGIT ** 3),
+            pynini.compose(cardinal_graph, NEMO_DIGIT**3),
         )
         cardinal_graph |= with_hundred
         graph_decimal_final = decimal.final_graph_wo_negative

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -25,20 +27,12 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
-from pynini.lib import pynutil
-
-digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
-teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv")))
-ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/ties.tsv")))
-zero = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/zero.tsv")))
-card_ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
-card_digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 
 
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal
-        	"21:a" -> ordinal { integer: "tjugoförsta" }
+                "21:a" -> ordinal { integer: "tjugoförsta" }
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -47,6 +41,14 @@ class OrdinalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify")
+
+        digit = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/digit.tsv")))
+        teens = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/teen.tsv")))
+        ties = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/ties.tsv")))
+        zero = pynini.invert(pynini.string_file(get_abs_path("data/ordinals/zero.tsv")))
+        card_ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/ties.tsv")))
+        card_digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
+
         graph_digit = digit.optimize()
         graph_teens = teens.optimize()
         graph_ties = ties.optimize()
@@ -93,7 +95,10 @@ class OrdinalFst(GraphFst):
             hundreds |= pynini.cross("1", "ett hundra")
             hundreds |= digit + pynutil.insert(NEMO_SPACE) + pynutil.insert("hundra")
 
-        graph_hundreds = hundreds + pynini.union(graph_tens, (pynutil.delete("0") + graph_digit),)
+        graph_hundreds = hundreds + pynini.union(
+            graph_tens,
+            (pynutil.delete("0") + graph_digit),
+        )
         if not deterministic:
             graph_hundreds |= hundreds + pynini.union(
                 (graph_teens | pynutil.insert(NEMO_SPACE) + graph_teens), (pynini.cross("0", NEMO_SPACE) + graph_digit)
@@ -177,7 +182,7 @@ class OrdinalFst(GraphFst):
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
+            @ NEMO_DIGIT**24
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)

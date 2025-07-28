@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, num_to_word
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -27,7 +29,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     capitalized_input_graph,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class CardinalFst(GraphFst):
@@ -206,7 +207,10 @@ class CardinalFst(GraphFst):
             + graph_in_thousands
         )
 
-        graph = pynini.union((graph_int | graph_ind) + delete_space + graph_hundreds, graph_zero,)
+        graph = pynini.union(
+            (graph_int | graph_ind) + delete_space + graph_hundreds,
+            graph_zero,
+        )
 
         graph = graph @ pynini.union(
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"
@@ -242,7 +246,7 @@ class CardinalFst(GraphFst):
         self.fst = final_graph.optimize()
 
     def delete_word(self, word: str):
-        """ Capitalizes word for `cased` input"""
+        """Capitalizes word for `cased` input"""
         delete_graph = pynutil.delete(word).optimize()
         if self.input_case == INPUT_CASED:
             if len(word) > 0:

@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_preserve_order,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
@@ -60,9 +61,8 @@ class MoneyFst(GraphFst):
             + delete_space
             + add_and
             + fractional_part
-            + keep_space
             + delete_space
-            + min
+            + pynini.closure(keep_space + min, 0, 1)
             + delete_preserve_order
         )
         # this graph fix word order from dollar three (دولار تسعة)--> three dollar (تسعة دولار)

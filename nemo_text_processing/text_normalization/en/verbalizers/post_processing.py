@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_ALPHA,
@@ -25,7 +26,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from pynini.lib import pynutil
+from nemo_text_processing.utils.logging import logger
 
 
 class PostProcessingFst:
@@ -46,7 +47,7 @@ class PostProcessingFst:
             far_file = os.path.join(cache_dir, "en_tn_post_processing.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["post_process_graph"]
-            logging.info(f'Post processing graph was restored from {far_file}.')
+            logger.info(f'Post processing graph was restored from {far_file}.')
         else:
             self.set_punct_dict()
             self.fst = self.get_punct_postprocess_graph()
@@ -98,17 +99,17 @@ class PostProcessingFst:
 
     def get_punct_postprocess_graph(self):
         """
-            Returns graph to post process punctuation marks.
+        Returns graph to post process punctuation marks.
 
-            {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
-            By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
+        {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
+        By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
         """
         punct_marks_all = PunctuationFst().punct_marks
 
         # no_space_before_punct assume no space before them
         quotes = ["'", "\"", "``", "«"]
         dashes = ["-", "—"]
-        brackets = ["<", "{", "("]
+        brackets = ["<", "{", "(", r"\["]
         open_close_single_quotes = [
             ("`", "`"),
         ]

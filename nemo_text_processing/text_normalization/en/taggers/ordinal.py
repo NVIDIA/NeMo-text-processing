@@ -14,15 +14,16 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 
 
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal, e.g.
         13th -> ordinal { integer: "thirteen" }
-        
+
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,

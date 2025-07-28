@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# gaph_utils is kept due to the fatc that importing from en folders will cause import errors that the data file names have to be the same with what are in the en folder
 import csv
 import os
 
@@ -26,7 +28,7 @@ def get_abs_path(rel_path):
 
     Args:
         rel_path: relative path to this file
-        
+
     Returns absolute path
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
@@ -41,14 +43,14 @@ def load_labels(abs_path):
 
     Returns dictionary of mappings
     """
-    label_tsv = open(abs_path, encoding="utf-8")
-    labels = list(csv.reader(label_tsv, delimiter="\t"))
+    with open(abs_path, encoding="utf-8") as label_tsv:
+        labels = list(csv.reader(label_tsv, delimiter="\t"))
     return labels
 
 
 def augment_labels_with_punct_at_end(labels):
     """
-    augments labels: if key ends on a punctuation that value does not have, add a new label 
+    augments labels: if key ends on a punctuation that value does not have, add a new label
     where the value maintains the punctuation
 
     Args:

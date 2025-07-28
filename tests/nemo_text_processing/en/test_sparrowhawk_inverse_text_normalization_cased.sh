@@ -1,10 +1,12 @@
 #! /bin/sh
 
-PROJECT_DIR=/workspace/tests
+GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+TEST_DIR=${2:-"/workspace/tests/en"}
 
 runtest () {
   input=$1
-  cd /workspace/sparrowhawk/documentation/grammars
+  echo "INPUT is $input"
+  cd ${GRAMMARS_DIR}
 
   # read test file
   while read testcase; do
@@ -21,59 +23,63 @@ runtest () {
 }
 
 testITNCardinal() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_cardinal.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_cardinal_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_cardinal.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_cardinal_cased.txt
 }
 
 testITNDate() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_date.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_date_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_date.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_date_cased.txt
 }
 
 testITNDecimal() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_decimal.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_decimal_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_decimal.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_decimal_cased.txt
 }
 
 testITNElectronic() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_electronic.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_electronic_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_electronic.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_electronic_cased.txt
 }
 
 testITNOrdinal() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_ordinal.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_ordinal_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_ordinal.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_ordinal_cased.txt
 }
 
 testITNTime() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_time.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_time_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_time.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_time_cased.txt
 }
 
 testITNMeasure() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_measure.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_measure_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_measure.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_measure_cased.txt
 }
 
 testITNMoney() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_money.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_money_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_money.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_money_cased.txt
 }
 
 testITNWhitelist() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_whitelist.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_whitelist_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_whitelist.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_whitelist_cased.txt
 }
 
 testITNTelephone() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_telephone.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_telephone_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_telephone.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_telephone_cased.txt
 }
 
 testITNWord() {
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_word.txt
-  runtest $PROJECT_DIR/en/data_inverse_text_normalization/test_cases_word_cased.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_word.txt
+  runtest $TEST_DIR/data_inverse_text_normalization/test_cases_word_cased.txt
 }
 
+
+# Remove all command-line arguments
+shift $#
+
 # Load shUnit2
-. $PROJECT_DIR/../shunit2/shunit2
+. /workspace/shunit2/shunit2

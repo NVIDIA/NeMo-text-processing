@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +14,17 @@
 
 
 import json
-import logging
 import re
 import string
 import sys
+import unicodedata
 from collections import defaultdict, namedtuple
 from typing import Dict, List, Optional, Set, Tuple
 from unicodedata import category
 
+from nemo_text_processing.utils.logging import logger
+
+NFC = 'NFC'
 EOS_TYPE = "EOS"
 PUNCT_TYPE = "PUNCT"
 PLAIN_TYPE = "PLAIN"
@@ -45,11 +48,11 @@ known_types = [
 ]
 
 
-def _load_kaggle_text_norm_file(file_path: str) -> List[Instance]:
+def _load_kaggle_text_norm_file(file_path: str, to_lower: bool) -> List[Instance]:
     """
     https://www.kaggle.com/richardwilliamsproat/text-normalization-for-english-russian-and-polish
     Loads text file in the Kaggle Google text normalization file format: <semiotic class>\t<unnormalized text>\t<`self` if trivial class or normalized text>
-    E.g. 
+    E.g.
     PLAIN   Brillantaisia   <self>
     PLAIN   is      <self>
     PLAIN   a       <self>
@@ -65,7 +68,7 @@ def _load_kaggle_text_norm_file(file_path: str) -> List[Instance]:
     Args:
         file_path: file path to text file
 
-    Returns: flat list of instances 
+    Returns: flat list of instances
     """
     res = []
     with open(file_path, 'r') as fp:
@@ -75,8 +78,9 @@ def _load_kaggle_text_norm_file(file_path: str) -> List[Instance]:
                 res.append(Instance(token_type=EOS_TYPE, un_normalized="", normalized=""))
             else:
                 l_type, l_token, l_normalized = parts
-                l_token = l_token.lower()
-                l_normalized = l_normalized.lower()
+                if to_lower:
+                    l_token = l_token.lower()
+                    l_normalized = l_normalized.lower()
 
                 if l_type == PLAIN_TYPE:
                     res.append(Instance(token_type=l_type, un_normalized=l_token, normalized=l_token))
@@ -85,11 +89,11 @@ def _load_kaggle_text_norm_file(file_path: str) -> List[Instance]:
     return res
 
 
-def load_files(file_paths: List[str], load_func=_load_kaggle_text_norm_file) -> List[Instance]:
+def load_files(file_paths: List[str], load_func=_load_kaggle_text_norm_file, to_lower: bool = True) -> List[Instance]:
     """
     Load given list of text files using the `load_func` function.
 
-    Args: 
+    Args:
         file_paths: list of file paths
         load_func: loading function
 
@@ -97,7 +101,7 @@ def load_files(file_paths: List[str], load_func=_load_kaggle_text_norm_file) -> 
     """
     res = []
     for file_path in file_paths:
-        res.extend(load_func(file_path=file_path))
+        res.extend(load_func(file_path=file_path, to_lower=to_lower))
     return res
 
 
@@ -117,7 +121,7 @@ def clean_generic(text: str) -> str:
 
 def evaluate(preds: List[str], labels: List[str], input: Optional[List[str]] = None, verbose: bool = True) -> float:
     """
-    Evaluates accuracy given predictions and labels. 
+    Evaluates accuracy given predictions and labels.
 
     Args:
         preds: predictions
@@ -185,8 +189,13 @@ def training_data_to_sentences(data: List[Instance]) -> Tuple[List[str], List[st
         else:
             sentence.append(instance)
             sentence_categories.update([instance.token_type])
-    un_normalized = [" ".join([instance.un_normalized for instance in sentence]) for sentence in sentences]
-    normalized = [" ".join([instance.normalized for instance in sentence]) for sentence in sentences]
+    un_normalized = [
+        " ".join([unicodedata.normalize(NFC, instance.un_normalized) for instance in sentence])
+        for sentence in sentences
+    ]
+    normalized = [
+        " ".join([unicodedata.normalize(NFC, instance.normalized) for instance in sentence]) for sentence in sentences
+    ]
     return un_normalized, normalized, categories
 
 
@@ -248,7 +257,7 @@ def load_file(file_path: str) -> List[str]:
     """
     Loads given text file with separate lines into list of string.
 
-    Args: 
+    Args:
         file_path: file path
 
     Returns: flat list of string
@@ -267,7 +276,7 @@ def write_file(file_path: str, data: List[str]):
     Args:
         file_path: file path
         data: list of string
-        
+
     """
     with open(file_path, 'w') as fp:
         for line in data:
@@ -344,7 +353,7 @@ def post_process_punct(input: str, normalized_text: str, add_unicode_punct: bool
                 idx_out += 1
                 idx_in += 1
         except:
-            logging.info(f"Skipping post-processing of {''.join(normalized_text)} for '{punct}'")
+            logger.info(f"Skipping post-processing of {''.join(normalized_text)} for '{punct}'")
 
     normalized_text = "".join(normalized_text)
     return re.sub(r' +', ' ', normalized_text)

@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_extra_space,
     delete_preserve_order,
 )
-from pynini.lib import pynutil
 
 
 class MeasureFst(GraphFst):
@@ -27,7 +28,7 @@ class MeasureFst(GraphFst):
     Finite state transducer for verbalizing measure, e.g.
         measure { cardinal { integer: "zwei" units: "unzen" } } -> "zwei unzen"
         measure { cardinal { integer_part: "zwei" quantity: "millionen" units: "unzen" } } -> "zwei millionen unzen"
-    
+
     Args:
         decimal: decimal GraphFst
         cardinal: cardinal GraphFst

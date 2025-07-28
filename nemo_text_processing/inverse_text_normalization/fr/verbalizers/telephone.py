@@ -13,15 +13,16 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import NEMO_NOT_QUOTE, GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.fr.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class TelephoneFst(GraphFst):
     """
     Finite state transducer for verbalizing telephone, e.g.
         telephone { number_part: "02 33 43 53 22" }
-        -> 02 33 43 53 22 
+        -> 02 33 43 53 22
     """
 
     def __init__(self):

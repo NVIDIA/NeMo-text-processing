@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -24,16 +26,15 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     plurals,
 )
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone, and IP, and SSN which includes country code, number part and extension 
-    country code optional: +*** 
+    Finite state transducer for classifying telephone, and IP, and SSN which includes country code, number part and extension
+    country code optional: +***
     number part: ***-***-****, or (***) ***-****
     extension optional: 1-9999
-    E.g 
+    E.g
     +1 123-123-5678-1 -> telephone { country_code: "one" number_part: "one two three, one two three, five six seven eight" extension: "one" }
     1-800-GO-U-HAUL -> telephone { country_code: "one" number_part: "one, eight hundred GO U HAUL" }
     Args:
