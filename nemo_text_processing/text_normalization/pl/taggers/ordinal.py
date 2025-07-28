@@ -191,3 +191,11 @@ class OrdinalFst(GraphFst):
             else:
                 two_digits[key] |= self.tens_all[key] + self.digits_all[key]
         return two_digits
+
+    def all_to_graph(self, graph_dict, deterministic=False):
+        output_graph = graph_dict["mi_sg_nom"]
+        if not deterministic:
+            for key in graph_dict:
+                if key != "mi_sg_nom":
+                    output_graph |= graph_dict[key]
+        return output_graph.optimize()
