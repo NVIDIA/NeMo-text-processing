@@ -127,11 +127,13 @@ def complete_paradigm(partial, complete=False):
                     partial[key] = partial[f'pl_{case}']
 
 
-def make_graph_dict(filepath, invert=True):
+def make_graph_dict(filepath, invert=True, complete=False):
     output_graph = {}
     word_tsv = load_labels(get_abs_path(filepath))
     for word, target in word_tsv:
         word_forms = adjective_inflection(word)
+        if complete:
+            complete_paradigm(word_forms, complete=True)
         for key in word_forms:
             if invert:
                 a = target
