@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import sys
 from unicodedata import category
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 from pynini.examples import plurals
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 
 
 class PunctuationFst(GraphFst):
@@ -35,7 +37,7 @@ class PunctuationFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
-        s = "!#%&\'()*+,-./:;<=>?@^_`{|}~\"。，；-《》“”"
+        s = "!#%&\'()*+,-/:;<=>?@^_`{|}~\"。，；-《》“”"
 
         punct_symbols_to_exclude = ["[", "]"]
         punct_unicode = [

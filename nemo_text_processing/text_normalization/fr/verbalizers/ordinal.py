@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):

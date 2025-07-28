@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -31,7 +32,7 @@ from nemo_text_processing.text_normalization.ar.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ar.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from pynini.lib import pynutil
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):
@@ -69,9 +70,9 @@ class ClassifyFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             no_digits = pynini.closure(pynini.difference(NEMO_CHAR, NEMO_DIGIT))
             self.fst_no_digits = pynini.compose(self.fst, no_digits).optimize()
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info(f"Creating ClassifyFst grammars. This might take some time...")
+            logger.info(f"Creating ClassifyFst grammars. This might take some time...")
 
             self.cardinal = CardinalFst()
             cardinal_graph = self.cardinal.fst
@@ -113,4 +114,3 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")

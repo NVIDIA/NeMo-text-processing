@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -25,13 +27,13 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.es.graph_utils import cardinal_separator
 from nemo_text_processing.text_normalization.it.utils import get_abs_path
-from pynini.lib import pynutil
 
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
 digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
 tens = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
 tens_one = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens_one.tsv")))
+tens_eight = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens_eight.tsv")))
 hundreds = pynini.invert(pynini.string_file(get_abs_path("data/numbers/hundreds.tsv")))
 
 
@@ -46,7 +48,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     Returns:
         fst: A pynini.FstLike object
     """
-    exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
+    exactly_three_digits = NEMO_DIGIT**3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
 
     cardinal_string = pynini.closure(
@@ -83,7 +85,8 @@ class CardinalFst(GraphFst):
         # double digit
         graph_tens = teen
         graph_tens |= tens + (pynutil.delete('0') | graph_digit)
-        graph_tens |= tens_one
+        graph_tens |= pynutil.add_weight(tens_one, -0.01)
+        graph_tens |= pynutil.add_weight(tens_eight, -0.01)
 
         self.tens = graph_tens.optimize()
 
@@ -159,7 +162,7 @@ class CardinalFst(GraphFst):
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
+            @ NEMO_DIGIT**24
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)

@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 import string
 from pathlib import Path
@@ -24,6 +23,8 @@ from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
+from nemo_text_processing.utils.logging import logger
+
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
 NEMO_DIGIT = byte.DIGIT
@@ -32,9 +33,9 @@ NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
 NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
 NEMO_ALNUM = pynini.union(NEMO_DIGIT, NEMO_ALPHA).optimize()
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
-NEMO_NON_BREAKING_SPACE = "\u00A0"
+NEMO_NON_BREAKING_SPACE = "\u00a0"
 NEMO_SPACE = " "
-NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", "\u00A0").optimize()
+NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", "\u00a0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 
@@ -67,7 +68,7 @@ def generator_main(file_name: str, graphs: Dict[str, pynini.FstLike]):
     for rule, graph in graphs.items():
         exporter[rule] = graph.optimize()
     exporter.close()
-    logging.info(f"Created {file_name}")
+    logger.info(f"Created {file_name}")
 
 
 def convert_space(fst) -> "pynini.FstLike":
@@ -150,4 +151,4 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
-        return res @ pynini.cdrewrite(pynini.cross("\u00A0", " "), "", "", NEMO_SIGMA)
+        return res @ pynini.cdrewrite(pynini.cross("\u00a0", " "), "", "", NEMO_SIGMA)

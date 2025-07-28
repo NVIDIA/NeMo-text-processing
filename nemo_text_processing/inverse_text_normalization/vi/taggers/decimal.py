@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
@@ -21,7 +23,6 @@ from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
-from pynini.lib import pynutil
 
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
@@ -122,10 +123,12 @@ class DecimalFst(GraphFst):
         final_graph = optional_graph_negative + final_graph_wo_sign
 
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit,
+            final_graph_wo_sign,
+            cardinal.graph_hundred_component_at_least_one_none_zero_digit,
         )
         final_graph |= optional_graph_negative + get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit,
+            final_graph_wo_sign,
+            cardinal.graph_hundred_component_at_least_one_none_zero_digit,
         )
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

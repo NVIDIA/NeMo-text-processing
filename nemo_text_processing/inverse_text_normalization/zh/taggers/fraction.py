@@ -13,8 +13,9 @@
 # limitations under the License.
 
 
-from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
 
 
 class FractionFst(GraphFst):
@@ -22,7 +23,7 @@ class FractionFst(GraphFst):
     Finite state transducer for classifying fraction
         e.g. 二分之一 -> tokens { fraction { denominator: "2" numerator: "1"} }
         e.g. 五又二分之一 -> tokens { fraction { integer_part: "1" denominator: "2" numerator: "1" } }
-    
+
     Args:
         cardinal: CardinalFst
     """

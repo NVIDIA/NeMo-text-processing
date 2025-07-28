@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.fr.graph_utils import GraphFst, delete_extra_space
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class DateFst(GraphFst):
@@ -45,7 +46,9 @@ class DateFst(GraphFst):
         day_graph = self.cardinal | pynini.cross("premier", "1")  # Premier is only ordinal used for dates
         day_graph = pynutil.insert("day: \"") + day_graph + pynutil.insert("\"")
         optional_graph_year = pynini.closure(
-            delete_extra_space + pynutil.insert("year: \"") + year_graph + pynutil.insert("\""), 0, 1,
+            delete_extra_space + pynutil.insert("year: \"") + year_graph + pynutil.insert("\""),
+            0,
+            1,
         )
         graph_dmy = day_graph + delete_extra_space + month_graph + optional_graph_year
 

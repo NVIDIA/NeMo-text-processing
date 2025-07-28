@@ -25,8 +25,9 @@ import model_utils
 import pandas as pd
 import utils
 from joblib import Parallel, delayed
-from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 from tqdm import tqdm
+
+from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
 parser = argparse.ArgumentParser(description="Re-scoring")
 parser.add_argument("--lang", default="en", type=str, choices=["en"])
@@ -72,7 +73,7 @@ def threshold_weights(norm_texts_weights, delta: float = 0.2):
     delta: delta to add to minimum weight in options to compose upper limit for threshhold
 
     returns:
-        filter list of same format as input 
+        filter list of same format as input
     """
     # threshold value is factor applied to lowest/first weight of all normalization options for every input
     res = []

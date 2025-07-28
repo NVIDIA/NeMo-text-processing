@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.ar.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.inverse_text_normalization.ar.verbalizers.word import WordFst
 from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst, delete_extra_space, delete_space
-from pynini.lib import pynutil
 
 
 class VerbalizeFinalFst(GraphFst):
     """
-    Finite state transducer that verbalizes an entire sentence, e.g. 
+    Finite state transducer that verbalizes an entire sentence, e.g.
     tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
     """
 

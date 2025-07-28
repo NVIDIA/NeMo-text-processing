@@ -14,8 +14,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst, convert_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst, convert_space
 
 
 class FractionFst(GraphFst):
@@ -24,7 +25,7 @@ class FractionFst(GraphFst):
         e.g. halv -> tokens { name: "1/2" }
         e.g. ett och en halv -> tokens { name: "1 1/2" }
         e.g. tre och fyra femtedelar -> tokens { name: "3 4/5" }
-    
+
     Args:
         itn_cardinal_tagger: ITN cardinal tagger
         tn_fraction_verbalizer: TN fraction verbalizer

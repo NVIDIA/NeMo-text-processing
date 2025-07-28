@@ -13,15 +13,16 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst, convert_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst, convert_space
 
 
 class TelephoneFst(GraphFst):
     """
-    Finite state transducer for classifying telephone numbers, e.g. 
+    Finite state transducer for classifying telephone numbers, e.g.
         noll åtta sjuhundraåttionio femtiotvå tjugofem -> tokens { name: "08-789 52 25" }
-    
+
     Args:
         tn_cardinal_tagger: TN Cardinal Tagger
     """

@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
@@ -20,7 +22,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -85,12 +86,12 @@ class TimeFst(GraphFst):
             + optional_suffix
             + optional_zone
         )
+        graph_hms @= pynini.cdrewrite(pynini.cross("one hours", "one hour"), "[BOS]", "", NEMO_SIGMA)
         graph_hms @= pynini.cdrewrite(
             pynutil.delete("o ")
-            | pynini.cross("one minutes", "one minute")
-            | pynini.cross("one seconds", "one second")
-            | pynini.cross("one hours", "one hour"),
-            pynini.union(" ", "[BOS]"),
+            | pynutil.add_weight(pynini.cross("o one minutes", "one minute"), -0.01)
+            | pynutil.add_weight(pynini.cross("o one seconds", "one second"), -0.01),
+            " ",
             "",
             NEMO_SIGMA,
         )

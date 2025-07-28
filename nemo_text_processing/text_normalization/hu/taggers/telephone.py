@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
@@ -22,7 +24,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.hu.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TelephoneFst(GraphFst):
@@ -40,8 +41,8 @@ class TelephoneFst(GraphFst):
         https://en.wikipedia.org/wiki/Telephone_numbers_in_Hungary
 
     Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
+                deterministic: if True will provide a single transduction option,
+                        for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True):

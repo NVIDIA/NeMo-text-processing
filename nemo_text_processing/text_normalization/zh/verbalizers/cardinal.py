@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class CardinalFst(GraphFst):
@@ -29,7 +30,7 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
-        delete_sign = pynini.cross("negative: \"负\"", "负") | pynini.cross("positive: \"正\"", "正")
+        delete_sign = pynini.cross("negative: \"-\"", "负")
         delete_integer = (
             pynutil.delete("integer: ")
             + pynutil.delete("\"")
@@ -43,6 +44,7 @@ class CardinalFst(GraphFst):
         )
         graph_sign = delete_sign + delete_space + delete_integer
         final_graph = delete_integer | graph_sign | graph_mandarin
+        self.numbers = final_graph
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

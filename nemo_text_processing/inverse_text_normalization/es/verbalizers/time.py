@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -20,7 +22,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -34,12 +35,14 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="verbalize")
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
 
-        # hour may or may not include preposition ("la" or "las")
+        # hour may or may not include article ("la" or "las")
+        article = pynini.union("la ", "las ", "La ", "Las ")
+
         hour = (
             pynutil.delete("hours:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(pynini.union("la ", "las "), 0, 1)
+            + pynini.closure(article, 0, 1)
             + pynini.closure(NEMO_DIGIT, 1)
             + pynutil.delete("\"")
         )

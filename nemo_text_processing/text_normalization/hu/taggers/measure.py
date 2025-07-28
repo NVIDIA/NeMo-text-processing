@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_NON_BREAKING_SPACE,
@@ -23,7 +25,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.hu.taggers.whitelist import load_inflected
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
-from pynini.lib import pynutil
 
 unit_singular = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
 
@@ -60,7 +61,9 @@ class MeasureFst(GraphFst):
         )
 
         optional_unit_denominator = pynini.closure(
-            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator, 0, 1,
+            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator,
+            0,
+            1,
         )
 
         unit_singular_graph = (

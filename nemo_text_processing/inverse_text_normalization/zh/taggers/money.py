@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
@@ -56,7 +57,9 @@ class MoneyFst(GraphFst):
 
         # yuan major plus minor
         major_symbol = pynini.accep("块") | pynini.cross("塊", "块")
-        tencent = pynini.accep("毛") | pynini.accep("角",)
+        tencent = pynini.accep("毛") | pynini.accep(
+            "角",
+        )
         cent = pynini.accep("分")
         graph_kuai = (
             graph_integer_component

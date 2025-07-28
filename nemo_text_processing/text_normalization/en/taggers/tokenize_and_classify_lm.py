@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
+from pynini.examples import plurals
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -55,8 +57,7 @@ from nemo_text_processing.text_normalization.en.verbalizers.roman import RomanFs
 from nemo_text_processing.text_normalization.en.verbalizers.telephone import TelephoneFst as vTelephone
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTime
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst as vWord
-from pynini.examples import plurals
-from pynini.lib import pynutil
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):
@@ -64,7 +65,7 @@ class ClassifyFst(GraphFst):
     Final class that composes all other classification grammars. This class can process an entire sentence including punctuation.
     For deployment, this grammar will be compiled and exported to OpenFst Finite State Archive (FAR) File.
     More details to deployment at NeMo/tools/text_processing_deployment.
-    
+
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
         deterministic: if True will provide a single transduction option,
@@ -95,9 +96,9 @@ class ClassifyFst(GraphFst):
             self.fst = pynini.Far(far_file, mode='r')['tokenize_and_classify']
             no_digits = pynini.closure(pynini.difference(NEMO_CHAR, NEMO_DIGIT))
             self.fst_no_digits = pynini.compose(self.fst, no_digits).optimize()
-            logging.info(f'ClassifyFst.fst was restored from {far_file}.')
+            logger.info(f'ClassifyFst.fst was restored from {far_file}.')
         else:
-            logging.info(f'Creating ClassifyFst grammars. This might take some time...')
+            logger.info(f'Creating ClassifyFst grammars. This might take some time...')
             # TAGGERS
             cardinal = CardinalFst(deterministic=True, lm=True)
             cardinal_tagger = cardinal
@@ -224,4 +225,3 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f'ClassifyFst grammars are saved to {far_file}.')

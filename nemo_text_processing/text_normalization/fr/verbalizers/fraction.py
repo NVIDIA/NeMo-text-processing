@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
@@ -20,18 +22,17 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
     """
-	Finite state transducer for verbalizing fraction
-		e.g. tokens { fraction { integer: "treinta y tres" numerator: "cuatro" denominator: "quinto" } } ->
-            treinta y tres y cuatro quintos
-	Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
-	"""
+    Finite state transducer for verbalizing fraction
+            e.g. tokens { fraction { integer: "treinta y tres" numerator: "cuatro" denominator: "quinto" } } ->
+        treinta y tres y cuatro quintos
+    Args:
+            deterministic: if True will provide a single transduction option,
+                    for False multiple transduction are generated (used for audio-based normalization)
+    """
 
     def __init__(self, ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)

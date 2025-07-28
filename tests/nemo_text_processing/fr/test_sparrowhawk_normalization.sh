@@ -1,10 +1,12 @@
 #! /bin/sh
 
-PROJECT_DIR=/workspace/tests
+GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+PROJECT_DIR=${2:-"/workspace/tests/en"}
 
 runtest () {
   input=$1
-  cd /workspace/sparrowhawk/documentation/grammars
+  echo "INPUT is $input"
+  cd ${GRAMMARS_DIR}
 
   # read test file
   while read testcase; do
@@ -25,6 +27,11 @@ testTNCardinal() {
   runtest $input
 }
 
+testTNDate() {
+  input=$PROJECT_DIR/fr/data_text_normalization/test_cases_date.txt
+  runtest $input
+}
+
 testTNDecimal() {
   input=$PROJECT_DIR/fr/data_text_normalization/test_cases_decimal.txt
   runtest $input
@@ -37,6 +44,16 @@ testTNFraction() {
 
 testTNOrdinal() {
   input=$PROJECT_DIR/fr/data_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
+
+testTNWhitelist() {
+  input=$PROJECT_DIR/fr/data_text_normalization/test_cases_whitelist.txt
+  runtest $input
+}
+
+testTNWord() {
+  input=$PROJECT_DIR/fr/data_text_normalization/test_cases_word.txt
   runtest $input
 }
 

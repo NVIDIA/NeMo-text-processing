@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -37,9 +38,9 @@ class TimeFst(GraphFst):
         alphabet_pm = pynini.string_file(get_abs_path("data/time/PM.tsv"))
 
         # fundamental components
-        hour_component = pynutil.delete("hour: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        minute_component = pynutil.delete("minute: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        second_component = pynutil.delete("second: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        hour_component = pynutil.delete("hours: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        minute_component = pynutil.delete("minutes: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        second_component = pynutil.delete("seconds: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         graph_regular = (
             hour_component
             | minute_component
@@ -51,7 +52,7 @@ class TimeFst(GraphFst):
         )
 
         # back count 三点差五分
-        delete_verb = pynutil.delete("verb: \"") + pynini.accep("差") + pynutil.delete("\"")
+        delete_verb = pynutil.delete("morphosyntactic_features: \"") + pynini.accep("差") + pynutil.delete("\"")
         graph_back_count = (
             (
                 pynini.closure(delete_verb + pynutil.insert(' '))

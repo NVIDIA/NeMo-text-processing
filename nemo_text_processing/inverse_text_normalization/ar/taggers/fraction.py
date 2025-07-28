@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
@@ -21,14 +23,13 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
         e.g. واحد و نصف -> tokens { integer_part: "1" numerator: "1" denominator: "2" }
-    
+
     Args:
         tn_cardinal: TN cardinal tagger
 

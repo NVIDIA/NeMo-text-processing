@@ -16,10 +16,11 @@ import sys
 from unicodedata import category
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
-from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 from pynini.examples import plurals
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
 
 
 class PunctuationFst(GraphFst):
@@ -42,7 +43,7 @@ class PunctuationFst(GraphFst):
             chr(i)
             for i in range(sys.maxunicode)
             if category(chr(i)).startswith("P") and chr(i) not in punct_symbols_to_exclude
-        ]
+        ] + [r"\[", r"\]"]
 
         whitelist_symbols = load_labels(get_abs_path("data/whitelist/symbol.tsv"))
         whitelist_symbols = [x[0] for x in whitelist_symbols]

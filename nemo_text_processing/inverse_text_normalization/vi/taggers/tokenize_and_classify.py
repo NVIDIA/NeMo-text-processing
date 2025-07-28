@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -37,7 +38,7 @@ from nemo_text_processing.inverse_text_normalization.vi.taggers.time import Time
 from nemo_text_processing.inverse_text_normalization.vi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.vi.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED
-from pynini.lib import pynutil
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):
@@ -68,9 +69,9 @@ class ClassifyFst(GraphFst):
             far_file = os.path.join(cache_dir, f"vi_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info(f"Creating ClassifyFst grammars.")
+            logger.info(f"Creating ClassifyFst grammars.")
             cardinal = CardinalFst()
             cardinal_graph = cardinal.fst
 
@@ -121,4 +122,3 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")

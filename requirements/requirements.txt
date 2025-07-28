@@ -3,10 +3,10 @@ editdistance
 inflect
 joblib
 pandas
-pynini==2.1.5
+pynini==2.1.6.post1
 regex
 sacremoses>=0.0.43
-setuptools==65.5.1
+setuptools>=65.5.1
 tqdm>=4.41.0
 transformers
 wget

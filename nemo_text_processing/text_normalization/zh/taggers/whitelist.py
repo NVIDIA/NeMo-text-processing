@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, convert_space
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 class WhiteListFst(GraphFst):
@@ -32,32 +33,24 @@ class WhiteListFst(GraphFst):
         input_file: path to a file with whitelist replacements
     """
 
-    def __init__(self, input_case: str, deterministic: bool = True, input_file: str = None):
+    def __init__(self, deterministic: bool = True, input_file: str = None):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
 
-        def _get_whitelist_graph(input_case, file):
+        def _get_whitelist_graph(file):
             whitelist = load_labels(file)
-            if input_case == "lower_cased":
-                whitelist = [[x[0].lower()] + x[1:] for x in whitelist]
             graph = pynini.string_map(whitelist)
             return graph
 
-        graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist.tsv"))
-        if not deterministic and input_case != "lower_cased":
-            graph |= pynutil.add_weight(
-                _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv")), weight=0.0001
-            )
+        graph = _get_whitelist_graph(get_abs_path("data/whitelist.tsv"))
+
+        graph |= pynutil.add_weight(_get_whitelist_graph(get_abs_path("data/whitelist.tsv")), weight=0.0001)
 
         if input_file:
-            whitelist_provided = _get_whitelist_graph(input_case, input_file)
+            whitelist_provided = _get_whitelist_graph(input_file)
             if not deterministic:
                 graph |= whitelist_provided
             else:
                 graph = whitelist_provided
-
-        if not deterministic:
-            units_graph = _get_whitelist_graph(input_case, file=get_abs_path("data/measure/measurements.tsv"))
-            graph |= units_graph
 
         self.graph = graph
         self.final_graph = convert_space(self.graph).optimize()

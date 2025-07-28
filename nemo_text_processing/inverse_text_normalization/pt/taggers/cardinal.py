@@ -14,6 +14,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.pt.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
@@ -24,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class CardinalFst(GraphFst):
@@ -170,9 +171,9 @@ class CardinalFst(GraphFst):
             ) @ (pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT))
             graph_hundred_component_prefix_e = graph_hundred_component_prefix_e.optimize()
 
-            graph_hundred_component_no_prefix = pynini.union(graph_hundreds + graph_e + graph_ties_component,) @ (
-                pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
-            )
+            graph_hundred_component_no_prefix = pynini.union(
+                graph_hundreds + graph_e + graph_ties_component,
+            ) @ (pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT))
             graph_hundred_component_no_prefix = graph_hundred_component_no_prefix.optimize()
 
             graph_mil_prefix_e = pynini.union(
@@ -349,18 +350,13 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph
 
         # save self.numbers_up_to_thousand for use in DecimalFst
-        digits_up_to_thousand = NEMO_DIGIT | (NEMO_DIGIT ** 2) | (NEMO_DIGIT ** 3)
+        digits_up_to_thousand = NEMO_DIGIT | (NEMO_DIGIT**2) | (NEMO_DIGIT**3)
         numbers_up_to_thousand = pynini.compose(graph, digits_up_to_thousand).optimize()
         self.numbers_up_to_thousand = numbers_up_to_thousand
 
         # save self.numbers_up_to_million for use in DecimalFst
         digits_up_to_million = (
-            NEMO_DIGIT
-            | (NEMO_DIGIT ** 2)
-            | (NEMO_DIGIT ** 3)
-            | (NEMO_DIGIT ** 4)
-            | (NEMO_DIGIT ** 5)
-            | (NEMO_DIGIT ** 6)
+            NEMO_DIGIT | (NEMO_DIGIT**2) | (NEMO_DIGIT**3) | (NEMO_DIGIT**4) | (NEMO_DIGIT**5) | (NEMO_DIGIT**6)
         )
         numbers_up_to_million = pynini.compose(graph, digits_up_to_million).optimize()
         self.numbers_up_to_million = numbers_up_to_million

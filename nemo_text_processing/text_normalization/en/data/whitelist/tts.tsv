@@ -98,7 +98,8 @@ b. c.	BC
 b.c.	BC
 A. A.	a a
 A.A.	AA
-A&A	A and A
+A&A	AANDA
+A100	AONEHUNDRED
 AAAs	AAA's
 AaB	AAB
 Aabo	AABO
@@ -117,7 +118,7 @@ Abp	ABP
 Abr	ABR
 abv	ABV
 Abz	ABZ
-A&C	A and C
+A&C	AANDC
 A. C.	AC
 A.C.	AC
 A/C	AC
@@ -131,12 +132,12 @@ ACMs	ACM's
 AcpA	ACPA
 AcpB	ACPB
 acq	ACQ
-A&CR	A and CR
+A&CR	AANDCR
 AcSOC	ACSOC
 acu	ACU
 AC&W	AC and W
 Acy	ACY
-A&D	A and D
+A&D	AANDD
 Adab	ADAB
 A. D.	AD
 A.D.	AD
@@ -157,7 +158,7 @@ ADRs	ADR's
 ADSRs	ADSR's
 ADSs	ADS's
 Adwa	ADWA
-A&E	A and E
+A&E	AANDE
 A. E.	AE
 A.E.	AE
 Aed	AED
@@ -220,7 +221,7 @@ Ahta	AHTA
 aht	AHT
 Ahu	AHU
 Ahva	AHVA
-A&I	A and I
+A&I	AANDI
 A. I.	AI
 A.I.	AI
 Aias	AIA's
@@ -251,7 +252,7 @@ aka.	AKA
 aka	AKA
 Aka.	AKA
 Aka	AKA
-A&K	A and K
+A&K	AANDK
 A. K.	AK
 A.K.	AK
 AKAPs	AKAP's
@@ -260,13 +261,13 @@ AKAs	AKA's
 akh	AKH
 Akpa	AKPA
 Aku	AKU
-A&L	A and L
+A&L	AANDL
 A. L.	AL
 A.L.	AL
 Alh	ALH
 ALUs	ALU's
 A'ma	AMA
-A&M	A and M
+A&M	AANDM
 a.m.	AM
 a.m	AM
 A. M.	AM
@@ -287,7 +288,7 @@ Amm	AMM
 AM&O	AM and O
 Ampt	AMPT
 amr	AMR
-A&M's	A and M's
+A&M's	AANDM's
 Ams'	AM's
 amsl	AMSL
 Amta	AMTA
@@ -305,7 +306,7 @@ Angu	ANGU
 Anhe	ANHE
 Anr	ANR
 Anrep	ANREP
-A&O	A and O
+A&O	AANDO
 A. O.	AO
 A.O.	AO
 AOCCs	AOCC's
@@ -326,7 +327,7 @@ AoS	AOS
 Aotus	AOTU's
 aov	AOV
 aovf	AOVF
-A&P	A and P
+A&P	AANDP
 A. P.	AP
 A.P.	AP
 Apc	APC
@@ -347,14 +348,14 @@ appr	APPR
 Appts	APPT's
 appu	APPU
 Appu	APPU
-A&P's	A and P's
+A&P's	AANDP's
 Aps	AP's
 APs	AP's
 AP&T	AP and T
 Aqa	AQA
 Aql	AQL
 Aqr	AQR
-A&R	A and R
+A&R	AANDR
 A. R.	AR
 A.R.	AR
 ArgR	ARGR
@@ -389,7 +390,7 @@ Asst	ASST
 Aste	ASTE
 Astt	ASTT
 Aswa	ASWA
-A&T	A and T
+A&T	AANDT
 atac	ATAC
 Atac	ATAC
 Atad	ATAD
@@ -422,12 +423,12 @@ ATOs	ATO's
 atpB	ATPB
 atri	ATRI
 Atri	ATRI
-A&T's	A and T's
+A&T's	AANDT's
 A.T.s	AT's
 AT&SF	AT and SF
-AT&T	AT and T
+AT&T	ATANDT
 attd	ATTD
-AT&T's	AT and T's
+AT&T's	ATANDTS
 atv	ATV
 ATVs	ATV's
 AtxA	ATXA
@@ -643,7 +644,7 @@ Bzyb	BZYB
 Caat	CAAT
 C. A.	CA
 C.A.	CA
-C&A	C and A
+C&A	CANDA
 CA&CC	CA and CC
 Cadw	CADW
 caeca	CAECA
@@ -893,7 +894,7 @@ czy	CZY
 Daai	DAAI
 D. A.	DA
 D.A.	DA
-D&AD	D and AD
+D&AD	DANDAD
 D.A.N.C.E.	dance
 Dav	DAV
 dBa	DBA
@@ -1511,7 +1512,7 @@ Geu	GEU
 Gev	GEV
 GeV	GEV
 Gfa	GFA
-GF&A	GF and A
+GF&A	GFANDA
 G. F.	GF
 G.F.	GF
 G. G.	GG
@@ -2052,7 +2053,7 @@ JHSVs	JHSV's
 JHud	JHUD
 J. I.	JI
 J.I.	JI
-J&J	J and J
+J&J	JANDJ
 J. J.	JJ
 J.J.	JJ
 Jka	JKA
@@ -2107,6 +2108,7 @@ Jym	JYM
 Jymn	JYMN
 J. Z.	JZ
 J.Z.	JZ
+K8S	KUBERNETES
 K. A.	KA
 K.A.	KA
 kbi	KBI
@@ -2323,6 +2325,7 @@ L.Y.	LY
 L&YR	L and YR
 M. A.	MA
 M.A.	MA
+MAX-Q	MAXQ
 M&A	M and A
 Mbewu	MBEWU
 mbi	MBI
@@ -2396,7 +2399,7 @@ M&L	M and L
 M. L.	ML
 M.L.	ML
 MLPs	MLP's
-MM&A	MM and A
+MM&A	MMANDA
 M&M	M and M
 M. M.	MM
 M.M.	MM
@@ -2553,6 +2556,7 @@ N.W.	NW
 nyc	NYC
 N. Y.	NY
 N.Y.	NY
+NX-SOC	NXSOC
 N'Zif	NZIF
 NZiK	NZIK
 N'Zi	NZI
@@ -2785,9 +2789,9 @@ Pyw	PYW
 Pyx	PYX
 P. Z.	PZ
 Q. A.	QA
-Q&A	Q and A
-Q&A's	Q and A's
-Q&As	Q and A's
+Q&A	QANDA
+Q&A's	QANDA's
+Q&As	QANDAS
 QbA	QBA
 Q.B.	QB
 Q.C.	QC
@@ -2923,6 +2927,7 @@ rup	RUP
 Rup	RUP
 R. U.	RU
 R.U.	RU
+RUN:AI	RUN AI
 RutB	RUTB
 Ruu	RUU
 Ruwa	RUWA
@@ -2995,7 +3000,7 @@ S. F.	SF
 S.F.	SF
 sfs	SFS
 S.F.'s	SF's
-SG&A	SG and A
+SG&A	SGANDA
 sgb	SGB
 Sgip	SGIP
 sgml	SGML
@@ -3093,6 +3098,7 @@ Ssy	SSY
 ST&AJ	ST and AJ
 STDs	STD's
 stfv	STFV
+STG-TWO	STGTWO
 STGs	STG's
 STIs	STI's
 STi	STI
@@ -3849,3 +3855,36 @@ Z. Y.	ZY
 Z.Y.	ZY
 Z. Z.	ZZ
 Z.Z.	ZZ
+2.5G	two point five g
+7-eleven	seven eleven
+AAA	triple a
+C#	c sharp
+DeepMind	deep mind
+DeepStream	deep stream
+DevOps	dev ops
+DisplayPort	display port
+HuggingFace	hugging face
+ServiceNow	service now
+SuperCloud	super cloud
+Wi-Fi	wifi
+7-Eleven	seven eleven
+Deepmind	deep mind
+Deepstream	deep stream
+Devops	dev ops
+Displayport	display port
+Huggingface	hugging face
+Servicenow	service now
+Supercloud	super cloud
+wi-fi	wifi
+deepmind	deep mind
+deepstream	deep stream
+devops	dev ops
+displayport	display port
+huggingface	hugging face
+servicenow	service now
+supercloud	super cloud
+wi-fi	wifi
+3-D	three d
+401k	four oh one k
+401(k)	four oh one k
+401 (k)	four oh one k

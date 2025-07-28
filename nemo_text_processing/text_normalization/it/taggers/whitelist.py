@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
 from nemo_text_processing.text_normalization.it.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 class WhiteListFst(GraphFst):
@@ -42,10 +43,10 @@ class WhiteListFst(GraphFst):
             graph = pynini.string_map(whitelist)
             return graph
 
-        graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist.tsv"))
+        graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist/whitelist.tsv"))
         if not deterministic and input_case != "lower_cased":
             graph |= pynutil.add_weight(
-                _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv")), weight=0.0001
+                _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist/whitelist.tsv")), weight=0.0001
             )
 
         if input_file:
@@ -56,7 +57,7 @@ class WhiteListFst(GraphFst):
                 graph = whitelist_provided
 
         if not deterministic:
-            units_graph = _get_whitelist_graph(input_case, file=get_abs_path("data/measures/measurements.tsv"))
+            units_graph = _get_whitelist_graph(input_case, file=get_abs_path("data/measure/measurements.tsv"))
             graph |= units_graph
 
         self.graph = graph

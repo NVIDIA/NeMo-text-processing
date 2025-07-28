@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class CardinalFst(GraphFst):
@@ -24,7 +25,7 @@ class CardinalFst(GraphFst):
         Fitite state transducer for classifying cardinals (e.g., 负五十 -> cardinal { negative: "-" integer: "50" })
         This class converts cardinals up to hundred millions (i.e., (10**10))
         Single unit digits are not converted (e.g., 五 -> 五)
-        Numbers less than 20 are not converted. 
+        Numbers less than 20 are not converted.
         二十 (2 characters/logograms) is kept as it is but 二十一 (3 characters/logograms) would become 21
         """
         super().__init__(name="cardinal", kind="classify")
@@ -78,7 +79,11 @@ class CardinalFst(GraphFst):
             | (graph_digits + delete_ten_thousands + pynini.cross(pynini.closure("零"), "00") + graph_all)
             | (graph_digits + delete_ten_thousands + pynini.cross(pynini.closure("零"), "000") + graph_digits)
         )
-        graph_ten_thousands = graph_ten_thousands_simple | graph_ten_thousands_complex | pynutil.insert("00000")
+        graph_ten_thousands = (
+            pynutil.add_weight(graph_ten_thousands_simple, -1.0)
+            | graph_ten_thousands_complex
+            | pynutil.insert("00000")
+        )
 
         # grammmar for hundred thousands 十万
         graph_hundred_thousands_simple = graph_all + closure_ten_thousands
@@ -88,8 +93,10 @@ class CardinalFst(GraphFst):
             | (graph_all + delete_ten_thousands + pynini.cross(pynini.closure("零"), "00") + graph_all)
             | (graph_all + delete_ten_thousands + pynini.cross(pynini.closure("零"), "000") + graph_digits)
         )
-        graph_hundred_thousands = (graph_hundred_thousands_simple | graph_hundred_thousands_complex) | pynutil.insert(
-            "000000"
+        graph_hundred_thousands = (
+            pynutil.add_weight(graph_hundred_thousands_simple, -1.0)
+            | graph_hundred_thousands_complex
+            | pynutil.insert("000000")
         )
 
         # grammar for millions 百万
@@ -103,7 +110,12 @@ class CardinalFst(GraphFst):
                 + graph_hundreds_complex
             )
             | (graph_hundreds_complex + delete_ten_thousands + pynini.cross(pynini.closure("零"), "00") + graph_all)
-            | (graph_hundreds_complex + delete_ten_thousands + pynini.cross(pynini.closure("零"), "000") + graph_digits)
+            | (
+                graph_hundreds_complex
+                + delete_ten_thousands
+                + pynini.cross(pynini.closure("零"), "000")
+                + graph_digits
+            )
         )
         graph_millions = (
             pynutil.add_weight(graph_millions_simple, -1.0) | graph_millions_complex | pynutil.insert("0000000")
@@ -168,7 +180,9 @@ class CardinalFst(GraphFst):
             | (graph_digits + delete_hundred_millions + pynini.cross(pynini.closure("零"), "0000000") + graph_digits)
         )
         graph_hundred_millions = (
-            graph_hundred_millions_simple | graph_hundred_millions_complex | pynutil.insert("000000000")
+            pynutil.add_weight(graph_hundred_millions_simple, -1.0)
+            | graph_hundred_millions_complex
+            | pynutil.insert("000000000")
         )
 
         # grammar for billions 十亿
@@ -203,7 +217,9 @@ class CardinalFst(GraphFst):
             | (graph_all + delete_hundred_millions + pynini.cross(pynini.closure("零"), "000000") + graph_all)
             | (graph_all + delete_hundred_millions + pynini.cross(pynini.closure("零"), "0000000") + graph_digits)
         )
-        graph_billions = graph_billions_simple | graph_billions_complex | pynutil.insert("0000000000")
+        graph_billions = (
+            pynutil.add_weight(graph_billions_simple, -1.0) | graph_billions_complex | pynutil.insert("0000000000")
+        )
 
         # grammar for ten billions 百亿
         graph_ten_billions_simple = graph_hundreds_complex + closure_hundred_millions
@@ -252,7 +268,11 @@ class CardinalFst(GraphFst):
                 + graph_digits
             )
         )
-        graph_ten_billions = graph_ten_billions_simple | graph_ten_billions_complex | pynutil.insert("00000000000")
+        graph_ten_billions = (
+            pynutil.add_weight(graph_ten_billions_simple, -1.0)
+            | graph_ten_billions_complex
+            | pynutil.insert("00000000000")
+        )
 
         # grammar for hundred billions 千亿
         graph_hundred_billions_simple = graph_thousands_complex + closure_hundred_millions
@@ -301,7 +321,9 @@ class CardinalFst(GraphFst):
                 + graph_digits
             )
         )
-        graph_hundred_billions = graph_hundred_billions_simple | graph_hundred_billions_complex
+        graph_hundred_billions = (
+            pynutil.add_weight(graph_hundred_billions_simple, -1.0) | graph_hundred_billions_complex
+        )
 
         # combining grammar; output for cardinal grammar
         graph = pynini.union(

@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.es.graph_utils import shift_number_gender
-from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):
@@ -22,7 +23,7 @@ class OrdinalFst(GraphFst):
     Finite state transducer for verbalizing ordinals
         e.g. ordinal { integer: "tercer" } } -> "tercero"
                                            -> "tercera"
-										   -> "tercer"
+                                                                                   -> "tercer"
 
     Args:
         deterministic: if True will provide a single transduction option,

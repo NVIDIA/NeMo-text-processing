@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_extra_space
 from nemo_text_processing.text_normalization.es.graph_utils import roman_to_int, strip_cardinal_apocope
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
-from pynini.lib import pynutil
 
 articles = pynini.union("de", "del", "el", "del año", "año")
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
@@ -115,7 +116,7 @@ class DateFst(GraphFst):
 
         dash = "-"
         day_optional = pynini.closure(pynini.cross(dash, NEMO_SPACE) + day, 0, 1)
-        graph_ymd = NEMO_DIGIT ** 4 @ year_only + pynini.cross(dash, NEMO_SPACE) + month_number + day_optional
+        graph_ymd = NEMO_DIGIT**4 @ year_only + pynini.cross(dash, NEMO_SPACE) + month_number + day_optional
 
         final_graph = graph_dmy + pynutil.insert(" preserve_order: true")
         final_graph |= graph_ymd

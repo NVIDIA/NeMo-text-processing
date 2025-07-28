@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     NEMO_CHAR,
     GraphFst,
@@ -20,7 +22,6 @@ from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -29,7 +30,7 @@ class FractionFst(GraphFst):
         e.g. demi -> tokens { fraction { numerator: "1" denominator: "2" } }
         e.g. un et demi -> tokens { fraction { integer_part: "1" numerator: "1" denominator: "2" } }
         e.g. trois et deux centième -> tokens { fraction { integer_part: "3" numerator: "2" denominator: "100" } }
-    
+
     Args:
         cardinal: OrdinalFst
     """

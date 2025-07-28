@@ -15,11 +15,12 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.sv.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path as get_tn_abs_path
 from nemo_text_processing.text_normalization.sv.utils import load_labels
-from pynini.lib import pynutil
 
 QUARTERS = {15: "kvart över", 30: "halv", 45: "kvart i"}
 
@@ -61,7 +62,7 @@ class TimeFst(GraphFst):
         e.g. klockan tretton tio -> time { hours: "kl. 13" minutes: "10" }
         e.g. kvart i tolv -> time { minutes: "45" hours: "11" }
         e.g. kvart över tolv -> time { minutes: "15" hours: "12" }
-    
+
     Args:
         tn_cardinal_tagger: TN cardinal verbalizer
     """

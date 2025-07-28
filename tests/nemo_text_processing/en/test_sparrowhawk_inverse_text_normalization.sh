@@ -1,10 +1,12 @@
 #! /bin/sh
 
-PROJECT_DIR=/workspace/tests
+GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+TEST_DIR=${2:-"/workspace/tests/en"}
 
 runtest () {
   input=$1
-  cd /workspace/sparrowhawk/documentation/grammars
+  echo "INPUT is $input"
+  cd ${GRAMMARS_DIR}
 
   # read test file
   while read testcase; do
@@ -21,59 +23,63 @@ runtest () {
 }
 
 testITNCardinal() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_cardinal.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_cardinal.txt
   runtest $input
 }
 
 testITNDate() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_date.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_date.txt
   runtest $input
 }
 
 testITNDecimal() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_decimal.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_decimal.txt
   runtest $input
 }
 
 testITNElectronic() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_electronic.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_electronic.txt
   runtest $input
 }
 
 testITNOrdinal() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_ordinal.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_ordinal.txt
   runtest $input
 }
 
 testITNTime() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_time.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_time.txt
   runtest $input
 }
 
 testITNMeasure() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_measure.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_measure.txt
   runtest $input
 }
 
 testITNMoney() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_money.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_money.txt
   runtest $input
 }
 
 testITNWhitelist() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_whitelist.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_whitelist.txt
   runtest $input
 }
 
 testITNTelephone() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_telephone.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_telephone.txt
   runtest $input
 }
 
 testITNWord() {
-  input=$PROJECT_DIR/en/data_inverse_text_normalization/test_cases_word.txt
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_word.txt
   runtest $input
 }
 
+
+# Remove all command-line arguments
+shift $#
+
 # Load shUnit2
-. $PROJECT_DIR/../shunit2/shunit2
+. /workspace/shunit2/shunit2

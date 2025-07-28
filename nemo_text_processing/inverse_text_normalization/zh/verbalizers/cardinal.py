@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
     GraphFst,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class CardinalFst(GraphFst):
@@ -27,7 +28,7 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="verbalize")
 
         # group numbers by three
-        exactly_three_digits = NEMO_DIGIT ** 3
+        exactly_three_digits = NEMO_DIGIT**3
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         suffix = pynini.union(

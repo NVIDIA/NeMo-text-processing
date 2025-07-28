@@ -12,15 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
+    NEMO_SPACE,
     GraphFst,
+    at,
+    colon,
     delete_preserve_order,
-    insert_space,
+    domain_string,
+    double_quotes,
+    double_slash,
+    http,
+    https,
+    period,
+    protocol_string,
+    username_string,
+    www,
 )
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
-from pynini.lib import pynutil
 
 digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
 zero = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
@@ -28,6 +40,12 @@ zero = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
 graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv"))
 server_common = pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
 domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
+
+accept_space = pynini.accep(NEMO_SPACE)
+delete_username = pynutil.delete(username_string + colon + NEMO_SPACE + double_quotes)
+delete_double_quotes = pynutil.delete(double_quotes)
+delete_domain = pynutil.delete(domain_string + colon + NEMO_SPACE + double_quotes)
+delete_protocol = pynutil.delete(protocol_string + colon + NEMO_SPACE + double_quotes)
 
 
 class ElectronicFst(GraphFst):
@@ -48,36 +66,41 @@ class ElectronicFst(GraphFst):
         graph_digit = digit_no_zero | zero
 
         def add_space_after_char():
-            return pynini.closure(NEMO_NOT_QUOTE - pynini.accep(" ") + insert_space) + (
-                NEMO_NOT_QUOTE - pynini.accep(" ")
+            return pynini.closure(NEMO_NOT_QUOTE - accept_space + pynutil.insert(NEMO_SPACE)) + (
+                NEMO_NOT_QUOTE - accept_space
             )
 
+        hungarian_at = [
+            "kukacjel ",
+            "csiga ",
+            "ormány ",
+            "farkas á ",
+            "bejgli ",
+            "at-jel ",
+        ]
         at_sign = pynutil.insert("kukac ")
         if not deterministic:
-            at_sign |= pynutil.insert("kukacjel ")
-            at_sign |= pynutil.insert("csiga ")
-            at_sign |= pynutil.insert("ormány ")
-            at_sign |= pynutil.insert("farkas á ")
-            at_sign |= pynutil.insert("bejgli ")
-            at_sign |= pynutil.insert("at-jel ")
+            for sign in hungarian_at:
+                at_sign |= pynutil.insert(sign)
 
         verbalize_characters = pynini.cdrewrite(graph_symbols | graph_digit, "", "", NEMO_SIGMA)
 
-        user_name = pynutil.delete("username: \"") + add_space_after_char() + pynutil.delete("\"")
+        user_name = delete_username + add_space_after_char() + delete_double_quotes
         user_name @= verbalize_characters
 
         convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | domain_common | server_common
-        domain = convert_defaults + pynini.closure(insert_space + convert_defaults)
+        domain = convert_defaults + pynini.closure(pynutil.insert(NEMO_SPACE) + convert_defaults)
         domain @= verbalize_characters
 
-        domain = pynutil.delete("domain: \"") + domain + pynutil.delete("\"")
+        domain = delete_domain + domain + delete_double_quotes
         protocol = (
-            pynutil.delete("protocol: \"")
+            delete_protocol
             + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
-            + pynutil.delete("\"")
+            + delete_double_quotes
         )
-        self.graph = (pynini.closure(protocol + pynini.accep(" "), 0, 1) + domain) | (
-            user_name + pynini.accep(" ") + at_sign + domain
+
+        self.graph = (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain) | (
+            user_name + NEMO_SPACE + at_sign + domain | (at_sign + user_name)
         )
         delete_tokens = self.delete_tokens(self.graph + delete_preserve_order)
         self.fst = delete_tokens.optimize()

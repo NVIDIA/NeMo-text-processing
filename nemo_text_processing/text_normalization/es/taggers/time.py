@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -20,7 +22,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
-from pynini.lib import pynutil
 
 time_zones = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
 suffix = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
@@ -114,7 +115,9 @@ class TimeFst(GraphFst):
         time_zone_graph = time_zones + pynini.closure(utc_or_gmt_diff, 0, 1)
 
         final_time_zone_optional = pynini.closure(
-            delete_space + insert_space + pynutil.insert("zone: \"") + time_zone_graph + pynutil.insert("\""), 0, 1,
+            delete_space + insert_space + pynutil.insert("zone: \"") + time_zone_graph + pynutil.insert("\""),
+            0,
+            1,
         )
 
         # 02.30 h

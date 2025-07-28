@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class MoneyFst(GraphFst):
@@ -30,13 +31,13 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
 
         # components to combine to make graphs
-        number_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        number_component = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         currency_component = pynutil.delete("currency: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         decimal_component = decimal.decimal_component
         unit_only_component = (
             (pynutil.delete("currency: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
-            | (pynutil.delete("currency_major: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
-            | (pynutil.delete("currency_minor: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
+            | (pynutil.delete("currency_maj: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
+            | (pynutil.delete("currency_min: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\""))
         )
 
         # graphs

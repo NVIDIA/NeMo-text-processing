@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     GraphFst,
     delete_hyphen,
@@ -20,13 +22,12 @@ from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TelephoneFst(GraphFst):
     """
     Finite state transducer for classifying telephone numbers. Assumes conventional grouping for Metropolitan France (and overseas departments)
-    (two number sequences are grouped as individual cardinals) or digit by digit (chiffre-par-chiffre) e.g. 
+    (two number sequences are grouped as individual cardinals) or digit by digit (chiffre-par-chiffre) e.g.
     "zero un quatre-vingt-deux zero deux vingt-deux cinquante" -> { number_part: "01 42 02 22 50" }
     "zero un quatre deux zero deux deux deux cinq zero" -> { number_part: "01 42 02 22 50" }
 

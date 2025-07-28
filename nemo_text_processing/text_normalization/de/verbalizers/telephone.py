@@ -13,14 +13,15 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_preserve_order
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_preserve_order
 
 
 class TelephoneFst(GraphFst):
     """
     Finite state transducer for verbalizing telephone, e.g.
-        telephone { country_code: "plus neun und vierzig" number_part: "null eins eins eins null null null" } 
+        telephone { country_code: "plus neun und vierzig" number_part: "null eins eins eins null null null" }
             -> "plus neun und vierzig null eins eins eins null null null"
 
     Args:

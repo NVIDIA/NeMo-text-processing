@@ -58,8 +58,14 @@ $18129~eighteen thousand one hundred and twenty nine dollars
 £1.20~one pound twenty pence
 £1.111~one point one one one pounds
 £2.01~two pounds one penny
-$50.00-$100.00~fifty dollars - one hundred dollars
+$50.00-$100.00~fifty dollars to one hundred dollars
 $1,925.21~one thousand nine hundred and twenty five dollars twenty one cents
 $1,234.123~one thousand two hundred and thirty four point one two three dollars
 US $76.3 trillion~US seventy six point three trillion dollars
 US$76.3 trillion~seventy six point three trillion us dollars
+The price for each canned salmon is $5 , each bottle of peanut butter is $3~The price for each canned salmon is five dollars , each bottle of peanut butter is three dollars
+$20/mo is what we are currently charging.~twenty dollars per month is what we are currently charging.
+$350/yr is the fee.~three hundred and fifty dollars per year is the fee.
+£10/wk sounds good to us.~ten pounds per week sounds good to us.
+$1/d is the new subscription cost.~one dollar per day is the new subscription cost.
+$0.5/hr is the total cost.~fifty cents per hour is the total cost.

@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 def get_quantity(decimal, cardinal):
@@ -68,35 +69,20 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="decimal", kind="classify")
 
-        cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv"))
-        cardinal_before_decimal = cardinal.just_cardinals | (pynini.closure(pynini.cross("零", "0"), 0, 1))
-
-        delete_decimal = pynutil.delete("点") | pynutil.delete(
-            "點"
-        )  # delete decimal character, 'point' in english in 'one point two for 1.2'
-
-        # grammar for integer part
-        graph_integer = (
-            pynutil.insert('integer_part: "')
-            + (cardinal_before_decimal | (pynini.closure(pynini.cross("零", "0"), 0, 1)))
-            + pynutil.insert('" ')
-        )  # tokenization on just numbers
-        graph_integer_or_none = graph_integer | pynutil.insert('integer_part: "0" ', weight=0.01)  # integer or zero
-
-        # grammar for fractional part
-        delete_zero = pynini.closure(pynini.cross("零", "0"))
-        graph_string_of_cardinals = cardinal_after_decimal
-        graph_string_of_cardinals = pynini.closure(
-            (pynini.closure(graph_string_of_cardinals) + delete_zero + pynini.closure(graph_string_of_cardinals)), 1
+        cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit-nano.tsv")) | pynini.closure(
+            pynini.cross("零", "0")
         )
-        graph_fractional = pynini.closure(
-            pynutil.insert('fractional_part: "') + graph_string_of_cardinals + pynutil.insert('"'), 1
-        )
+        cardinal_before_decimal = cardinal.just_cardinals | pynini.cross("零", "0")
 
-        # grammar for decimal: integer+delete character+part after decimal point
-        graph_decimal_no_sign = pynini.closure((graph_integer_or_none + delete_decimal + graph_fractional), 1)
+        delete_decimal = pynutil.delete("点") | pynutil.delete("點")
 
-        # New Grammar added for Money
+        graph_integer = pynutil.insert('integer_part: "') + cardinal_before_decimal + pynutil.insert('" ')
+
+        graph_string_of_cardinals = pynini.closure(cardinal_after_decimal, 1)
+        graph_fractional = pynutil.insert('fractional_part: "') + graph_string_of_cardinals + pynutil.insert('"')
+
+        graph_decimal_no_sign = pynini.closure((graph_integer + delete_decimal + graph_fractional), 1)
+
         self.final_graph_wo_negative = graph_decimal_no_sign | get_quantity(
             graph_decimal_no_sign, cardinal.just_cardinals
         )

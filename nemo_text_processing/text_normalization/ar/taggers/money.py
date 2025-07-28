@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -21,7 +23,6 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
 min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
@@ -35,7 +36,7 @@ class MoneyFst(GraphFst):
         "$1,99" -> money { integer_part: "سبعة" currency_maj: "دولار" fractional_part: "تسعة وتسعون"  currency_min: "سنت" preserve_order: true}
         "$0,10" -> money { fractional_part: "عشرة"  currency_min: "بنسات" preserve_order: true }
         "$9" -> money { integer_part: "تسعة" currency_maj: "دولار" preserve_order: true}
-        
+
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -141,7 +142,10 @@ class MoneyFst(GraphFst):
             )
 
             graph_with_no_minor_curr = integer_plus_maj
-            graph_with_no_minor_curr |= pynutil.add_weight(integer_plus_maj, weight=0.0001,)
+            graph_with_no_minor_curr |= pynutil.add_weight(
+                integer_plus_maj,
+                weight=0.0001,
+            )
 
             graph_with_no_minor_curr = pynutil.delete(curr_symbol) + graph_with_no_minor_curr + preserve_order
 

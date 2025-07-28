@@ -14,9 +14,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, insert_space
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels, naive_inflector
-from pynini.lib import pynutil
 
 quantities = load_labels(get_abs_path("data/number/quantities.tsv"))
 
@@ -45,7 +46,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
     e.g. 1 millió -> integer_part: "egy" quantity: "millió"
     e.g. 1,4 million -> integer_part: "egy" fractional_part: "négy" quantity: "millió"
 
-    Args: 
+    Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
@@ -67,7 +68,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g. 
+    Finite state transducer for classifying decimal, e.g.
         -11,4006 milliárd -> decimal { negative: "true" integer_part: "tizenegy"  fractional_part: "négyezer-hat tízezred" quantity: "milliárd" preserve_order: true }
         1 milliárd -> decimal { integer_part: "egy" quantity: "milliárd" preserve_order: true }
     Args:
@@ -100,7 +101,7 @@ class DecimalFst(GraphFst):
         ]:
             for modifier in ["", "tíz", "száz"]:
                 decimal_number |= (
-                    (NEMO_DIGIT ** order + (NEMO_DIGIT - "0"))
+                    (NEMO_DIGIT**order + (NEMO_DIGIT - "0"))
                     @ pynini.cdrewrite(pynini.cross("0", ""), "[BOS]", "", NEMO_SIGMA)
                     @ cardinal_graph
                     + final_zero

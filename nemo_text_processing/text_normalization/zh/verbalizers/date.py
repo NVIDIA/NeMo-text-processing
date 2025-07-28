@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class DateFst(GraphFst):
@@ -54,6 +56,7 @@ class DateFst(GraphFst):
         optional_era = (
             pynutil.delete("era: ") + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         )
+
         graph_date = (
             pynini.closure(year_component)
             + pynini.closure(delete_space)
@@ -61,7 +64,20 @@ class DateFst(GraphFst):
             + pynini.closure(delete_space)
             + pynini.closure(day_component)
         )
-        graph_date_era = optional_era + delete_space + graph_date
+
+        graph_date_era = pynini.union(
+            (optional_era + delete_space + year_component),
+            (optional_era + delete_space + year_component + delete_space + month_component),
+            (
+                optional_era
+                + delete_space
+                + year_component
+                + delete_space
+                + month_component
+                + delete_space
+                + day_component
+            ),
+        )
 
         graph_date_all = graph_date | graph_date_era
 
@@ -83,6 +99,7 @@ class DateFst(GraphFst):
         )
 
         final_graph = graph_date_all | graph_range
+        # final_graph = optional_era + delete_space + year_component
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

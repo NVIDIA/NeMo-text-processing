@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, delete_space
 
 
 class TimeFst(GraphFst):
@@ -22,7 +23,7 @@ class TimeFst(GraphFst):
     Finite state transducer for verbalizing time, e.g.
         time { hours: "8" minutes: "30" zone: "e s t" } -> 08:30 Uhr est
         time { hours: "8" } -> 8 Uhr
-        time { hours: "8" minutes: "30" seconds: "10" } -> 08:30:10 Uhr 
+        time { hours: "8" minutes: "30" seconds: "10" } -> 08:30:10 Uhr
     """
 
     def __init__(self, deterministic: bool = True):

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_NOT_QUOTE,
@@ -27,20 +29,19 @@ from nemo_text_processing.text_normalization.es.graph_utils import (
     shift_cardinal_gender,
     strip_cardinal_apocope,
 )
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
     """
-	Finite state transducer for verbalizing fraction
-		e.g. tokens { fraction { integer: "treinta y tres" numerator: "cuatro" denominator: "quinto" } } ->
-            treinta y tres y cuatro quintos
+    Finite state transducer for verbalizing fraction
+            e.g. tokens { fraction { integer: "treinta y tres" numerator: "cuatro" denominator: "quinto" } } ->
+        treinta y tres y cuatro quintos
 
 
-	Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
-	"""
+    Args:
+            deterministic: if True will provide a single transduction option,
+                    for False multiple transduction are generated (used for audio-based normalization)
+    """
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
@@ -140,7 +141,8 @@ class FractionFst(GraphFst):
 
             fraction_with_one_fem = numerator_one_fem + delete_space + insert_space
             fraction_with_one_fem += pynini.union(
-                denominator_singular_fem @ merge_stem, denominator_singular_fem @ merge_into_single_word,
+                denominator_singular_fem @ merge_stem,
+                denominator_singular_fem @ merge_into_single_word,
             )  # Both forms exists
             fraction_with_one_fem += pynutil.insert(" parte")
             fraction_with_one_fem @= pynini.cdrewrite(
@@ -149,7 +151,8 @@ class FractionFst(GraphFst):
 
             fraction_default_fem = numerator_fem + delete_space + insert_space
             fraction_default_fem += pynini.union(
-                denominator_plural_fem @ merge_stem, denominator_plural_fem @ merge_into_single_word,
+                denominator_plural_fem @ merge_stem,
+                denominator_plural_fem @ merge_into_single_word,
             )
             fraction_default_fem += pynutil.insert(" partes")
 

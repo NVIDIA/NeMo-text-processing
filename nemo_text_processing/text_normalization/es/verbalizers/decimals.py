@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
@@ -26,19 +28,18 @@ from nemo_text_processing.text_normalization.es.graph_utils import (
     shift_number_gender,
     strip_cardinal_apocope,
 )
-from pynini.lib import pynutil
 
 
 class DecimalFst(GraphFst):
     """
-	Finite state transducer for classifying decimal, e.g.
-		decimal { negative: "true" integer_part: "dos"  fractional_part: "cuatro cero" quantity: "billones" } -> menos dos coma quatro cero billones
-		decimal { integer_part: "un" quantity: "billón" } -> un billón
+        Finite state transducer for classifying decimal, e.g.
+                decimal { negative: "true" integer_part: "dos"  fractional_part: "cuatro cero" quantity: "billones" } -> menos dos coma quatro cero billones
+                decimal { integer_part: "un" quantity: "billón" } -> un billón
 
     Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
-	"""
+                deterministic: if True will provide a single transduction option,
+                        for False multiple transduction are generated (used for audio-based normalization)
+    """
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
