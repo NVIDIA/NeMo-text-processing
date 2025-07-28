@@ -14,6 +14,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 # from nemo_text_processing.text_normalization.pl.taggers.cardinal import cardinal_graph
 from pynini.lib import pynutil
 
@@ -78,6 +79,21 @@ def adjective_inflection(word: str, compound: str = "") -> dict:
     return fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b, compound)
 
 
+def make_graph_dict(filepath):
+    output_graph = {}
+
+    word_tsv = load_labels(get_abs_path(filepath))
+    for word, target in word_tsv:
+        word_forms = adjective_inflection(word)
+
+        for key in word_forms:
+            if key in output_graph:
+                output_graph[key] = pynini.cross(word_forms[key], target)
+            else:
+                output_graph[key] |= pynini.cross(word_forms[key], target)
+    return output_graph
+
+
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g. 
@@ -92,6 +108,13 @@ class OrdinalFst(GraphFst):
 
     def __init__(self, deterministic=False):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
+
+        digits_tsv = load_labels(get_abs_path("data/ordinal/digit.tsv"))
+        for digit in digits_tsv:
+            word, num = digit
+            word_forms = adjective_inflection(word)
+
+
 
         self.graph = (
             (
