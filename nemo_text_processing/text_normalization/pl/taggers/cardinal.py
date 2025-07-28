@@ -23,7 +23,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.pl.graph_utils import PL_ALPHA
-from nemo_text_processing.text_normalization.pl.utils import get_abs_path
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.taggers.ordinal import adjective_inflection, complete_paradigm
 from pynini.lib import pynutil
 
 
@@ -112,6 +113,27 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     return cardinal_string @ fst
 
 
+def make_inflected_graph_dict(file_path: str, cross: str, deterministic=False) -> dict:
+    """
+    Helper function to create a dictionary of pynini graphs from a TSV file.
+    Args:
+        file_path: Path to the TSV file containing the mappings.
+        cross: The string to cross with the second column of the TSV.
+
+    Returns:
+        A dictionary where keys represent grammar and values are the corresponding pynini graphs.
+    """
+    graph_dict = {}
+    for line in load_labels(get_abs_path(file_path)):
+        key, value = line[0], line[1]
+        if key not in graph_dict:
+            graph_dict[key] = pynini.cross(cross, value)
+        else:
+            if not deterministic:
+                graph_dict[key] |= pynini.cross(cross, value)
+    return graph_dict
+
+
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g.
@@ -125,6 +147,18 @@ class CardinalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+
+        jeden_all = adjective_inflection("jeden")
+        jeden_graph = pynini.cross("1", jeden_all["mi_sg_nom"])
+        if not deterministic:
+            for key in jeden_all:
+                if key == "mi_sg_nom":
+                    continue
+                jeden_graph |= pynini.cross("1", jeden_all[key])
+        complete_paradigm(jeden_all)
+        self.jeden_all = {a[0]: pynini.cross("1", a[1]) for a in jeden_all.items()}
+
+
         zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
         digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
         teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
@@ -264,7 +298,7 @@ class CardinalFst(GraphFst):
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(
-                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), SV_ALPHA, SV_ALPHA, NEMO_SIGMA
+                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), PL_ALPHA, PL_ALPHA, NEMO_SIGMA
             )
         )
 
