@@ -141,15 +141,3 @@ class OrdinalFst(GraphFst):
             else:
                 two_digits[key] |= self.tens_all[key] + self.digits_all[key]
         return two_digits
-
-def make_two_digit():
-    two_digits = {}
-    for key in digits_all:
-        two_digits[key] = tens_all[key] + pynutil.delete('0')
-        two_digits[key] |= pynutil.delete('0') + digits_all[key]
-        two_digits[key] |= teens_all[key]
-        if key != "compound":
-            two_digits[key] |= tens_all[key] + insert_space + digits_all[key]
-        else:
-            two_digits[key] |= tens_all[key] + digits_all[key]
-    return two_digits
