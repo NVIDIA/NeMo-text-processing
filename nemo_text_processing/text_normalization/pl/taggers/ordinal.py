@@ -14,13 +14,16 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
+# from nemo_text_processing.text_normalization.pl.taggers.cardinal import cardinal_graph
 from pynini.lib import pynutil
 
 
-def adjective_inflection(word: str):
-    def fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b=""):
+def adjective_inflection(word: str, compound: str = "") -> dict:
+    def fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b="", compound=""):
         if stem_b == "":
             stem_b = stem
+        if compound == "":
+            compound = stem_b + "o"
         return {
             "mi_sg_nom": mi_sg,
             "mi_sg_gen": stem + "ego",
@@ -33,7 +36,7 @@ def adjective_inflection(word: str):
             "mp_pl_nom": mp_pl,
             "pl_ins": stem + vowel + "mi",
             "pl_loc": stem + vowel + "ch",
-            "compound": stem_b + "o",
+            "compound": compound,
         }
     stem_b = ""
     if word.endswith("en"):
@@ -67,7 +70,12 @@ def adjective_inflection(word: str):
         mi_sg = word
         mp_pl = word[:-2] + "ci"
         vowel = "y"
-    return fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b)
+    elif word.endswith("y"):
+        stem = word[:-1]
+        mi_sg = word
+        mp_pl = word[:-1] + "i"
+        vowel = "y"
+    return fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b, compound)
 
 
 class OrdinalFst(GraphFst):
@@ -75,6 +83,7 @@ class OrdinalFst(GraphFst):
     Finite state transducer for classifying cardinals, e.g. 
         "2." -> ordinal { integer: "drugi" } }
         "2-gi" -> ordinal { integer: "drugi" } }
+        "123." -> ordinal { integer: "sto dwudziesty trzeci" } }
 
     Args:
         deterministic: if True will provide a single transduction option,
