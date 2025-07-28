@@ -79,18 +79,22 @@ def adjective_inflection(word: str, compound: str = "") -> dict:
     return fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b, compound)
 
 
-def make_graph_dict(filepath):
+def make_graph_dict(filepath, invert=True):
     output_graph = {}
-
     word_tsv = load_labels(get_abs_path(filepath))
     for word, target in word_tsv:
         word_forms = adjective_inflection(word)
-
         for key in word_forms:
-            if key in output_graph:
-                output_graph[key] = pynini.cross(word_forms[key], target)
+            if invert:
+                a = target
+                b = word_forms[key]
             else:
-                output_graph[key] |= pynini.cross(word_forms[key], target)
+                a = word_forms[key]
+                b = target
+            if key not in output_graph:
+                output_graph[key] = pynini.cross(a, b)
+            else:
+                output_graph[key] |= pynini.cross(a, b)
     return output_graph
 
 
