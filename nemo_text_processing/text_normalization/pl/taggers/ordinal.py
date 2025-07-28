@@ -79,6 +79,54 @@ def adjective_inflection(word: str, compound: str = "") -> dict:
     return fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b, compound)
 
 
+def complete_paradigm(partial, complete=False):
+    partial["mi_sg_acc"] = partial["mi_sg_nom"]
+    partial["mi_sg_loc"] = partial["mi_sg_ins"]
+    partial["mi_sg_voc"] = partial["mi_sg_nom"]
+    # ma.sg same as mi.sg, except acc = gen
+    partial["ma_sg_nom"] = partial["mi_sg_nom"]
+    partial["ma_sg_gen"] = partial["mi_sg_gen"]
+    partial["ma_sg_dat"] = partial["mi_sg_dat"]
+    partial["ma_sg_acc"] = partial["mi_sg_gen"]
+    partial["ma_sg_ins"] = partial["mi_sg_ins"]
+    partial["ma_sg_loc"] = partial["mi_sg_loc"]
+    partial["ma_sg_voc"] = partial["mi_sg_voc"]
+    # mp.sg same as ma.sg
+    partial["mp_sg_nom"] = partial["ma_sg_nom"]
+    partial["mp_sg_gen"] = partial["ma_sg_gen"]
+    partial["mp_sg_dat"] = partial["ma_sg_dat"]
+    partial["mp_sg_acc"] = partial["ma_sg_acc"]
+    partial["mp_sg_ins"] = partial["ma_sg_ins"]
+    partial["mp_sg_loc"] = partial["ma_sg_loc"]
+    partial["mp_sg_voc"] = partial["ma_sg_voc"]
+    # nt.sg same as mi.sg aside from nom/acc/voc
+    partial["nt_sg_gen"] = partial["mi_sg_gen"]
+    partial["nt_sg_dat"] = partial["mi_sg_dat"]
+    partial["nt_sg_acc"] = partial["nt_sg_nom"]
+    partial["nt_sg_ins"] = partial["mi_sg_ins"]
+    partial["nt_sg_loc"] = partial["mi_sg_loc"]
+    partial["nt_sg_voc"] = partial["nt_sg_nom"]
+    # f.sg
+    partial["f_sg_dat"] = partial["f_sg_gen"]
+    partial["f_sg_acc"] = partial["f_sg_ins"]
+    partial["f_sg_loc"] = partial["f_sg_gen"]
+    partial["f_sg_voc"] = partial["f_sg_nom"]
+    # plurals
+    partial["mp_pl_acc"] = partial["pl_loc"]
+    partial["mp_pl_voc"] = partial["mp_pl_nom"]
+    partial["pl_nom"] = partial["nt_sg_nom"]
+    partial["pl_gen"] = partial["pl_loc"]
+    partial["pl_dat"] = partial["mi_sg_ins"]
+    partial["pl_acc"] = partial["pl_nom"]
+    partial["pl_voc"] = partial["pl_nom"]
+    if complete:
+        for gender in ["mi", "ma", "mp", "nt", "f"]:
+            for case in ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]:
+                key = f'{gender}_pl_{case}'
+                if key not in partial:
+                    partial[key] = partial[f'pl_{case}']
+
+
 def make_graph_dict(filepath, invert=True):
     output_graph = {}
     word_tsv = load_labels(get_abs_path(filepath))
