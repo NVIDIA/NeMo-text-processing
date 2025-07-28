@@ -76,7 +76,7 @@ def make_million(number: str, non_zero_pl: 'pynini.FstLike', non_zero_quant: 'py
     graph |= non_zero_pl + pynutil.insert(f" {number}{pl_end}")
     # hack for the stem change in tysiąc (1000)
     if number == "tysiąc":
-        number == "tysięc"
+        number = "tysięc"
     graph |= non_zero_quant + pynutil.insert(f" {number}{quant_end}")
     graph |= pynutil.delete("000")
     graph += insert_space
