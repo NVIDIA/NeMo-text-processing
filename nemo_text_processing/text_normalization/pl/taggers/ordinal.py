@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, insert_space
 from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 # from nemo_text_processing.text_normalization.pl.taggers.cardinal import cardinal_graph
 from pynini.lib import pynutil
@@ -113,12 +113,11 @@ class OrdinalFst(GraphFst):
     def __init__(self, deterministic=False):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
-        digits_tsv = load_labels(get_abs_path("data/ordinal/digit.tsv"))
-        for digit in digits_tsv:
-            word, num = digit
-            word_forms = adjective_inflection(word)
-
-
+        self.digits_all = make_graph_dict("data/ordinal/digit.tsv")
+        self.tens_all = make_graph_dict("data/ordinal/tens.tsv")
+        self.teens_all = make_graph_dict("data/ordinal/teens.tsv")
+        self.hundreds_all = make_graph_dict("data/ordinal/hundreds.tsv")
+        two_digit_all = self.make_two_digit()
 
         self.graph = (
             (
@@ -130,3 +129,27 @@ class OrdinalFst(GraphFst):
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
+    
+    def make_two_digit(self):
+        two_digits = {}
+        for key in self.digits_all:
+            two_digits[key] = self.tens_all[key] + pynutil.delete('0')
+            two_digits[key] |= pynutil.delete('0') + self.digits_all[key]
+            two_digits[key] |= self.teens_all[key]
+            if key != "compound":
+                two_digits[key] |= self.tens_all[key] + insert_space + self.digits_all[key]
+            else:
+                two_digits[key] |= self.tens_all[key] + self.digits_all[key]
+        return two_digits
+
+def make_two_digit():
+    two_digits = {}
+    for key in digits_all:
+        two_digits[key] = tens_all[key] + pynutil.delete('0')
+        two_digits[key] |= pynutil.delete('0') + digits_all[key]
+        two_digits[key] |= teens_all[key]
+        if key != "compound":
+            two_digits[key] |= tens_all[key] + insert_space + digits_all[key]
+        else:
+            two_digits[key] |= tens_all[key] + digits_all[key]
+    return two_digits
