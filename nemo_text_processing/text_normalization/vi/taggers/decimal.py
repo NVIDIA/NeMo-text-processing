@@ -69,7 +69,7 @@ class DecimalFst(GraphFst):
 
         # 2. Thousand-separated decimals: 12.345,67 and 12.345,67 tỷ
         integer_with_dots = (
-            NEMO_DIGIT + pynini.closure(NEMO_DIGIT, 0, 2) + pynini.closure(pynutil.delete(".") + NEMO_DIGIT ** 3, 1)
+            NEMO_DIGIT + pynini.closure(NEMO_DIGIT, 0, 2) + pynini.closure(pynutil.delete(".") + NEMO_DIGIT**3, 1)
         )
         separated_decimal = (
             pynutil.insert("integer_part: \"")

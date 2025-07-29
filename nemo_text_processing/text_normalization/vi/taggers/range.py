@@ -36,7 +36,12 @@ class RangeFst(GraphFst):
     """
 
     def __init__(
-        self, time: GraphFst, date: GraphFst, decimal: GraphFst, money: GraphFst, deterministic: bool = True,
+        self,
+        time: GraphFst,
+        date: GraphFst,
+        decimal: GraphFst,
+        money: GraphFst,
+        deterministic: bool = True,
     ):
         super().__init__(name="range", kind="classify", deterministic=deterministic)
 

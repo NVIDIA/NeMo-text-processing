@@ -89,7 +89,7 @@ class CardinalFst(GraphFst):
         # Thousand with dots: 1.000
         dot_patterns.append(
             pynini.compose(
-                (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 2) + delete_dot + NEMO_DIGIT ** 3, self.thousand
+                (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 2) + delete_dot + NEMO_DIGIT**3, self.thousand
             )
         )
 
@@ -99,9 +99,9 @@ class CardinalFst(GraphFst):
                 (NEMO_DIGIT - "0")
                 + pynini.closure(NEMO_DIGIT, 0, 2)
                 + delete_dot
-                + NEMO_DIGIT ** 3
+                + NEMO_DIGIT**3
                 + delete_dot
-                + NEMO_DIGIT ** 3,
+                + NEMO_DIGIT**3,
                 self.million,
             )
         )
@@ -112,11 +112,11 @@ class CardinalFst(GraphFst):
                 (NEMO_DIGIT - "0")
                 + pynini.closure(NEMO_DIGIT, 0, 2)
                 + delete_dot
-                + NEMO_DIGIT ** 3
+                + NEMO_DIGIT**3
                 + delete_dot
-                + NEMO_DIGIT ** 3
+                + NEMO_DIGIT**3
                 + delete_dot
-                + NEMO_DIGIT ** 3,
+                + NEMO_DIGIT**3,
                 self.billion,
             )
         )
