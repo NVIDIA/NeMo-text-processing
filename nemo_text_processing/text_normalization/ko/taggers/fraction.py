@@ -33,17 +33,13 @@ class FractionFst(GraphFst):
         cardinal = cardinal.graph
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
-        
+
         slash = pynutil.delete('/')
         morphemes = pynini.accep('분의')
         root = pynini.accep('√')
 
         # Decimal number (e.g., 1.23 → 일점이삼)
-        decimal_number = (
-            cardinal
-            + pynini.cross(".", "점")
-            + pynini.closure(graph_digit | graph_zero)
-        )
+        decimal_number = cardinal + pynini.cross(".", "점") + pynini.closure(graph_digit | graph_zero)
 
         # Accept cardinal / root + cardinal / decimal / root + decimal
         numeral = cardinal | (root + cardinal) | decimal_number | (root + decimal_number)
@@ -59,17 +55,9 @@ class FractionFst(GraphFst):
         integer_component_with_space = integer_component + pynutil.insert(NEMO_SPACE)
 
         # Denominator and numerator
-        denominator_component = (
-            pynutil.insert('denominator: "')
-            + numeral
-            + pynutil.insert('"')
-        )
+        denominator_component = pynutil.insert('denominator: "') + numeral + pynutil.insert('"')
 
-        numerator_component = (
-            pynutil.insert('numerator: "')
-            + numeral
-            + pynutil.insert('"')
-        )
+        numerator_component = pynutil.insert('numerator: "') + numeral + pynutil.insert('"')
 
         # Format 1: 3/4 style
         graph_fraction_slash = (
@@ -95,7 +83,8 @@ class FractionFst(GraphFst):
         optional_sign = (
             pynutil.insert('negative: "')
             + (pynini.accep("마이너스") | pynini.cross("-", "마이너스"))
-            + pynutil.insert('"') + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert('"')
+            + pynutil.insert(NEMO_SPACE)
         )
 
         # Combine full graph

@@ -40,7 +40,9 @@ class FractionFst(GraphFst):
         numerator = pynini.closure(NEMO_NOT_QUOTE - "√")
 
         # Delete FST field: denominator and extract value
-        denominator_component = pynutil.delete('denominator: "') + (denominator_root | denominator) + pynutil.delete('"')
+        denominator_component = (
+            pynutil.delete('denominator: "') + (denominator_root | denominator) + pynutil.delete('"')
+        )
         numerator_component = pynutil.delete('numerator: "') + (numerator_root | numerator) + pynutil.delete('"')
 
         # Match fraction form: "denominator + 분의 + numerator"
@@ -48,14 +50,20 @@ class FractionFst(GraphFst):
         graph_fraction = (
             denominator_component
             + pynutil.delete(NEMO_SPACE)
-            + pynini.closure(pynutil.delete('morphosyntactic_features:') + delete_space + pynutil.delete('"분의"') + delete_space, 0, 1)
+            + pynini.closure(
+                pynutil.delete('morphosyntactic_features:') + delete_space + pynutil.delete('"분의"') + delete_space,
+                0,
+                1,
+            )
             + pynutil.insert("분의")
             + numerator_component
         )
 
         # Match and delete integer_part field (e.g., "2" in "2과3분의1")
         graph_integer = (
-            pynutil.delete('integer_part:') + delete_space + pynutil.delete('"')
+            pynutil.delete('integer_part:')
+            + delete_space
+            + pynutil.delete('"')
             + pynini.closure(pynini.union("√", ".", NEMO_NOT_QUOTE - '"'))
             + pynutil.delete('"')
         )
@@ -63,14 +71,16 @@ class FractionFst(GraphFst):
 
         # Match and delete optional negative field (e.g., "마이너스")
         optional_sign = (
-            pynutil.delete('negative:') + delete_space + pynutil.delete('"')
-            + pynini.closure(NEMO_NOT_QUOTE - '"') + pynutil.delete('"') + delete_space
+            pynutil.delete('negative:')
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(NEMO_NOT_QUOTE - '"')
+            + pynutil.delete('"')
+            + delete_space
         )
 
         # Final graph handles optional negative + (integer + fraction | fraction only)
-        graph = pynini.closure(optional_sign, 0, 1) + (
-            graph_integer_fraction | graph_fraction
-        )
+        graph = pynini.closure(optional_sign, 0, 1) + (graph_integer_fraction | graph_fraction)
 
         # Final optimized verbalizer FST
         final_graph = self.delete_tokens(graph)
