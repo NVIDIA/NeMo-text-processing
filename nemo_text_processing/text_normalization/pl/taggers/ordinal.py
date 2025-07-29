@@ -184,6 +184,9 @@ class OrdinalFst(GraphFst):
         hundreds_graph = all_to_graph(self.hundreds_all, deterministic=deterministic)
         two_digit_graph = all_to_graph(two_digit_all, deterministic=deterministic)
 
+        wieczny_forms = adjective_inflection("wieczny")
+        wieczny_acceptor = pynini.union(*wieczny_forms.values())
+
         # self.graph = (
         #     (
         #         pynini.closure(NEMO_DIGIT | pynini.accep("."))
