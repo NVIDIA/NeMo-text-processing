@@ -58,10 +58,7 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(
-                cache_dir,
-                f"vi_tn_{deterministic}_deterministic_{input_case}_tokenize.far",
-            )
+            far_file = os.path.join(cache_dir, f"vi_tn_{deterministic}_deterministic_{input_case}_tokenize.far",)
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -146,11 +143,11 @@ class ClassifyFst(GraphFst):
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
-                | pynutil.add_weight(money_graph, 1.09)  # Higher priority than cardinal/decimal
+                | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(range_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(roman_graph, 1.1)
-                | pynutil.add_weight(date_graph, 1.09)
+                | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)

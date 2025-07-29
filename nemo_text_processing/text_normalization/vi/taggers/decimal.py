@@ -35,40 +35,41 @@ class DecimalFst(GraphFst):
         if not deterministic:
             self.graph = self.graph | cardinal_graph
 
-        # Load all data upfront
+        # Load data
         digit_labels = load_labels(get_abs_path("data/numbers/digit.tsv"))
         zero_labels = load_labels(get_abs_path("data/numbers/zero.tsv"))
         magnitude_labels = load_labels(get_abs_path("data/numbers/magnitudes.tsv"))
         quantity_abbr_labels = load_labels(get_abs_path("data/numbers/quantity_abbr.tsv"))
 
-        # Build reusable components
+        # Common components
         single_digit_map = pynini.union(*[pynini.cross(k, v) for k, v in digit_labels + zero_labels])
         quantity_units = pynini.union(*[v for _, v in magnitude_labels])
         one_to_three_digits = NEMO_DIGIT + pynini.closure(NEMO_DIGIT, 0, 2)
 
-        # Core building blocks
+        # Building blocks
         integer_part = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         fractional_part = (
             pynutil.insert("fractional_part: \"")
-            + (single_digit_map + pynini.closure(pynutil.insert(" ") + single_digit_map))
+            + single_digit_map
+            + pynini.closure(pynutil.insert(" ") + single_digit_map)
             + pynutil.insert("\"")
         )
         optional_quantity = (
             pynutil.delete(" ").ques + pynutil.insert(" quantity: \"") + quantity_units + pynutil.insert("\"")
         ).ques
 
-        # Main decimal patterns
         patterns = []
 
-        # 1. Basic decimal: 12,5
+        # 1. Basic decimal patterns: 12,5 and 12,5 tỷ
         basic_decimal = (
             (integer_part + pynutil.insert(" ")).ques + pynutil.delete(",") + pynutil.insert(" ") + fractional_part
         )
-        patterns.extend([basic_decimal, basic_decimal + optional_quantity])
+        patterns.append(basic_decimal)
+        patterns.append(basic_decimal + optional_quantity)
 
-        # 2. Integer with separators: 12.345,67
+        # 2. Thousand-separated decimals: 12.345,67 and 12.345,67 tỷ
         integer_with_dots = (
-            NEMO_DIGIT + pynini.closure(NEMO_DIGIT, 0, 2) + pynini.closure(pynutil.delete(".") + NEMO_DIGIT**3, 1)
+            NEMO_DIGIT + pynini.closure(NEMO_DIGIT, 0, 2) + pynini.closure(pynutil.delete(".") + NEMO_DIGIT ** 3, 1)
         )
         separated_decimal = (
             pynutil.insert("integer_part: \"")
@@ -78,18 +79,20 @@ class DecimalFst(GraphFst):
             + pynutil.insert(" ")
             + fractional_part
         )
-        patterns.extend([separated_decimal, separated_decimal + optional_quantity])
+        patterns.append(separated_decimal)
+        patterns.append(separated_decimal + optional_quantity)
 
-        # 3. Integer only with quantity: 100 triệu
-        patterns.append(
+        # 3. Integer with quantity: 100 triệu
+        integer_with_quantity = (
             integer_part
             + pynutil.delete(" ").ques
             + pynutil.insert(" quantity: \"")
             + quantity_units
             + pynutil.insert("\"")
         )
+        patterns.append(integer_with_quantity)
 
-        # 4. Standard abbreviations: 1k, 100tr
+        # 4. Standard abbreviations: 1k, 100tr, etc.
         for abbr, full_name in quantity_abbr_labels:
             abbr_pattern = pynini.compose(
                 one_to_three_digits + pynini.cross(abbr, ""),
@@ -99,13 +102,13 @@ class DecimalFst(GraphFst):
             )
             patterns.append(abbr_pattern)
 
-        # 5. Special compound patterns: 1tr2, 2t3
-        special_patterns = [
-            ("tr", "triệu", "trăm nghìn"),  # 1tr2 -> một triệu hai trăm nghìn
-            ("t", "tỷ", "trăm triệu"),  # 2t3 -> hai tỷ ba trăm triệu
-        ]
+        # 5. Compound abbreviations: 1tr2 -> một triệu hai trăm nghìn, 2t3 -> hai tỷ ba trăm triệu
+        compound_expansions = {
+            "tr": ("triệu", "trăm nghìn"),  # 1tr2 -> một triệu hai trăm nghìn
+            "t": ("tỷ", "trăm triệu"),  # 2t3 -> hai tỷ ba trăm triệu
+        }
 
-        for abbr, major_unit, minor_suffix in special_patterns:
+        for abbr, (major_unit, minor_suffix) in compound_expansions.items():
             pattern = one_to_three_digits + pynini.cross(abbr, "") + NEMO_DIGIT
             expansion = (
                 pynutil.insert("integer_part: \"")
@@ -119,7 +122,7 @@ class DecimalFst(GraphFst):
         # Combine all patterns
         self._final_graph_wo_negative = pynini.union(*patterns).optimize()
 
-        # Add optional negative
+        # Add optional negative prefix
         negative = (pynutil.insert("negative: ") + pynini.cross("-", "\"true\" ")).ques
         final_graph = negative + self._final_graph_wo_negative
 
