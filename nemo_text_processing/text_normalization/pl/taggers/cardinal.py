@@ -168,6 +168,8 @@ class CardinalFst(GraphFst):
 
         jeden_all = adjective_inflection("jeden")
         jeden_graph = pynini.cross("1", jeden_all["mi_sg_nom"])
+        # in compound numbers, jeden does not inflect
+        jeden_only = pynini.cross("1", jeden_all["mi_sg_nom"])
         if not deterministic:
             for key in jeden_all:
                 if key == "mi_sg_nom":
@@ -175,7 +177,12 @@ class CardinalFst(GraphFst):
                 jeden_graph |= pynini.cross("1", jeden_all[key])
         complete_paradigm(jeden_all)
         self.jeden_all = {a[0]: pynini.cross("1", a[1]) for a in jeden_all.items()}
+        self.zero_all = get_nominal_graph("data/grammar/noun_nt_ro.tsv", "data/numbers/zero.tsv")
 
+        cases = ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]
+        jeden_filt = {}
+        for case in cases:
+            jeden_filt[case] = self.jeden_all[f'mi_sg_{case}']
 
         zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
         digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
