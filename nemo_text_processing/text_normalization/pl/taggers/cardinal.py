@@ -140,7 +140,7 @@ def get_nominal_inflections(inflection_file, noun_file):
     return output
 
 
-def get_nominal_graph(inflection_file, noun_file) -> 'pynini.FstLike':
+def get_nominal_graph(inflection_file, noun_file):
     output = {}
     input = get_nominal_inflections(inflection_file, noun_file)
     for item in input:
