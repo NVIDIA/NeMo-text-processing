@@ -114,15 +114,6 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
 
 
 def make_inflected_graph_dict(file_path: str, cross: str, deterministic=False) -> dict:
-    """
-    Helper function to create a dictionary of pynini graphs from a TSV file.
-    Args:
-        file_path: Path to the TSV file containing the mappings.
-        cross: The string to cross with the second column of the TSV.
-
-    Returns:
-        A dictionary where keys represent grammar and values are the corresponding pynini graphs.
-    """
     graph_dict = {}
     for line in load_labels(get_abs_path(file_path)):
         key, value = line[0], line[1]
@@ -132,6 +123,21 @@ def make_inflected_graph_dict(file_path: str, cross: str, deterministic=False) -
             if not deterministic:
                 graph_dict[key] |= pynini.cross(cross, value)
     return graph_dict
+
+
+def get_nominal_inflections(inflection_file, noun_file):
+    output = {}
+    inflections = {a[0]: a[1] for a in load_labels(get_abs_path(inflection_file))}
+    digit_noun_tsv = load_labels(get_abs_path(noun_file))
+    for digit_noun in digit_noun_tsv:
+        word = digit_noun[0]
+        digit = digit_noun[1]
+        lemma_ending = inflections["sg_nom"]
+        assert word.endswith(lemma_ending), f"Word {word} does not end with {lemma_ending}"
+        stem = word[:-len(lemma_ending)]
+        wordforms = {k: stem + v for k, v in inflections.items()}
+        output[digit] = wordforms
+    return output
 
 
 class CardinalFst(GraphFst):
