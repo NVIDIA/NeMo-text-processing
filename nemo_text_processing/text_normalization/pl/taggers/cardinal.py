@@ -140,6 +140,18 @@ def get_nominal_inflections(inflection_file, noun_file):
     return output
 
 
+def get_nominal_graph(inflection_file, noun_file) -> 'pynini.FstLike':
+    output = {}
+    input = get_nominal_inflections(inflection_file, noun_file)
+    for item in input:
+        for key in input[item]:
+            if not key in output:
+                output[key] = pynini.cross(item, input[item][key])
+            else:
+                output[key] |= pynini.cross(item, input[item][key])
+    return output
+
+
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g.
