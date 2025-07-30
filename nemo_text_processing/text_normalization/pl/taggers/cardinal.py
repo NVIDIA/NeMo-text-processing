@@ -152,6 +152,25 @@ def get_nominal_graph(inflection_file, noun_file):
     return output
 
 
+def get_digit_forms(filepath):
+    """
+    Returns a dictionary of digit forms for Polish numbers.
+    """
+    output = {}
+    for line in load_labels(get_abs_path(filepath)):
+        digit, grammar, form = line[0], line[1], line[2]
+        if not digit in output:
+            output[digit] = {}
+        if grammar not in output[digit]:
+            output[digit][grammar] = form
+        else:
+            if type(output[digit][grammar]) is list:
+                output[digit][grammar].append(form)
+            else:
+                output[digit][grammar] = [output[digit][grammar], form]
+    return output
+
+
 def dict_to_graph(input_dict: dict, deterministic: bool = True) -> dict:
     """
     Converts a nested dictionary of forms to a dict of pynini.FSTs.
@@ -204,10 +223,25 @@ class CardinalFst(GraphFst):
         self.zero_sg = {x.replace("sg_", ""): y for x, y in self.zero_all.items() if x.startswith("sg_")}
 
         cases = ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]
+        dwa_cases = ["mi_pl_nom", "pl_gen", "pl_dat", "mi_pl_nom", "mi_pl_ins", "pl_gen", "mi_pl_nom"]
+        pl_cases = ["mi_pl_nom", "pl_gen", "pl_dat", "mi_pl_nom", "pl_ins", "pl_gen", "mi_pl_nom"]
+        qnt_cases = ["mi_pl_nom", "pl_gen", "pl_gen", "mi_pl_nom", "pl_ins", "pl_gen", "mi_pl_nom"]
         jeden_filt = {}
         for case in cases:
             jeden_filt[case] = self.jeden_all[f'mi_sg_{case}']
         # something similar for dwa
+        digit_forms_all = get_digit_forms("data/numbers/digit_forms.tsv")
+        digit_graph = dict_to_graph(digit_forms_all, deterministic=deterministic)
+        digit_pl = {}
+        for case, trg in zip(cases, dwa_cases):
+            digit_pl[case] = digit_graph["2"][trg]
+        for pl_digit in ["3", "4"]:
+            for case, trg in zip(cases, pl_cases):
+                digit_pl[case] |= digit_graph[pl_digit][trg]
+
+        # one does not inflect in compound numbers, so we use the nominative form
+        # e.g., https://www.poradnia-jezykowa.uni.lodz.pl/szczegoly/jeden-w-liczebnikach-wielowyrazowych
+        
 
 
         # zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
