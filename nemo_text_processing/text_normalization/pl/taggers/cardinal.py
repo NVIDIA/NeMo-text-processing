@@ -23,8 +23,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.pl.graph_utils import PL_ALPHA
-from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
-from nemo_text_processing.text_normalization.pl.taggers.ordinal import adjective_inflection, complete_paradigm
+from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
 from pynini.lib import pynutil
 
 
@@ -178,253 +178,254 @@ class CardinalFst(GraphFst):
         complete_paradigm(jeden_all)
         self.jeden_all = {a[0]: pynini.cross("1", a[1]) for a in jeden_all.items()}
         self.zero_all = get_nominal_graph("data/grammar/noun_nt_ro.tsv", "data/numbers/zero.tsv")
+        self.zero_sg = {x.replace("sg_", ""): y for x, y in self.zero_all.items() if x.startswith("sg_")}
 
         cases = ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]
         jeden_filt = {}
         for case in cases:
             jeden_filt[case] = self.jeden_all[f'mi_sg_{case}']
 
-        zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
-        digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
-        teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
-        ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
-        hundreds = pynini.invert(pynini.string_file(get_abs_path("data/numbers/hundreds.tsv")))
+        # zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
+        # digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
+        # teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))
+        # ties = pynini.invert(pynini.string_file(get_abs_path("data/numbers/tens.tsv")))
+        # hundreds = pynini.invert(pynini.string_file(get_abs_path("data/numbers/hundreds.tsv")))
 
-        plural_3digits = NEMO_DIGIT + (NEMO_DIGIT - "1") + pynini.union("2", "3", "4")
-        quantity_3digits = NEMO_DIGIT + pynini.union(
-            "1" + NEMO_DIGIT,
-            (NEMO_DIGIT - "1") + pynini.union("0", "5", "6", "7", "8", "9")
-        )
+        # plural_3digits = NEMO_DIGIT + (NEMO_DIGIT - "1") + pynini.union("2", "3", "4")
+        # quantity_3digits = NEMO_DIGIT + pynini.union(
+        #     "1" + NEMO_DIGIT,
+        #     (NEMO_DIGIT - "1") + pynini.union("0", "5", "6", "7", "8", "9")
+        # )
 
-        # Any single digit
-        graph_digit = digit
-        digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
-        self.digit = graph_digit
+        # # Any single digit
+        # graph_digit = digit
+        # digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
+        # self.digit = graph_digit
 
-        single_digits_graph = graph_digit | zero
-        self.single_digits_graph = single_digits_graph + pynini.closure(insert_space + single_digits_graph)
+        # single_digits_graph = graph_digit | zero
+        # self.single_digits_graph = single_digits_graph + pynini.closure(insert_space + single_digits_graph)
 
-        # Any double digit
-        graph_tens = teen
-        graph_ties = ties
-        if deterministic:
-            graph_tens |= graph_ties + (pynutil.delete('0') | graph_digit)
-        else:
-            graph_tens |= pynutil.add_weight(pynini.cross("18", "aderton"), -0.001)
-            graph_tens |= pynutil.add_weight(
-                graph_ties + (pynutil.delete('0') | (graph_digit | insert_space + graph_digit)), -0.001
-            )
+        # # Any double digit
+        # graph_tens = teen
+        # graph_ties = ties
+        # if deterministic:
+        #     graph_tens |= graph_ties + (pynutil.delete('0') | graph_digit)
+        # else:
+        #     graph_tens |= pynutil.add_weight(pynini.cross("18", "aderton"), -0.001)
+        #     graph_tens |= pynutil.add_weight(
+        #         graph_ties + (pynutil.delete('0') | (graph_digit | insert_space + graph_digit)), -0.001
+        #     )
 
-        hundreds = digits_no_one + pynutil.insert("hundra")
-        hundreds |= pynini.cross("1", "hundra")
-        if not deterministic:
-            hundreds |= pynutil.add_weight(pynini.cross("1", "etthundra"), -0.001)
-            hundreds |= pynutil.add_weight(digit + pynutil.insert(NEMO_SPACE) + pynutil.insert("hundra"), -0.001)
+        # hundreds = digits_no_one + pynutil.insert("hundra")
+        # hundreds |= pynini.cross("1", "hundra")
+        # if not deterministic:
+        #     hundreds |= pynutil.add_weight(pynini.cross("1", "etthundra"), -0.001)
+        #     hundreds |= pynutil.add_weight(digit + pynutil.insert(NEMO_SPACE) + pynutil.insert("hundra"), -0.001)
 
-        self.tens = graph_tens.optimize()
+        # self.tens = graph_tens.optimize()
 
-        graph_two_digit_non_zero = pynini.union(graph_digit, graph_tens, (pynutil.delete("0") + graph_digit))
-        if not deterministic:
-            graph_two_digit_non_zero |= pynutil.add_weight(
-                pynini.union(graph_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + graph_digit)), -0.001
-            )
+        # graph_two_digit_non_zero = pynini.union(graph_digit, graph_tens, (pynutil.delete("0") + graph_digit))
+        # if not deterministic:
+        #     graph_two_digit_non_zero |= pynutil.add_weight(
+        #         pynini.union(graph_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + graph_digit)), -0.001
+        #     )
 
-        self.two_digit_non_zero = graph_two_digit_non_zero.optimize()
+        # self.two_digit_non_zero = graph_two_digit_non_zero.optimize()
 
-        graph_final_two_digit_non_zero = pynini.union(final_digit, graph_tens, (pynutil.delete("0") + final_digit))
-        if not deterministic:
-            graph_final_two_digit_non_zero |= pynutil.add_weight(
-                pynini.union(final_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + final_digit)), -0.001
-            )
+        # graph_final_two_digit_non_zero = pynini.union(final_digit, graph_tens, (pynutil.delete("0") + final_digit))
+        # if not deterministic:
+        #     graph_final_two_digit_non_zero |= pynutil.add_weight(
+        #         pynini.union(final_digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + final_digit)), -0.001
+        #     )
 
-        self.final_two_digit_non_zero = graph_final_two_digit_non_zero.optimize()
+        # self.final_two_digit_non_zero = graph_final_two_digit_non_zero.optimize()
 
-        # Three digit strings
-        graph_hundreds = hundreds + pynini.union(pynutil.delete("00"), graph_tens, (pynutil.delete("0") + final_digit))
-        if not deterministic:
-            graph_hundreds |= pynutil.add_weight(
-                hundreds
-                + pynini.union(
-                    pynutil.delete("00"),
-                    (graph_tens | pynutil.insert(NEMO_SPACE) + graph_tens),
-                    (pynini.cross("0", NEMO_SPACE) + final_digit),
-                ),
-                -0.001,
-            )
+        # # Three digit strings
+        # graph_hundreds = hundreds + pynini.union(pynutil.delete("00"), graph_tens, (pynutil.delete("0") + final_digit))
+        # if not deterministic:
+        #     graph_hundreds |= pynutil.add_weight(
+        #         hundreds
+        #         + pynini.union(
+        #             pynutil.delete("00"),
+        #             (graph_tens | pynutil.insert(NEMO_SPACE) + graph_tens),
+        #             (pynini.cross("0", NEMO_SPACE) + final_digit),
+        #         ),
+        #         -0.001,
+        #     )
 
-        self.hundreds = graph_hundreds.optimize()
+        # self.hundreds = graph_hundreds.optimize()
 
-        # For all three digit strings with leading zeroes (graph appends '0's to manage place in string)
-        graph_hundreds_component = pynini.union(graph_hundreds, pynutil.delete("0") + graph_tens)
+        # # For all three digit strings with leading zeroes (graph appends '0's to manage place in string)
+        # graph_hundreds_component = pynini.union(graph_hundreds, pynutil.delete("0") + graph_tens)
 
-        graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component | (
-            pynutil.delete("00") + graph_digit
-        )
+        # graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component | (
+        #     pynutil.delete("00") + graph_digit
+        # )
 
-        graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
-            pynutil.delete("00") + digits_no_one
-        )
-        self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = (
-            graph_hundreds_component_at_least_one_non_zero_digit_no_one.optimize()
-        )
+        # graph_hundreds_component_at_least_one_non_zero_digit_no_one = graph_hundreds_component | (
+        #     pynutil.delete("00") + digits_no_one
+        # )
+        # self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = (
+        #     graph_hundreds_component_at_least_one_non_zero_digit_no_one.optimize()
+        # )
 
-        tusen = pynutil.insert("tusen")
-        etttusen = tusen
+        # tusen = pynutil.insert("tusen")
+        # etttusen = tusen
 
-        following_hundred = insert_space + graph_hundreds_component_at_least_one_non_zero_digit
-        if not deterministic:
-            following_hundred |= graph_hundreds_component_at_least_one_non_zero_digit
+        # following_hundred = insert_space + graph_hundreds_component_at_least_one_non_zero_digit
+        # if not deterministic:
+        #     following_hundred |= graph_hundreds_component_at_least_one_non_zero_digit
 
-        graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
-            pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
-            graph_hundreds_component_at_least_one_non_zero_digit_no_one
-            + tusen
-            + (following_hundred | pynutil.delete("000")),
-            pynini.cross("001", etttusen) + (following_hundred | pynutil.delete("000")),
-        )
-        self.graph_thousands_component_at_least_one_non_zero_digit = (
-            graph_thousands_component_at_least_one_non_zero_digit.optimize()
-        )
+        # graph_thousands_component_at_least_one_non_zero_digit = pynini.union(
+        #     pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit,
+        #     graph_hundreds_component_at_least_one_non_zero_digit_no_one
+        #     + tusen
+        #     + (following_hundred | pynutil.delete("000")),
+        #     pynini.cross("001", etttusen) + (following_hundred | pynutil.delete("000")),
+        # )
+        # self.graph_thousands_component_at_least_one_non_zero_digit = (
+        #     graph_thousands_component_at_least_one_non_zero_digit.optimize()
+        # )
 
-        graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
-            pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
-            graph_hundreds_component_at_least_one_non_zero_digit_no_one
-            + tusen
-            + (following_hundred | pynutil.delete("000")),
-            pynini.cross("001", etttusen) + (following_hundred | pynutil.delete("000")),
-        )
-        self.graph_thousands_component_at_least_one_non_zero_digit_no_one = (
-            graph_thousands_component_at_least_one_non_zero_digit_no_one.optimize()
-        )
+        # graph_thousands_component_at_least_one_non_zero_digit_no_one = pynini.union(
+        #     pynutil.delete("000") + graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+        #     graph_hundreds_component_at_least_one_non_zero_digit_no_one
+        #     + tusen
+        #     + (following_hundred | pynutil.delete("000")),
+        #     pynini.cross("001", etttusen) + (following_hundred | pynutil.delete("000")),
+        # )
+        # self.graph_thousands_component_at_least_one_non_zero_digit_no_one = (
+        #     graph_thousands_component_at_least_one_non_zero_digit_no_one.optimize()
+        # )
 
-        non_zero_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one
-        graph_million = make_million("milion", non_zero_no_one, deterministic)
-        graph_milliard = make_million("miliard", non_zero_no_one, deterministic)
-        graph_billion = make_million("bilion", non_zero_no_one, deterministic)
-        graph_billiard = make_million("biliard", non_zero_no_one, deterministic)
-        graph_trillion = make_million("trilion", non_zero_no_one, deterministic)
-        graph_trilliard = make_million("triliard", non_zero_no_one, deterministic)
+        # non_zero_no_one = graph_hundreds_component_at_least_one_non_zero_digit_no_one
+        # graph_million = make_million("milion", non_zero_no_one, deterministic)
+        # graph_milliard = make_million("miliard", non_zero_no_one, deterministic)
+        # graph_billion = make_million("bilion", non_zero_no_one, deterministic)
+        # graph_billiard = make_million("biliard", non_zero_no_one, deterministic)
+        # graph_trillion = make_million("trilion", non_zero_no_one, deterministic)
+        # graph_trilliard = make_million("triliard", non_zero_no_one, deterministic)
 
-        graph = (
-            graph_trilliard
-            + graph_trillion
-            + graph_billiard
-            + graph_billion
-            + graph_milliard
-            + graph_million
-            + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
-        )
+        # graph = (
+        #     graph_trilliard
+        #     + graph_trillion
+        #     + graph_billiard
+        #     + graph_billion
+        #     + graph_milliard
+        #     + graph_million
+        #     + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
+        # )
 
-        self.graph = (
-            ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
-            @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
-            @ graph
-            @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
-            @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(
-                pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), PL_ALPHA, PL_ALPHA, NEMO_SIGMA
-            )
-        )
+        # self.graph = (
+        #     ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
+        #     @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
+        #     @ NEMO_DIGIT ** 24
+        #     @ graph
+        #     @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
+        #     @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
+        #     @ pynini.cdrewrite(
+        #         pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 2), NEMO_SPACE), PL_ALPHA, PL_ALPHA, NEMO_SIGMA
+        #     )
+        # )
 
-        self.graph_hundreds_component_at_least_one_non_zero_digit = (
-            pynini.closure(NEMO_DIGIT, 2, 3) | pynini.difference(NEMO_DIGIT, pynini.accep("0"))
-        ) @ self.graph
-        self.graph_hundreds_component_at_least_one_non_zero_digit_en = (
-            self.graph_hundreds_component_at_least_one_non_zero_digit
-            @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
-        )
-        # For plurals, because the 'one' in 21, etc. still needs to agree
-        self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = (
-            pynini.project(self.graph_hundreds_component_at_least_one_non_zero_digit, "input") - "1"
-        ) @ self.graph_hundreds_component_at_least_one_non_zero_digit
-        self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en = (
-            pynini.project(self.graph_hundreds_component_at_least_one_non_zero_digit_en, "input") - "1"
-        ) @ self.graph_hundreds_component_at_least_one_non_zero_digit_en
+        # self.graph_hundreds_component_at_least_one_non_zero_digit = (
+        #     pynini.closure(NEMO_DIGIT, 2, 3) | pynini.difference(NEMO_DIGIT, pynini.accep("0"))
+        # ) @ self.graph
+        # self.graph_hundreds_component_at_least_one_non_zero_digit_en = (
+        #     self.graph_hundreds_component_at_least_one_non_zero_digit
+        #     @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
+        # )
+        # # For plurals, because the 'one' in 21, etc. still needs to agree
+        # self.graph_hundreds_component_at_least_one_non_zero_digit_no_one = (
+        #     pynini.project(self.graph_hundreds_component_at_least_one_non_zero_digit, "input") - "1"
+        # ) @ self.graph_hundreds_component_at_least_one_non_zero_digit
+        # self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en = (
+        #     pynini.project(self.graph_hundreds_component_at_least_one_non_zero_digit_en, "input") - "1"
+        # ) @ self.graph_hundreds_component_at_least_one_non_zero_digit_en
 
-        zero_space = zero + insert_space
-        self.zero_space = zero_space
-        self.three_digits_read = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
-            zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
-            zero_space + zero_space + digit,
-        )
-        self.three_digits_read_en = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
-            zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
-            zero_space + zero_space + digit,
-        )
-        self.three_digits_read_frac = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
-            zero_space + digit + insert_space + digit,
-        )
-        self.three_digits_read_frac_en = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
-            zero_space + digit + insert_space + digit,
-        )
-        self.two_or_three_digits_read_frac = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
-            ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens,
-            zero_space + single_digits_graph + pynini.closure(insert_space + digit, 0, 1),
-            single_digits_graph + pynini.closure(insert_space + single_digits_graph, 3),
-            zero_space + zero_space + zero,
-            single_digits_graph,
-        )
-        self.two_or_three_digits_read_frac_en = pynini.union(
-            ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
-            @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
-            ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ (graph_tens @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)),
-            zero_space + single_digits_graph + pynini.closure(insert_space + single_digits_graph, 0, 1),
-            single_digits_graph + pynini.closure(insert_space + single_digits_graph, 3),
-            zero_space + zero_space + zero,
-            single_digits_graph,
-        )
-        self.two_digits_read = pynini.union(((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, zero_space + digit)
-        self.two_digits_read_en = pynini.union(
-            ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ (graph_tens @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)),
-            zero_space + digit,
-        )
-        self.any_read_digit = ((NEMO_DIGIT - "0") @ digit) + pynini.closure(insert_space + digit)
-        if not deterministic:
-            self.three_digits_read |= pynutil.add_weight(digit + insert_space + digit + insert_space + digit, -0.001)
-            self.three_digits_read |= pynutil.add_weight(
-                ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens + insert_space + digit, -0.001
-            )
-            self.three_digits_read |= pynutil.add_weight(
-                digit + insert_space + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, -0.001
-            )
-            self.two_digits_read |= pynutil.add_weight(digit + insert_space + digit, -0.001)
+        # zero_space = zero + insert_space
+        # self.zero_space = zero_space
+        # self.three_digits_read = pynini.union(
+        #     ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+        #     @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+        #     zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
+        #     zero_space + zero_space + digit,
+        # )
+        # self.three_digits_read_en = pynini.union(
+        #     ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+        #     @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
+        #     zero_space + ((NEMO_DIGIT ** 2) @ graph_tens),
+        #     zero_space + zero_space + digit,
+        # )
+        # self.three_digits_read_frac = pynini.union(
+        #     ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+        #     @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+        #     zero_space + digit + insert_space + digit,
+        # )
+        # self.three_digits_read_frac_en = pynini.union(
+        #     ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+        #     @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
+        #     zero_space + digit + insert_space + digit,
+        # )
+        # self.two_or_three_digits_read_frac = pynini.union(
+        #     ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+        #     @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one,
+        #     ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens,
+        #     zero_space + single_digits_graph + pynini.closure(insert_space + digit, 0, 1),
+        #     single_digits_graph + pynini.closure(insert_space + single_digits_graph, 3),
+        #     zero_space + zero_space + zero,
+        #     single_digits_graph,
+        # )
+        # self.two_or_three_digits_read_frac_en = pynini.union(
+        #     ((NEMO_DIGIT - "0") + (NEMO_DIGIT ** 2))
+        #     @ self.graph_hundreds_component_at_least_one_non_zero_digit_no_one_en,
+        #     ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ (graph_tens @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)),
+        #     zero_space + single_digits_graph + pynini.closure(insert_space + single_digits_graph, 0, 1),
+        #     single_digits_graph + pynini.closure(insert_space + single_digits_graph, 3),
+        #     zero_space + zero_space + zero,
+        #     single_digits_graph,
+        # )
+        # self.two_digits_read = pynini.union(((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, zero_space + digit)
+        # self.two_digits_read_en = pynini.union(
+        #     ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ (graph_tens @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)),
+        #     zero_space + digit,
+        # )
+        # self.any_read_digit = ((NEMO_DIGIT - "0") @ digit) + pynini.closure(insert_space + digit)
+        # if not deterministic:
+        #     self.three_digits_read |= pynutil.add_weight(digit + insert_space + digit + insert_space + digit, -0.001)
+        #     self.three_digits_read |= pynutil.add_weight(
+        #         ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens + insert_space + digit, -0.001
+        #     )
+        #     self.three_digits_read |= pynutil.add_weight(
+        #         digit + insert_space + ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ graph_tens, -0.001
+        #     )
+        #     self.two_digits_read |= pynutil.add_weight(digit + insert_space + digit, -0.001)
 
-        self.graph |= zero
+        # self.graph |= zero
 
-        self.graph_unfiltered = self.graph
-        self.graph = filter_punctuation(self.graph).optimize()
-        self.graph_en = self.graph @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
-        self.graph_no_one = (pynini.project(self.graph, "input") - "1") @ self.graph
-        self.graph_no_one_en = (pynini.project(self.graph_en, "input") - "1") @ self.graph_en
+        # self.graph_unfiltered = self.graph
+        # self.graph = filter_punctuation(self.graph).optimize()
+        # self.graph_en = self.graph @ pynini.cdrewrite(ett_to_en, "", "[EOS]", NEMO_SIGMA)
+        # self.graph_no_one = (pynini.project(self.graph, "input") - "1") @ self.graph
+        # self.graph_no_one_en = (pynini.project(self.graph_en, "input") - "1") @ self.graph_en
 
-        joiner_chars = pynini.union("-", "–", "—")
-        joiner = pynini.cross(joiner_chars, " till ")
-        self.range = self.graph + joiner + self.graph
-        if not deterministic:
-            either_one = self.graph | self.graph_en
-            self.range = either_one + joiner + either_one
+        # joiner_chars = pynini.union("-", "–", "—")
+        # joiner = pynini.cross(joiner_chars, " till ")
+        # self.range = self.graph + joiner + self.graph
+        # if not deterministic:
+        #     either_one = self.graph | self.graph_en
+        #     self.range = either_one + joiner + either_one
 
-        optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
+        # optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
-        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
-        if not deterministic:
-            final_graph |= pynutil.add_weight(
-                optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\""), -0.001
-            )
-            final_graph |= pynutil.add_weight(
-                pynutil.insert("integer: \"") + self.single_digits_graph + pynutil.insert("\""), -0.001
-            )
+        # final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        # if not deterministic:
+        #     final_graph |= pynutil.add_weight(
+        #         optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\""), -0.001
+        #     )
+        #     final_graph |= pynutil.add_weight(
+        #         pynutil.insert("integer: \"") + self.single_digits_graph + pynutil.insert("\""), -0.001
+        #     )
 
-        final_graph = self.add_tokens(final_graph)
-        self.fst = final_graph.optimize()
+        # final_graph = self.add_tokens(final_graph)
+        # self.fst = final_graph.optimize()
