@@ -16,7 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.vi.graph_utils import (
-    NEMO_COMMA,
+    NEMO_COMMA_VI,
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_space,
@@ -69,14 +69,14 @@ class DecimalFst(GraphFst):
         integer_with_quantity = integer + delete_space + insert_space + quantity
 
         decimal_with_comma = (
-            integer + delete_space + insert_space + pynutil.insert(NEMO_COMMA) + insert_space + fractional
+            integer + delete_space + insert_space + pynutil.insert(NEMO_COMMA_VI) + insert_space + fractional
         )
 
         decimal_with_quantity = (
             integer
             + delete_space
             + insert_space
-            + pynutil.insert(NEMO_COMMA)
+            + pynutil.insert(NEMO_COMMA_VI)
             + insert_space
             + fractional
             + delete_space
@@ -86,7 +86,7 @@ class DecimalFst(GraphFst):
 
         fractional_only = (
             pynini.closure(integer + delete_space + insert_space, 0, 1)
-            + pynutil.insert(NEMO_COMMA)
+            + pynutil.insert(NEMO_COMMA_VI)
             + insert_space
             + fractional
         )

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, NEMO_COMMA
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path, load_labels
 
 
@@ -25,6 +25,10 @@ class DecimalFst(GraphFst):
         -12,5 tỷ -> decimal { negative: "true" integer_part: "mười hai" fractional_part: "năm" quantity: "tỷ" }
         12.345,67 -> decimal { integer_part: "mười hai nghìn ba trăm bốn mươi lăm" fractional_part: "sáu bảy" }
         1tr2 -> decimal { integer_part: "một triệu hai trăm nghìn" }
+        818,303 -> decimal { integer_part: "tám trăm mười tám" fractional_part: "ba không ba" }
+        0,2 triệu -> decimal { integer_part: "không" fractional_part: "hai" quantity: "triệu" }
+    Args:
+        cardinal: CardinalFst instance for processing integer parts
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
@@ -51,18 +55,18 @@ class DecimalFst(GraphFst):
         fractional_part = (
             pynutil.insert("fractional_part: \"")
             + single_digit_map
-            + pynini.closure(pynutil.insert(" ") + single_digit_map)
+            + pynini.closure(pynutil.insert(NEMO_SPACE) + single_digit_map)
             + pynutil.insert("\"")
         )
         optional_quantity = (
-            pynutil.delete(" ").ques + pynutil.insert(" quantity: \"") + quantity_units + pynutil.insert("\"")
+            pynutil.delete(NEMO_SPACE).ques + pynutil.insert(" quantity: \"") + quantity_units + pynutil.insert("\"")
         ).ques
 
         patterns = []
 
         # 1. Basic decimal patterns: 12,5 and 12,5 tỷ
         basic_decimal = (
-            (integer_part + pynutil.insert(" ")).ques + pynutil.delete(",") + pynutil.insert(" ") + fractional_part
+            (integer_part + pynutil.insert(NEMO_SPACE)).ques + pynutil.delete(NEMO_COMMA) + pynutil.insert(NEMO_SPACE) + fractional_part
         )
         patterns.append(basic_decimal)
         patterns.append(basic_decimal + optional_quantity)
@@ -71,12 +75,16 @@ class DecimalFst(GraphFst):
         integer_with_dots = (
             NEMO_DIGIT + pynini.closure(NEMO_DIGIT, 0, 2) + pynini.closure(pynutil.delete(".") + NEMO_DIGIT**3, 1)
         )
-        separated_decimal = (
+        separated_integer_part = (
             pynutil.insert("integer_part: \"")
             + pynini.compose(integer_with_dots, cardinal_graph)
-            + pynutil.insert("\" ")
-            + pynutil.delete(",")
-            + pynutil.insert(" ")
+            + pynutil.insert("\"")
+        )
+        separated_decimal = (
+            separated_integer_part
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.delete(NEMO_COMMA)
+            + pynutil.insert(NEMO_SPACE)
             + fractional_part
         )
         patterns.append(separated_decimal)
@@ -85,7 +93,7 @@ class DecimalFst(GraphFst):
         # 3. Integer with quantity: 100 triệu
         integer_with_quantity = (
             integer_part
-            + pynutil.delete(" ").ques
+            + pynutil.delete(NEMO_SPACE).ques
             + pynutil.insert(" quantity: \"")
             + quantity_units
             + pynutil.insert("\"")
@@ -95,7 +103,7 @@ class DecimalFst(GraphFst):
         # 4. Standard abbreviations: 1k, 100tr, etc.
         for abbr, full_name in quantity_abbr_labels:
             abbr_pattern = pynini.compose(
-                one_to_three_digits + pynini.cross(abbr, ""),
+                one_to_three_digits + pynutil.delete(abbr),
                 pynutil.insert("integer_part: \"")
                 + pynini.compose(one_to_three_digits, cardinal_graph)
                 + pynutil.insert(f"\" quantity: \"{full_name}\""),

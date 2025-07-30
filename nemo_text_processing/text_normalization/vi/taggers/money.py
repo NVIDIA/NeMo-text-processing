@@ -17,6 +17,8 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.vi.graph_utils import (
     NEMO_DIGIT,
+    NEMO_COMMA,
+    NEMO_SPACE,
     GraphFst,
     convert_space,
     delete_space,
@@ -31,6 +33,11 @@ class MoneyFst(GraphFst):
         "10,5$" -> money { integer_part: "mười" currency_maj: "đô la" fractional_part: "năm mươi" currency_min: "xu" preserve_order: true }
         "10đ" -> money { integer_part: "mười" currency_maj: "đồng" }
         "10 triệu đồng" -> money { integer_part: "mười" quantity: "triệu" currency_maj: "đồng" }
+        
+    Args:
+        cardinal: CardinalFst instance for processing integer parts
+        decimal: DecimalFst instance for processing fractional parts
+        deterministic: if True will provide a single transduction option, for False multiple transduction are generated.
     """
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True):
@@ -84,7 +91,8 @@ class MoneyFst(GraphFst):
 
                 # Minor-only pattern: 0,5$ -> năm mươi xu (highest priority)
                 minor_only = (
-                    pynutil.delete("0,")
+                    pynutil.delete("0")
+                    + pynutil.delete(NEMO_COMMA)
                     + fractional_part
                     + insert_space
                     + min_tag
@@ -98,7 +106,7 @@ class MoneyFst(GraphFst):
                     integer_part
                     + insert_space
                     + maj_tag
-                    + pynini.cross(",", " ")
+                    + pynini.cross(NEMO_COMMA, NEMO_SPACE)
                     + fractional_part
                     + insert_space
                     + min_tag

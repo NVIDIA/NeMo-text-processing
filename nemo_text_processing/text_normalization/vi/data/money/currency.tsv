@@ -9,13 +9,16 @@ $	đô la
 £	bảng anh
 ₹	rupee
 ¢	xu
+₣	franc pháp
 cent	xu
 cents	xu
 CHF	franc thụy sĩ
+FF	franc pháp
 JPY	yên nhật
 KRW	won hàn quốc
 CNY	nhân dân tệ
-CNY	yuan
+USD	đô la
+usd	đô la
 SGD	đô la singapore
 MYR	ringgit malaysia
 THB	baht thái lan
@@ -26,11 +29,12 @@ CAD	đô la canada
 NZD	đô la new zealand
 HKD	đô la hồng kông
 TWD	đô la đài loan
+ff	franc pháp
 chf	franc thụy sĩ
 jpy	yên nhật
 krw	won hàn quốc
 cny	nhân dân tệ
-cny	yuan
+usd	đô la
 vnd	đồng
 vnđ	đồng
 sgd	đô la singapore

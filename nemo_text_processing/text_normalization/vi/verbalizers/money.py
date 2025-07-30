@@ -16,7 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.vi.graph_utils import (
-    NEMO_COMMA,
+    NEMO_COMMA_VI,
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_preserve_order,
@@ -79,7 +79,7 @@ class MoneyFst(GraphFst):
             integer_part
             + delete_space
             + insert_space
-            + pynutil.insert(NEMO_COMMA)
+            + pynutil.insert(NEMO_COMMA_VI)
             + insert_space
             + fractional_part
             + delete_space

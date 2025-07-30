@@ -15,8 +15,10 @@
 /chiếc	một chiếc
 /kg	một ki lô gam
 /g	một gam
+/cm	một xăng ti mét
 /m	một mét
 /km	một ki lô mét
+/cm²	một xăng ti mét vuông
 /m²	một mét vuông
 /m2	một mét vuông
 /m³	một mét khối
@@ -28,6 +30,8 @@
 /bài	một bài
 /trang	một trang
 /từ	một từ
+/đồng	một đồng
+/KB	một kilobyte
 /GB	một gigabyte
 /MB	một megabyte
 /TB	một terabyte
