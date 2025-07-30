@@ -233,11 +233,12 @@ class CardinalFst(GraphFst):
         digit_forms_all = get_digit_forms("data/numbers/digit_forms.tsv")
         digit_graph = dict_to_graph(digit_forms_all, deterministic=deterministic)
         digit_pl = {}
-        for case, trg in zip(cases, dwa_cases):
-            digit_pl[case] = digit_graph["2"][trg]
-        for pl_digit in ["3", "4"]:
-            for case, trg in zip(cases, pl_cases):
-                digit_pl[case] |= digit_graph[pl_digit][trg]
+        for idx in range(len(cases)):
+            digit_pl[cases[idx]] = pynini.union(
+                digit_graph["2"][dwa_cases[idx]],
+                digit_graph["3"][pl_cases[idx]],
+                digit_graph["4"][pl_cases[idx]],
+            ).optimize()
 
         # one does not inflect in compound numbers, so we use the nominative form
         # e.g., https://www.poradnia-jezykowa.uni.lodz.pl/szczegoly/jeden-w-liczebnikach-wielowyrazowych
