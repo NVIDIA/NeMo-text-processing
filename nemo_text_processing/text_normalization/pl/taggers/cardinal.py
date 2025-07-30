@@ -153,22 +153,25 @@ def get_nominal_graph(inflection_file, noun_file):
 
 
 def dict_to_graph(input_dict: dict, deterministic: bool = True) -> dict:
+    """
+    Converts a nested dictionary of forms to a dict of pynini.FSTs.
+    Example input:
+        {'2': {'mi_pl_ins': ['form1', 'form2'], 'mi_sg_nom': 'form3'}}
+    Output:
+        {'2': {'mi_pl_ins': FST, 'mi_sg_nom': FST}}
+    """
     graph_dict = {}
     for key, value in input_dict.items():
-        if not key in graph_dict:
-            graph_dict[key] = {}
-            for subkey, subvalue in value.items():
-                rest = []
-                if type(subvalue) is list:
-                    form = subvalue[0]
-                    rest = subvalue[1:]
-                else:
-                    form = subvalue
-                graph = pynini.cross(key, form)
-                if not deterministic and rest != []:
-                    for alt in rest:
+        graph_dict[key] = {}
+        for subkey, subvalue in value.items():
+            if isinstance(subvalue, list):
+                graph = pynini.cross(key, subvalue[0])
+                if not deterministic:
+                    for alt in subvalue[1:]:
                         graph |= pynini.cross(key, alt)
-                graph_dict[key][subkey] = graph
+            else:
+                graph = pynini.cross(key, subvalue)
+            graph_dict[key][subkey] = graph
     return graph_dict
 
 
