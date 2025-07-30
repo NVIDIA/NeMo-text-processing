@@ -28,6 +28,9 @@ from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_
 from pynini.lib import pynutil
 
 
+CASES = ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]
+
+
 def make_million(number: str, non_zero_pl: 'pynini.FstLike', non_zero_quant: 'pynini.FstLike', case: str = None, deterministic: bool = True) -> 'pynini.FstLike':
     """
     Helper function for thousands/millions/milliards and higher
@@ -222,22 +225,21 @@ class CardinalFst(GraphFst):
         self.zero_all = get_nominal_graph("data/grammar/noun_nt_ro.tsv", "data/numbers/zero.tsv")
         self.zero_sg = {x.replace("sg_", ""): y for x, y in self.zero_all.items() if x.startswith("sg_")}
 
-        cases = ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]
         dwa_cases = ["mi_pl_nom", "pl_gen", "pl_dat", "mi_pl_nom", "mi_pl_ins", "pl_gen", "mi_pl_nom"]
         pl_cases = ["mi_pl_nom", "pl_gen", "pl_dat", "mi_pl_nom", "pl_ins", "pl_gen", "mi_pl_nom"]
         qnt_cases = ["mi_pl_nom", "pl_gen", "pl_gen", "mi_pl_nom", "pl_ins", "pl_gen", "mi_pl_nom"]
         jeden_filt = {}
-        for case in cases:
+        for case in CASES:
             jeden_filt[case] = self.jeden_all[f'mi_sg_{case}']
         # something similar for dwa
         digit_forms_all = get_digit_forms("data/numbers/digit_forms.tsv")
         digit_graph = dict_to_graph(digit_forms_all, deterministic=deterministic)
         digit_pl = {}
-        for idx in range(len(cases)):
-            digit_pl[cases[idx]] = pynini.union(
+        for idx in range(len(CASES)):
+            digit_pl[CASES[idx]] = pynini.union(
                 digit_graph["2"][dwa_cases[idx]],
                 digit_graph["3"][pl_cases[idx]],
-                digit_graph["4"][pl_cases[idx]],
+                digit_graph["4"][pl_cases[idx]]
             ).optimize()
 
         # one does not inflect in compound numbers, so we use the nominative form
