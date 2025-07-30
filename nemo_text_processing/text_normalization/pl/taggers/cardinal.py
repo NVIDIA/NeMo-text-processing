@@ -152,6 +152,26 @@ def get_nominal_graph(inflection_file, noun_file):
     return output
 
 
+def dict_to_graph(input_dict: dict, deterministic: bool = True) -> dict:
+    graph_dict = {}
+    for key, value in input_dict.items():
+        if not key in graph_dict:
+            graph_dict[key] = {}
+            for subkey, subvalue in value.items():
+                rest = []
+                if type(subvalue) is list:
+                    form = subvalue[0]
+                    rest = subvalue[1:]
+                else:
+                    form = subvalue
+                graph = pynini.cross(key, form)
+                if not deterministic and rest != []:
+                    for alt in rest:
+                        graph |= pynini.cross(key, alt)
+                graph_dict[key][subkey] = graph
+    return graph_dict
+
+
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g.
@@ -184,6 +204,8 @@ class CardinalFst(GraphFst):
         jeden_filt = {}
         for case in cases:
             jeden_filt[case] = self.jeden_all[f'mi_sg_{case}']
+        # something similar for dwa
+
 
         # zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
         # digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
