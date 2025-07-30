@@ -43,6 +43,10 @@ def load_labels(abs_path):
 
 
 def adjective_inflection(word: str, compound: str = "") -> dict:
+    """
+    inflect adjectives based on their endings.
+    This includes things like ordinals and 'jeden' (1) which inflect like adjectives.
+    """
     def fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b="", compound=""):
         if stem_b == "":
             stem_b = stem

@@ -14,6 +14,7 @@
 
 import pynini
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.pl.graph_utils import all_to_graph
 from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 # from nemo_text_processing.text_normalization.pl.taggers.cardinal import cardinal_graph
 from pynini.lib import pynutil
@@ -88,15 +89,6 @@ def make_graph_dict(filepath, invert=True, complete=False):
             else:
                 output_graph[key] |= pynini.cross(a, b)
     return output_graph
-
-
-def all_to_graph(graph_dict, deterministic=False):
-    output_graph = graph_dict["mi_sg_nom"]
-    if not deterministic:
-        for key in graph_dict:
-            if key != "mi_sg_nom":
-                output_graph |= graph_dict[key]
-    return output_graph.optimize()
 
 
 class OrdinalFst(GraphFst):
