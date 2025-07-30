@@ -16,8 +16,8 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.vi.graph_utils import (
-    NEMO_DIGIT,
     NEMO_COMMA,
+    NEMO_DIGIT,
     NEMO_SPACE,
     GraphFst,
     convert_space,
@@ -33,7 +33,7 @@ class MoneyFst(GraphFst):
         "10,5$" -> money { integer_part: "mười" currency_maj: "đô la" fractional_part: "năm mươi" currency_min: "xu" preserve_order: true }
         "10đ" -> money { integer_part: "mười" currency_maj: "đồng" }
         "10 triệu đồng" -> money { integer_part: "mười" quantity: "triệu" currency_maj: "đồng" }
-        
+
     Args:
         cardinal: CardinalFst instance for processing integer parts
         decimal: DecimalFst instance for processing fractional parts

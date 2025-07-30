@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst, NEMO_COMMA
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_COMMA, NEMO_DIGIT, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path, load_labels
 
 
@@ -66,7 +66,10 @@ class DecimalFst(GraphFst):
 
         # 1. Basic decimal patterns: 12,5 and 12,5 tỷ
         basic_decimal = (
-            (integer_part + pynutil.insert(NEMO_SPACE)).ques + pynutil.delete(NEMO_COMMA) + pynutil.insert(NEMO_SPACE) + fractional_part
+            (integer_part + pynutil.insert(NEMO_SPACE)).ques
+            + pynutil.delete(NEMO_COMMA)
+            + pynutil.insert(NEMO_SPACE)
+            + fractional_part
         )
         patterns.append(basic_decimal)
         patterns.append(basic_decimal + optional_quantity)
