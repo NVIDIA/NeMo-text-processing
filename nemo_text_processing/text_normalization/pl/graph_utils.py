@@ -67,3 +67,15 @@ def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     ).optimize()
 
     return graph @ fst
+
+
+def all_to_graph(graph_dict, deterministic=False):
+    for default_key in ["mi_sg_nom", "sg_nom", "nom"]:
+        if default_key in graph_dict:
+            break
+    output_graph = graph_dict[default_key]
+    if not deterministic:
+        for key in graph_dict:
+            if key != default_key:
+                output_graph |= graph_dict[key]
+    return output_graph.optimize()
