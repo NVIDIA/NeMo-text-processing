@@ -103,7 +103,7 @@ class OrdinalFst(GraphFst):
 
         ordinal_graph = pynutil.insert("integer: \"") + ((ordinal_final + ordinals_suffix)) + pynutil.insert("\"")
 
-        #Adding various counter suffix for ordinal
+        # Adding various counter suffix for ordinal
         # For counting, Korean does not use the speical "첫" for 1. Instead the regular "한"
         counters = pynini.union(
             graph_digit, graph_tens, graph_twenties, graph_thirties

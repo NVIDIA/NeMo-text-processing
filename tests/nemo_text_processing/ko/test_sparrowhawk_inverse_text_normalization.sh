@@ -37,6 +37,11 @@ testITNDecimal() {
   runtest $input
 }
 
+testITNFraction() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
+
 # Remove all command-line arguments
 shift $#
 
