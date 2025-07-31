@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, NEMO_SPACE
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst
 
 
 class FractionFst(GraphFst):
@@ -50,11 +50,18 @@ class FractionFst(GraphFst):
         graph_mixed_number = (
             pynutil.insert("integer_part: \"")
             + (
-                decimal | (decimal + connecting_word) | (root_word + decimal) | (cardinal + root_word + decimal)
-                | (root_word + decimal + connecting_word) | (cardinal + root_word + decimal + connecting_word)
-                | cardinal | (cardinal + connecting_word) | (root_word + cardinal) | (cardinal + root_word + cardinal)
-                | (root_word + cardinal + connecting_word) | (cardinal + root_word + cardinal + connecting_word)
-                
+                decimal
+                | (decimal + connecting_word)
+                | (root_word + decimal)
+                | (cardinal + root_word + decimal)
+                | (root_word + decimal + connecting_word)
+                | (cardinal + root_word + decimal + connecting_word)
+                | cardinal
+                | (cardinal + connecting_word)
+                | (root_word + cardinal)
+                | (cardinal + root_word + cardinal)
+                | (root_word + cardinal + connecting_word)
+                | (cardinal + root_word + cardinal + connecting_word)
             )
             + pynutil.insert("\"")
         )
@@ -62,8 +69,14 @@ class FractionFst(GraphFst):
         graph_denominator = (
             pynutil.insert("denominator: \"")
             + (
-                (decimal | (cardinal + root_word + decimal) | (root_word + decimal) 
-                | cardinal | (cardinal + root_word + cardinal) | (root_word + cardinal))
+                (
+                    decimal
+                    | (cardinal + root_word + decimal)
+                    | (root_word + decimal)
+                    | cardinal
+                    | (cardinal + root_word + cardinal)
+                    | (root_word + cardinal)
+                )
                 + pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)
             )
             + pynutil.insert("\"")
@@ -72,21 +85,39 @@ class FractionFst(GraphFst):
         graph_numerator = (
             pynutil.insert("numerator: \"")
             + (
-                (decimal | (cardinal + root_word + decimal) | (root_word + decimal)
-                | cardinal | (cardinal + root_word + cardinal) | (root_word + cardinal))
+                (
+                    decimal
+                    | (cardinal + root_word + decimal)
+                    | (root_word + decimal)
+                    | cardinal
+                    | (cardinal + root_word + cardinal)
+                    | (root_word + cardinal)
+                )
                 + pynini.closure(pynutil.delete(NEMO_SPACE))
             )
             + pynutil.insert("\"")
         )
 
-        graph_fraction_sign = (graph_sign + pynutil.insert(NEMO_SPACE) + graph_denominator + pynutil.insert(NEMO_SPACE) + fraction_word + graph_numerator)
-        graph_fraction_no_sign = (graph_denominator + pynutil.insert(NEMO_SPACE) + fraction_word + graph_numerator)
+        graph_fraction_sign = (
+            graph_sign
+            + pynutil.insert(NEMO_SPACE)
+            + graph_denominator
+            + pynutil.insert(NEMO_SPACE)
+            + fraction_word
+            + graph_numerator
+        )
+        graph_fraction_no_sign = graph_denominator + pynutil.insert(NEMO_SPACE) + fraction_word + graph_numerator
         # Only fraction like "1/3" or "- 1/3"
-        graph_fractions = (graph_fraction_sign | graph_fraction_no_sign)
+        graph_fractions = graph_fraction_sign | graph_fraction_no_sign
         # Mixed number fraction like "2 1/3" or "-2 1/3"
         graph_mixed_number_fraction = (
-            pynini.closure((graph_sign + pynutil.insert(" ")), 0, 1) + pynutil.add_weight(graph_mixed_number, 1.1)
-            + pynutil.insert(NEMO_SPACE) + graph_denominator + pynutil.insert(NEMO_SPACE) + fraction_word + graph_numerator
+            pynini.closure((graph_sign + pynutil.insert(" ")), 0, 1)
+            + pynutil.add_weight(graph_mixed_number, 1.1)
+            + pynutil.insert(NEMO_SPACE)
+            + graph_denominator
+            + pynutil.insert(NEMO_SPACE)
+            + fraction_word
+            + graph_numerator
         )
 
         final_graph = graph_fractions | graph_mixed_number_fraction
