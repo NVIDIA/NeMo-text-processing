@@ -69,7 +69,6 @@ class ClassifyFst(GraphFst):
 
             fraction = FractionFst(cardinal, decimal)
             fraction_graph = fraction.fst
-
             word_graph = WordFst().fst
 
             classify = (
