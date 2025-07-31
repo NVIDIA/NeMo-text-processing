@@ -37,8 +37,10 @@ class DecimalFst(GraphFst):
         zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
 
         DOUBLE_QUOTE = '"'
-        
-        graph_integer = pynutil.insert(f'integer_part: {DOUBLE_QUOTE}') + cardinal_before_decimal + pynutil.insert(DOUBLE_QUOTE)
+
+        graph_integer = (
+            pynutil.insert(f'integer_part: {DOUBLE_QUOTE}') + cardinal_before_decimal + pynutil.insert(DOUBLE_QUOTE)
+        )
         graph_fractional = (
             pynutil.insert(f'fractional_part: {DOUBLE_QUOTE}')
             + pynini.closure(cardinal_after_decimal | zero, 1)
@@ -55,7 +57,9 @@ class DecimalFst(GraphFst):
             + pynutil.insert(DOUBLE_QUOTE)
         )
 
-        graph_decimal = graph_decimal_no_sign | (graph_with_negative + pynutil.insert(NEMO_SPACE) + graph_decimal_no_sign)
+        graph_decimal = graph_decimal_no_sign | (
+            graph_with_negative + pynutil.insert(NEMO_SPACE) + graph_decimal_no_sign
+        )
 
         # For internal use without tokens
         self.just_decimal = graph_decimal_no_sign.optimize()
