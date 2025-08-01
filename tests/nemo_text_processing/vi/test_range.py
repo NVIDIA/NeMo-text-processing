@@ -12,24 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pynini
-from pynini.lib import pynutil
+import pytest
+from parameterized import parameterized
 
-from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.normalize import Normalizer
+
+from tests.nemo_text_processing.utils import parse_test_case_file
 
 
-class PunctuationFst(GraphFst):
-    """
-    Finite state transducer for classifying punctuation for Vietnamese
-    """
+class TestRange:
+    normalizer = Normalizer(input_case='cased', lang='vi', cache_dir=None, overwrite_cache=True)
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
-
-        s = "!#%&'()*+,-./:;<=>?@^_`{|}~"
-
-        punct = pynini.union(*s)
-        self.punct_marks = punct
-        self.graph = punct
-
-        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
+    @parameterized.expand(parse_test_case_file("vi/data_text_normalization/test_cases_range.txt"))
+    @pytest.mark.run_only_on('CPU')
+    def test_norm(self, test_input, expected):
+        pred = self.normalizer.normalize(test_input)
+        assert pred == expected, f"input: {test_input} assert {pred} == {expected}"

@@ -63,10 +63,15 @@ testTNTime() {
 #   runtest $input
 # }
 
-# testTNMoney() {
-#   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_money.txt
-#   runtest $input
-# }
+testTNMoney() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_money.txt
+  runtest $input
+}
+
+testTNRange() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_range.txt
+  runtest $input
+}
 
 # testTNTelephone() {
 #   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_telephone.txt
