@@ -63,9 +63,10 @@ INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
 MINUS = pynini.union("ऋणात्मक", "नकारात्मक").optimize()
 
+
 def integer_to_devanagari(n: int) -> str:
     return ''.join(DEVANAGARI_DIGIT[int(d)] for d in str(n))
-    
+
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     """
