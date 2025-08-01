@@ -15,7 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.vi.graph_utils import (
+    NEMO_COMMA_VI,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 
 
 class DecimalFst(GraphFst):
@@ -34,45 +40,64 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        # Handle negative sign - Vietnamese uses "âm" for negative numbers
-        self.optional_sign = pynini.cross("negative: \"true\"", "âm ")
-        if not deterministic:
-            # Alternative ways to say negative in Vietnamese
-            self.optional_sign |= pynini.cross("negative: \"true\"", "trừ ")
-
-        self.optional_sign = pynini.closure(self.optional_sign + delete_space, 0, 1)
-
-        self.integer = pynutil.delete("integer_part:") + cardinal.integer
-        self.optional_integer = pynini.closure(self.integer + delete_space + insert_space, 0, 1)
-
-        # Handle fractional part - Vietnamese uses "phẩy" (comma) instead of "point"
-        self.fractional_default = (
+        # Basic components
+        integer = pynutil.delete("integer_part:") + cardinal.integer
+        fractional = (
             pynutil.delete("fractional_part:")
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-
-        self.fractional = pynutil.insert("phẩy ") + self.fractional_default
-
-        self.quantity = (
-            delete_space
-            + insert_space
-            + pynutil.delete("quantity:")
+        quantity = (
+            pynutil.delete("quantity:")
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        self.optional_quantity = pynini.closure(self.quantity, 0, 1)
 
-        graph = self.optional_sign + (
-            self.integer
-            | (self.integer + self.quantity)
-            | (self.optional_integer + self.fractional + self.optional_quantity)
+        # Negative handling
+        negative = pynini.cross("negative: \"true\"", "âm ")
+        if not deterministic:
+            negative |= pynini.cross("negative: \"true\"", "trừ ")
+        optional_negative = pynini.closure(negative + delete_space, 0, 1)
+
+        # Simple patterns
+        simple_integer = integer
+
+        integer_with_quantity = integer + delete_space + insert_space + quantity
+
+        decimal_with_comma = (
+            integer + delete_space + insert_space + pynutil.insert(NEMO_COMMA_VI) + insert_space + fractional
         )
 
+        decimal_with_quantity = (
+            integer
+            + delete_space
+            + insert_space
+            + pynutil.insert(NEMO_COMMA_VI)
+            + insert_space
+            + fractional
+            + delete_space
+            + insert_space
+            + quantity
+        )
+
+        fractional_only = (
+            pynini.closure(integer + delete_space + insert_space, 0, 1)
+            + pynutil.insert(NEMO_COMMA_VI)
+            + insert_space
+            + fractional
+        )
+
+        # Group all patterns
+        all_patterns = pynini.union(
+            simple_integer, integer_with_quantity, decimal_with_comma, decimal_with_quantity, fractional_only
+        )
+
+        # Combine with negative handling
+        graph = optional_negative + all_patterns
+
         self.numbers = graph
-        delete_tokens = self.delete_tokens(graph)
-        self.fst = delete_tokens.optimize()
+        self.fst = self.delete_tokens(graph).optimize()
