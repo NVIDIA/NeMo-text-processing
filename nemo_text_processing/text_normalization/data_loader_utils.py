@@ -162,8 +162,8 @@ def training_data_to_tokens(
     for instance in data:
         if instance.token_type != EOS_TYPE:
             if category is None or instance.token_type == category:
-                result[instance.token_type][0].append(instance.un_normalized)
-                result[instance.token_type][1].append(instance.normalized)
+                result[instance.token_type][0].append(unicodedata.normalize(NFC, instance.un_normalized))
+                result[instance.token_type][1].append(unicodedata.normalize(NFC, instance.normalized))
     return result
 
 
