@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -48,7 +48,7 @@ class DecimalFst(GraphFst):
         fractional_part = pynutil.insert("fractional_part: \"") + decimal_part + pynutil.insert("\"")
 
         graph_decimal_regular = (
-            integer_part + decimal_point + pynutil.insert(" ") + fractional_part
+            integer_part + decimal_point + pynutil.insert(NEMO_SPACE) + fractional_part
         )  # Regular decimal like 1.5
         graph_deicimal_larger = get_quantity(
             graph_decimal_regular

@@ -1,5 +1,4 @@
 # Copyright (c) 2025, NVIDIA CORPORATION.  All rights reserved.
-# Copyright 2015 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +21,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import INPUT_LOWER_CASED, GraphFst, generator_main
 from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
 
@@ -67,12 +67,15 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal)
             decimal_graph = decimal.fst
 
+            fraction = FractionFst(cardinal, decimal)
+            fraction_graph = fraction.fst
             word_graph = WordFst().fst
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.0)
                 | pynutil.add_weight(word_graph, 100)
             )
 
