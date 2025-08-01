@@ -11,25 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import pynini
-from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst
-
-
-class PunctuationFst(GraphFst):
-    """
-    Finite state transducer for classifying punctuation for Vietnamese
-    """
-
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
-
-        s = "!#%&'()*+,-./:;<=>?@^_`{|}~"
-
-        punct = pynini.union(*s)
-        self.punct_marks = punct
-        self.graph = punct
-
-        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
