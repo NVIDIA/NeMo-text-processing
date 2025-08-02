@@ -51,5 +51,5 @@ class FractionFst(GraphFst):
         mixed_fraction = integer_tagged + delete_space + pynutil.insert(" và ") + fraction_part
 
         self.numbers = optional_sign + (simple_fraction | mixed_fraction)
-        
+
         self.fst = self.delete_tokens(self.numbers).optimize()

@@ -14,11 +14,11 @@
 
 from nemo_text_processing.text_normalization.vi.graph_utils import (
     GraphFst,
-    delete_space,
     delete_preserve_order,
+    delete_space,
+    extract_field,
     extract_wrapper_content,
     insert_space,
-    extract_field,
 )
 
 
@@ -31,7 +31,7 @@ class MeasureFst(GraphFst):
 
     Args:
         decimal: DecimalFst verbalizer
-        cardinal: CardinalFst verbalizer  
+        cardinal: CardinalFst verbalizer
         fraction: FractionFst verbalizer
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
@@ -39,10 +39,10 @@ class MeasureFst(GraphFst):
 
     def __init__(self, decimal: GraphFst, cardinal: GraphFst, fraction: GraphFst, deterministic: bool = True):
         super().__init__(name="measure", kind="verbalize", deterministic=deterministic)
-        
+
         # Extract components
         unit = extract_field("units")
-        
+
         # Combine all number types into single graph
         number_graph = (
             extract_wrapper_content("decimal", decimal.numbers)
@@ -54,8 +54,6 @@ class MeasureFst(GraphFst):
         graph = number_graph + delete_space + insert_space + unit
 
         # Handle preserve_order: unit + space + number
-        graph |= (
-            unit + delete_space + insert_space + number_graph + delete_preserve_order
-        )
+        graph |= unit + delete_space + insert_space + number_graph + delete_preserve_order
 
-        self.fst = self.delete_tokens(graph).optimize() 
+        self.fst = self.delete_tokens(graph).optimize()

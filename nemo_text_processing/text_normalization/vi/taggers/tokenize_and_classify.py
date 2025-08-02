@@ -18,7 +18,6 @@ import time
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.vi.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -29,6 +28,7 @@ from nemo_text_processing.text_normalization.vi.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.vi.taggers.date import DateFst
 from nemo_text_processing.text_normalization.vi.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.vi.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.vi.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.vi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.vi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.vi.taggers.punctuation import PunctuationFst
@@ -129,7 +129,7 @@ class ClassifyFst(GraphFst):
             measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
             measure_graph = measure.fst
             logger.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
-            
+
             # Create composed verbalizers for range processing
             start_time = time.time()
             v_cardinal = VCardinalFst(deterministic=deterministic)
@@ -146,12 +146,19 @@ class ClassifyFst(GraphFst):
             money_final = pynini.compose(money_graph, v_money.fst)
 
             v_fraction = VFractionFst(deterministic=deterministic)
-            v_measure = VMeasureFst(decimal=v_decimal, cardinal=v_cardinal, fraction=v_fraction, deterministic=deterministic)
+            v_measure = VMeasureFst(
+                decimal=v_decimal, cardinal=v_cardinal, fraction=v_fraction, deterministic=deterministic
+            )
             measure_final = pynini.compose(measure_graph, v_measure.fst)
 
             # Create range graph
             range_fst = RangeFst(
-                time=time_final, date=date_final, decimal=decimal_final, money=money_final, measure=measure_final, deterministic=deterministic
+                time=time_final,
+                date=date_final,
+                decimal=decimal_final,
+                money=money_final,
+                measure=measure_final,
+                deterministic=deterministic,
             )
             range_graph = range_fst.fst
             logger.debug(f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes")

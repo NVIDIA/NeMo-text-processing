@@ -64,13 +64,7 @@ def extract_field(field_name):
 
 def extract_wrapper_content(wrapper_type: str, content_graph):
     """Helper to extract content from wrapper like 'decimal { ... }'"""
-    return (
-        pynutil.delete(f"{wrapper_type} {{")
-        + delete_space
-        + content_graph
-        + delete_space
-        + pynutil.delete("}")
-    )
+    return pynutil.delete(f"{wrapper_type} {{") + delete_space + content_graph + delete_space + pynutil.delete("}")
 
 
 def convert_space(fst) -> "pynini.FstLike":

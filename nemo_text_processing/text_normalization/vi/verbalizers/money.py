@@ -98,20 +98,20 @@ class MoneyFst(GraphFst):
         )
 
         per_units_non_metric = pynini.string_file(get_abs_path("data/money/per_unit_non_metric.tsv"))
-        
+
         per_unit_prefixes = pynini.string_file(get_abs_path("data/money/per_unit_prefixes.tsv"))
         per_unit_bases = pynini.string_file(get_abs_path("data/money/per_unit_bases.tsv"))
-        
+
         prefixes_vn = pynini.project(per_unit_prefixes, "output")
         bases_vn = pynini.project(per_unit_bases, "output")
-        
+
         space_accept = pynini.accep(NEMO_SPACE)
         one_space = pynini.accep("một ")
-        
+
         # Accept metric combinations: "một ki lô gam"
         metric_per_units = one_space + prefixes_vn + space_accept + bases_vn
         standalone_per_units = one_space + bases_vn
-        
+
         # Combine all per_unit recognitions
         per_units = per_units_non_metric | metric_per_units | standalone_per_units
         per_units_normalized = pynini.project(per_units, "output")

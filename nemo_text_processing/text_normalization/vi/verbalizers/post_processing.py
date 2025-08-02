@@ -18,10 +18,7 @@ from typing import Dict, List
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import (
-    NEMO_SIGMA,
-    generator_main,
-)
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_SIGMA, generator_main
 from nemo_text_processing.utils.logging import logger
 
 
@@ -59,13 +56,10 @@ class PostProcessingFst:
         return {
             # Punctuation that should not have space before them
             'no_space_before': [",", ".", "!", "?", ":", ";", ")", r"\]", "}", "\""],
-            
-            # Punctuation that should not have space after them  
+            # Punctuation that should not have space after them
             'no_space_after': ["(", r"\[", "{"],
-            
             # Punctuation that can have space before them (exceptions)
             'allow_space_before': ["&", "-", "—", "–", "(", r"\[", "{", "\"", "'", "«", "»"],
-            
             # Special Vietnamese punctuation handling
             'vietnamese_special': {
                 # Vietnamese quotation marks
@@ -74,7 +68,7 @@ class PostProcessingFst:
                 'dashes': ["-", "—", "–"],
                 # Vietnamese brackets
                 'brackets': ["(", ")", r"\[", r"\]", "{", "}"],
-            }
+            },
         }
 
     def set_punct_dict(self):
@@ -109,40 +103,37 @@ class PostProcessingFst:
     def get_punct_postprocess_graph(self):
         """
         Returns graph to post process punctuation marks for Vietnamese.
-        
+
         Uses dynamic configuration for flexible punctuation handling.
         Vietnamese punctuation spacing rules are defined in get_vietnamese_punct_config().
         """
         # Get dynamic punctuation configuration
         punct_config = self.get_vietnamese_punct_config()
-        
+
         # Extract configuration
         no_space_before_punct = punct_config['no_space_before']
         no_space_after_punct = punct_config['no_space_after']
-        
+
         # Create FSTs for punctuation rules
         no_space_before_punct_fst = pynini.union(*no_space_before_punct)
         no_space_after_punct_fst = pynini.union(*no_space_after_punct)
-        
+
         delete_space = pynutil.delete(" ")
 
         # Rule 1: Remove space before punctuation (primary rule)
         remove_space_before = pynini.cdrewrite(
             delete_space + no_space_before_punct_fst,  # " ," -> ","
             "",  # any context before
-            "",  # any context after  
-            NEMO_SIGMA
+            "",  # any context after
+            NEMO_SIGMA,
         ).optimize()
 
-        # Rule 2: Remove space after opening brackets  
+        # Rule 2: Remove space after opening brackets
         remove_space_after = pynini.cdrewrite(
-            no_space_after_punct_fst + delete_space,  # "( " -> "("
-            "",
-            "",
-            NEMO_SIGMA
+            no_space_after_punct_fst + delete_space, "", "", NEMO_SIGMA  # "( " -> "("
         ).optimize()
 
         # Combine the two main rules
         graph = pynini.compose(remove_space_before, remove_space_after)
-        
+
         return graph.optimize()
