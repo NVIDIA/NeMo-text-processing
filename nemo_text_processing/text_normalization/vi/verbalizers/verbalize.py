@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from nemo_text_processing.text_normalization.vi.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.vi.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.vi.verbalizers.date import DateFst
@@ -59,6 +60,9 @@ class VerbalizeFst(GraphFst):
         money = MoneyFst(deterministic=deterministic)
         money_graph = money.fst
 
+        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
+        measure_graph = measure.fst
+        
         graph = (
             cardinal_graph
             | whitelist_graph
@@ -70,6 +74,7 @@ class VerbalizeFst(GraphFst):
             | roman_graph
             | time_graph
             | money_graph
+            | measure_graph
         )
 
         self.fst = graph

@@ -41,6 +41,7 @@ class RangeFst(GraphFst):
         date: GraphFst,
         decimal: GraphFst,
         money: GraphFst,
+        measure: GraphFst,
         deterministic: bool = True,
     ):
         super().__init__(name="range", kind="classify", deterministic=deterministic)
@@ -50,11 +51,11 @@ class RangeFst(GraphFst):
         # Pattern: X-Y -> X đến Y
         # This will handle time ranges, date ranges, decimal ranges, and money ranges with dash
         range_pattern = (
-            (time | date | decimal | money)
+            (time | date | decimal | money | measure)
             + delete_space
             + pynini.cross("-", " đến ")
             + delete_space
-            + (time | date | decimal | money)
+            + (time | date | decimal | money | measure)
         )
 
         self.graph = range_pattern
