@@ -328,9 +328,10 @@ class CardinalFst(GraphFst):
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
 
+
 if __name__ == '__main__':
     from nemo_text_processing.text_normalization.hi.utils import apply_fst
 
     cardinal = CardinalFst()
     input_text = "११०१११११११११११"
-    apply_fst(input_text, cardinal.fst) 
+    apply_fst(input_text, cardinal.fst)

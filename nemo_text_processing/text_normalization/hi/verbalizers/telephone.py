@@ -60,6 +60,6 @@ class TelephoneFst(GraphFst):
             1,
         )
 
-        graph = optional_country_code + number_part + optional_extension 
+        graph = optional_country_code + number_part + optional_extension
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
