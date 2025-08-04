@@ -92,7 +92,7 @@ class CardinalFst(GraphFst):
                 # Build pattern: (non-zero digit) + up to 2 digits + (dot + 3 digits) repeated i times
                 pattern = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 2)
                 for _ in range(i):  # i = number of dot groups for this magnitude
-                    pattern += delete_dot + NEMO_DIGIT ** 3
+                    pattern += delete_dot + NEMO_DIGIT**3
 
                 dot_patterns.append(pynini.compose(pattern, self.magnitude_patterns[magnitude_name]))
 
@@ -195,7 +195,7 @@ class CardinalFst(GraphFst):
             prefix: base prefix pattern
             zeros_to_delete: number of zeros to delete (0, 00, etc.)
             magnitude_word: magnitude word to insert
-            linh_word: linh word to insert  
+            linh_word: linh word to insert
             digit_pattern: pattern for the digits (single_digit or two_digit)
         """
         pattern = (
@@ -215,7 +215,7 @@ class CardinalFst(GraphFst):
 
     def _build_all_magnitude_patterns(self):
         """
-        Dynamically build all magnitude patterns 
+        Dynamically build all magnitude patterns
         Returns: dict mapping magnitude names to their FST patterns
         """
         # Define magnitude hierarchy (name, min_digits, max_digits, zero_count)
