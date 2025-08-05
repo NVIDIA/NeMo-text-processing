@@ -104,8 +104,6 @@ if __name__ == "__main__":
     print("- Accuracy: " + str(sum(token_weighted_accuracy) / sum(token_count_per_type.values())))
     print(" - Total: " + str(sum(token_count_per_type.values())), '\n')
 
-    print(" - Total: " + str(sum(token_count_per_type.values())), '\n')
-
     for token_type in token_accuracy:
         if token_type not in known_types:
             raise ValueError("Unexpected token type: " + token_type)
