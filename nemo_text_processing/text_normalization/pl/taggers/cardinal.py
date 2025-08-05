@@ -228,18 +228,20 @@ class CardinalFst(GraphFst):
         dwa_cases = ["mi_pl_nom", "pl_gen", "pl_dat", "mi_pl_nom", "mi_pl_ins", "pl_gen", "mi_pl_nom"]
         pl_cases = ["mi_pl_nom", "pl_gen", "pl_dat", "mi_pl_nom", "pl_ins", "pl_gen", "mi_pl_nom"]
         qnt_cases = ["mi_pl_nom", "pl_gen", "pl_gen", "mi_pl_nom", "pl_ins", "pl_gen", "mi_pl_nom"]
-        jeden_filt = {}
-        jeden_compound = {}
+
         # jeden (one) does not inflect in compound numbers, so we use the nominative form
         # e.g., https://www.poradnia-jezykowa.uni.lodz.pl/szczegoly/jeden-w-liczebnikach-wielowyrazowych
         # but a lot of people get this wrong, so we also include the inflected forms
         # This is different from Russian; also, jeden in compounds is a quantity, not singular
+        jeden_filt = {}
+        jeden_compound = {}
         for case in CASES:
             jeden_filt[case] = self.jeden_all[f'mi_sg_{case}']
             jeden_compound[case] = jeden_all[f'mi_sg_nom']
             if not deterministic:
                 jeden_compound[case] |= self.jeden_all[f'mi_sg_{case}']
-        # something similar for dwa
+
+        # 2-4 are plural (5-9 are quantities)
         digit_forms_all = get_digit_forms("data/numbers/digit_forms.tsv")
         digit_graph = dict_to_graph(digit_forms_all, deterministic=deterministic)
         digit_pl = {}
@@ -249,8 +251,8 @@ class CardinalFst(GraphFst):
                 digit_graph["3"][pl_cases[idx]],
                 digit_graph["4"][pl_cases[idx]]
             ).optimize()
-
         
+        digit_qnt = {}
 
 
         # zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
