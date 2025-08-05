@@ -69,10 +69,17 @@ def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     return graph @ fst
 
 
-def all_to_graph(graph_dict, deterministic=False):
-    for default_key in ["mi_sg_nom", "sg_nom", "nom"]:
-        if default_key in graph_dict:
-            break
+def all_to_graph(graph_dict, default=None, deterministic=False):
+    """
+    Converts a dictionary of graphs to a single graph.
+    Polish has multiple cases, so this is useful for generating a single graph
+    """
+    if default is None:
+        for default_key in ["mi_sg_nom", "sg_nom", "nom", "mi_pl_nom", "pl_nom"]:
+            if default_key in graph_dict:
+                break
+    else:
+        default_key = default
     output_graph = graph_dict[default_key]
     if not deterministic:
         for key in graph_dict:
