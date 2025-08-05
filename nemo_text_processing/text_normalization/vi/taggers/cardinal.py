@@ -77,40 +77,19 @@ class CardinalFst(GraphFst):
 
         self.hundreds = pynini.closure(NEMO_DIGIT, 3, 3) @ self.hundreds_pattern
 
-        # Build magnitude patterns dynamically
         self.magnitude_patterns = self._build_all_magnitude_patterns()
-
-        # Handle dot-separated numbers: 1.000, 1.000.000, etc.
-        delete_dot = pynutil.delete(".")
-        dot_patterns = []
-
-        # Build dot patterns automatically for all available magnitudes
-        for i, magnitude_name in enumerate(
-            ["thousand", "million", "billion", "trillion", "quadrillion", "quintillion"], 1
-        ):
-            if magnitude_name in self.magnitude_patterns:
-                # Build pattern: (non-zero digit) + up to 2 digits + (dot + 3 digits) repeated i times
-                pattern = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 2)
-                for _ in range(i):  # i = number of dot groups for this magnitude
-                    pattern += delete_dot + NEMO_DIGIT**3
-
-                dot_patterns.append(pynini.compose(pattern, self.magnitude_patterns[magnitude_name]))
-
-        # Build final graph with all magnitude patterns
+        custom_patterns = self._build_all_patterns()
+        
         all_patterns = [
-            *self.magnitude_patterns.values(),  # All magnitude patterns (trillion, billion, million, thousand)
-            self.hundreds,
-            self.two_digit,
-            self.single_digit,
-            self.zero,
-            *dot_patterns,
+            *custom_patterns,
+            *self.magnitude_patterns.values(),
+            self.hundreds, self.two_digit, self.single_digit, self.zero,
         ]
         self.graph = pynini.union(*all_patterns).optimize()
 
         self.single_digits_graph = self.single_digit | self.zero
         self.graph_with_and = self.graph
 
-        # Build final FST with optional negative and integer wrapper
         negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
         final_graph = negative + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         self.fst = self.add_tokens(final_graph).optimize()
@@ -118,126 +97,105 @@ class CardinalFst(GraphFst):
     def _build_magnitude_pattern(self, name, min_digits, max_digits, zero_count, prev_pattern=None):
         magnitude_word = self.magnitudes[name]
         linh_word = self.magnitudes["linh"]
-
         patterns = []
+        
         for digits in range(min_digits, max_digits + 1):
             leading_digits = digits - zero_count
-
-            # Choose leading pattern based on digit count
-            if leading_digits == 1:
-                leading_fst = self.single_digit
-            elif leading_digits == 2:
-                leading_fst = self.two_digit
-            else:  # 3 digits
-                leading_fst = self.hundreds_pattern
+            if leading_digits == 1: leading_fst = self.single_digit
+            elif leading_digits == 2: leading_fst = self.two_digit
+            else: leading_fst = self.hundreds_pattern
 
             prefix = leading_fst + insert_space + pynutil.insert(magnitude_word)
-            digit_patterns = []
+            digit_patterns = [prefix + pynutil.delete("0" * zero_count)]
 
-            # Case 1: All trailing zeros (e.g., 1000 -> một nghìn)
-            digit_patterns.append(prefix + pynutil.delete("0" * zero_count))
-
-            # Case 2: Has lower magnitude (e.g., 1001000 -> một triệu một nghìn)
-            if prev_pattern:
+            if prev_pattern and name not in ["quadrillion", "quintillion"]:
                 digit_patterns.append(prefix + insert_space + prev_pattern)
 
-            # Case 3: Trailing patterns with linh (e.g., 1001 -> một nghìn linh một)
             for trailing_zeros in range(zero_count):
                 remaining_digits = zero_count - trailing_zeros
                 trailing_prefix = prefix + pynutil.delete("0" * trailing_zeros)
 
                 if remaining_digits == 1:
-                    # Prefer "linh" pattern with better weight
-                    linh_pattern = (
-                        trailing_prefix + insert_space + pynutil.insert(linh_word) + insert_space + self.linh_digits
-                    )
+                    linh_pattern = trailing_prefix + insert_space + pynutil.insert(linh_word) + insert_space + self.linh_digits
                     digit_patterns.append(pynutil.add_weight(linh_pattern, -0.1))
                 elif remaining_digits == 2:
                     digit_patterns.append(trailing_prefix + insert_space + self.two_digit)
                 elif remaining_digits == 3:
                     digit_patterns.append(trailing_prefix + insert_space + self.hundreds_pattern)
 
-            # Handle special cross-magnitude patterns (e.g., 1001001 -> một triệu một nghìn linh một)
-            if name == "million" and digits == 7 and "thousand" in self.magnitudes:
-                # Use helper method to build linh patterns consistently
-                digit_patterns.extend(
-                    [
-                        self._build_linh_pattern(prefix, 2, self.magnitudes["thousand"], linh_word, self.single_digit),
-                        self._build_linh_pattern(prefix, 1, self.magnitudes["thousand"], linh_word, self.two_digit),
-                    ]
-                )
-            elif name == "billion" and digits == 10:
-                # Handle patterns like 1001001001
-                digit_patterns.append(
-                    prefix
-                    + pynutil.delete("00")
-                    + insert_space
-                    + self.single_digit
-                    + insert_space
-                    + pynutil.insert(self.magnitudes["million"])
-                    + pynutil.delete("00")
-                    + insert_space
-                    + self.single_digit
-                    + insert_space
-                    + pynutil.insert(self.magnitudes["thousand"])
-                    + insert_space
-                    + self.hundreds_pattern
-                )
-
             patterns.append(pynini.closure(NEMO_DIGIT, digits, digits) @ pynini.union(*digit_patterns))
 
         return pynini.union(*patterns)
 
-    def _build_linh_pattern(self, prefix, zeros_to_delete, magnitude_word, linh_word, digit_pattern):
-        """
-        Helper method to build linh patterns consistently
-        Args:
-            prefix: base prefix pattern
-            zeros_to_delete: number of zeros to delete (0, 00, etc.)
-            magnitude_word: magnitude word to insert
-            linh_word: linh word to insert
-            digit_pattern: pattern for the digits (single_digit or two_digit)
-        """
-        pattern = (
-            prefix
-            + pynutil.delete("0" * zeros_to_delete)
-            + insert_space
-            + digit_pattern
-            + insert_space
-            + pynutil.insert(magnitude_word)
-            + pynutil.delete("00")
-            + insert_space
-            + pynutil.insert(linh_word)
-            + insert_space
-            + self.linh_digits
-        )
-        return pynutil.add_weight(pattern, -0.1)
-
     def _build_all_magnitude_patterns(self):
-        """
-        Dynamically build all magnitude patterns
-        Returns: dict mapping magnitude names to their FST patterns
-        """
-        # Define magnitude hierarchy (name, min_digits, max_digits, zero_count)
         magnitude_config = [
-            ("thousand", 4, 6, 3),
-            ("million", 7, 9, 6),
-            ("billion", 10, 12, 9),
-            ("trillion", 13, 15, 12),
-            ("quadrillion", 16, 18, 15),
-            ("quintillion", 19, 21, 18),
+            ("thousand", 4, 6, 3), ("million", 7, 9, 6), ("billion", 10, 12, 9),
+            ("trillion", 13, 15, 12), ("quadrillion", 16, 18, 15), ("quintillion", 19, 21, 18),
         ]
-
         patterns = {}
         prev_pattern = None
-
         for name, min_digits, max_digits, zero_count in magnitude_config:
-            # Only build pattern if the magnitude word exists in magnitudes.tsv
             if name in self.magnitudes:
                 patterns[name] = self._build_magnitude_pattern(name, min_digits, max_digits, zero_count, prev_pattern)
                 prev_pattern = patterns[name]
             else:
-                # Stop building patterns if magnitude word doesn't exist
                 break
-
         return patterns
+
+    def _get_zero_or_magnitude_pattern(self, digits, magnitude_key):
+        """Create pattern that handles all-zeros or normal magnitude processing"""
+        all_zeros = "0" * digits
+        return pynini.union(pynini.cross(all_zeros, ""), NEMO_DIGIT**digits @ self.magnitude_patterns[magnitude_key])
+    
+    def _build_all_patterns(self):
+        patterns = []
+        delete_dot = pynutil.delete(".")
+        
+        # Large number split patterns (>12 digits): front + "tỷ" + back(9 digits)
+        if "billion" in self.magnitudes:
+            billion_word = self.magnitudes["billion"]
+            back_digits = 9
+            
+            for total_digits in range(13, 22):
+                front_digits = total_digits - back_digits
+                front_pattern = self._get_pattern_for_digits(front_digits)
+                if front_pattern:
+                    back_pattern = self._get_zero_or_magnitude_pattern(back_digits, "million")
+                    split_pattern = front_pattern + insert_space + pynutil.insert(billion_word) + insert_space + back_pattern
+                    patterns.append(NEMO_DIGIT**total_digits @ pynutil.add_weight(split_pattern, -0.5))
+        
+        # Dot patterns
+        dot_configs = [(6, None), (5, None), (4, None), (3, "billion"), (2, "million"), (1, "thousand")]
+        for dots, magnitude in dot_configs:
+            pattern = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0, 2)
+            for _ in range(dots):
+                pattern += delete_dot + NEMO_DIGIT**3
+            
+            if magnitude and magnitude in self.magnitude_patterns:
+                patterns.append(pynini.compose(pynutil.add_weight(pattern, -0.3), self.magnitude_patterns[magnitude]))
+            elif not magnitude:
+                if dots == 4: digit_range = [13, 14, 15]
+                elif dots == 5: digit_range = [16, 17, 18] 
+                elif dots == 6: digit_range = [19, 20, 21]
+                else: digit_range = []
+                
+                for digit_count in digit_range:
+                    if 13 <= digit_count <= 21:
+                        front_digits = digit_count - back_digits
+                        front_pattern = self._get_pattern_for_digits(front_digits)
+                        if front_pattern:
+                            back_pattern = self._get_zero_or_magnitude_pattern(back_digits, "million")
+                            split = (NEMO_DIGIT**front_digits @ front_pattern) + insert_space + pynutil.insert(self.magnitudes["billion"]) + insert_space + back_pattern
+                            patterns.append(pynini.compose(pattern, NEMO_DIGIT**digit_count @ pynutil.add_weight(split, -1.0)))
+        
+        return patterns
+    
+    def _get_pattern_for_digits(self, digit_count):
+        if digit_count <= 0: return None
+        elif digit_count == 1: return self.single_digit
+        elif digit_count == 2: return self.two_digit
+        elif digit_count == 3: return self.hundreds_pattern
+        elif digit_count <= 6: return self.magnitude_patterns.get("thousand")
+        elif digit_count <= 9: return self.magnitude_patterns.get("million")
+        elif digit_count <= 12: return self.magnitude_patterns.get("billion")
+        else: return None
