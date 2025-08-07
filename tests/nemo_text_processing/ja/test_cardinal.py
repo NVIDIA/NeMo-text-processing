@@ -23,20 +23,42 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestCardinal:
-    normalizer_ja = Normalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
+    normalizer = Normalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
+    normalizer_project = Normalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased', project_input=True)
 
     @parameterized.expand(parse_test_case_file('ja/data_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_norm_date(self, test_input, expected):
-        preds = self.normalizer_ja.normalize(test_input)
+    def test_norm_cardinal(self, test_input, expected):
+        preds = self.normalizer.normalize(test_input)
         assert expected == preds
 
-    inverse_normalizer_ja = InverseNormalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False)
+    @parameterized.expand(parse_test_case_file('ja/data_text_normalization/test_cases_cardinal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_cardinal_project_input(self, test_input, expected):
+        pred = self.normalizer_project.normalize(test_input)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'
+
+    inverse_normalizer = InverseNormalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False)
+    inverse_normalizer_project = InverseNormalizer(lang='ja', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('ja/data_inverse_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_denorm(self, test_input, expected):
-        pred = self.inverse_normalizer_ja.inverse_normalize(test_input, verbose=False)
+    def test_denorm_cardinal(self, test_input, expected):
+        pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
+
+    @parameterized.expand(parse_test_case_file('ja/data_inverse_text_normalization/test_cases_cardinal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_cardinal_project_input(self, test_input, expected):
+        pred = self.inverse_normalizer_project.inverse_normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'

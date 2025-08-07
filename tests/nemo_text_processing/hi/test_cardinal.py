@@ -40,3 +40,31 @@ class TestCardinal:
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
+
+    inverse_normalizer_hi_projecting = InverseNormalizer(
+        lang='hi', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
+    )
+
+    @parameterized.expand(parse_test_case_file('hi/data_inverse_text_normalization/test_cases_cardinal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_project(self, test_input, expected):
+        pred = self.inverse_normalizer_hi_projecting.inverse_normalize(test_input, verbose=True)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'
+
+    normalizer_hi_projecting = Normalizer(
+        input_case='cased', lang='hi', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, post_process=False
+    )
+
+    @parameterized.expand(parse_test_case_file('hi/data_text_normalization/test_cases_cardinal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_project(self, test_input, expected):
+        pred = self.normalizer_hi_projecting.normalize(test_input, verbose=True)
+        if test_input == expected:
+            assert pred.strip() == expected.strip()
+        else:
+            assert pred.strip() == f'{expected}[{test_input}]'.strip()

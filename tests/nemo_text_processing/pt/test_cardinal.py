@@ -23,10 +23,21 @@ from ..utils import CACHE_DIR, parse_test_case_file
 class TestCardinal:
 
     inverse_normalizer = InverseNormalizer(lang='pt', cache_dir=CACHE_DIR, overwrite_cache=False)
+    inverse_normalizer_project = InverseNormalizer(lang='pt', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('pt/data_inverse_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_denorm(self, test_input, expected):
+    def test_denorm_cardinal(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
+
+    @parameterized.expand(parse_test_case_file('pt/data_inverse_text_normalization/test_cases_cardinal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_cardinal_project_input(self, test_input, expected):
+        pred = self.inverse_normalizer_project.inverse_normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'

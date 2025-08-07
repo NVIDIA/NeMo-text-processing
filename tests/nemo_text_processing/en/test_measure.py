@@ -28,6 +28,9 @@ class TestMeasure:
     inverse_normalizer_en_cased = InverseNormalizer(
         lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased"
     )
+    inverse_normalizer_en_projecting = InverseNormalizer(
+        lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, project_input=True
+    )
 
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_measure.txt'))
     @pytest.mark.run_only_on('CPU')
@@ -41,11 +44,24 @@ class TestMeasure:
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_measure_cased.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_denorm(self, test_input, expected):
+    def test_denorm_cased(self, test_input, expected):
         pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
+    @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_measure.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_project(self, test_input, expected):
+        pred = self.inverse_normalizer_en_projecting.inverse_normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'
+
     normalizer_en = Normalizer(input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False)
+    normalizer_en_projecting = Normalizer(
+        input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False, project_input=True
+    )
     normalizer_with_audio_en = (
         NormalizerWithAudio(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
         if RUN_AUDIO_BASED_TESTS
@@ -64,3 +80,13 @@ class TestMeasure:
                 test_input, n_tagged=30, punct_post_process=False,
             )
             assert expected in pred_non_deterministic
+
+    @parameterized.expand(parse_test_case_file('en/data_text_normalization/test_cases_measure.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_project(self, test_input, expected):
+        pred = self.normalizer_en_projecting.normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'

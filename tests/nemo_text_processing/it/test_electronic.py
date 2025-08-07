@@ -20,12 +20,23 @@ from nemo_text_processing.text_normalization.normalize import Normalizer
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
-class TestChar:
+class TestElectronic:
     normalizer = Normalizer(lang='it', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
+    normalizer_project = Normalizer(lang='it', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased', project_input=True)
 
     @parameterized.expand(parse_test_case_file('it/data_text_normalization/test_cases_electronic.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_norm_char(self, test_input, expected):
-        preds = self.normalizer.normalize(test_input, punct_post_process=True)
-        assert expected == preds
+    def test_norm_electronic(self, test_input, expected):
+        pred = self.normalizer.normalize(test_input, punct_post_process=True)
+        assert pred == expected
+
+    @parameterized.expand(parse_test_case_file('it/data_text_normalization/test_cases_electronic.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_electronic_project_input(self, test_input, expected):
+        pred = self.normalizer_project.normalize(test_input, punct_post_process=True)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'
