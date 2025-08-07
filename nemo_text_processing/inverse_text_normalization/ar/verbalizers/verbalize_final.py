@@ -26,7 +26,7 @@ class VerbalizeFinalFst(GraphFst):
     """
 
     def __init__(self, project_input: bool = False):
-        super().__init__(name="verbalize_final", kind="verbalize")
+        super().__init__(name="verbalize_final", kind="verbalize", project_input=project_input)
         verbalize = VerbalizeFst(project_input=project_input).fst
         word = WordFst(project_input=project_input).fst
         types = verbalize | word

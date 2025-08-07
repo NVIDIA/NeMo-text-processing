@@ -36,9 +36,9 @@ class VerbalizeFst(GraphFst):
         decimal_graph = decimal.fst
         fraction = FractionFst(project_input=project_input)
         fraction_graph = fraction.fst
-        money = MoneyFst(decimal, deterministic=True, project_input=project_input)
+        money = MoneyFst(decimal, project_input=project_input)
         money_graph = money.fst
-        measure = MeasureFst(decimal=decimal, cardinal=cardinal, deterministic=True, project_input=project_input)
+        measure = MeasureFst(decimal=decimal, cardinal=cardinal, project_input=project_input)
         measure_graph = measure.fst
         graph = cardinal_graph | decimal_graph | fraction_graph | money_graph | measure_graph
         self.fst = graph
