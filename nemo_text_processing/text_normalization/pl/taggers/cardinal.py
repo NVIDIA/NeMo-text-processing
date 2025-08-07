@@ -210,6 +210,17 @@ class CardinalFst(GraphFst):
                 | tens + component_join + (compound_digit | compound_one)
                 | pynutil.delete("0") + (digit | isolated_one)
             ).optimize()
+            # Instrumental compounds may leave the preceding tens in the
+            # genitive-shaped form while the final numeral is instrumental.
+            if case == "ins" and not deterministic:
+                instrumental_alternatives = (
+                    tens_gen + component_join + (compound_digit | compound_one)
+                    | pynutil.delete("0") + self._digit_for_slot(digit_graphs, "pl_gen")
+                    | self._teen_for_slot(teen_graphs, "pl_gen")
+                )
+                two_digit |= pynutil.add_weight(instrumental_alternatives, 0.001)
+                two_digit.optimize()
+
             hundred = (
                 hundreds + pynutil.delete("00")
                 | hundreds + component_join + two_digit
