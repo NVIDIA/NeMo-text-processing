@@ -105,12 +105,11 @@ class MoneyFst(GraphFst):
         prefixes_vn = pynini.project(per_unit_prefixes, "output")
         bases_vn = pynini.project(per_unit_bases, "output")
 
-        space_accept = pynini.accep(NEMO_SPACE)
-        one_space = pynini.accep("một ")
+        one = pynini.accep("một")
 
         # Accept metric combinations: "một ki lô gam"
-        metric_per_units = one_space + prefixes_vn + space_accept + bases_vn
-        standalone_per_units = one_space + bases_vn
+        metric_per_units = one + insert_space + prefixes_vn + insert_space + bases_vn
+        standalone_per_units = one + insert_space + bases_vn
 
         # Combine all per_unit recognitions
         per_units = per_units_non_metric | metric_per_units | standalone_per_units
