@@ -40,3 +40,29 @@ class TestWord:
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
+
+    inverse_normalizer_hy_projecting = InverseNormalizer(
+        lang='hy', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
+    )
+
+    @parameterized.expand(parse_test_case_file('hy/data_inverse_text_normalization/test_cases_word.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_project(self, test_input, expected):
+        pred = self.inverse_normalizer_hy_projecting.inverse_normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'
+
+    normalizer_hy_projecting = Normalizer(lang='hy', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, input_case='lower_cased')
+
+    @parameterized.expand(parse_test_case_file('hy/data_text_normalization/test_cases_word.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_project(self, test_input, expected):
+        pred = self.normalizer_hy_projecting.normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'

@@ -40,3 +40,24 @@ class TestTextSentenceSplit:
         for s, gt in zip(sentences, gt_sentences):
             print(s, gt)
         assert gt_sentences == sentences
+
+    normalizer_en_projecting = Normalizer(
+        input_case='cased', lang='en', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+    )
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_text_sentence_split_project(self):
+        text = "This happened in 1918 when Mrs. and Mr. Smith paid $111.12 in U.S.A. at 9 a.m. on Dec. 1. 2020. And Jan. 17th. This is an example. He paid $123 for this desk. 123rd, St. Patrick. This is a. b. and there is c.b."
+        gt_sentences = [
+            'This happened in 1918 when Mrs. and Mr. Smith paid $111.12 in U.S.A. at 9 a.m. on Dec. 1. 2020.',
+            'And Jan. 17th.',
+            'This is an example.',
+            'He paid $123 for this desk.',
+            '123rd, St. Patrick. This is a.b. and there is c.b.',
+        ]
+        sentences = self.normalizer_en_projecting.split_text_into_sentences(text)
+
+        for s, gt in zip(sentences, gt_sentences):
+            print(s, gt)
+        assert gt_sentences == sentences

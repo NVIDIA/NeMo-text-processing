@@ -12,32 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pytest
 from parameterized import parameterized
 
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+
 from ..utils import CACHE_DIR, parse_test_case_file
-
-try:
-    from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
-
-    PYNINI_AVAILABLE = True
-except (ImportError, ModuleNotFoundError):
-    PYNINI_AVAILABLE = False
 
 
 class TestWhitelist:
-    inverse_normalizer = (
-        InverseNormalizer(lang='vi', cache_dir=CACHE_DIR, overwrite_cache=False) if PYNINI_AVAILABLE else None
-    )
+
+    inverse_normalizer = InverseNormalizer(lang='vi', cache_dir=CACHE_DIR, overwrite_cache=False)
+    inverse_normalizer_project = InverseNormalizer(lang='vi', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('vi/data_inverse_text_normalization/test_cases_whitelist.txt'))
-    @pytest.mark.skipif(
-        not PYNINI_AVAILABLE,
-        reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
-    )
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_denorm(self, test_input, expected):
+    def test_denorm_whitelist(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
+
+    @parameterized.expand(parse_test_case_file('vi/data_inverse_text_normalization/test_cases_whitelist.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_whitelist_project_input(self, test_input, expected):
+        pred = self.inverse_normalizer_project.inverse_normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'

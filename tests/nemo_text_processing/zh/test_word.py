@@ -12,31 +12,52 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pytest
 from parameterized import parameterized
 
-from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestWord:
+
+    normalizer = Normalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
+    normalizer_project = Normalizer(lang='zh', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
     inverse_normalizer = InverseNormalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False)
-
-    @parameterized.expand(parse_test_case_file('zh/data_inverse_text_normalization/test_cases_word.txt'))
-    @pytest.mark.run_only_on('CPU')
-    @pytest.mark.unit
-    def test_denorm(self, test_input, expected):
-        pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
-        assert pred == expected
-
-    normalizer_zh = Normalizer(lang='zh', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
+    inverse_normalizer_project = InverseNormalizer(lang='zh', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('zh/data_text_normalization/test_cases_word.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_norm_date(self, test_input, expected):
-        preds = self.normalizer_zh.normalize(test_input)
-        assert expected == preds
+    def test_norm_word(self, test_input, expected):
+        pred = self.normalizer.normalize(test_input)
+        assert pred == expected
+
+    @parameterized.expand(parse_test_case_file('zh/data_text_normalization/test_cases_word.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_word_project_input(self, test_input, expected):
+        pred = self.normalizer_project.normalize(test_input)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'
+
+    @parameterized.expand(parse_test_case_file('zh/data_inverse_text_normalization/test_cases_word.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_word(self, test_input, expected):
+        pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
+        assert pred == expected
+
+    @parameterized.expand(parse_test_case_file('zh/data_inverse_text_normalization/test_cases_word.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_word_project_input(self, test_input, expected):
+        pred = self.inverse_normalizer_project.inverse_normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'

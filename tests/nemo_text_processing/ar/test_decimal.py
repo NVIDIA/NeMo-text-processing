@@ -60,3 +60,31 @@ class TestDecimal:
         #         test_input, n_tagged=30, punct_post_process=False,
         #     )
         #     assert expected in pred_non_deterministic
+
+    inverse_normalizer_ar_projecting = InverseNormalizer(
+        lang='ar', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
+    )
+
+    @parameterized.expand(parse_test_case_file('ar/data_inverse_text_normalization/test_cases_decimal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm_project(self, test_input, expected):
+        pred = self.inverse_normalizer_ar_projecting.inverse_normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'
+
+    normalizer_ar_projecting = Normalizer(
+        lang='ar', input_case="cased", project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+    )
+
+    @parameterized.expand(parse_test_case_file('ar/data_text_normalization/test_cases_decimal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_project(self, test_input, expected):
+        pred = self.normalizer_ar_projecting.normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'

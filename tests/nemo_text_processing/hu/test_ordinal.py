@@ -30,3 +30,15 @@ class TestOrdinal:
     def test_norm(self, test_input, expected):
         pred = self.normalizer_hu.normalize(test_input, verbose=False)
         assert pred == expected
+
+    normalizer_hu_projecting = Normalizer(input_case='cased', lang='hu', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
+
+    @parameterized.expand(parse_test_case_file('hu/data_text_normalization/test_cases_ordinal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_project(self, test_input, expected):
+        pred = self.normalizer_hu_projecting.normalize(test_input, verbose=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'

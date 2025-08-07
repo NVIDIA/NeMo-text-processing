@@ -39,3 +39,17 @@ class TestPunctuation:
     def test_norm_python_punct_post_process(self, test_input, expected):
         pred = self.normalizer_en.normalize(test_input, verbose=True, punct_post_process=True)
         assert pred == expected, f"for input |{test_input}|: pred: |{pred}| != expected: |{expected}|"
+
+    normalizer_en_projecting = Normalizer(
+        input_case='cased', lang='en', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True,
+    )
+
+    @parameterized.expand(parse_test_case_file('en/data_text_normalization/test_cases_punctuation.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_project(self, test_input, expected):
+        pred = self.normalizer_en_projecting.normalize(test_input, verbose=False, punct_post_process=False)
+        if test_input == expected:
+            assert pred == expected
+        else:
+            assert pred == f'{expected}[{test_input}]'
