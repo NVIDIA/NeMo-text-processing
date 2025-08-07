@@ -43,7 +43,6 @@ class TestMeasure:
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
-
     normalizer = Normalizer(
         input_case='cased', lang='vi', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
     )
