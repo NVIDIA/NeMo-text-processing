@@ -54,7 +54,7 @@ class MoneyFst(GraphFst):
         deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="money", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="money", kind="classify", project_input=project_input)
         cardinal_graph = cardinal.graph_no_one_en
         cardinal_graph_ett = cardinal.graph_no_one
         graph_decimal_final = decimal.final_graph_wo_negative_w_abbr_en

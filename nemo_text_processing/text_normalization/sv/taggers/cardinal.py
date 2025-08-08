@@ -99,7 +99,7 @@ class CardinalFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
         zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
         digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
         teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv")))

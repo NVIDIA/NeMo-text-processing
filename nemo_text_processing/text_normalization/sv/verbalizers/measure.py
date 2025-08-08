@@ -41,7 +41,7 @@ class MeasureFst(GraphFst):
         deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="measure", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="measure", kind="verbalize", project_input=project_input)
         optional_sign = cardinal.optional_sign
         unit = (
             pynutil.delete("units: \"")

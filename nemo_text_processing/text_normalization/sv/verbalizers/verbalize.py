@@ -37,7 +37,7 @@ class VerbalizeFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
+        super().__init__(name="verbalize", kind="verbalize")
         cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.fst
         ordinal = OrdinalFst(deterministic=deterministic, project_input=project_input)
@@ -52,7 +52,7 @@ class VerbalizeFst(GraphFst):
         measure_graph = measure.fst
         electronic = ElectronicFst(deterministic=deterministic, project_input=project_input)
         electronic_graph = electronic.fst
-        whitelist_graph = WhiteListFst(deterministic=deterministic, project_input=project_input).fst
+        whitelist_graph = WhiteListFst(project_input=project_input).fst
         money_graph = MoneyFst(decimal=decimal, deterministic=deterministic, project_input=project_input).fst
         telephone_graph = TelephoneFst(deterministic=deterministic, project_input=project_input).fst
         time_graph = TimeFst(deterministic=deterministic, project_input=project_input).fst

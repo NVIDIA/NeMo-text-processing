@@ -24,18 +24,26 @@ class OrdinalFst(GraphFst):
         e.g. hundraandra -> tokens { name: "102." }
 
     Args:
-        tn_ordinal_verbalizer: TN Ordinal Verbalizer
+        tn_ordinal: TN Ordinal Tagger
     """
 
     def __init__(self, tn_ordinal: GraphFst, project_input: bool = False):
         super().__init__(name="ordinal", kind="classify", project_input=project_input)
 
-        graph = pynini.arcmap(tn_ordinal.bare_ordinals, map_type="rmweight").invert().optimize()
-        self.bare_ordinals = graph
-        self.ordinals = graph + pynutil.insert(".")
+        # Invert the TN ordinal graph to map from ordinal words to numbers
+        inverted_graph = pynini.arcmap(tn_ordinal.bare_ordinals, map_type="rmweight").invert().optimize()
+        self.bare_ordinals = inverted_graph
+        self.ordinals = inverted_graph + pynutil.insert(".")
 
+        # Exclude "första" and "andra" from the ordinal tagger - they should be handled by whitelist/word tagger
         forsta_andra = pynini.project(pynini.union("1", "2") @ tn_ordinal.bare_ordinals, "output")
-        graph = ((pynini.project(graph, "input") - forsta_andra.arcsort()) @ graph) + pynutil.insert(".")
+        
+        # Only accept ordinals other than "första"/"andra"
+        ordinal_graph = (pynini.project(inverted_graph, "input") - forsta_andra.arcsort()) @ inverted_graph + pynutil.insert(".")
 
-        graph = pynutil.insert("name: \"") + graph + pynutil.insert("\"")
-        self.fst = graph.optimize()
+        # Wrap in integer field
+        graph = pynutil.insert("integer: \"") + ordinal_graph + pynutil.insert("\"")
+        
+        # Add ordinal tokens wrapper
+        final_graph = self.add_tokens(graph)
+        self.fst = final_graph.optimize()

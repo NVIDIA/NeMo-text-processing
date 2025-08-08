@@ -38,7 +38,7 @@ class TimeFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="time", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="time", kind="verbalize", project_input=project_input)
         ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
         NOT_NOLL = pynini.difference(ANY_NOT_QUOTE, "noll")
         hour = pynutil.delete("hours:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")

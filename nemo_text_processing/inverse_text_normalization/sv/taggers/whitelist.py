@@ -55,5 +55,10 @@ class WhiteListFst(GraphFst):
             raise ValueError(f"Whitelist file {input_file} not found")
 
         whitelist = string_map_cased(input_file, input_case)
-        graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
-        self.fst = graph.optimize()
+        
+        # Create proper whitelist token with name field (not old flat name token)
+        name_graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
+        
+        # Use add_tokens which will handle the projecting/non-projecting cases
+        final_graph = self.add_tokens(name_graph)
+        self.fst = final_graph.optimize()

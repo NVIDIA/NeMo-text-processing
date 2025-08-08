@@ -51,7 +51,7 @@ class MeasureFst(GraphFst):
         deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="measure", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="measure", kind="classify", project_input=project_input)
         cardinal_graph_ett = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
 

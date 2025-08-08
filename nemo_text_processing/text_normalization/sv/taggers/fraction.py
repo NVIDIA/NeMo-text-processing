@@ -41,7 +41,7 @@ class FractionFst(GraphFst):
         deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="fraction", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="fraction", kind="classify", project_input=project_input)
         cardinal_graph = cardinal.graph
         ordinal_graph = ordinal.graph
         numerator_graph = cardinal.graph_en
@@ -62,21 +62,21 @@ class FractionFst(GraphFst):
                 ("a", "adel"),
             ]
         )
-        alt_fractional_endings = pynini.string_map([("tondel", "tondedel"), ("tiondel", "tiondedel")])
         lexicalised = pynini.string_map([("andradel", "halv"), ("fjärdedel", "kvart")])
-        alt_lexicalised = pynini.string_map([("halv", "andradel"), ("kvart", "fjärdedel"), ("kvart", "kvarts")])
 
         fractions = (
             ordinal_graph
             @ pynini.cdrewrite(fractional_endings, "", "[EOS]", NEMO_SIGMA)
             @ pynini.cdrewrite(lexicalised, "[BOS]", "[EOS]", NEMO_SIGMA)
         )
-        fractions_alt = (
-            fractions
-            @ pynini.cdrewrite(alt_fractional_endings, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(alt_lexicalised, "[BOS]", "[EOS]", NEMO_SIGMA)
-        )
         if not deterministic:
+            alt_fractional_endings = pynini.string_map([("tondel", "tondedel"), ("tiondel", "tiondedel")])
+            alt_lexicalised = pynini.string_map([("halv", "andradel"), ("kvart", "fjärdedel"), ("kvart", "kvarts")])
+            fractions_alt = (
+                fractions
+                @ pynini.cdrewrite(alt_fractional_endings, "", "[EOS]", NEMO_SIGMA)
+                @ pynini.cdrewrite(alt_lexicalised, "[BOS]", "[EOS]", NEMO_SIGMA)
+            )
             fractions |= fractions_alt
 
         self.fractions = fractions

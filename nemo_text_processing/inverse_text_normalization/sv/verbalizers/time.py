@@ -33,7 +33,7 @@ class TimeFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="time", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="time", kind="verbalize", project_input=project_input)
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         hour = pynutil.delete("hours: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")

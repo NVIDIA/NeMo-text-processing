@@ -36,7 +36,7 @@ class DateFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="date", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="date", kind="verbalize", project_input=project_input)
 
         day = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
@@ -54,9 +54,12 @@ class DateFst(GraphFst):
         graph_dmy = pynini.union(
             day + NEMO_SPACE + month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
         )
-        graph_was_ymd = pynini.union(month + NEMO_SPACE + year, day + NEMO_SPACE + month + NEMO_SPACE + year)
+        
+        # month + optional year, day + month + optional year
+        graph_my = month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
+        graph_dmy_flexible = day + NEMO_SPACE + month + pynini.closure(NEMO_SPACE + year_era_opt, 0, 1) + delete_preserve_order
 
-        self.graph = graph_dmy | graph_year_era | graph_was_ymd | year
+        self.graph = graph_dmy | graph_year_era | graph_my | graph_dmy_flexible | year
         final_graph = self.graph
 
         delete_tokens = self.delete_tokens(final_graph)

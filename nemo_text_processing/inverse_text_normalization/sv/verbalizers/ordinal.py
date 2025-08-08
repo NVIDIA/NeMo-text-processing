@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pynini
 from pynini.lib import pynutil
 
@@ -22,14 +21,13 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOT
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for verbalizing ordinal, e.g.
-        ordinal { integer: "thirteen" } } -> thirteenth
+        ordinal { integer: "13." } -> 13.
 
     Args:
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
+        project_input: if True, will project to input space
     """
 
-    def __init__(self, deterministic: bool = True, project_input: bool = False):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="ordinal", kind="verbalize", project_input=project_input)
 
         graph = (
@@ -40,6 +38,5 @@ class OrdinalFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        self.graph = graph
-        delete_tokens = self.delete_tokens(self.graph)
+        delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

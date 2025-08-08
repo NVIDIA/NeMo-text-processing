@@ -126,7 +126,7 @@ class DecimalFst(GraphFst):
         deterministic: bool,
         project_input: bool = False
     ):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="decimal", kind="classify", project_input=project_input)
 
         cardinal_graph = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
