@@ -21,10 +21,11 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, G
 class TelephoneFst(GraphFst):
     """
     Finite state transducer for classifying telephone numbers, e.g.
-        noll åtta sjuhundraåttionio femtiotvå tjugofem -> tokens { name: "08-789 52 25" }
+        noll åtta sjuhundraåttionio femtiotvå tjugofem -> tokens { telephone { number_part: "08-789 52 25" } }
 
     Args:
         tn_cardinal_tagger: TN Cardinal Tagger
+        tn_telephone_tagger: TN Telephone Tagger
     """
 
     def __init__(
@@ -34,9 +35,9 @@ class TelephoneFst(GraphFst):
         project_input: bool = False
     ):
         super().__init__(name="telephone", kind="classify", project_input=project_input)
-        # country_plus_area_code = pynini.invert(tn_telephone_tagger.country_plus_area_code).optimize()
+
+        # Use the original working approach: construct telephone patterns from TN cardinal components
         area_codes = pynini.invert(tn_telephone_tagger.area_codes).optimize()
-        # lead = (country_plus_area_code | area_codes) + pynini.cross(" ", "-")
         lead = area_codes + pynini.cross(" ", "-")
 
         two_digits = pynini.invert(tn_cardinal_tagger.two_digits_read).optimize()
@@ -50,6 +51,10 @@ class TelephoneFst(GraphFst):
         )
 
         graph = convert_space(lead + base_number_part)
-        final_graph = pynutil.insert("name: \"") + graph + pynutil.insert("\"")
-
+        
+        # Create proper telephone token with number_part field (not old name field)
+        number_part_graph = pynutil.insert("number_part: \"") + graph + pynutil.insert("\"")
+        
+        # Use add_tokens which will handle the projecting/non-projecting cases
+        final_graph = self.add_tokens(number_part_graph)
         self.fst = final_graph.optimize()

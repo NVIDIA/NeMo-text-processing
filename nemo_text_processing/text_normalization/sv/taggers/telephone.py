@@ -55,8 +55,8 @@ class TelephoneFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="telephone", kind="classify", deterministic=deterministic, project_input=project_input)
-        cardinal = CardinalFst(deterministic)
+        super().__init__(name="telephone", kind="classify", project_input=project_input)
+        cardinal = CardinalFst(deterministic=deterministic)
         add_separator = pynutil.insert(", ")
         zero_space = cardinal.zero_space
         digit = cardinal.digit

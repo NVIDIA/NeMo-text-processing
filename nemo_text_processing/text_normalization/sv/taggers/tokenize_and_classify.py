@@ -24,6 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.sv.taggers.abbreviation import AbbreviationFst
@@ -66,14 +67,21 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None
     ):
-        super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
+        super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
-            far_file = os.path.join(
-                cache_dir, f"sv_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far"
+            far_file = generate_far_filename(
+                language="sv",
+                mode="tn",
+                cache_dir=cache_dir,
+                operation="tokenize",
+                deterministic=deterministic,
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist_file
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -133,7 +141,7 @@ class ClassifyFst(GraphFst):
             logger.debug(f"whitelist: {time.time() - start_time: .2f}s -- {whitelist_graph.num_states()} nodes")
 
             start_time = time.time()
-            punctuation = PunctuationFst(deterministic=deterministic, project_input=project_input)
+            punctuation = PunctuationFst(project_input=project_input)
             punct_graph = punctuation.fst
             logger.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
 

@@ -38,7 +38,7 @@ class WhiteListFst(GraphFst):
         project_input: bool = False,
         input_file: str = None
     ):
-        super().__init__(name="whitelist", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         def _get_whitelist_graph(input_case, file):
             whitelist = load_labels(file)

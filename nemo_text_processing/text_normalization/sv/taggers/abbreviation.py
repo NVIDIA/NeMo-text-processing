@@ -37,7 +37,7 @@ class AbbreviationFst(GraphFst):
         deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="abbreviation", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="abbreviation", kind="classify", project_input=project_input)
 
         dot = pynini.accep(".")
         # A.B.C. -> A. B. C.

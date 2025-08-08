@@ -15,7 +15,12 @@
 from nemo_text_processing.inverse_text_normalization.sv.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.sv.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.sv.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.electronic import ElectronicFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.sv.verbalizers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.sv.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.sv.verbalizers.cardinal import CardinalFst as TNCardinalVerbalizer
 
@@ -28,7 +33,7 @@ class VerbalizeFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
+        super().__init__(name="verbalize", kind="verbalize")
         tn_cardinal_verbalizer = TNCardinalVerbalizer(deterministic=False, project_input=project_input)
 
         cardinal = CardinalFst(tn_cardinal_verbalizer=tn_cardinal_verbalizer, project_input=project_input)
@@ -36,6 +41,11 @@ class VerbalizeFst(GraphFst):
         date_graph = DateFst(project_input=project_input).fst
         decimal = DecimalFst(project_input=project_input)
         decimal_graph = decimal.fst
+        electronic_graph = ElectronicFst(project_input=project_input).fst
+        fraction_graph = FractionFst(project_input=project_input).fst
+        ordinal_graph = OrdinalFst(project_input=project_input).fst
+        telephone_graph = TelephoneFst(project_input=project_input).fst
         time_graph = TimeFst(project_input=project_input).fst
-        graph = time_graph | decimal_graph | cardinal_graph | date_graph
+        whitelist_graph = WhiteListFst(project_input=project_input).fst
+        graph = time_graph | decimal_graph | cardinal_graph | ordinal_graph | date_graph | fraction_graph | electronic_graph | telephone_graph | whitelist_graph
         self.fst = graph

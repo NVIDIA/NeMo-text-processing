@@ -45,7 +45,7 @@ class DateFst(GraphFst):
         deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="date", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
         month_numbers = pynini.string_file(get_abs_path("data/dates/months.tsv"))

@@ -45,7 +45,7 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="electronic", kind="verbalize", project_input=project_input)
 
         graph_digit = digit_no_zero | zero
 

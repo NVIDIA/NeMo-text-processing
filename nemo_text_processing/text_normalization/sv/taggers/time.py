@@ -54,7 +54,7 @@ class TimeFst(GraphFst):
         deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="time", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="time", kind="classify", project_input=project_input)
         suffix_graph = pynini.string_map(load_labels(get_abs_path("data/time/suffix.tsv")))
         time_zone_graph = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
 

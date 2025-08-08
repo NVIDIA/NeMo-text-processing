@@ -40,7 +40,7 @@ class MoneyFst(GraphFst):
         deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="money", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="money", kind="verbalize", project_input=project_input)
         keep_space = pynini.accep(" ")
         maj = pynutil.delete("currency_maj: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         min = pynutil.delete("currency_min: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")

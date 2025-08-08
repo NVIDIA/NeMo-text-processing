@@ -20,12 +20,13 @@ from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 class ElectronicFst(GraphFst):
     """
-    Finite state transducer for classifying electronic: email addresses, etc.
-        e.g. c d f ett at a b c punkt e d u -> tokens { name: "cdf1.abc.edu" }
+    Finite state transducer for classifying electronic: email addresses, URLs, etc.
+        e.g. c d f ett snabel-a a b c punkt e d u -> tokens { electronic { username: "cdf1" domain: "abc.edu" } }
+        e.g. w w w punkt nvidia punkt com -> tokens { electronic { protocol: "www." domain: "nvidia.com" } }
 
     Args:
-        tn_electronic_tagger: TN eletronic tagger
-        tn_electronic_verbalizer: TN eletronic verbalizer
+        tn_electronic_tagger: TN electronic tagger
+        tn_electronic_verbalizer: TN electronic verbalizer
     """
 
     def __init__(
@@ -36,9 +37,10 @@ class ElectronicFst(GraphFst):
     ):
         super().__init__(name="electronic", kind="classify", project_input=project_input)
 
-        tagger = pynini.invert(tn_electronic_verbalizer.graph).optimize()
-        verbalizer = pynini.invert(tn_electronic_tagger.graph).optimize()
-        final_graph = tagger @ verbalizer
+        # Invert the TN electronic verbalizer to go from Swedish verbal form back to structured format
+        # This should produce the same token structure as TN (both protocol and domain for URLs)
+        verbalizer_inverted = pynini.invert(tn_electronic_verbalizer.graph).optimize()
 
-        graph = pynutil.insert("name: \"") + final_graph + pynutil.insert("\"")
-        self.fst = graph.optimize()
+        # Use add_tokens which will handle the projecting/non-projecting cases
+        final_graph = self.add_tokens(verbalizer_inverted)
+        self.fst = final_graph.optimize()
