@@ -79,9 +79,9 @@ class ClassifyFst(GraphFst):
             decimal_graph = decimal.fst
             fraction = FractionFst(cardinal)
             fraction_graph = fraction.fst
-            date = DateFst(cardinal)
+            date = DateFst(cardinal, ordinal)
             date_graph = date.fst
-            time = TimeFst()
+            time = TimeFst(cardinal)
             time_graph = time.fst
             measure = MeasureFst(cardinal, decimal)
             measure_graph = measure.fst
