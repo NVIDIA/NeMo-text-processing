@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_COMMA, NEMO_DIGIT, NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_COMMA, NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_space
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path
 
 
@@ -41,7 +41,9 @@ class MeasureFst(GraphFst):
             optional_negative
             + pynutil.insert(f"{measure_type} {{ ")
             + number_graph
-            + pynutil.insert(" } units: \"")
+            + pynutil.insert(" }")
+            + delete_space
+            + pynutil.insert(" units: \"")
             + graph_unit
             + pynutil.insert('"')
         )
@@ -77,6 +79,20 @@ class MeasureFst(GraphFst):
         # Combine all unit mappings
         graph_unit = graph_metric_units | graph_special_units | graph_standalone_units
 
+        # Add compound unit support (unit/unit patterns like km/h)
+        graph_unit_compound = (
+            pynini.cross("/", " trên ") + pynutil.insert(NEMO_SPACE) + graph_unit
+        )
+        
+        optional_graph_unit_compound = pynini.closure(
+            pynutil.insert(NEMO_SPACE) + graph_unit_compound,
+            0,
+            1,
+        )
+
+        # Update unit graph to include compound units
+        graph_unit = graph_unit + optional_graph_unit_compound | graph_unit_compound
+
         # Create unit symbol pattern using FST operations (no loops needed)
         prefix_symbols = pynini.project(graph_prefixes, "input")  # Extract prefix symbols
         base_symbols = pynini.project(graph_base_units, "input")  # Extract base symbols
@@ -84,7 +100,11 @@ class MeasureFst(GraphFst):
 
         # Build unit pattern: metric combinations | standalone bases | special units
         metric_pattern = prefix_symbols + base_symbols  # All prefix+base combinations
-        unit_pattern = metric_pattern | base_symbols | special_symbols
+        simple_unit_pattern = metric_pattern | base_symbols | special_symbols
+        
+        # Add compound unit patterns to recognition 
+        compound_pattern = simple_unit_pattern + "/" + simple_unit_pattern
+        unit_pattern = simple_unit_pattern | compound_pattern
 
         number = pynini.closure(NEMO_DIGIT, 1)
         decimal_number = number + NEMO_COMMA + pynini.closure(NEMO_DIGIT, 1)
@@ -98,9 +118,10 @@ class MeasureFst(GraphFst):
 
         # Domain restriction patterns - only match core number+unit patterns
         # Remove punctuation handling to let punctuation tagger handle it separately
-        integer_measure_domain = number + unit_pattern
-        decimal_measure_domain = decimal_number + unit_pattern
-        fraction_measure_domain = number + "/" + number + unit_pattern
+        optional_space = pynini.closure(NEMO_SPACE, 0, 1)
+        integer_measure_domain = number + optional_space + unit_pattern
+        decimal_measure_domain = decimal_number + optional_space + unit_pattern
+        fraction_measure_domain = number + "/" + number + optional_space + unit_pattern
 
         cardinal_number_graph = pynutil.insert('integer: "') + (number @ cardinal_graph) + pynutil.insert('"')
 

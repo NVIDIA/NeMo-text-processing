@@ -55,3 +55,9 @@ Thể tích 500ml~Thể tích năm trăm mi li lít
 Kích thước 100cm x 50cm~Kích thước một trăm xăng ti mét x năm mươi xăng ti mét
 1,5m2~một phẩy năm mét vuông
 1,5m~một phẩy năm mét
+120km/h~một trăm hai mươi ki lô mét trên giờ
+100 km/h~một trăm ki lô mét trên giờ
+50m/s~năm mươi mét trên giây
+30 m/min~ba mươi mét trên phút
+5cm/s~năm xăng ti mét trên giây
+200mg/ml~hai trăm mi li gam trên mi li lít
