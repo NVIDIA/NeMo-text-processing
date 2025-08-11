@@ -16,11 +16,13 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
+    DEVANAGARI_DIGIT,
     NEMO_HI_DIGIT,
     GraphFst,
     delete_extra_space,
     delete_space,
     insert_space,
+    integer_to_devanagari,
 )
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
@@ -35,16 +37,22 @@ class DateFst(GraphFst):
         date: DateFst
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, ordinal: GraphFst):
         super().__init__(name="date", kind="classify")
 
         graph_year = pynutil.add_weight(
             pynini.compose(cardinal.graph_no_exception, pynini.closure(NEMO_HI_DIGIT, 1, 4)), 0.03
         )
+        cardinal_graph = cardinal.graph_no_exception
 
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
-        graph_date_days = pynini.string_file(get_abs_path("data/date/date_days.tsv")).invert()
+
+        graph_date_days = cardinal.graph_digit | cardinal.graph_teens_and_ties
+        date_days = pynini.union(*[integer_to_devanagari(i) for i in range(1, 32)]).optimize()
+        graph_date_days = graph_date_days @ date_days
+
         graph_century = pynini.string_file(get_abs_path("data/date/century.tsv")).invert()
+        graph_morph_features = pynini.string_file(get_abs_path("data/ordinals/morph_features.tsv"))
 
         self.day = pynutil.insert("day: \"") + graph_date_days + pynutil.insert("\" ")
         self.month = pynutil.insert("month: \"") + month_graph + pynutil.insert("\" ")
@@ -60,7 +68,10 @@ class DateFst(GraphFst):
             + pynutil.insert("\" ")
         )
         self.century = pynutil.insert("text: \"") + graph_century + pynutil.insert("\" ")
-        insert_comma = pynutil.insert(", ")
+        self.ordinal_century = pynutil.insert("era: \"") + cardinal_graph + pynutil.insert("\" ")
+        self.morpho_graph = (
+            pynutil.insert("morphosyntactic_features: \"") + graph_morph_features + pynutil.insert("\"")
+        )
 
         graph_day_month = self.day + delete_space + self.month
         graph_month_day = self.month + delete_space + self.day
@@ -76,6 +87,9 @@ class DateFst(GraphFst):
         )
         graph_month_year_century = self.month + delete_space + self.year + delete_space + self.century
         graph_year_range = self.year_range
+        graph_year_range_century = self.year_range + delete_space + self.century
+
+        graph_ordinal_century = self.ordinal_century + self.morpho_graph + delete_extra_space + self.century
 
         graph_date_exceptions = self.month + delete_space + pynutil.delete("की") + delete_space + self.day
         graph_date_exceptions += pynutil.insert("preserve_order: true")
@@ -91,6 +105,8 @@ class DateFst(GraphFst):
             | graph_day_month_year_century
             | graph_month_year_century
             | graph_year_range
+            | graph_year_range_century
+            | graph_ordinal_century
             | graph_date_exceptions
         )
         final_graph = self.add_tokens(graph)

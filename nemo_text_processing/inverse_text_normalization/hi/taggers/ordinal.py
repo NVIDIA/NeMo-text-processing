@@ -83,5 +83,6 @@ class OrdinalFst(GraphFst):
         rule = pynini.cdrewrite(morpho_graph, pynini.closure(NEMO_HI_DIGIT), pynini.union("[EOS]", " "), NEMO_SIGMA)
 
         final_graph = pynutil.insert("integer: \"") + graph @ rule
-        final_graph = self.add_tokens(final_graph)
+        self.final_graph = self.add_tokens(final_graph)
+        final_graph = self.final_graph
         self.fst = final_graph.optimize()
