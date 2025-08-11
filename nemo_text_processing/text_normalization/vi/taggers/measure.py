@@ -15,7 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_COMMA, NEMO_DIGIT, NEMO_SPACE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.vi.graph_utils import (
+    NEMO_COMMA,
+    NEMO_DIGIT,
+    NEMO_SPACE,
+    GraphFst,
+    delete_space,
+)
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path
 
 
@@ -80,10 +86,8 @@ class MeasureFst(GraphFst):
         graph_unit = graph_metric_units | graph_special_units | graph_standalone_units
 
         # Add compound unit support (unit/unit patterns like km/h)
-        graph_unit_compound = (
-            pynini.cross("/", " trên ") + pynutil.insert(NEMO_SPACE) + graph_unit
-        )
-        
+        graph_unit_compound = pynini.cross("/", " trên ") + pynutil.insert(NEMO_SPACE) + graph_unit
+
         optional_graph_unit_compound = pynini.closure(
             pynutil.insert(NEMO_SPACE) + graph_unit_compound,
             0,
@@ -101,8 +105,8 @@ class MeasureFst(GraphFst):
         # Build unit pattern: metric combinations | standalone bases | special units
         metric_pattern = prefix_symbols + base_symbols  # All prefix+base combinations
         simple_unit_pattern = metric_pattern | base_symbols | special_symbols
-        
-        # Add compound unit patterns to recognition 
+
+        # Add compound unit patterns to recognition
         compound_pattern = simple_unit_pattern + "/" + simple_unit_pattern
         unit_pattern = simple_unit_pattern | compound_pattern
 
