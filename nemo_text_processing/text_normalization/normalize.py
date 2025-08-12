@@ -176,7 +176,11 @@ class Normalizer:
             from nemo_text_processing.text_normalization.ja.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'vi':
             from nemo_text_processing.text_normalization.vi.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.vi.verbalizers.post_processing import PostProcessingFst
             from nemo_text_processing.text_normalization.vi.verbalizers.verbalize_final import VerbalizeFinalFst
+
+            if post_process:
+                self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
@@ -377,7 +381,7 @@ class Normalizer:
                 return text
         output = SPACE_DUP.sub(' ', output[1:])
 
-        if self.lang == "en" and hasattr(self, 'post_processor'):
+        if self.lang in ["en", "vi"] and hasattr(self, 'post_processor'):
             output = self.post_process(output)
 
         if punct_post_process:

@@ -47,7 +47,29 @@ class MoneyFst(GraphFst):
         currency_major_labels = load_labels(get_abs_path("data/money/currency.tsv"))
         currency_minor_labels = load_labels(get_abs_path("data/money/currency_minor.tsv"))
         quantity_graph = pynini.string_file(get_abs_path("data/numbers/quantity_abbr.tsv"))
-        per_unit_graph = pynini.string_file(get_abs_path("data/money/per_unit.tsv"))
+
+        # Load optimized per_unit files using subfst approach
+        per_unit_non_metric_path = get_abs_path("data/money/per_unit_non_metric.tsv")
+        per_unit_prefixes_path = get_abs_path("data/money/per_unit_prefixes.tsv")
+        per_unit_bases_path = get_abs_path("data/money/per_unit_bases.tsv")
+
+        # Create subfst for metric per_unit patterns
+        graph_prefixes = pynini.string_file(per_unit_prefixes_path)
+        graph_bases = pynini.string_file(per_unit_bases_path)
+
+        # Build metric combinations: "/kg" -> "một ki lô gam"
+        slash = pynutil.delete("/")
+        one_space = pynutil.insert("một ")
+        space = pynutil.insert(NEMO_SPACE)
+
+        graph_metric_per_units = slash + one_space + graph_prefixes + space + graph_bases
+        graph_standalone_per_units = slash + one_space + graph_bases
+
+        # Load non-metric per_unit entries
+        graph_non_metric_per_units = pynini.string_file(per_unit_non_metric_path)
+
+        # Combine all per_unit mappings
+        per_unit_graph = graph_metric_per_units | graph_standalone_per_units | graph_non_metric_per_units
 
         # Basic components
         cardinal_graph = cardinal.graph

@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.vi.graph_utils import (
     NEMO_COMMA_VI,
     NEMO_NOT_QUOTE,
+    NEMO_SPACE,
     GraphFst,
     delete_preserve_order,
     delete_space,
@@ -96,8 +97,22 @@ class MoneyFst(GraphFst):
             | graph_integer  # Handle simple cases (most common, lowest priority)
         )
 
-        # Add per-unit support (following English pattern)
-        per_units = pynini.string_file(get_abs_path("data/money/per_unit.tsv"))
+        per_units_non_metric = pynini.string_file(get_abs_path("data/money/per_unit_non_metric.tsv"))
+
+        per_unit_prefixes = pynini.string_file(get_abs_path("data/money/per_unit_prefixes.tsv"))
+        per_unit_bases = pynini.string_file(get_abs_path("data/money/per_unit_bases.tsv"))
+
+        prefixes_vn = pynini.project(per_unit_prefixes, "output")
+        bases_vn = pynini.project(per_unit_bases, "output")
+
+        one = pynini.accep("một")
+
+        # Accept metric combinations: "một ki lô gam"
+        metric_per_units = one + insert_space + prefixes_vn + insert_space + bases_vn
+        standalone_per_units = one + insert_space + bases_vn
+
+        # Combine all per_unit recognitions
+        per_units = per_units_non_metric | metric_per_units | standalone_per_units
         per_units_normalized = pynini.project(per_units, "output")
         per_unit_pattern = (
             pynutil.delete(' morphosyntactic_features: "') + insert_space + per_units_normalized + pynutil.delete('"')

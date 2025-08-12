@@ -62,6 +62,11 @@ class FractionFst(GraphFst):
 
         simple_fraction = numerator + denominator
         mixed_fraction = integer_part + pynutil.delete(" ") + numerator + denominator
+
+        # Create graph without negative for reuse in other FSTs (like measure)
+        fraction_wo_negative = simple_fraction | mixed_fraction
+        self.final_graph_wo_negative = fraction_wo_negative.optimize()
+
         optional_graph_negative = (pynutil.insert("negative: ") + pynini.cross("-", "\"true\" ")).ques
 
         self.fst = self.add_tokens(optional_graph_negative + (simple_fraction | mixed_fraction)).optimize()

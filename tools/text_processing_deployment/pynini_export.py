@@ -243,6 +243,9 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.vi.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
+        from nemo_text_processing.text_normalization.vi.verbalizers.post_processing import (
+            PostProcessingFst as TNPostProcessingFst,
+        )
         from nemo_text_processing.text_normalization.vi.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'zh':
         from nemo_text_processing.inverse_text_normalization.zh.taggers.tokenize_and_classify import (
