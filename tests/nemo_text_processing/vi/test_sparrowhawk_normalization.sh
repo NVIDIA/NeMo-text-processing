@@ -58,10 +58,10 @@ testTNTime() {
   runtest $input
 }
 
-# testTNMeasure() {
-#   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_measure.txt
-#   runtest $input
-# }
+testTNMeasure() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_measure.txt
+  runtest $input
+}
 
 testTNMoney() {
   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_money.txt
