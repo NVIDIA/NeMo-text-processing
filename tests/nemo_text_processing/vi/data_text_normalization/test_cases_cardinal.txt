@@ -53,11 +53,6 @@
 -100~âm một trăm
 -1000~âm một nghìn
 0~không
-1000~một nghìn
-1001~một nghìn linh một
-101~một trăm linh một
-104~một trăm linh bốn
-105~một trăm linh năm
 24~hai mươi tư
 35~ba mươi lăm
 41~bốn mươi mốt
@@ -105,3 +100,10 @@
 1010001~một triệu mười nghìn linh một
 10000000000~mười tỷ
 150~một trăm năm mươi
+1000000000000~một nghìn tỷ
+1234567890123~một nghìn hai trăm ba mươi tư tỷ năm trăm sáu mươi bảy triệu tám trăm chín mươi nghìn một trăm hai mươi ba
+9876543210987~chín nghìn tám trăm bảy mươi sáu tỷ năm trăm bốn mươi ba triệu hai trăm mười nghìn chín trăm tám mươi bảy
+1000000000000000~một triệu tỷ
+1111111111111111~một triệu một trăm mười một nghìn một trăm mười một tỷ một trăm mười một triệu một trăm mười một nghìn một trăm mười một
+5432109876543210~năm triệu bốn trăm ba mươi hai nghìn một trăm linh chín tỷ tám trăm bảy mươi sáu triệu năm trăm bốn mươi ba nghìn hai trăm mười
+1000000000000000000~một tỷ tỷ
