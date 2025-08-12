@@ -44,6 +44,7 @@ class FractionFst(GraphFst):
             pynutil.delete("morphosyntactic_features: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         )
 
+
         fraction_default = numerator + insert_bata + denominator
 
         self.graph = (
@@ -51,6 +52,7 @@ class FractionFst(GraphFst):
             + pynini.closure(pynini.closure(integer, 0, 1) + insert_space + insert_aur)
             + fraction_default
         ) | graph_quarter
+
 
         graph = self.graph
 
