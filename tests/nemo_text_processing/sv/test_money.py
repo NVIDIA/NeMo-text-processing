@@ -19,7 +19,12 @@ from parameterized import parameterized
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from tests.nemo_text_processing.utils import (
+    CACHE_DIR,
+    RUN_AUDIO_BASED_TESTS,
+    assert_projecting_output,
+    parse_test_case_file,
+)
 
 
 class TestMoney:
@@ -43,3 +48,18 @@ class TestMoney:
                 test_input, n_tagged=10, punct_post_process=False
             )
             assert expected in pred_non_deterministic
+
+    normalizer_sv_projecting = Normalizer(
+        input_case='cased',
+        lang='sv',
+        project_input=True,
+        cache_dir=CACHE_DIR,
+        overwrite_cache=False,
+    )
+
+    @parameterized.expand(parse_test_case_file('sv/data_text_normalization/test_cases_money.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_project(self, test_input, expected):
+        pred = self.normalizer_sv_projecting.normalize(test_input, verbose=False)
+        assert_projecting_output(pred, expected, test_input)
