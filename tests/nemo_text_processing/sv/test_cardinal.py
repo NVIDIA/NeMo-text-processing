@@ -19,7 +19,12 @@ from nemo_text_processing.inverse_text_normalization.inverse_normalize import In
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from tests.nemo_text_processing.utils import (
+    CACHE_DIR,
+    RUN_AUDIO_BASED_TESTS,
+    assert_projecting_output,
+    parse_test_case_file,
+)
 
 
 class TestCardinal:
@@ -68,12 +73,11 @@ class TestCardinal:
     @pytest.mark.unit
     def test_denorm_project(self, test_input, expected):
         pred = self.inverse_normalizer_sv_projecting.inverse_normalize(test_input, verbose=True)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)
 
-    normalizer_sv_projecting = Normalizer(input_case='cased', lang='sv', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
+    normalizer_sv_projecting = Normalizer(
+        input_case='cased', lang='sv', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
+    )
 
     # normalizer_sv_with_audio = (
     #     NormalizerWithAudio(input_case='cased', lang='sv', cache_dir=CACHE_DIR, overwrite_cache=False)
@@ -86,10 +90,7 @@ class TestCardinal:
     @pytest.mark.unit
     def test_norm_project(self, test_input, expected):
         pred = self.normalizer_sv_projecting.normalize(test_input, verbose=True)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)
 
         # if self.normalizer_sv_with_audio:
         #     pred_non_deterministic = self.normalizer_sv_with_audio.normalize(
