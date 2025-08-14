@@ -24,6 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.text_normalization.en.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.en.taggers.cardinal import CardinalFst
@@ -78,8 +79,15 @@ class ClassifyFst(GraphFst):
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
-            far_file = os.path.join(
-                cache_dir, f"en_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
+            far_file = generate_far_filename(
+                language="en",
+                mode="tn", 
+                cache_dir=cache_dir,
+                operation="tokenize",
+                deterministic=deterministic,
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist_file
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -190,13 +198,13 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(electonic_graph, 1.11)
                 | pynutil.add_weight(fraction_graph, 1.1)
-                | pynutil.add_weight(range_graph, 1.1)
+                | pynutil.add_weight(range_graph, 1.11)
                 | pynutil.add_weight(serial_graph, 1.12)  # should be higher than the rest of the classes
                 | pynutil.add_weight(graph_range_money, 1.1)
             )
 
-            # roman_graph = RomanFst(deterministic=deterministic).fst
-            # classify |= pynutil.add_weight(roman_graph, 1.1)
+            roman_graph = RomanFst(deterministic=deterministic, project_input=project_input).fst
+            classify |= pynutil.add_weight(roman_graph, 1.1)
 
             if not deterministic:
                 abbreviation_graph = AbbreviationFst(deterministic=deterministic, project_input=project_input).fst

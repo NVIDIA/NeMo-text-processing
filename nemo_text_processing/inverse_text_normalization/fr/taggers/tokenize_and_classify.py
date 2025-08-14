@@ -22,6 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.inverse_text_normalization.fr.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.fr.taggers.date import DateFst
@@ -55,18 +56,26 @@ class ClassifyFst(GraphFst):
 
     def __init__(
         self,
+        input_case: str = INPUT_LOWER_CASED,
         cache_dir: str = None,
         overwrite_cache: bool = False,
         whitelist: str = None,
-        input_case: str = INPUT_LOWER_CASED,
         project_input: bool = False
     ):
-        super().__init__(name="tokenize_and_classify", kind="classify")
+        super().__init__(name="tokenize_and_classify", kind="classify", project_input=project_input)
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"fr_itn_{input_case}.far")
+            far_file = generate_far_filename(
+                language="fr",
+                mode="itn",
+                cache_dir=cache_dir,
+                operation="tokenize_and_classify",
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist,
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")

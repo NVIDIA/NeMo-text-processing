@@ -35,12 +35,12 @@ class VerbalizeFinalFst(GraphFst):
 
     def __init__(
         self,
-        deterministic=True,
+        deterministic: bool = True,
         project_input: bool = False,
-        cache_dir=None,
-        overwrite_cache=False
+        cache_dir: str = None,
+        overwrite_cache: bool = False
     ):
-        super().__init__(name="verbalize_final", kind="verbalize")
+        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic, project_input=project_input)
         verbalize = VerbalizeFst(project_input=project_input).fst
         word = WordFst(project_input=project_input).fst
         types = verbalize | word

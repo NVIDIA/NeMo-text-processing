@@ -35,6 +35,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -65,7 +66,16 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"pt_itn_{input_case}.far")
+            far_file = generate_far_filename(
+                language="pt",
+                mode="itn",
+                cache_dir=cache_dir,
+                operation="tokenize",
+                deterministic=False,
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=""
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")

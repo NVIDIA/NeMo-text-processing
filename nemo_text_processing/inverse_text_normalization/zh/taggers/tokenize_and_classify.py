@@ -19,10 +19,10 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
-    delete_extra_space,
     delete_space,
     delete_zero_or_one_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.inverse_text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.date import DateFst
@@ -61,7 +61,15 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, "_zh_itn.far")
+            far_file = generate_far_filename(
+                language="zh",
+                mode="itn",
+                cache_dir=cache_dir,
+                operation="tokenize",
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")

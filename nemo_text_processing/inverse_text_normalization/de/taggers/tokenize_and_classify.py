@@ -46,6 +46,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -67,32 +68,39 @@ class ClassifyFst(GraphFst):
         self,
         cache_dir: str = None,
         overwrite_cache: bool = False,
-        deterministic: bool = True,
         project_input: bool = False,
         whitelist: str = None,
         input_case: str = INPUT_LOWER_CASED
     ):
-        super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
+        super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
         if cache_dir is not None and cache_dir != 'None':
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"de_itn_{input_case}.far")
+            far_file = generate_far_filename(
+                language="en",
+                mode="itn",
+                cache_dir=cache_dir,
+                operation="tokenize_and_classify",
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logger.info(f"Creating ClassifyFst grammars.")
-            tn_cardinal_tagger = TNCardinalTagger(deterministic=False, project_input=project_input)
-            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False, project_input=project_input)
-            tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False, project_input=project_input)
-            tn_ordinal_verbalizer = TNOrdinalVerbalizer(deterministic=False, project_input=project_input)
-            tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False, project_input=project_input)
-            tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, deterministic=False, project_input=project_input)
-            tn_date_verbalizer = TNDateVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False, project_input=project_input)
-            tn_electronic_tagger = TNElectronicTagger(deterministic=False, project_input=project_input)
-            tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False, project_input=project_input)
-            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False, input_file=whitelist)
+            tn_cardinal_tagger = TNCardinalTagger(project_input=project_input)
+            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, project_input=project_input)
+            tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, project_input=project_input)
+            tn_ordinal_verbalizer = TNOrdinalVerbalizer(project_input=project_input)
+            tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, project_input=project_input)
+            tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, project_input=project_input)
+            tn_date_verbalizer = TNDateVerbalizer(ordinal=tn_ordinal_verbalizer, project_input=project_input)
+            tn_electronic_tagger = TNElectronicTagger(project_input=project_input)
+            tn_electronic_verbalizer = TNElectronicVerbalizer(project_input=project_input)
+            tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", input_file=whitelist)
 
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger, project_input=project_input)
             cardinal_graph = cardinal.fst

@@ -147,7 +147,7 @@ class InverseNormalizer(Normalizer):
                 input_case=input_case,
             )
 
-        self.verbalizer = VerbalizeFinalFst(project_input=project_input)
+        self.verbalizer = VerbalizeFinalFst(cache_dir=cache_dir, project_input=project_input)
         self.parser = TokenParser()
         self.lang = lang
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split

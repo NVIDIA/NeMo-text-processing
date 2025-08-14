@@ -23,6 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.hu.taggers.cardinal import CardinalFst
@@ -48,8 +49,7 @@ class ClassifyFst(GraphFst):
 
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
-        deterministic: if True will provide a single transduction option,
-            for False multiple options (used for audio-based normalization)
+        project_input: if True, input is projected onto output.
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
         whitelist: path to a file with whitelist replacements
@@ -58,19 +58,26 @@ class ClassifyFst(GraphFst):
     def __init__(
         self,
         input_case: str,
-        deterministic: bool = False,
+        deterministic: bool = True,
         project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = False,
         whitelist: str = None
     ):
-        super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
+        super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic, project_input=project_input)
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
-            far_file = os.path.join(
-                cache_dir, f"_{input_case}_hu_tn_{deterministic}_deterministic{whitelist_file}.far",
+            far_file = generate_far_filename(
+                language="hu",
+                mode="tn",
+                cache_dir=cache_dir,
+                operation="tokenize",
+                deterministic=deterministic,
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist_file
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -78,35 +85,35 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars. This might take some time...")
 
-            self.cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
+            self.cardinal = CardinalFst(project_input=project_input)
             cardinal_graph = self.cardinal.fst
 
-            self.ordinal = OrdinalFst(cardinal=self.cardinal, deterministic=deterministic, project_input=project_input)
+            self.ordinal = OrdinalFst(cardinal=self.cardinal, project_input=project_input)
             ordinal_graph = self.ordinal.fst
 
-            self.decimal = DecimalFst(cardinal=self.cardinal, deterministic=deterministic, project_input=project_input)
+            self.decimal = DecimalFst(cardinal=self.cardinal, project_input=project_input)
             decimal_graph = self.decimal.fst
 
-            self.fraction = FractionFst(cardinal=self.cardinal, ordinal=self.ordinal, deterministic=deterministic, project_input=project_input)
+            self.fraction = FractionFst(cardinal=self.cardinal, ordinal=self.ordinal, project_input=project_input)
             fraction_graph = self.fraction.fst
             self.measure = MeasureFst(
-                cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic, project_input=project_input
+                cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, project_input=project_input
             )
             measure_graph = self.measure.fst
-            self.date = DateFst(cardinal=self.cardinal, deterministic=deterministic, project_input=project_input)
+            self.date = DateFst(deterministic=deterministic, cardinal=self.cardinal, project_input=project_input)
             date_graph = self.date.fst
-            word_graph = WordFst(deterministic=deterministic, project_input=project_input).fst
-            self.time = TimeFst(self.cardinal, deterministic=deterministic, project_input=project_input)
+            word_graph = WordFst(project_input=project_input).fst
+            self.time = TimeFst(self.cardinal, project_input=project_input)
             time_graph = self.time.fst
-            self.telephone = TelephoneFst(deterministic=deterministic, project_input=project_input)
+            self.telephone = TelephoneFst(project_input=project_input)
             telephone_graph = self.telephone.fst
             self.electronic = ElectronicFst(deterministic=deterministic, project_input=project_input)
             electronic_graph = self.electronic.fst
-            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic, project_input=project_input)
+            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, project_input=project_input)
             money_graph = self.money.fst
-            self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist, project_input=project_input)
+            self.whitelist = WhiteListFst(input_case=input_case, input_file=whitelist, project_input=project_input)
             whitelist_graph = self.whitelist.fst
-            punct_graph = PunctuationFst(deterministic=deterministic, project_input=project_input).fst
+            punct_graph = PunctuationFst(deterministic=True, project_input=project_input).fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
