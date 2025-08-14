@@ -17,7 +17,7 @@ from parameterized import parameterized
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from ..utils import CACHE_DIR, parse_test_case_file
+from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
 
 
 class TestMoney:
@@ -36,7 +36,4 @@ class TestMoney:
     @pytest.mark.unit
     def test_norm_money_project_input(self, test_input, expected):
         pred = self.normalizer_project.normalize(test_input)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)

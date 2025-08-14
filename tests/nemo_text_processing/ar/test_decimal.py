@@ -18,7 +18,7 @@ from parameterized import parameterized
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file
+from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
 
 
 class TestDecimal:
@@ -37,7 +37,7 @@ class TestDecimal:
         assert pred == expected
 
     normalizer_ar = Normalizer(
-        lang='ar', input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+        lang='ar', input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False
     )
     # normalizer_with_audio_en = (
     #     NormalizerWithAudio(input_case='cased', lang='ar', cache_dir=CACHE_DIR, overwrite_cache=False)
@@ -70,13 +70,10 @@ class TestDecimal:
     @pytest.mark.unit
     def test_denorm_project(self, test_input, expected):
         pred = self.inverse_normalizer_ar_projecting.inverse_normalize(test_input, verbose=False)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)
 
     normalizer_ar_projecting = Normalizer(
-        lang='ar', input_case="cased", project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+        lang='ar', input_case="cased", project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
     )
 
     @parameterized.expand(parse_test_case_file('ar/data_text_normalization/test_cases_decimal.txt'))
@@ -84,7 +81,4 @@ class TestDecimal:
     @pytest.mark.unit
     def test_norm_project(self, test_input, expected):
         pred = self.normalizer_ar_projecting.normalize(test_input, verbose=False)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)

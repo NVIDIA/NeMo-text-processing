@@ -16,12 +16,12 @@ import pytest
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from ..utils import CACHE_DIR
+from tests.nemo_text_processing.utils import CACHE_DIR
 
 
 class TestTextSentenceSplit:
     normalizer_en = Normalizer(
-        input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+        input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False
     )
 
     @pytest.mark.run_only_on('CPU')
@@ -42,7 +42,7 @@ class TestTextSentenceSplit:
         assert gt_sentences == sentences
 
     normalizer_en_projecting = Normalizer(
-        input_case='cased', lang='en', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+        input_case='cased', lang='en', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
     )
 
     @pytest.mark.run_only_on('CPU')

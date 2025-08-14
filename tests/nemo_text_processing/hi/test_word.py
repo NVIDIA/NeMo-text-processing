@@ -18,12 +18,12 @@ from parameterized import parameterized
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from ..utils import CACHE_DIR, parse_test_case_file
+from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
 
 
 class TestWord:
     normalizer = Normalizer(
-        input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+        input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False
     )
     inverse_normalizer = InverseNormalizer(lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
 
@@ -50,13 +50,10 @@ class TestWord:
     @pytest.mark.unit
     def test_denorm_project(self, test_input, expected):
         pred = self.inverse_normalizer_hi_projecting.inverse_normalize(test_input, verbose=True)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)
 
     normalizer_hi_projecting = Normalizer(
-        input_case='cased', lang='hi', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+        input_case='cased', lang='hi', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
     )
 
     @parameterized.expand(parse_test_case_file('hi/data_text_normalization/test_cases_word.txt'))
@@ -64,7 +61,4 @@ class TestWord:
     @pytest.mark.unit
     def test_norm_project(self, test_input, expected):
         pred = self.normalizer_hi_projecting.normalize(test_input, verbose=True, punct_post_process=True)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)

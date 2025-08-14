@@ -19,7 +19,7 @@ from parameterized import parameterized
 
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, get_test_cases_multiple
+from tests.nemo_text_processing.utils import CACHE_DIR, get_test_cases_multiple
 
 
 class TestNormalizeWithAudio:
