@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2022, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 
 
-class WhiteListFst(GraphFst):
+class RangeFst(GraphFst):
     """
-    Finite state transducer for verbalizing whitelist
-        e.g. tokens { name: "misses" } } -> misses
+    Finite state transducer for verbalizing range
+        e.g. tokens { range { name: "one to three" } } -> one to three
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -28,7 +28,7 @@ class WhiteListFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="range", kind="verbalize", deterministic=deterministic, project_input=project_input)
         graph = (
             pynutil.delete("name:")
             + delete_space

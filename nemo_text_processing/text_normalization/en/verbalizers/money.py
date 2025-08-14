@@ -77,7 +77,7 @@ class MoneyFst(GraphFst):
             pynutil.delete(' morphosyntactic_features: "')
             + pynutil.insert(" ")
             + per_units_normalized
-            + pynutil.delete('" ')
+            + pynutil.delete('"')
         )
         graph += remove_per_units_normalized.ques
 
