@@ -49,6 +49,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -84,7 +85,15 @@ class ClassifyFst(GraphFst):
             en_whitelist = get_abs_path("data/en_whitelist.tsv")
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"es_en_itn_{input_case}.far")
+            far_file = generate_far_filename(
+                language="es_en",
+                mode="itn",
+                cache_dir=cache_dir,
+                operation="tokenize",
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -100,11 +109,11 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal, input_case=input_case, project_input=project_input)
             decimal_graph = decimal.fst
 
-            fraction = FractionFst(cardinal, ordinal, input_case=input_case, project_input=project_input)
+            fraction = FractionFst(cardinal, ordinal, project_input=project_input)
             fraction_graph = fraction.fst
 
             measure_graph = MeasureFst(
-                cardinal=cardinal, decimal=decimal, fraction=fraction, input_case=input_case, project_input=project_input
+                cardinal=cardinal, decimal=decimal, fraction=fraction, project_input=project_input
             ).fst
             date_graph = DateFst(cardinal, input_case=input_case, project_input=project_input).fst
             word_graph = WordFst(project_input=project_input).fst

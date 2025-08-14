@@ -18,7 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, generator_main
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, generator_main, generate_far_filename
 from nemo_text_processing.text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.decimal import DecimalFst
@@ -62,7 +62,16 @@ class ClassifyFst(GraphFst):
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
-            far_file = os.path.join(cache_dir, f"zh_tn_{deterministic}_deterministic_{whitelist_file}_tokenize.far")
+            far_file = generate_far_filename(
+                language="zh",
+                mode="tn",
+                cache_dir=cache_dir,
+                operation="tokenize",
+                deterministic=deterministic,
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist_file
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
         else:
@@ -72,9 +81,9 @@ class ClassifyFst(GraphFst):
             time = TimeFst(deterministic=deterministic, project_input=project_input)
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
             money = MoneyFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic, project_input=project_input)
+            measure = MeasureFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic, project_input=project_input)
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
-            whitelist = WhiteListFst(deterministic=deterministic, project_input=project_input)
+            whitelist = WhiteListFst(deterministic=deterministic, project_input=project_input, input_file=whitelist)
             word = WordFst(deterministic=deterministic, project_input=project_input)
             punctuation = PunctuationFst(deterministic=deterministic, project_input=project_input)
 

@@ -18,7 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space, generator_main
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space, generator_main, generate_far_filename
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.postprocessor import PostProcessor
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize import VerbalizeFst
 
@@ -39,7 +39,14 @@ class VerbalizeFinalFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"ja_tn_{deterministic}_deterministic_verbalizer.far")
+            far_file = generate_far_filename(
+                language="ja",
+                mode="itn",
+                cache_dir=cache_dir,
+                operation="verbalize",
+                deterministic=deterministic,
+                project_input=project_input
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
         else:

@@ -24,6 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.date import DateFst
@@ -65,7 +66,15 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"hi_itn.far")
+            far_file = generate_far_filename(
+                language="hi",
+                mode="itn",
+                cache_dir=cache_dir,
+                operation="tokenize_and_classify",
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -88,10 +97,10 @@ class ClassifyFst(GraphFst):
             measure_graph = measure.fst
             money = MoneyFst(cardinal, decimal, project_input=project_input)
             money_graph = money.fst
-            telephone = TelephoneFst(cardinal, project_input=project_input)
+            telephone = TelephoneFst(project_input=project_input)
             telephone_graph = telephone.fst
             punct_graph = PunctuationFst(project_input=project_input).fst
-            whitelist_graph = WhiteListFst(project_input=project_input).fst
+            whitelist_graph = WhiteListFst(input_file=whitelist, project_input=project_input).fst
             word_graph = WordFst(project_input=project_input).fst
 
             classify = (
