@@ -55,7 +55,7 @@ class ElectronicFst(GraphFst):
         graph_digit = graph_digit_no_zero | graph_zero
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
-        NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
+        NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}", '"')).optimize()
         dict_words = pynini.project(pynini.string_file(get_abs_path("data/electronic/words.tsv")), "output")
         default_chars_symbols = pynini.cdrewrite(
             pynutil.insert(" ") + (graph_symbols | graph_digit | long_numbers) + pynutil.insert(" "),

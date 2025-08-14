@@ -135,7 +135,9 @@ class WhiteListFst(GraphFst):
 
         self.graph = (convert_space(graph)).optimize()
 
-        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
+        final_graph = pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")
+        final_graph = self.add_tokens(final_graph)
+        self.fst = final_graph.optimize()
 
 
 def get_formats(input_f, input_case=INPUT_CASED, is_default=True):

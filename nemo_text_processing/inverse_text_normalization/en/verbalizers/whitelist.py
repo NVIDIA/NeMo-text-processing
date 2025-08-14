@@ -36,4 +36,5 @@ class WhiteListFst(GraphFst):
             + pynutil.delete("\"")
         )
         graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
-        self.fst = graph.optimize()
+        delete_tokens = self.delete_tokens(graph)
+        self.fst = delete_tokens.optimize()

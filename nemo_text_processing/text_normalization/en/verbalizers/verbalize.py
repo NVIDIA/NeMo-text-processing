@@ -22,7 +22,9 @@ from nemo_text_processing.text_normalization.en.verbalizers.fraction import Frac
 from nemo_text_processing.text_normalization.en.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.en.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.en.verbalizers.range import RangeFst
 from nemo_text_processing.text_normalization.en.verbalizers.roman import RomanFst
+from nemo_text_processing.text_normalization.en.verbalizers.serial import SerialFst
 from nemo_text_processing.text_normalization.en.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
@@ -57,6 +59,8 @@ class VerbalizeFst(GraphFst):
         date_graph = DateFst(ordinal=ordinal, deterministic=deterministic, project_input=project_input).fst
         money_graph = MoneyFst(decimal=decimal, deterministic=deterministic, project_input=project_input).fst
         whitelist_graph = WhiteListFst(deterministic=deterministic, project_input=project_input).fst
+        serial_graph = SerialFst(deterministic=deterministic, project_input=project_input).fst
+        range_graph = RangeFst(deterministic=deterministic, project_input=project_input).fst
 
         graph = (
             time_graph
@@ -70,6 +74,8 @@ class VerbalizeFst(GraphFst):
             | electronic_graph
             | fraction_graph
             | whitelist_graph
+            | serial_graph
+            | range_graph
         )
 
         roman_graph = RomanFst(deterministic=deterministic, project_input=project_input).fst

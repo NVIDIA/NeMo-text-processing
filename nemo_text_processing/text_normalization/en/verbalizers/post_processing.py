@@ -148,21 +148,23 @@ class PostProcessingFst:
         graph = pynini.compose(graph, no_space_after_punct).optimize()
 
         # remove space around text in quotes
+        # Handle both normal case (content starting with alphabetic char) and projected input case (content starting with [)
+        content_start = pynini.union(NEMO_ALPHA, r"\[")
         single_quote = pynutil.add_weight(pynini.accep("`"), MIN_NEG_WEIGHT)
         double_quotes = pynutil.add_weight(pynini.accep('"'), MIN_NEG_WEIGHT)
         quotes_graph = (
-            single_quote + delete_space_optional + NEMO_ALPHA + NEMO_SIGMA + delete_space_optional + single_quote
+            single_quote + delete_space_optional + content_start + NEMO_SIGMA + delete_space_optional + single_quote
         ).optimize()
 
         # this is to make sure multiple quotes are tagged from right to left without skipping any quotes in the left
-        not_alpha = pynini.difference(NEMO_CHAR, NEMO_ALPHA).optimize() | pynutil.add_weight(
+        not_content_start = pynini.difference(NEMO_CHAR, content_start).optimize() | pynutil.add_weight(
             NEMO_SPACE, MIN_NEG_WEIGHT
         )
-        end = pynini.closure(pynutil.add_weight(not_alpha, MIN_NEG_WEIGHT))
+        end = pynini.closure(pynutil.add_weight(not_content_start, MIN_NEG_WEIGHT))
         quotes_graph |= (
             double_quotes
             + delete_space_optional
-            + NEMO_ALPHA
+            + content_start
             + NEMO_SIGMA
             + delete_space_optional
             + double_quotes
@@ -175,9 +177,10 @@ class PostProcessingFst:
         graph = pynini.compose(graph, quotes_graph).optimize()
 
         # remove space between a word and a single quote followed by s
+        # Handle both normal case (word ending with alphabetic char) and projected input case (word ending with ])
         remove_space_around_single_quote = pynini.cdrewrite(
             delete_space_optional + pynini.union(*self.punct_marks["'"]) + delete_space,
-            NEMO_ALPHA,
+            pynini.union(NEMO_ALPHA, r"\]"),
             pynini.union("s ", "s[EOS]"),
             NEMO_SIGMA,
         )

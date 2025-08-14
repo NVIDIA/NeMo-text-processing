@@ -126,4 +126,5 @@ class RangeFst(GraphFst):
 
         self.graph = self.graph.optimize()
         graph = pynutil.insert("name: \"") + convert_space(self.graph).optimize() + pynutil.insert("\"")
-        self.fst = graph.optimize()
+        final_graph = self.add_tokens(graph)
+        self.fst = final_graph.optimize()
