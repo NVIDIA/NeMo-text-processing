@@ -19,13 +19,15 @@ from parameterized import parameterized
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
+from tests.nemo_text_processing.utils import CACHE_DIR, assert_projecting_output, parse_test_case_file
 
 
 class TestTime:
 
     normalizer = Normalizer(input_case='cased', lang='rw', cache_dir=CACHE_DIR, overwrite_cache=False)
-    normalizer_project = Normalizer(input_case='cased', lang='rw', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
+    normalizer_project = Normalizer(
+        input_case='cased', lang='rw', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
+    )
 
     @parameterized.expand(parse_test_case_file('rw/data_text_normalization/test_cases_time.txt'))
     @pytest.mark.run_only_on('CPU')

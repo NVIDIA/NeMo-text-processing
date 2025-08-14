@@ -23,8 +23,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
 from nemo_text_processing.text_normalization.en.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.en.taggers.cardinal import CardinalFst
@@ -81,13 +81,13 @@ class ClassifyFst(GraphFst):
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = generate_far_filename(
                 language="en",
-                mode="tn", 
+                mode="tn",
                 cache_dir=cache_dir,
                 operation="tokenize",
                 deterministic=deterministic,
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=whitelist_file
+                whitelist_file=whitelist_file,
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -116,7 +116,13 @@ class ClassifyFst(GraphFst):
             logger.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
             start_time = time.time()
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic, project_input=project_input)
+            measure = MeasureFst(
+                cardinal=cardinal,
+                decimal=decimal,
+                fraction=fraction,
+                deterministic=deterministic,
+                project_input=project_input,
+            )
             measure_graph = measure.fst
             logger.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
 
@@ -133,11 +139,15 @@ class ClassifyFst(GraphFst):
             logger.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
 
             start_time = time.time()
-            electonic_graph = ElectronicFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input).fst
+            electonic_graph = ElectronicFst(
+                cardinal=cardinal, deterministic=deterministic, project_input=project_input
+            ).fst
             logger.debug(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
 
             start_time = time.time()
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic, project_input=project_input).fst
+            money_graph = MoneyFst(
+                cardinal=cardinal, decimal=decimal, deterministic=deterministic, project_input=project_input
+            ).fst
             logger.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 
             start_time = time.time()
@@ -156,17 +166,25 @@ class ClassifyFst(GraphFst):
             logger.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
             start_time = time.time()
-            serial_graph = SerialFst(cardinal=cardinal, ordinal=ordinal, deterministic=deterministic, project_input=project_input).fst
+            serial_graph = SerialFst(
+                cardinal=cardinal, ordinal=ordinal, deterministic=deterministic, project_input=project_input
+            ).fst
             logger.debug(f"serial: {time.time() - start_time: .2f}s -- {serial_graph.num_states()} nodes")
 
             start_time = time.time()
             v_time_graph = vTimeFst(deterministic=deterministic, project_input=project_input).fst
             v_ordinal_graph = vOrdinalFst(deterministic=deterministic, project_input=project_input)
-            v_date_graph = vDateFst(ordinal=v_ordinal_graph, deterministic=deterministic, project_input=project_input).fst
+            v_date_graph = vDateFst(
+                ordinal=v_ordinal_graph, deterministic=deterministic, project_input=project_input
+            ).fst
             time_final = pynini.compose(time_graph, v_time_graph)
             date_final = pynini.compose(date_graph, v_date_graph)
             range_graph = RangeFst(
-                time=time_final, date=date_final, cardinal=cardinal, deterministic=deterministic, project_input=project_input
+                time=time_final,
+                date=date_final,
+                cardinal=cardinal,
+                deterministic=deterministic,
+                project_input=project_input,
             ).fst
             logger.debug(f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes")
 

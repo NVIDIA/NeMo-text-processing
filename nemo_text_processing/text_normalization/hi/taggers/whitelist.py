@@ -30,11 +30,7 @@ from nemo_text_processing.text_normalization.hi.utils import (
 
 class WhiteListFst(GraphFst):
     def __init__(
-        self,
-        input_case: str,
-        deterministic: bool = True,
-        project_input: bool = False,
-        input_file: str = None
+        self, input_case: str, deterministic: bool = True, project_input: bool = False, input_file: str = None
     ):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic, project_input=project_input)
 

@@ -23,12 +23,7 @@ class WordFst(GraphFst):
     tokens { char: "你" } -> 你
     '''
 
-    def __init__(
-        self,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="char", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         graph = pynutil.delete("name: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")

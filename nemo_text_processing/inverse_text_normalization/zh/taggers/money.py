@@ -15,17 +15,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 
 
 class MoneyFst(GraphFst):
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        decimal: GraphFst,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, project_input: bool = False):
         super().__init__(name="money", kind="classify", project_input=project_input)
 
         # imports
@@ -62,7 +57,9 @@ class MoneyFst(GraphFst):
 
         # yuan major plus minor
         major_symbol = pynini.accep("块") | pynini.cross("塊", "块")
-        tencent = pynini.accep("毛") | pynini.accep("角",)
+        tencent = pynini.accep("毛") | pynini.accep(
+            "角",
+        )
         cent = pynini.accep("分")
         graph_kuai = (
             graph_integer_component

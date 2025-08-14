@@ -28,12 +28,7 @@ class DateFst(GraphFst):
     { date { month: "二" day: "十一" } } -> 二月十一日
     """
 
-    def __init__(
-        self,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         year_component = (

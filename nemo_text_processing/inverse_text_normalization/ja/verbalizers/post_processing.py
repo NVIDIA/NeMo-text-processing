@@ -18,6 +18,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NARROW_NON_BREAK_SPACE
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
@@ -25,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     generator_main,
 )
-from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NARROW_NON_BREAK_SPACE
 from nemo_text_processing.utils.logging import logger
 
 

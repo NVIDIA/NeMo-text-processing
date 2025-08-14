@@ -25,11 +25,7 @@ class FractionFst(GraphFst):
     """
 
     def __init__(
-        self,
-        cardinal: GraphFst,
-        ordinal: GraphFst,
-        input_case: str = INPUT_LOWER_CASED,
-        project_input: bool = False
+        self, cardinal: GraphFst, ordinal: GraphFst, input_case: str = INPUT_LOWER_CASED, project_input: bool = False
     ):
         super().__init__(name="fraction", kind="classify", project_input=project_input)
         cardinal_graph = cardinal.all_nums_no_tokens

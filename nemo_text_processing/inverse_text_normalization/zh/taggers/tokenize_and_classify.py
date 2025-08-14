@@ -17,13 +17,6 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    delete_space,
-    delete_zero_or_one_space,
-    generator_main,
-    generate_far_filename,
-)
 from nemo_text_processing.inverse_text_normalization.zh.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.decimal import DecimalFst
@@ -34,6 +27,13 @@ from nemo_text_processing.inverse_text_normalization.zh.taggers.punctuation impo
 from nemo_text_processing.inverse_text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.zh.taggers.word import WordFst
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    GraphFst,
+    delete_space,
+    delete_zero_or_one_space,
+    generate_far_filename,
+    generator_main,
+)
 from nemo_text_processing.utils.logging import logger
 
 
@@ -54,7 +54,7 @@ class ClassifyFst(GraphFst):
         cache_dir: str = None,
         whitelist: str = None,
         overwrite_cache: bool = False,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -68,7 +68,7 @@ class ClassifyFst(GraphFst):
                 operation="tokenize",
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=whitelist
+                whitelist_file=whitelist,
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -91,7 +91,9 @@ class ClassifyFst(GraphFst):
             fraction = FractionFst(cardinal, project_input=project_input)
             fraction_graph = fraction.fst
             punct_graph = PunctuationFst(project_input=project_input).fst
-            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case, project_input=project_input).fst
+            whitelist_graph = WhiteListFst(
+                input_file=whitelist, input_case=input_case, project_input=project_input
+            ).fst
 
             classify = (
                 pynutil.add_weight(time_graph, 1.1)

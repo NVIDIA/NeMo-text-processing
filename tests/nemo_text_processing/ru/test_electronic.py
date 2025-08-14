@@ -15,17 +15,19 @@
 import pytest
 from parameterized import parameterized
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
-
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
-from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+
+from tests.nemo_text_processing.utils import CACHE_DIR, assert_projecting_output, parse_test_case_file
 
 
 class TestElectronic:
 
     normalizer = NormalizerWithAudio(input_case='cased', lang='ru', cache_dir=CACHE_DIR)
-    normalizer_project = Normalizer(input_case='cased', lang='ru', deterministic=False, project_input=True, cache_dir=CACHE_DIR)
+    normalizer_project = Normalizer(
+        input_case='cased', lang='ru', deterministic=False, project_input=True, cache_dir=CACHE_DIR
+    )
     inverse_normalizer = InverseNormalizer(lang='ru', cache_dir=CACHE_DIR)
     inverse_normalizer_project = InverseNormalizer(lang='ru', project_input=True, cache_dir=CACHE_DIR)
     N_TAGGED = 100

@@ -24,12 +24,7 @@ class Whitelist(GraphFst):
     tokens { whitelist: "ATM" } -> A T M
     '''
 
-    def __init__(
-        self,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic, project_input=project_input)
         remove_erhua = pynutil.delete("erhua: \"") + pynutil.delete("儿") + pynutil.delete("\"")
         whitelist = pynutil.delete("name: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

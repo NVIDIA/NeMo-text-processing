@@ -33,8 +33,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import CardinalFst as TNCardinalTagger
 from nemo_text_processing.text_normalization.sv.taggers.date import DateFst as TNDateTagger
@@ -88,9 +88,18 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars.")
             tn_cardinal_tagger = TNCardinalTagger(deterministic=False, project_input=project_input)
-            tn_ordinal_tagger = TNOrdinalTagger(cardinal=tn_cardinal_tagger, deterministic=False, project_input=project_input)
-            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=False, project_input=project_input)
-            tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False, project_input=project_input)
+            tn_ordinal_tagger = TNOrdinalTagger(
+                cardinal=tn_cardinal_tagger, deterministic=False, project_input=project_input
+            )
+            tn_date_tagger = TNDateTagger(
+                cardinal=tn_cardinal_tagger,
+                ordinal=tn_ordinal_tagger,
+                deterministic=False,
+                project_input=project_input,
+            )
+            tn_decimal_tagger = TNDecimalTagger(
+                cardinal=tn_cardinal_tagger, deterministic=False, project_input=project_input
+            )
             tn_fraction_tagger = TNFractionTagger(
                 cardinal=tn_cardinal_tagger, ordinal=tn_ordinal_tagger, deterministic=True, project_input=project_input
             )
@@ -103,22 +112,32 @@ class ClassifyFst(GraphFst):
 
             ordinal = OrdinalFst(tn_ordinal=tn_ordinal_tagger, project_input=project_input)
             ordinal_graph = ordinal.fst
-            decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger, project_input=project_input)
+            decimal = DecimalFst(
+                itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger, project_input=project_input
+            )
             decimal_graph = decimal.fst
 
-            fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_tagger=tn_fraction_tagger, project_input=project_input)
+            fraction = FractionFst(
+                itn_cardinal_tagger=cardinal, tn_fraction_tagger=tn_fraction_tagger, project_input=project_input
+            )
             fraction_graph = fraction.fst
 
             date_graph = DateFst(tn_date_tagger=tn_date_tagger, project_input=project_input).fst
             word_graph = WordFst(project_input=project_input).fst
             time_graph = TimeFst(tn_cardinal_tagger=tn_cardinal_tagger, project_input=project_input).fst
-            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case, project_input=project_input).fst
+            whitelist_graph = WhiteListFst(
+                input_file=whitelist, input_case=input_case, project_input=project_input
+            ).fst
             punct_graph = PunctuationFst(project_input=project_input).fst
             electronic_graph = ElectronicFst(
-                tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer, project_input=project_input
+                tn_electronic_tagger=tn_electronic_tagger,
+                tn_electronic_verbalizer=tn_electronic_verbalizer,
+                project_input=project_input,
             ).fst
             telephone_graph = TelephoneFst(
-                tn_cardinal_tagger=tn_cardinal_tagger, tn_telephone_tagger=tn_telephone_tagger, project_input=project_input
+                tn_cardinal_tagger=tn_cardinal_tagger,
+                tn_telephone_tagger=tn_telephone_tagger,
+                project_input=project_input,
             ).fst
 
             classify = (

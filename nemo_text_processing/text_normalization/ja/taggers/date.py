@@ -17,10 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ja.graph_utils import NEMO_NARROW_NON_BREAK_SPACE
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NON_BREAKING_SPACE,
-    GraphFst,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NON_BREAKING_SPACE, GraphFst
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
 
@@ -60,12 +57,7 @@ class DateFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="date", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph_cardinal = cardinal.just_cardinals

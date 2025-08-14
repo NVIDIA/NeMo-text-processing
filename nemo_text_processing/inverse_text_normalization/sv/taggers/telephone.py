@@ -28,12 +28,7 @@ class TelephoneFst(GraphFst):
         tn_telephone_tagger: TN Telephone Tagger
     """
 
-    def __init__(
-        self,
-        tn_cardinal_tagger: GraphFst,
-        tn_telephone_tagger: GraphFst,
-        project_input: bool = False
-    ):
+    def __init__(self, tn_cardinal_tagger: GraphFst, tn_telephone_tagger: GraphFst, project_input: bool = False):
         super().__init__(name="telephone", kind="classify", project_input=project_input)
 
         # Use the original working approach: construct telephone patterns from TN cardinal components
@@ -51,10 +46,10 @@ class TelephoneFst(GraphFst):
         )
 
         graph = convert_space(lead + base_number_part)
-        
+
         # Create proper telephone token with number_part field (not old name field)
         number_part_graph = pynutil.insert("number_part: \"") + graph + pynutil.insert("\"")
-        
+
         # Use add_tokens which will handle the projecting/non-projecting cases
         final_graph = self.add_tokens(number_part_graph)
         self.fst = final_graph.optimize()

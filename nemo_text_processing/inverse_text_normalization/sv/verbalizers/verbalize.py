@@ -47,5 +47,15 @@ class VerbalizeFst(GraphFst):
         telephone_graph = TelephoneFst(project_input=project_input).fst
         time_graph = TimeFst(project_input=project_input).fst
         whitelist_graph = WhiteListFst(project_input=project_input).fst
-        graph = time_graph | decimal_graph | cardinal_graph | ordinal_graph | date_graph | fraction_graph | electronic_graph | telephone_graph | whitelist_graph
+        graph = (
+            time_graph
+            | decimal_graph
+            | cardinal_graph
+            | ordinal_graph
+            | date_graph
+            | fraction_graph
+            | electronic_graph
+            | telephone_graph
+            | whitelist_graph
+        )
         self.fst = graph

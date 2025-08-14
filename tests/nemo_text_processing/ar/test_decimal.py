@@ -18,7 +18,7 @@ from parameterized import parameterized
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
+from tests.nemo_text_processing.utils import CACHE_DIR, assert_projecting_output, parse_test_case_file
 
 
 class TestDecimal:
@@ -36,9 +36,7 @@ class TestDecimal:
         pred = self.inverse_normalizer_ar.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
-    normalizer_ar = Normalizer(
-        lang='ar', input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False
-    )
+    normalizer_ar = Normalizer(lang='ar', input_case="cased", cache_dir=CACHE_DIR, overwrite_cache=False)
     # normalizer_with_audio_en = (
     #     NormalizerWithAudio(input_case='cased', lang='ar', cache_dir=CACHE_DIR, overwrite_cache=False)
     #     if PYNINI_AVAILABLE and RUN_AUDIO_BASED_TESTS

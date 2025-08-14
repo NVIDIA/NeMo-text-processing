@@ -47,7 +47,7 @@ class MeasureFst(GraphFst):
         decimal: GraphFst,
         fraction: GraphFst,
         input_case: str = INPUT_LOWER_CASED,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="measure", kind="classify", project_input=project_input)
 

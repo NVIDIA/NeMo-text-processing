@@ -27,12 +27,7 @@ class DecimalFst(GraphFst):
         tn_decimal_verbalizer: TN decimal verbalizer
     """
 
-    def __init__(
-        self,
-        tn_decimal_verbalizer: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, tn_decimal_verbalizer: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic, project_input=project_input)
         delete_space = pynutil.delete(" ")
         optional_sign = pynini.closure(

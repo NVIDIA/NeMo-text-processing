@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
 from nemo_text_processing.text_normalization.hy.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hy.taggers.decimal import DecimalFst
@@ -56,7 +56,7 @@ class ClassifyFst(GraphFst):
         deterministic: bool = False,
         project_input: bool = False,
         overwrite_cache: bool = False,
-        input_case: str = INPUT_LOWER_CASED
+        input_case: str = INPUT_LOWER_CASED,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -71,7 +71,7 @@ class ClassifyFst(GraphFst):
                 deterministic=deterministic,
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=""
+                whitelist_file="",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]

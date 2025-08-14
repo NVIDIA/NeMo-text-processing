@@ -30,12 +30,7 @@ class DecimalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        tn_decimal,
-        deterministic: bool = False,
-        project_input: bool = False
-    ):
+    def __init__(self, tn_decimal, deterministic: bool = False, project_input: bool = False):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         optional_graph_negative = pynini.closure(

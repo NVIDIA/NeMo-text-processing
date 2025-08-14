@@ -20,12 +20,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class FractionFst(GraphFst):
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        decimal: GraphFst,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, project_input: bool = False):
         """
         Fitite state transducer for classifying fractions
         e.g.,

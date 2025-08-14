@@ -34,8 +34,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
 from nemo_text_processing.text_normalization.ru.taggers.tokenize_and_classify import ClassifyFst as TNClassifyFst
 from nemo_text_processing.utils.logging import logger
@@ -60,7 +60,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None,
         input_case: str = INPUT_LOWER_CASED,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -75,7 +75,7 @@ class ClassifyFst(GraphFst):
                 deterministic=False,
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=""
+                whitelist_file="",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -83,7 +83,11 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars. This might take some time...")
             tn_classify = TNClassifyFst(
-                input_case='cased', deterministic=False, cache_dir=cache_dir, overwrite_cache=True, project_input=project_input
+                input_case='cased',
+                deterministic=False,
+                cache_dir=cache_dir,
+                overwrite_cache=True,
+                project_input=project_input,
             )
             cardinal = CardinalFst(tn_cardinal=tn_classify.cardinal, project_input=project_input)
             cardinal_graph = cardinal.fst

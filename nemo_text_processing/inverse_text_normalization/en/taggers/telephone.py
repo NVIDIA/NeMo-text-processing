@@ -75,12 +75,7 @@ class TelephoneFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        input_case: str = INPUT_LOWER_CASED,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED, project_input: bool = False):
         super().__init__(name="telephone", kind="classify", project_input=project_input)
         # country code, number_part, extension
         digit_to_str = (

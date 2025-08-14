@@ -27,7 +27,7 @@ class ElectronicFst(GraphFst):
 
     def __init__(self, project_input: bool = False):
         super().__init__(name="electronic", kind="verbalize", project_input=project_input)
-        
+
         user_name = (
             pynutil.delete("username:")
             + delete_space
@@ -35,7 +35,7 @@ class ElectronicFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        
+
         domain = (
             pynutil.delete("domain:")
             + delete_space
@@ -51,7 +51,7 @@ class ElectronicFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        
+
         # Handle preserve_order field (optional)
         preserve_order = (
             delete_space
@@ -63,12 +63,12 @@ class ElectronicFst(GraphFst):
         )
         optional_preserve_order = pynini.closure(preserve_order, 0, 1)
 
-        # Email format: username @ domain  
+        # Email format: username @ domain
         email_graph = user_name + delete_space + pynutil.insert("@") + domain + optional_preserve_order
-        
+
         # URL format with protocol only (for cases where only protocol field exists)
         url_protocol_only = protocol + optional_preserve_order
-        
+
         # URL format with protocol + domain (for cases where both fields exist)
         url_protocol_domain = protocol + delete_space + domain + optional_preserve_order
 

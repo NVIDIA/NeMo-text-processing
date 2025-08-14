@@ -14,6 +14,7 @@
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.text_normalization.ar.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -22,7 +23,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.ar.utils import get_abs_path, load_labels
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
 min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
@@ -43,12 +43,7 @@ class MoneyFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="money", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_graph = cardinal.cardinal_numbers_with_leading_zeros

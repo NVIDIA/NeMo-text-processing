@@ -56,12 +56,7 @@ class DecimalFst(GraphFst):
     cardinal: CardinalFst
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))

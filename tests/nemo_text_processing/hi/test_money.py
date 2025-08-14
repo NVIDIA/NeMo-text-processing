@@ -18,7 +18,7 @@ from parameterized import parameterized
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
+from tests.nemo_text_processing.utils import CACHE_DIR, assert_projecting_output, parse_test_case_file
 
 
 class TestMoney:
@@ -56,7 +56,12 @@ class TestMoney:
             assert pred.strip() == f'{expected}[{test_input}]'.strip()
 
     normalizer_hi_projecting = Normalizer(
-        input_case='cased', lang='hi', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False, post_process=False
+        input_case='cased',
+        lang='hi',
+        project_input=True,
+        cache_dir=CACHE_DIR,
+        overwrite_cache=False,
+        post_process=False,
     )
 
     @parameterized.expand(parse_test_case_file('hi/data_text_normalization/test_cases_money.txt'))

@@ -18,15 +18,15 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
+from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.rw.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.rw.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.rw.taggers.whitelist import WhiteListFst
@@ -40,7 +40,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         deterministic: bool = True,
         project_input: bool = False,
-        whitelist: str = None
+        whitelist: str = None,
     ):
         super().__init__(name='tokenize_and_classify', kind='classify', deterministic=deterministic)
         far_file = None
@@ -54,7 +54,7 @@ class ClassifyFst(GraphFst):
                 deterministic=deterministic,
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=""
+                whitelist_file="",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             print("FAR file: ", far_file)

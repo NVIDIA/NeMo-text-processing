@@ -51,14 +51,22 @@ class VerbalizeFst(GraphFst):
         fraction_graph = fraction.fst
         date = DateFst(ordinal=ordinal, project_input=project_input)
         date_graph = date.fst
-        measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic, project_input=project_input)
+        measure = MeasureFst(
+            cardinal=cardinal,
+            decimal=decimal,
+            fraction=fraction,
+            deterministic=deterministic,
+            project_input=project_input,
+        )
         measure_graph = measure.fst
         electronic = ElectronicFst(deterministic=deterministic, project_input=project_input)
         electronic_graph = electronic.fst
         whitelist_graph = WhiteListFst(deterministic=deterministic, project_input=project_input).fst
         money_graph = MoneyFst(decimal=decimal, project_input=project_input).fst
         telephone_graph = TelephoneFst(deterministic=deterministic, project_input=project_input).fst
-        time_graph = TimeFst(cardinal_tagger=cardinal_tagger, deterministic=deterministic, project_input=project_input).fst
+        time_graph = TimeFst(
+            cardinal_tagger=cardinal_tagger, deterministic=deterministic, project_input=project_input
+        ).fst
 
         graph = (
             cardinal_graph

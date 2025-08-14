@@ -31,67 +31,76 @@ class FractionFst(GraphFst):
         tn_fraction_tagger: TN fraction tagger
     """
 
-    def __init__(
-        self,
-        itn_cardinal_tagger: GraphFst,
-        tn_fraction_tagger: GraphFst,
-        project_input: bool = False
-    ):
+    def __init__(self, itn_cardinal_tagger: GraphFst, tn_fraction_tagger: GraphFst, project_input: bool = False):
         super().__init__(name="fraction", kind="classify", project_input=project_input)
         cardinal = itn_cardinal_tagger.graph_no_exception
         fractions = tn_fraction_tagger.fractions_any.invert().optimize()
 
         minus = pynini.cross("minus ", "-")
         optional_minus = pynini.closure(minus, 0, 1)
-        
+
         # Need delete_space for proper space handling
         from nemo_text_processing.text_normalization.en.graph_utils import delete_space
-        
+
         # Pattern 1: "fyra femtedelar" -> numerator: "4" denominator: "5"
         simple_fraction = (
-            pynutil.insert("numerator: \"") + cardinal + pynutil.insert("\" ") +
-            delete_space + 
-            pynutil.insert("denominator: \"") + fractions + pynutil.insert("\"")
+            pynutil.insert("numerator: \"")
+            + cardinal
+            + pynutil.insert("\" ")
+            + delete_space
+            + pynutil.insert("denominator: \"")
+            + fractions
+            + pynutil.insert("\"")
         )
-        
-        # Pattern 2: "tjugotre och fyra femtedelar" -> integer_part: "23" numerator: "4" denominator: "5" 
+
+        # Pattern 2: "tjugotre och fyra femtedelar" -> integer_part: "23" numerator: "4" denominator: "5"
         mixed_fraction = (
-            pynutil.insert("integer_part: \"") + optional_minus + cardinal + pynutil.insert("\" ") +
-            pynutil.delete(" och ") + 
-            pynutil.insert("numerator: \"") + cardinal + pynutil.insert("\" ") +
-            delete_space +
-            pynutil.insert("denominator: \"") + fractions + pynutil.insert("\"")
+            pynutil.insert("integer_part: \"")
+            + optional_minus
+            + cardinal
+            + pynutil.insert("\" ")
+            + pynutil.delete(" och ")
+            + pynutil.insert("numerator: \"")
+            + cardinal
+            + pynutil.insert("\" ")
+            + delete_space
+            + pynutil.insert("denominator: \"")
+            + fractions
+            + pynutil.insert("\"")
         )
-        
+
         # Pattern 3: "två och halv" -> integer_part: "2" numerator: "1" denominator: "2"
         mixed_half = (
-            pynutil.insert("integer_part: \"") + optional_minus + cardinal + pynutil.insert("\" ") +
-            pynutil.delete(" och ") +
-            pynutil.insert("numerator: \"") + pynini.cross("halv", "1") + pynutil.insert("\" ") +
-            pynutil.insert("denominator: \"2\"")
+            pynutil.insert("integer_part: \"")
+            + optional_minus
+            + cardinal
+            + pynutil.insert("\" ")
+            + pynutil.delete(" och ")
+            + pynutil.insert("numerator: \"")
+            + pynini.cross("halv", "1")
+            + pynutil.insert("\" ")
+            + pynutil.insert("denominator: \"2\"")
         )
-        
+
         # Pattern 4: "en halv" -> numerator: "1" denominator: "2"
         simple_half = (
-            pynutil.insert("numerator: \"") + pynini.cross("en halv", "1") + pynutil.insert("\" ") +
-            pynutil.insert("denominator: \"2\"")
+            pynutil.insert("numerator: \"")
+            + pynini.cross("en halv", "1")
+            + pynutil.insert("\" ")
+            + pynutil.insert("denominator: \"2\"")
         )
-        
-        # Pattern 5: Just "halv" -> numerator: "1" denominator: "2" 
+
+        # Pattern 5: Just "halv" -> numerator: "1" denominator: "2"
         bare_half = (
-            pynutil.insert("numerator: \"") + pynini.cross("halv", "1") + pynutil.insert("\" ") +
-            pynutil.insert("denominator: \"2\"")
+            pynutil.insert("numerator: \"")
+            + pynini.cross("halv", "1")
+            + pynutil.insert("\" ")
+            + pynutil.insert("denominator: \"2\"")
         )
-        
+
         # Combine all patterns
-        graph = pynini.union(
-            mixed_fraction,
-            simple_fraction, 
-            mixed_half,
-            simple_half,
-            bare_half
-        )
-        
-        # Use add_tokens() to create proper fraction tokens 
+        graph = pynini.union(mixed_fraction, simple_fraction, mixed_half, simple_half, bare_half)
+
+        # Use add_tokens() to create proper fraction tokens
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

@@ -15,8 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.zh.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class DateFst(GraphFst):
@@ -61,7 +61,9 @@ class DateFst(GraphFst):
         # graph_date = graph_year | graph_month | graph_day
 
         # grammar for optional prefix ad or bc
-        graph_bc_prefix = pynini.closure("紀元前", 0, 1) | pynini.closure("公元前", 0, 1) | pynini.closure("纪元前", 0, 1)
+        graph_bc_prefix = (
+            pynini.closure("紀元前", 0, 1) | pynini.closure("公元前", 0, 1) | pynini.closure("纪元前", 0, 1)
+        )
         graph_bc = pynutil.delete(graph_bc_prefix)
 
         graph_ad_prefix = (

@@ -34,12 +34,7 @@ class MoneyFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        decimal: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, decimal: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="money", kind="verbalize", project_input=project_input)
         keep_space = pynini.accep(" ")
         maj = pynutil.delete("currency_maj: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")

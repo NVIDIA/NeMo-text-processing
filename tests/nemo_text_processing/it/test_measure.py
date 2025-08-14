@@ -17,12 +17,14 @@ from parameterized import parameterized
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
+from tests.nemo_text_processing.utils import CACHE_DIR, assert_projecting_output, parse_test_case_file
 
 
 class TestMeasure:
     normalizer = Normalizer(lang='it', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
-    normalizer_project = Normalizer(lang='it', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased', project_input=True)
+    normalizer_project = Normalizer(
+        lang='it', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased', project_input=True
+    )
 
     @parameterized.expand(parse_test_case_file('it/data_text_normalization/test_cases_measure.txt'))
     @pytest.mark.run_only_on('CPU')

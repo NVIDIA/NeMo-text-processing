@@ -35,8 +35,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -60,7 +60,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         whitelist: str = None,
         input_case: str = INPUT_LOWER_CASED,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -74,7 +74,7 @@ class ClassifyFst(GraphFst):
                 operation="tokenize_and_classify",
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=whitelist
+                whitelist_file=whitelist,
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -100,8 +100,12 @@ class ClassifyFst(GraphFst):
             date_graph = DateFst(cardinal, input_case=input_case, project_input=project_input).fst
             word_graph = WordFst(project_input=project_input).fst
             time_graph = TimeFst(input_case=input_case, project_input=project_input).fst
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input).fst
-            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case, project_input=project_input).fst
+            money_graph = MoneyFst(
+                cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input
+            ).fst
+            whitelist_graph = WhiteListFst(
+                input_file=whitelist, input_case=input_case, project_input=project_input
+            ).fst
             punct_graph = PunctuationFst(project_input=project_input).fst
             electronic_graph = ElectronicFst(input_case=input_case, project_input=project_input).fst
             telephone_graph = TelephoneFst(input_case=input_case, project_input=project_input).fst

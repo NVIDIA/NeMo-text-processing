@@ -17,21 +17,21 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR,
-    NEMO_DIGIT,
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-    generate_far_filename,
-)
 from nemo_text_processing.text_normalization.ar.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ar.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ar.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.ar.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ar.taggers.word import WordFst
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generate_far_filename,
+    generator_main,
+)
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
 
@@ -58,7 +58,7 @@ class ClassifyFst(GraphFst):
         project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = False,
-        whitelist: str = None
+        whitelist: str = None,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
         far_file = None
@@ -73,7 +73,7 @@ class ClassifyFst(GraphFst):
                 deterministic=deterministic,
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=whitelist_file
+                whitelist_file=whitelist_file,
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -92,7 +92,11 @@ class ClassifyFst(GraphFst):
             self.money = MoneyFst(cardinal=self.cardinal, project_input=project_input)
             money_graph = self.money.fst
             self.measure = MeasureFst(
-                cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic, project_input=project_input
+                cardinal=self.cardinal,
+                decimal=self.decimal,
+                fraction=self.fraction,
+                deterministic=deterministic,
+                project_input=project_input,
             )
             measure_graph = self.measure.fst
             word_graph = WordFst(deterministic=deterministic, project_input=project_input).fst

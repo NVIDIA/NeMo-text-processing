@@ -37,12 +37,7 @@ class MoneyFst(GraphFst):
         decimal: DecimalFst
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        decimal: GraphFst,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, project_input: bool = False):
         super().__init__(name="money", kind="classify", project_input=project_input)
         # quantity, integer_part, fractional_part, currency
 

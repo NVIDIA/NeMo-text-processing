@@ -30,12 +30,7 @@ class DateFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        tn_date: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, tn_date: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="date", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph = pynini.invert(tn_date.final_graph).optimize()

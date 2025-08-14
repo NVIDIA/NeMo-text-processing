@@ -33,7 +33,7 @@ class OrdinalFst(GraphFst):
         itn_cardinal_tagger: GraphFst,
         tn_ordinal_verbalizer: GraphFst,
         deterministic: bool = True,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic, project_input=project_input)
 

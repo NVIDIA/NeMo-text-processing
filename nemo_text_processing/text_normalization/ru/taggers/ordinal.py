@@ -36,11 +36,7 @@ class OrdinalFst(GraphFst):
     """
 
     def __init__(
-        self,
-        number_names: dict,
-        alternative_formats: dict,
-        deterministic=False,
-        project_input: bool = False
+        self, number_names: dict, alternative_formats: dict, deterministic=False, project_input: bool = False
     ):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic, project_input=project_input)
 

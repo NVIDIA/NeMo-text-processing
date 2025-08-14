@@ -59,12 +59,7 @@ class DecimalFst(GraphFst):
                 for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        deterministic: bool = False,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = False, project_input: bool = False):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         integer_part = cardinal.cardinal_numbers_default

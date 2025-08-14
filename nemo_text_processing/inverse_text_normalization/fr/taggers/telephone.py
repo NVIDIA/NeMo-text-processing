@@ -16,12 +16,8 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.fr.graph_utils import delete_hyphen
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    delete_space,
-    insert_space,
-)
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space, insert_space
 
 
 class TelephoneFst(GraphFst):

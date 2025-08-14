@@ -34,7 +34,7 @@ class WhiteListFst(GraphFst):
         tn_whitelist_tagger: GraphFst,
         deterministic: bool = True,
         project_input: bool = False,
-        input_file: str = None
+        input_file: str = None,
     ):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic, project_input=project_input)
 

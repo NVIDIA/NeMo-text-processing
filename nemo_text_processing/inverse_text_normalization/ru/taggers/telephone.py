@@ -29,12 +29,7 @@ class TelephoneFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        tn_telephone: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, tn_telephone: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic, project_input=project_input)
 
         tn_telephone = tn_telephone.final_graph

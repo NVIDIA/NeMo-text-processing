@@ -14,4 +14,4 @@
 # limitations under the License.
 
 
-NEMO_NARROW_NON_BREAK_SPACE = "\u202F"
+NEMO_NARROW_NON_BREAK_SPACE = "\u202f"

@@ -27,13 +27,7 @@ class MoneyFst(GraphFst):
         tokens { money { currency: "$" integer: "二" } } -> 二美元
     """
 
-    def __init__(
-        self,
-        decimal: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, decimal: GraphFst, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         # components to combine to make graphs

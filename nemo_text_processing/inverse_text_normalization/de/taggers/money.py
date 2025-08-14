@@ -42,7 +42,7 @@ class MoneyFst(GraphFst):
         itn_cardinal_tagger: GraphFst,
         itn_decimal_tagger: GraphFst,
         deterministic: bool = True,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="money", kind="classify", deterministic=deterministic, project_input=project_input)
         cardinal_graph = (

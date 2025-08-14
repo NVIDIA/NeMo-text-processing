@@ -29,12 +29,7 @@ class CardinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))

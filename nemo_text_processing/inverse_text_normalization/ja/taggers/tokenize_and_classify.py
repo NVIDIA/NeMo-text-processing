@@ -19,12 +19,6 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_LOWER_CASED,
-    GraphFst,
-    generator_main,
-    generate_far_filename,
-)
 from nemo_text_processing.inverse_text_normalization.ja.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.decimal import DecimalFst
@@ -34,6 +28,12 @@ from nemo_text_processing.inverse_text_normalization.ja.taggers.punctuation impo
 from nemo_text_processing.inverse_text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.ja.taggers.word import WordFst
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
+    GraphFst,
+    generate_far_filename,
+    generator_main,
+)
 
 
 class ClassifyFst(GraphFst):
@@ -55,7 +55,7 @@ class ClassifyFst(GraphFst):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         whitelist: str = None,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -70,7 +70,7 @@ class ClassifyFst(GraphFst):
                 deterministic=False,
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=""
+                whitelist_file="",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]

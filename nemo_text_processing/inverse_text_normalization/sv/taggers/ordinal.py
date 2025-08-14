@@ -37,13 +37,15 @@ class OrdinalFst(GraphFst):
 
         # Exclude "första" and "andra" from the ordinal tagger - they should be handled by whitelist/word tagger
         forsta_andra = pynini.project(pynini.union("1", "2") @ tn_ordinal.bare_ordinals, "output")
-        
+
         # Only accept ordinals other than "första"/"andra"
-        ordinal_graph = (pynini.project(inverted_graph, "input") - forsta_andra.arcsort()) @ inverted_graph + pynutil.insert(".")
+        ordinal_graph = (
+            pynini.project(inverted_graph, "input") - forsta_andra.arcsort()
+        ) @ inverted_graph + pynutil.insert(".")
 
         # Wrap in integer field
         graph = pynutil.insert("integer: \"") + ordinal_graph + pynutil.insert("\"")
-        
+
         # Add ordinal tokens wrapper
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

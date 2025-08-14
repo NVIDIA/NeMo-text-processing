@@ -18,7 +18,7 @@ from parameterized import parameterized
 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
+from tests.nemo_text_processing.utils import CACHE_DIR, assert_projecting_output, parse_test_case_file
 
 
 class TestMeasure:

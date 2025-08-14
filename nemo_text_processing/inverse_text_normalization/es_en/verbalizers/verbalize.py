@@ -57,7 +57,9 @@ class VerbalizeFst(GraphFst):
         fraction_graph = fraction.fst
 
         ordinal_graph = OrdinalFst(project_input=project_input).fst
-        measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, project_input=project_input).fst
+        measure_graph = MeasureFst(
+            decimal=decimal, cardinal=cardinal, fraction=fraction, project_input=project_input
+        ).fst
         money_graph = MoneyFst(decimal=decimal, project_input=project_input).fst
         time_graph = TimeFst(project_input=project_input).fst
         date_graph = DateFst(project_input=project_input).fst

@@ -27,12 +27,7 @@ class CardinalFst(GraphFst):
         cardinal { positive: "正" integer: "23" } -> 正二十三
     """
 
-    def __init__(
-        self,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         delete_sign = pynini.cross("negative: \"-\"", "负")

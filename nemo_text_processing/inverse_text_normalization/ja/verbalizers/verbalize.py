@@ -14,7 +14,6 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.decimal import DecimalFst
@@ -22,6 +21,7 @@ from nemo_text_processing.inverse_text_normalization.ja.verbalizers.fraction imp
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ja.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class VerbalizeFst(GraphFst):

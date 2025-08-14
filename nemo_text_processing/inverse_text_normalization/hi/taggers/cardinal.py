@@ -16,6 +16,8 @@
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_HI_DIGIT
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
@@ -25,8 +27,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_space,
 )
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_HI_DIGIT
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
 class CardinalFst(GraphFst):

@@ -23,8 +23,7 @@ graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 
-NEMO_NON_BREAKING_SPACE = u"\u00A0"
+NEMO_NON_BREAKING_SPACE = u"\u00a0"
 
 
 MINUS = pynini.union("ऋणात्मक", "नकारात्मक").optimize()
-

@@ -16,11 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
-from nemo_text_processing.text_normalization.hi.graph_utils import (
-    NEMO_HI_DIGIT,
-    NEMO_HI_NON_ZERO,
-    NEMO_HI_ZERO,
-)
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_HI_DIGIT, NEMO_HI_NON_ZERO, NEMO_HI_ZERO
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 days = pynini.string_file(get_abs_path("data/date/days.tsv"))

@@ -37,12 +37,7 @@ class CardinalFst(GraphFst):
         tn_cardinal_tagger: TN cardinal tagger
     """
 
-    def __init__(
-        self,
-        tn_cardinal_tagger: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, tn_cardinal_tagger: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         # add_space_between_chars = pynini.cdrewrite(pynini.closure(insert_space, 0, 1), NEMO_CHAR, NEMO_CHAR, NEMO_SIGMA)

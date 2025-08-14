@@ -42,7 +42,9 @@ class VerbalizeFst(GraphFst):
         electronic = ElectronicFst(deterministic=deterministic, project_input=project_input)
         electronic_graph = electronic.fst
         whitelist_graph = WhiteListFst(deterministic=deterministic, project_input=project_input).fst
-        measure = MeasureFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic, project_input=project_input)
+        measure = MeasureFst(
+            cardinal=cardinal, decimal=decimal, deterministic=deterministic, project_input=project_input
+        )
         measure_graph = measure.fst
         money = MoneyFst(decimal=decimal, deterministic=deterministic, project_input=project_input)
         money_graph = money.fst

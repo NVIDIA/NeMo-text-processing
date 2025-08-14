@@ -13,8 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from nemo_text_processing.text_normalization.en.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.rw.verbalizers.time import VerbalizeTimeFst
 
 

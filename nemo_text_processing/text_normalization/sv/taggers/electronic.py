@@ -68,24 +68,24 @@ class ElectronicFst(GraphFst):
         )
         protocol = protocol_start | protocol_end | (protocol_start + protocol_end)
         protocol = pynutil.insert("protocol: \"") + protocol + pynutil.insert("\"")
-        
+
         # Create dedicated URL domain pattern to avoid boundary issues
         # URL domains can be more complex than email domains (paths, multi-part TLDs, etc.)
         url_domain_chars = NEMO_ALPHA | NEMO_DIGIT | accepted_symbols | dot
-        
+
         # URL domain pattern: must contain at least one dot and end properly
         url_domain_pattern = (
-            pynini.closure(url_domain_chars) +  # Optional prefix chars
-            url_domain_chars +  # At least one char before dot
-            dot +  # Required dot
-            pynini.closure(url_domain_chars) +  # Domain part after dot
-            pynini.closure(  # Optional additional .domain parts (for .com.sm, .co.uk, etc.)
+            pynini.closure(url_domain_chars)  # Optional prefix chars
+            + url_domain_chars  # At least one char before dot
+            + dot  # Required dot
+            + pynini.closure(url_domain_chars)  # Domain part after dot
+            + pynini.closure(  # Optional additional .domain parts (for .com.sm, .co.uk, etc.)
                 dot + pynini.closure(url_domain_chars, 1), 0
             )
         )
-        
+
         url_domain_graph = pynutil.insert("domain: \"") + url_domain_pattern + pynutil.insert("\"")
-        
+
         graph |= protocol + insert_space + url_domain_graph
         self.graph = graph
 

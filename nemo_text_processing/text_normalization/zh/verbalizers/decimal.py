@@ -27,12 +27,7 @@ class DecimalFst(GraphFst):
         decimal { positive: "正" integer_part: "零" fractional_part: "五" quantity: "万" } -> 正零点五万
     """
 
-    def __init__(
-        self,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")

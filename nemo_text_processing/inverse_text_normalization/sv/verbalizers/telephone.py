@@ -27,7 +27,7 @@ class TelephoneFst(GraphFst):
 
     def __init__(self, project_input: bool = False):
         super().__init__(name="telephone", kind="verbalize", project_input=project_input)
-        
+
         number_part = (
             pynutil.delete("number_part:")
             + delete_space
@@ -35,7 +35,7 @@ class TelephoneFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        
+
         country_code = (
             pynutil.delete("country_code:")
             + delete_space
@@ -51,11 +51,11 @@ class TelephoneFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        
+
         # Optional fields
         optional_country_code = pynini.closure(country_code + delete_space, 0, 1)
         optional_extension = pynini.closure(delete_space + extension, 0, 1)
-        
+
         # Main pattern: [country_code] number_part [extension]
         graph = optional_country_code + number_part + optional_extension
 

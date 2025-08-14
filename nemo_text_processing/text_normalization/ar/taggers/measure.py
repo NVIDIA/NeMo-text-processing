@@ -15,6 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -23,7 +24,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.ar.utils import get_abs_path
 
 unit_singular = pynini.string_file(get_abs_path("data/measure/measurements.tsv"))
 
@@ -46,7 +46,7 @@ class MeasureFst(GraphFst):
         decimal: GraphFst,
         fraction: GraphFst,
         deterministic: bool = True,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="measure", kind="classify", deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.cardinal_numbers

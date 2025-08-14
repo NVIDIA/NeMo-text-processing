@@ -36,11 +36,7 @@ class MeasureFst(GraphFst):
     """
 
     def __init__(
-        self,
-        cardinal: GraphFst,
-        decimal: GraphFst,
-        input_case: str = INPUT_LOWER_CASED,
-        project_input: bool = False
+        self, cardinal: GraphFst, decimal: GraphFst, input_case: str = INPUT_LOWER_CASED, project_input: bool = False
     ):
         super().__init__(name="measure", kind="classify", project_input=project_input)
 

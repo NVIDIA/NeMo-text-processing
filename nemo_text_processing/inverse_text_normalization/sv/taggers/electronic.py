@@ -30,10 +30,7 @@ class ElectronicFst(GraphFst):
     """
 
     def __init__(
-        self,
-        tn_electronic_tagger: GraphFst,
-        tn_electronic_verbalizer: GraphFst,
-        project_input: bool = False
+        self, tn_electronic_tagger: GraphFst, tn_electronic_verbalizer: GraphFst, project_input: bool = False
     ):
         super().__init__(name="electronic", kind="classify", project_input=project_input)
 

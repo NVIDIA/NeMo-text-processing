@@ -33,8 +33,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -56,7 +56,7 @@ class ClassifyFst(GraphFst):
         whitelist: str = None,
         overwrite_cache: bool = False,
         input_case: str = INPUT_LOWER_CASED,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -70,7 +70,7 @@ class ClassifyFst(GraphFst):
                 operation="tokenize_and_classify",
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=whitelist
+                whitelist_file=whitelist,
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]

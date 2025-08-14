@@ -41,7 +41,9 @@ class VerbalizeFst(GraphFst):
         decimal_graph = decimal.fst
         fraction = FractionFst(project_input=project_input)
         fraction_graph = fraction.fst
-        measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, project_input=project_input).fst
+        measure_graph = MeasureFst(
+            decimal=decimal, cardinal=cardinal, fraction=fraction, project_input=project_input
+        ).fst
         money_graph = MoneyFst(decimal=decimal, project_input=project_input).fst
         time_graph = TimeFst(project_input=project_input).fst
         date_graph = DateFst(project_input=project_input).fst

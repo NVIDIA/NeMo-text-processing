@@ -16,12 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    delete_space,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class CardinalFst(GraphFst):
@@ -52,7 +47,7 @@ class CardinalFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        exactly_three_digits = NEMO_DIGIT ** 3
+        exactly_three_digits = NEMO_DIGIT**3
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         group_by_threes = at_most_three_digits + (pynutil.insert(",") + exactly_three_digits).closure()

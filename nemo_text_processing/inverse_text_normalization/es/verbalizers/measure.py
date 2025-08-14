@@ -33,13 +33,7 @@ class MeasureFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(
-        self,
-        decimal: GraphFst,
-        cardinal: GraphFst,
-        fraction: GraphFst,
-        project_input: bool = False
-    ):
+    def __init__(self, decimal: GraphFst, cardinal: GraphFst, fraction: GraphFst, project_input: bool = False):
         super().__init__(name="measure", kind="verbalize", project_input=project_input)
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-"), 0, 1)
         unit = (

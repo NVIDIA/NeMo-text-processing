@@ -18,13 +18,11 @@ from parameterized import parameterized
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
+from tests.nemo_text_processing.utils import CACHE_DIR, assert_projecting_output, parse_test_case_file
 
 
 class TestWord:
-    normalizer = Normalizer(
-        input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False
-    )
+    normalizer = Normalizer(input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
     inverse_normalizer = InverseNormalizer(lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('hi/data_text_normalization/test_cases_word.txt'))

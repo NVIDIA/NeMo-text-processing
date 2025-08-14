@@ -35,12 +35,7 @@ class DateFst(GraphFst):
 
     """
 
-    def __init__(
-        self,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="date", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))

@@ -38,12 +38,7 @@ class DateFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        number_names: dict,
-        deterministic: bool,
-        project_input: bool = False
-    ):
+    def __init__(self, number_names: dict, deterministic: bool, project_input: bool = False):
         super().__init__(name="date", kind="classify", deterministic=deterministic, project_input=project_input)
 
         # Ru format: DD-MM-YYYY or DD-MM-YY

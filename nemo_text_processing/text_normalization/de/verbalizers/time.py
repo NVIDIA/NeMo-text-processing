@@ -42,12 +42,7 @@ class TimeFst(GraphFst):
         for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        cardinal_tagger: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal_tagger: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         # add weight so when using inverse text normalization this conversion is depriotized

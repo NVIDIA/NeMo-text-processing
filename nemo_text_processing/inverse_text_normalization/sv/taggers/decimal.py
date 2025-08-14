@@ -29,12 +29,7 @@ class DecimalFst(GraphFst):
         tn_decimal_tagger: TN decimal tagger
     """
 
-    def __init__(
-        self,
-        itn_cardinal_tagger: GraphFst,
-        tn_decimal_tagger: GraphFst,
-        project_input: bool = False
-    ):
+    def __init__(self, itn_cardinal_tagger: GraphFst, tn_decimal_tagger: GraphFst, project_input: bool = False):
         super().__init__(name="decimal", kind="classify", project_input=project_input)
 
         self.graph = tn_decimal_tagger.graph_itn

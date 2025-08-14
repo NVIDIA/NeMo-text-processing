@@ -33,12 +33,7 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        deterministic=False,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, deterministic=False, project_input: bool = False):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_graph = cardinal.graph

@@ -48,7 +48,13 @@ class VerbalizeFst(GraphFst):
         fraction_graph = fraction.fst
         date = DateFst(deterministic=deterministic, project_input=project_input)
         date_graph = date.fst
-        measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic, project_input=project_input)
+        measure = MeasureFst(
+            cardinal=cardinal,
+            decimal=decimal,
+            fraction=fraction,
+            deterministic=deterministic,
+            project_input=project_input,
+        )
         measure_graph = measure.fst
         electronic = ElectronicFst(deterministic=deterministic, project_input=project_input)
         electronic_graph = electronic.fst

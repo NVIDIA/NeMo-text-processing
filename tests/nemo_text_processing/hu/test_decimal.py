@@ -17,7 +17,7 @@ from parameterized import parameterized
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
+from tests.nemo_text_processing.utils import CACHE_DIR, assert_projecting_output, parse_test_case_file
 
 
 class TestDecimal:
@@ -30,7 +30,9 @@ class TestDecimal:
         pred = self.normalizer_hu.normalize(test_input, verbose=False)
         assert pred == expected
 
-    normalizer_hu_projecting = Normalizer(input_case='cased', lang='hu', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
+    normalizer_hu_projecting = Normalizer(
+        input_case='cased', lang='hu', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
+    )
 
     @parameterized.expand(parse_test_case_file('hu/data_text_normalization/test_cases_decimal.txt'))
     @pytest.mark.run_only_on('CPU')

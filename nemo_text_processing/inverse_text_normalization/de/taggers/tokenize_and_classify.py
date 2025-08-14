@@ -45,8 +45,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -70,7 +70,7 @@ class ClassifyFst(GraphFst):
         overwrite_cache: bool = False,
         project_input: bool = False,
         whitelist: str = None,
-        input_case: str = INPUT_LOWER_CASED
+        input_case: str = INPUT_LOWER_CASED,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
@@ -84,7 +84,7 @@ class ClassifyFst(GraphFst):
                 operation="tokenize_and_classify",
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=whitelist
+                whitelist_file=whitelist,
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -105,27 +105,45 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst(tn_cardinal_tagger=tn_cardinal_tagger, project_input=project_input)
             cardinal_graph = cardinal.fst
 
-            ordinal = OrdinalFst(itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer, project_input=project_input)
+            ordinal = OrdinalFst(
+                itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer, project_input=project_input
+            )
             ordinal_graph = ordinal.fst
-            decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger, project_input=project_input)
+            decimal = DecimalFst(
+                itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger, project_input=project_input
+            )
             decimal_graph = decimal.fst
 
-            fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_verbalizer=tn_fraction_verbalizer, project_input=project_input)
+            fraction = FractionFst(
+                itn_cardinal_tagger=cardinal,
+                tn_fraction_verbalizer=tn_fraction_verbalizer,
+                project_input=project_input,
+            )
             fraction_graph = fraction.fst
 
             measure_graph = MeasureFst(
-                itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, itn_fraction_tagger=fraction, project_input=project_input
+                itn_cardinal_tagger=cardinal,
+                itn_decimal_tagger=decimal,
+                itn_fraction_tagger=fraction,
+                project_input=project_input,
             ).fst
             date_graph = DateFst(
-                itn_cardinal_tagger=cardinal, tn_date_verbalizer=tn_date_verbalizer, tn_date_tagger=tn_date_tagger, project_input=project_input
+                itn_cardinal_tagger=cardinal,
+                tn_date_verbalizer=tn_date_verbalizer,
+                tn_date_tagger=tn_date_tagger,
+                project_input=project_input,
             ).fst
             word_graph = WordFst(project_input=project_input).fst
             time_graph = TimeFst(tn_time_verbalizer=tn_time_verbalizer, project_input=project_input).fst
-            money_graph = MoneyFst(itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, project_input=project_input).fst
+            money_graph = MoneyFst(
+                itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, project_input=project_input
+            ).fst
             whitelist_graph = WhiteListFst(tn_whitelist_tagger=tn_whitelist_tagger, project_input=project_input).fst
             punct_graph = PunctuationFst(project_input=project_input).fst
             electronic_graph = ElectronicFst(
-                tn_electronic_tagger=tn_electronic_tagger, tn_electronic_verbalizer=tn_electronic_verbalizer, project_input=project_input
+                tn_electronic_tagger=tn_electronic_tagger,
+                tn_electronic_verbalizer=tn_electronic_verbalizer,
+                project_input=project_input,
             ).fst
             telephone_graph = TelephoneFst(tn_cardinal_tagger=tn_cardinal_tagger, project_input=project_input).fst
 

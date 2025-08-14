@@ -28,12 +28,7 @@ class OrdinalFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic, project_input=project_input)
 
         cardinal_graph = cardinal.all_nums_no_tokens

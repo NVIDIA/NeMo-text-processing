@@ -24,15 +24,15 @@ from nemo_text_processing.inverse_text_normalization.ar.taggers.measure import M
 from nemo_text_processing.inverse_text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.word import WordFst
+from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst as TNClassifyFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
-from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst as TNClassifyFst
-from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED
 from nemo_text_processing.utils.logging import logger
 
 
@@ -69,7 +69,7 @@ class ClassifyFst(GraphFst):
                 operation="tokenize_and_classify",
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=whitelist
+                whitelist_file=whitelist,
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -77,7 +77,11 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars.")
             tn_classify = TNClassifyFst(
-                input_case='cased', deterministic=True, project_input=project_input, cache_dir=cache_dir, overwrite_cache=True
+                input_case='cased',
+                deterministic=True,
+                project_input=project_input,
+                cache_dir=cache_dir,
+                overwrite_cache=True,
             )
 
             cardinal = CardinalFst(tn_cardinal=tn_classify.cardinal, project_input=project_input)

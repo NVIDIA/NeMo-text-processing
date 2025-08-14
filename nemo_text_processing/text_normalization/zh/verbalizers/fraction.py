@@ -26,13 +26,7 @@ class FractionFst(GraphFst):
         tokens { fraction { integer_part: "一" denominator: "二" numerator: "一" } } -> 一又二分之一
     """
 
-    def __init__(
-        self,
-        decimal: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False,
-        lm: bool = False
-    ):
+    def __init__(self, decimal: GraphFst, deterministic: bool = True, project_input: bool = False, lm: bool = False):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic, project_input=project_input)
 
         graph_decimal = decimal.decimal_component

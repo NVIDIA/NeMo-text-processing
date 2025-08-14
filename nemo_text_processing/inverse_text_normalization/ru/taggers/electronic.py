@@ -29,12 +29,7 @@ class ElectronicFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        tn_electronic,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, tn_electronic, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic, project_input=project_input)
 
         graph = tn_electronic.final_graph

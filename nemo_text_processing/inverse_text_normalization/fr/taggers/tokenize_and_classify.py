@@ -17,13 +17,6 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-    generate_far_filename,
-)
 from nemo_text_processing.inverse_text_normalization.fr.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.fr.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.fr.taggers.decimal import DecimalFst
@@ -37,7 +30,14 @@ from nemo_text_processing.inverse_text_normalization.fr.taggers.telephone import
 from nemo_text_processing.inverse_text_normalization.fr.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.fr.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.fr.taggers.word import WordFst
-from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generate_far_filename,
+    generator_main,
+)
 from nemo_text_processing.utils.logging import logger
 
 
@@ -60,7 +60,7 @@ class ClassifyFst(GraphFst):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         whitelist: str = None,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", project_input=project_input)
 
@@ -94,7 +94,9 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal, project_input=project_input)
             decimal_graph = decimal.fst
 
-            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, project_input=project_input).fst
+            measure_graph = MeasureFst(
+                cardinal=cardinal, decimal=decimal, fraction=fraction, project_input=project_input
+            ).fst
             date_graph = DateFst(cardinal, project_input=project_input).fst
             word_graph = WordFst(project_input=project_input).fst
             time_graph = TimeFst(project_input=project_input).fst

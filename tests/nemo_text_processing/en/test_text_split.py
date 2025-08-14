@@ -20,9 +20,7 @@ from tests.nemo_text_processing.utils import CACHE_DIR
 
 
 class TestTextSentenceSplit:
-    normalizer_en = Normalizer(
-        input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False
-    )
+    normalizer_en = Normalizer(input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit

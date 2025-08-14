@@ -19,6 +19,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
@@ -26,7 +27,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
     string_map_cased,
 )
-from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.utils import load_labels
 
 
@@ -43,12 +43,7 @@ class WhiteListFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(
-        self,
-        input_case: str = INPUT_LOWER_CASED,
-        input_file: str = None,
-        project_input: bool = False
-    ):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None, project_input: bool = False):
         super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         if input_file is None:

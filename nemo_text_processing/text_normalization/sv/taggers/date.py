@@ -38,13 +38,7 @@ class DateFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(
-        self,
-        cardinal: GraphFst,
-        ordinal: GraphFst,
-        deterministic: bool = True,
-        project_input: bool = False
-    ):
+    def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="date", kind="classify", project_input=project_input)
 
         delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT

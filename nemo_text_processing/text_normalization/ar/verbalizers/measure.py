@@ -42,7 +42,7 @@ class MeasureFst(GraphFst):
         cardinal: GraphFst,
         fraction: GraphFst,
         deterministic: bool,
-        project_input: bool = False
+        project_input: bool = False,
     ):
         super().__init__(name="measure", kind="verbalize", deterministic=deterministic, project_input=project_input)
         unit = pynutil.delete("units: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
