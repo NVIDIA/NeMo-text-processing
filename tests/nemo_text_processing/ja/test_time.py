@@ -18,7 +18,7 @@ from parameterized import parameterized
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from ..utils import CACHE_DIR, parse_test_case_file
+from tests.nemo_text_processing.utils import CACHE_DIR, parse_test_case_file, assert_projecting_output
 
 
 class TestTime:
@@ -38,10 +38,7 @@ class TestTime:
     @pytest.mark.unit
     def test_norm_time_project_input(self, test_input, expected):
         pred = self.normalizer_project.normalize(test_input, verbose=False)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)
 
     inverse_normalizer = InverseNormalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False)
     inverse_normalizer_project = InverseNormalizer(lang='ja', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
@@ -58,7 +55,4 @@ class TestTime:
     @pytest.mark.unit
     def test_denorm_time_project_input(self, test_input, expected):
         pred = self.inverse_normalizer_project.inverse_normalize(test_input, verbose=False)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)

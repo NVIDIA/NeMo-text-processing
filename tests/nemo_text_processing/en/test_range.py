@@ -18,7 +18,7 @@ from parameterized import parameterized
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from tests.nemo_text_processing.utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file, assert_projecting_output
 
 
 class TestRange:
@@ -50,7 +50,4 @@ class TestRange:
     @pytest.mark.unit
     def test_norm_project(self, test_input, expected):
         pred = self.normalizer_en_projecting.normalize(test_input, verbose=False)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)

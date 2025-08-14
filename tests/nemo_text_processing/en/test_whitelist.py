@@ -20,7 +20,7 @@ from nemo_text_processing.inverse_text_normalization.inverse_normalize import In
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from tests.nemo_text_processing.utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file, assert_projecting_output
 
 
 class TestWhitelist:
@@ -53,10 +53,7 @@ class TestWhitelist:
     @pytest.mark.unit
     def test_denorm_project(self, test_input, expected):
         pred = self.inverse_normalizer_en_projecting.inverse_normalize(test_input, verbose=False)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)
 
     normalizer_en = Normalizer(input_case='cased', cache_dir=CACHE_DIR, overwrite_cache=False)
     normalizer_en_projecting = Normalizer(
@@ -86,10 +83,7 @@ class TestWhitelist:
     @pytest.mark.unit
     def test_norm_project(self, test_input, expected):
         pred = self.normalizer_en_projecting.normalize(test_input, verbose=False)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)
 
     normalizer_uppercased = Normalizer(input_case='cased', lang='en')
     normalizer_uppercased_projecting = Normalizer(input_case='cased', lang='en', project_input=True)
@@ -113,7 +107,4 @@ class TestWhitelist:
     @pytest.mark.unit
     def test_norm_cased_project(self, test_input, expected):
         pred = self.normalizer_uppercased_projecting.normalize(test_input, verbose=False)
-        if test_input == expected:
-            assert pred == expected
-        else:
-            assert pred == f'{expected}[{test_input}]'
+        assert_projecting_output(pred, expected, test_input)
