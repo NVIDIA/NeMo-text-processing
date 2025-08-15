@@ -19,18 +19,12 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
-    at,
     colon,
     delete_preserve_order,
     domain_string,
     double_quotes,
-    double_slash,
-    http,
-    https,
-    period,
     protocol_string,
     username_string,
-    www,
 )
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
 
