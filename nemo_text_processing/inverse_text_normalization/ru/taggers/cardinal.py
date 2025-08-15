@@ -26,17 +26,14 @@ class CardinalFst(GraphFst):
 
     Args:
         tn_cardinal: Text normalization Cardinal graph
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(
         self,
         tn_cardinal: GraphFst,
-        deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
 
         graph = tn_cardinal.cardinal_numbers_default
         self.graph = graph.invert().optimize()

@@ -30,10 +30,9 @@ class DecimalFst(GraphFst):
     def __init__(
         self,
         tn_decimal_verbalizer: GraphFst,
-        deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="decimal", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="decimal", kind="verbalize", project_input=project_input)
         delete_space = pynutil.delete(" ")
         optional_sign = pynini.closure(
             pynutil.delete("negative: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"") + delete_space, 0, 1

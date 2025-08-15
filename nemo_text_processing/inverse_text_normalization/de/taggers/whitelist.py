@@ -32,11 +32,10 @@ class WhiteListFst(GraphFst):
     def __init__(
         self,
         tn_whitelist_tagger: GraphFst,
-        deterministic: bool = True,
         project_input: bool = False,
         input_file: str = None
     ):
-        super().__init__(name="whitelist", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         if input_file:
             whitelist = pynini.string_file(input_file).invert()

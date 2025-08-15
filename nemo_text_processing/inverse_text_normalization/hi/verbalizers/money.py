@@ -29,7 +29,6 @@ class MoneyFst(GraphFst):
 
     def __init__(
         self,
-        cardinal: GraphFst,
         decimal: GraphFst,
         project_input: bool = False
     ):

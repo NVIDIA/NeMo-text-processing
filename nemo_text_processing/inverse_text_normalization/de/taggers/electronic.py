@@ -32,10 +32,9 @@ class ElectronicFst(GraphFst):
         self,
         tn_electronic_tagger: GraphFst,
         tn_electronic_verbalizer: GraphFst,
-        deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="electronic", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="electronic", kind="classify", project_input=project_input)
 
         tagger = pynini.invert(tn_electronic_verbalizer.graph).optimize()
         verbalizer = pynini.invert(tn_electronic_tagger.graph).optimize()

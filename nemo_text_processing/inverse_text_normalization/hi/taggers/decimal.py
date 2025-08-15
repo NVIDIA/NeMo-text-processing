@@ -21,7 +21,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
     INPUT_LOWER_CASED,
     MIN_NEG_WEIGHT,
-    MINUS,
     NEMO_DIGIT,
     NEMO_SIGMA,
     TO_LOWER,
@@ -30,11 +29,10 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
 )
-from nemo_text_processing.text_normalization.en.utils import load_labels
 
 
 def get_quantity(
-    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', input_case: str = INPUT_LOWER_CASED
+    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike'
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
@@ -113,7 +111,7 @@ class DecimalFst(GraphFst):
         final_graph = optional_graph_negative + final_graph_wo_sign
 
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal_graph, input_case=input_case
+            final_graph_wo_sign, cardinal_graph
         )
 
         # accept semiotic spans that start with a capital letter
@@ -121,7 +119,7 @@ class DecimalFst(GraphFst):
             pynini.compose(TO_LOWER + NEMO_SIGMA, self.final_graph_wo_negative).optimize(), MIN_NEG_WEIGHT
         )
 
-        quantity_graph = get_quantity(final_graph_wo_sign, cardinal_graph, input_case=input_case)
+        quantity_graph = get_quantity(final_graph_wo_sign, cardinal_graph)
         final_graph |= optional_graph_negative + quantity_graph
 
         if input_case == INPUT_CASED:

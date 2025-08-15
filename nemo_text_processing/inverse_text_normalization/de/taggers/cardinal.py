@@ -40,10 +40,9 @@ class CardinalFst(GraphFst):
     def __init__(
         self,
         tn_cardinal_tagger: GraphFst,
-        deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="cardinal", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="cardinal", kind="classify", project_input=project_input)
 
         # add_space_between_chars = pynini.cdrewrite(pynini.closure(insert_space, 0, 1), NEMO_CHAR, NEMO_CHAR, NEMO_SIGMA)
         optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" "))

@@ -28,7 +28,7 @@ class TelephoneFst(GraphFst):
         Cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst, project_input: bool = False):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="telephone", kind="classify", project_input=project_input)
 
         hindi_digit_graph = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()

@@ -34,8 +34,6 @@ class OrdinalFst(GraphFst):
     Args:
         cardinal: CardinalFst
         input_case: accepting either "lower_cased" or "cased" input.
-        (input_case is not necessary everything is made for lower_cased input)
-        TODO add cased input support
     """
 
     def __init__(

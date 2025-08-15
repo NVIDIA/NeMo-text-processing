@@ -45,8 +45,8 @@ class VerbalizeFst(GraphFst):
         date_graph = DateFst(project_input=project_input).fst
         time_graph = TimeFst(project_input=project_input).fst
         measure_graph = MeasureFst(cardinal, decimal, project_input=project_input).fst
-        money_graph = MoneyFst(cardinal, decimal, project_input=project_input).fst
-        telephone_graph = TelephoneFst(cardinal, project_input=project_input).fst
+        money_graph = MoneyFst(decimal, project_input=project_input).fst
+        telephone_graph = TelephoneFst(project_input=project_input).fst
         word_graph = WordFst(project_input=project_input).fst
         whitelist_graph = WhiteListFst(project_input=project_input).fst
 

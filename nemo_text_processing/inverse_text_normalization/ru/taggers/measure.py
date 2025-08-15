@@ -25,17 +25,14 @@ class MeasureFst(GraphFst):
 
     Args:
         tn_measure: Text normalization Cardinal graph
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(
         self,
         tn_measure,
-        deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="measure", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="measure", kind="classify", project_input=project_input)
 
         tn_measure = tn_measure.tagger_graph_default @ tn_measure.verbalizer_graph
         graph = tn_measure.invert().optimize()

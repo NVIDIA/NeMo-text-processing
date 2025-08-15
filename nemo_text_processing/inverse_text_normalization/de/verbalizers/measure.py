@@ -34,10 +34,9 @@ class MeasureFst(GraphFst):
         self,
         decimal: GraphFst,
         cardinal: GraphFst,
-        deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="measure", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="measure", kind="verbalize", project_input=project_input)
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-"), 0, 1)
         unit = (
             pynutil.delete("units:")

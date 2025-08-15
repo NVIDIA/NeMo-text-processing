@@ -30,7 +30,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 
 
 def get_quantity(
-    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike', input_case: str = INPUT_LOWER_CASED
+    decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstLike'
 ) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
@@ -40,8 +40,6 @@ def get_quantity(
     Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
-        input_case: accepting either "lower_cased" or "cased" input.
-        (input_case is not necessary everything is made for lower_cased input)
         TODO add case input support
 
     """
@@ -71,14 +69,12 @@ class DecimalFst(GraphFst):
         e.g. մեկ միլիարդ -> decimal { integer_part: "1" quantity: "միլիարդ" }
     Args:
         cardinal: CardinalFst
-        input_case: accepting either "lower_cased" or "cased" input.
         TODO add cased input support
     """
 
     def __init__(
         self,
         cardinal: GraphFst,
-        input_case: str = INPUT_LOWER_CASED,
         project_input: bool = False
     ):
         super().__init__(name="decimal", kind="classify", project_input=project_input)
@@ -106,7 +102,7 @@ class DecimalFst(GraphFst):
         final_graph = final_graph_wo_sign
 
         self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit, input_case=input_case
+            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
         )
 
         self.final_graph_wo_negative |= pynutil.add_weight(
@@ -114,7 +110,7 @@ class DecimalFst(GraphFst):
         )
 
         quantity_graph = get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit, input_case=input_case
+            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
         )
         final_graph |= quantity_graph
 

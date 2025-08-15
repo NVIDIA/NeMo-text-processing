@@ -45,10 +45,9 @@ class DateFst(GraphFst):
         itn_cardinal_tagger: GraphFst,
         tn_date_tagger: GraphFst,
         tn_date_verbalizer: GraphFst,
-        deterministic: bool = True,
         project_input: bool = False
     ):
-        super().__init__(name="date", kind="classify", deterministic=deterministic)
+        super().__init__(name="date", kind="classify", project_input=project_input)
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         optional_delete_space = pynini.closure(NEMO_SIGMA | pynutil.delete(" ", weight=0.0001))

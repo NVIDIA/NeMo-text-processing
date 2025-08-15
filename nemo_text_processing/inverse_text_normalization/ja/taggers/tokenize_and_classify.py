@@ -67,10 +67,9 @@ class ClassifyFst(GraphFst):
                 mode="itn",
                 cache_dir=cache_dir,
                 operation="tokenize",
-                deterministic=False,
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=""
+                whitelist_file=whitelist
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]

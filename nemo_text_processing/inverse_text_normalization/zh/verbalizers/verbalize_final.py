@@ -37,12 +37,11 @@ class VerbalizeFinalFst(GraphFst):
 
     def __init__(
         self,
-        deterministic: bool = True,
         project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = False
     ):
-        super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="verbalize_final", kind="verbalize", project_input=project_input)
 
         far_file = None
         if cache_dir is not None and cache_dir != "None":
@@ -52,7 +51,6 @@ class VerbalizeFinalFst(GraphFst):
                 mode="itn",
                 cache_dir=cache_dir,
                 operation="verbalize",
-                deterministic=deterministic,
                 project_input=project_input
             )
         

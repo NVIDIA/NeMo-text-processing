@@ -35,15 +35,12 @@ class VerbalizeFinalFst(GraphFst):
     tokens { name: "klockan" } tokens { name: "är" } tokens { time { hours: "12" minutes: "30" } } -> klockan är 12:30
 
     Args:
-        deterministic: if True will provide a single transduction option,
-            for False multiple options (used for audio-based normalization)
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
     """
 
     def __init__(
         self,
-        deterministic: bool = True,
         project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = False
@@ -58,7 +55,6 @@ class VerbalizeFinalFst(GraphFst):
                 mode="itn",
                 cache_dir=cache_dir,
                 operation="verbalize",
-                deterministic=deterministic,
                 project_input=project_input
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):

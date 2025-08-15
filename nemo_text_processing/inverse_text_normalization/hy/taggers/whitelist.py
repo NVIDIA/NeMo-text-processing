@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import pynini
 from pynini.lib import pynutil
 
@@ -28,9 +29,15 @@ class WhiteListFst(GraphFst):
     Whitelisted tokens are defined and loaded from "data/whitelist.tsv" (unless input_file specified).
     """
 
-    def __init__(self, project_input: bool = False):
+    def __init__(self, input_file: str = None, project_input: bool = False):
         super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
-        whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv")).invert()
+        if input_file is None:
+            input_file = get_abs_path("data/whitelist.tsv")
+
+        if not os.path.exists(input_file):
+            raise ValueError(f"Whitelist file {input_file} not found")
+        
+        whitelist = pynini.string_file(input_file).invert()
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
         self.fst = graph.optimize()

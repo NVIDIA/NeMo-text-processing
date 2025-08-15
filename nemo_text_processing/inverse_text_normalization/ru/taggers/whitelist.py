@@ -26,19 +26,16 @@ class WhiteListFst(GraphFst):
         "квартира" -> telephone { number_part: "кв." }
 
     Args:
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
         input_file: path to a file with whitelist replacements (each line of the file: written_form\tspoken_form\n),
             e.g. nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
     """
 
     def __init__(
         self,
-        deterministic: bool = True,
         project_input: bool = False,
         input_file: str = None
     ):
-        super().__init__(name="whitelist", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         if input_file:
             whitelist = pynini.string_file(input_file).invert()

@@ -17,10 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
-    INPUT_LOWER_CASED,
     MINUS,
-    NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
     delete_space,
@@ -38,9 +35,8 @@ class CardinalFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED, project_input: bool = False):
+    def __init__(self, project_input: bool = False):
         super().__init__(name="cardinal", kind="classify", project_input=project_input)
-        self.input_case = input_case
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
         graph_teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")).invert()

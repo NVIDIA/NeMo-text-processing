@@ -26,17 +26,14 @@ class DecimalFst(GraphFst):
 
     Args:
         tn_decimal: Text normalization Decimal graph
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(
         self,
         tn_decimal,
-        deterministic: bool = False,
         project_input: bool = False
     ):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic, project_input=project_input)
+        super().__init__(name="decimal", kind="classify", project_input=project_input)
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("минус", "\"true\"") + delete_extra_space, 0, 1
