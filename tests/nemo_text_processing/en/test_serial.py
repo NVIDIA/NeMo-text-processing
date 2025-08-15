@@ -18,7 +18,12 @@ from parameterized import parameterized
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from tests.nemo_text_processing.utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file, assert_projecting_output
+from tests.nemo_text_processing.utils import (
+    CACHE_DIR,
+    RUN_AUDIO_BASED_TESTS,
+    assert_projecting_output,
+    parse_test_case_file,
+)
 
 
 class TestSerial:
@@ -44,7 +49,9 @@ class TestSerial:
             )
             assert expected in pred_non_deterministic, f"input: {test_input}"
 
-    normalizer_en_projecting = Normalizer(input_case='cased', lang='en', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
+    normalizer_en_projecting = Normalizer(
+        input_case='cased', lang='en', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False
+    )
 
     @parameterized.expand(parse_test_case_file('en/data_text_normalization/test_cases_serial.txt'))
     @pytest.mark.run_only_on('CPU')

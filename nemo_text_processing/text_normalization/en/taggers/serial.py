@@ -47,7 +47,7 @@ class SerialFst(GraphFst):
         ordinal: GraphFst,
         deterministic: bool = True,
         project_input: bool = False,
-        lm: bool = False
+        lm: bool = False,
     ):
         super().__init__(name="serial", kind="classify", deterministic=deterministic, project_input=project_input)
 

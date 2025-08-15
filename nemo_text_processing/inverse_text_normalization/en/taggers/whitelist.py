@@ -40,12 +40,7 @@ class WhiteListFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(
-        self,
-        input_case: str = INPUT_LOWER_CASED,
-        input_file: str = None,
-        project_input: bool = False
-    ):
+    def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None, project_input: bool = False):
         super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         if input_file is None:

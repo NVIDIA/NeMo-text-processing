@@ -24,7 +24,7 @@ from copy import deepcopy
 from glob import glob
 from math import factorial
 from time import perf_counter
-from typing import Dict, List, Optional, Union, Any
+from typing import Any, Dict, List, Optional, Union
 
 import pynini
 import regex
@@ -200,7 +200,10 @@ class Normalizer:
             )
 
         self.verbalizer = VerbalizeFinalFst(
-            deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache, project_input=project_input
+            deterministic=deterministic,
+            cache_dir=cache_dir,
+            overwrite_cache=overwrite_cache,
+            project_input=project_input,
         )
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
         self.parser = TokenParser()
@@ -337,7 +340,7 @@ class Normalizer:
         Copy the ``"input"`` value that exists in *source_with_input* into the
         matching element of *target* (both arguments have the same 2-level layout).
 
-        The input key is added inside the semiotic class mapping (e.g., inside 
+        The input key is added inside the semiotic class mapping (e.g., inside
         "cardinal", "time", etc.), not at the token level. The original structures are
         **not** modified; a deep copy of *target* is returned.
 
@@ -365,7 +368,7 @@ class Normalizer:
                 # Only copy if the key is present on the source side.
                 if INPUT_KEY in src_tokens:
                     input_value = src_tokens[INPUT_KEY]
-                    
+
                     # Find the semiotic class in target tokens and add input there
                     for key, value in tgt_tokens.items():
                         if isinstance(value, OrderedDict) and key != INPUT_KEY:
@@ -652,16 +655,14 @@ class Normalizer:
         # ---------- choose permutation source -----------------------------------
         if PRESERVE_ORDER_KEY in d:
             if INPUT_KEY in d and next(reversed(d)) != INPUT_KEY:
-                raise ValueError(
-                    f"When {PRESERVE_ORDER_KEY} is set, `{INPUT_KEY}` must already be last")
-            d_permutations = [tuple(d.items())]          # preserve order
+                raise ValueError(f"When {PRESERVE_ORDER_KEY} is set, `{INPUT_KEY}` must already be last")
+            d_permutations = [tuple(d.items())]  # preserve order
         else:
             items = list(d.items())
             if INPUT_KEY in d:
-                raw_item    = (INPUT_KEY, d[INPUT_KEY])
+                raw_item = (INPUT_KEY, d[INPUT_KEY])
                 other_items = [kv for kv in items if kv[0] != INPUT_KEY]
-                d_permutations = [perm + (raw_item,)
-                                for perm in itertools.permutations(other_items)]
+                d_permutations = [perm + (raw_item,) for perm in itertools.permutations(other_items)]
             else:
                 d_permutations = itertools.permutations(items)
 
@@ -671,16 +672,13 @@ class Normalizer:
             subl = [""]
             for k, v in perm:
                 if isinstance(v, str):
-                    subl = ["".join(x) for x in itertools.product(
-                                subl, [f'{k}: "{v}" '])]
+                    subl = ["".join(x) for x in itertools.product(subl, [f'{k}: "{v}" '])]
                 elif isinstance(v, OrderedDict):
                     rec = self._permute(v)
                     # NOTE: single closing brace fixes the extra-`}` problem
-                    subl = ["".join(x) for x in itertools.product(
-                                subl, [f" {k} {{ "], rec, [" } "])]
+                    subl = ["".join(x) for x in itertools.product(subl, [f" {k} {{ "], rec, [" } "])]
                 elif isinstance(v, bool):
-                    subl = ["".join(x) for x in itertools.product(
-                                subl, [f"{k}: true "])]
+                    subl = ["".join(x) for x in itertools.product(subl, [f"{k}: true "])]
                 else:
                     raise ValueError(f"Key: {k!r}  Value: {v!r}")
             serialisations.extend(subl)

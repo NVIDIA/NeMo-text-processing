@@ -53,7 +53,12 @@ class MeasureFst(GraphFst):
     """
 
     def __init__(
-        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True, project_input: bool = False,
+        self,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        fraction: GraphFst,
+        deterministic: bool = True,
+        project_input: bool = False,
     ):
         super().__init__(name="measure", kind="classify", deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.graph_with_and | self.get_range(cardinal.graph_with_and)

@@ -82,7 +82,7 @@ class ClassifyFst(GraphFst):
         project_input: bool = False,
         cache_dir: str = None,
         overwrite_cache: bool = True,
-        whitelist: str = None
+        whitelist: str = None,
     ):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 

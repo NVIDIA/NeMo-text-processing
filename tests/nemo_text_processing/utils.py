@@ -88,15 +88,15 @@ def normalize_whitespace(text: str) -> str:
 def extract_projected_content(text: str) -> List[Tuple[str, str, str]]:
     """
     Extract all projected content from a string with paired brackets format.
-    
+
     Args:
         text: Text containing paired projections like "text [normalized][original] more text"
-    
+
     Returns:
         List of (prefix_text, normalized, original) tuples where prefix_text is the text before this projection
-    
+
     Examples:
-        "i can use your [card ending in eight eight seven six][card ending in 8876]" 
+        "i can use your [card ending in eight eight seven six][card ending in 8876]"
             -> [("i can use your ", "card ending in eight eight seven six", "card ending in 8876")]
     """
     import re
@@ -126,10 +126,10 @@ def extract_projected_content(text: str) -> List[Tuple[str, str, str]]:
 def reconstruct_sentences(text: str) -> Tuple[str, str]:
     """
     Reconstruct the normalized output and original input from projected text.
-    
+
     Args:
         text: Text with paired projections like "text [normalized][original] more text"
-        
+
     Returns:
         Tuple of (normalized_sentence, original_sentence)
     """
@@ -157,32 +157,34 @@ def reconstruct_sentences(text: str) -> Tuple[str, str]:
 
     return normalize_whitespace(normalized_sentence), normalize_whitespace(original_sentence)
 
+
 def remove_spaces_around_punctuation(text):
     """Remove spaces that are adjacent to punctuation characters."""
     punctuation_chars = r'[,!?.;:(){}[\]<>/@#$%^&*+=|\\`~"\'-]'
-    
+
     # Remove spaces before punctuation
     text = re.sub(r'\s+(?=' + punctuation_chars + ')', '', text)
-    
+
     # Remove spaces after punctuation
     text = re.sub(r'(?<=' + punctuation_chars + r')\s+', '', text)
-    
+
     return text
+
 
 def assert_projecting_output(predicted: str, expected_output: str, original_input: str) -> None:
     """
     Enhanced assertion for projecting tests with paired bracket format.
-    
+
     Args:
         predicted: The actual output from the normalizer (with [normalized][original] pairs)
         expected_output: The expected normalized output
         original_input: The original input that should be reconstructed
-        
+
     Raises:
         AssertionError: If the projecting output doesn't match expectations
     """
     import re
-    
+
     predicted = normalize_whitespace(predicted)
     expected_output = normalize_whitespace(expected_output)
     original_input = normalize_whitespace(original_input)
@@ -210,7 +212,7 @@ def assert_projecting_output(predicted: str, expected_output: str, original_inpu
     # Check if original input contains punctuation
     # Define punctuation characters that trigger space-agnostic comparison
     punctuation_chars = r'[,!?.;:(){}[\]<>/@#$%^&*+=|\\`~"\'-]'
-    
+
     if re.search(punctuation_chars, original_input):
         # Remove all spaces for comparison when punctuation is present
         original_input_no_spaces = re.sub(r'\s+', '', original_input)

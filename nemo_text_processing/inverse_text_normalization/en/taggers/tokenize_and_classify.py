@@ -35,8 +35,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
     generate_far_filename,
+    generator_main,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -75,7 +75,7 @@ class ClassifyFst(GraphFst):
                 operation="tokenize_and_classify",
                 project_input=project_input,
                 input_case=input_case,
-                whitelist_file=whitelist
+                whitelist_file=whitelist,
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -91,12 +91,18 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal, input_case=input_case, project_input=project_input)
             decimal_graph = decimal.fst
 
-            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input).fst
+            measure_graph = MeasureFst(
+                cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input
+            ).fst
             date_graph = DateFst(ordinal=ordinal, input_case=input_case, project_input=project_input).fst
             word_graph = WordFst(project_input=project_input).fst
             time_graph = TimeFst(input_case=input_case, project_input=project_input).fst
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input).fst
-            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case, project_input=project_input).fst
+            money_graph = MoneyFst(
+                cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input
+            ).fst
+            whitelist_graph = WhiteListFst(
+                input_file=whitelist, input_case=input_case, project_input=project_input
+            ).fst
             punct_graph = PunctuationFst(project_input=project_input).fst
             electronic_graph = ElectronicFst(input_case=input_case, project_input=project_input).fst
             telephone_graph = TelephoneFst(cardinal, input_case=input_case, project_input=project_input).fst

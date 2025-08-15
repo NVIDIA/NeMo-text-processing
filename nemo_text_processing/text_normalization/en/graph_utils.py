@@ -201,7 +201,7 @@ def generate_far_filename(
 ) -> str:
     """
     Generate FAR filename based on parameters.
-    
+
     Args:
         language: Language code (e.g., "en")
         mode: Either "tn" or "itn"
@@ -211,26 +211,26 @@ def generate_far_filename(
         project_input: If True, append "projecting" to filename
         input_case: Input case handling, append if INPUT_CASED
         whitelist_file: Whitelist filename to include
-        
+
     Returns:
         Complete path to FAR file
     """
     filename_parts = [language, mode]
-    
+
     if deterministic:
         filename_parts.append("deterministic")
-        
+
     if project_input:
         filename_parts.append("projecting")
-        
+
     if input_case == INPUT_CASED:
         filename_parts.append(input_case)
-        
+
     if whitelist_file:
         filename_parts.append(Path(whitelist_file).stem)
-        
+
     filename_parts.append(operation)
-    
+
     filename = "_".join(filename_parts) + ".far"
     return os.path.join(cache_dir, filename)
 
@@ -374,15 +374,12 @@ class GraphFst:
         Args:
             fst: input fst.
             project: if True, adds input projection with brackets
-            
+
         """
         if self.project_input:
             # Match input content: either NEMO_NOT_QUOTE or NEMO_NOT_QUOTE followed by a single quote
             # This handles cases like '12"' where input ends with a quote character
-            input_content = pynini.union(
-                pynini.closure(NEMO_NOT_QUOTE, 1),
-                pynini.closure(NEMO_NOT_QUOTE, 1) + "\""
-            )
+            input_content = pynini.union(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.closure(NEMO_NOT_QUOTE, 1) + "\"")
             input_projection = (
                 pynutil.delete(" input: \"")
                 + pynutil.insert(r"\[")
@@ -391,7 +388,7 @@ class GraphFst:
                 + pynutil.delete("\"")
             )
             input_projection = pynini.closure(input_projection, 0, 1)
-            
+
             # Wrap main output in brackets when projecting input
             bracketed_fst = pynutil.insert(r"\[") + fst + pynutil.insert(r"\]")
             fst = bracketed_fst + input_projection

@@ -147,12 +147,7 @@ class DateFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(
-        self,
-        ordinal: GraphFst,
-        input_case: str,
-        project_input: bool = False
-    ):
+    def __init__(self, ordinal: GraphFst, input_case: str, project_input: bool = False):
         super().__init__(name="date", kind="classify", project_input=project_input)
 
         ordinal_graph = ordinal.graph
