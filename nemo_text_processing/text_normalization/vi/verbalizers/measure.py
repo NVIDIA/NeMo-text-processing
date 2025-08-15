@@ -44,20 +44,12 @@ class MeasureFst(GraphFst):
 
         # Extract components
         unit = extract_field("units")
-        
+
         # Handle negative sign - Vietnamese uses "âm" for negative numbers
-        optional_negative = pynini.closure(
-            pynini.cross("negative: \"true\"", "âm ") + delete_space,
-            0,
-            1
-        )
+        optional_negative = pynini.closure(pynini.cross("negative: \"true\"", "âm ") + delete_space, 0, 1)
         if not deterministic:
             # Alternative ways to say negative in Vietnamese
-            optional_negative |= pynini.closure(
-                pynini.cross("negative: \"true\"", "trừ ") + delete_space,
-                0,
-                1
-            )
+            optional_negative |= pynini.closure(pynini.cross("negative: \"true\"", "trừ ") + delete_space, 0, 1)
 
         # Combine all number types into single graph
         number_graph = (

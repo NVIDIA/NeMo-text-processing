@@ -116,11 +116,12 @@ class DecimalFst(GraphFst):
         # 5. Decimal with abbreviations: 2,5tr, but avoid measure conflicts
         measure_prefix_labels = load_labels(get_abs_path("data/measure/prefixes.tsv"))
         measure_prefixes = {prefix.lower() for prefix, _ in measure_prefix_labels}
-        
-        # Filter quantity abbreviations to avoid measure conflicts  
-        safe_quantity_abbrs = [(abbr, full) for abbr, full in quantity_abbr_labels 
-                              if abbr.lower() not in measure_prefixes]
-        
+
+        # Filter quantity abbreviations to avoid measure conflicts
+        safe_quantity_abbrs = [
+            (abbr, full) for abbr, full in quantity_abbr_labels if abbr.lower() not in measure_prefixes
+        ]
+
         for abbr, full_name in safe_quantity_abbrs:
             decimal_abbr_pattern = (
                 (integer_part + pynutil.insert(NEMO_SPACE)).ques

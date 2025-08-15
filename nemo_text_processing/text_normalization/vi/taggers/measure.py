@@ -124,7 +124,7 @@ class MeasureFst(GraphFst):
         # Remove punctuation handling to let punctuation tagger handle it separately
         optional_space = pynini.closure(NEMO_SPACE, 0, 1)
         optional_negative_sign = pynini.closure("-" + optional_space, 0, 1)
-        
+
         integer_measure_domain = optional_negative_sign + number + optional_space + unit_pattern
         decimal_measure_domain = optional_negative_sign + decimal_number + optional_space + unit_pattern
         fraction_measure_domain = optional_negative_sign + number + "/" + number + optional_space + unit_pattern

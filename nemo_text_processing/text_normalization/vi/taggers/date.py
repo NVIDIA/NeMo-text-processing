@@ -34,18 +34,18 @@ class DateFst(GraphFst):
 
         # Vietnamese date keywords
         DAY_WORD = "ngày"
-        MONTH_WORD = "tháng" 
+        MONTH_WORD = "tháng"
         YEAR_WORD = "năm"
         ORDINAL_YEAR_WORD = "năm thứ"
-        
+
         # Prebuilt patterns for common usage
         day_prefix = pynini.accep(DAY_WORD + NEMO_SPACE)
         month_prefix = pynini.accep(MONTH_WORD + NEMO_SPACE)
         year_prefix = pynini.accep(YEAR_WORD + NEMO_SPACE)
         ordinal_year_prefix = pynini.accep(ORDINAL_YEAR_WORD + NEMO_SPACE)
-        
+
         delete_day_prefix = pynutil.delete(DAY_WORD + NEMO_SPACE)
-        delete_month_prefix = pynutil.delete(MONTH_WORD + NEMO_SPACE) 
+        delete_month_prefix = pynutil.delete(MONTH_WORD + NEMO_SPACE)
         delete_year_prefix = pynutil.delete(YEAR_WORD + NEMO_SPACE)
         delete_ordinal_year_prefix = pynutil.delete(ORDINAL_YEAR_WORD + NEMO_SPACE)
 
@@ -88,11 +88,13 @@ class DateFst(GraphFst):
         )
 
         # YYYY/MM/DD format (ISO standard) - output in Vietnamese order
-        iso_year_part = pynutil.insert("year: \"") + year_convert + pynutil.insert("\" ") 
-        iso_month_part = pynutil.insert("month: \"") + month_convert + pynutil.insert("\" ") 
-        iso_day_part = pynutil.insert("day: \"") + day_convert + pynutil.insert("\"") 
-        
-        iso_date_sep = iso_year_part + pynutil.delete(separator) + iso_month_part + pynutil.delete(separator) + iso_day_part
+        iso_year_part = pynutil.insert("year: \"") + year_convert + pynutil.insert("\" ")
+        iso_month_part = pynutil.insert("month: \"") + month_convert + pynutil.insert("\" ")
+        iso_day_part = pynutil.insert("day: \"") + day_convert + pynutil.insert("\"")
+
+        iso_date_sep = (
+            iso_year_part + pynutil.delete(separator) + iso_month_part + pynutil.delete(separator) + iso_day_part
+        )
         patterns.append(pynini.compose(year_digit + separator + month_digit + separator + day_digit, iso_date_sep))
 
         for sep in [separator, pynini.accep(NEMO_SPACE)]:
@@ -105,9 +107,7 @@ class DateFst(GraphFst):
 
         day_month_sep = day_part + pynutil.delete(separator) + month_final
         patterns.append(
-            pynini.compose(
-                day_prefix + day_digit + separator + month_digit, delete_day_prefix + day_month_sep
-            )
+            pynini.compose(day_prefix + day_digit + separator + month_digit, delete_day_prefix + day_month_sep)
         )
 
         patterns.append(
