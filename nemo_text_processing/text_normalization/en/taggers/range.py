@@ -53,14 +53,14 @@ class RangeFst(GraphFst):
 
         cardinal = cardinal.graph_with_and
         # YEAR
-        date_year_four_digit = (NEMO_DIGIT ** 4 + pynini.closure(pynini.accep("s"), 0, 1)) @ date
-        date_year_two_digit = (NEMO_DIGIT ** 2 + pynini.closure(pynini.accep("s"), 0, 1)) @ date
+        date_year_four_digit = (NEMO_DIGIT**4 + pynini.closure(pynini.accep("s"), 0, 1)) @ date
+        date_year_two_digit = (NEMO_DIGIT**2 + pynini.closure(pynini.accep("s"), 0, 1)) @ date
         year_to_year_graph = (
             date_year_four_digit
             + delete_space
             + pynini.cross("-", " to ")
             + delete_space
-            + (date_year_four_digit | date_year_two_digit | (NEMO_DIGIT ** 2 @ cardinal))
+            + (date_year_four_digit | date_year_two_digit | (NEMO_DIGIT**2 @ cardinal))
         )
         mid_year_graph = pynini.accep("mid") + pynini.cross("-", " ") + (date_year_four_digit | date_year_two_digit)
 

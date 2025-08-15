@@ -25,9 +25,9 @@ from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_pat
 
 class DateFst(GraphFst):
     """
-        Finite state transducer for classifying date, 
+        Finite state transducer for classifying date,
         e.g. पांच जनवरी दो हज़ार बारह -> date { month: "जनवरी" day: "५" year: "२०१२" preserve_order: true }
-        e.g. दो हज़ार बारह -> date { year: "२०१२" preserve_order: true }     
+        e.g. दो हज़ार बारह -> date { year: "२०१२" preserve_order: true }
     Args:
         cardinal: CardinalFst
         date: DateFst

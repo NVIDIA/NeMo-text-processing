@@ -38,8 +38,8 @@ def get_quantity(
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. दस लाख -> integer_part: "१॰" quantity: "लाख"
     e.g. एक दशमलव पाँच लाख -> integer_part: "१" fractional_part: "५" quantity: "लाख"
- 
-    Args: 
+
+    Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
         input_case: accepting either "lower_cased" or "cased" input.
@@ -68,17 +68,17 @@ class DecimalFst(GraphFst):
         Decimal point "." is determined by "दशमलव"
             e.g. ऋण एक दशमलव दो छह -> decimal { negative: "true" integer_part: "१" morphosyntactic_features: "." fractional_part: "२६" }
 
- 
+
         This decimal rule assumes that decimals can be pronounced as:
         (a cardinal) + ('दशमलव') plus (any sequence of cardinals <१०००, including 'शून्य')
- 
-        Also writes large numbers in shortened form, e.g. 
+
+        Also writes large numbers in shortened form, e.g.
             e.g. एक दशमलव दो छह लाख -> decimal { negative: "false" integer_part: "१" morphosyntactic_features: "." fractional_part: "२६" quantity: "लाख" }
             e.g. दो लाख -> decimal { negative: "false" integer_part: "२" quantity: "लाख" }
             e.g. एक अरब आठ सौ चौबीस लाख -> decimal { negative: "false" integer_part: "१८२४" quantity: "लाख" }
     Args:
         cardinal: CardinalFst
- 
+
     """
 
     def __init__(
@@ -100,7 +100,9 @@ class DecimalFst(GraphFst):
         point = pynutil.delete("दशमलव")
 
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("ऋण", "\"true\"") + delete_extra_space, 0, 1,
+            pynutil.insert("negative: ") + pynini.cross("ऋण", "\"true\"") + delete_extra_space,
+            0,
+            1,
         )
 
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")

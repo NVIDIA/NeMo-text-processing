@@ -75,12 +75,14 @@ class CardinalFst(GraphFst):
         # This only covers "standard format".
         # Conventional format like thousand crores/lakh crores is yet to be implemented
         graph_in_thousands = pynini.union(
-            self.graph_two_digit + delete_space + delete_thousand, pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + delete_thousand,
+            pynutil.insert("००", weight=0.1),
         )
         self.graph_thousands = graph_in_thousands
 
         graph_in_lakhs = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("लाख"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("लाख"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_crores = pynini.union(
@@ -89,23 +91,28 @@ class CardinalFst(GraphFst):
         )
 
         graph_in_arabs = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("अरब"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("अरब"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_kharabs = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("खरब"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("खरब"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_nils = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("नील"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("नील"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_padmas = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("पद्म"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("पद्म"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_shankhs = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("शंख"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("शंख"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_ind = (

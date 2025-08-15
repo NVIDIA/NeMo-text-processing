@@ -21,8 +21,8 @@ from nemo_text_processing.text_normalization.hi.taggers.decimal import quantitie
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g. 
-        decimal { negative: "true" integer_part: "बारह"  fractional_part: "पाँच शून्य शून्य छह" quantity: "अरब" } -> ऋणात्मक बारह दशमलव पाँच शून्य शून्य छह  
+    Finite state transducer for classifying decimal, e.g.
+        decimal { negative: "true" integer_part: "बारह"  fractional_part: "पाँच शून्य शून्य छह" quantity: "अरब" } -> ऋणात्मक बारह दशमलव पाँच शून्य शून्य छह
         decimal { integer_part: "बारह" quantity: "billion" } -> बारह अरब
 
     """

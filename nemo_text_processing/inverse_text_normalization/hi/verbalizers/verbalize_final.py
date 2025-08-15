@@ -32,7 +32,7 @@ from nemo_text_processing.utils.logging import logger
 
 class VerbalizeFinalFst(GraphFst):
     """
-    Finite state transducer that verbalizes an entire sentence, e.g. 
+    Finite state transducer that verbalizes an entire sentence, e.g.
     tokens { name: "अब" } tokens { time { hours: "१२" minutes: "३०" } } tokens { name: "बज" } tokens { name: "गए" } tokens { name: "हैं" } -> अब १२:३० बज गए हैं
     """
 

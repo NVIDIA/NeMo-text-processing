@@ -14,8 +14,8 @@ delete_leading_zero = (
 
 
 class DateFst(GraphFst):
-    ''' Finite state transducer for classyfing dates, e.g.:
-        '02.03.2003' -> date {day: 'deux' month: 'mai' year: 'deux mille trois' preserve order: true} 
+    '''Finite state transducer for classyfing dates, e.g.:
+    '02.03.2003' -> date {day: 'deux' month: 'mai' year: 'deux mille trois' preserve order: true}
     '''
 
     def __init__(

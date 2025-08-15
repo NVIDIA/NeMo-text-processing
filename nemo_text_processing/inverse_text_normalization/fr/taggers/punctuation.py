@@ -28,7 +28,7 @@ class PunctuationFst(GraphFst):
         super().__init__(name="punctuation", kind="classify", project_input=project_input)
 
         s = "!#$%&\'()*+,-./:;<=>?@^_`{|}~"
-        guillemets = "\u00AB" + "\u00BB"  # quotation marks in French.
+        guillemets = "\u00ab" + "\u00bb"  # quotation marks in French.
         s += guillemets
         punct = pynini.union(*s)
 

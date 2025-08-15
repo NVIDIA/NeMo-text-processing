@@ -34,6 +34,6 @@ class WordFst(GraphFst):
         super().__init__(name="word", kind="verbalize", project_input=project_input)
         chars = pynini.closure(NEMO_CHAR - " ", 1)
         char = pynutil.delete("name:") + delete_space + pynutil.delete('"') + chars + pynutil.delete('"')
-        graph = char @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+        graph = char @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)
 
         self.fst = graph.optimize()

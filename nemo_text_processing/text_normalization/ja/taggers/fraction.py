@@ -115,7 +115,9 @@ class FractionFst(GraphFst):
         )
 
         optional_sign = (
-            pynutil.insert("negative: \"") + (pynini.accep("マイナス") | pynini.cross("-", "マイナス")) + pynutil.insert("\"")
+            pynutil.insert("negative: \"")
+            + (pynini.accep("マイナス") | pynini.cross("-", "マイナス"))
+            + pynutil.insert("\"")
         )
 
         graph_fraction_slash_sigh = pynini.closure(optional_sign + pynutil.insert(NEMO_SPACE), 0, 1) + (

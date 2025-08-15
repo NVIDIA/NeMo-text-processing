@@ -28,10 +28,10 @@ def get_abs_path(rel_path):
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
 
 def apply_fst(text, fst):
-    """ Given a string input, returns the output string
-        produced by traversing the path with lowest weight.
-        If no valid path accepts input string, returns an
-        error.
+    """Given a string input, returns the output string
+    produced by traversing the path with lowest weight.
+    If no valid path accepts input string, returns an
+    error.
     """
     try:
         print(pynini.shortestpath(text @ fst).string())

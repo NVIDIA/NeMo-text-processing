@@ -22,8 +22,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOT
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time e.g.
-   
-  
+
+
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
