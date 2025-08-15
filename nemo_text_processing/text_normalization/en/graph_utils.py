@@ -217,8 +217,8 @@ def generate_far_filename(
     """
     filename_parts = [language, mode]
 
-    if deterministic:
-        filename_parts.append("deterministic")
+    if not deterministic:
+        filename_parts.append("non-deterministic")
 
     if project_input:
         filename_parts.append("projecting")
