@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2022, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,17 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 
 
-class AbbreviationFst(GraphFst):
+class RangeFst(GraphFst):
     """
-    Finite state transducer for verbalizing abbreviations
-        e.g. tokens { abbreviation { value: "A B C" } } -> "ABC"
+    Finite state transducer for verbalizing range
+        e.g. tokens { range { name: "one to three" } } -> one to three
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -29,8 +28,15 @@ class AbbreviationFst(GraphFst):
     """
 
     def __init__(self, deterministic: bool = True, project_input: bool = False):
-        super().__init__(name="abbreviation", kind="verbalize", deterministic=deterministic, project_input=project_input)
-
-        graph = pynutil.delete("value: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        super().__init__(name="range", kind="verbalize", deterministic=deterministic, project_input=project_input)
+        graph = (
+            pynutil.delete("name:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynutil.delete("\"")
+        )
+        graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+        
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

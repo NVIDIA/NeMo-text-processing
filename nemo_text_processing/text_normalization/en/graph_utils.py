@@ -34,6 +34,8 @@ NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
 NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
 NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
 NEMO_ALNUM = pynini.union(NEMO_DIGIT, NEMO_ALPHA).optimize()
+NEMO_VOWELS = pynini.union(*"aeiouAEIOU").optimize()
+NEMO_CONSONANTS = pynini.union(*"BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz").optimize()
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = "\u00a0"
 NEMO_SPACE = " "
@@ -74,6 +76,7 @@ NEMO_LOWER_NOT_A = pynini.union(
 ).optimize()
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
+delete_space_or_punct = NEMO_PUNCT | delete_space
 delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
@@ -186,6 +189,52 @@ def generator_main(file_name: str, graphs: Dict[str, "pynini.FstLike"]):
     logger.info(f"Created {file_name}")
 
 
+def generate_far_filename(
+    language: str,
+    mode: str,  # "tn" or "itn"
+    cache_dir: str,
+    operation: str,  # "tokenize" or "verbalize"
+    deterministic: bool = False,
+    project_input: bool = False,
+    input_case: str = INPUT_LOWER_CASED,
+    whitelist_file: str = "",
+) -> str:
+    """
+    Generate FAR filename based on parameters.
+    
+    Args:
+        language: Language code (e.g., "en")
+        mode: Either "tn" or "itn"
+        cache_dir: Directory for cache files
+        operation: Either "tokenize" or "verbalize"
+        deterministic: If True, append "deterministic" to filename
+        project_input: If True, append "projecting" to filename
+        input_case: Input case handling, append if INPUT_CASED
+        whitelist_file: Whitelist filename to include
+        
+    Returns:
+        Complete path to FAR file
+    """
+    filename_parts = [language, mode]
+    
+    if deterministic:
+        filename_parts.append("deterministic")
+        
+    if project_input:
+        filename_parts.append("projecting")
+        
+    if input_case == INPUT_CASED:
+        filename_parts.append(input_case)
+        
+    if whitelist_file:
+        filename_parts.append(Path(whitelist_file).stem)
+        
+    filename_parts.append(operation)
+    
+    filename = "_".join(filename_parts) + ".far"
+    return os.path.join(cache_dir, filename)
+
+
 def get_plurals(fst):
     """
     Given singular returns plurals
@@ -279,11 +328,12 @@ class GraphFst:
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, name: str, kind: str, deterministic: bool = True):
+    def __init__(self, name: str, kind: str, deterministic: bool = True, project_input: bool = False):
         self.name = name
         self.kind = kind
         self._fst = None
         self.deterministic = deterministic
+        self.project_input = project_input
 
         self.far_path = Path(os.path.dirname(__file__) + "/grammars/" + kind + "/" + name + ".far")
         if self.far_exist():
@@ -313,6 +363,8 @@ class GraphFst:
         Returns:
             Fst: fst
         """
+        if self.project_input:
+            return pynutil.insert('input: "') + fst.project('input') + pynutil.insert('"')
         return pynutil.insert(f"{self.name} {{ ") + fst + pynutil.insert(" }")
 
     def delete_tokens(self, fst) -> "pynini.FstLike":
@@ -320,11 +372,30 @@ class GraphFst:
         Deletes class name wrap around output of given fst
 
         Args:
-            fst: input fst
-
-        Returns:
-            Fst: fst
+            fst: input fst.
+            project: if True, adds input projection with brackets
+            
         """
+        if self.project_input:
+            # Match input content: either NEMO_NOT_QUOTE or NEMO_NOT_QUOTE followed by a single quote
+            # This handles cases like '12"' where input ends with a quote character
+            input_content = pynini.union(
+                pynini.closure(NEMO_NOT_QUOTE, 1),
+                pynini.closure(NEMO_NOT_QUOTE, 1) + "\""
+            )
+            input_projection = (
+                pynutil.delete(" input: \"")
+                + pynutil.insert(r"\[")
+                + input_content
+                + pynutil.insert(r"\]")
+                + pynutil.delete("\"")
+            )
+            input_projection = pynini.closure(input_projection, 0, 1)
+            
+            # Wrap main output in brackets when projecting input
+            bracketed_fst = pynutil.insert(r"\[") + fst + pynutil.insert(r"\]")
+            fst = bracketed_fst + input_projection
+
         res = (
             pynutil.delete(f"{self.name}")
             + delete_space

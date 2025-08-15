@@ -51,8 +51,14 @@ class WhiteListFst(GraphFst):
         input_file: path to a file with whitelist replacements
     """
 
-    def __init__(self, input_case: str, deterministic: bool = True, input_file: str = None):
-        super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
+    def __init__(
+        self,
+        input_case: str,
+        deterministic: bool = True,
+        project_input: bool = False,
+        input_file: str = None
+    ):
+        super().__init__(name="whitelist", kind="classify", deterministic=deterministic, project_input=project_input)
 
         def _get_whitelist_graph(input_case, file, keep_punct_add_end: bool = False):
             whitelist = load_labels(file)
@@ -129,7 +135,9 @@ class WhiteListFst(GraphFst):
 
         self.graph = (convert_space(graph)).optimize()
 
-        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
+        final_graph = pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")
+        final_graph = self.add_tokens(final_graph)
+        self.fst = final_graph.optimize()
 
 
 def get_formats(input_f, input_case=INPUT_CASED, is_default=True):

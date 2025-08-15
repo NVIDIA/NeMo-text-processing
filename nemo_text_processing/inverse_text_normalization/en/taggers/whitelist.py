@@ -16,18 +16,15 @@
 
 import os
 
-import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_CASED,
     INPUT_LOWER_CASED,
     GraphFst,
     convert_space,
     string_map_cased,
 )
-from nemo_text_processing.text_normalization.en.utils import load_labels
 
 
 class WhiteListFst(GraphFst):
@@ -43,8 +40,13 @@ class WhiteListFst(GraphFst):
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, input_case: str = INPUT_LOWER_CASED, input_file: str = None):
-        super().__init__(name="whitelist", kind="classify")
+    def __init__(
+        self,
+        input_case: str = INPUT_LOWER_CASED,
+        input_file: str = None,
+        project_input: bool = False
+    ):
+        super().__init__(name="whitelist", kind="classify", project_input=project_input)
 
         if input_file is None:
             input_file = get_abs_path("data/whitelist.tsv")
@@ -54,4 +56,5 @@ class WhiteListFst(GraphFst):
 
         whitelist = string_map_cased(input_file, input_case)
         graph = pynutil.insert("name: \"") + convert_space(whitelist) + pynutil.insert("\"")
-        self.fst = graph.optimize()
+        final_graph = self.add_tokens(graph)
+        self.fst = final_graph.optimize()

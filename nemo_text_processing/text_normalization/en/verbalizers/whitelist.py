@@ -27,8 +27,8 @@ class WhiteListFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic, project_input=project_input)
         graph = (
             pynutil.delete("name:")
             + delete_space
@@ -36,5 +36,7 @@ class WhiteListFst(GraphFst):
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
         )
-        graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)
-        self.fst = graph.optimize()
+        graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+        
+        delete_tokens = self.delete_tokens(graph)
+        self.fst = delete_tokens.optimize()

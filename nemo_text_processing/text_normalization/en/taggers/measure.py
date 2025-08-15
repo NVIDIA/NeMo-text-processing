@@ -53,13 +53,9 @@ class MeasureFst(GraphFst):
     """
 
     def __init__(
-        self,
-        cardinal: GraphFst,
-        decimal: GraphFst,
-        fraction: GraphFst,
-        deterministic: bool = True,
+        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True, project_input: bool = False,
     ):
-        super().__init__(name="measure", kind="classify", deterministic=deterministic)
+        super().__init__(name="measure", kind="classify", deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.graph_with_and | self.get_range(cardinal.graph_with_and)
 
         graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))

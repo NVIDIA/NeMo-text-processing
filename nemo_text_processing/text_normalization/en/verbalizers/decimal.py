@@ -34,8 +34,8 @@ class DecimalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal, deterministic: bool = True):
-        super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
+    def __init__(self, cardinal, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="decimal", kind="verbalize", deterministic=deterministic, project_input=project_input)
         self.optional_sign = pynini.cross("negative: \"true\"", "minus ")
         if not deterministic:
             self.optional_sign |= pynini.cross("negative: \"true\"", "negative ")

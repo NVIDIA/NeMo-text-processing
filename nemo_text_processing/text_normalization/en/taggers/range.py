@@ -38,9 +38,10 @@ class RangeFst(GraphFst):
         date: GraphFst,
         cardinal: GraphFst,
         deterministic: bool = True,
-        lm: bool = False,
+        project_input: bool = False,
+        lm: bool = False
     ):
-        super().__init__(name="range", kind="classify", deterministic=deterministic)
+        super().__init__(name="range", kind="classify", deterministic=deterministic, project_input=project_input)
 
         delete_space = pynini.closure(pynutil.delete(" "), 0, 1)
 
@@ -125,4 +126,5 @@ class RangeFst(GraphFst):
 
         self.graph = self.graph.optimize()
         graph = pynutil.insert("name: \"") + convert_space(self.graph).optimize() + pynutil.insert("\"")
-        self.fst = graph.optimize()
+        final_graph = self.add_tokens(graph)
+        self.fst = final_graph.optimize()

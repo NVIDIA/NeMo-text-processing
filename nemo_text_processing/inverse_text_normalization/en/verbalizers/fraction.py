@@ -21,5 +21,5 @@ class FractionFst(GraphFst):
     Finite state transducer for verbalizing fraction,
     """
 
-    def __init__(self):
-        super().__init__(name="fraction", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="fraction", kind="verbalize", project_input=project_input)

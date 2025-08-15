@@ -36,6 +36,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    generate_far_filename,
 )
 from nemo_text_processing.utils.logging import logger
 
@@ -49,6 +50,7 @@ class ClassifyFst(GraphFst):
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
+        project: if True, adds input projection for mapping original text.
         overwrite_cache: set to True to overwrite .far files
         whitelist: path to a file with whitelist replacements
     """
@@ -57,6 +59,7 @@ class ClassifyFst(GraphFst):
         self,
         input_case: str = INPUT_LOWER_CASED,
         cache_dir: str = None,
+        project_input: bool = False,
         overwrite_cache: bool = False,
         whitelist: str = None,
     ):
@@ -65,30 +68,38 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"en_itn_{input_case}.far")
+            far_file = generate_far_filename(
+                language="en",
+                mode="itn",
+                cache_dir=cache_dir,
+                operation="tokenize_and_classify",
+                project_input=project_input,
+                input_case=input_case,
+                whitelist_file=whitelist
+            )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logger.info(f"Creating ClassifyFst grammars.")
-            cardinal = CardinalFst(input_case=input_case)
+            cardinal = CardinalFst(input_case=input_case, project_input=project_input)
             cardinal_graph = cardinal.fst
 
-            ordinal = OrdinalFst(cardinal, input_case=input_case)
+            ordinal = OrdinalFst(cardinal, input_case=input_case, project_input=project_input)
             ordinal_graph = ordinal.fst
 
-            decimal = DecimalFst(cardinal, input_case=input_case)
+            decimal = DecimalFst(cardinal, input_case=input_case, project_input=project_input)
             decimal_graph = decimal.fst
 
-            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, input_case=input_case).fst
-            date_graph = DateFst(ordinal=ordinal, input_case=input_case).fst
-            word_graph = WordFst().fst
-            time_graph = TimeFst(input_case=input_case).fst
-            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, input_case=input_case).fst
-            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case).fst
-            punct_graph = PunctuationFst().fst
-            electronic_graph = ElectronicFst(input_case=input_case).fst
-            telephone_graph = TelephoneFst(cardinal, input_case=input_case).fst
+            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input).fst
+            date_graph = DateFst(ordinal=ordinal, input_case=input_case, project_input=project_input).fst
+            word_graph = WordFst(project_input=project_input).fst
+            time_graph = TimeFst(input_case=input_case, project_input=project_input).fst
+            money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, input_case=input_case, project_input=project_input).fst
+            whitelist_graph = WhiteListFst(input_file=whitelist, input_case=input_case, project_input=project_input).fst
+            punct_graph = PunctuationFst(project_input=project_input).fst
+            electronic_graph = ElectronicFst(input_case=input_case, project_input=project_input).fst
+            telephone_graph = TelephoneFst(cardinal, input_case=input_case, project_input=project_input).fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)

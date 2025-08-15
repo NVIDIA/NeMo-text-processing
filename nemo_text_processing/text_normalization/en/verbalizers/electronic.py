@@ -43,8 +43,8 @@ class ElectronicFst(GraphFst):
         for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
-        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
+        super().__init__(name="electronic", kind="verbalize", deterministic=deterministic, project_input=project_input)
         graph_digit_no_zero = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv"))).optimize()
         graph_zero = pynini.cross("0", "zero")
         long_numbers = pynutil.add_weight(graph_digit_no_zero + pynini.cross("000", " thousand"), MIN_NEG_WEIGHT)
@@ -55,7 +55,7 @@ class ElectronicFst(GraphFst):
         graph_digit = graph_digit_no_zero | graph_zero
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
-        NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
+        NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}", '"')).optimize()
         dict_words = pynini.project(pynini.string_file(get_abs_path("data/electronic/words.tsv")), "output")
         default_chars_symbols = pynini.cdrewrite(
             pynutil.insert(" ") + (graph_symbols | graph_digit | long_numbers) + pynutil.insert(" "),

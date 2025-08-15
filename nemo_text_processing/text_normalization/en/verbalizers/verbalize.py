@@ -22,7 +22,9 @@ from nemo_text_processing.text_normalization.en.verbalizers.fraction import Frac
 from nemo_text_processing.text_normalization.en.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.en.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.en.verbalizers.range import RangeFst
 from nemo_text_processing.text_normalization.en.verbalizers.roman import RomanFst
+from nemo_text_processing.text_normalization.en.verbalizers.serial import SerialFst
 from nemo_text_processing.text_normalization.en.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.en.verbalizers.whitelist import WhiteListFst
@@ -39,24 +41,26 @@ class VerbalizeFst(GraphFst):
             for False multiple options (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, deterministic: bool = True, project_input: bool = False):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
-        cardinal = CardinalFst(deterministic=deterministic)
+        cardinal = CardinalFst(deterministic=deterministic, project_input=project_input)
         cardinal_graph = cardinal.fst
-        decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+        decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic, project_input=project_input)
         decimal_graph = decimal.fst
-        ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal = OrdinalFst(deterministic=deterministic, project_input=project_input)
         ordinal_graph = ordinal.fst
-        fraction = FractionFst(deterministic=deterministic)
+        fraction = FractionFst(deterministic=deterministic, project_input=project_input)
         fraction_graph = fraction.fst
-        telephone_graph = TelephoneFst(deterministic=deterministic).fst
-        electronic_graph = ElectronicFst(deterministic=deterministic).fst
-        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
+        telephone_graph = TelephoneFst(deterministic=deterministic, project_input=project_input).fst
+        electronic_graph = ElectronicFst(deterministic=deterministic, project_input=project_input).fst
+        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic, project_input=project_input)
         measure_graph = measure.fst
-        time_graph = TimeFst(deterministic=deterministic).fst
-        date_graph = DateFst(ordinal=ordinal, deterministic=deterministic).fst
-        money_graph = MoneyFst(decimal=decimal, deterministic=deterministic).fst
-        whitelist_graph = WhiteListFst(deterministic=deterministic).fst
+        time_graph = TimeFst(deterministic=deterministic, project_input=project_input).fst
+        date_graph = DateFst(ordinal=ordinal, deterministic=deterministic, project_input=project_input).fst
+        money_graph = MoneyFst(decimal=decimal, deterministic=deterministic, project_input=project_input).fst
+        whitelist_graph = WhiteListFst(deterministic=deterministic, project_input=project_input).fst
+        serial_graph = SerialFst(deterministic=deterministic, project_input=project_input).fst
+        range_graph = RangeFst(deterministic=deterministic, project_input=project_input).fst
 
         graph = (
             time_graph
@@ -70,13 +74,15 @@ class VerbalizeFst(GraphFst):
             | electronic_graph
             | fraction_graph
             | whitelist_graph
+            | serial_graph
+            | range_graph
         )
 
-        roman_graph = RomanFst(deterministic=deterministic).fst
+        roman_graph = RomanFst(deterministic=deterministic, project_input=project_input).fst
         graph |= roman_graph
 
         if not deterministic:
-            abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst
+            abbreviation_graph = AbbreviationFst(deterministic=deterministic, project_input=project_input).fst
             graph |= abbreviation_graph
 
         self.fst = graph

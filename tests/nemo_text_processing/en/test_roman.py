@@ -18,7 +18,7 @@ from parameterized import parameterized
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from tests.nemo_text_processing.utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file, assert_projecting_output
 
 
 class TestRoman:
@@ -35,8 +35,8 @@ class TestRoman:
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
-        # pred = self.normalizer_en.normalize(test_input, verbose=False)
-        # assert pred == expected
+        pred = self.normalizer_en.normalize(test_input, verbose=False)
+        assert pred == expected
 
         if self.normalizer_with_audio_en:
             pred_non_deterministic = self.normalizer_with_audio_en.normalize(
@@ -45,3 +45,21 @@ class TestRoman:
                 punct_post_process=False,
             )
             assert expected in pred_non_deterministic
+
+    normalizer_en_projecting = Normalizer(input_case='cased', lang='en', project_input=True, cache_dir=CACHE_DIR, overwrite_cache=False)
+
+    @parameterized.expand(parse_test_case_file('en/data_text_normalization/test_cases_roman.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_project(self, test_input, expected):
+        pred = self.normalizer_en_projecting.normalize(test_input, verbose=False)
+        assert_projecting_output(pred, expected, test_input)
+
+        if self.normalizer_with_audio_en:
+            pred_non_deterministic = self.normalizer_with_audio_en.normalize(
+                test_input, n_tagged=30, punct_post_process=False,
+            )
+            if test_input == expected:
+                assert expected in pred_non_deterministic
+            else:
+                assert f'{expected}[{test_input}]' in pred_non_deterministic

@@ -30,8 +30,8 @@ class RomanFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="roman", kind="classify", deterministic=deterministic)
+    def __init__(self, deterministic: bool = True, lm: bool = False, project_input: bool = False):
+        super().__init__(name="roman", kind="classify", deterministic=deterministic, project_input=project_input)
 
         roman_dict = load_labels(get_abs_path("data/roman/roman_to_spoken.tsv"))
         default_graph = pynini.string_map(roman_dict).optimize()

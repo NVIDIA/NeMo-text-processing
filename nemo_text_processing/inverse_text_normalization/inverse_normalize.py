@@ -44,6 +44,7 @@ class InverseNormalizer(Normalizer):
         self,
         input_case: str = INPUT_LOWER_CASED,
         lang: str = "en",
+        project_input: bool = False,
         whitelist: str = None,
         cache_dir: str = None,
         overwrite_cache: bool = False,
@@ -135,7 +136,18 @@ class InverseNormalizer(Normalizer):
         self.tagger = ClassifyFst(
             cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case
         )
-        self.verbalizer = VerbalizeFinalFst()
+
+        self.project_input = project_input
+        if self.project_input:
+            self.tagger_input_projector = ClassifyFst(
+                cache_dir=cache_dir,
+                project_input=True,
+                overwrite_cache=overwrite_cache,
+                whitelist=whitelist,
+                input_case=input_case,
+            )
+
+        self.verbalizer = VerbalizeFinalFst(cache_dir=cache_dir, project_input=project_input)
         self.parser = TokenParser()
         self.lang = lang
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
@@ -193,6 +205,11 @@ def parse_args():
         default=None,
         type=str,
     )
+    parser.add_argument(
+        "--project_input",
+        help="Add this flag to project input text to ITN output. This is useful for getting a mapping between input and output text.",
+        action="store_true",
+    )
     parser.add_argument("--verbose", help="print info for debugging", action='store_true')
     parser.add_argument("--overwrite_cache", help="set to True to re-create .far grammar files", action="store_true")
     parser.add_argument(
@@ -214,6 +231,7 @@ if __name__ == "__main__":
         lang=args.language,
         cache_dir=args.cache_dir,
         overwrite_cache=args.overwrite_cache,
+        project_input=args.project_input,
         whitelist=whitelist,
     )
     print(f'Time to generate graph: {round(perf_counter() - start_time, 2)} sec')

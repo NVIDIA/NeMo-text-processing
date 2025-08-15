@@ -22,10 +22,13 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal
         e.g. cardinal { integer: "23" negative: "-" } -> -23
+
+    Args:
+        project: if True, adds input projection for mapping original text.
     """
 
-    def __init__(self):
-        super().__init__(name="cardinal", kind="verbalize")
+    def __init__(self, project_input: bool = False):
+        super().__init__(name="cardinal", kind="verbalize", project_input=project_input)
         optional_sign = pynini.closure(
             pynutil.delete("negative:")
             + delete_space
