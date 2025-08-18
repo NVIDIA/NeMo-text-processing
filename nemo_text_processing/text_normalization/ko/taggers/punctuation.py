@@ -16,6 +16,7 @@ import pynini
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 
+
 class PunctuationFst(GraphFst):
     """
     Finite state transducer for classifying punctuation
@@ -29,11 +30,8 @@ class PunctuationFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
-        
-        range_component = (
-            pynini.cross("〜", "부터")
-            | pynini.accep("부터")  
-        )
+
+        range_component = pynini.cross("〜", "부터") | pynini.accep("부터")
 
         graph = pynutil.insert('name: "') + range_component + pynutil.insert('"')
         self.fst = graph.optimize()

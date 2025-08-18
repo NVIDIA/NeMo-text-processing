@@ -17,6 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
+
 class DateFst(GraphFst):
     """
     Korean date verbalizer
@@ -24,22 +25,14 @@ class DateFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
-        
-        era_component = (
-            pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        )
 
-        year_component = (
-            pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        )
+        era_component = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
-        month_component = (
-            pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") 
-        )
+        year_component = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
-        day_component = (
-            pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") 
-        )
+        month_component = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+
+        day_component = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
         week_component = (
             pynutil.delete("weekday: \"")
@@ -50,7 +43,7 @@ class DateFst(GraphFst):
         )
 
         space = pynini.accep(" ")
-        
+
         # This graph now correctly uses the 'space' variable defined above.
         graph_basic_date = (
             pynini.closure(era_component + delete_space, 0, 1)
@@ -59,8 +52,8 @@ class DateFst(GraphFst):
             + pynini.closure(day_component, 0, 1)
             + pynini.closure((delete_space + week_component) | (week_component), 0, 1)
         ) | month_component + delete_space + week_component
-        
+
         final_graph = graph_basic_date
-        
+
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

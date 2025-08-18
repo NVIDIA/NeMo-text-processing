@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
+
 class WhiteListFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)

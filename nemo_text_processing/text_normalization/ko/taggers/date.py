@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
+
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying dates in Korean, e.g.
@@ -54,7 +55,7 @@ class DateFst(GraphFst):
             -> tokens { date { year: "이천이십삼년" month: "삼월" day: "일일" weekday: "수요일" } }
                tokens { name: "부터" }
                tokens { date { month: "유월" day: "십이일" weekday: "화요일" } }
-               
+
     Args:
         cardinal: CardinalFst
     """
@@ -75,47 +76,64 @@ class DateFst(GraphFst):
         # This will match suffixes like "년"(year), "월"(month), "일"(day)
         era_component = pynutil.insert("era: \"") + era + pynutil.insert("\"")
 
-        year_component = (
-            pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("년") + pynutil.insert("\"")
-        )
-        month_component = (
-            pynutil.insert("month: \"") + month + pynutil.insert("월") + pynutil.insert("\"")
-        )
-        day_component = (
-            pynutil.insert("day: \"") + day + pynutil.insert("일") + pynutil.insert("\"")
-        )
+        year_component = pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("년") + pynutil.insert("\"")
+        month_component = pynutil.insert("month: \"") + month + pynutil.insert("월") + pynutil.insert("\"")
+        day_component = pynutil.insert("day: \"") + day + pynutil.insert("일") + pynutil.insert("\"")
 
         # Handle parentheses around weekdays
         front_bracket = (
-            pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete("(") + pynini.closure(pynutil.delete(delete_spaces))
+            pynini.closure(pynutil.delete(delete_spaces))
+            + pynutil.delete("(")
+            + pynini.closure(pynutil.delete(delete_spaces))
         ) | (
-            pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete("（") + pynini.closure(pynutil.delete(delete_spaces))
+            pynini.closure(pynutil.delete(delete_spaces))
+            + pynutil.delete("（")
+            + pynini.closure(pynutil.delete(delete_spaces))
         )
         preceding_bracket = (
-            pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete(")") + pynini.closure(pynutil.delete(delete_spaces))
+            pynini.closure(pynutil.delete(delete_spaces))
+            + pynutil.delete(")")
+            + pynini.closure(pynutil.delete(delete_spaces))
         ) | (
-            pynini.closure(pynutil.delete(delete_spaces)) + pynutil.delete("）") + pynini.closure(pynutil.delete(delete_spaces))
+            pynini.closure(pynutil.delete(delete_spaces))
+            + pynutil.delete("）")
+            + pynini.closure(pynutil.delete(delete_spaces))
         )
 
         week_component_bracketed = (
-            front_bracket + pynutil.insert("weekday: \"") + week + preceding_bracket + pynutil.insert("\"")
-        ) | (
-            front_bracket + pynutil.insert("weekday: \"") + week + pynini.cross("〜", "부터") + week + preceding_bracket + pynutil.insert("\"")
-        ) | (
-            front_bracket + pynutil.insert("weekday: \"") + week + pynutil.delete("・") + week + preceding_bracket + pynutil.insert("\"")
+            (front_bracket + pynutil.insert("weekday: \"") + week + preceding_bracket + pynutil.insert("\""))
+            | (
+                front_bracket
+                + pynutil.insert("weekday: \"")
+                + week
+                + pynini.cross("〜", "부터")
+                + week
+                + preceding_bracket
+                + pynutil.insert("\"")
+            )
+            | (
+                front_bracket
+                + pynutil.insert("weekday: \"")
+                + week
+                + pynutil.delete("・")
+                + week
+                + preceding_bracket
+                + pynutil.insert("\"")
+            )
         )
-        
+
         week_component_plain = pynutil.insert("weekday: \"") + week + pynutil.insert("\"")
         week_component = week_component_bracketed | week_component_plain
-
 
         # Format: YYYY/MM/DD(weekday)
         graph_basic_date = (
             pynini.closure(era_component + pynutil.insert(" "), 0, 1)
             + (pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("년") + pynutil.insert("\""))
-            + signs + pynutil.insert(" ")
+            + signs
+            + pynutil.insert(" ")
             + (pynutil.insert("month: \"") + month + pynutil.insert("월") + pynutil.insert("\""))
-            + signs + pynutil.insert(" ")
+            + signs
+            + pynutil.insert(" ")
             + (pynutil.insert("day: \"") + day + pynutil.insert("일") + pynutil.insert("\""))
             + pynini.closure(pynini.closure(pynutil.insert(" "), 0, 1) + week_component, 0, 1)
         )
@@ -123,10 +141,18 @@ class DateFst(GraphFst):
         # Single elements (year/month/day)
         individual_year_component = (
             pynini.closure(era_component + pynutil.insert(" "), 0, 1)
-            + pynutil.insert("year: \"") + graph_cardinal + pynutil.delete("년") + pynutil.insert("년") + pynutil.insert("\"")
+            + pynutil.insert("year: \"")
+            + graph_cardinal
+            + pynutil.delete("년")
+            + pynutil.insert("년")
+            + pynutil.insert("\"")
         )
-        individual_month_component = pynutil.insert("month: \"") + month + pynutil.delete("월") + pynutil.insert("월") + pynutil.insert("\"")
-        individual_day_component   = pynutil.insert("day: \"")   + day   + pynutil.delete("일") + pynutil.insert("일") + pynutil.insert("\"")
+        individual_month_component = (
+            pynutil.insert("month: \"") + month + pynutil.delete("월") + pynutil.insert("월") + pynutil.insert("\"")
+        )
+        individual_day_component = (
+            pynutil.insert("day: \"") + day + pynutil.delete("일") + pynutil.insert("일") + pynutil.insert("\"")
+        )
 
         graph_individual_component = (
             individual_year_component | individual_month_component | individual_day_component | week_component
@@ -135,9 +161,15 @@ class DateFst(GraphFst):
         graph_individual_component_combined = (
             (individual_year_component + pynutil.insert(" ") + individual_month_component)
             | (individual_month_component + pynutil.insert(" ") + individual_day_component)
-            | (individual_year_component + pynutil.insert(" ") + individual_month_component + pynutil.insert(" ") + individual_day_component)
+            | (
+                individual_year_component
+                + pynutil.insert(" ")
+                + individual_month_component
+                + pynutil.insert(" ")
+                + individual_day_component
+            )
         ) + pynini.closure(pynutil.insert(" ") + week_component, 0, 1)
-        
+
         nendai = pynini.accep("년대")
         era_nendai = (
             pynini.closure(era_component + pynutil.insert(" "), 0, 1)
@@ -147,7 +179,9 @@ class DateFst(GraphFst):
             + pynutil.insert("\"")
         ).optimize()
 
-        graph_all_date = (graph_basic_date | graph_individual_component | graph_individual_component_combined | era_nendai).optimize()
+        graph_all_date = (
+            graph_basic_date | graph_individual_component | graph_individual_component_combined | era_nendai
+        ).optimize()
 
         final_graph = self.add_tokens(graph_all_date)
         self.fst = final_graph.optimize()

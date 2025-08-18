@@ -19,14 +19,14 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, generator_main
 from nemo_text_processing.text_normalization.ko.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.ko.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ko.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ko.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.ko.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
 from nemo_text_processing.text_normalization.ko.taggers.punctuation import PunctuationFst
-from nemo_text_processing.utils.logging import logger
 from nemo_text_processing.text_normalization.ko.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.ko.taggers.date import DateFst
+from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):
@@ -70,7 +70,7 @@ class ClassifyFst(GraphFst):
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
             whitelist = WhiteListFst(deterministic=deterministic)
             punctuation = PunctuationFst(deterministic=deterministic)
-            
+
             classify = pynini.union(
                 pynutil.add_weight(cardinal.fst, 1.1),
                 pynutil.add_weight(date.fst, 1.1),

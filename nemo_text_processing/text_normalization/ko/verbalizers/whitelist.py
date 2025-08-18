@@ -17,11 +17,13 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 
+
 class WhiteListFst(GraphFst):
     """
     tokens { name: "부터" } -> 부터
     tokens { name: "~" }   -> ~
     """
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)
         graph = (
@@ -35,4 +37,3 @@ class WhiteListFst(GraphFst):
         graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)
 
         self.fst = graph.optimize()
-
