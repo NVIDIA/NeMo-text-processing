@@ -14,10 +14,10 @@
 
 
 import os
-
 import pynini
+from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, generator_main
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SIGMA, GraphFst, generator_main
 from nemo_text_processing.utils.logging import logger
 
 
@@ -30,9 +30,7 @@ class PostProcessingFst:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
     """
-
     def __init__(self, cache_dir: str = None, overwrite_cache: bool = False):
-
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
@@ -42,9 +40,49 @@ class PostProcessingFst:
             logger.info(f'Post processing graph was restored from {far_file}.')
         else:
             self.fst = self.get_postprocess_graph()
-
             if far_file:
                 generator_main(far_file, {"post_process_graph": self.fst})
 
     def get_postprocess_graph(self):
-        return pynini.cdrewrite(pynini.cross("", ""), "", "", pynini.closure(NEMO_SIGMA)).optimize()
+        """
+        Build and return the post-processing FST.
+        """
+        sigma = pynini.closure(NEMO_SIGMA)
+
+        # Collapse spaces around the particle "부터"
+        delete_space_around_particle = pynini.cdrewrite(
+            pynini.cross(" 부터 ", "부터"),
+            "",
+            "",
+            sigma,
+        )
+
+        # Join "<Month> <day-word> ... 부터" -> "<Month><day-word>부터"
+        SPACE = pynini.accep(" ")
+        BUHTEO = pynini.accep("부터")
+
+        # Month words in Korean TN output
+        MONTH_WORD = pynini.union(
+            "일월", "이월", "삼월", "사월", "오월", "유월",
+            "칠월", "팔월", "구월", "시월", "십일월", "십이월",
+        )
+
+        # First syllable of the day number word (enough to detect the pattern)
+        NUMHEAD = pynini.union("일", "이", "삼", "사", "오", "육", "칠", "팔", "구", "십")
+
+        rm_space_month_num_bu = pynini.cdrewrite(
+            pynini.cross(" ", ""),                     
+            MONTH_WORD,                                 
+            NUMHEAD + pynini.closure(SPACE) + BUHTEO,
+            sigma,
+        )
+
+        # Apply Rule 1, then Rule 2
+        return (delete_space_around_particle @ rm_space_month_num_bu).optimize()
+
+
+
+
+
+
+
