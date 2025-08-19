@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path, load_labels
 
 
@@ -31,6 +31,23 @@ class DateFst(GraphFst):
 
     def __init__(self, cardinal, deterministic: bool = True):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
+
+        # Vietnamese date keywords
+        DAY_WORD = "ngày"
+        MONTH_WORD = "tháng"
+        YEAR_WORD = "năm"
+        ORDINAL_YEAR_WORD = "năm thứ"
+
+        # Prebuilt patterns for common usage
+        day_prefix = pynini.accep(DAY_WORD + NEMO_SPACE)
+        month_prefix = pynini.accep(MONTH_WORD + NEMO_SPACE)
+        year_prefix = pynini.accep(YEAR_WORD + NEMO_SPACE)
+        ordinal_year_prefix = pynini.accep(ORDINAL_YEAR_WORD + NEMO_SPACE)
+
+        delete_day_prefix = pynutil.delete(DAY_WORD + NEMO_SPACE)
+        delete_month_prefix = pynutil.delete(MONTH_WORD + NEMO_SPACE)
+        delete_year_prefix = pynutil.delete(YEAR_WORD + NEMO_SPACE)
+        delete_ordinal_year_prefix = pynutil.delete(ORDINAL_YEAR_WORD + NEMO_SPACE)
 
         day_mappings = load_labels(get_abs_path("data/date/days.tsv"))
         month_mappings = load_labels(get_abs_path("data/date/months.tsv"))
@@ -60,73 +77,82 @@ class DateFst(GraphFst):
 
         patterns = []
 
+        # DD/MM/YYYY format (Vietnamese standard)
         date_sep = day_part + pynutil.delete(separator) + month_part + pynutil.delete(separator) + year_part
         patterns.append(pynini.compose(day_digit + separator + month_digit + separator + year_digit, date_sep))
         patterns.append(
             pynini.compose(
-                pynini.accep("ngày ") + day_digit + separator + month_digit + separator + year_digit,
-                pynutil.delete("ngày ") + date_sep,
+                day_prefix + day_digit + separator + month_digit + separator + year_digit,
+                delete_day_prefix + date_sep,
             )
         )
 
-        for sep in [separator, pynini.accep(" ")]:
+        # YYYY/MM/DD format (ISO standard) - output in Vietnamese order
+        iso_year_part = pynutil.insert("year: \"") + year_convert + pynutil.insert("\" ")
+        iso_month_part = pynutil.insert("month: \"") + month_convert + pynutil.insert("\" ")
+        iso_day_part = pynutil.insert("day: \"") + day_convert + pynutil.insert("\"")
+
+        iso_date_sep = (
+            iso_year_part + pynutil.delete(separator) + iso_month_part + pynutil.delete(separator) + iso_day_part
+        )
+        patterns.append(pynini.compose(year_digit + separator + month_digit + separator + day_digit, iso_date_sep))
+
+        for sep in [separator, pynini.accep(NEMO_SPACE)]:
             patterns.append(
                 pynini.compose(
-                    pynini.accep("tháng ") + month_digit + sep + year_digit,
-                    pynutil.delete("tháng ") + month_part + pynutil.delete(sep) + year_part,
+                    month_prefix + month_digit + sep + year_digit,
+                    delete_month_prefix + month_part + pynutil.delete(sep) + year_part,
                 )
             )
 
         day_month_sep = day_part + pynutil.delete(separator) + month_final
         patterns.append(
+            pynini.compose(day_prefix + day_digit + separator + month_digit, delete_day_prefix + day_month_sep)
+        )
+
+        patterns.append(
             pynini.compose(
-                pynini.accep("ngày ") + day_digit + separator + month_digit, pynutil.delete("ngày ") + day_month_sep
+                day_prefix + day_digit + pynini.accep(NEMO_SPACE + MONTH_WORD + NEMO_SPACE) + month_digit,
+                delete_day_prefix + day_part + pynutil.delete(NEMO_SPACE + MONTH_WORD + NEMO_SPACE) + month_final,
             )
         )
 
         patterns.append(
             pynini.compose(
-                pynini.accep("ngày ") + day_digit + pynini.accep(" tháng ") + month_digit,
-                pynutil.delete("ngày ") + day_part + pynutil.delete(" tháng ") + month_final,
-            )
-        )
-
-        patterns.append(
-            pynini.compose(
-                pynini.accep("ngày ")
+                day_prefix
                 + day_digit
-                + pynini.accep(" tháng ")
+                + pynini.accep(NEMO_SPACE + MONTH_WORD + NEMO_SPACE)
                 + month_digit
-                + pynini.accep(" năm ")
+                + pynini.accep(NEMO_SPACE + YEAR_WORD + NEMO_SPACE)
                 + year_digit,
-                pynutil.delete("ngày ")
+                delete_day_prefix
                 + day_part
-                + pynutil.delete(" tháng ")
+                + pynutil.delete(NEMO_SPACE + MONTH_WORD + NEMO_SPACE)
                 + month_part
-                + pynutil.delete(" năm ")
+                + pynutil.delete(NEMO_SPACE + YEAR_WORD + NEMO_SPACE)
                 + year_part,
             )
         )
 
-        patterns.append(pynini.compose(pynini.accep("năm ") + year_digit, pynutil.delete("năm ") + year_part))
+        patterns.append(pynini.compose(year_prefix + year_digit, delete_year_prefix + year_part))
 
         era_abbrs = list(era_to_full.keys())
         for era_abbr in era_abbrs:
             patterns.append(
                 pynini.compose(
-                    pynini.accep("năm ") + year_digit + pynini.accep(" ") + pynini.accep(era_abbr),
-                    pynutil.delete("năm ") + year_part + pynutil.delete(" ") + era_part,
+                    year_prefix + year_digit + pynini.accep(NEMO_SPACE) + pynini.accep(era_abbr),
+                    delete_year_prefix + year_part + pynutil.delete(NEMO_SPACE) + era_part,
                 )
             )
 
             patterns.append(
                 pynini.compose(
-                    pynini.accep("năm thứ ") + year_digit + pynini.accep(" ") + pynini.accep(era_abbr),
-                    pynutil.delete("năm thứ ")
+                    ordinal_year_prefix + year_digit + pynini.accep(NEMO_SPACE) + pynini.accep(era_abbr),
+                    delete_ordinal_year_prefix
                     + pynutil.insert("ordinal: \"")
                     + year_convert
                     + pynutil.insert("\" ")
-                    + pynutil.delete(" ")
+                    + pynutil.delete(NEMO_SPACE)
                     + era_part,
                 )
             )

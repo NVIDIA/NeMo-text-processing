@@ -113,7 +113,27 @@ class DecimalFst(GraphFst):
             )
             patterns.append(abbr_pattern)
 
-        # 5. Compound abbreviations: 1tr2 -> một triệu hai trăm nghìn, 2t3 -> hai tỷ ba trăm triệu
+        # 5. Decimal with abbreviations: 2,5tr, but avoid measure conflicts
+        measure_prefix_labels = load_labels(get_abs_path("data/measure/prefixes.tsv"))
+        measure_prefixes = {prefix.lower() for prefix, _ in measure_prefix_labels}
+
+        # Filter quantity abbreviations to avoid measure conflicts
+        safe_quantity_abbrs = [
+            (abbr, full) for abbr, full in quantity_abbr_labels if abbr.lower() not in measure_prefixes
+        ]
+
+        for abbr, full_name in safe_quantity_abbrs:
+            decimal_abbr_pattern = (
+                (integer_part + pynutil.insert(NEMO_SPACE)).ques
+                + pynutil.delete(NEMO_COMMA)
+                + pynutil.insert(NEMO_SPACE)
+                + fractional_part
+                + pynutil.insert(f" quantity: \"{full_name}\"")
+                + pynutil.delete(abbr)
+            )
+            patterns.append(decimal_abbr_pattern)
+
+        # 6. Compound abbreviations: 1tr2 -> một triệu hai trăm nghìn, 2t3 -> hai tỷ ba trăm triệu
         compound_expansions = {
             "tr": ("triệu", "trăm nghìn"),  # 1tr2 -> một triệu hai trăm nghìn
             "t": ("tỷ", "trăm triệu"),  # 2t3 -> hai tỷ ba trăm triệu

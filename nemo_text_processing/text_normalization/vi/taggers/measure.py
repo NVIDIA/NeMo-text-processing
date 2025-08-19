@@ -115,7 +115,7 @@ class MeasureFst(GraphFst):
 
         # Optional negative sign handling for Vietnamese
         optional_graph_negative = pynini.closure(
-            pynini.cross(pynini.union("âm", "trừ"), "negative: \"true\" "),
+            pynini.cross("-", "negative: \"true\" "),
             0,
             1,
         )
@@ -123,9 +123,11 @@ class MeasureFst(GraphFst):
         # Domain restriction patterns - only match core number+unit patterns
         # Remove punctuation handling to let punctuation tagger handle it separately
         optional_space = pynini.closure(NEMO_SPACE, 0, 1)
-        integer_measure_domain = number + optional_space + unit_pattern
-        decimal_measure_domain = decimal_number + optional_space + unit_pattern
-        fraction_measure_domain = number + "/" + number + optional_space + unit_pattern
+        optional_negative_sign = pynini.closure("-" + optional_space, 0, 1)
+
+        integer_measure_domain = optional_negative_sign + number + optional_space + unit_pattern
+        decimal_measure_domain = optional_negative_sign + decimal_number + optional_space + unit_pattern
+        fraction_measure_domain = optional_negative_sign + number + "/" + number + optional_space + unit_pattern
 
         cardinal_number_graph = pynutil.insert('integer: "') + (number @ cardinal_graph) + pynutil.insert('"')
 
