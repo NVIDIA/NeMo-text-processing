@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pynini
+
 from nemo_text_processing.text_normalization.vi.graph_utils import (
     GraphFst,
     delete_preserve_order,
@@ -43,6 +45,12 @@ class MeasureFst(GraphFst):
         # Extract components
         unit = extract_field("units")
 
+        # Handle negative sign - Vietnamese uses "âm" for negative numbers
+        optional_negative = pynini.closure(pynini.cross("negative: \"true\"", "âm ") + delete_space, 0, 1)
+        if not deterministic:
+            # Alternative ways to say negative in Vietnamese
+            optional_negative |= pynini.closure(pynini.cross("negative: \"true\"", "trừ ") + delete_space, 0, 1)
+
         # Combine all number types into single graph
         number_graph = (
             extract_wrapper_content("decimal", decimal.numbers)
@@ -50,10 +58,10 @@ class MeasureFst(GraphFst):
             | extract_wrapper_content("fraction", fraction.numbers)
         )
 
-        # Main pattern: number + space + unit (most common case)
-        graph = number_graph + delete_space + insert_space + unit
+        # Main pattern: [negative] number + space + unit (most common case)
+        graph = optional_negative + number_graph + delete_space + insert_space + unit
 
-        # Handle preserve_order: unit + space + number
-        graph |= unit + delete_space + insert_space + number_graph + delete_preserve_order
+        # Handle preserve_order: [negative] unit + space + number
+        graph |= optional_negative + unit + delete_space + insert_space + number_graph + delete_preserve_order
 
         self.fst = self.delete_tokens(graph).optimize()

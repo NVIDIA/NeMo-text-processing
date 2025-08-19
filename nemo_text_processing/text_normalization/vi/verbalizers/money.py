@@ -88,10 +88,27 @@ class MoneyFst(GraphFst):
             + currency_maj
         )
 
+        # 6. Decimal with quantity: integer + fractional + quantity + currency - for cases like 2,5 triệu đồng
+        graph_decimal_with_quantity = (
+            integer_part
+            + delete_space
+            + insert_space
+            + pynutil.insert(NEMO_COMMA_VI)
+            + insert_space
+            + fractional_part
+            + delete_space
+            + insert_space
+            + quantity
+            + delete_space
+            + insert_space
+            + currency_maj
+        )
+
         # Create main graph with proper priority order (similar to English)
         graph = (
             graph_minor  # Handle minor-only cases first
             | graph_integer_with_minor  # Handle major+minor cases
+            | graph_decimal_with_quantity  # Handle decimal with quantity cases (before simpler decimal)
             | graph_with_quantity  # Handle quantity cases
             | graph_decimal  # Handle decimal cases
             | graph_integer  # Handle simple cases (most common, lowest priority)
