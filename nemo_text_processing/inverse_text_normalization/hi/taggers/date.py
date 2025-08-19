@@ -29,9 +29,9 @@ from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_pat
 
 class DateFst(GraphFst):
     """
-        Finite state transducer for classifying date, 
+        Finite state transducer for classifying date,
         e.g. पांच जनवरी दो हज़ार बारह -> date { month: "जनवरी" day: "५" year: "२०१२" preserve_order: true }
-        e.g. दो हज़ार बारह -> date { year: "२०१२" preserve_order: true }     
+        e.g. दो हज़ार बारह -> date { year: "२०१२" preserve_order: true }
     Args:
         cardinal: CardinalFst
         date: DateFst
@@ -46,7 +46,6 @@ class DateFst(GraphFst):
         cardinal_graph = cardinal.graph_no_exception
 
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
-
         graph_date_days = cardinal.graph_digit | cardinal.graph_teens_and_ties
         date_days = pynini.union(*[integer_to_devanagari(i) for i in range(1, 32)]).optimize()
         graph_date_days = graph_date_days @ date_days
@@ -71,8 +70,7 @@ class DateFst(GraphFst):
         self.ordinal_century = pynutil.insert("era: \"") + cardinal_graph + pynutil.insert("\" ")
         self.morpho_graph = (
             pynutil.insert("morphosyntactic_features: \"") + graph_morph_features + pynutil.insert("\"")
-        )
-
+        ) 
         graph_day_month = self.day + delete_space + self.month
         graph_month_day = self.month + delete_space + self.day
         graph_month_day += pynutil.insert(" preserve_order: true")
@@ -90,7 +88,6 @@ class DateFst(GraphFst):
         graph_year_range_century = self.year_range + delete_space + self.century
 
         graph_ordinal_century = self.ordinal_century + self.morpho_graph + delete_extra_space + self.century
-
         graph_date_exceptions = self.month + delete_space + pynutil.delete("की") + delete_space + self.day
         graph_date_exceptions += pynutil.insert("preserve_order: true")
 

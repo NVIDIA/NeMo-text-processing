@@ -46,7 +46,11 @@ class DateFst(GraphFst):
             + pynutil.add_weight(year_graph, -YEAR_WEIGHT)
             + pynutil.insert("\"")
         )
-        optional_graph_year = pynini.closure(graph_year, 0, 1,)
+        optional_graph_year = pynini.closure(
+            graph_year,
+            0,
+            1,
+        )
         graph_ad_bc = pynutil.insert("text: \"") + prefixes + delete_space + pynutil.insert("\"")
 
         graph_mdy = month_graph + (

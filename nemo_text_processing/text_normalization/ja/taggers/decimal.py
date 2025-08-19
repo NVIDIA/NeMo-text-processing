@@ -25,7 +25,7 @@ class DecimalFst(GraphFst):
     Finite state transducer for classifying decimal, e.g.
         0.5 -> decimal { integer_part: "零" fractional_part: "五" }
         -0.5万 -> decimal { negative: "マイナス" integer_part: "零" fractional_part: "五" quantity: "万"}
-        
+
     Args:
         cardinal: CardinalFst
     """
@@ -46,7 +46,9 @@ class DecimalFst(GraphFst):
         graph_decimal_no_sign = graph_integer + pynutil.delete('.') + pynutil.insert(" ") + graph_fraction
 
         graph_optional_sign = (
-            pynutil.insert("negative: \"") + (pynini.cross("-", "マイナス") | pynini.accep("マイナス")) + pynutil.insert("\"")
+            pynutil.insert("negative: \"")
+            + (pynini.cross("-", "マイナス") | pynini.accep("マイナス"))
+            + pynutil.insert("\"")
         )
 
         graph_decimal = graph_decimal_no_sign | (graph_optional_sign + pynutil.insert(" ") + graph_decimal_no_sign)
