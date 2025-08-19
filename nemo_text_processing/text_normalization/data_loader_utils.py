@@ -45,6 +45,8 @@ known_types = [
     "FRACTION",
     "TIME",
     "ADDRESS",
+    "ROMAN",
+    "RANGE",
 ]
 
 

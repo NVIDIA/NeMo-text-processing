@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_ALPHA, NEMO_DIGIT, NEMO_NOT_SPACE, GraphFst
 
 
 class WordFst(GraphFst):
@@ -30,5 +30,17 @@ class WordFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
-        word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
+
+        # Symbols that should cause token breaks
+        # Include measure symbols, currency symbols, and digits
+        symbols_to_exclude = pynini.union("°", "′", "″", "$", "€", "₩", "£", "¥", "#", "%", "₫", NEMO_DIGIT).optimize()
+
+        word_chars = pynini.closure(pynini.difference(NEMO_NOT_SPACE, symbols_to_exclude), 1)
+        default_word_graph = word_chars
+
+        alpha_word_graph = pynini.closure(NEMO_ALPHA, 1)
+
+        graph = pynutil.add_weight(alpha_word_graph, -1.0) | default_word_graph
+
+        word = pynutil.insert("name: \"") + graph + pynutil.insert("\"")
         self.fst = word.optimize()
