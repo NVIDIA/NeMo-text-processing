@@ -70,7 +70,7 @@ class DateFst(GraphFst):
         self.ordinal_century = pynutil.insert("era: \"") + cardinal_graph + pynutil.insert("\" ")
         self.morpho_graph = (
             pynutil.insert("morphosyntactic_features: \"") + graph_morph_features + pynutil.insert("\"")
-        ) 
+        )
         graph_day_month = self.day + delete_space + self.month
         graph_month_day = self.month + delete_space + self.day
         graph_month_day += pynutil.insert(" preserve_order: true")
