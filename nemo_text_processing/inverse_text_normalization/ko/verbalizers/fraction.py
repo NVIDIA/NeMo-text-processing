@@ -53,7 +53,9 @@ class FractionFst(GraphFst):
 
         regular_graph = (
             pynini.closure((sign_component + pynutil.delete(NEMO_SPACE)), 0, 1)
-            + pynini.closure(mixed_number_component + pynutil.delete(NEMO_SPACE) + pynutil.insert(NEMO_NON_BREAKING_SPACE))
+            + pynini.closure(
+                mixed_number_component + pynutil.delete(NEMO_SPACE) + pynutil.insert(NEMO_NON_BREAKING_SPACE)
+            )
             + numerator_component
             + pynutil.delete(NEMO_SPACE)
             + pynutil.insert("/")

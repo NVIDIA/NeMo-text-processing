@@ -16,8 +16,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
+
 
 class TimeFst(GraphFst):
     """
@@ -28,6 +29,7 @@ class TimeFst(GraphFst):
         e.g. 두시반 -> time { hours: "2" minutes: "30" }
         e.g. 오후 두시반 -> time { prefix: "오후" hours: "2" minutes: "30" }
     """
+
     def __init__(self):
         super().__init__(name="time", kind="classify")
 
@@ -38,18 +40,24 @@ class TimeFst(GraphFst):
         # Special expression for 30 minute
         graph_half = pynini.cross("반", "30")
 
-        hour_component = (pynutil.insert("hours: \"") + (graph_hours + pynutil.delete("시")) + pynutil.insert("\""))
+        hour_component = pynutil.insert("hours: \"") + (graph_hours + pynutil.delete("시")) + pynutil.insert("\"")
 
-        minute_component = (pynutil.insert("minutes: \"") + ((graph_minutes + pynutil.delete("분")) | graph_half) + pynutil.insert("\""))
+        minute_component = (
+            pynutil.insert("minutes: \"")
+            + ((graph_minutes + pynutil.delete("분")) | graph_half)
+            + pynutil.insert("\"")
+        )
 
-        second_component = (pynutil.insert("seconds: \"") + (graph_minutes + pynutil.delete("초")) + pynutil.insert("\""))
+        second_component = (
+            pynutil.insert("seconds: \"") + (graph_minutes + pynutil.delete("초")) + pynutil.insert("\"")
+        )
 
         hour = pynini.closure(hour_component, 0, 1)
         minute = pynini.closure(delete_space + minute_component, 0, 1)
-        second = pynini.closure(delete_space + second_component , 0, 1)
+        second = pynini.closure(delete_space + second_component, 0, 1)
 
         graph_regular = hour + minute + second
-        
+
         # 오전 = AM, 오후 = PM
         prefix_words = pynini.accep("오전") | pynini.accep("오후")
         prefix_tag = pynutil.insert("prefix: \"") + prefix_words + pynutil.insert("\"")
@@ -58,6 +66,10 @@ class TimeFst(GraphFst):
         suffix_words = pynini.accep("전") | pynini.accep("후")
         suffix_tag = pynutil.insert("suffix: \"") + suffix_words + pynutil.insert("\"")
 
-        final_graph = pynini.closure(delete_space + prefix_tag, 0, 1) + graph_regular + pynini.closure(delete_space + suffix_tag, 0, 1)
+        final_graph = (
+            pynini.closure(delete_space + prefix_tag, 0, 1)
+            + graph_regular
+            + pynini.closure(delete_space + suffix_tag, 0, 1)
+        )
 
         self.fst = self.add_tokens(final_graph).optimize()

@@ -17,9 +17,9 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
     NEMO_DIGIT,
+    NEMO_NOT_QUOTE,
     GraphFst,
     delete_space,
-    NEMO_NOT_QUOTE
 )
 
 
@@ -32,6 +32,7 @@ class TimeFst(GraphFst):
         e.g. 두시반 -> time { hours: "2" minutes: "30" }
         e.g. 오후 두시반 -> time { prefix: "오후" hours: "2" minutes: "30" }
     """
+
     def __init__(self):
         super().__init__(name="time", kind="verbalize")
 
@@ -39,32 +40,48 @@ class TimeFst(GraphFst):
         minutes_component = pynutil.delete("minutes: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         seconds_component = pynutil.delete("seconds: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         suffix_component = pynutil.delete("suffix: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        prefix_component = pynutil.delete("prefix: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"") 
+        prefix_component = pynutil.delete("prefix: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         # Add a leading zero to single-digit minutes/seconds
         single_digit = NEMO_DIGIT
         leading_zero = pynutil.insert("0") + single_digit
         add_leading_zero = pynini.union(single_digit @ leading_zero, pynini.closure(NEMO_DIGIT, 2))
-        
+
         minutes = minutes_component @ add_leading_zero
         seconds = seconds_component @ add_leading_zero
-        
+
         # Defining all the possible combinations
         path_h = hours_component + pynutil.insert(":00")
         path_m = minutes
         path_s = seconds
 
         path_hm = hours_component + delete_space + pynutil.insert(":") + minutes
-        path_hs = hours_component + delete_space + pynutil.insert(":") + pynutil.insert("00") + delete_space + pynutil.insert(":") + seconds
+        path_hs = (
+            hours_component
+            + delete_space
+            + pynutil.insert(":")
+            + pynutil.insert("00")
+            + delete_space
+            + pynutil.insert(":")
+            + seconds
+        )
         path_ms = minutes + delete_space + pynutil.insert(":") + seconds
 
-        path_hms = hours_component + delete_space + pynutil.insert(":") + minutes + delete_space + pynutil.insert(":") + seconds
+        path_hms = (
+            hours_component
+            + delete_space
+            + pynutil.insert(":")
+            + minutes
+            + delete_space
+            + pynutil.insert(":")
+            + seconds
+        )
 
         time_graph = pynini.union(path_h, path_m, path_s, path_hm, path_hs, path_ms, path_hms)
 
         # Adding prefix and suffix space
         optional_prefix_out = pynini.closure(delete_space + prefix_component, 0, 1)
         optional_suffix_out = pynini.closure(delete_space + pynutil.insert(" ") + suffix_component, 0, 1)
-        
+
         final_graph = optional_prefix_out + time_graph + optional_suffix_out
         self.fst = self.delete_tokens(delete_space + final_graph).optimize()
