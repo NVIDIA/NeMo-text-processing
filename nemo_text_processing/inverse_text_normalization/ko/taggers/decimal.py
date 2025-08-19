@@ -49,7 +49,6 @@ class DecimalFst(GraphFst):
 
         graph_decimal_regular = integer_part + decimal_point + pynutil.insert(NEMO_SPACE) + fractional_part # Regular decimal like 1.5
         graph_deicimal_larger = get_quantity(graph_decimal_regular) # If decimal is used to express big numbers like  15000 -> "1.5만"
-        
 
         self.decimal = graph_decimal_regular | graph_deicimal_larger
         self.just_decimal = cardinals + pynini.cross("점", ".") + decimal_part

@@ -53,8 +53,7 @@ class FractionFst(GraphFst):
                 decimal | (decimal + connecting_word) | (root_word + decimal) | (cardinal + root_word + decimal)
                 | (root_word + decimal + connecting_word) | (cardinal + root_word + decimal + connecting_word)
                 | cardinal | (cardinal + connecting_word) | (root_word + cardinal) | (cardinal + root_word + cardinal)
-                | (root_word + cardinal + connecting_word) | (cardinal + root_word + cardinal + connecting_word)
-                
+                | (root_word + cardinal + connecting_word) | (cardinal + root_word + cardinal + connecting_word)             
             )
             + pynutil.insert("\"")
         )
