@@ -1,0 +1,23 @@
+zwei dollar~2 $
+ein dollar~1 $
+eine million dollar~1 Mio. $
+ein cent~1 ¢
+zwei cent~2 ¢
+zwanzig cent~20 ¢
+zwanzig euro cent~0,20 €
+zwanzig eurocent~0,20 €
+zweiundzwanzig us cent~0,22 $
+zwei dollar zwanzig~2,20 $
+zweidollarzwanzig~zweidollarzwanzig
+zwei dollar und zwanzig cent~2,20 $
+zwei euro und zwanzig cent~2,20 €
+zwei pfund und zwanzig pence~2,20 £
+zwei euro zwanzig cent~2,20 €
+zwei millionen euro~2 Mio. €
+zwei pfund und ein penny~2,01 £
+fünfzig yen und vierunddreißig sen~50,34 ¥
+fünfzig yen vierunddreißig~50,34 ¥
+sechsundsiebzig paise~0,76 ₹
+vierzig złoty zehn groszen~40,10 zł
+vierzig złoty ein grosz~40,01 zł
+dreizehn franken~13 CHF

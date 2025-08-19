@@ -1,0 +1,10 @@
+112~eins eins zwei
+015 25 673421~null eins fünf zwei fünf sechs sieben drei vier zwei eins
+245 141410~zwei vier fünf eins vier vierzehn zehn
+525 673421~fünf zwei fünf sechs sieben drei vier zwei eins
+093 71 65040~null neun drei sieben eins sechs fünfzig vierzig
++493 079 397172~plus vier neun drei null sieben neun drei neun sieben eins sieben zwei
++498 53 908871~plus vier neun acht fünf drei neun null achtundachtzig einundsiebzig
+084 3 882617~null acht vier drei acht zweiundachtzig sechshundertsiebzehn
+031 68 898566~null drei eins sechs acht neunundachtzig fünfundachtzig sechsundsechzig
+020 06 92796~null zwei null null sechs neun zwei sieben neun sechs

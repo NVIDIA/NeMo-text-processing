@@ -1,0 +1,36 @@
+acht uhr~8:00 Uhr
+vierundzwanzig uhr~24:00 Uhr
+vierundzwanzig uhr zweiundzwanzig e s t~24:22 Uhr e s t
+vierzehn uhr einunddreißig u t c minus fünf~14:31 Uhr UTC-5
+fünf uhr neunzehn sekunden~5:00:19 Uhr
+fünf uhr neunzehn~5:19 Uhr
+um fünf~um 5:00 Uhr
+um fünf neunzehn~um 5:19 Uhr
+zwölf uhr mittags~12:00 Uhr
+eins uhr mittags~13:00 Uhr
+achtzehn uhr~18:00 Uhr
+sechs uhr abends~18:00 Uhr
+achtzehn uhr nachmittags~18:00 Uhr
+acht uhr sieben~8:07 Uhr
+sieben nach acht~8:07 Uhr
+sieben vor acht~7:53 Uhr
+sieben vor acht abends~19:53 Uhr
+null uhr siebzehn~00:17 Uhr
+halb zwölf~11:30 Uhr
+halb zwölf nachts~23:30 Uhr
+viertel vor zwölf~11:45 Uhr
+viertel zwölf~11:15 Uhr
+drei vor zwölf~11:57 Uhr
+zweiundzwanzig vor zwölf~11:38 Uhr
+drei nach zwölf~12:03 Uhr
+viertel nach zwölf~12:15 Uhr
+zehn nach zwölf~12:10 Uhr
+zehn vor zwölf~11:50 Uhr
+viertel nach zwölf nachts~24:15 Uhr
+drei viertel nach zwölf nachts~24:45 Uhr
+null uhr null minuten null sekunden~00:00:00 Uhr
+ein uhr eine minute eine sekunde e s t~1:01:01 Uhr e s t
+zwei uhr zwei minuten drei und zwanzig sekunden~2:02:23 Uhr
+zwei uhr zwei minuten dreiundzwanzig sekunden~2:02:23 Uhr
+zwischen viertel nach sechs uhr abends und ein uhr nachts~zwischen 18:15 Uhr und 1:00 Uhr
+von viertel drei bis fünf nachmittags~von 2:15 Uhr bis 17:00 Uhr
