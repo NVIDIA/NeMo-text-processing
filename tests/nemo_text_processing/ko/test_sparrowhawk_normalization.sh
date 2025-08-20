@@ -46,6 +46,11 @@ testTNFractionText() {
   runtest $input
 }
 
+testTNDateText() {
+ input=$TEST_DIR/ko/data_text_normalization/test_cases_date.txt
+  runtest $input
+}
+
 # Remove all command-line arguments
 shift $#
 

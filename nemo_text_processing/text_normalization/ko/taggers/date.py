@@ -65,6 +65,8 @@ class DateFst(GraphFst):
 
         graph_cardinal = cardinal.graph
 
+        insert_space = pynutil.insert(" ")
+
         month = pynutil.delete("0").ques + pynini.string_file(get_abs_path("data/date/month_number.tsv"))
         day = pynutil.delete("0").ques + pynini.string_file(get_abs_path("data/date/day.tsv"))
         week = pynini.string_file(get_abs_path("data/date/week.tsv"))
@@ -127,52 +129,34 @@ class DateFst(GraphFst):
 
         # Format: YYYY/MM/DD(weekday)
         graph_basic_date = (
-            pynini.closure(era_component + pynutil.insert(" "), 0, 1)
+            pynini.closure(era_component + insert_space, 0, 1)
             + (pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("년") + pynutil.insert("\""))
-            + signs
-            + pynutil.insert(" ")
+            + signs + insert_space
             + (pynutil.insert("month: \"") + month + pynutil.insert("월") + pynutil.insert("\""))
-            + signs
-            + pynutil.insert(" ")
+            + signs + insert_space
             + (pynutil.insert("day: \"") + day + pynutil.insert("일") + pynutil.insert("\""))
-            + pynini.closure(pynini.closure(pynutil.insert(" "), 0, 1) + week_component, 0, 1)
+            + pynini.closure(pynini.closure(insert_space, 0, 1) + week_component, 0, 1)
         )
 
         # Single elements (year/month/day)
         individual_year_component = (
-            pynini.closure(era_component + pynutil.insert(" "), 0, 1)
-            + pynutil.insert("year: \"")
-            + graph_cardinal
-            + pynutil.delete("년")
-            + pynutil.insert("년")
-            + pynutil.insert("\"")
-        )
-        individual_month_component = (
-            pynutil.insert("month: \"") + month + pynutil.delete("월") + pynutil.insert("월") + pynutil.insert("\"")
-        )
-        individual_day_component = (
-            pynutil.insert("day: \"") + day + pynutil.delete("일") + pynutil.insert("일") + pynutil.insert("\"")
+            pynini.closure(era_component + insert_space, 0, 1)
+            + pynutil.insert("year: \"") + graph_cardinal + pynutil.delete("년") + pynutil.insert("년") + pynutil.insert("\"")
         )
 
         graph_individual_component = (
             individual_year_component | individual_month_component | individual_day_component | week_component
-        ) + pynini.closure(pynutil.insert(" ") + week_component, 0, 1)
+        ) + pynini.closure(insert_space + week_component, 0, 1)
 
         graph_individual_component_combined = (
-            (individual_year_component + pynutil.insert(" ") + individual_month_component)
-            | (individual_month_component + pynutil.insert(" ") + individual_day_component)
-            | (
-                individual_year_component
-                + pynutil.insert(" ")
-                + individual_month_component
-                + pynutil.insert(" ")
-                + individual_day_component
-            )
-        ) + pynini.closure(pynutil.insert(" ") + week_component, 0, 1)
-
+            (individual_year_component + insert_space + individual_month_component)
+            | (individual_month_component + insert_space + individual_day_component)
+            | (individual_year_component + insert_space + individual_month_component + insert_space + individual_day_component)
+        ) + pynini.closure(insert_space + week_component, 0, 1)
+        
         nendai = pynini.accep("년대")
         era_nendai = (
-            pynini.closure(era_component + pynutil.insert(" "), 0, 1)
+            pynini.closure(era_component + insert_space, 0, 1)
             + pynutil.insert("year: \"")
             + graph_cardinal
             + nendai
