@@ -131,9 +131,11 @@ class DateFst(GraphFst):
         graph_basic_date = (
             pynini.closure(era_component + insert_space, 0, 1)
             + (pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("년") + pynutil.insert("\""))
-            + signs + insert_space
+            + signs
+            + insert_space
             + (pynutil.insert("month: \"") + month + pynutil.insert("월") + pynutil.insert("\""))
-            + signs + insert_space
+            + signs
+            + insert_space
             + (pynutil.insert("day: \"") + day + pynutil.insert("일") + pynutil.insert("\""))
             + pynini.closure(pynini.closure(insert_space, 0, 1) + week_component, 0, 1)
         )
@@ -141,7 +143,11 @@ class DateFst(GraphFst):
         # Single elements (year/month/day)
         individual_year_component = (
             pynini.closure(era_component + insert_space, 0, 1)
-            + pynutil.insert("year: \"") + graph_cardinal + pynutil.delete("년") + pynutil.insert("년") + pynutil.insert("\"")
+            + pynutil.insert("year: \"")
+            + graph_cardinal
+            + pynutil.delete("년")
+            + pynutil.insert("년")
+            + pynutil.insert("\"")
         )
 
         graph_individual_component = (
@@ -151,9 +157,15 @@ class DateFst(GraphFst):
         graph_individual_component_combined = (
             (individual_year_component + insert_space + individual_month_component)
             | (individual_month_component + insert_space + individual_day_component)
-            | (individual_year_component + insert_space + individual_month_component + insert_space + individual_day_component)
+            | (
+                individual_year_component
+                + insert_space
+                + individual_month_component
+                + insert_space
+                + individual_day_component
+            )
         ) + pynini.closure(insert_space + week_component, 0, 1)
-        
+
         nendai = pynini.accep("년대")
         era_nendai = (
             pynini.closure(era_component + insert_space, 0, 1)
