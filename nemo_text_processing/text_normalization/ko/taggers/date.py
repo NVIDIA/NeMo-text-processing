@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, insert_space, delete_space
+from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
@@ -62,27 +62,25 @@ class DateFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
-        
+
         strip0 = pynini.closure(pynutil.delete("0"), 0, 1)
         graph_cardinal = cardinal.graph
         cardinal_lz = (strip0 + graph_cardinal).optimize()
-        
+
         # Load base .tsv files
         week = pynini.string_file(get_abs_path("data/date/week.tsv"))
         month_exceptions = pynini.string_file(get_abs_path("data/date/exceptions.tsv"))
         month_exceptions_inputs = pynini.project(month_exceptions, "input").optimize()
-        
+
         # Non-exception inputs go through the generic cardinal path
         graph_cardinal_non_exceptions = pynini.compose(
-            pynini.difference(
-                pynini.project(graph_cardinal, "input"), month_exceptions_inputs
-            ).optimize(),
+            pynini.difference(pynini.project(graph_cardinal, "input"), month_exceptions_inputs).optimize(),
             graph_cardinal,
         ).optimize()
-        
+
         # Month cardinal: prefer exceptions;
         month_cardinal = strip0 + (month_exceptions | graph_cardinal_non_exceptions).optimize()
-                
+
         era = pynini.union("기원전", "기원후").optimize()
         signs = pynutil.delete("/") | pynutil.delete(".") | pynutil.delete("-")
 
@@ -92,7 +90,7 @@ class DateFst(GraphFst):
 
         # MM: 01-09 | 10-12
         MM = (pynini.accep("0") + _1to9) | (pynini.accep("1") + pynini.union("0", "1", "2"))
-        
+
         # DD: 01-09 | 10-19 | 20-29 | 30-31
         DD = (
             (pynini.accep("0") + _1to9)
@@ -100,7 +98,7 @@ class DateFst(GraphFst):
             | (pynini.accep("2") + _d)
             | (pynini.accep("3") + pynini.union("0", "1"))
         )
-        
+
         # YYYY: exactly 4 digits and two-digit year for M/D/YY and D/M/YY
         YYYY = _d + _d + _d + _d
         YY = _d + _d
@@ -183,25 +181,35 @@ class DateFst(GraphFst):
         graph_basic_date = (
             pynini.closure(era_component + insert_space, 0, 1)
             + (pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("년") + pynutil.insert("\""))
-            + signs + insert_space
+            + signs
+            + insert_space
             + (pynutil.insert("month: \"") + month_cardinal + pynutil.insert("월") + pynutil.insert("\""))
-            + signs + insert_space
+            + signs
+            + insert_space
             + (pynutil.insert("day: \"") + cardinal_lz + pynutil.insert("일") + pynutil.insert("\""))
             + pynini.closure(pynini.closure(insert_space, 0, 1) + week_component, 0, 1)
         )
-        
+
         # American: MM/DD/YYYY
         graph_american_date = (
-            month_component_md + signs + insert_space
-            + day_component_md + signs + insert_space
+            month_component_md
+            + signs
+            + insert_space
+            + day_component_md
+            + signs
+            + insert_space
             + year_component_md
             + pynini.closure(pynini.closure(insert_space, 0, 1) + week_component, 0, 1)
         ).optimize()
 
         # European: DD/MM/YYYY
         graph_european_date = (
-            day_component_md + signs + insert_space
-            + month_component_md + signs + insert_space
+            day_component_md
+            + signs
+            + insert_space
+            + month_component_md
+            + signs
+            + insert_space
             + year_component_md
             + pynini.closure(pynini.closure(insert_space, 0, 1) + week_component, 0, 1)
         ).optimize()
@@ -235,17 +243,21 @@ class DateFst(GraphFst):
         week_full_word_acceptor = pynini.project(week, "output")
         week_component_full_word = pynutil.insert("weekday: \"") + week_full_word_acceptor + pynutil.insert("\"")
 
-        day_and_weekday_component = individual_day_component + pynini.closure(insert_space, 0, 1) + week_component_full_word
+        day_and_weekday_component = (
+            individual_day_component + pynini.closure(insert_space, 0, 1) + week_component_full_word
+        )
 
-        month_and_weekday_component = individual_month_component + pynini.closure(insert_space, 0, 1) + week_component_full_word
+        month_and_weekday_component = (
+            individual_month_component + pynini.closure(insert_space, 0, 1) + week_component_full_word
+        )
 
         graph_individual_component = (
-            day_and_weekday_component |   
-            month_and_weekday_component |    
-            individual_year_component | 
-            individual_month_component | 
-            individual_day_component | 
-            week_component
+            day_and_weekday_component
+            | month_and_weekday_component
+            | individual_year_component
+            | individual_month_component
+            | individual_day_component
+            | week_component
         ) + pynini.closure(insert_space + week_component, 0, 1)
 
         graph_individual_component_combined = (
@@ -270,7 +282,12 @@ class DateFst(GraphFst):
         ).optimize()
 
         graph_all_date = (
-            graph_basic_date | graph_american_date | graph_european_date | graph_individual_component | graph_individual_component_combined | era_nendai
+            graph_basic_date
+            | graph_american_date
+            | graph_european_date
+            | graph_individual_component
+            | graph_individual_component_combined
+            | era_nendai
         ).optimize()
 
         final_graph = self.add_tokens(graph_all_date)

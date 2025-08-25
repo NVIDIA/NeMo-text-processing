@@ -14,10 +14,17 @@
 
 
 import os
+
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SIGMA, NEMO_SPACE, GraphFst, generator_main, insert_space
+from nemo_text_processing.text_normalization.ko.graph_utils import (
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+    generator_main,
+    insert_space,
+)
 from nemo_text_processing.utils.logging import logger
 
 

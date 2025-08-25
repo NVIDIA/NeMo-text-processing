@@ -25,7 +25,7 @@ class DateFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
-        
+
         era_component = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         year_component = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         month_component = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")

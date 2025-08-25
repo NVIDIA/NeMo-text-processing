@@ -33,7 +33,7 @@ class VerbalizeFinalFst(GraphFst):
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
     """
-    
+
     def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
         super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
 
