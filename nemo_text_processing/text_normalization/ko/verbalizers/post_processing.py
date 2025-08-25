@@ -17,7 +17,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SIGMA, GraphFst, generator_main
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SIGMA, NEMO_SPACE, GraphFst, generator_main, insert_space
 from nemo_text_processing.utils.logging import logger
 
 
@@ -48,7 +48,7 @@ class PostProcessingFst:
         """
         Build and return the post-processing FST.
         """
-        sigma = pynini.closure(NEMO_SIGMA)
+        sigma = pynini.project(pynini.closure(NEMO_SIGMA), "input").optimize()
 
         # Collapse spaces around the particle "부터"
         delete_space_around_particle = pynini.cdrewrite(
@@ -59,7 +59,7 @@ class PostProcessingFst:
         )
 
         # Join "<Month> <day-word> ... 부터" -> "<Month><day-word>부터"
-        SPACE = pynini.accep(" ")
+        SP = pynini.project(NEMO_SPACE, "input").optimize()
         BUHTEO = pynini.accep("부터")
 
         # Month words in Korean TN output
@@ -82,9 +82,9 @@ class PostProcessingFst:
         NUMHEAD = pynini.union("일", "이", "삼", "사", "오", "육", "칠", "팔", "구", "십")
 
         rm_space_month_num_bu = pynini.cdrewrite(
-            pynini.cross(" ", ""),
+            pynini.cross(NEMO_SPACE, ""),
             MONTH_WORD,
-            NUMHEAD + pynini.closure(SPACE) + BUHTEO,
+            NUMHEAD + pynini.closure(SP) + BUHTEO,
             sigma,
         )
 

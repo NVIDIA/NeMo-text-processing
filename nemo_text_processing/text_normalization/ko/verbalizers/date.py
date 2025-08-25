@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 
 
 class DateFst(GraphFst):
@@ -25,15 +25,11 @@ class DateFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
-
+        
         era_component = pynutil.delete("era: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-
         year_component = pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-
         month_component = pynutil.delete("month: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-
         day_component = pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-
         week_component = (
             pynutil.delete("weekday: \"")
             + pynini.closure(delete_space)
@@ -42,9 +38,7 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
 
-        space = pynini.accep(" ")
-
-        # This graph now correctly uses the 'space' variable defined above.
+        # This graph now correctly uses the 'delete_space' variable defined above.
         graph_basic_date = (
             pynini.closure(era_component + delete_space, 0, 1)
             + pynini.closure(year_component + delete_space, 0, 1)

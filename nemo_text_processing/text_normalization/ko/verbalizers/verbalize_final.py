@@ -24,9 +24,16 @@ from nemo_text_processing.utils.logging import logger
 
 class VerbalizeFinalFst(GraphFst):
     """
-    Korean version: Verbalizes entire sentence by composing multiple token blocks.
-    """
+    Finite state transducer that verbalizes an entire sentence, e.g.
+    tokens { name: "its" } tokens { time { hours: "twelve" minutes: "thirty" } } tokens { name: "now" } tokens { name: "." } -> its twelve thirty now .
 
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple options (used for audio-based normalization)
+        cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
+        overwrite_cache: set to True to overwrite .far files
+    """
+    
     def __init__(self, deterministic: bool = True, cache_dir: str = None, overwrite_cache: bool = False):
         super().__init__(name="verbalize_final", kind="verbalize", deterministic=deterministic)
 
