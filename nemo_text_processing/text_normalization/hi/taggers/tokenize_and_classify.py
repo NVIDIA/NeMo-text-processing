@@ -156,7 +156,9 @@ class ClassifyFst(GraphFst):
             classify |= pynutil.add_weight(word_graph, 100)
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(NEMO_SPACE)) + token + pynini.closure(pynutil.insert(NEMO_SPACE) + punct)
+                pynini.closure(punct + pynutil.insert(NEMO_SPACE))
+                + token
+                + pynini.closure(pynutil.insert(NEMO_SPACE) + punct)
             )
 
             graph = token_plus_punct + pynini.closure(

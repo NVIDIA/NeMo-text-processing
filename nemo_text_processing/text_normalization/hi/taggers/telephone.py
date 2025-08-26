@@ -97,6 +97,7 @@ def generate_mobile(context_keywords):
 
     return (number_with_country | number_without_country) + extension_optional
 
+
 def get_landline(std_length, context_keywords):
     context_before, context_after = get_context(context_keywords)
 
