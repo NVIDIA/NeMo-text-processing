@@ -19,6 +19,7 @@ from nemo_text_processing.inverse_text_normalization.ko.verbalizers.decimal impo
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
@@ -46,5 +47,8 @@ class VerbalizeFst(GraphFst):
         time = TimeFst()
         time_graph = time.fst
 
-        graph = cardinal_graph | ordinal_graph | decimal_graph | fraction_graph | time_graph
+        date = DateFst()
+        date_graph = date.fst
+
+        graph = cardinal_graph | ordinal_graph | decimal_graph | fraction_graph | time_graph | date_graph
         self.fst = graph

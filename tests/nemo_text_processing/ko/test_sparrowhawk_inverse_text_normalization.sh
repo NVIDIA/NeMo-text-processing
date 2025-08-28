@@ -47,6 +47,11 @@ testITNTime() {
   runtest $input
 }
 
+testITNDate() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_date.txt
+  runtest $input
+}
+
 # Remove all command-line arguments
 shift $#
 
