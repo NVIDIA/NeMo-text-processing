@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, NEMO_SPACE
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst
 
 
 class DateFst(GraphFst):
@@ -39,7 +39,7 @@ class DateFst(GraphFst):
         day_component = (
             pynutil.delete("day: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.insert("일") + pynutil.delete("\"")
         )
-        
+
         graph = (
             pynini.closure(pynutil.delete(NEMO_SPACE) + year_component, 0, 1)
             + pynini.closure(pynutil.delete(NEMO_SPACE) + month_component, 0, 1)
