@@ -15,12 +15,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import (
-    GraphFst,
-    insert_space,
-    delete_space,
-)
+from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
+
 
 class TimeFst(GraphFst):
     """
@@ -45,9 +42,9 @@ class TimeFst(GraphFst):
         SEP = SP + insert_space
         hour_clock = pynini.string_file(get_abs_path("data/time/hour.tsv"))
         division = pynini.string_file(get_abs_path("data/time/division.tsv"))
-        
+
         division_component = pynutil.insert("suffix: \"") + division + pynutil.insert("\"")
-        
+
         # --- Special single-word times ---
         noon = pynini.accep("정오")
         midnight = pynini.accep("자정")
@@ -88,12 +85,8 @@ class TimeFst(GraphFst):
         )
 
         # Priority: 13-24 > 0 > 1-12 to prevent partial matching errors
-        hour_component_ko = (
-            hour_component_ko_13_24
-            | hour_component_ko_zero
-            | hour_component_ko_1_12
-        ).optimize()
-        
+        hour_component_ko = (hour_component_ko_13_24 | hour_component_ko_zero | hour_component_ko_1_12).optimize()
+
         # Minutes: number+"분" or "반" (approx. 30분). Allows optional '쯤|경' after minutes/반.
         about_word = pynini.union("쯤", "경")
         minute_number = (
@@ -139,21 +132,14 @@ class TimeFst(GraphFst):
         ).optimize()
 
         # Special words with optional suffix
-        graph_special = (
-            suffix_prefix_opt
-            + (noon_component | midnight_component)
-            + suffix_postfix_opt
-        ).optimize()
+        graph_special = (suffix_prefix_opt + (noon_component | midnight_component) + suffix_postfix_opt).optimize()
 
         # --- Clock patterns: HH:MM[:SS] ---
         colon = pynutil.delete(":")
-        
+
         # Map 1-12 hours using native-Korean words, allowing an optional leading zero.
         graph_hour_1_12 = (
-            pynutil.insert("hours: \"")
-            + (strip0 + hour_clock)
-            + pynutil.insert("시")
-            + pynutil.insert("\"")
+            pynutil.insert("hours: \"") + (strip0 + hour_clock) + pynutil.insert("시") + pynutil.insert("\"")
         ).optimize()
 
         # 0, 00, and 13-24 -> Sino-Korean words
@@ -164,28 +150,15 @@ class TimeFst(GraphFst):
         )
         hour_sino_read = hour_sino_val @ graph_cardinal
 
-        graph_hour_others = (
-            pynutil.insert("hours: \"")
-            + hour_sino_read
-            + pynutil.insert("시")
-            + pynutil.insert("\"")
-        )
+        graph_hour_others = pynutil.insert("hours: \"") + hour_sino_read + pynutil.insert("시") + pynutil.insert("\"")
 
         hour_clock_component = (graph_hour_1_12 | graph_hour_others).optimize()
 
         minute_clock_component = (
-            pynutil.insert("minutes: \"")
-            + strip0
-            + graph_cardinal
-            + pynutil.insert("분")
-            + pynutil.insert("\"")
+            pynutil.insert("minutes: \"") + strip0 + graph_cardinal + pynutil.insert("분") + pynutil.insert("\"")
         )
         second_clock_component = (
-            pynutil.insert("seconds: \"")
-            + strip0
-            + graph_cardinal
-            + pynutil.insert("초")
-            + pynutil.insert("\"")
+            pynutil.insert("seconds: \"") + strip0 + graph_cardinal + pynutil.insert("초") + pynutil.insert("\"")
         )
 
         # HH:MM (drop minutes if "00")
@@ -206,7 +179,7 @@ class TimeFst(GraphFst):
             + delete_space.ques
             + colon
             + delete_space.ques
-            + (pynini.cross("00", "") | pynini.closure(insert_space + minute_clock_component, 0, 1)) 
+            + (pynini.cross("00", "") | pynini.closure(insert_space + minute_clock_component, 0, 1))
             + delete_space.ques
             + colon
             + delete_space.ques

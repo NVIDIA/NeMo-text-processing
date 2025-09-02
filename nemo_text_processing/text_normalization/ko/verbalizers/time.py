@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space, delete_space
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 
 
 class TimeFst(GraphFst):
@@ -27,20 +27,30 @@ class TimeFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
-        
+
         hour_component = pynutil.delete("hours: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         minute_content = pynini.closure(NEMO_NOT_QUOTE)
-        minute_component = pynutil.delete("minutes: \"") + pynini.cross("영분", "") + pynutil.delete("\"") | \
-                           pynutil.delete("minutes: \"") + (minute_content - "영분") + pynutil.delete("\"")
+        minute_component = pynutil.delete("minutes: \"") + pynini.cross("영분", "") + pynutil.delete(
+            "\""
+        ) | pynutil.delete("minutes: \"") + (minute_content - "영분") + pynutil.delete("\"")
 
         second_content = pynini.closure(NEMO_NOT_QUOTE)
-        second_component = pynutil.delete("seconds: \"") + pynini.cross("영초", "") + pynutil.delete("\"") | \
-                           pynutil.delete("seconds: \"") + (second_content - "영초") + pynutil.delete("\"")
+        second_component = pynutil.delete("seconds: \"") + pynini.cross("영초", "") + pynutil.delete(
+            "\""
+        ) | pynutil.delete("seconds: \"") + (second_content - "영초") + pynutil.delete("\"")
 
         division_component = pynutil.delete("suffix: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        
+
         graph_basic_time = pynini.closure(division_component + delete_space + insert_space, 0, 1) + (
-            (hour_component + delete_space + insert_space + minute_component + delete_space + insert_space + second_component)
+            (
+                hour_component
+                + delete_space
+                + insert_space
+                + minute_component
+                + delete_space
+                + insert_space
+                + second_component
+            )
             | (hour_component + delete_space + insert_space + minute_component)
             | hour_component
             | minute_component
