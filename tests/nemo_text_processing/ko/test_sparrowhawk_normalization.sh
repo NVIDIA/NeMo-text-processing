@@ -51,6 +51,11 @@ testTNDateText() {
   runtest $input
 }
 
+testTNTimeText() {
+ input=$TEST_DIR/ko/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
+
 # Remove all command-line arguments
 shift $#
 

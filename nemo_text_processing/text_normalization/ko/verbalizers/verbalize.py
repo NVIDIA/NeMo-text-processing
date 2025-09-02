@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.ko.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ko.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ko.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.ko.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.verbalizers.word import WordFst
 
@@ -45,6 +46,7 @@ class VerbalizeFst(GraphFst):
         word = WordFst(deterministic=deterministic)
         fraction = FractionFst(deterministic=deterministic)
         whitelist = WhiteListFst(deterministic=deterministic)
+        time = TimeFst(deterministic=deterministic)
 
         graph = pynini.union(
             cardinal.fst,
@@ -54,6 +56,7 @@ class VerbalizeFst(GraphFst):
             fraction.fst,
             date.fst,
             whitelist.fst,
+            time.fst,
         )
 
         self.fst = graph.optimize()
