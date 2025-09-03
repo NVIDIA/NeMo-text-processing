@@ -39,7 +39,7 @@ class TestSerial:
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         pred = self.normalizer_en.normalize(test_input, verbose=False, punct_post_process=False)
-        assert pred == expected, f"input: {test_input}"
+        assert pred == expected
 
         if self.normalizer_with_audio_en:
             pred_non_deterministic = self.normalizer_with_audio_en.normalize(

@@ -40,16 +40,16 @@ class TestMoney:
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer_en.inverse_normalize(test_input, verbose=False)
-        assert pred == expected, f"input: {test_input}"
+        assert pred == expected
         pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
-        assert pred == expected, f"input: {test_input}"
+        assert pred == expected
 
     @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_money_cased.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm_cased(self, test_input, expected):
         pred = self.inverse_normalizer_en_cased.inverse_normalize(test_input, verbose=False)
-        assert pred == expected, f"input: {test_input}"
+        assert pred == expected
 
     normalizer_en = Normalizer(
         input_case='cased', lang='en', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=False
@@ -65,7 +65,7 @@ class TestMoney:
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         pred = self.normalizer_en.normalize(test_input, verbose=False)
-        assert pred == expected, f"input: {test_input}"
+        assert pred == expected
 
         if self.normalizer_with_audio_en:
             pred_non_deterministic = self.normalizer_with_audio_en.normalize(
