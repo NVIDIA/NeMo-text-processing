@@ -88,6 +88,12 @@ class DateFst(GraphFst):
         _d = pynini.union(*[pynini.accep(str(i)) for i in range(10)])
         _1to9 = pynini.union(*[pynini.accep(str(i)) for i in range(1, 10)])
 
+        # For standalone years:
+        # - No era: 1–4 digits with NO leading zeros
+        YEAR_NO_ERA_1TO4 = pynini.closure(pynutil.delete("0"), 0, 3) + _1to9 + pynini.closure(_d, 0, 3)
+        # - With era (기원전/기원후): allow leading zeros but strip them
+        YEAR_ERA_1TO4 = pynini.closure(pynutil.delete("0"), 0, 3) + _1to9 + pynini.closure(_d, 0, 3)
+
         # MM: 01-09 | 10-12
         MM = (pynini.accep("0") + _1to9) | (pynini.accep("1") + pynini.union("0", "1", "2"))
 
@@ -100,13 +106,12 @@ class DateFst(GraphFst):
         )
 
         # YYYY: exactly 4 digits and two-digit year for M/D/YY and D/M/YY
-        YYYY = _d + _d + _d + _d
+        YYYY = pynini.union("1", "2") + _d + _d + _d
         YY = _d + _d
 
         # Map digits -> cardinal words using existing graphs (strip leading zero via month_cardinal/cardinal_lz)
         mm_to_text = pynini.compose(MM, month_cardinal).optimize()
         dd_to_text = pynini.compose(DD, cardinal_lz).optimize()
-        yyyy_to_text = pynini.compose(YYYY, graph_cardinal).optimize()
         yy_to_text = pynini.compose(YY, graph_cardinal).optimize()
 
         # Components with tags/suffixes (strict)
@@ -116,21 +121,12 @@ class DateFst(GraphFst):
         day_component_md = (
             pynutil.insert("day: \"") + dd_to_text + pynutil.insert("일") + pynutil.insert("\"")
         ).optimize()
-        year_component_y4 = (
-            pynutil.insert("year: \"") + yyyy_to_text + pynutil.insert("년") + pynutil.insert("\"")
-        ).optimize()
         year_component_y2 = (
             pynutil.insert("year: \"") + yy_to_text + pynutil.insert("년") + pynutil.insert("\"")
         ).optimize()
 
-        # Prefer 4-digit year; still allow 2-digit with worse weight
-        year_component_md = (year_component_y4 | pynutil.add_weight(year_component_y2, 1.0)).optimize()
-
         # Generic components
         era_component = pynutil.insert("era: \"") + era + pynutil.insert("\"")
-        year_component = pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("년") + pynutil.insert("\"")
-        month_component = pynutil.insert("month: \"") + month_cardinal + pynutil.insert("월") + pynutil.insert("\"")
-        day_component = pynutil.insert("day: \"") + cardinal_lz + pynutil.insert("일") + pynutil.insert("\"")
 
         # Brackets for weekday
         front_bracket = (
@@ -176,11 +172,24 @@ class DateFst(GraphFst):
 
         week_component_plain = pynutil.insert("weekday: \"") + week + pynutil.insert("\"")
         week_component = week_component_bracketed | week_component_plain
+        
+        # Strict 4-digit year component (1000–2999)
+        year_component_y4_strict = (
+            pynutil.insert("year: \"")
+            + (YYYY @ graph_cardinal)
+            + pynutil.insert("년")
+            + pynutil.insert("\"")
+        ).optimize()
 
+        # Prefer strict 4-digit; still allow 2-digit with worse weight (for MM/DD/YY etc.)
+        year_component_md_strict = (
+            year_component_y4_strict | pynutil.add_weight(year_component_y2, 1.0)
+        ).optimize()
+        
         # Format: YYYY/MM/DD(weekday)
         graph_basic_date = (
             pynini.closure(era_component + insert_space, 0, 1)
-            + (pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("년") + pynutil.insert("\""))
+            + year_component_y4_strict
             + signs
             + insert_space
             + (pynutil.insert("month: \"") + month_cardinal + pynutil.insert("월") + pynutil.insert("\""))
@@ -198,7 +207,7 @@ class DateFst(GraphFst):
             + day_component_md
             + signs
             + insert_space
-            + year_component_md
+            + year_component_md_strict
             + pynini.closure(pynini.closure(insert_space, 0, 1) + week_component, 0, 1)
         ).optimize()
 
@@ -210,19 +219,27 @@ class DateFst(GraphFst):
             + month_component_md
             + signs
             + insert_space
-            + year_component_md
+            + year_component_md_strict
             + pynini.closure(pynini.closure(insert_space, 0, 1) + week_component, 0, 1)
         ).optimize()
 
         # Single elements (year/month/day)
         individual_year_component = (
-            pynini.closure(era_component + insert_space, 0, 1)
+            # with era: (기원전|기원후) + 1~4 digits (leading zeros allowed → stripped)
+            (era_component + insert_space
             + pynutil.insert("year: \"")
-            + graph_cardinal
+            + (YEAR_ERA_1TO4 @ graph_cardinal)
             + pynutil.delete("년")
             + pynutil.insert("년")
-            + pynutil.insert("\"")
-        )
+            + pynutil.insert("\""))
+            |
+            # no era: 1~4 digits, no leading zero
+            (pynutil.insert("year: \"")
+            + (YEAR_NO_ERA_1TO4 @ graph_cardinal)
+            + pynutil.delete("년")
+            + pynutil.insert("년")
+            + pynutil.insert("\""))
+        ).optimize()
 
         individual_month_component = (
             pynutil.insert("month: \"")
