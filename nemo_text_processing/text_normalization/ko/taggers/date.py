@@ -172,20 +172,15 @@ class DateFst(GraphFst):
 
         week_component_plain = pynutil.insert("weekday: \"") + week + pynutil.insert("\"")
         week_component = week_component_bracketed | week_component_plain
-        
+
         # Strict 4-digit year component (1000–2999)
         year_component_y4_strict = (
-            pynutil.insert("year: \"")
-            + (YYYY @ graph_cardinal)
-            + pynutil.insert("년")
-            + pynutil.insert("\"")
+            pynutil.insert("year: \"") + (YYYY @ graph_cardinal) + pynutil.insert("년") + pynutil.insert("\"")
         ).optimize()
 
         # Prefer strict 4-digit; still allow 2-digit with worse weight (for MM/DD/YY etc.)
-        year_component_md_strict = (
-            year_component_y4_strict | pynutil.add_weight(year_component_y2, 1.0)
-        ).optimize()
-        
+        year_component_md_strict = (year_component_y4_strict | pynutil.add_weight(year_component_y2, 1.0)).optimize()
+
         # Format: YYYY/MM/DD(weekday)
         graph_basic_date = (
             pynini.closure(era_component + insert_space, 0, 1)
@@ -226,19 +221,24 @@ class DateFst(GraphFst):
         # Single elements (year/month/day)
         individual_year_component = (
             # with era: (기원전|기원후) + 1~4 digits (leading zeros allowed → stripped)
-            (era_component + insert_space
-            + pynutil.insert("year: \"")
-            + (YEAR_ERA_1TO4 @ graph_cardinal)
-            + pynutil.delete("년")
-            + pynutil.insert("년")
-            + pynutil.insert("\""))
+            (
+                era_component
+                + insert_space
+                + pynutil.insert("year: \"")
+                + (YEAR_ERA_1TO4 @ graph_cardinal)
+                + pynutil.delete("년")
+                + pynutil.insert("년")
+                + pynutil.insert("\"")
+            )
             |
             # no era: 1~4 digits, no leading zero
-            (pynutil.insert("year: \"")
-            + (YEAR_NO_ERA_1TO4 @ graph_cardinal)
-            + pynutil.delete("년")
-            + pynutil.insert("년")
-            + pynutil.insert("\""))
+            (
+                pynutil.insert("year: \"")
+                + (YEAR_NO_ERA_1TO4 @ graph_cardinal)
+                + pynutil.delete("년")
+                + pynutil.insert("년")
+                + pynutil.insert("\"")
+            )
         ).optimize()
 
         individual_month_component = (
