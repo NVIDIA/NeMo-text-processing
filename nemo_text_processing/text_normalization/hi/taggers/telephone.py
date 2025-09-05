@@ -36,7 +36,6 @@ insert_shunya = pynutil.insert('शून्य') + insert_space
 digit_to_word = pynini.string_file(get_abs_path("data/telephone/number.tsv"))
 digits = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-country_codes = pynini.string_file(get_abs_path("data/telephone/country_codes.tsv"))
 mobile_context = pynini.string_file(get_abs_path("data/telephone/mobile_context.tsv"))
 landline_context = pynini.string_file(get_abs_path("data/telephone/landline_context.tsv"))
 credit_context = pynini.string_file(get_abs_path("data/telephone/credit_context.tsv"))
@@ -51,12 +50,13 @@ def generate_mobile(context_keywords):
     # Filter cardinals to only include allowed digits
     mobile_start_digit = allowed_digits @ digits | allowed_digits @ digit_to_word
 
+    country_code_digits = pynini.closure((digit_to_word | digits | zero) + insert_space, 1, 3)
     country_code = (
         pynutil.insert("country_code: \"")
         + context_before
         + pynini.cross("+", "प्लस")
         + insert_space
-        + country_codes
+        + country_code_digits
         + pynutil.insert("\" ")
         + pynini.closure(delete_space, 0, 1)
     )
@@ -71,14 +71,18 @@ def generate_mobile(context_keywords):
         1,
     )
 
+    number_part = (
+        mobile_start_digit
+        + insert_space
+        + pynini.closure((digit_to_word | digits | zero) + insert_space, 9)
+    )
+
     number_without_country = (
         pynutil.insert("number_part: \"")
         + context_before
         + delete_zero_optional
         + insert_shunya
-        + mobile_start_digit
-        + insert_space
-        + pynini.closure((digit_to_word | digits | zero) + insert_space, 9)
+        + number_part
         + context_after
         + pynutil.insert("\" ")
         + delete_space
@@ -87,9 +91,7 @@ def generate_mobile(context_keywords):
     number_with_country = (
         country_code
         + pynutil.insert("number_part: \"")
-        + mobile_start_digit
-        + insert_space
-        + pynini.closure((digit_to_word | digits | zero) + insert_space, 9)
+        + number_part
         + context_after
         + pynutil.insert("\" ")
         + delete_space
