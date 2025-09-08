@@ -71,11 +71,7 @@ def generate_mobile(context_keywords):
         1,
     )
 
-    number_part = (
-        mobile_start_digit
-        + insert_space
-        + pynini.closure((digit_to_word | digits | zero) + insert_space, 9)
-    )
+    number_part = mobile_start_digit + insert_space + pynini.closure((digit_to_word | digits | zero) + insert_space, 9)
 
     number_without_country = (
         pynutil.insert("number_part: \"")
