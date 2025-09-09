@@ -117,12 +117,18 @@ def get_landline(std_length, context_keywords):
         + pynini.closure((digit_to_word | digits | zero) + insert_space, landline_digit_count, landline_digit_count)
     )
 
-    separator_optional = pynini.closure(pynini.cross("-", ""), 0, 1)
+    separator_optional = pynini.closure(pynini.cross("-", "") | pynini.cross(".", ""), 0, 1)
+
+    std_code_in_brackets = (
+        delete_zero_optional + delete_space + pynutil.delete("(") + pynini.closure(delete_space, 0, 1) + std_code_graph + pynini.closure(delete_space, 0, 1) + pynutil.delete(")")
+    )
+    
+    std_part = pynini.union(std_code_graph, std_code_in_brackets)
 
     return (
         pynutil.insert("number_part: \"")
         + context_before
-        + std_code_graph
+        + std_part
         + separator_optional
         + delete_space
         + landline_graph
