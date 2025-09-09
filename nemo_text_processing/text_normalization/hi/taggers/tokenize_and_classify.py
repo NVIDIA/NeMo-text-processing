@@ -20,6 +20,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
+    NEMO_SPACE,
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_extra_space,
@@ -34,6 +35,7 @@ from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.taggers.ordinals import OrdinalFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.hi.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
@@ -129,6 +131,11 @@ class ClassifyFst(GraphFst):
             punct_graph = punctuation.fst
             logging.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
 
+            start_time = time.time()
+            telephone = TelephoneFst()
+            telephone_graph = telephone.fst
+            logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(cardinal_graph, 1.1)
@@ -139,6 +146,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(telephone_graph, 1.1)
             )
 
             start_time = time.time()
@@ -148,20 +156,22 @@ class ClassifyFst(GraphFst):
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             punct = pynini.closure(
                 pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                | (pynutil.insert(" ") + punct),
+                | (pynutil.insert(NEMO_SPACE) + punct),
                 1,
             )
 
             classify |= pynutil.add_weight(word_graph, 100)
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+                pynini.closure(punct + pynutil.insert(NEMO_SPACE))
+                + token
+                + pynini.closure(pynutil.insert(NEMO_SPACE) + punct)
             )
 
             graph = token_plus_punct + pynini.closure(
                 (
                     pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                    | (pynutil.insert(" ") + punct + pynutil.insert(" "))
+                    | (pynutil.insert(NEMO_SPACE) + punct + pynutil.insert(NEMO_SPACE))
                 )
                 + token_plus_punct
             )
