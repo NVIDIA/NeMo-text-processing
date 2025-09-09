@@ -120,9 +120,15 @@ def get_landline(std_length, context_keywords):
     separator_optional = pynini.closure(pynini.cross("-", "") | pynini.cross(".", ""), 0, 1)
 
     std_code_in_brackets = (
-        delete_zero_optional + delete_space + pynutil.delete("(") + pynini.closure(delete_space, 0, 1) + std_code_graph + pynini.closure(delete_space, 0, 1) + pynutil.delete(")")
+        delete_zero_optional
+        + delete_space
+        + pynutil.delete("(")
+        + pynini.closure(delete_space, 0, 1)
+        + std_code_graph
+        + pynini.closure(delete_space, 0, 1)
+        + pynutil.delete(")")
     )
-    
+
     std_part = pynini.union(std_code_graph, std_code_in_brackets)
 
     return (
