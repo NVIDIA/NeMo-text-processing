@@ -135,7 +135,7 @@ class ElectronicFst(GraphFst):
             pynutil.insert('domain: "')
             + (pynini.closure(accepted_characters, 1) + pynini.closure(domain_component, 1))
             + pynutil.insert('"'),
-            0.1
+            0.1,
         ).optimize()
 
         graph |= pynutil.add_weight(graph_domain, MIN_NEG_WEIGHT)
