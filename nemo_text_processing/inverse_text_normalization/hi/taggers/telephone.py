@@ -15,12 +15,10 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst, delete_space, NEMO_WHITE_SPACE, NEMO_CHAR, insert_space, delete_extra_space
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst, delete_space, NEMO_WHITE_SPACE, NEMO_CHAR
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path, apply_fst
 
-delete_zero = pynutil.delete(pynini.union("0", "०"))
-delete_zero_optional = pynini.closure(delete_zero, 0, 1)
-insert_shunya = pynutil.insert('शून्य') + insert_space
+shunya = pynini.cross("शून्य", "०")
 
 digit = (
     pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert() 
@@ -108,80 +106,20 @@ def generate_mobile(context_keywords):
     )
 
     return (number_without_country | number_with_country) + extension
-
+    
 def generate_telephone(context_keywords):
     context_before, context_after = get_context(context_keywords)
+    shunya_optional = pynini.closure(shunya + delete_space, 0, 1)
 
-    graph_country_code = (
-        pynutil.insert("country_code: \"")
-        + pynini.closure(context_before + NEMO_WHITE_SPACE, 0, 1) 
-        + pynini.cross("प्लस", "+") + NEMO_WHITE_SPACE
-        + delete_space + country_code
-        + pynutil.insert("\" ")
-    )
-
-    number_without_country = (
-        pynutil.insert("number_part: \"")
-        + pynini.closure(context_before + NEMO_WHITE_SPACE, 0, 1)
-        + mobile_start_digit + delete_space
-        + pynini.closure(digit + delete_space, 8, 8) + digit
-        + pynini.closure(context_after, 0, 1)
-        + pynutil.insert("\" ")
-    )
-
-    number_with_country = (
-        graph_country_code + NEMO_WHITE_SPACE
-        + pynutil.insert("number_part: \"")
-        + mobile_start_digit + delete_space
-        + pynini.closure(digit + delete_space, 8, 8) + digit # \d{8,8}
-        + pynini.closure(NEMO_WHITE_SPACE + context_after, 0, 1)
-        + pynutil.insert("\" ")
-    )
-
-    ext_digits = pynini.closure(digit + delete_space, 0, 2) + digit
-    extension = (
-        pynutil.insert("extension: \"")
-        + delete_space                                     
-        + pynini.closure(ext_digits, 0, 1)
-        + pynini.closure(context_after, 0, 1)                 
-        + pynutil.insert("\" ")
-        + delete_space
-    )
-
-    return (number_without_country | number_with_country) + extension
-    
-def get_landline(std_list, std_length, context_keywords):
-    context_before, context_after = get_context(context_keywords)
-    std_digits = pynini.union(*[std for std in std_list if len(std.strip()) == std_length])
-    std_graph = delete_zero_optional + insert_shunya + std_digits @ std_codes + insert_space
-    
-    landline_digits = pynini.closure(digit + NEMO_WHITE_SPACE, 1, 9-std_length) 
-    landline_graph = landline_start_digit + insert_space + landline_digits
-    
-    seperator_optional = pynini.closure(pynini.cross("-", ""), 0, 1)
+    landline = shunya_optional + pynini.closure(digit + delete_space, 9, 9) + digit
+    landline_with_context_before = context_before + NEMO_WHITE_SPACE + landline
+    landline_with_context_after = landline + NEMO_WHITE_SPACE + context_after
 
     return (
         pynutil.insert("number_part: \"") 
-        + context_before 
-        + std_graph 
-        + seperator_optional 
-        + delete_space 
-        + landline_graph 
-        + context_after 
+        + (landline | landline_with_context_before | landline_with_context_after) 
         + pynutil.insert("\" ")
     )
-
-def generate_telephone(context_keywords):
-    graph = (
-        get_landline(2, context_keywords)
-        | get_landline(3, context_keywords)
-        | get_landline(4, context_keywords)
-        | get_landline(5, context_keywords)
-        | get_landline(6, context_keywords)
-        | get_landline(7, context_keywords)
-    )
-    
-    return graph
 
 class TelephoneFst(GraphFst):
     """
@@ -195,13 +133,15 @@ class TelephoneFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="telephone", kind="classify")
 
-        credit_card = generate_credit(["नंबर", "कार्ड", "क्रेडिट"])
+        mobile = generate_mobile(["नंबर", "मोबाइल", "फोन", "कॉल"])
+        landline = generate_telephone(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉल"])
         pincode = generate_pincode(["पिन", "कोड", "पिनकोड"])
+        credit = generate_credit(["नंबर", "कार्ड", "क्रेडिट"])
 
         graph = (
-            # pynutil.add_weight(mobile_number, 0.7)
-            # | pynutil.add_weight(landline, 0.8)
-            pynutil.add_weight(credit_card, 0.9)
+            pynutil.add_weight(mobile, 0.7)
+            | pynutil.add_weight(landline, 0.8)
+            | pynutil.add_weight(credit, 0.9)
             | pynutil.add_weight(pincode, 1)
         )
 
@@ -210,13 +150,23 @@ class TelephoneFst(GraphFst):
 
 if __name__ == '__main__':
     def run_test(tests, graph):
+        test_count = len(tests)
+        fail_count = pass_count = 0
         print()
         for test in tests:
-            apply_fst(test, graph)
-            print('-'*50)
+            try:
+                # print(pynini.shortestpath(test @ graph).string())
+                # print('-'*50)
+                pass_count += 1
+            except pynini.FstOpError:
+                print(f"Error: No valid output with given input: '{test}'")
+                fail_count += 1
+                print('-'*50)
+        
+        print(f"\nTotal : {test_count} \nFailed : {fail_count} \nPassed : {pass_count}")
 
     mobile = generate_mobile(["नंबर", "मोबाइल", "फोन", "कॉल"])
-    telephone = generate_telephone(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉल"])
+    landline = generate_telephone(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉल"])
     pincode = generate_pincode(["पिन", "कोड", "पिनकोड"])
     credit = generate_credit(["नंबर", "कार्ड", "क्रेडिट"])
 
@@ -248,11 +198,16 @@ if __name__ == '__main__':
     ]
 
     telephone_tests = [
-        "शून्य चार शून्य दो सात आठ एक आठ तीन नौ",
+        "शून्य चार शून्य दो सात आठ एक आठ तीन नौ नौ",
+        "चार शून्य दो सात आठ एक आठ तीन नौ नौ",
 
+        "मोबाइल शून्य चार शून्य दो सात आठ एक आठ तीन नौ नौ",
+        "शून्य चार शून्य दो सात आठ एक आठ तीन नौ नौ मोबाइल",
+        "मोबाइल चार शून्य दो सात आठ एक आठ तीन नौ नौ",
+        "चार शून्य दो सात आठ एक आठ तीन नौ नौ मोबाइल",
     ]
 
     tests = mobile_tests + pincode_tests + credit_tests + telephone_tests
-    combined_graph = mobile | pincode | credit | telephone
+    combined_graph = mobile | pincode | credit | landline
 
-    run_test(telephone_tests, telephone)
+    run_test(telephone_tests, landline)
