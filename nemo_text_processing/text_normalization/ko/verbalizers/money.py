@@ -56,10 +56,10 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
 
         # --- fields ---
-        integer_part     = del_key_val("integer_part")
-        minor_part_drop  = drop_key_val("minor_part")            # ignore minor for KRW
-        currency_val_any = del_key_val("currency_maj")           # ex) "원", "달러", "유로"
-        won_key_drop     = drop_key_exact("currency_maj", "원")  # don't print the key for KRW
+        integer_part = del_key_val("integer_part")
+        minor_part_drop = drop_key_val("minor_part")  # ignore minor for KRW
+        currency_val_any = del_key_val("currency_maj")  # ex) "원", "달러", "유로"
+        won_key_drop = drop_key_exact("currency_maj", "원")  # don't print the key for KRW
 
         # ===== KRW (원) =====
         # (A) [integer] [원] -> "{integer}원"
@@ -75,10 +75,7 @@ class MoneyFst(GraphFst):
         other_core = (other_core + pynini.closure(minor_part_drop, 0, 1)).optimize()
 
         # ===== combine (no period) =====
-        graph_core = (
-            pynutil.add_weight(won_core, 0.0) |
-            pynutil.add_weight(other_core, 0.5)
-        ).optimize()
+        graph_core = (pynutil.add_weight(won_core, 0.0) | pynutil.add_weight(other_core, 0.5)).optimize()
 
         # no trailing period mapping
         graph = graph_core
