@@ -22,74 +22,66 @@ from nemo_text_processing.text_normalization.ko.utils import get_abs_path, load_
 class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money.
-    Creates tokens like:
-      money { integer_part: "삼백오십" currency_maj: "원" period: "년" }
+    Produces tokens like:
+      money { integer_part: "삼백오십" currency_maj: "원" }
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="money", kind="classify", deterministic=deterministic)
 
         graph_cardinal = cardinal.graph
-        SP = pynini.closure(delete_space)
+        SP = pynini.closure(delete_space)  # absorb any amount of spaces in input
 
-        # --- 숫자 (정수/소수) ---
-        # 정수부: "0" 또는 1-9 시작, 콤마 허용 (18,925,000 등)
+        # --- Numbers (integer / optional minor) ---
+        # Integer part: "0" or a non-zero leading digit; allow commas (e.g., 18,925,000)
         integer_part_fst = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT | pynutil.delete(","))) | NEMO_DIGIT
 
-        # integer_part (순수 수사)
+        # Plain integer → integer_part: "<Korean number>"
         graph_integer_plain = (
             pynutil.insert('integer_part: "') + (integer_part_fst @ graph_cardinal) + pynutil.insert('" ')
         )
 
-        # 소수부(두 자리) → minor_part (원화 테스트에선 주로 미사용이지만 형태 유지)
+        # Optional 2-digit decimal (kept as minor_part if ever used downstream)
         decimal_part_fst = NEMO_DIGIT + NEMO_DIGIT
         graph_minor = pynutil.insert('minor_part: "') + (decimal_part_fst @ graph_cardinal) + pynutil.insert('" ')
 
-        # 숫자 + (만|억|조) 접미 —— ★ 우선순위/괄호 버그 방지: 전체를 감싸 integer_part로 넣기
+        # Integer with scale suffix (만/억/조) → wrap the whole thing in one integer_part
         scale_unit = pynini.union("만", "억", "조")
         value_with_scale = (integer_part_fst @ graph_cardinal) + scale_unit
         graph_integer_with_suffix = (
             pynutil.insert('integer_part: "') + value_with_scale + pynutil.insert('" ')
         ).optimize()
 
-        # 정수(+선택 소수)
+        # Integer (+ optional ".<2-digit>" minor)
         number_component_plain = graph_integer_plain + pynini.closure(pynutil.delete(".") + graph_minor, 0, 1)
         number_component = (graph_integer_with_suffix | number_component_plain).optimize()
 
-        # --- 통화 (선행/후행 모두) ---
-        # currency_major.tsv 예:
-        #   ₩   원
-        #   KRW 원
-        #   원  원
+        # --- Currency (prefix or suffix) ---
+        # currency_major.tsv example:
+        #   ₩    원
+        #   KRW  원
+        #   원   원
         maj_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
 
-        # 선행 통화 (₩, KRW 등)
+        # Prefix currency (e.g., ₩, KRW): emit currency_maj then number
         currency_major_prepended = pynini.union(
             *[pynutil.delete(surface) + pynutil.insert(f'currency_maj: "{unit}" ') for surface, unit in maj_labels]
         ).optimize()
 
-        # 후행 통화 (…원, …달러 등)
+        # Suffix currency (e.g., ...원, ...달러): convert unit literal to currency_maj
         currency_major_appended = pynini.union(
             *[pynutil.delete(unit) + pynutil.insert(f'currency_maj: "{unit}" ') for _, unit in maj_labels]
         ).optimize()
 
-        # --- 기간(/월, /년, /주, /일, /시간) ---
-        period_map = pynini.union(
-            pynutil.delete("/월") + pynutil.insert('period: "월"'),
-            pynutil.delete("/년") + pynutil.insert('period: "년"'),
-            pynutil.delete("/주") + pynutil.insert('period: "주"'),
-            pynutil.delete("/일") + pynutil.insert('period: "일"'),
-            pynutil.delete("/시간") + pynutil.insert('period: "시간"'),
-        )
-        # 토큰 사이 출력 공백을 안정적으로 보장 (필드 내부에 이미 `" "`를 넣었기 때문에 여기선 앞에만 한 칸)
-        period_opt = pynini.closure(pynutil.insert(" ") + period_map, 0, 1)
+        # --- Compose (NO period handling) ---
+        # NOTE: We deliberately do NOT consume '/월', '/년', '/주', '/일', '/시간' here.
+        # If present in the raw text, they remain outside the money token and can be handled upstream/elsewhere.
 
-        # --- 결합 ---
-        # 선행 통화: [통화] [숫자] [기간?]
-        graph_prepend = (currency_major_prepended + SP + number_component + period_opt).optimize()
+        # [currency] [number]
+        graph_prepend = (currency_major_prepended + SP + number_component).optimize()
 
-        # 후행 통화: [숫자] [통화] [기간?]
-        graph_append = (number_component + currency_major_appended + period_opt).optimize()
+        # [number] [currency]
+        graph_append = (number_component + currency_major_appended).optimize()
 
         graph = (graph_prepend | graph_append).optimize()
 
