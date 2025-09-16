@@ -15,12 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import (
-    GraphFst,
-    delete_space,
-    insert_space,
-    NEMO_DIGIT,
-)
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_DIGIT, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path, load_labels
 
 
@@ -43,26 +38,18 @@ class MoneyFst(GraphFst):
 
         # Plain integer → integer_part: "<Korean number>"
         graph_integer_plain = (
-            pynutil.insert('integer_part: "')
-            + (integer_part_fst @ graph_cardinal)
-            + pynutil.insert('" ')
+            pynutil.insert('integer_part: "') + (integer_part_fst @ graph_cardinal) + pynutil.insert('" ')
         )
 
         # Optional 2-digit decimal (kept as minor_part if ever used downstream)
         decimal_part_fst = NEMO_DIGIT + NEMO_DIGIT
-        graph_minor = (
-            pynutil.insert('minor_part: "')
-            + (decimal_part_fst @ graph_cardinal)
-            + pynutil.insert('" ')
-        )
+        graph_minor = pynutil.insert('minor_part: "') + (decimal_part_fst @ graph_cardinal) + pynutil.insert('" ')
 
         # Integer with scale suffix (만/억/조) → wrap the whole thing in one integer_part
         scale_unit = pynini.union("만", "억", "조")
         value_with_scale = (integer_part_fst @ graph_cardinal) + scale_unit
         graph_integer_with_suffix = (
-            pynutil.insert('integer_part: "')
-            + value_with_scale
-            + pynutil.insert('" ')
+            pynutil.insert('integer_part: "') + value_with_scale + pynutil.insert('" ')
         ).optimize()
 
         # Integer (+ optional ".<2-digit>" minor)
@@ -78,18 +65,12 @@ class MoneyFst(GraphFst):
 
         # Prefix currency (e.g., ₩, KRW): emit currency_maj then number
         currency_major_prepended = pynini.union(
-            *[
-                pynutil.delete(surface) + pynutil.insert(f'currency_maj: "{unit}" ')
-                for surface, unit in maj_labels
-            ]
+            *[pynutil.delete(surface) + pynutil.insert(f'currency_maj: "{unit}" ') for surface, unit in maj_labels]
         ).optimize()
 
         # Suffix currency (e.g., ...원, ...달러): convert unit literal to currency_maj
         currency_major_appended = pynini.union(
-            *[
-                pynutil.delete(unit) + pynutil.insert(f'currency_maj: "{unit}" ')
-                for _, unit in maj_labels
-            ]
+            *[pynutil.delete(unit) + pynutil.insert(f'currency_maj: "{unit}" ') for _, unit in maj_labels]
         ).optimize()
 
         # --- Compose (NO period handling) ---

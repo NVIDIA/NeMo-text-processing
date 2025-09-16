@@ -15,25 +15,23 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import (
-    NEMO_SIGMA,
-    GraphFst,
-    insert_space,
-    delete_space,
-)
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SIGMA, GraphFst, delete_space, insert_space
 
 # ===== whitespace & token helpers =====
 SP = pynini.closure(delete_space)  # absorb 0+ spaces
 NOT_QUOTE = pynini.difference(NEMO_SIGMA, pynini.accep('"'))
 FIELD_VAL = pynini.closure(NOT_QUOTE, 1)
 
+
 def del_key_val(key: str):
     """SP + key: "<VAL>" -> <VAL>"""
     return (SP + pynutil.delete(f'{key}: "') + FIELD_VAL + pynutil.delete('"')).optimize()
 
+
 def drop_key_val(key: str):
     """SP + key: "<ANY>" -> (delete)"""
     return (SP + pynutil.delete(f'{key}: "') + pynini.closure(NOT_QUOTE, 1) + pynutil.delete('"')).optimize()
+
 
 def drop_key_exact(key: str, val: str):
     """SP + key: "val" -> (delete)"""
@@ -58,17 +56,17 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
 
         # --- fields ---
-        integer_part     = del_key_val("integer_part")
-        minor_part_drop  = drop_key_val("minor_part")            # ignore minor for KRW
-        currency_val_any = del_key_val("currency_maj")           # ex) "원", "달러", "유로"
-        won_key_drop     = drop_key_exact("currency_maj", "원")  # don't print the key for KRW
+        integer_part = del_key_val("integer_part")
+        minor_part_drop = drop_key_val("minor_part")  # ignore minor for KRW
+        currency_val_any = del_key_val("currency_maj")  # ex) "원", "달러", "유로"
+        won_key_drop = drop_key_exact("currency_maj", "원")  # don't print the key for KRW
 
         # ===== KRW (원) =====
         # (A) [integer] [원] -> "{integer}원"
         won_a = integer_part + SP + won_key_drop + pynutil.insert("원")
         # (B) [원] [integer] -> "{integer}원"
         won_b = won_key_drop + SP + integer_part + pynutil.insert("원")
-        won_core = (won_a | won_b)
+        won_core = won_a | won_b
         won_core = (won_core + pynini.closure(minor_part_drop, 0, 1)).optimize()
 
         # ===== Other currencies =====
@@ -76,10 +74,7 @@ class MoneyFst(GraphFst):
         other_core = (integer_part + insert_space + currency_val_any).optimize()
         other_core = (other_core + pynini.closure(minor_part_drop, 0, 1)).optimize()
 
-        graph_core = (
-            pynutil.add_weight(won_core, 0.0) |
-            pynutil.add_weight(other_core, 0.5)
-        ).optimize()
+        graph_core = (pynutil.add_weight(won_core, 0.0) | pynutil.add_weight(other_core, 0.5)).optimize()
 
         # no trailing period mapping
         graph = graph_core

@@ -19,11 +19,11 @@ from nemo_text_processing.text_normalization.ko.verbalizers.cardinal import Card
 from nemo_text_processing.text_normalization.ko.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ko.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ko.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.ko.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.ko.verbalizers.money import MoneyFst
 
 
 class VerbalizeFst(GraphFst):
@@ -49,7 +49,7 @@ class VerbalizeFst(GraphFst):
         whitelist = WhiteListFst(deterministic=deterministic)
         time = TimeFst(deterministic=deterministic)
         money = MoneyFst(deterministic=deterministic)
-        
+
         graph = pynini.union(
             cardinal.fst,
             ordinal.fst,
