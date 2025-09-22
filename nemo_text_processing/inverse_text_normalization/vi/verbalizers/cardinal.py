@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_QUOTE
 
 
 class CardinalFst(GraphFst):
@@ -29,9 +29,9 @@ class CardinalFst(GraphFst):
         optional_sign = pynini.closure(
             pynutil.delete("negative:")
             + delete_space
-            + pynutil.delete('"')
+            + pynutil.delete(NEMO_QUOTE)
             + NEMO_NOT_QUOTE
-            + pynutil.delete('"')
+            + pynutil.delete(NEMO_QUOTE)
             + delete_space,
             0,
             1,
@@ -39,9 +39,9 @@ class CardinalFst(GraphFst):
         graph = (
             pynutil.delete("integer:")
             + delete_space
-            + pynutil.delete('"')
+            + pynutil.delete(NEMO_QUOTE)
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
+            + pynutil.delete(NEMO_QUOTE)
         )
         self.numbers = graph
         graph = optional_sign + graph
