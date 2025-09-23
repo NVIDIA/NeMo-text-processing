@@ -1,7 +1,7 @@
 pipeline {
   agent {
         docker {
-          image 'tnitn_ci_4:py312'
+          image 'tnitn_ci_py312:25.03'
           args '-v /mnt/jenkins/jenkinsci:/home/jenkins -v $HOME/.cache:/root/.cache --shm-size=4g --entrypoint=""'
         }
   }
