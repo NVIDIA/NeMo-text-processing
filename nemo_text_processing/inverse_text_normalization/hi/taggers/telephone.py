@@ -18,7 +18,8 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst, delete_space, NEMO_WHITE_SPACE, NEMO_CHAR
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
-shunya = pynini.cross("शून्य", "०")
+# shunya = pynini.string_map([("शून्य", "०")])
+shunya = pynini.string_map([("शून्य", "०"), ("zero", "०")])
 
 digit = (
     pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert() 
@@ -76,7 +77,7 @@ def generate_mobile(context_keywords):
         + country_code
         + pynutil.insert("\" ")
     )
-    number_part = pynini.closure(digit + delete_space, 9, 9) + digit
+    number_part = (pynini.closure(digit + delete_space, 9, 9) + digit)
     graph_number = (
         pynutil.insert("number_part: \"")
         + number_part
@@ -84,14 +85,13 @@ def generate_mobile(context_keywords):
         + pynutil.insert("\" ")
     )
 
-    graph = graph_country_code + graph_number 
+    graph = graph_country_code + graph_number
     return graph.optimize()
     
 def generate_telephone(context_keywords):
     context_before, context_after = get_context(context_keywords)
-    shunya_optional = pynini.closure(shunya + delete_space, 0, 1)
 
-    landline = shunya_optional + pynini.closure(digit + delete_space, 9, 9) + digit
+    landline = shunya + delete_space + pynini.closure(digit + delete_space, 9, 9) + digit
     landline_with_context_before = context_before + NEMO_WHITE_SPACE + landline
     landline_with_context_after = landline + NEMO_WHITE_SPACE + context_after
 
@@ -127,74 +127,3 @@ class TelephoneFst(GraphFst):
 
         self.final = graph.optimize()
         self.fst = self.add_tokens(self.final)
-
-if __name__ == '__main__':
-    from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-    def run_test(tests, graph):
-        test_count = len(tests)
-        fail_count = pass_count = 0
-        print()
-        for test in tests:
-            try:
-                result = pynini.shortestpath(test @ graph).string()
-                print(result)
-                print('-'*50)
-                pass_count += 1
-            except pynini.FstOpError:
-                print(f"Error: No valid output with given input: '{test}'")
-                fail_count += 1
-                print('-'*50)
-        
-        print(f"\nTotal : {test_count} \nFailed : {fail_count} \nPassed : {pass_count}")
-
-    mobile = generate_mobile(["नंबर", "मोबाइल", "फोन", "कॉल"])
-    landline = generate_telephone(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉल"])
-    pincode = generate_pincode(["पिन", "कोड", "पिनकोड"])
-    credit = generate_credit(["नंबर", "कार्ड", "क्रेडिट"])
-
-    pincode_tests = [
-        "पिनकोड एक एक एक एक एक एक", 
-        "एक एक एक एक एक एक पिनकोड",
-        "एक एक एक एक एक एक",
-        # "एक एक एक एक एक एक एक", # should fail
-        # "एक एक एक एक एक", # should fail
-    ]
-
-    credit_tests = [
-        "क्रेडिट एक एक एक एक", 
-        "एक एक एक एक क्रेडिट",
-        "एक एक एक एक",
-        # "एक एक एक एक एक", # should fail
-        # "एक एक एक", # should fail 
-    ]
-
-    mobile_tests = [
-        "आठ चार तीन सात दो शून्य पांच छह एक आठ",
-        "मोबाइल प्लस नौ एक आठ चार तीन सात दो शून्य पांच छह एक आठ",
-        "मोबाइल प्लस नौ एक आठ चार तीन सात दो शून्य पांच छह एक आठ छह एक आठ", # extention 
-        "आठ चार तीन सात दो शून्य पांच छह एक आठ छह एक आठ", # extention 
-        "प्लस नौ एक आठ चार तीन सात दो शून्य पांच छह एक आठ मोबाइल",
-        "प्लस नौ एक आठ चार तीन सात दो शून्य पांच छह एक आठ",
-        # "प्लस नौ एक आठ चार तीन सात दो शून्य पांच छह एक आठ आठ आठ आठ आठ", # should fail
-        # "प्लस नौ एक आठ चार तीन सात दो शून्य पांच छह एक", # should fail
-    ]
-
-    telephone_tests = [
-        "शून्य चार शून्य दो सात आठ एक आठ तीन नौ नौ",
-        "चार शून्य दो सात आठ एक आठ तीन नौ नौ",
-
-        "मोबाइल शून्य चार शून्य दो सात आठ एक आठ तीन नौ नौ",
-        "शून्य चार शून्य दो सात आठ एक आठ तीन नौ नौ मोबाइल",
-        "मोबाइल चार शून्य दो सात आठ एक आठ तीन नौ नौ",
-        "चार शून्य दो सात आठ एक आठ तीन नौ नौ मोबाइल",
-    ]
-
-    tests = mobile_tests + pincode_tests + credit_tests + telephone_tests
-    combined_graph = mobile | pincode | credit | landline
-
-    # run_test(["प्लस नौ एक"], mobile)
-    # run_test(["एक एक एक एक एक एक एक एक एक एक"], mobile)
-    run_test(["प्लस नौ एक एक एक एक एक एक एक एक एक एक एक"], TelephoneFst(CardinalFst()).fst)
-
-    # python nemo_text_processing\inverse_text_normalization\inverse_normalize.py --text="प्लस नौ एक नौ आठ सात छह पाँच चार तीन दो एक शून्य" --verbose --overwrite_cache 
-    # pytest tests\nemo_text_processing\hi\test_telephone.py --cpu --cache-clear
