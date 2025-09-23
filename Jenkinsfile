@@ -1,7 +1,7 @@
 pipeline {
   agent {
         docker {
-          image 'tnitn_ci_3:py312'
+          image 'tnitn_ci_4:py312'
           args '-v /mnt/jenkins/jenkinsci:/home/jenkins -v $HOME/.cache:/root/.cache --shm-size=4g --entrypoint=""'
         }
   }
@@ -39,14 +39,6 @@ pipeline {
         sh 'python -c "import torchvision; print(torchvision.__version__)"'
       }
     }
-
-    stage('Install test requirements') {
-      steps {
-        sh 'apt-get update && apt-get install -y bc'
-      }
-    }
-
-
 
     stage('NeMo Installation') {
       steps {
