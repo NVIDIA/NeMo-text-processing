@@ -62,5 +62,5 @@ VERBALIZE_FAR=${CACHE_DIR}_${GRAMMARS}_${INPUT_CASE}/verbalize/verbalize.far
 
 CONFIG=${LANGUAGE}_${GRAMMARS}_${INPUT_CASE}
 
-cp $CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars_${CONFIG}/en_toy/classify/
-cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars_${CONFIG}/en_toy/verbalize/
+cp $CLASSIFY_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/classify/
+cp $VERBALIZE_FAR /workspace/sparrowhawk/documentation/grammars/en_toy/verbalize/
