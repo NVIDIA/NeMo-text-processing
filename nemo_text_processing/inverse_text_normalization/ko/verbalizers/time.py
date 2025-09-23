@@ -20,6 +20,7 @@ from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_space,
+    NEMO_SPACE
 )
 
 
@@ -81,7 +82,7 @@ class TimeFst(GraphFst):
 
         # Adding prefix and suffix space
         optional_prefix_out = pynini.closure(delete_space + prefix_component, 0, 1)
-        optional_suffix_out = pynini.closure(delete_space + pynutil.insert(" ") + suffix_component, 0, 1)
+        optional_suffix_out = pynini.closure(delete_space + pynutil.insert(NEMO_SPACE) + suffix_component, 0, 1)
 
         final_graph = optional_prefix_out + time_graph + optional_suffix_out
         self.fst = self.delete_tokens(delete_space + final_graph).optimize()

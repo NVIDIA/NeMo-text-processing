@@ -52,6 +52,11 @@ testITNDate() {
   runtest $input
 }
 
+testITNMoney() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_money.txt
+  runtest $input
+}
+
 # Remove all command-line arguments
 shift $#
 

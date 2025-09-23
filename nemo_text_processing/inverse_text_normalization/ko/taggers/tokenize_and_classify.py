@@ -25,6 +25,7 @@ from nemo_text_processing.inverse_text_normalization.ko.taggers.fraction import 
 from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
 
 
@@ -78,6 +79,9 @@ class ClassifyFst(GraphFst):
             date = DateFst(cardinal)
             date_graph = date.fst
 
+            money = MoneyFst(cardinal)
+            money_graph = money.fst
+
             word_graph = WordFst().fst
 
             classify = (
@@ -87,6 +91,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(fraction_graph, 1.0)
                 | pynutil.add_weight(time_graph, 1.0)
                 | pynutil.add_weight(date_graph, 1.1)
+                | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
 
