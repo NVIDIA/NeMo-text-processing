@@ -50,4 +50,4 @@ repos:
       - id: black
         name: Format code
         args: [--skip-string-normalization, --line-length=119]
-        additional_dependencies: ['click==8.0.2']
+        additional_dependencies: ['click>=8.0.2']
