@@ -18,12 +18,13 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     NEMO_DIGIT,
+    NEMO_QUOTE,
     GraphFst,
     delete_extra_space,
     delete_space,
-    NEMO_QUOTE,
-    insert_space
+    insert_space,
 )
+
 
 class DecimalFst(GraphFst):
     """
@@ -44,36 +45,48 @@ class DecimalFst(GraphFst):
         graph_decimal = pynini.union(
             base_decimal,
             cardinal.graph_four,
-            pynini.closure(base_decimal + delete_space, 1) + (base_decimal | cardinal.graph_four | cardinal.graph_five | cardinal.graph_one),
+            pynini.closure(base_decimal + delete_space, 1)
+            + (base_decimal | cardinal.graph_four | cardinal.graph_five | cardinal.graph_one),
         ).optimize()
         self.graph = graph_decimal
 
         point = pynutil.delete("chấm") | pynutil.delete("phẩy")
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative:") + insert_space + pynini.cross(cardinal.negative_words, '"true"') + delete_extra_space,
+            pynutil.insert("negative:")
+            + insert_space
+            + pynini.cross(cardinal.negative_words, '"true"')
+            + delete_extra_space,
             0,
             1,
         )
 
-        graph_fractional = pynutil.insert('fractional_part:') + insert_space + pynutil.insert(NEMO_QUOTE) + graph_decimal + pynutil.insert(NEMO_QUOTE)
+        graph_fractional = (
+            pynutil.insert('fractional_part:')
+            + insert_space
+            + pynutil.insert(NEMO_QUOTE)
+            + graph_decimal
+            + pynutil.insert(NEMO_QUOTE)
+        )
         graph_integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert(NEMO_QUOTE)
         final_graph_wo_sign = (
             pynini.closure(graph_integer + delete_extra_space, 0, 1) + point + delete_extra_space + graph_fractional
         )
         # Build quantity handling - reuse magnitude words from cardinal context
-        # e.g. một triệu -> integer_part: "1" quantity: "triệu"  
+        # e.g. một triệu -> integer_part: "1" quantity: "triệu"
         # e.g. một tỷ rưỡi -> integer_part: "1" fractional_part: "5" quantity: "tỷ"
         numbers = cardinal.graph_hundred_component_at_least_one_none_zero_digit @ (
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
         )
-        
+
         magnitude_words = cardinal.magnitude_words
         thousand_words = cardinal.thousand_words
-        
+
         last_digit = cardinal.last_digit
         optional_fraction_graph = pynini.closure(
             delete_extra_space
-            + pynutil.insert('fractional_part:') + insert_space + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('fractional_part:')
+            + insert_space
+            + pynutil.insert(NEMO_QUOTE)
             + (last_digit | cardinal.graph_half | cardinal.graph_one | cardinal.graph_four)
             + pynutil.insert(NEMO_QUOTE),
             0,
@@ -81,11 +94,15 @@ class DecimalFst(GraphFst):
         )
 
         quantity_graph = (
-            pynutil.insert('integer_part:') + insert_space + pynutil.insert(NEMO_QUOTE)
+            pynutil.insert('integer_part:')
+            + insert_space
+            + pynutil.insert(NEMO_QUOTE)
             + numbers
             + pynutil.insert(NEMO_QUOTE)
             + delete_extra_space
-            + pynutil.insert('quantity:') + insert_space + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('quantity:')
+            + insert_space
+            + pynutil.insert(NEMO_QUOTE)
             + magnitude_words
             + pynutil.insert(NEMO_QUOTE)
             + optional_fraction_graph
@@ -93,7 +110,9 @@ class DecimalFst(GraphFst):
         quantity_graph |= (
             final_graph_wo_sign
             + delete_extra_space
-            + pynutil.insert('quantity:') + insert_space + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('quantity:')
+            + insert_space
+            + pynutil.insert(NEMO_QUOTE)
             + (magnitude_words | thousand_words)
             + pynutil.insert(NEMO_QUOTE)
         )

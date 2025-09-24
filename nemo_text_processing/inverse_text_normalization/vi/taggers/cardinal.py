@@ -45,15 +45,15 @@ class CardinalFst(GraphFst):
         self.graph_four = pynini.cross("tư", "4")
         self.graph_five = pynini.cross("lăm", "5")
         self.graph_half = pynini.cross("rưỡi", "5")
-        
+
         self.magnitude_words = pynini.union("triệu", "tỉ", "tỷ", "vạn")
         self.thousand_words = pynini.union("ngàn", "nghìn")
         self.negative_words = pynini.union("âm", "trừ")
-        
+
         graph_hundred = pynini.cross("trăm", "")
         graph_ten = pynini.cross("mươi", "")
         zero = pynini.cross(pynini.union("linh", "lẻ"), "0")
-        
+
         graph_zero = self.graph_zero
         graph_digit = self.graph_digit
         graph_one = self.graph_one
@@ -90,7 +90,9 @@ class CardinalFst(GraphFst):
                 zero + delete_space + (graph_digit | graph_four | graph_five),
             ).optimize()
         )
-        graph_hundred_component = graph_hundreds_component | (pynutil.insert("00", weight=0.1) + delete_space + graph_digit)
+        graph_hundred_component = graph_hundreds_component | (
+            pynutil.insert("00", weight=0.1) + delete_space + graph_digit
+        )
 
         graph_hundred_component_at_least_one_none_zero_digit = graph_hundred_component @ (
             pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
@@ -101,12 +103,9 @@ class CardinalFst(GraphFst):
         graph_hundreds_zero = graph_hundreds_component | pynutil.insert("000", weight=0.1)
 
         graph_thousands = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit
-            + delete_space
-            + pynutil.delete(self.thousand_words),
+            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete(self.thousand_words),
             pynutil.insert("000", weight=0.1),
         ).optimize()
-
 
         graph_million = pynini.union(
             graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("triệu"),
@@ -121,7 +120,7 @@ class CardinalFst(GraphFst):
 
         # Main graph combining all magnitude levels
         graph = pynini.union(
-            # Full format: billion + million + thousand + hundred  
+            # Full format: billion + million + thousand + hundred
             graph_billion
             + delete_space
             + graph_million
@@ -140,10 +139,13 @@ class CardinalFst(GraphFst):
             graph_zero,
         )
 
-        graph = graph @ pynini.union(
-            pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT),
-            "0",
-        ).optimize()
+        graph = (
+            graph
+            @ pynini.union(
+                pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT),
+                "0",
+            ).optimize()
+        )
 
         # don't convert cardinals from zero to nine inclusive
         single_digits = pynini.project(pynini.union(graph_digit, graph_zero), "input").optimize()
