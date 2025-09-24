@@ -27,6 +27,7 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     delete_space,
     generator_main,
 )
+from nemo_text_processing.text_normalization.hi.taggers.address import AddressFst
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.taggers.date import DateFst
 from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
@@ -136,6 +137,11 @@ class ClassifyFst(GraphFst):
             telephone_graph = telephone.fst
             logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
 
+            start_time = time.time()
+            address = AddressFst()
+            address_graph = address.fst
+            logging.debug(f"address: {time.time() - start_time: .2f}s -- {address_graph.num_states()} nodes")
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(cardinal_graph, 1.1)
@@ -147,6 +153,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
+                | pynutil.add_weight(address_graph, 1.1)
             )
 
             start_time = time.time()

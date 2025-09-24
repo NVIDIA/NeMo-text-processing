@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.hi.verbalizers.address import AddressFst
 from nemo_text_processing.text_normalization.hi.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.hi.verbalizers.decimal import DecimalFst
@@ -65,6 +66,9 @@ class VerbalizeFst(GraphFst):
         telephone = TelephoneFst()
         telephone_graph = telephone.fst
 
+        address = AddressFst()
+        address_graph = address.fst
+
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
         graph = (
@@ -78,6 +82,7 @@ class VerbalizeFst(GraphFst):
             | ordinal_graph
             | whitelist_graph
             | telephone_graph
+            | address_graph
         )
 
         self.fst = graph
