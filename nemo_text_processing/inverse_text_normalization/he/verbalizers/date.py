@@ -101,9 +101,7 @@ class DateFst(GraphFst):
         )
 
         # day month and year
-        graph_dmy = (
-            graph_dm + delete_space + pynutil.insert('.') + delete_zero_or_one_space + year
-        )
+        graph_dmy = graph_dm + delete_space + pynutil.insert('.') + delete_zero_or_one_space + year
 
         # only month and year
         graph_my = (

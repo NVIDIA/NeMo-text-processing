@@ -55,10 +55,7 @@ class MeasureFst(GraphFst):
 
         prefix_graph = pynini.string_file(get_abs_path("data/prefix.tsv"))
         optional_prefix_graph = pynini.closure(
-            pynutil.insert('morphosyntactic_features: "')
-            + prefix_graph
-            + pynutil.insert('"')
-            + insert_space,
+            pynutil.insert('morphosyntactic_features: "') + prefix_graph + pynutil.insert('"') + insert_space,
             0,
             1,
         )
@@ -68,10 +65,7 @@ class MeasureFst(GraphFst):
 
         # Let singular apply to values > 1 as they could be part of an adjective phrase (e.g. 14 foot tall building)
         subgraph_decimal = (
-            pynutil.insert("decimal { ")
-            + decimal.final_graph_wo_sign
-            + pynutil.insert(" }")
-            + delete_extra_space
+            pynutil.insert("decimal { ") + decimal.final_graph_wo_sign + pynutil.insert(" }") + delete_extra_space
         )
 
         subgraph_cardinal = (
@@ -90,9 +84,7 @@ class MeasureFst(GraphFst):
 
         spaced_units = pynini.string_file(get_abs_path("data/spaced_measurements.tsv"))
         spaced_units = pynini.invert(spaced_units)
-        spaced_units = (
-            pynutil.insert('units: "\[SPACE\]') + spaced_units + pynutil.insert('"') # noqa: W605
-        )
+        spaced_units = pynutil.insert('units: "\[SPACE\]') + spaced_units + pynutil.insert('"')  # noqa: W605
 
         # in joint units the unit is concatenated to the number, in spaced unit separate the unit with a space
         units_graph = joined_units | spaced_units
@@ -110,15 +102,8 @@ class MeasureFst(GraphFst):
         )
 
         number_graph = subgraph_decimal | subgraph_cardinal
-        number_unit_graph = (number_graph + units_graph) | (
-            units_graph + delete_space + one_graph
-        )
+        number_unit_graph = (number_graph + units_graph) | (units_graph + delete_space + one_graph)
 
-        final_graph = (
-            optional_prefix_graph
-            + optional_graph_negative
-            + number_unit_graph
-            + delete_zero_or_one_space
-        )
+        final_graph = optional_prefix_graph + optional_graph_negative + number_unit_graph + delete_zero_or_one_space
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

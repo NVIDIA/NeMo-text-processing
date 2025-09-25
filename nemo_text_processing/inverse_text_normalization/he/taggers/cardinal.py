@@ -21,16 +21,13 @@ from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
     delete_and,
     delete_optional_and,
 )
-from nemo_text_processing.inverse_text_normalization.he.utils import (
-    get_abs_path,
-)
-
+from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_SPACE,
-    insert_space,
     delete_space,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.en.utils import load_labels
 
@@ -58,9 +55,7 @@ class CardinalFst(GraphFst):
         )
 
         graph_two_digit = pynini.union(graph_teen, graph_ties)
-        self.graph_two_digit = pynini.union(
-            graph_digit, graph_ties, pynutil.add_weight(graph_teen, -0.001)
-        )
+        self.graph_two_digit = pynini.union(graph_digit, graph_ties, pynutil.add_weight(graph_teen, -0.001))
 
         # hundreds
         hundred = pynini.string_map([("מאה", "1"), ("מאתיים", "2")])
@@ -119,18 +114,12 @@ class CardinalFst(GraphFst):
         graph_millions = pynini.union(many_millions, million, pynutil.insert("000", weight=0.001))
 
         graph = pynini.union(
-            graph_millions
-            + delete_space
-            + graph_thousands
-            + delete_space
-            + graph_hundred,
+            graph_millions + delete_space + graph_thousands + delete_space + graph_hundred,
             graph_zero,
         )
 
         graph = graph @ pynini.union(
-            pynutil.delete(pynini.closure("0"))
-            + pynini.difference(NEMO_DIGIT, "0")
-            + pynini.closure(NEMO_DIGIT),
+            pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT),
             "0",
         )
 
