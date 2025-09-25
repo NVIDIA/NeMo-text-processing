@@ -101,6 +101,7 @@ def parse_args():
             'ar',
             'it',
             'es_en',
+            'he',
             'hi',
             'hy',
             'mr',
@@ -283,6 +284,13 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.mr.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+    elif args.language == 'he':
+        from nemo_text_processing.inverse_text_normalization.he.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.he.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
     elif args.language == 'hy':
         from nemo_text_processing.inverse_text_normalization.hy.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -312,6 +320,8 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+    else:
+        raise KeyError(f"Language {args.language} is not defined for export.")
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
     export_grammars(
         output_dir=output_dir,
