@@ -45,16 +45,11 @@ class WhiteListFst(GraphFst):
             raise ValueError(f"Whitelist file {input_file} not found")
 
         optional_prefix_graph = pynini.closure(
-            pynutil.insert('morphosyntactic_features: "')
-            + prefix_graph
-            + pynutil.insert('"')
-            + insert_space,
+            pynutil.insert('morphosyntactic_features: "') + prefix_graph + pynutil.insert('"') + insert_space,
             0,
             1,
         )
         whitelist = string_map_cased(input_file)
-        graph = (
-            pynutil.insert('name: "') + convert_space(whitelist) + pynutil.insert('"')
-        )
+        graph = pynutil.insert('name: "') + convert_space(whitelist) + pynutil.insert('"')
         final_graph = optional_prefix_graph + graph
         self.fst = final_graph.optimize()

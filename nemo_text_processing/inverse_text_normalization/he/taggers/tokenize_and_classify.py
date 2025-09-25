@@ -18,41 +18,17 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    GraphFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import (
-    CardinalFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.date import (
-    DateFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import (
-    DecimalFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.measure import (
-    MeasureFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.ordinal import (
-    OrdinalFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.punctuation import (
-    PunctuationFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.time import (
-    TimeFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.whitelist import (
-    WhiteListFst,
-)
-from nemo_text_processing.inverse_text_normalization.he.taggers.word import (
-    WordFst,
-)
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.punctuation import PunctuationFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.word import WordFst
+from nemo_text_processing.text_normalization.en.graph_utils import delete_extra_space, delete_space, generator_main
 
 
 class ClassifyFst(GraphFst):
@@ -113,21 +89,13 @@ class ClassifyFst(GraphFst):
                 # NOTE: we convert ordinals in Hebrew only if it is a part of a date! this is why it is missing.
             )
 
-            punct = (
-                pynutil.insert("tokens { ")
-                + pynutil.add_weight(punct_graph, weight=1.1)
-                + pynutil.insert(" }")
-            )
+            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" "))
-                + token
-                + pynini.closure(pynutil.insert(" ") + punct)
+                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
             )
 
-            graph = token_plus_punct + pynini.closure(
-                delete_extra_space + token_plus_punct
-            )
+            graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
             graph = delete_space + graph + delete_space
 
             self.fst = graph.optimize()
