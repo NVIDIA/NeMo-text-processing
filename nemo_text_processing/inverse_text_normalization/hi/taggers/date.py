@@ -46,7 +46,6 @@ class DateFst(GraphFst):
         cardinal_graph = cardinal.graph_no_exception
 
         month_graph = pynini.string_file(get_abs_path("data/date/months.tsv"))
-
         graph_date_days = cardinal.graph_digit | cardinal.graph_teens_and_ties
         date_days = pynini.union(*[integer_to_devanagari(i) for i in range(1, 32)]).optimize()
         graph_date_days = graph_date_days @ date_days
@@ -87,9 +86,11 @@ class DateFst(GraphFst):
         graph_month_year_century = self.month + delete_space + self.year + delete_space + self.century
         graph_year_range = self.year_range
         graph_year_range_century = self.year_range + delete_space + self.century
-
+        
         graph_ordinal_century = self.ordinal_century + self.morpho_graph + delete_extra_space + self.century
 
+
+        graph_ordinal_century = self.ordinal_century + self.morpho_graph + delete_extra_space + self.century
         graph_date_exceptions = self.month + delete_space + pynutil.delete("की") + delete_space + self.day
         graph_date_exceptions += pynutil.insert("preserve_order: true")
 
