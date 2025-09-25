@@ -33,7 +33,7 @@ class DecimalFst(GraphFst):
         optionl_sign = pynini.closure(pynini.cross("negative: \"true\"", "-") + delete_space, 0, 1)
 
         # Need parser to group digits by threes
-        exactly_three_digits = NEMO_DIGIT ** 3
+        exactly_three_digits = NEMO_DIGIT**3
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # Thousands separator

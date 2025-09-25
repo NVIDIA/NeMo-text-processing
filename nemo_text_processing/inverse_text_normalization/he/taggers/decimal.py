@@ -15,11 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    MINUS,
-    GraphFst,
-    delete_and,
-)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import MINUS, GraphFst, delete_and
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
@@ -36,7 +32,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
     e.g. one million -> integer_part: "1" quantity: "million"
     e.g. one point five million -> integer_part: "1" fractional_part: "5" quantity: "million"
 
-    Args: 
+    Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
@@ -107,7 +103,11 @@ class DecimalFst(GraphFst):
         point = pynutil.delete("נקודה")
 
         graph_negative = pynutil.insert("negative: ") + pynini.cross(MINUS, "\"true\"") + delete_extra_space
-        optional_graph_negative = pynini.closure(graph_negative, 0, 1,)
+        optional_graph_negative = pynini.closure(
+            graph_negative,
+            0,
+            1,
+        )
 
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")

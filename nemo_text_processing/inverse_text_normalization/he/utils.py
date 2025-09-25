@@ -56,6 +56,7 @@ tens_dict = {
 
 ten = {"short": "עשר", "long": "עשרה"}  # double pronunciation: short is 'eser' and 'asar', long is 'esre' and 'asara'
 
+
 #############
 # FUNCTIONS #
 #############
@@ -65,7 +66,7 @@ def get_abs_path(rel_path):
 
     Args:
         rel_path: relative path to this file
-        
+
     Returns absolute path
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
@@ -73,7 +74,7 @@ def get_abs_path(rel_path):
 
 def augment_labels_with_punct_at_end(labels):
     """
-    augments labels: if key ends on a punctuation that value does not have, add a new label 
+    augments labels: if key ends on a punctuation that value does not have, add a new label
     where the value maintains the punctuation
 
     Args:

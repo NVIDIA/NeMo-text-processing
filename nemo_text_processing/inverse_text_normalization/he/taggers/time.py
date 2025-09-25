@@ -49,7 +49,9 @@ class TimeFst(GraphFst):
         suffix_graph = pynini.string_file(get_abs_path("data/time/time_suffix.tsv"))
 
         time_prefix = pynini.string_file(get_abs_path("data/prefix.tsv"))
-        time_prefix_graph = pynutil.insert("morphosyntactic_features: \"") + time_prefix + pynutil.insert("\"") + insert_space
+        time_prefix_graph = (
+            pynutil.insert("morphosyntactic_features: \"") + time_prefix + pynutil.insert("\"") + insert_space
+        )
 
         optional_time_prefix_graph = pynini.closure(time_prefix_graph, 0, 1)
 
@@ -67,7 +69,14 @@ class TimeFst(GraphFst):
         )
 
         graph_minute_to_verbose = pynini.string_map(
-            [("רבע", "45"), ("עשרה", "50"), ("חמישה", "55"), ("עשרים", "40"), ("עשרים וחמישה", "35"), ("דקה", "59"),]
+            [
+                ("רבע", "45"),
+                ("עשרה", "50"),
+                ("חמישה", "55"),
+                ("עשרים", "40"),
+                ("עשרים וחמישה", "35"),
+                ("דקה", "59"),
+            ]
         )
 
         # only used for < 1000 thousand -> 0 weight

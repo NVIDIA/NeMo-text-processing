@@ -41,7 +41,7 @@ def string_map_cased(input_file: str):
 
 
 def apply_fst(text, fst):
-    """ Given a string input, returns the output string
+    """Given a string input, returns the output string
     produced by traversing the path with lowest weight.
     If no valid path accepts input string, returns an
     error.
@@ -118,4 +118,4 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
-        return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+        return res @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)

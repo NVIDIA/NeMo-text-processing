@@ -17,12 +17,9 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    GraphFst,
-    string_map_cased,
-)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst, string_map_cased
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import insert_space, convert_space
+from nemo_text_processing.text_normalization.en.graph_utils import convert_space, insert_space
 
 
 class WhiteListFst(GraphFst):

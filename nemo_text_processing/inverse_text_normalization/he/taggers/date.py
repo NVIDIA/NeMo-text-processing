@@ -17,11 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    delete_extra_space,
-    delete_space,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import delete_extra_space, delete_space, insert_space
 
 
 def _get_year_graph(graph_two_digits, graph_thousands):
@@ -66,7 +62,7 @@ class DateFst(GraphFst):
         month_name2number_graph = pynutil.insert("month: \"") + month_name2number + pynutil.insert("\"")
 
         month_number2number = pynini.string_file(get_abs_path("data/months_ordinal2number.tsv"))
-        month_number2number_graph = (pynutil.insert("month: \"") + month_number2number + pynutil.insert("\""))
+        month_number2number_graph = pynutil.insert("month: \"") + month_number2number + pynutil.insert("\"")
 
         all_month_graph = month_name2number_graph | month_number2number_graph
 
@@ -77,8 +73,12 @@ class DateFst(GraphFst):
         delete_prefix = pynutil.delete(prefix_graph)
 
         graph_prefix = pynutil.insert("morphosyntactic_features: \"") + prefix_graph + pynutil.insert("\"")
-        year_prefix_graph = pynutil.insert("morphosyntactic_features: \"") +  pynini.closure(prefix_graph, 0, 1) + pynini.union("שנה", "שנת") + pynutil.insert("\"")
-
+        year_prefix_graph = (
+            pynutil.insert("morphosyntactic_features: \"")
+            + pynini.closure(prefix_graph, 0, 1)
+            + pynini.union("שנה", "שנת")
+            + pynutil.insert("\"")
+        )
 
         graph_dm = (
             pynini.closure(graph_prefix + insert_space, 0, 1)

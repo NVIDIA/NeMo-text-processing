@@ -32,7 +32,7 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="verbalize")
 
         # Need parser to group digits by threes
-        exactly_three_digits = NEMO_DIGIT ** 3
+        exactly_three_digits = NEMO_DIGIT**3
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # Thousands separator
