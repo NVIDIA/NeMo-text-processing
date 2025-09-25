@@ -25,10 +25,10 @@ from nemo_text_processing.text_normalization.ko.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.ko.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.ko.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.ko.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
-from nemo_text_processing.text_normalization.ko.taggers.telephone import TelephoneFst
 from nemo_text_processing.utils.logging import logger
 
 

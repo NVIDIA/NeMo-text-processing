@@ -16,12 +16,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import (
-    GraphFst,
-    NEMO_NOT_QUOTE,
-    delete_space,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+
 
 class TelephoneFst(GraphFst):
     """

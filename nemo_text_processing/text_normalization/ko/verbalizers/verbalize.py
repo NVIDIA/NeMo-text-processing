@@ -21,11 +21,10 @@ from nemo_text_processing.text_normalization.ko.verbalizers.decimal import Decim
 from nemo_text_processing.text_normalization.ko.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.ko.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.ko.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.ko.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.ko.verbalizers.telephone import TelephoneFst
-
 
 
 class VerbalizeFst(GraphFst):
