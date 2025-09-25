@@ -15,8 +15,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
-from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
+    GraphFst,
+)
+from nemo_text_processing.inverse_text_normalization.he.utils import (
+    get_abs_path,
+)
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA
 
 
@@ -38,6 +42,6 @@ class OrdinalFst(GraphFst):
 
         self.graph = graph @ cardinal_graph
 
-        final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        final_graph = pynutil.insert('integer: "') + self.graph + pynutil.insert('"')
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

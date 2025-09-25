@@ -25,7 +25,8 @@ def _get_year_graph(graph_two_digits, graph_thousands):
     Transducer for year, e.g. twenty twenty -> 2020
     """
     year_graph = pynini.union(
-        (graph_two_digits + delete_space + graph_two_digits), graph_thousands  # 20 19, 40 12, 20 20
+        (graph_two_digits + delete_space + graph_two_digits),
+        graph_thousands,  # 20 19, 40 12, 20 20
     )  # 2012 - assuming no limit on the year
 
     year_graph.optimize()
@@ -53,13 +54,19 @@ class DateFst(GraphFst):
         two_digits_graph = cardinal.graph_two_digit
 
         day_graph = pynutil.add_weight(two_digits_graph | ordinal_graph, -0.7)
-        day_graph = pynutil.insert("day: \"") + day_graph + pynutil.insert("\"")
+        day_graph = pynutil.insert('day: "') + day_graph + pynutil.insert('"')
 
         month_names = pynini.string_file(get_abs_path("data/months.tsv"))
-        month_names_graph = pynutil.insert("month: \"") + month_names + pynutil.insert("\"")
+        month_names_graph = (
+            pynutil.insert('month: "') + month_names + pynutil.insert('"')
+        )
 
-        month_name2number = pynini.string_file(get_abs_path("data/months_name2number.tsv"))
-        month_name2number_graph = pynutil.insert("month: \"") + month_name2number + pynutil.insert("\"")
+        month_name2number = pynini.string_file(
+            get_abs_path("data/months_name2number.tsv")
+        )
+        month_name2number_graph = (
+            pynutil.insert('month: "') + month_name2number + pynutil.insert('"')
+        )
 
         month_number2number = pynini.string_file(get_abs_path("data/months_ordinal2number.tsv"))
         month_number2number_graph = pynutil.insert("month: \"") + month_number2number + pynutil.insert("\"")
@@ -67,7 +74,12 @@ class DateFst(GraphFst):
         all_month_graph = month_name2number_graph | month_number2number_graph
 
         year_graph = _get_year_graph(two_digits_graph, cardinal.graph_thousands)
-        graph_year = delete_extra_space + pynutil.insert("year: \"") + year_graph + pynutil.insert("\"")
+        graph_year = (
+            delete_extra_space
+            + pynutil.insert('year: "')
+            + year_graph
+            + pynutil.insert('"')
+        )
 
         prefix_graph = pynini.string_file(get_abs_path("data/prefix.tsv"))
         delete_prefix = pynutil.delete(prefix_graph)
@@ -99,7 +111,11 @@ class DateFst(GraphFst):
             + graph_year
         )
 
-        graph_my = pynini.closure(graph_prefix + insert_space, 0, 1) + month_names_graph + graph_year
+        graph_my = (
+            pynini.closure(graph_prefix + insert_space, 0, 1)
+            + month_names_graph
+            + graph_year
+        )
         graph_y_only = year_prefix_graph + graph_year
 
         final_graph = graph_dm | graph_dmy | graph_my | graph_y_only

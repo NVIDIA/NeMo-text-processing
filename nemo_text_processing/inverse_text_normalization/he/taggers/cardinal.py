@@ -90,18 +90,27 @@ class CardinalFst(GraphFst):
             (pynutil.insert("00") + thousand), many_thousands, pynutil.insert("000", weight=0.001)
         )
 
-        self.graph_thousands = pynini.union(graph_thousands + delete_space + graph_hundred, graph_zero)
+        self.graph_thousands = pynini.union(
+            graph_thousands + delete_space + graph_hundred, graph_zero
+        )
         self.graph_thousands @= pynini.union(
-            pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"
+            pynutil.delete(pynini.closure("0"))
+            + pynini.difference(NEMO_DIGIT, "0")
+            + pynini.closure(NEMO_DIGIT),
+            "0",
         )
 
         # millions
         million = pynini.string_map([("מיליון", "001")])
 
-        delete_millions = pynutil.delete("מיליונים") | pynutil.delete("מיליון", weight=0.001)
+        delete_millions = pynutil.delete("מיליונים") | pynutil.delete(
+            "מיליון", weight=0.001
+        )
         many_millions = large_number_prefix + delete_space + delete_millions
 
-        graph_millions = pynini.union(many_millions, million, pynutil.insert("000", weight=0.001))
+        graph_millions = pynini.union(
+            many_millions, million, pynutil.insert("000", weight=0.001)
+        )
 
         graph = pynini.union(
             graph_millions + delete_space + graph_thousands + delete_space + graph_hundred, graph_zero
@@ -112,7 +121,9 @@ class CardinalFst(GraphFst):
         )
 
         labels_exception = load_labels(get_abs_path("data/numbers/digit.tsv"))
-        labels_exception = list(set([x[0] for x in labels_exception] + ["אפס", "עשר", "עשרה"]))
+        labels_exception = list(
+            set([x[0] for x in labels_exception] + ["אפס", "עשר", "עשרה"])
+        )
         labels_exception += ["ו" + label for label in labels_exception]
         graph_exception = pynini.union(*labels_exception).optimize()
 
@@ -121,29 +132,51 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph
 
         ### Token insertion
-        minus_graph = pynutil.insert("negative: ") + pynini.cross("מינוס", "\"-\"") + NEMO_SPACE
+        minus_graph = (
+            pynutil.insert("negative: ") + pynini.cross("מינוס", '"-"') + NEMO_SPACE
+        )
         optional_minus_graph = pynini.closure(minus_graph, 0, 1)
 
         optional_prefix_graph = pynini.closure(
-            pynutil.insert("morphosyntactic_features: \"") + prefix_graph + pynutil.insert("\"") + insert_space, 0, 1
+            pynutil.insert('morphosyntactic_features: "')
+            + prefix_graph
+            + pynutil.insert('"')
+            + insert_space,
+            0,
+            1,
         )
 
-        graph_wo_small_digits = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        graph_wo_small_digits = (
+            pynini.project(graph, "input") - graph_exception.arcsort()
+        ) @ graph
 
-        cardinal_wo_viable_hours = load_labels(get_abs_path("data/numbers/viable_hours.tsv"))
+        cardinal_wo_viable_hours = load_labels(
+            get_abs_path("data/numbers/viable_hours.tsv")
+        )
         cardinal_wo_viable_hours = list(set([x[0] for x in cardinal_wo_viable_hours]))
         viable_hours_exception = pynini.union(*cardinal_wo_viable_hours).optimize()
-        self.graph_wo_viable_hours = (pynini.project(graph, "input") - viable_hours_exception.arcsort()) @ graph
+        self.graph_wo_viable_hours = (
+            pynini.project(graph, "input") - viable_hours_exception.arcsort()
+        ) @ graph
 
         small_number_with_minus = (
-            insert_space + minus_graph + pynutil.insert("integer: \"") + self.graph_no_exception + pynutil.insert("\"")
+            insert_space
+            + minus_graph
+            + pynutil.insert('integer: "')
+            + self.graph_no_exception
+            + pynutil.insert('"')
         )
 
         big_number_with_optional_minus = (
-            optional_minus_graph + pynutil.insert("integer: \"") + graph_wo_small_digits + pynutil.insert("\"")
+            optional_minus_graph
+            + pynutil.insert('integer: "')
+            + graph_wo_small_digits
+            + pynutil.insert('"')
         )
 
-        graph = optional_prefix_graph + (small_number_with_minus | big_number_with_optional_minus)
+        graph = optional_prefix_graph + (
+            small_number_with_minus | big_number_with_optional_minus
+        )
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

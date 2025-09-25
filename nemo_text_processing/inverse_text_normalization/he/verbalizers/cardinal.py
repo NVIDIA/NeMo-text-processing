@@ -15,8 +15,14 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_ALPHA_HE, GraphFst
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, delete_space
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
+    NEMO_ALPHA_HE,
+    GraphFst,
+)
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
+    delete_space,
+)
 
 
 class CardinalFst(GraphFst):
@@ -36,16 +42,19 @@ class CardinalFst(GraphFst):
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # Thousands separator
-        group_by_threes = at_most_three_digits + (pynutil.insert(",") + exactly_three_digits).closure()
+        group_by_threes = (
+            at_most_three_digits
+            + (pynutil.insert(",") + exactly_three_digits).closure()
+        )
 
         # Keep the prefix if exists and add a dash
         optional_prefix = pynini.closure(
             pynutil.delete("morphosyntactic_features:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_ALPHA_HE, 1)
             + pynutil.insert("-")
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + delete_space,
             0,
             1,
@@ -55,9 +64,9 @@ class CardinalFst(GraphFst):
         optional_sign = pynini.closure(
             pynutil.delete("negative:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.accep("-")
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + delete_space,
             0,
             1,
@@ -67,9 +76,9 @@ class CardinalFst(GraphFst):
         graph = (
             pynutil.delete("integer:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT, 1)  # Accepts at least one digit
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
 
         # Add thousands separator
