@@ -24,6 +24,8 @@ from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import Ordin
 from nemo_text_processing.text_normalization.ko.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.verbalizers.word import WordFst
+from nemo_text_processing.text_normalization.ko.verbalizers.telephone import TelephoneFst
+
 
 
 class VerbalizeFst(GraphFst):
@@ -49,6 +51,7 @@ class VerbalizeFst(GraphFst):
         whitelist = WhiteListFst(deterministic=deterministic)
         time = TimeFst(deterministic=deterministic)
         money = MoneyFst(deterministic=deterministic)
+        telephone = TelephoneFst(deterministic=deterministic)
 
         graph = pynini.union(
             cardinal.fst,
@@ -60,6 +63,7 @@ class VerbalizeFst(GraphFst):
             whitelist.fst,
             time.fst,
             money.fst,
+            telephone.fst,
         )
 
         self.fst = graph.optimize()

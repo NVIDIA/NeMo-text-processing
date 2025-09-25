@@ -19,14 +19,14 @@ from nemo_text_processing.text_normalization.normalize import Normalizer
 from ..utils import parse_test_case_file
 
 
-class TestMoney:
+class TestTime:
     normalizer_ko = Normalizer(
         lang='ko', cache_dir='export/ko_tn_grammars_lower_cased', overwrite_cache=False, input_case='lower_cased'
     )
 
-    @parameterized.expand(parse_test_case_file('ko/data_text_normalization/test_cases_money.txt'))
+    @parameterized.expand(parse_test_case_file('ko/data_text_normalization/test_cases_telephone.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_money(self, test_input, expected):
+    def test_telephone(self, test_input, expected):
         preds = self.normalizer_ko.normalize(test_input)
         assert expected == preds

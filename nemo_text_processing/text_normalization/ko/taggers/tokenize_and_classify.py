@@ -28,6 +28,7 @@ from nemo_text_processing.text_normalization.ko.taggers.punctuation import Punct
 from nemo_text_processing.text_normalization.ko.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
+from nemo_text_processing.text_normalization.ko.taggers.telephone import TelephoneFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -74,6 +75,7 @@ class ClassifyFst(GraphFst):
             whitelist = WhiteListFst(deterministic=deterministic)
             punctuation = PunctuationFst(deterministic=deterministic)
             money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
+            telephone = TelephoneFst(deterministic=deterministic)
 
             classify = pynini.union(
                 pynutil.add_weight(cardinal.fst, 1.1),
@@ -86,6 +88,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(money.fst, 1.1),
                 pynutil.add_weight(punctuation.fst, 1.0),
                 pynutil.add_weight(whitelist.fst, 1.1),
+                pynutil.add_weight(telephone.fst, 1.1),
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
