@@ -91,7 +91,7 @@ class MeasureFst(GraphFst):
         spaced_units = pynini.string_file(get_abs_path("data/spaced_measurements.tsv"))
         spaced_units = pynini.invert(spaced_units)
         spaced_units = (
-            pynutil.insert('units: "\[SPACE\]') + spaced_units + pynutil.insert('"'). # noqa: W605
+            pynutil.insert('units: "\[SPACE\]') + spaced_units + pynutil.insert('"') # noqa: W605
         )
 
         # in joint units the unit is concatenated to the number, in spaced unit separate the unit with a space

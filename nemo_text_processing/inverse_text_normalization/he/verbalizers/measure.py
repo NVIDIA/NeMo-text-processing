@@ -15,13 +15,15 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
+    GraphFst,
+)
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_NOT_QUOTE,
-    NEMO_SIGMA,
-    NEMO_SPACE,
     delete_space,
+    NEMO_SPACE,
+    NEMO_SIGMA,
 )
 
 
@@ -46,10 +48,10 @@ class MeasureFst(GraphFst):
         optional_prefix = pynini.closure(
             pynutil.delete("morphosyntactic_features:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.insert('-')
-            + pynutil.delete("\"")
+            + pynutil.insert("-")
+            + pynutil.delete('"')
             + delete_space,
             0,
             1,
@@ -57,40 +59,53 @@ class MeasureFst(GraphFst):
 
         # Removes the negative attribute and leaves the sign if occurs
         optional_sign = pynini.closure(
-            pynutil.delete("negative:")
+            pynutil.delete("code_switch:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.accep("-")
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + delete_space,
             0,
             1,
         )
 
         graph_decimal = (
-            pynutil.delete("decimal {") + delete_space + decimal.numbers + delete_space + pynutil.delete("}")
+            pynutil.delete("decimal {")
+            + delete_space
+            + decimal.numbers
+            + delete_space
+            + pynutil.delete("}")
         )
 
         graph_cardinal = (
-            pynutil.delete("cardinal {") + delete_space + cardinal.numbers + delete_space + pynutil.delete("}")
+            pynutil.delete("cardinal {")
+            + delete_space
+            + cardinal.numbers
+            + delete_space
+            + pynutil.delete("}")
         )
 
         unit = (
             pynutil.delete("units:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_CHAR - NEMO_SPACE, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + delete_space
         )
         unit @= pynini.cdrewrite(
-            pynini.cross("\[SPACE\]", NEMO_SPACE), "", "", NEMO_SIGMA
+            pynini.cross("\[SPACE\]", NEMO_SPACE), "", "", NEMO_SIGMA  # noqa: W605
         )  # For space separated measures.
 
         numbers_units = delete_space + unit
         numbers_graph = (graph_cardinal | graph_decimal) + numbers_units
 
-        one_graph = delete_space + pynutil.insert("1") + unit + pynutil.delete("cardinal { integer: \"1\" }")
+        one_graph = (
+            delete_space
+            + pynutil.insert("1")
+            + unit
+            + pynutil.delete('cardinal { integer: "1" }')
+        )
 
         graph = optional_prefix + optional_sign + (numbers_graph | one_graph)
         delete_tokens = self.delete_tokens(graph)
