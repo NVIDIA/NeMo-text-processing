@@ -127,14 +127,15 @@ class ElectronicFst(GraphFst):
 
         full_stop_accep = pynini.accep(".")
         dollar_accep = pynini.accep("$")  # Include for the correct transduction of the money graph
-        excluded_symbols = full_stop_accep | dollar_accep
+        excluded_symbols = full_stop_accep | dollar_accep | pynini.accep(",")
         filtered_symbols = pynini.difference(accepted_symbols, excluded_symbols)
         accepted_characters = NEMO_ALPHA | NEMO_DIGIT | filtered_symbols
         domain_component = full_stop_accep + pynini.closure(accepted_characters, 2)
-        graph_domain = (
+        graph_domain = pynutil.add_weight(
             pynutil.insert('domain: "')
             + (pynini.closure(accepted_characters, 1) + pynini.closure(domain_component, 1))
-            + pynutil.insert('"')
+            + pynutil.insert('"'),
+            0.1,
         ).optimize()
 
         graph |= pynutil.add_weight(graph_domain, MIN_NEG_WEIGHT)
