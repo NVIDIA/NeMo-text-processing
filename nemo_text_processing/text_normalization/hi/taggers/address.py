@@ -39,8 +39,7 @@ class AddressFst(GraphFst):
     def __init__(self):
         super().__init__(name="address", kind="classify")
         single_digit_verbalizer = (
-            pynini.string_file(get_abs_path("data/telephone/number.tsv"))
-            | pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+            pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
             | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         )
 
@@ -51,11 +50,33 @@ class AddressFst(GraphFst):
         char_verbalizer = digit_verbalizer | NEMO_ALPHA
         verbalizer = pynini.closure(char_verbalizer + insert_space, 1) + char_verbalizer
 
+        address_lexicon = pynini.string_file(get_abs_path("data/address/lexicon.tsv"))
+        address_suffix = pynini.string_file(get_abs_path("data/address/suffix.tsv"))
+
+        lexicon_graph = pynini.closure(NEMO_ALPHA, 1) + address_suffix
+        place_name_graph = pynini.union(address_lexicon, pynutil.add_weight(lexicon_graph, 0.1))
+
         context_before = get_context(address_context)
 
         number_part = (
             pynutil.insert('number_part: "')
             + pynini.closure(context_before, 0, 1)
+            + verbalizer
+            + pynutil.insert('"')
+        )
+
+        number_with_place_name = (
+            pynutil.insert('number_part: "')
+            + verbalizer
+            + insert_space
+            + place_name_graph
+            + pynutil.insert('"')
+        )
+
+        place_name_with_number = (
+            pynutil.insert('number_part: "')
+            + place_name_graph
+            + insert_space
             + verbalizer
             + pynutil.insert('"')
         )
@@ -72,6 +93,7 @@ class AddressFst(GraphFst):
             + pynutil.insert('"')
         )
 
-        final_graph = number_part | hyphen_graph | slash_graph
+        final_graph = number_part | hyphen_graph | slash_graph | number_with_place_name | place_name_with_number
 
+        final_graph = pynutil.add_weight(final_graph, -0.1)
         self.fst = self.add_tokens(final_graph)
