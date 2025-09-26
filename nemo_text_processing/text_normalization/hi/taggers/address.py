@@ -15,8 +15,20 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, NEMO_DIGIT, NEMO_HI_DIGIT, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    GraphFst,
+    NEMO_DIGIT,
+    NEMO_HI_DIGIT,
+    NEMO_SPACE,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
+
+address_context = pynini.string_file(get_abs_path("data/address/address_context.tsv"))
+
+def get_context(keywords: 'pynini.FstLike'):
+    return (keywords + pynini.accep(NEMO_SPACE)).optimize()
+
 
 class AddressFst(GraphFst):
     """
@@ -25,7 +37,6 @@ class AddressFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="address", kind="classify")
-        # Implement address tagging logic here
         single_digit_verbalizer = (
             pynini.string_file(get_abs_path("data/telephone/number.tsv"))
             | pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
@@ -38,11 +49,20 @@ class AddressFst(GraphFst):
 
         verbalizer = pynini.closure(digit_verbalizer + insert_space, 1) + digit_verbalizer
 
-        number_part = pynutil.insert('number_part: "') + verbalizer + pynutil.insert('"')
+        context_before = get_context(address_context)
+
+        number_part = (
+            pynutil.insert('number_part: "')
+            + context_before
+            + verbalizer
+            + pynutil.insert('"')
+        )
 
         hyphen_graph = pynini.cross("-", " ")
 
-        slash_graph = pynini.cross("/", " बटा ")
+        slash_graph = (
+            digit_verbalizer + insert_space + pynini.cross("/", "बटा") + insert_space + digit_verbalizer
+        )
 
         final_graph = number_part | hyphen_graph | slash_graph
 
