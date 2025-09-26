@@ -93,7 +93,7 @@ class AddressFst(GraphFst):
             + pynutil.insert('"')
         )
 
-        final_graph = number_part | hyphen_graph | slash_graph | number_with_place_name | place_name_with_number
+        final_graph = place_name_with_number | number_with_place_name | number_part | hyphen_graph | slash_graph
 
         final_graph = pynutil.add_weight(final_graph, -0.1)
         self.fst = self.add_tokens(final_graph)
