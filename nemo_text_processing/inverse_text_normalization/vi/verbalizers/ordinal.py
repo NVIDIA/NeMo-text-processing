@@ -18,7 +18,6 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     NEMO_NOT_QUOTE,
-    NEMO_QUOTE,
     GraphFst,
     delete_space,
 )
@@ -35,9 +34,9 @@ class OrdinalFst(GraphFst):
         graph = (
             pynutil.delete("integer:")
             + delete_space
-            + pynutil.delete(NEMO_QUOTE)
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete(NEMO_QUOTE)
+            + pynutil.delete('"')
         )
 
         graph = pynutil.insert("thứ ") + graph

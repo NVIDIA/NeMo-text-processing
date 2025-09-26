@@ -17,7 +17,6 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     NEMO_NOT_QUOTE,
-    NEMO_QUOTE,
     NEMO_SPACE,
     GraphFst,
     delete_space,
@@ -36,26 +35,26 @@ class DecimalFst(GraphFst):
         integer = (
             pynutil.delete("integer_part:")
             + delete_space
-            + pynutil.delete(NEMO_QUOTE)
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete(NEMO_QUOTE)
+            + pynutil.delete('"')
         )
         optional_integer = pynini.closure(integer + delete_space, 0, 1)
         fractional = (
             pynutil.insert(".")
             + pynutil.delete("fractional_part:")
             + delete_space
-            + pynutil.delete(NEMO_QUOTE)
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete(NEMO_QUOTE)
+            + pynutil.delete('"')
         )
         optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
         quantity = (
             pynutil.delete("quantity:")
             + delete_space
-            + pynutil.delete(NEMO_QUOTE)
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete(NEMO_QUOTE)
+            + pynutil.delete('"')
         )
         optional_quantity = pynini.closure(pynutil.insert(NEMO_SPACE) + quantity + delete_space, 0, 1)
         graph = optional_integer + optional_fractional + optional_quantity

@@ -17,7 +17,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
-    NEMO_QUOTE,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -45,17 +44,17 @@ class FractionFst(GraphFst):
         numerator = (
             pynutil.insert('numerator:')
             + insert_space
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + graph_cardinal
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
         )
         fraction_component = pynutil.delete(pynini.union("phần", "trên", "chia"))
         denominator = (
             pynutil.insert('denominator:')
             + insert_space
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + (graph_cardinal | graph_four)
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
         )
 
         graph_fraction_component = numerator + delete_space + fraction_component + delete_extra_space + denominator

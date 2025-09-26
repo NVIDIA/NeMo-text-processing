@@ -17,7 +17,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
-    NEMO_QUOTE,
     GraphFst,
     delete_space,
     insert_space,
@@ -42,11 +41,11 @@ class OrdinalFst(GraphFst):
         final_graph = (
             pynutil.insert('integer:')
             + insert_space
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + graph_ordinal
             + delete_space
             + self.graph
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
         )
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

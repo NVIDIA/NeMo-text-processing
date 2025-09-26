@@ -18,7 +18,6 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     NEMO_DIGIT,
-    NEMO_QUOTE,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -63,11 +62,11 @@ class DecimalFst(GraphFst):
         graph_fractional = (
             pynutil.insert('fractional_part:')
             + insert_space
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + graph_decimal
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
         )
-        graph_integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert(NEMO_QUOTE)
+        graph_integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"')
         final_graph_wo_sign = (
             pynini.closure(graph_integer + delete_extra_space, 0, 1) + point + delete_extra_space + graph_fractional
         )
@@ -86,9 +85,9 @@ class DecimalFst(GraphFst):
             delete_extra_space
             + pynutil.insert('fractional_part:')
             + insert_space
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + (last_digit | cardinal.graph_half | cardinal.graph_one | cardinal.graph_four)
-            + pynutil.insert(NEMO_QUOTE),
+            + pynutil.insert('"'),
             0,
             1,
         )
@@ -96,15 +95,15 @@ class DecimalFst(GraphFst):
         quantity_graph = (
             pynutil.insert('integer_part:')
             + insert_space
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + numbers
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + delete_extra_space
             + pynutil.insert('quantity:')
             + insert_space
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + magnitude_words
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + optional_fraction_graph
         )
         quantity_graph |= (
@@ -112,9 +111,9 @@ class DecimalFst(GraphFst):
             + delete_extra_space
             + pynutil.insert('quantity:')
             + insert_space
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
             + (magnitude_words | thousand_words)
-            + pynutil.insert(NEMO_QUOTE)
+            + pynutil.insert('"')
         )
 
         final_graph = optional_graph_negative + final_graph_wo_sign
