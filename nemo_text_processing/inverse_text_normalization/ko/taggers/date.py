@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, NEMO_SPACE
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -41,28 +41,14 @@ class DateFst(GraphFst):
         day_suffix = pynini.cross("일", "")
 
         year_component = (
-            pynutil.insert("year: \"")
-            + cardinal
-            + pynini.closure(year_suffix, 0, 1)
-            + pynutil.insert("\"")
+            pynutil.insert("year: \"") + cardinal + pynini.closure(year_suffix, 0, 1) + pynutil.insert("\"")
         )
 
         month_component = (
-            pynutil.insert("month: \"")
-            + spacing
-            + month
-            + pynini.closure(month_suffix, 0, 1)
-            + pynutil.insert("\"")
+            pynutil.insert("month: \"") + spacing + month + pynini.closure(month_suffix, 0, 1) + pynutil.insert("\"")
         )
 
-        day_component = (
-            pynutil.insert("day: \"")
-            + spacing
-            + cardinal
-            + day_suffix
-            + spacing
-            + pynutil.insert("\"")
-        )
+        day_component = pynutil.insert("day: \"") + spacing + cardinal + day_suffix + spacing + pynutil.insert("\"")
 
         graph_component = year_component | month_component | day_component
         graph_date = (
@@ -75,4 +61,3 @@ class DateFst(GraphFst):
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-

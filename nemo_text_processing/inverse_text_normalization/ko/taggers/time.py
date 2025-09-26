@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, delete_space, NEMO_SPACE
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -36,30 +36,18 @@ class TimeFst(GraphFst):
         # 1-9 in cardinals for minutes and seconds
         cardinal_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         cardinal_zero = pynini.cross("영", "0")
-        
+
         graph_tens_prefix = pynini.union(
-            pynini.cross("이", "2"),
-            pynini.cross("삼", "3"),
-            pynini.cross("사", "4"),
-            pynini.cross("오", "5")
+            pynini.cross("이", "2"), pynini.cross("삼", "3"), pynini.cross("사", "4"), pynini.cross("오", "5")
         )
         # Graphing 10-19
-        graph_ten = pynini.union(
-            pynini.cross("십", "10"),
-            pynini.cross("십", "1") + cardinal_digit
-        ).optimize()
+        graph_ten = pynini.union(pynini.cross("십", "10"), pynini.cross("십", "1") + cardinal_digit).optimize()
         # Graphing 20-59
-        graph_tens = (
-            (graph_tens_prefix + pynini.cross("십", "0")) 
-            | (graph_tens_prefix + pynini.cross("십", "") + cardinal_digit)
+        graph_tens = (graph_tens_prefix + pynini.cross("십", "0")) | (
+            graph_tens_prefix + pynini.cross("십", "") + cardinal_digit
         )
 
-        graph_0_to_59 = pynini.union(
-            cardinal_zero,
-            cardinal_digit,
-            graph_ten,
-            graph_tens
-        ).optimize()
+        graph_0_to_59 = pynini.union(cardinal_zero, cardinal_digit, graph_ten, graph_tens).optimize()
 
         # 1-12 for hours
         graph_hours = pynini.string_file(get_abs_path("data/time/time_hours.tsv"))
@@ -92,7 +80,12 @@ class TimeFst(GraphFst):
         graph_regular = hour + minute + second
 
         # 오전 = AM, 오후 = PM
-        prefix_words = (pynini.accep("오전") + spacing) | (pynini.accep("오후") + spacing) | (pynini.accep("새벽") + spacing) | (pynini.accep("아침") + spacing)
+        prefix_words = (
+            (pynini.accep("오전") + spacing)
+            | (pynini.accep("오후") + spacing)
+            | (pynini.accep("새벽") + spacing)
+            | (pynini.accep("아침") + spacing)
+        )
         prefix_tag = pynutil.insert("prefix: \"") + prefix_words + pynutil.insert("\"")
 
         # 전 = before, 후 = after
