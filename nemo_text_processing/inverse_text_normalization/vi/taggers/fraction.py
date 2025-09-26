@@ -42,11 +42,7 @@ class FractionFst(GraphFst):
         graph_four = cardinal.graph_four
 
         numerator = (
-            pynutil.insert('numerator:')
-            + insert_space
-            + pynutil.insert('"')
-            + graph_cardinal
-            + pynutil.insert('"')
+            pynutil.insert('numerator:') + insert_space + pynutil.insert('"') + graph_cardinal + pynutil.insert('"')
         )
         fraction_component = pynutil.delete(pynini.union("phần", "trên", "chia"))
         denominator = (
