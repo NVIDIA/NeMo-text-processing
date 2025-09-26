@@ -17,6 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
     GraphFst,
+    NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_HI_DIGIT,
     NEMO_SPACE,
@@ -27,7 +28,7 @@ from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 address_context = pynini.string_file(get_abs_path("data/address/address_context.tsv"))
 
 def get_context(keywords: 'pynini.FstLike'):
-    return (keywords + pynini.accep(NEMO_SPACE)).optimize()
+    return (keywords + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)).optimize()
 
 
 class AddressFst(GraphFst):
@@ -47,13 +48,14 @@ class AddressFst(GraphFst):
 
         digit_verbalizer = pynini.compose(single_digit, single_digit_verbalizer)
 
-        verbalizer = pynini.closure(digit_verbalizer + insert_space, 1) + digit_verbalizer
+        char_verbalizer = digit_verbalizer | NEMO_ALPHA
+        verbalizer = pynini.closure(char_verbalizer + insert_space, 1) + char_verbalizer
 
         context_before = get_context(address_context)
 
         number_part = (
             pynutil.insert('number_part: "')
-            + context_before
+            + pynini.closure(context_before, 0, 1)
             + verbalizer
             + pynutil.insert('"')
         )
@@ -61,7 +63,13 @@ class AddressFst(GraphFst):
         hyphen_graph = pynini.cross("-", " ")
 
         slash_graph = (
-            digit_verbalizer + insert_space + pynini.cross("/", "बटा") + insert_space + digit_verbalizer
+            pynutil.insert('number_part: "')
+            + digit_verbalizer
+            + insert_space
+            + pynini.cross("/", "बटा")
+            + insert_space
+            + digit_verbalizer
+            + pynutil.insert('"')
         )
 
         final_graph = number_part | hyphen_graph | slash_graph
