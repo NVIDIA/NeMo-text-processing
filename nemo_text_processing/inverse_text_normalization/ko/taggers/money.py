@@ -17,10 +17,10 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
     NEMO_DIGIT,
+    NEMO_SPACE,
     GraphFst,
     convert_space,
     delete_extra_space,
-    NEMO_SPACE
 )
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
@@ -40,11 +40,7 @@ class MoneyFst(GraphFst):
         cardinals = cardinal.just_cardinals
         currency = pynini.string_file(get_abs_path("data/currency.tsv"))
 
-        graph_unit = (
-            pynutil.insert('currency: "') 
-            + currency 
-            + pynutil.insert('"')
-        )
+        graph_unit = pynutil.insert('currency: "') + currency + pynutil.insert('"')
 
         # Main graph for integer money amounts
         # Structure: <number> + <optional space> + <currency>
