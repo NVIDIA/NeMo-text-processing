@@ -41,7 +41,7 @@ class CardinalFst(GraphFst):
 
         thousand_words = pynini.union("ngàn", "nghìn")
         negative_words = pynini.union("âm", "trừ")
-        
+
         graph_hundred = pynini.cross("trăm", "")
         graph_ten = pynini.cross("mươi", "")
         zero = pynini.cross(pynini.union("linh", "lẻ"), "0")

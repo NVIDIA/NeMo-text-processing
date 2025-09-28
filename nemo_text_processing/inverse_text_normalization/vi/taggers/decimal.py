@@ -48,21 +48,17 @@ class DecimalFst(GraphFst):
         graph_five = pynini.cross("lăm", "5")
         graph_one = pynini.cross("mốt", "1")
         negative_words = pynini.union("âm", "trừ")
-        
+
         graph_decimal = pynini.union(
             base_decimal,
             graph_four,
-            pynini.closure(base_decimal + delete_space, 1)
-            + (base_decimal | graph_four | graph_five | graph_one),
+            pynini.closure(base_decimal + delete_space, 1) + (base_decimal | graph_four | graph_five | graph_one),
         ).optimize()
         self.graph = graph_decimal
 
         point = pynutil.delete("chấm") | pynutil.delete("phẩy")
         optional_graph_negative = pynini.closure(
-            pynutil.insert("negative:")
-            + insert_space
-            + pynini.cross(negative_words, '"true"')
-            + delete_extra_space,
+            pynutil.insert("negative:") + insert_space + pynini.cross(negative_words, '"true"') + delete_extra_space,
             0,
             1,
         )
