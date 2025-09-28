@@ -39,7 +39,7 @@ class FractionFst(GraphFst):
         super().__init__(name="fraction", kind="classify")
 
         graph_cardinal = cardinal.graph_no_exception
-        graph_four = cardinal.graph_four
+        graph_four = pynini.cross("tư", "4")
 
         numerator = (
             pynutil.insert('numerator:') + insert_space + pynutil.insert('"') + graph_cardinal + pynutil.insert('"')

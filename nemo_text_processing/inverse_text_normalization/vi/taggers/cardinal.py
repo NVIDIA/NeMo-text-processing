@@ -36,30 +36,22 @@ class CardinalFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
-        self.graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        self.graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
 
-        self.graph_one = pynini.cross("mốt", "1")
-        self.graph_four = pynini.cross("tư", "4")
-        self.graph_five = pynini.cross("lăm", "5")
-        self.graph_half = pynini.cross("rưỡi", "5")
-
-        self.magnitude_words = pynini.union("triệu", "tỉ", "tỷ", "vạn")
-        self.thousand_words = pynini.union("ngàn", "nghìn")
-        self.negative_words = pynini.union("âm", "trừ")
-
+        thousand_words = pynini.union("ngàn", "nghìn")
+        negative_words = pynini.union("âm", "trừ")
+        
         graph_hundred = pynini.cross("trăm", "")
         graph_ten = pynini.cross("mươi", "")
         zero = pynini.cross(pynini.union("linh", "lẻ"), "0")
 
-        graph_zero = self.graph_zero
-        graph_digit = self.graph_digit
-        graph_one = self.graph_one
-        graph_four = self.graph_four
-        graph_five = self.graph_five
-        graph_half = self.graph_half
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        graph_one = pynini.cross("mốt", "1")
+        graph_four = pynini.cross("tư", "4")
+        graph_five = pynini.cross("lăm", "5")
+        graph_half = pynini.cross("rưỡi", "5")
 
         optional_ten = pynini.closure(delete_space + graph_ten, 0, 1)
         last_digit_exception = pynini.project(pynini.cross("năm", "5"), "input")
@@ -103,7 +95,7 @@ class CardinalFst(GraphFst):
         graph_hundreds_zero = graph_hundreds_component | pynutil.insert("000", weight=0.1)
 
         graph_thousands = pynini.union(
-            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete(self.thousand_words),
+            graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete(thousand_words),
             pynutil.insert("000", weight=0.1),
         ).optimize()
 
@@ -131,7 +123,7 @@ class CardinalFst(GraphFst):
             # Special thousand format with last digit or "rưỡi" (half)
             graph_hundred_component_at_least_one_none_zero_digit
             + delete_space
-            + pynutil.delete(self.thousand_words)
+            + pynutil.delete(thousand_words)
             + delete_space
             + (((last_digit | graph_half) + pynutil.insert("00", weight=0.1)) | graph_hundreds_zero),
             # Single digits (for non-exception cases)
@@ -155,7 +147,7 @@ class CardinalFst(GraphFst):
         self.graph = pynini.difference(pynini.project(graph, "input"), single_digits) @ graph
 
         optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(self.negative_words, '"-"') + NEMO_SPACE,
+            pynutil.insert("negative: ") + pynini.cross(negative_words, '"-"') + NEMO_SPACE,
             0,
             1,
         )

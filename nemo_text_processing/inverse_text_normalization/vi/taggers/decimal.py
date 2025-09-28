@@ -23,6 +23,7 @@ from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     delete_space,
     insert_space,
 )
+from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
 
 
 class DecimalFst(GraphFst):
@@ -40,12 +41,19 @@ class DecimalFst(GraphFst):
 
         cardinal_graph = cardinal.graph_no_exception
 
-        base_decimal = cardinal.graph_digit | cardinal.graph_zero
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        base_decimal = graph_digit | graph_zero
+        graph_four = pynini.cross("tư", "4")
+        graph_five = pynini.cross("lăm", "5")
+        graph_one = pynini.cross("mốt", "1")
+        negative_words = pynini.union("âm", "trừ")
+        
         graph_decimal = pynini.union(
             base_decimal,
-            cardinal.graph_four,
+            graph_four,
             pynini.closure(base_decimal + delete_space, 1)
-            + (base_decimal | cardinal.graph_four | cardinal.graph_five | cardinal.graph_one),
+            + (base_decimal | graph_four | graph_five | graph_one),
         ).optimize()
         self.graph = graph_decimal
 
@@ -53,7 +61,7 @@ class DecimalFst(GraphFst):
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative:")
             + insert_space
-            + pynini.cross(cardinal.negative_words, '"true"')
+            + pynini.cross(negative_words, '"true"')
             + delete_extra_space,
             0,
             1,
@@ -77,8 +85,8 @@ class DecimalFst(GraphFst):
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT)
         )
 
-        magnitude_words = cardinal.magnitude_words
-        thousand_words = cardinal.thousand_words
+        magnitude_words = pynini.union("triệu", "tỉ", "tỷ", "vạn")
+        thousand_words = pynini.union("ngàn", "nghìn")
 
         last_digit = cardinal.last_digit
         optional_fraction_graph = pynini.closure(
@@ -86,7 +94,7 @@ class DecimalFst(GraphFst):
             + pynutil.insert('fractional_part:')
             + insert_space
             + pynutil.insert('"')
-            + (last_digit | cardinal.graph_half | cardinal.graph_one | cardinal.graph_four)
+            + (last_digit | pynini.cross("rưỡi", "5") | graph_one | graph_four)
             + pynutil.insert('"'),
             0,
             1,
