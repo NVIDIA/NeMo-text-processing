@@ -41,15 +41,21 @@ def get_context(keywords):
     
     window = pynini.closure(word, 0, 5)
     
-    # Make context mandatory by using (1, 1) closure - exactly one occurrence required
-    before = pynini.closure(keywords + pynini.accep(NEMO_SPACE) + window, 1, 1)
-    after = pynini.closure(pynutil.delete(NEMO_SPACE) + window + keywords, 1, 1)
+    # Create flexible context patterns that allow context in either direction
+    before = pynini.closure(keywords + pynini.accep(NEMO_SPACE) + window, 0, 1)
+    after = pynini.closure(pynutil.delete(NEMO_SPACE) + window + keywords, 0, 1)
     
-    # Also create optional versions for when we need to allow empty context
-    before_optional = pynini.closure(keywords + pynini.accep(NEMO_SPACE) + window, 0, 1)
-    after_optional = pynini.closure(pynutil.delete(NEMO_SPACE) + window + keywords, 0, 1)
+    # Create mandatory context requirement: at least one context keyword must be present
+    # This allows either before OR after context (or both)
+    context_present = (
+        pynini.closure(keywords + pynini.accep(NEMO_SPACE) + window, 1, 1) + 
+        pynini.closure(pynutil.delete(NEMO_SPACE) + window + keywords, 0, 1)
+    ) | (
+        pynini.closure(keywords + pynini.accep(NEMO_SPACE) + window, 0, 1) + 
+        pynini.closure(pynutil.delete(NEMO_SPACE) + window + keywords, 1, 1)
+    )
     
-    return before.optimize(), after.optimize(), before_optional.optimize(), after_optional.optimize()
+    return before.optimize(), after.optimize(), context_present.optimize(), after.optimize()
 
 
 class AddressFst(GraphFst):
@@ -78,9 +84,14 @@ class AddressFst(GraphFst):
         # Create number sequence (same as digit_sequence for consistency)
         number_sequence = digit_sequence
         
-        # Non-digit characters for text parts
-        non_digit_char = pynini.difference(NEMO_CHAR, pynini.union(single_digit, NEMO_WHITE_SPACE))
+        # Non-digit characters for text parts (excluding hyphen and slash for proper pattern separation)
+        special_chars = pynini.union("-", "/")
+        non_digit_char = pynini.difference(NEMO_CHAR, pynini.union(single_digit, NEMO_WHITE_SPACE, special_chars))
         text_part = pynini.closure(non_digit_char, 1)
+        
+        # Text part that can include special characters (for patterns that handle them)
+        non_digit_char_with_specials = pynini.difference(NEMO_CHAR, pynini.union(single_digit, NEMO_WHITE_SPACE))
+        text_part_with_specials = pynini.closure(non_digit_char_with_specials, 1)
         
         # Create handlers for different character types
         # English letters: consecutive letters stay together, no internal spaces
@@ -218,44 +229,46 @@ class AddressFst(GraphFst):
             digit_sequence + pynini.closure(insert_space + text_part, 0)
         )
         
-        # Combine all address patterns with high priority ones first
+        # Combine all address patterns with hyphen/slash patterns FIRST for highest priority
         address_patterns = (
+            # Hyphen and slash patterns get highest priority
+            text_hyphen_digits_with_context |
+            digits_hyphen_digits_with_context |
+            text_hyphen_text |
+            digits_slash_digits_with_context |
             range_pattern |
+            # Then other specific patterns
+            alpha_digits_with_context |
+            text_hyphen_digits |  # Direct hyphen pattern
+            digits_slash_digits |  # Direct slash pattern  
+            digits_hyphen_digits |  # Direct hyphen-digit pattern
             two_digit_with_text |
             single_digit_with_text |
             text_two_digit |
-            text_hyphen_text |
-            text_hyphen_digits_with_context |
-            digits_slash_digits_with_context |
-            digits_hyphen_digits_with_context |
-            alpha_digits_with_context |
             digits_with_text |
             text_with_digits |
             long_digits_with_context |
             complex_address |
-            # Also include basic numeric and alphanumeric patterns from working approach
-            number_sequence |
-            alphanumeric_with_digit
+            # Basic patterns last so they don't override specific patterns
+            alphanumeric_with_digit |
+            number_sequence
         )
 
-        # Apply working context requirement approach
-        context_before, context_after, context_before_optional, context_after_optional = get_context(address_context)
-        
-        # Create a version of context_after that inserts space when present (mandatory)
+        # Apply STRICT context requirement to prevent interfering with cardinal tagger
+        # Context is now MANDATORY - address patterns can only match when address keywords are present
         all_digits = pynini.union(NEMO_HI_DIGIT, NEMO_DIGIT)
         non_digit_char = pynini.difference(NEMO_CHAR, pynini.union(all_digits, NEMO_WHITE_SPACE))
         word = pynini.closure(non_digit_char, 1) + pynini.accep(NEMO_SPACE)
         window = pynini.closure(word, 0, 5)
-        context_after_with_space = pynini.closure(insert_space + pynutil.delete(NEMO_SPACE) + window + address_context, 1, 1)
         
-        # Create optional version for when context_before is present
-        context_after_with_space_optional = pynini.closure(insert_space + pynutil.delete(NEMO_SPACE) + window + address_context, 0, 1)
+        # MANDATORY context: require at least one address keyword before OR after the pattern
+        context_before = pynini.closure(address_context + pynini.accep(NEMO_SPACE) + window, 1, 1)
+        context_after = pynini.closure(insert_space + pynutil.delete(NEMO_SPACE) + window + address_context, 1, 1)
         
-        # Build the graph with mandatory context requirements
-        # Apply context requirement to all address patterns
+        # Either context before OR context after is required (not optional)
         graph = (
-            (context_before + address_patterns + context_after_with_space_optional) |
-            (context_before_optional + address_patterns + context_after_with_space)
+            (context_before + address_patterns + pynini.closure(insert_space + pynutil.delete(NEMO_SPACE) + window + address_context, 0, 1)) |
+            (pynini.closure(address_context + pynini.accep(NEMO_SPACE) + window, 0, 1) + address_patterns + context_after)
         )
         
         # Use proven weight from working approach
