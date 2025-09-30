@@ -48,7 +48,7 @@ def drop_key_val(key: str):
       output ''
     """
     return (sp + pynutil.delete(f'{key}: "') + FIELD_VAL + pynutil.delete('"')).optimize()
-  
+
 
 def drop_key_exact(key: str, val: str):
     """
