@@ -39,8 +39,8 @@ class TelephoneFst(GraphFst):
         zero_map = pynini.cross("0", "영")
         digit_ko = (digit | zero_map).optimize()
 
-        three_digits = digit_ko ** 3
-        four_digits  = digit_ko ** 4
+        three_digits = digit_ko**3
+        four_digits = digit_ko**4
 
         # country code: "+1", "+82", "+1-"
         country_core = (

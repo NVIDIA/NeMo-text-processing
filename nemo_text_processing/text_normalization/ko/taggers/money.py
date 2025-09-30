@@ -34,10 +34,7 @@ class MoneyFst(GraphFst):
 
         # --- Numbers (integer / optional minor) ---
         # Integer part: "0" or a non-zero leading digit; allow commas (e.g., 18,925,000)
-        integer_part_fst = pynini.union(
-            "0",
-            (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT | pynutil.delete(","))
-        )                 
+        integer_part_fst = pynini.union("0", (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT | pynutil.delete(",")))
 
         # Plain integer → integer_part: "<Korean number>"
         graph_integer_plain = (
@@ -45,7 +42,7 @@ class MoneyFst(GraphFst):
         )
 
         # Optional 2-digit decimal (kept as minor_part if ever used downstream)
-        decimal_part_fst = NEMO_DIGIT ** 2
+        decimal_part_fst = NEMO_DIGIT**2
         graph_minor = pynutil.insert('minor_part: "') + (decimal_part_fst @ graph_cardinal) + pynutil.insert('" ')
 
         # Integer with scale suffix (만/억/조) → wrap the whole thing in one integer_part
