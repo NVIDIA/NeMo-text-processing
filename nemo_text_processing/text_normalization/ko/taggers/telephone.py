@@ -21,10 +21,12 @@ from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 class TelephoneFst(GraphFst):
     """
-    한국어 전화번호 태거(미니멀)
-    - 0은 항상 "영"
-    - 패턴: [ +<cc> ] (### | (###)) ( - | . ) (### | ####) ( - | . ) ####
-    - 확장/SSN/IP 미지원
+    Finite state transducer for classifying Korean telephone numbers.
+    Produces tokens like:
+        telephone { country_code: "플러스 팔 이, " number_part: "영일영, 삼칠일삼, 칠공오공" }
+    Fields:
+        - country_code: optional, spoken with leading "플러스" for '+', ends with ", "
+        - number_part : area, middle(3–4 digits), last4; digits read per digit (0 -> "영")
     """
 
     def __init__(self, deterministic: bool = True):
@@ -37,15 +39,8 @@ class TelephoneFst(GraphFst):
         zero_map = pynini.cross("0", "영")
         digit_ko = (digit | zero_map).optimize()
 
-        # helper: n digits as per-digit reading ("일 이 삼" ...)
-        def n_digits(n: int):
-            return (digit_ko + pynini.closure(digit_ko, 0, n - 1)).optimize()
-
-        def three_digits():
-            return n_digits(3)
-
-        def four_digits():
-            return n_digits(4)
+        three_digits = digit_ko ** 3
+        four_digits  = digit_ko ** 4
 
         # country code: "+1", "+82", "+1-"
         country_core = (
@@ -58,7 +53,7 @@ class TelephoneFst(GraphFst):
         country_code = country_code + pynini.closure(pynutil.delete("-"), 0, 1) + delete_space + insert_space
 
         # area part: "123-" | "123." | "(123)" [space?] or "(123)-"
-        area_core = three_digits()
+        area_core = three_digits
         area_part = (
             (area_core + (pynutil.delete("-") | pynutil.delete(".")))
             | (
@@ -69,8 +64,8 @@ class TelephoneFst(GraphFst):
         ) + add_sep
 
         # 2) allow 3 **or 4** digits in the middle block (to support 010-3713-7050)
-        mid = pynini.union(three_digits(), four_digits()).optimize()
-        last4 = four_digits()
+        mid = pynini.union(three_digits, four_digits)
+        last4 = four_digits
 
         # consume '-' or '.' between middle and last blocks
         number_part_core = area_part + mid + (pynutil.delete("-") | pynutil.delete(".")) + add_sep + last4

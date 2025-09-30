@@ -28,35 +28,33 @@ class TelephoneFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="verbalize", deterministic=deterministic)
 
-        NOT_QUOTE = NEMO_NOT_QUOTE
-
-        # country_code (있으면 끝에 공백 하나)
+        # country_code (optional, add trailing space if present)
         country = (
             pynini.closure(delete_space, 0, 1)
             + pynutil.delete('country_code: "')
-            + pynini.closure(NOT_QUOTE, 1)
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
             + insert_space
         )
 
-        # number_part (필수)
+        # number_part (mandatory)
         number = (
             pynini.closure(delete_space, 0, 1)
             + pynutil.delete('number_part: "')
-            + pynini.closure(NOT_QUOTE, 1)
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
         )
 
-        # extension (있을 때만 앞에 ", 내선 " 삽입)
+        # extension (optional, prepend with ", 내선 ")
         ext_field = (
             pynini.closure(delete_space, 0, 1)
             + pynutil.delete('extension: "')
-            + pynini.closure(NOT_QUOTE, 1)
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
         )
         extension_opt = pynini.closure(pynutil.insert(", 내선 ") + ext_field, 0, 1)
 
-        # telephone { ... } 래퍼 삭제
+        # remove wrapper "telephone { ... }"
         graph = (
             pynutil.delete("telephone")
             + pynini.closure(delete_space, 0, 1)

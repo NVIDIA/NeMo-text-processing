@@ -30,11 +30,14 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="classify", deterministic=deterministic)
 
         graph_cardinal = cardinal.graph
-        SP = pynini.closure(delete_space)  # absorb any amount of spaces in input
+        sp = pynini.closure(delete_space)  # absorb any amount of spaces in input
 
         # --- Numbers (integer / optional minor) ---
         # Integer part: "0" or a non-zero leading digit; allow commas (e.g., 18,925,000)
-        integer_part_fst = ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT | pynutil.delete(","))) | NEMO_DIGIT
+        integer_part_fst = pynini.union(
+            "0",
+            (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT | pynutil.delete(","))
+        )                 
 
         # Plain integer → integer_part: "<Korean number>"
         graph_integer_plain = (
@@ -42,7 +45,7 @@ class MoneyFst(GraphFst):
         )
 
         # Optional 2-digit decimal (kept as minor_part if ever used downstream)
-        decimal_part_fst = NEMO_DIGIT + NEMO_DIGIT
+        decimal_part_fst = NEMO_DIGIT ** 2
         graph_minor = pynutil.insert('minor_part: "') + (decimal_part_fst @ graph_cardinal) + pynutil.insert('" ')
 
         # Integer with scale suffix (만/억/조) → wrap the whole thing in one integer_part
@@ -78,7 +81,7 @@ class MoneyFst(GraphFst):
         # If present in the raw text, they remain outside the money token and can be handled upstream/elsewhere.
 
         # [currency] [number]
-        graph_prepend = (currency_major_prepended + SP + number_component).optimize()
+        graph_prepend = (currency_major_prepended + sp + number_component).optimize()
 
         # [number] [currency]
         graph_append = (number_component + currency_major_appended).optimize()

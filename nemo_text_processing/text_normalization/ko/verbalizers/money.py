@@ -24,17 +24,44 @@ FIELD_VAL = pynini.closure(NOT_QUOTE, 1)
 
 
 def del_key_val(key: str):
-    """SP + key: "<VAL>" -> <VAL>"""
+    """
+    Delete the token field prefix and quotes, keep only the value.
+
+    Input format:  [SP] key: "<VAL>"
+    Output:        <VAL>
+
+    Example:
+      input  'integer_part: "삼백오십"'
+      output '삼백오십'
+    """
     return (SP + pynutil.delete(f'{key}: "') + FIELD_VAL + pynutil.delete('"')).optimize()
 
 
 def drop_key_val(key: str):
-    """SP + key: "<ANY>" -> (delete)"""
+    """
+    Delete the entire key-value pair (key and its quoted value).
+
+    Input format:  [SP] key: "<ANY>"
+    Output:        (nothing)
+
+    Example:
+      input  'minor_part: "십"'
+      output ''
+    """
     return (SP + pynutil.delete(f'{key}: "') + pynini.closure(NOT_QUOTE, 1) + pynutil.delete('"')).optimize()
 
 
 def drop_key_exact(key: str, val: str):
-    """SP + key: "val" -> (delete)"""
+    """
+    Delete the exact key-value pair if it matches the given value.
+
+    Input format:  [SP] key: "val"
+    Output:        (nothing)
+
+    Example:
+      input  'currency_maj: "원"'
+      output ''
+    """
     return (SP + pynutil.delete(f'{key}: "{val}"')).optimize()
 
 
@@ -45,7 +72,7 @@ class MoneyFst(GraphFst):
     Input tokens:
       tokens { money { integer_part: "..." currency_maj: "..." [minor_part: "..."] } }
 
-    NOTE: Period (e.g., /월, /년, …) is intentionally NOT handled here.
+    Period (e.g., /월, /년, …) is intentionally NOT handled here.
     Output examples:
       integer_part: "십" currency_maj: "원"          -> "십원"
       integer_part: "삼십억" currency_maj: "원"     -> "삼십억원"
