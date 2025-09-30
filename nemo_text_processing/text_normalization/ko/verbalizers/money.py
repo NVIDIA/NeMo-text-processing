@@ -15,54 +15,53 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SIGMA, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 
 # ===== whitespace & token helpers =====
-SP = pynini.closure(delete_space)  # absorb 0+ spaces
-NOT_QUOTE = pynini.difference(NEMO_SIGMA, pynini.accep('"'))
-FIELD_VAL = pynini.closure(NOT_QUOTE, 1)
+sp = pynini.closure(delete_space)  # absorb 0+ spaces
+FIELD_VAL = pynini.closure(NEMO_NOT_QUOTE, 1)
 
 
 def del_key_val(key: str):
     """
     Delete the token field prefix and quotes, keep only the value.
 
-    Input format:  [SP] key: "<VAL>"
+    Input format:  [sp] key: "<VAL>"
     Output:        <VAL>
 
     Example:
       input  'integer_part: "삼백오십"'
       output '삼백오십'
     """
-    return (SP + pynutil.delete(f'{key}: "') + FIELD_VAL + pynutil.delete('"')).optimize()
+    return (sp + pynutil.delete(f'{key}: "') + FIELD_VAL + pynutil.delete('"')).optimize()
 
 
 def drop_key_val(key: str):
     """
     Delete the entire key-value pair (key and its quoted value).
 
-    Input format:  [SP] key: "<ANY>"
+    Input format:  [sp] key: "<ANY>"
     Output:        (nothing)
 
     Example:
       input  'minor_part: "십"'
       output ''
     """
-    return (SP + pynutil.delete(f'{key}: "') + pynini.closure(NOT_QUOTE, 1) + pynutil.delete('"')).optimize()
-
+    return (sp + pynutil.delete(f'{key}: "') + FIELD_VAL + pynutil.delete('"')).optimize()
+  
 
 def drop_key_exact(key: str, val: str):
     """
     Delete the exact key-value pair if it matches the given value.
 
-    Input format:  [SP] key: "val"
+    Input format:  [sp] key: "val"
     Output:        (nothing)
 
     Example:
       input  'currency_maj: "원"'
       output ''
     """
-    return (SP + pynutil.delete(f'{key}: "{val}"')).optimize()
+    return (sp + pynutil.delete(f'{key}: "{val}"')).optimize()
 
 
 class MoneyFst(GraphFst):
@@ -90,9 +89,9 @@ class MoneyFst(GraphFst):
 
         # ===== KRW (원) =====
         # (A) [integer] [원] -> "{integer}원"
-        won_a = integer_part + SP + won_key_drop + pynutil.insert("원")
+        won_a = integer_part + sp + won_key_drop + pynutil.insert("원")
         # (B) [원] [integer] -> "{integer}원"
-        won_b = won_key_drop + SP + integer_part + pynutil.insert("원")
+        won_b = won_key_drop + sp + integer_part + pynutil.insert("원")
         won_core = won_a | won_b
         won_core = (won_core + pynini.closure(minor_part_drop, 0, 1)).optimize()
 
