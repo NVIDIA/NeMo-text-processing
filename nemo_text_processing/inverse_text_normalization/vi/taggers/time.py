@@ -50,21 +50,17 @@ class TimeFst(GraphFst):
         minute = pynini.cross("phút", "")
         optional_minute = pynini.closure(delete_space + minute, 0, 1)
         second = pynini.cross("giây", "")
-        
+
         # Zero prefix patterns for minutes (linh, lẻ, không)
-        # Examples: "linh năm" -> "05", "không tám" -> "08"  
-        zero_prefix = pynini.union(
-            pynini.cross("linh", "0"),
-            pynini.cross("lẻ", "0"), 
-            pynini.cross("không", "0")
-        )
+        # Examples: "linh năm" -> "05", "không tám" -> "08"
+        zero_prefix = pynini.union(pynini.cross("linh", "0"), pynini.cross("lẻ", "0"), pynini.cross("không", "0"))
         graph_zero_minute = zero_prefix + delete_space + graph_minutes
         graph_minute_extended = graph_minutes | graph_zero_minute
 
         final_graph_hour = pynutil.insert('hours: "') + graph_hours + pynutil.insert('"') + delete_space + oclock
         graph_minute = graph_minute_extended + optional_minute
         graph_second = graph_minute_extended + delete_space + second
-        
+
         # Optional time zone support
         final_time_zone_optional = pynini.closure(
             delete_space
@@ -113,7 +109,7 @@ class TimeFst(GraphFst):
             + (graph_second | graph_half)
             + pynutil.insert('"')
         )
-        
+
         # Pattern 4: Hour + Seconds only (e.g., "ba giờ mười giây" -> 3:00:10)
         graph_hs = (
             final_graph_hour
@@ -146,14 +142,17 @@ class TimeFst(GraphFst):
         )
 
         # Combine all time patterns
-        final_graph = pynini.union(
-            final_graph_hour,      # Hour only
-            graph_hm,              # Hour + Minutes  
-            graph_hms,             # Hour + Minutes + Seconds
-            graph_hs,              # Hour + Seconds
-            graph_ms,              # Minutes + Seconds only
-            graph_time_to          # "Kém" pattern
-        ) + final_time_zone_optional
+        final_graph = (
+            pynini.union(
+                final_graph_hour,  # Hour only
+                graph_hm,  # Hour + Minutes
+                graph_hms,  # Hour + Minutes + Seconds
+                graph_hs,  # Hour + Seconds
+                graph_ms,  # Minutes + Seconds only
+                graph_time_to,  # "Kém" pattern
+            )
+            + final_time_zone_optional
+        )
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

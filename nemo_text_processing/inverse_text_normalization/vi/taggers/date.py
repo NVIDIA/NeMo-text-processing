@@ -20,7 +20,6 @@ from nemo_text_processing.inverse_text_normalization.vi.graph_utils import Graph
 from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
 
 
-
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date,
@@ -37,7 +36,7 @@ class DateFst(GraphFst):
 
         cardinal_graph = cardinal.graph_no_exception
         YEAR_WEIGHT = 0.001
-        
+
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv")).optimize()
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).optimize()
@@ -94,22 +93,34 @@ class DateFst(GraphFst):
             + (graph_digit | graph_zero)
             + delete_space
             + (graph_teen | graph_ties | graph_digits),
-            graph_thousands,        
-            graph_hundreds,         
+            graph_thousands,
+            graph_hundreds,
             (graph_digit + pynutil.insert("0") + delete_space + (graph_ties | graph_digits | graph_teen)),
-            ((graph_digit | graph_zero) + delete_space + (graph_digit | graph_zero) + delete_space + (graph_digit | graph_zero) + delete_space + (graph_digit | graph_zero))
+            (
+                (graph_digit | graph_zero)
+                + delete_space
+                + (graph_digit | graph_zero)
+                + delete_space
+                + (graph_digit | graph_zero)
+                + delete_space
+                + (graph_digit | graph_zero)
+            ),
         ).optimize()
-        
+
         year_graph = pynutil.add_weight(year_graph_raw, YEAR_WEIGHT)
-        
+
         # Month graph with special handling for "năm" (means "5" in months but "year" in other contexts)
-        month_graph = pynutil.insert('month: "') + pynini.string_file(get_abs_path("data/months.tsv")).optimize() + pynutil.insert('"')
+        month_graph = (
+            pynutil.insert('month: "')
+            + pynini.string_file(get_abs_path("data/months.tsv")).optimize()
+            + pynutil.insert('"')
+        )
         month_exception = pynini.project(pynini.cross("năm", "5"), "input")
         month_graph_exception = (pynini.project(month_graph, "input") - month_exception.arcsort()) @ month_graph
 
         day_graph = pynutil.insert('day: "') + cardinal_graph + pynutil.insert('"')
         graph_month = pynutil.delete("tháng") + delete_space + month_graph_exception
-        
+
         graph_year = pynutil.add_weight(
             delete_extra_space
             + pynutil.delete("năm")
@@ -117,29 +128,34 @@ class DateFst(GraphFst):
             + pynutil.insert('year: "')
             + pynutil.add_weight(year_graph, -YEAR_WEIGHT)
             + pynutil.insert('"'),
-            -0.1 
+            -0.1,
         )
-        
+
         # Date pattern combinations
         # Pattern 1: Day-Month-Year (e.g., "ngày 15 tháng 1 năm 2024")
         graph_dmy = (
-            day_graph + delete_space + pynutil.delete("tháng") + delete_extra_space + month_graph + pynini.closure(graph_year, 0, 1)
+            day_graph
+            + delete_space
+            + pynutil.delete("tháng")
+            + delete_extra_space
+            + month_graph
+            + pynini.closure(graph_year, 0, 1)
         )
-        
+
         # Pattern 2: Month-Year (e.g., "tháng 1 năm 2024")
         graph_my = pynutil.delete("tháng") + delete_space + month_graph + graph_year
-        
+
         # Pattern 3: Standalone year (e.g., "năm 2024")
         graph_year_standalone = pynutil.add_weight(
             pynutil.delete("năm") + delete_extra_space + pynutil.insert('year: "') + year_graph + pynutil.insert('"'),
-            -0.1  
+            -0.1,
         )
 
         final_graph = pynini.union(
-            graph_dmy,              # Day-Month-Year
-            graph_my,               # Month-Year  
-            graph_month,            # Month only
-            graph_year_standalone    # Year only
+            graph_dmy,  # Day-Month-Year
+            graph_my,  # Month-Year
+            graph_month,  # Month only
+            graph_year_standalone,  # Year only
         ) + pynutil.insert(" preserve_order: true")
-        
+
         self.fst = self.add_tokens(final_graph).optimize()

@@ -17,8 +17,8 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
-    NEMO_NOT_SPACE,
     NEMO_NOT_QUOTE,
+    NEMO_NOT_SPACE,
     GraphFst,
     delete_space,
     insert_space,
@@ -40,7 +40,7 @@ class MeasureFst(GraphFst):
         optional_sign = pynini.closure(pynini.cross('negative: "true"', "-"), 0, 1)
         # Units that don't need space (time units)
         no_space_units = pynini.union("s", "ms", "ns", "μs", "h", "min")
-        
+
         unit_no_space = (
             pynutil.delete("units:")
             + delete_space
@@ -49,7 +49,7 @@ class MeasureFst(GraphFst):
             + pynutil.delete('"')
             + delete_space
         )
-        
+
         unit_with_space = (
             pynutil.delete("units:")
             + delete_space
@@ -87,14 +87,10 @@ class MeasureFst(GraphFst):
         optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
         # Graph with no space for time units
         graph_no_space = (
-            (graph_cardinal | graph_decimal)
-            + delete_space
-            + optional_fractional
-            + unit_no_space
-            + delete_space
+            (graph_cardinal | graph_decimal) + delete_space + optional_fractional + unit_no_space + delete_space
         )
-        
-        # Graph with space for other units  
+
+        # Graph with space for other units
         graph_with_space = (
             (graph_cardinal | graph_decimal)
             + delete_space
@@ -103,7 +99,7 @@ class MeasureFst(GraphFst):
             + unit_with_space
             + delete_space
         )
-        
+
         graph = graph_no_space | graph_with_space
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
