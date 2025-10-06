@@ -33,7 +33,6 @@ class RangeFst(GraphFst):
         super().__init__(name="range", kind="verbalize", deterministic=deterministic)
 
         # Range content is already verbalized by the tagger, just extract it
-        # Use NEMO_NOT_QUOTE like other verbalizers (allows spaces but not quotes)
         chars = pynini.closure(NEMO_CHAR - " ", 1)
         char = pynutil.delete("name:") + delete_space + pynutil.delete("\"") + chars + pynutil.delete("\"")
         graph = char @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)
