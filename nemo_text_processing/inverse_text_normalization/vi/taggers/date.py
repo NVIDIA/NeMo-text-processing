@@ -73,8 +73,7 @@ class DateFst(GraphFst):
 
         # Thousands pattern (e.g., "hai nghìn không ba" -> "2003")
         graph_hundred_component = pynini.union(
-            pynini.union(graph_digit, graph_zero) + delete_space + pynutil.delete("trăm"),
-            pynutil.insert("0")
+            pynini.union(graph_digit, graph_zero) + delete_space + pynutil.delete("trăm"), pynutil.insert("0")
         )
         graph_thousands = (
             graph_digit
