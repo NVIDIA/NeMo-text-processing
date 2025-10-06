@@ -20,7 +20,6 @@ from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
 class TelephoneFst(GraphFst):
-    class TelephoneFst(GraphFst):
     """
     Finite state transducer for classifying Korean telephone numbers.
 
