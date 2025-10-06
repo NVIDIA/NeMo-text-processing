@@ -20,13 +20,20 @@ from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
 class TelephoneFst(GraphFst):
+    class TelephoneFst(GraphFst):
     """
     Finite state transducer for classifying Korean telephone numbers.
-    Produces tokens like:
-        telephone { country_code: "플러스 팔 이, " number_part: "영일영, 삼칠일삼, 칠공오공" }
-    Fields:
-        - country_code: optional, spoken with leading "플러스" for '+', ends with ", "
-        - number_part : area, middle(3–4 digits), last4; digits read per digit (0 -> "영")
+
+    Example inputs → tokens:
+        +82-10-3713-7050  -> telephone { country_code: "플러스 팔 이," number_part: "영일영, 삼칠일삼, 칠영오영" }
+        +1 (415) 555-0123 -> telephone { country_code: "플러스 일,"   number_part: "사일오, 오오오, 영일이삼" }
+        (031)371-3700     -> telephone { number_part: "영삼일, 삼칠일, 삼칠영영" }
+        010-3713-7050     -> telephone { number_part: "영일영, 삼칠일삼, 칠영오영" }
+        010.777.8888      -> telephone { number_part: "영일영, 칠칠칠, 팔팔팔팔" }
+
+    Args:
+        deterministic (bool, optional): If True, provide a single transduction;
+            if False, allow multiple transductions.
     """
 
     def __init__(self, deterministic: bool = True):

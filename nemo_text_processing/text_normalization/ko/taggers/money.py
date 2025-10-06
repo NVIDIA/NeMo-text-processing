@@ -21,9 +21,20 @@ from nemo_text_processing.text_normalization.ko.utils import get_abs_path, load_
 
 class MoneyFst(GraphFst):
     """
-    Finite state transducer for classifying money.
-    Produces tokens like:
-      money { integer_part: "삼백오십" currency_maj: "원" }
+    Finite state transducer for classifying Korean money.
+
+    Example inputs and outputs:
+        ₩350 -> money { currency_maj: "원" integer_part: "삼백오십" }
+        350원 -> money { integer_part: "삼백오십" currency_maj: "원" }
+        KRW 12,050 -> money { currency_maj: "원" integer_part: "일만이천오십" }
+        12만 500원 -> money { integer_part: "십이만오백" currency_maj: "원" }
+        ₩10.25 -> money { currency_maj: "원" integer_part: "십" minor_part: "이십오" }   # optional 2-digit minor
+        0원 -> money { integer_part: "영" currency_maj: "원" }
+
+    Args:
+        cardinal: CardinalFst
+        deterministic: If True, provide a single transduction;
+            if False, allow multiple transductions.
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):

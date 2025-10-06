@@ -21,8 +21,21 @@ from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOT
 
 class TelephoneFst(GraphFst):
     """
-    telephone { [country_code: "...",] number_part: "..." [extension: "..."] }
-      -> [country_code + ' '] + number_part [+ ', 내선 ' + extension]
+    Finite state transducer for verbalizing Korean telephone numbers.
+
+    Input:
+        telephone { [country_code: "...",] number_part: "..." [extension: "..."] }
+    Output:
+        [country_code + " "] + number_part [+ ", 내선 " + extension]
+
+    Examples:
+        telephone { country_code: "플러스 팔 이," number_part: "영일영, 삼칠일삼, 칠영오영" }
+            -> 플러스 팔 이, 영일영, 삼칠일삼, 칠영오영
+        telephone { number_part: "팔영영, 오오오, 영영영영" extension: "이삼사" }
+            -> 팔영영, 오오오, 영영영영, 내선 이삼사
+
+    Args:
+        deterministic: if True provides a single transduction; if False allows multiple.
     """
 
     def __init__(self, deterministic: bool = True):
