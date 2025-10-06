@@ -50,14 +50,14 @@ class DateFst(GraphFst):
         optional_ten = pynini.closure(delete_space + graph_ten, 0, 1)
         # Ties graph for 20-99 (e.g., "hai ba" -> "23")
         graph_ties = pynini.union(
-            ties_graph + optional_ten + delete_space + (graph_digit | graph_one | graph_four | graph_five),
+            ties_graph + optional_ten + delete_space + pynini.union(graph_digit, graph_one, graph_four, graph_five),
             ties_graph + delete_space + graph_ten + pynutil.insert("0"),
         )
 
         # Zero prefix patterns (e.g., "linh năm" -> "05")
         zero = pynini.cross((pynini.union("linh", "lẻ")), "0")
         graph_digits = pynini.union(
-            zero + delete_space + (graph_digit | graph_four),
+            zero + delete_space + pynini.union(graph_digit, graph_four),
             graph_zero + delete_space + graph_digit,
         ).optimize()
 
@@ -68,13 +68,14 @@ class DateFst(GraphFst):
             + delete_space
             + pynutil.delete("trăm")
             + delete_space
-            + (graph_teen | graph_ties | graph_digits)
+            + pynini.union(graph_teen, graph_ties, graph_digits)
         )
 
         # Thousands pattern (e.g., "hai nghìn không ba" -> "2003")
-        graph_hundred_component = (
-            (graph_digit | graph_zero) + delete_space + pynutil.delete("trăm")
-        ) | pynutil.insert("0")
+        graph_hundred_component = pynini.union(
+            pynini.union(graph_digit, graph_zero) + delete_space + pynutil.delete("trăm"),
+            pynutil.insert("0")
+        )
         graph_thousands = (
             graph_digit
             + delete_space
@@ -82,7 +83,7 @@ class DateFst(GraphFst):
             + delete_space
             + graph_hundred_component
             + delete_space
-            + (graph_teen | graph_ties | graph_digits)
+            + pynini.union(graph_teen, graph_ties, graph_digits)
         )
 
         # Complete year graph with all supported patterns
@@ -90,20 +91,20 @@ class DateFst(GraphFst):
             # Standard patterns: 2019, 2012, 2005, etc.
             graph_digit
             + delete_space
-            + (graph_digit | graph_zero)
+            + pynini.union(graph_digit, graph_zero)
             + delete_space
-            + (graph_teen | graph_ties | graph_digits),
+            + pynini.union(graph_teen, graph_ties, graph_digits),
             graph_thousands,
             graph_hundreds,
-            (graph_digit + pynutil.insert("0") + delete_space + (graph_ties | graph_digits | graph_teen)),
+            (graph_digit + pynutil.insert("0") + delete_space + pynini.union(graph_ties, graph_digits, graph_teen)),
             (
-                (graph_digit | graph_zero)
+                pynini.union(graph_digit, graph_zero)
                 + delete_space
-                + (graph_digit | graph_zero)
+                + pynini.union(graph_digit, graph_zero)
                 + delete_space
-                + (graph_digit | graph_zero)
+                + pynini.union(graph_digit, graph_zero)
                 + delete_space
-                + (graph_digit | graph_zero)
+                + pynini.union(graph_digit, graph_zero)
             ),
         ).optimize()
 
