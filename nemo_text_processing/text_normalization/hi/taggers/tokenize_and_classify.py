@@ -144,6 +144,7 @@ class ClassifyFst(GraphFst):
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
+                | pynutil.add_weight(address_graph, 1.08)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
@@ -153,7 +154,6 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
-                | pynutil.add_weight(address_graph, 1.09)
             )
 
             start_time = time.time()
