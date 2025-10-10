@@ -87,7 +87,11 @@ class MeasureFst(GraphFst):
         optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
         # Graph with no space for time units
         graph_no_space = (
-            pynini.union(graph_cardinal, graph_decimal) + delete_space + optional_fractional + unit_no_space + delete_space
+            pynini.union(graph_cardinal, graph_decimal)
+            + delete_space
+            + optional_fractional
+            + unit_no_space
+            + delete_space
         )
 
         # Graph with space for other units

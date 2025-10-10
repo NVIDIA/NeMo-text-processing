@@ -33,7 +33,7 @@ class ElectronicFst(GraphFst):
         alpha_num = pynini.union(
             NEMO_ALPHA,
             pynini.string_file(get_abs_path("data/numbers/digit.tsv")),
-            pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+            pynini.string_file(get_abs_path("data/numbers/zero.tsv")),
         )
 
         symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).invert()
@@ -52,12 +52,12 @@ class ElectronicFst(GraphFst):
         server = pynini.union(
             single_alphanum,
             pynini.string_file(get_abs_path("data/electronic/server_name.tsv")),
-            pynini.closure(NEMO_ALPHA, 2)  # At least 2 letters for server name
+            pynini.closure(NEMO_ALPHA, 2),  # At least 2 letters for server name
         )
         domain = pynini.union(
             single_alphanum,
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")),
-            pynini.closure(NEMO_ALPHA, 2)  # At least 2 letters for domain
+            pynini.closure(NEMO_ALPHA, 2),  # At least 2 letters for domain
         )
         multi_domain = (
             pynini.closure(process_dot + delete_extra_space + domain + delete_extra_space)
@@ -78,31 +78,28 @@ class ElectronicFst(GraphFst):
         ############# url ###
         protocol_end = pynini.cross(pynini.union("w w w", "www"), "www")
         protocol_start = pynini.union(
-            pynini.cross("h t t p", "http"),
-            pynini.cross("h t t p s", "https")
+            pynini.cross("h t t p", "http"), pynini.cross("h t t p s", "https")
         ) + pynini.cross(" hai chấm sẹc sẹc ", "://")
-        
+
         # Domain part: server.domain (e.g., nvidia.com, www.nvidia.com)
-        url_domain = (
-            server
-            + delete_extra_space
-            + process_dot
-            + delete_extra_space
-            + domain
-        )
-        
+        url_domain = server + delete_extra_space + process_dot + delete_extra_space + domain
+
         # Optional endings: /path or .vn or .com.vn
-        url_ending = delete_extra_space + url_symbols + delete_extra_space + pynini.union(
-            domain,
-            pynini.closure(accepted_url_chars + delete_extra_space) + accepted_url_chars
+        url_ending = (
+            delete_extra_space
+            + url_symbols
+            + delete_extra_space
+            + pynini.union(domain, pynini.closure(accepted_url_chars + delete_extra_space) + accepted_url_chars)
         )
         protocol = (
             pynini.closure(protocol_start, 0, 1)  # Optional http://
-            + pynini.closure(protocol_end + delete_extra_space + process_dot + delete_extra_space, 0, 1)  # Optional www.
+            + pynini.closure(
+                protocol_end + delete_extra_space + process_dot + delete_extra_space, 0, 1
+            )  # Optional www.
             + url_domain  # Required: server.domain
             + pynini.closure(url_ending, 0)  # Optional: /path or .vn
         )
-        
+
         protocol = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
         graph |= protocol
         ########

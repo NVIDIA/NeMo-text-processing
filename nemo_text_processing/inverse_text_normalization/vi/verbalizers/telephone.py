@@ -33,7 +33,7 @@ class TelephoneFst(GraphFst):
         super().__init__(name="telephone", kind="verbalize")
 
         number_part = pynutil.delete('number_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
-        
+
         # Optional country code
         country_code = (
             pynutil.delete('country_code: "')
@@ -42,10 +42,10 @@ class TelephoneFst(GraphFst):
             + pynutil.delete(' ')
             + pynutil.insert(' ')
         )
-        
+
         optional_country_code = pynini.closure(country_code, 0, 1)
-        
+
         graph = optional_country_code + number_part
-        
+
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
