@@ -101,7 +101,7 @@ class ElectronicFst(GraphFst):
         )
 
         protocol = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
-        graph |= protocol
+        graph = pynini.union(graph, protocol)
         ########
 
         final_graph = self.add_tokens(graph)
