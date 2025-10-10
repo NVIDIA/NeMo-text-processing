@@ -39,7 +39,7 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="verbalize")
         optional_sign = pynini.closure(pynini.cross('negative: "true"', "-"), 0, 1)
         # Units that don't need space (time units)
-        no_space_units = pynini.union("s", "ms", "ns", "μs", "h", "min")
+        no_space_units = pynini.union("s", "ms", "ns", "μs", "h", "min", "%")
 
         unit_no_space = (
             pynutil.delete("units:")
@@ -87,12 +87,12 @@ class MeasureFst(GraphFst):
         optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
         # Graph with no space for time units
         graph_no_space = (
-            (graph_cardinal | graph_decimal) + delete_space + optional_fractional + unit_no_space + delete_space
+            pynini.union(graph_cardinal, graph_decimal) + delete_space + optional_fractional + unit_no_space + delete_space
         )
 
         # Graph with space for other units
         graph_with_space = (
-            (graph_cardinal | graph_decimal)
+            pynini.union(graph_cardinal, graph_decimal)
             + delete_space
             + optional_fractional
             + insert_space
@@ -100,6 +100,6 @@ class MeasureFst(GraphFst):
             + delete_space
         )
 
-        graph = graph_no_space | graph_with_space
+        graph = pynini.union(graph_no_space, graph_with_space)
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

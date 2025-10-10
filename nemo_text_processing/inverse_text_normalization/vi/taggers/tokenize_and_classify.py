@@ -92,11 +92,11 @@ class ClassifyFst(GraphFst):
             whitelist_graph = WhiteListFst(input_file=whitelist).fst
             punct_graph = PunctuationFst().fst
             electronic_graph = ElectronicFst().fst
-            telephone_graph = TelephoneFst().fst
+            telephone_graph = TelephoneFst(cardinal=cardinal).fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
-                | pynutil.add_weight(time_graph, 1.1)
+                | pynutil.add_weight(time_graph, 1.09)
                 | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
@@ -105,7 +105,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
-                | pynutil.add_weight(electronic_graph, 1.1)
+                | pynutil.add_weight(electronic_graph, 1.11)
                 | pynutil.add_weight(word_graph, 100)
             )
 
