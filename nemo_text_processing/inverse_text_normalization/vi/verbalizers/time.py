@@ -87,6 +87,6 @@ class TimeFst(GraphFst):
             + pynutil.insert("s")
         )
 
-        graph = (graph_h | graph_ms | graph_hms) + optional_zone
+        graph = pynini.union(graph_h, graph_ms, graph_hms) + optional_zone
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
