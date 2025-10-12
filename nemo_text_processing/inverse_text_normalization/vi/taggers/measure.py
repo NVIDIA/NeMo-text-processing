@@ -59,7 +59,9 @@ class MeasureFst(GraphFst):
 
         unit_singular = (
             pynutil.insert('units: "')
-            + (unit_singular | unit_misc | pynutil.add_weight(unit_singular + delete_space + unit_misc, 0.01))
+            + pynini.union(
+                unit_singular, unit_misc, pynutil.add_weight(unit_singular + delete_space + unit_misc, 0.01)
+            )
             + pynutil.insert('"')
         )
 
@@ -85,20 +87,23 @@ class MeasureFst(GraphFst):
         fraction_graph = (
             delete_extra_space
             + pynutil.insert('fractional_part: "')
-            + (graph_digit | graph_half | graph_one | graph_four)
+            + pynini.union(graph_digit, graph_half, graph_one, graph_four)
             + pynutil.insert('"')
         )
 
-        subgraph_cardinal |= (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert('integer: "')
-            + cardinal_graph
-            + pynutil.insert('" }')
-            + delete_extra_space
-            + unit_singular
-            + fraction_graph
+        subgraph_cardinal = pynini.union(
+            subgraph_cardinal,
+            (
+                pynutil.insert("cardinal { ")
+                + optional_graph_negative
+                + pynutil.insert('integer: "')
+                + cardinal_graph
+                + pynutil.insert('" }')
+                + delete_extra_space
+                + unit_singular
+                + fraction_graph
+            ),
         )
-        final_graph = subgraph_decimal | subgraph_cardinal
+        final_graph = pynini.union(subgraph_decimal, subgraph_cardinal)
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
