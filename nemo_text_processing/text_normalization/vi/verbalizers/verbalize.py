@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.vi.verbalizers.fraction import Frac
 from nemo_text_processing.text_normalization.vi.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.vi.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.vi.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.vi.verbalizers.range import RangeFst
 from nemo_text_processing.text_normalization.vi.verbalizers.roman import RomanFst
 from nemo_text_processing.text_normalization.vi.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.vi.verbalizers.whitelist import WhiteListFst
@@ -63,6 +64,9 @@ class VerbalizeFst(GraphFst):
         measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
         measure_graph = measure.fst
 
+        range_fst = RangeFst(deterministic=deterministic)
+        range_graph = range_fst.fst
+
         graph = (
             cardinal_graph
             | whitelist_graph
@@ -75,6 +79,7 @@ class VerbalizeFst(GraphFst):
             | time_graph
             | money_graph
             | measure_graph
+            | range_graph
         )
 
         self.fst = graph

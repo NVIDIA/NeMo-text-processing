@@ -55,7 +55,7 @@ class PostProcessingFst:
         """
         return {
             # Punctuation that should not have space before them
-            'no_space_before': [",", ".", "!", "?", ":", ";", ")", r"\]", "}", "\""],
+            'no_space_before': [",", ".", "!", "?", ":", ";", ")", r"\]", "}"],
             # Punctuation that should not have space after them
             'no_space_after': ["(", r"\[", "{"],
             # Punctuation that can have space before them (exceptions)
