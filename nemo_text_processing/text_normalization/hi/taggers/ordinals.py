@@ -39,11 +39,20 @@ class OrdinalFst(GraphFst):
         # Define Hindi digits
         hindi_digits = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९")
         
-        # Define ordinal suffixes
-        ordinal_suffixes = pynini.union("वां", "वीं", "वें", "वे")
+        # Define acceptable input ordinal suffix variants and canonicalize outputs
+        input_suffixes = pynini.union("वां", "वीं", "वें", "वे", "वी")
+        suffix_canonical_map = pynini.string_map(
+            [
+                ("वां", "वां"),
+                ("वीं", "वीं"),
+                ("वी", "वीं"),
+                ("वें", "वें"),
+                ("वे", "वें"),
+            ]
+        )
         
-        # Build ordinal pattern: one or more Hindi digits + ordinal suffix
-        ordinal_numbers = pynini.closure(hindi_digits, 1) + ordinal_suffixes
+        # Build ordinal pattern: one or more Hindi digits + accepted ordinal suffix variant
+        ordinal_numbers = pynini.closure(hindi_digits, 1) + input_suffixes
         
         # For ordinal conversion, we need to:
         # 1. Extract the number part (without suffix)
@@ -54,24 +63,10 @@ class OrdinalFst(GraphFst):
         number_part = pynini.closure(hindi_digits, 1)
         
         # Create conversion: Hindi number + suffix -> cardinal + suffix
-        ordinal_conversions = []
-        
-        for suffix in ["वां", "वीं", "वें", "वे"]:
-            # Pattern: Extract number part, convert via cardinal, add suffix
-            number_with_suffix = number_part + pynini.accep(suffix)
-            
-            # Convert number part through cardinal FST and add suffix
-            converted = pynini.compose(
-                number_part,
-                cardinal.final_graph
-            ) + pynini.accep(suffix)
-            
-            # Create the mapping
-            ordinal_conversion = pynini.compose(number_with_suffix, converted)
-            ordinal_conversions.append(ordinal_conversion)
-        
-        # Union all ordinal conversions
-        ordinal_graph = pynini.union(*ordinal_conversions)
+        # Compose input (digits + suffix variant) with output (cardinal words + canonical suffix)
+        input_acceptor = number_part + input_suffixes
+        output_transducer = pynini.compose(number_part, cardinal.final_graph) + suffix_canonical_map
+        ordinal_graph = pynini.compose(input_acceptor, output_transducer)
         
         # Final graph with token wrapping
         final_graph = pynutil.insert("integer: \"") + ordinal_graph + pynutil.insert("\"")

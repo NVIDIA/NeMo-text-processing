@@ -44,5 +44,3 @@ class OrdinalFst(GraphFst):
         delete_tokens = self.delete_tokens(self.numbers)
 
         self.fst = delete_tokens.optimize()
-
-
