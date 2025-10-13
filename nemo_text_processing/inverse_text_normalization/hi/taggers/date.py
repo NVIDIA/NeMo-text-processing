@@ -88,6 +88,8 @@ class DateFst(GraphFst):
         graph_year_range_century = self.year_range + delete_space + self.century
 
         graph_ordinal_century = self.ordinal_century + self.morpho_graph + delete_extra_space + self.century
+
+        graph_ordinal_century = self.ordinal_century + self.morpho_graph + delete_extra_space + self.century
         graph_date_exceptions = self.month + delete_space + pynutil.delete("की") + delete_space + self.day
         graph_date_exceptions += pynutil.insert("preserve_order: true")
 
