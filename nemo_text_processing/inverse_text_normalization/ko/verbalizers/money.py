@@ -36,7 +36,7 @@ class MoneyFst(GraphFst):
             + pynini.closure(NEMO_CHAR - NEMO_SPACE, 1)
             + pynutil.delete('"')
         )
-        
+
         unit = (
             pynutil.delete("currency:")
             + delete_space
