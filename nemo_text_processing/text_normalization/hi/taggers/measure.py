@@ -15,7 +15,17 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    GraphFst,
+    delete_space,
+    insert_space,
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_HI_DIGIT,
+    NEMO_SPACE,
+    NEMO_WHITE_SPACE,
+    NEMO_CHAR,
+)
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
@@ -36,6 +46,93 @@ class MeasureFst(GraphFst):
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
+
+    def get_address_graph(self, cardinal: GraphFst):
+        """
+        Address tagger that converts digits/hyphens/slashes character-by-character
+        when address context keywords are present, keeping all surrounding text.
+        
+        Examples:
+            "७०० ओक स्ट्रीट" -> "सात शून्य शून्य ओक स्ट्रीट"
+            "६६-४ पार्क रोड" -> "छह छह हाइफ़न चार पार्क रोड"
+        """
+        # Load character mappings
+        char_to_word = (
+            pynini.string_file(get_abs_path("data/address/address_digits.tsv"))
+            | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        )
+        
+        # Load address context keywords
+        address_context = pynini.string_file(get_abs_path("data/address/gpt_context.tsv"))
+        
+        # Define character sets
+        single_digit = NEMO_DIGIT | NEMO_HI_DIGIT
+        special_chars = pynini.union("-", "/")
+        convertible_char = single_digit | special_chars
+        
+        # Non-convertible characters (everything else except space)
+        non_space_char = pynini.difference(NEMO_CHAR, pynini.union(convertible_char, NEMO_WHITE_SPACE))
+        
+        # Character-level processor:
+        # - Convertible chars -> add space before and after, then convert
+        # - Spaces -> keep as single space
+        # - Commas and other punctuation -> add space before if not already there
+        # - Other chars -> keep as-is
+        
+        # For comma, add space before it
+        comma_processor = insert_space + pynini.accep(",")
+        
+        # For other non-space, non-comma chars, keep as-is
+        other_char = pynini.difference(non_space_char, pynini.accep(","))
+        
+        char_processor = (
+            insert_space + pynini.compose(convertible_char, char_to_word) + insert_space
+        ) | pynini.accep(NEMO_SPACE) | comma_processor | other_char
+        
+        # Process entire string character by character
+        # This creates a graph that converts all digits/special chars and keeps everything else
+        full_string_processor = pynini.closure(char_processor, 1)
+        
+        # Now we need to only apply this when address context is present
+        # Create patterns that match strings containing address keywords
+        any_char = pynini.union(NEMO_CHAR, NEMO_WHITE_SPACE)
+        
+        # Pattern: anything + context + anything
+        # This matches any string that contains at least one address context keyword
+        has_context = (
+            pynini.closure(any_char) +
+            address_context +
+            pynini.closure(any_char)
+        )
+        
+        # Compose: only process strings that have address context
+        # The composition ensures we only convert when context is present
+        # Note: We need to be careful here - the context check is on the INPUT side,
+        # and the conversion is the OUTPUT side
+        
+        # For simplicity, let's just require that the string contains at least one digit
+        # and at least one address keyword somewhere
+        has_digit = (
+            pynini.closure(any_char) +
+            pynini.union(single_digit) +
+            pynini.closure(any_char)
+        )
+        
+        # Input must have both context and digit
+        input_pattern = pynini.intersect(has_context, has_digit)
+        
+        # Apply the character processor to inputs matching the pattern
+        address_graph = pynini.compose(input_pattern, full_string_processor)
+        
+        # Wrap as measure with "address" unit
+        graph = (
+            pynutil.insert('units: "address" cardinal { integer: "') +
+            address_graph +
+            pynutil.insert('" } preserve_order: true')
+        )
+        
+        # High priority to override date range
+        return pynutil.add_weight(graph, -0.5).optimize()
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="measure", kind="classify")
@@ -175,6 +272,9 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
+        # Get the address graph for digit-by-digit conversion in address contexts
+        address_graph = self.get_address_graph(cardinal)
+        
         graph = (
             pynutil.add_weight(graph_decimal, 0.01)
             | pynutil.add_weight(graph_cardinal, 0.01)
@@ -183,6 +283,7 @@ class MeasureFst(GraphFst):
             | pynutil.add_weight(graph_savva, 0.005)
             | pynutil.add_weight(graph_sadhe, 0.005)
             | pynutil.add_weight(graph_paune, -0.2)
+            | address_graph  # Include address graph
         )
         self.graph = graph.optimize()
 

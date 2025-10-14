@@ -62,10 +62,11 @@ class AddressFst(GraphFst):
     """
     Finite state transducer for tagging address patterns with digit-by-digit conversion,
     special character handling (hyphen -> हाइफ़न, slash -> बटा), and address-specific patterns.
+    Outputs in telephone format so telephone verbalizer can handle it.
     """
 
     def __init__(self):
-        super().__init__(name="address", kind="classify")
+        super().__init__(name="telephone", kind="classify")
         
         # Load digit mappings for digit-by-digit conversion
         digit_to_word = (
