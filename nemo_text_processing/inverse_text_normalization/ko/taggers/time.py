@@ -16,8 +16,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -85,7 +85,7 @@ class TimeFst(GraphFst):
             (pynini.accep("오전") + spacing),
             (pynini.accep("오후") + spacing),
             (pynini.accep("새벽") + spacing),
-            (pynini.accep("아침") + spacing)
+            (pynini.accep("아침") + spacing),
         )
         prefix_tag = pynutil.insert("prefix: \"") + prefix_words + pynutil.insert("\"")
 
@@ -102,10 +102,7 @@ class TimeFst(GraphFst):
         cardinal = CardinalFst()
         cardinal_graph = cardinal.fst
 
-        #Adding cardinal graph to prevent processing out of range numbers
-        final_graph = pynini.union(
-            time_graph,
-            cardinal_graph
-        )
+        # Adding cardinal graph to prevent processing out of range numbers
+        final_graph = pynini.union(time_graph, cardinal_graph)
 
         self.fst = self.add_tokens(final_graph).optimize()
