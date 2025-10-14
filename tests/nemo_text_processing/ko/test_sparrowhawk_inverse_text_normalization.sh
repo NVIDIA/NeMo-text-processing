@@ -57,6 +57,11 @@ testITNMoney() {
   runtest $input
 }
 
+testITNTelephone() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_telephone.txt
+  runtest $input
+}
+
 # Remove all command-line arguments
 shift $#
 

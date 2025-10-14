@@ -16,10 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
-    NEMO_DIGIT,
     GraphFst,
-    convert_space,
-    delete_extra_space,
     NEMO_SPACE
 )
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
@@ -28,7 +25,7 @@ from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_pat
 class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money
-        e.g. 오만 삼천원 -> money { integer_part: "53000" currency: "원" }
+        e.g. 오만 삼천원 -> money { integer_part: "53000" currency: "₩" }
 
     Args:
         cardinal: CardinalFst
@@ -40,21 +37,25 @@ class MoneyFst(GraphFst):
         cardinals = cardinal.just_cardinals
         currency = pynini.string_file(get_abs_path("data/currency.tsv"))
 
-        graph_unit = (
-            pynutil.insert('currency: "') 
-            + currency 
-            + pynutil.insert('"')
-        )
+        # Accepting space if there are one between integer and currency
+        spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
 
-        # Main graph for integer money amounts
-        # Structure: <number> + <optional space> + <currency>
         graph_integer = (
-            pynutil.insert('integer_part: "')
+            pynutil.insert("integer_part: \"")
             + cardinals
-            + pynutil.insert('"')
-            + delete_extra_space  # Handles optional spacing
-            + graph_unit
+            + pynutil.insert("\"")
+            + spacing
         )
 
-        final_graph = self.add_tokens(graph_integer)
+        graph_unit = (
+            pynutil.insert(" currency: \"") 
+            + currency 
+            + pynutil.insert("\"")
+        )
+
+        graph_final = (
+            graph_integer + graph_unit
+        )
+
+        final_graph = self.add_tokens(graph_final)
         self.fst = final_graph.optimize()

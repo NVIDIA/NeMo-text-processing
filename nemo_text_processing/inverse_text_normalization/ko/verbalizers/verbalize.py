@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pynini
+from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.cardinal import CardinalFst
@@ -22,6 +24,7 @@ from nemo_text_processing.inverse_text_normalization.ko.verbalizers.ordinal impo
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.money import MoneyFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
@@ -55,5 +58,20 @@ class VerbalizeFst(GraphFst):
         money = MoneyFst()
         money_graph = money.fst
 
-        graph = cardinal_graph | ordinal_graph | decimal_graph | fraction_graph | time_graph | date_graph | money_graph
+        telephone = TelephoneFst()
+        telephone_graph = telephone.fst
+
+        word = WordFst()
+        word_graph = word.fst
+
+        graph = pynini.union(cardinal_graph,
+                              ordinal_graph,
+                              decimal_graph,
+                              fraction_graph,
+                              time_graph,
+                              date_graph,
+                              money_graph,
+                              telephone_graph,
+                              word_graph
+                            )
         self.fst = graph

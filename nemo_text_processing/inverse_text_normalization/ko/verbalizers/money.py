@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_CHAR, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_CHAR, GraphFst, delete_space, NEMO_SPACE
 
 
 class MoneyFst(GraphFst):
@@ -33,7 +33,7 @@ class MoneyFst(GraphFst):
             pynutil.delete("integer_part:")
             + delete_space
             + pynutil.delete('"')
-            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynini.closure(NEMO_CHAR - NEMO_SPACE, 1)
             + pynutil.delete('"')
         )
         
@@ -41,9 +41,12 @@ class MoneyFst(GraphFst):
             pynutil.delete("currency:")
             + delete_space
             + pynutil.delete('"')
-            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynini.closure(NEMO_CHAR - NEMO_SPACE, 1)
             + pynutil.delete('"')
         )
-        graph = unit + delete_space + integer
+
+        optional_space = pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1).optimize()
+
+        graph = unit + optional_space + integer
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
