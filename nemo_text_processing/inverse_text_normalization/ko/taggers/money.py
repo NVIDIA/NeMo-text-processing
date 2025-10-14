@@ -1,0 +1,47 @@
+# Copyright (c) 2025, NVIDIA CORPORATION.  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import pynini
+from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst
+from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
+
+
+class MoneyFst(GraphFst):
+    """
+    Finite state transducer for classifying money
+        e.g. 오만 삼천원 -> money { integer_part: "53000" currency: "₩" }
+
+    Args:
+        cardinal: CardinalFst
+    """
+
+    def __init__(self, cardinal: GraphFst):
+        super().__init__(name="money", kind="classify")
+
+        cardinals = cardinal.just_cardinals
+        currency = pynini.string_file(get_abs_path("data/currency.tsv"))
+
+        # Accepting space if there are one between integer and currency
+        spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
+
+        graph_integer = pynutil.insert("integer_part: \"") + cardinals + pynutil.insert("\"") + spacing
+
+        graph_unit = pynutil.insert(" currency: \"") + currency + pynutil.insert("\"")
+
+        graph_final = graph_integer + graph_unit
+
+        final_graph = self.add_tokens(graph_final)
+        self.fst = final_graph.optimize()
