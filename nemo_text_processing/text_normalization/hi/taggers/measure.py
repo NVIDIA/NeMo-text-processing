@@ -118,8 +118,47 @@ class MeasureFst(GraphFst):
             pynini.closure(any_char)
         )
         
-        # Input must have both context and digit
-        input_pattern = pynini.intersect(has_context, has_digit)
+        # IMPORTANT: Exclude long digit sequences that look like telephone numbers
+        # Telephone numbers typically have 10+ consecutive digits
+        # Addresses typically have shorter digit sequences (1-5 digits)
+        long_digit_sequence = pynini.closure(single_digit, 10)  # 10+ digits
+        has_long_digits = (
+            pynini.closure(any_char) +
+            long_digit_sequence +
+            pynini.closure(any_char)
+        )
+        
+        # Also exclude if ONLY "नंबर" context without other address keywords
+        # This prevents "मोबाइल नंबर 1234567890" from being matched
+        only_number_context = (
+            pynini.closure(any_char) +
+            pynini.accep("नंबर") +
+            pynini.closure(any_char)
+        )
+        
+        # Require address-specific keywords (not just "नंबर")
+        address_specific_keywords = pynini.union(
+            "स्ट्रीट", "रोड", "मार्ग", "गली", "लेन", "पार्कवे", "एवेन्यू",
+            "मकान", "हाउस", "प्लॉट", "बूथ", "अपार्टमेंट", "फ्लैट",
+            "बिल्डिंग", "भवन", "टावर", "कॉम्प्लेक्स", "सेक्टर", "ब्लॉक",
+            "पार्क", "नगर", "कॉलोनी", "एस्टेट", "सोसाइटी", "क्षेत्र",
+            "डी", "आर डी", "एस टी", "ए वी ई", "पास", "नियर", "सामने"
+        )
+        
+        has_address_keyword = (
+            pynini.closure(any_char) +
+            address_specific_keywords +
+            pynini.closure(any_char)
+        )
+        
+        # Input must:
+        # 1. Have address-specific keyword (not just "नंबर")
+        # 2. Have digits
+        # 3. NOT have long digit sequences (phone numbers)
+        input_pattern = pynini.intersect(
+            pynini.intersect(has_address_keyword, has_digit),
+            pynini.difference(pynini.union(any_char).closure(), has_long_digits)
+        )
         
         # Apply the character processor to inputs matching the pattern
         address_graph = pynini.compose(input_pattern, full_string_processor)
@@ -131,8 +170,9 @@ class MeasureFst(GraphFst):
             pynutil.insert('" } preserve_order: true')
         )
         
-        # High priority to override date range
-        return pynutil.add_weight(graph, -0.5).optimize()
+        # Lower priority than telephone to avoid conflicts
+        # Telephone has weights 0.7-1.0, so use 1.05 to be lower priority
+        return pynutil.add_weight(graph, 1.05).optimize()
 
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="measure", kind="classify")
