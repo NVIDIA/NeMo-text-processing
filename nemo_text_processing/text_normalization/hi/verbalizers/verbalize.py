@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.hi.verbalizers.fraction import Frac
 from nemo_text_processing.text_normalization.hi.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hi.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.verbalizers.telephone import TelephoneFst
+from nemo_text_processing.text_normalization.hi.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.hi.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.verbalizers.whitelist import WhiteListFst
 
@@ -61,6 +62,8 @@ class VerbalizeFst(GraphFst):
 
         telephone = TelephoneFst()
         telephone_graph = telephone.fst
+        ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal_graph = ordinal.fst
 
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
@@ -72,6 +75,7 @@ class VerbalizeFst(GraphFst):
             | time_graph
             | measure_graph
             | money_graph
+            | ordinal_graph
             | whitelist_graph
             | telephone_graph
         )

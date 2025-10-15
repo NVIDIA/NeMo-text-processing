@@ -33,6 +33,7 @@ from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFs
 from nemo_text_processing.text_normalization.hi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.hi.taggers.ordinals import OrdinalFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.hi.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
@@ -115,6 +116,11 @@ class ClassifyFst(GraphFst):
             logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 
             start_time = time.time()
+            ordinal = OrdinalFst(deterministic=deterministic)
+            ordinal_graph = ordinal.fst
+            logging.debug(f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes")
+
+            start_time = time.time()
             whitelist_graph = WhiteListFst(
                 input_case=input_case, deterministic=deterministic, input_file=whitelist
             ).fst
@@ -140,6 +146,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
+                | pynutil.add_weight(ordinal_graph, 1.1)
             )
 
             start_time = time.time()

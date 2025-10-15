@@ -53,7 +53,6 @@ class MeasureFst(GraphFst):
         point = pynutil.delete(".")
         decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
-
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
         quarterly_units_graph = pynini.string_file(get_abs_path("data/measure/quarterly_units.tsv"))
 
