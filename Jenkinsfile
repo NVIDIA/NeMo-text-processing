@@ -2,7 +2,7 @@ pipeline {
   agent {
         docker {
           image 'tnitn_ci_py310:24.07'
-          args '-v /mnt/jenkins/jenkinsci:/home/jenkins -v $HOME/.cache:/root/.cache --shm-size=4g --entrypoint=""'
+          args '-v /mnt/jenkins/jenkinsci/TestData:/home/jenkins/TestData -v $HOME/.cache:/root/.cache --shm-size=4g --entrypoint=""'
         }
   }
   options {
