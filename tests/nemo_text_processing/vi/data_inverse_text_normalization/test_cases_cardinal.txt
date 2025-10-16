@@ -91,3 +91,52 @@ một trăm linh một~101
 một trăm mốt~110
 một trăm mười~110
 hai triệu ba nghìn~2003000
+mười một~11
+mười hai~12
+mười lăm~15
+mười bảy~17
+hai mươi~20
+hai mươi mốt~21
+hai mốt~21
+ba mươi lăm~35
+bốn mươi tư~44
+năm mươi lăm~55
+bảy mươi mốt~71
+chín mươi chín~99
+một trăm~100
+một trăm linh một~101
+một trăm lẻ năm~105
+hai trăm mười hai~212
+ba trăm linh tư~304
+năm trăm linh lăm~505
+sáu trăm lẻ tư~604
+bảy trăm lẻ bảy~707
+chín trăm linh chín~909
+chín trăm chín mươi chín~999
+một nghìn~1000
+một ngàn~1000
+một nghìn không trăm linh năm~1005
+một ngàn hai trăm ba mươi bốn~1234
+mười hai nghìn ba trăm bốn mươi lăm~12345
+một trăm hai mươi ba nghìn không trăm linh bốn~123004
+một triệu~1 triệu
+hai triệu ba trăm nghìn bốn trăm lẻ hai~2300402
+hai triệu ba trăm nghìn không trăm linh bảy~2300007
+một tỷ~1 tỷ
+ba tỷ không trăm linh ba~3000000003
+ba tỷ bốn trăm năm mươi sáu triệu bảy trăm tám mươi chín nghìn không trăm linh một~3456789001
+một nghìn tỷ~1000 tỷ
+một triệu tỷ~1 triệu tỷ
+một tỷ tỷ~1 tỷ tỷ
+hai mươi ba tỷ bốn trăm năm mươi sáu triệu bảy trăm tám mươi chín nghìn không trăm mười hai~23456789012
+chín trăm chín mươi chín tỷ chín trăm chín mươi chín triệu chín trăm chín mươi chín nghìn chín trăm chín mươi chín~999999999999
+một trăm hai mươi ba tỷ bốn trăm năm mươi sáu triệu bảy trăm tám mươi chín nghìn không trăm mười hai~123456789012
+âm bốn mươi hai~-42
+âm một trăm lẻ tám~-108
+âm ba trăm nghìn không trăm linh năm~-300005
+âm ba triệu không trăm linh chín~-3000009
+  ba   mươi   mốt  ~31
+hai mươi mốt~21
+bốn ngàn ba trăm lẻ năm~4305
+iPhone mười lăm~iPhone 15
+đường số mười hai~đường số 12
