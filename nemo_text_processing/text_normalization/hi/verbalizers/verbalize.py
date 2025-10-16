@@ -19,8 +19,8 @@ from nemo_text_processing.text_normalization.hi.verbalizers.decimal import Decim
 from nemo_text_processing.text_normalization.hi.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.hi.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hi.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.hi.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hi.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.hi.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hi.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.verbalizers.whitelist import WhiteListFst
 

@@ -19,12 +19,13 @@ from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_HI_DIGIT
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
+
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying Hindi ordinals, e.g.
         १०वां -> ordinal { integer: "दसवां" }
         २१वीं -> ordinal { integer: "इक्कीसवीं" }
-    
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
@@ -36,7 +37,7 @@ class OrdinalFst(GraphFst):
         cardinal = cardinal if cardinal is not None else CardinalFst(deterministic=deterministic)
 
         suffixes_fst = pynini.string_file(get_abs_path("data/ordinal/suffixes.tsv"))
-        
+
         number = pynini.closure(NEMO_HI_DIGIT, 1)
         # Build graph by mapping numbers with suffixes through cardinal FST
         graph = (number + suffixes_fst) @ ((number @ cardinal.final_graph) + suffixes_fst)
