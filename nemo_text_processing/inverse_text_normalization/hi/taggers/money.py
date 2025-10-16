@@ -21,7 +21,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.inverse_text_normalization.hi.utils import apply_fst, get_abs_path
+from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
 
 class MoneyFst(GraphFst):
@@ -40,14 +40,22 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
+        cardinal_single_and_double_digit_graph = cardinal.graph_digit | cardinal.graph_teens_and_ties
         decimal_graph = decimal.final_graph_wo_negative
         currency_graph = pynini.string_file(get_abs_path("data/money/currency.tsv")).invert()
+        paune_graph = pynini.string_file(get_abs_path("data/numbers/paune.tsv")).invert()
 
         self.integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
+        self.integer_quarterly_measures = pynutil.insert("integer_part: \"") + cardinal_single_and_double_digit_graph
+        self.integer_paune = pynutil.insert("integer_part: \"") + paune_graph
         self.paise = pynutil.insert("fractional_part: \"") + cardinal_graph + pynutil.insert("\"")
         self.fraction = decimal_graph
         self.currency = pynutil.insert("currency: \"") + currency_graph + pynutil.insert("\" ")
         aur = pynutil.delete("और")
+        delete_hundred = pynutil.delete("सौ")
+        delete_lakh = pynutil.delete("लाख")
+        delete_hazar = pynutil.delete("हजार") | pynutil.delete("हज़ार")
+        delete_crore = pynutil.delete("करोड़") | pynutil.delete("करोड़")
 
         graph_currency_decimal = self.fraction + delete_extra_space + self.currency
         graph_currency_cardinal = self.integer + delete_extra_space + self.currency
@@ -60,8 +68,186 @@ class MoneyFst(GraphFst):
             + delete_extra_space
             + pynutil.delete(currency_graph)
         )
+        # cases for saade,sava with teens and ties
+        graph_saade_teens_ties = (
+            pynutil.delete("साढ़े")
+            + delete_space
+            + self.integer_quarterly_measures
+            + pynutil.insert("\"")
+            + delete_space
+            + pynutil.insert(" fractional_part: \"५०\"")
+            + delete_extra_space
+            + self.currency
+        )
+        graph_sava_teens_ties = (
+            pynutil.delete("सवा")
+            + delete_space
+            + self.integer_quarterly_measures
+            + pynutil.insert("\"")
+            + delete_space
+            + pynutil.insert(" fractional_part: \"२५\"")
+            + delete_extra_space
+            + self.currency
+        )
+        graph_dedh = (
+            pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))
+            + delete_space
+            + pynutil.insert("integer_part: \"१\"")
+            + delete_space
+            + pynutil.insert(" fractional_part: \"५०\"")
+            + delete_extra_space
+            + self.currency
+        )
+        graph_dhaai = (
+            pynutil.delete("ढाई")
+            + delete_space
+            + pynutil.insert("integer_part: \"२\"")
+            + delete_space
+            + pynutil.insert(" fractional_part: \"५०\"")
+            + delete_extra_space
+            + self.currency
+        )
 
-        graph = graph_currency_decimal | graph_currency_cardinal | graph_rupay_and_paisa
+        graph_exceptions_teens_ties = graph_saade_teens_ties | graph_sava_teens_ties | graph_dedh | graph_dhaai
+
+        # cases for saade,sava,paune,dedh and dhaai with hundreds and thousands
+        graph_exceptions = self.integer + delete_extra_space + self.currency
+
+        # exceptions with lakhs
+        graph_saade_lakh = pynutil.add_weight(
+            pynutil.delete("साढ़े")
+            + delete_space
+            + self.integer_quarterly_measures
+            + delete_space
+            + pynutil.insert("५००००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_lakh
+            + delete_extra_space
+            + self.currency,
+            0.01,
+        )
+        graph_sava_lakh = pynutil.add_weight(
+            pynutil.delete("सवा")
+            + delete_space
+            + self.integer_quarterly_measures
+            + delete_space
+            + pynutil.insert("२५०००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_lakh
+            + delete_extra_space
+            + self.currency,
+            0.01,
+        )
+        graph_paune_lakh = (
+            pynutil.delete("पौने")
+            + delete_space
+            + self.integer_paune
+            + delete_space
+            + pynutil.insert("७५०००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_lakh
+            + delete_extra_space
+            + self.currency
+        )
+        graph_dedh_lakh = (
+            pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))
+            + delete_space
+            + pynutil.insert("integer_part: \"")
+            + pynutil.insert("१५००००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_lakh
+            + delete_extra_space
+            + self.currency
+        )
+        graph_dhaai_lakh = (
+            pynutil.delete("ढाई")
+            + delete_space
+            + pynutil.insert("integer_part: \"")
+            + pynutil.insert("२५००००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_lakh
+            + delete_extra_space
+            + self.currency
+        )
+
+        graph_exceptions_lakhs = (
+            graph_saade_lakh | graph_sava_lakh | graph_paune_lakh | graph_dedh_lakh | graph_dhaai_lakh
+        )
+
+        # exceptions with crores
+        graph_saade_crore = (
+            pynutil.delete("साढ़े")
+            + delete_space
+            + self.integer_quarterly_measures
+            + delete_space
+            + pynutil.insert("५००००००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_crore
+            + delete_extra_space
+            + self.currency
+        )
+        graph_sava_crore = (
+            pynutil.delete("सवा")
+            + delete_space
+            + self.integer_quarterly_measures
+            + delete_space
+            + pynutil.insert("२५०००००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_crore
+            + delete_extra_space
+            + self.currency
+        )
+        graph_paune_crore = (
+            pynutil.delete("पौने")
+            + delete_space
+            + self.integer_paune
+            + delete_space
+            + pynutil.insert("७५०००००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_crore
+            + delete_extra_space
+            + self.currency
+        )
+        graph_dhaai_crore = (
+            pynutil.delete("ढाई")
+            + delete_space
+            + pynutil.insert("integer_part: \"")
+            + pynutil.insert("२५००००००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_crore
+            + delete_extra_space
+            + self.currency
+        )
+        graph_dedh_crore = (
+            pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))
+            + delete_space
+            + pynutil.insert("integer_part: \"")
+            + pynutil.insert("१५००००००", weight=-0.1)
+            + pynutil.insert("\"")
+            + delete_space
+            + delete_crore
+            + delete_extra_space
+            + self.currency
+        )
+
+        graph_exceptions_crores = (
+            graph_saade_crore | graph_sava_crore | graph_paune_crore | graph_dedh_crore | graph_dhaai_crore
+        )
+
+        graph_quarterly_measures = (
+            graph_exceptions_teens_ties | graph_exceptions | graph_exceptions_lakhs | graph_exceptions_crores
+        )
+
+        graph = graph_currency_decimal | graph_currency_cardinal | graph_rupay_and_paisa | graph_quarterly_measures
         self.graph = graph.optimize()
 
         final_graph = self.add_tokens(graph)

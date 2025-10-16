@@ -10,7 +10,6 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: true)
   }
   environment {
-
     AR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-23-24-0'
     EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-25-25-0'
