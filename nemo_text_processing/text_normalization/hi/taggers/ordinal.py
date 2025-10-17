@@ -1,4 +1,4 @@
-# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_HI_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
@@ -31,17 +31,12 @@ class OrdinalFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: CardinalFst | None = None, deterministic: bool = True):
+    def __init__(self, cardinal: CardinalFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
-        cardinal = cardinal if cardinal is not None else CardinalFst(deterministic=deterministic)
-
         suffixes_fst = pynini.string_file(get_abs_path("data/ordinal/suffixes.tsv"))
-
-        number = pynini.closure(NEMO_HI_DIGIT, 1)
-        # Build graph by mapping numbers with suffixes through cardinal FST
-        graph = (number + suffixes_fst) @ ((number @ cardinal.final_graph) + suffixes_fst)
-        graph = graph.optimize()
+        
+        graph = cardinal.final_graph + suffixes_fst
 
         final_graph = pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
