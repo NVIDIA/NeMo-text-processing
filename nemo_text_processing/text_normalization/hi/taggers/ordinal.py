@@ -35,7 +35,7 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
         suffixes_fst = pynini.string_file(get_abs_path("data/ordinal/suffixes.tsv"))
-        
+
         graph = cardinal.final_graph + suffixes_fst
 
         final_graph = pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
