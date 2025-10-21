@@ -32,12 +32,13 @@ NEMO_CHAR = utf8.VALID_UTF8_CHAR
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
+DEVANAGARI_DIGIT = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"]
 
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
-NEMO_NON_BREAKING_SPACE = u"\u00A0"
-NEMO_ZWNJ = u"\u200C"
+NEMO_NON_BREAKING_SPACE = u"\u00a0"
+NEMO_ZWNJ = u"\u200c"
 NEMO_SPACE = " "
-NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00A0").optimize()
+NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00a0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 
@@ -61,6 +62,10 @@ MIN_POS_WEIGHT = 0.0001
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
 MINUS = pynini.union("ऋणात्मक", "नकारात्मक").optimize()
+
+
+def integer_to_devanagari(n: int) -> str:
+    return ''.join(DEVANAGARI_DIGIT[int(d)] for d in str(n))
 
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
@@ -196,4 +201,4 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
-        return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+        return res @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)

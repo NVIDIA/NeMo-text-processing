@@ -49,9 +49,15 @@ class ElectronicFst(GraphFst):
         else:
             numbers = pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" ")
 
-        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
+        cc_cues = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")),
+            MIN_NEG_WEIGHT,
+        )
 
-        cc_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")), MIN_NEG_WEIGHT,)
+        cc_cues = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv")),
+            MIN_NEG_WEIGHT,
+        )
 
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
 
@@ -59,10 +65,14 @@ class ElectronicFst(GraphFst):
             pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
         )
 
-        dict_words = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/words.tsv")), MIN_NEG_WEIGHT,)
+        dict_words = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/words.tsv")),
+            MIN_NEG_WEIGHT,
+        )
 
         dict_words_without_delimiter = dict_words + pynini.closure(
-            pynutil.add_weight(pynutil.insert(" ") + dict_words, MIN_NEG_WEIGHT), 1,
+            pynutil.add_weight(pynutil.insert(" ") + dict_words, MIN_NEG_WEIGHT),
+            1,
         )
         dict_words_graph = dict_words_without_delimiter | dict_words
 
@@ -117,14 +127,15 @@ class ElectronicFst(GraphFst):
 
         full_stop_accep = pynini.accep(".")
         dollar_accep = pynini.accep("$")  # Include for the correct transduction of the money graph
-        excluded_symbols = full_stop_accep | dollar_accep
+        excluded_symbols = full_stop_accep | dollar_accep | pynini.accep(",")
         filtered_symbols = pynini.difference(accepted_symbols, excluded_symbols)
         accepted_characters = NEMO_ALPHA | NEMO_DIGIT | filtered_symbols
         domain_component = full_stop_accep + pynini.closure(accepted_characters, 2)
-        graph_domain = (
+        graph_domain = pynutil.add_weight(
             pynutil.insert('domain: "')
             + (pynini.closure(accepted_characters, 1) + pynini.closure(domain_component, 1))
-            + pynutil.insert('"')
+            + pynutil.insert('"'),
+            0.1,
         ).optimize()
 
         graph |= pynutil.add_weight(graph_domain, MIN_NEG_WEIGHT)

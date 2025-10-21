@@ -22,7 +22,7 @@ ci:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v5.0.0
     hooks:
       - id: check-yaml
       - id: check-case-conflict
@@ -30,14 +30,14 @@ repos:
       - id: requirements-txt-fixer
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
+    rev: 7.2.0
     hooks:
     -   id: flake8
         args:
         - --select=W605
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 6.0.1
     hooks:
       - id: isort
         name: Format imports
@@ -45,9 +45,9 @@ repos:
         exclude: docs/
 
   - repo: https://github.com/psf/black
-    rev: 19.10b0
+    rev: 25.1.0
     hooks:
       - id: black
         name: Format code
         args: [--skip-string-normalization, --line-length=119]
-        additional_dependencies: ['click==8.0.2']
+        additional_dependencies: ['click>=8.0.2']

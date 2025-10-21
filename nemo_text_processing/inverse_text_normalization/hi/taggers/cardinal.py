@@ -44,8 +44,14 @@ class CardinalFst(GraphFst):
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
         graph_teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")).invert()
+        graph_paune = pynini.string_file(get_abs_path("data/numbers/paune.tsv")).invert()
+        self.graph_zero = graph_zero
+        self.graph_digit = graph_digit
+        self.graph_single_digit_with_zero = pynutil.insert("०") + graph_digit
+        self.graph_teens_and_ties = graph_teens_and_ties
         self.graph_two_digit = graph_teens_and_ties | (pynutil.insert("०") + graph_digit)
         graph_hundred = pynini.cross("सौ", "")
+        delete_hundred = pynutil.delete("सौ")
         delete_thousand = pynutil.delete("हज़ार") | pynutil.delete("हजार")
         graph_hundred_component = pynini.union(graph_digit + delete_space + graph_hundred, pynutil.insert("०"))
         graph_hundred_component += delete_space
@@ -64,11 +70,93 @@ class CardinalFst(GraphFst):
         )
         graph_hundred_as_thousand += delete_space
         graph_hundred_as_thousand += self.graph_two_digit | pynutil.insert("००")
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynutil.delete("साढ़े")
+            + delete_space
+            + graph_digit
+            + pynutil.insert("५००", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynutil.delete("सवा")
+            + delete_space
+            + graph_digit
+            + pynutil.insert("२५०", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynutil.delete("पौने")
+            + delete_space
+            + graph_paune
+            + pynutil.insert("७५०", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))
+            + delete_space
+            + pynutil.insert("१५००", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
+        graph_hundred_as_thousand |= pynutil.add_weight(
+            pynutil.delete("ढाई")
+            + delete_space
+            + pynutil.insert("२५००", weight=-0.1)
+            + delete_space
+            + delete_thousand,
+            -0.1,
+        )
 
-        self.graph_hundreds = graph_hundred_component | graph_hundred_as_thousand
+        graph_in_hundreds = pynutil.add_weight(
+            pynutil.delete("साढ़े")
+            + delete_space
+            + (graph_digit | self.graph_two_digit)
+            + pynutil.insert("५०", weight=-0.1)
+            + delete_space
+            + delete_hundred,
+            -0.1,
+        )
+        graph_in_hundreds |= pynutil.add_weight(
+            pynutil.delete("सवा")
+            + delete_space
+            + (graph_digit | self.graph_two_digit)
+            + pynutil.insert("२५", weight=-0.1)
+            + delete_space
+            + delete_hundred,
+            -0.1,
+        )
+        graph_in_hundreds |= pynutil.add_weight(
+            pynutil.delete("पौने")
+            + delete_space
+            + graph_paune
+            + pynutil.insert("७५", weight=-0.1)
+            + delete_space
+            + delete_hundred,
+            -0.1,
+        )
+        graph_in_hundreds |= pynutil.add_weight(
+            pynini.union(pynutil.delete("डेढ़") | pynutil.delete("डेढ़"))
+            + delete_space
+            + pynutil.insert("१५०", weight=-0.1)
+            + delete_space
+            + delete_hundred,
+            -0.1,
+        )
+        graph_in_hundreds |= pynutil.add_weight(
+            pynutil.delete("ढाई") + delete_space + pynutil.insert("२५०", weight=-0.1) + delete_space + delete_hundred,
+            -0.1,
+        )
+        self.graph_hundreds = graph_hundred_component | graph_hundred_as_thousand | graph_in_hundreds
 
         graph_teens_and_ties_component = pynini.union(
-            graph_teens_and_ties | pynutil.insert("00") + delete_space + (graph_digit | pynutil.insert("0")),
+            graph_teens_and_ties | pynutil.insert("००") + delete_space + (graph_digit | pynutil.insert("०")),
         )
         graph_ties_component_at_least_one_none_zero_digit = self.graph_two_digit @ (
             pynini.closure(NEMO_HI_DIGIT) + pynini.closure(NEMO_HI_DIGIT)
@@ -79,12 +167,14 @@ class CardinalFst(GraphFst):
         # This only covers "standard format".
         # Conventional format like thousand crores/lakh crores is yet to be implemented
         graph_in_thousands = pynini.union(
-            self.graph_two_digit + delete_space + delete_thousand, pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + delete_thousand,
+            pynutil.insert("००", weight=0.1),
         )
         self.graph_thousands = graph_in_thousands
 
         graph_in_lakhs = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("लाख"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("लाख"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_crores = pynini.union(
@@ -93,23 +183,28 @@ class CardinalFst(GraphFst):
         )
 
         graph_in_arabs = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("अरब"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("अरब"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_kharabs = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("खरब"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("खरब"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_nils = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("नील"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("नील"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_padmas = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("पद्म"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("पद्म"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_in_shankhs = pynini.union(
-            self.graph_two_digit + delete_space + pynutil.delete("शंख"), pynutil.insert("००", weight=0.1),
+            self.graph_two_digit + delete_space + pynutil.delete("शंख"),
+            pynutil.insert("००", weight=0.1),
         )
 
         graph_ind = (
@@ -132,6 +227,7 @@ class CardinalFst(GraphFst):
         graph_no_prefix = pynutil.add_weight(
             pynini.cross("सौ", "१००")
             | pynini.cross("हज़ार", "१०००")
+            | pynini.cross("हजार", "१०००")
             | pynini.cross("लाख", "१०००००")
             | pynini.cross("करोड़", "१०००००००"),
             2,

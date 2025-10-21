@@ -15,15 +15,106 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
+    NEMO_CHAR,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_space,
+)
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
+
+shunya = (
+    pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
+    | pynini.string_file(get_abs_path("data/telephone/eng_zero.tsv")).invert()
+)
+digit_without_shunya = (
+    pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
+    | pynini.string_file(get_abs_path("data/telephone/eng_digit.tsv")).invert()
+)
+digit = digit_without_shunya | shunya
+
+
+def get_context(keywords: list):
+    keywords = pynini.union(*keywords)
+
+    # TODO: create a tsv for below data
+    hindi_digits = pynini.union("शून्य", "एक", "दो", "तीन", "चार", "पाँच", "पांच", "छे", 'छह', "सात", "आठ", "नौ")
+    english_digits = pynini.union("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+    all_digits = hindi_digits | english_digits
+
+    non_digit_char = pynini.difference(NEMO_CHAR, pynini.union(all_digits, NEMO_WHITE_SPACE))
+    word = pynini.closure(non_digit_char, 1) + NEMO_WHITE_SPACE
+    window = pynini.closure(word, 0, 5)
+    before = (keywords + window).optimize()
+    after = (window + keywords).optimize()
+
+    return before, after
+
+
+def generate_context_graph(context_keywords, length):
+    context_before, context_after = get_context(context_keywords)
+    digits = pynini.closure(digit + delete_space, length - 1, length - 1) + digit
+
+    graph_after_context = digits + NEMO_WHITE_SPACE + context_after
+    graph_before_context = context_before + NEMO_WHITE_SPACE + digits
+    graph_without_context = digits
+
+    return (
+        pynutil.insert("number_part: \"")
+        + (graph_before_context | graph_after_context | graph_without_context)
+        + pynutil.insert("\" ")
+    ).optimize()
+
+
+def generate_pincode(context_keywords):
+    return generate_context_graph(context_keywords, 6)
+
+
+def generate_credit(context_keywords):
+    return generate_context_graph(context_keywords, 4)
+
+
+def generate_mobile(context_keywords):
+    context_before, context_after = get_context(context_keywords)
+
+    country_code = pynini.cross("प्लस", "+") + pynini.closure(delete_space + digit, 2, 2) + NEMO_WHITE_SPACE
+    graph_country_code = (
+        pynutil.insert("country_code: \"")
+        + (context_before + NEMO_WHITE_SPACE) ** (0, 1)
+        + country_code
+        + pynutil.insert("\" ")
+    )
+
+    number_part = digit_without_shunya + delete_space + pynini.closure(digit + delete_space, 8, 8) + digit
+    graph_number = (
+        pynutil.insert("number_part: \"")
+        + number_part
+        + pynini.closure(NEMO_WHITE_SPACE + context_after, 0, 1)
+        + pynutil.insert("\" ")
+    )
+
+    graph = (graph_country_code + graph_number) | graph_number
+    return graph.optimize()
+
+
+def generate_telephone(context_keywords):
+    context_before, context_after = get_context(context_keywords)
+
+    landline = shunya + delete_space + pynini.closure(digit + delete_space, 9, 9) + digit
+    landline_with_context_before = context_before + NEMO_WHITE_SPACE + landline
+    landline_with_context_after = landline + NEMO_WHITE_SPACE + context_after
+
+    return (
+        pynutil.insert("number_part: \"")
+        + (landline | landline_with_context_before | landline_with_context_after)
+        + pynutil.insert("\" ")
+    )
 
 
 class TelephoneFst(GraphFst):
     """
     Finite state transducer for classifying telephone numbers, e.g.
     e.g. प्लस इक्यानवे नौ आठ सात छह पांच चार तीन दो एक शून्य => tokens { name: "+९१ ९८७६५ ४३२१०" }
-    
     Args:
         Cardinal: CardinalFst
     """
@@ -31,128 +122,17 @@ class TelephoneFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="telephone", kind="classify")
 
-        hindi_digit_graph = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
-        hindi_digit_graph |= pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
-
-        english_digit_graph = pynini.string_file(get_abs_path("data/telephone/eng_to_hindi_digit.tsv")).invert()
-
-        country_code_graph_single_digits = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
-        country_code_graph_single_digits |= pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
-        country_code_graph_single_digits |= pynini.string_file(
-            get_abs_path("data/telephone/eng_to_hindi_digit.tsv")
-        ).invert()
-
-        country_code_graph_double_digits = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")).invert()
-        country_code_graph_double_digits |= pynini.string_file(
-            get_abs_path("data/telephone/teens_and_ties_eng_to_hin.tsv")
-        ).invert()
-
-        self.hindi_digit = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 0, 9)
-            + hindi_digit_graph
-            + pynutil.insert("\" ")
-        )
-        self.english_digit = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(english_digit_graph + delete_space, 0, 9)
-            + english_digit_graph
-            + delete_space
-            + pynutil.insert("\" ")
-        )
-
-        self.country_code_with_single_digits = (
-            pynutil.insert("country_code: \"")
-            + pynini.closure(country_code_graph_single_digits + delete_space, 0, 2)
-            + pynutil.insert("\" ")
-        )
-        self.country_code_with_double_digits = (
-            pynutil.insert("country_code: \"")
-            + pynini.closure(country_code_graph_double_digits + delete_space, 0, 1)
-            + pynutil.insert("\" ")
-        )
-        self.country_code = self.country_code_with_single_digits | self.country_code_with_double_digits
-
-        # two, three, four-digit extension code with zero
-        self.city_code_hindi = (
-            pynutil.insert("extension: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 2, 5)
-            + pynutil.insert("\" ")
-        )
-        self.city_code_english = (
-            pynutil.insert("extension: \"")
-            + pynini.closure(english_digit_graph + delete_space, 2, 5)
-            + pynutil.insert("\" ")
-        )
-
-        self.city_extension = self.city_code_hindi | self.city_code_english
-
-        # 7-digit landline graph in hindi and english digits
-        self.landline_hindi = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 7, 7)
-            + pynutil.insert("\" ")
-        )
-        self.landline_english = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(english_digit_graph + delete_space, 7, 7)
-            + pynutil.insert("\" ")
-        )
-
-        self.landline = self.landline_hindi | self.landline_english
-
-        self.pincode_in_hindi = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 0, 5)
-            + hindi_digit_graph
-            + pynutil.insert("\" ")
-        )
-        self.pincode_in_english = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(english_digit_graph + delete_space, 0, 5)
-            + english_digit_graph
-            + pynutil.insert("\" ")
-        )
-
-        self.credit_card_last_digits_hindi = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(hindi_digit_graph + delete_space, 0, 3)
-            + hindi_digit_graph
-            + pynutil.insert("\" ")
-        )
-        self.credit_card_last_digits_english = (
-            pynutil.insert("number_part: \"")
-            + pynini.closure(english_digit_graph + delete_space, 0, 3)
-            + english_digit_graph
-            + pynutil.insert("\" ")
-        )
-
-        delete_plus = pynini.union(
-            pynutil.delete("प्लस") | pynutil.delete("plus") | pynutil.delete("Plus") | pynutil.delete("PLUS")
-        )
-
-        delete_zero = pynini.union(
-            pynutil.delete("शून्य") | pynutil.delete("zero") | pynutil.delete("Zero") | pynutil.delete("ZERO")
-        )
-
-        graph_number_with_hindi_digit = (
-            delete_plus + delete_space + self.country_code + delete_space + self.hindi_digit
-        )
-        graph_number_with_english_digit = delete_plus + delete_space + self.country_code + self.english_digit
-
-        graph_landline_with_extension = delete_zero + delete_space + self.city_extension + delete_space + self.landline
-
-        graph_pincode = self.pincode_in_hindi | self.pincode_in_english
-
-        graph_credit_card_last_digits = self.credit_card_last_digits_hindi | self.credit_card_last_digits_english
+        mobile = generate_mobile(["नंबर", "मोबाइल", "फोन", "कॉल"])
+        landline = generate_telephone(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉल"])
+        pincode = generate_pincode(["पिन", "कोड", "पिनकोड"])
+        credit = generate_credit(["नंबर", "कार्ड", "क्रेडिट"])
 
         graph = (
-            graph_number_with_hindi_digit
-            | graph_number_with_english_digit
-            | graph_landline_with_extension
-            | graph_pincode
-            | graph_credit_card_last_digits
+            pynutil.add_weight(mobile, 0.7)
+            | pynutil.add_weight(landline, 0.8)
+            | pynutil.add_weight(credit, 0.9)
+            | pynutil.add_weight(pincode, 1)
         )
 
-        final_graph = self.add_tokens(graph)
-        self.fst = final_graph
+        self.final = graph.optimize()
+        self.fst = self.add_tokens(self.final)
