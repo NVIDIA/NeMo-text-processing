@@ -37,9 +37,18 @@ digit = digit_without_shunya | shunya
 def get_context(keywords: list):
     keywords = pynini.union(*keywords)
 
-    # TODO: create a tsv for below data
-    hindi_digits = pynini.union("शून्य", "एक", "दो", "तीन", "चार", "पाँच", "पांच", "छे", 'छह', "सात", "आठ", "नौ")
-    english_digits = pynini.union("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+    # Load Hindi digits from TSV files
+    hindi_digits = (
+        pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+    ).project("output")
+    
+    # Load English digits from TSV files
+    english_digits = (
+        pynini.string_file(get_abs_path("data/telephone/eng_digit.tsv"))
+        | pynini.string_file(get_abs_path("data/telephone/eng_zero.tsv"))
+    ).project("output")
+    
     all_digits = hindi_digits | english_digits
 
     non_digit_char = pynini.difference(NEMO_CHAR, pynini.union(all_digits, NEMO_WHITE_SPACE))
@@ -122,10 +131,35 @@ class TelephoneFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="telephone", kind="classify")
 
-        mobile = generate_mobile(["नंबर", "मोबाइल", "फोन", "कॉल"])
-        landline = generate_telephone(["नंबर", "मोबाइल", "फोन", "लैंडलाइन", "कॉल"])
-        pincode = generate_pincode(["पिन", "कोड", "पिनकोड"])
-        credit = generate_credit(["नंबर", "कार्ड", "क्रेडिट"])
+        # Load context cues from TSV file
+        context_cues = pynini.string_file(get_abs_path("data/telephone/context_cues.tsv"))
+        
+        # Extract keywords for each category
+        mobile_keywords = pynini.compose(
+            pynini.cross("mobile", ""),
+            context_cues
+        ).project("output").optimize()
+        
+        landline_keywords = pynini.compose(
+            pynini.cross("landline", ""),
+            context_cues
+        ).project("output").optimize()
+        
+        pincode_keywords = pynini.compose(
+            pynini.cross("pincode", ""),
+            context_cues
+        ).project("output").optimize()
+        
+        credit_keywords = pynini.compose(
+            pynini.cross("credit", ""),
+            context_cues
+        ).project("output").optimize()
+
+        # Convert FSTs to keyword lists for generate_* functions
+        mobile = generate_mobile([mobile_keywords])
+        landline = generate_telephone([landline_keywords])
+        pincode = generate_pincode([pincode_keywords])
+        credit = generate_credit([credit_keywords])
 
         graph = (
             pynutil.add_weight(mobile, 0.7)
