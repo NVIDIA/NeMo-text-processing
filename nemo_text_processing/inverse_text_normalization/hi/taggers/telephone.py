@@ -42,13 +42,13 @@ def get_context(keywords: list):
         pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
     ).project("output")
-    
+
     # Load English digits from TSV files
     english_digits = (
         pynini.string_file(get_abs_path("data/telephone/eng_digit.tsv"))
         | pynini.string_file(get_abs_path("data/telephone/eng_zero.tsv"))
     ).project("output")
-    
+
     all_digits = hindi_digits | english_digits
 
     non_digit_char = pynini.difference(NEMO_CHAR, pynini.union(all_digits, NEMO_WHITE_SPACE))
@@ -133,27 +133,15 @@ class TelephoneFst(GraphFst):
 
         # Load context cues from TSV file
         context_cues = pynini.string_file(get_abs_path("data/telephone/context_cues.tsv"))
-        
+
         # Extract keywords for each category
-        mobile_keywords = pynini.compose(
-            pynini.cross("mobile", ""),
-            context_cues
-        ).project("output").optimize()
-        
-        landline_keywords = pynini.compose(
-            pynini.cross("landline", ""),
-            context_cues
-        ).project("output").optimize()
-        
-        pincode_keywords = pynini.compose(
-            pynini.cross("pincode", ""),
-            context_cues
-        ).project("output").optimize()
-        
-        credit_keywords = pynini.compose(
-            pynini.cross("credit", ""),
-            context_cues
-        ).project("output").optimize()
+        mobile_keywords = pynini.compose(pynutil.delete("mobile"), context_cues).project("output").optimize()
+
+        landline_keywords = pynini.compose(pynutil.delete("landline"), context_cues).project("output").optimize()
+
+        pincode_keywords = pynini.compose(pynutil.delete("pincode"), context_cues).project("output").optimize()
+
+        credit_keywords = pynini.compose(pynutil.delete("credit"), context_cues).project("output").optimize()
 
         # Convert FSTs to keyword lists for generate_* functions
         mobile = generate_mobile([mobile_keywords])
