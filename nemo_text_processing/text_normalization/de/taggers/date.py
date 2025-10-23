@@ -66,6 +66,7 @@ class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g.
         "01.04.2010" -> date { day: "erster" month: "april" year: "zwei tausend zehn" preserve_order: true }
+        "08.02.95" -> date { day: "achter" month: "februar" year: "fünf und neunzig" preserve_order: true }
         "1994" -> date { year: "neunzehn vier und neuzig" }
         "1900" -> date { year: "neunzehn hundert" }
 
@@ -113,6 +114,10 @@ class DateFst(GraphFst):
         year = pynutil.add_weight(get_year_graph(cardinal=cardinal), weight=0.001)
         self.year = year
 
+        # two-digit year handler (e.g. "95" -> "fünf und neunzig") used for dotted date forms
+        year_short = delete_leading_zero @ cardinal.two_digit_non_zero
+        year_short_only = pynutil.insert("year: \"") + year_short + pynutil.insert("\"")
+
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
 
         graph_dmy = (
@@ -126,7 +131,7 @@ class DateFst(GraphFst):
 
         separators = ["."]
         for sep in separators:
-            year_optional = pynini.closure(pynini.cross(sep, " ") + year_only, 0, 1)
+            year_optional = pynini.closure(pynini.cross(sep, " ") + (year_only | year_short_only), 0, 1)
             new_graph = day + pynini.cross(sep, " ") + month_number + year_optional
             graph_dmy |= new_graph
 
