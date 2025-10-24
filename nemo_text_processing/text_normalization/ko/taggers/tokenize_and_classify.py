@@ -22,8 +22,10 @@ from nemo_text_processing.text_normalization.ko.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.ko.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ko.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ko.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.ko.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.ko.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.ko.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
@@ -72,6 +74,8 @@ class ClassifyFst(GraphFst):
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
             whitelist = WhiteListFst(deterministic=deterministic)
             punctuation = PunctuationFst(deterministic=deterministic)
+            money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
+            telephone = TelephoneFst(deterministic=deterministic)
 
             classify = pynini.union(
                 pynutil.add_weight(cardinal.fst, 1.1),
@@ -81,8 +85,10 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(ordinal.fst, 1.1),
                 pynutil.add_weight(decimal.fst, 3.05),
                 pynutil.add_weight(word.fst, 100),
+                pynutil.add_weight(money.fst, 1.1),
                 pynutil.add_weight(punctuation.fst, 1.0),
                 pynutil.add_weight(whitelist.fst, 1.1),
+                pynutil.add_weight(telephone.fst, 1.1),
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")

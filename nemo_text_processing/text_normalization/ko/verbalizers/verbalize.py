@@ -19,7 +19,9 @@ from nemo_text_processing.text_normalization.ko.verbalizers.cardinal import Card
 from nemo_text_processing.text_normalization.ko.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ko.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ko.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.ko.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.ko.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.ko.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.verbalizers.word import WordFst
@@ -47,6 +49,8 @@ class VerbalizeFst(GraphFst):
         fraction = FractionFst(deterministic=deterministic)
         whitelist = WhiteListFst(deterministic=deterministic)
         time = TimeFst(deterministic=deterministic)
+        money = MoneyFst(deterministic=deterministic)
+        telephone = TelephoneFst(deterministic=deterministic)
 
         graph = pynini.union(
             cardinal.fst,
@@ -57,6 +61,8 @@ class VerbalizeFst(GraphFst):
             date.fst,
             whitelist.fst,
             time.fst,
+            money.fst,
+            telephone.fst,
         )
 
         self.fst = graph.optimize()
