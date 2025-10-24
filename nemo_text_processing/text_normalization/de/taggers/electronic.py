@@ -17,7 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.de.utils import get_abs_path, load_labels
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_CHAR, NEMO_DIGIT, GraphFst, insert_space, MIN_NEG_WEIGHT
 
 
 class ElectronicFst(GraphFst):
@@ -76,7 +76,18 @@ class ElectronicFst(GraphFst):
         protocol = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
         url = protocol + insert_space + (domain_graph)
 
-        graph = url | domain_graph | email | tag
+        # id numbers: tag trigger phrase + digits
+        id_cues = pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/electronic/id_cues.tsv")), 
+            MIN_NEG_WEIGHT
+            )
+
+        numbers = pynini.closure(NEMO_DIGIT, 4, 16)
+        id_number = (
+            pynutil.insert('protocol: "') + id_cues + pynutil.insert('" domain: "') + numbers + pynutil.insert('"')
+        )
+
+        graph = url | domain_graph | email | tag | id_number
         self.graph = graph
 
         final_graph = self.add_tokens(self.graph + pynutil.insert(" preserve_order: true"))

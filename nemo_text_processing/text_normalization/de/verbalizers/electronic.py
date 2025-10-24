@@ -24,6 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_preserve_order,
     insert_space,
+    delete_space,
 )
 
 
@@ -70,7 +71,34 @@ class ElectronicFst(GraphFst):
             + add_space_after_char() @ pynini.cdrewrite(graph_symbols, "", "", NEMO_SIGMA)
             + pynutil.delete('"')
         )
-        self.graph = (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain) | (
+
+        # Special case: id nummer cue + digit sequence read
+        id_cues = pynini.string_file(get_abs_path("data/electronic/id_cues.tsv")).optimize()
+
+        preserve_order = pynutil.delete('preserve_order: true').ques
+
+        protocol_id = pynutil.delete('protocol: "') + id_cues + pynutil.delete('"')
+
+        digit_map = (
+            pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
+            | pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
+            | pynini.cross("1", "eins")
+        )
+        digit_by_digit = (
+            pynutil.delete('domain: "')
+            + digit_map
+            + pynini.closure(pynutil.insert(" ") + digit_map)
+            + pynutil.delete('"')
+        )
+
+        idnummer_fst = protocol_id + delete_space + digit_by_digit + preserve_order
+
+        # Generic protocol+domain fallback: 
+        protocol_domain = protocol + delete_space + domain + preserve_order
+
+        self.graph = idnummer_fst | protocol_domain | (
+            pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain
+        ) | (
             user_name + NEMO_SPACE + pynutil.insert("at ") + domain | (pynutil.insert("at ") + user_name)
         )
 
