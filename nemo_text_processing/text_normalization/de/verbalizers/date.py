@@ -56,7 +56,10 @@ class DateFst(GraphFst):
         graph_dmy |= final_month + pynini.accep(" ") + year
 
         self.graph = graph_dmy | year
-        final_graph = self.graph + delete_preserve_order
+
+        punct_graph = pynini.closure(pynutil.delete(' preserve_punct: "."') + pynutil.insert("."), 0, 1)
+
+        final_graph = self.graph + punct_graph + delete_preserve_order
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

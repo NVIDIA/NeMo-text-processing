@@ -115,10 +115,10 @@ class DateFst(GraphFst):
         self.year = year
 
         # two-digit year handler (e.g. "95" -> "fünf und neunzig") used for dotted date forms
-        year_short = delete_leading_zero @ cardinal.two_digit_non_zero
+        year_short = numbers
         year_short_only = pynutil.insert("year: \"") + year_short + pynutil.insert("\"")
-
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
+        year_union = year_only | year_short_only
 
         graph_dmy = (
             day
@@ -126,12 +126,12 @@ class DateFst(GraphFst):
             + pynini.closure(pynutil.delete(" "), 0, 1)
             + insert_space
             + month_name
-            + pynini.closure(pynini.accep(" ") + year_only, 0, 1)
+            + pynini.closure(pynini.accep(" ") + year_union, 0, 1)
         )
 
         separators = ["."]
         for sep in separators:
-            year_optional = pynini.closure(pynini.cross(sep, " ") + (year_only | year_short_only), 0, 1)
+            year_optional = pynini.closure(pynini.cross(sep, " ") + year_union, 0, 1)
             new_graph = day + pynini.cross(sep, " ") + month_number + year_optional
             graph_dmy |= new_graph
 
