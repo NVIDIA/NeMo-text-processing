@@ -23,8 +23,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     delete_preserve_order,
-    insert_space,
     delete_space,
+    insert_space,
 )
 
 
@@ -93,13 +93,14 @@ class ElectronicFst(GraphFst):
 
         idnummer_fst = protocol_id + delete_space + digit_by_digit + preserve_order
 
-        # Generic protocol+domain fallback: 
+        # Generic protocol+domain fallback:
         protocol_domain = protocol + delete_space + domain + preserve_order
 
-        self.graph = idnummer_fst | protocol_domain | (
-            pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain
-        ) | (
-            user_name + NEMO_SPACE + pynutil.insert("at ") + domain | (pynutil.insert("at ") + user_name)
+        self.graph = (
+            idnummer_fst
+            | protocol_domain
+            | (pynini.closure(protocol + NEMO_SPACE, 0, 1) + domain)
+            | (user_name + NEMO_SPACE + pynutil.insert("at ") + domain | (pynutil.insert("at ") + user_name))
         )
 
         # normalizes sentence-final periods following URLs

@@ -17,7 +17,14 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.de.utils import get_abs_path, load_labels
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_CHAR, NEMO_DIGIT, GraphFst, insert_space, MIN_NEG_WEIGHT
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    MIN_NEG_WEIGHT,
+    NEMO_ALPHA,
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    GraphFst,
+    insert_space,
+)
 
 
 class ElectronicFst(GraphFst):
@@ -77,10 +84,7 @@ class ElectronicFst(GraphFst):
         url = protocol + insert_space + (domain_graph)
 
         # id numbers: tag trigger phrase + digits
-        id_cues = pynutil.add_weight(
-            pynini.string_file(get_abs_path("data/electronic/id_cues.tsv")), 
-            MIN_NEG_WEIGHT
-            )
+        id_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/id_cues.tsv")), MIN_NEG_WEIGHT)
 
         numbers = pynini.closure(NEMO_DIGIT, 4, 16)
         id_number = (
