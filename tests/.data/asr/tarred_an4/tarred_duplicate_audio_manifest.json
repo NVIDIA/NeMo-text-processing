@@ -1,0 +1,6 @@
+{"audio_filepath": "_data_an4_wav_an4_clstk_fash_an251-fash-b.wav", "duration": 0.5, "offset": 0.5, "label": "fash", "text": "yes", "shard_id": 0}
+{"audio_filepath": "_data_an4_wav_an4_clstk_fash_an251-fash-b-sub1.wav", "duration": 0.5, "offset": 0.4, "label": "fash", "text": "yes", "shard_id": 0}
+{"audio_filepath": "_data_an4_wav_an4_clstk_fash_an253-fash-b.wav", "duration": 0.7, "offset": 0, "label": "fash", "text": "go", "shard_id": 0}
+{"audio_filepath": "_data_an4_wav_an4_clstk_fclc_cen3-fclc-b.wav", "duration": 1.9, "offset": 0, "label": "fclc", "text": "five five three five", "shard_id": 1}
+{"audio_filepath": "_data_an4_wav_an4_clstk_fclc_cen4-fclc-b.wav", "duration": 3.7, "offset": 0, "label": "fclc", "text": "a y l e s b o r o", "shard_id": 1}
+{"audio_filepath": "_data_an4_wav_an4_clstk_fclc_cen5-fclc-b.wav", "duration": 4.3, "offset": 0, "label": "fclc", "text": "p i t t s b u r g h", "shard_id": 1}

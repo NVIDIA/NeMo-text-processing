@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0023",
+        "words": "i hope he doesn't work too hard said shaggy",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 3.67
+    },
+    {
+        "session_id": "dev-clean-2mix-0023",
+        "words": "he drank the wine greedily",
+        "speaker": "8297",
+        "start_time": 1.008,
+        "end_time": 3.488
+    }
+]

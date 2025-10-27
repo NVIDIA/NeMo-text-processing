@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0024",
+        "words": "he doesn't work at all",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 1.91
+    },
+    {
+        "session_id": "dev-clean-2mix-0024",
+        "words": "when she fell the whole race fell with her",
+        "speaker": "5536",
+        "start_time": 1.856,
+        "end_time": 4.546
+    }
+]

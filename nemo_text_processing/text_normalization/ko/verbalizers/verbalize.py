@@ -24,8 +24,9 @@ from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import Ordin
 from nemo_text_processing.text_normalization.ko.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.ko.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.ko.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.ko.verbalizers.word import WordFst
-
+from nemo_text_processing.text_normalization.ko.verbalizers.electronic import ElectronicFst
 
 class VerbalizeFst(GraphFst):
     """
@@ -51,7 +52,9 @@ class VerbalizeFst(GraphFst):
         time = TimeFst(deterministic=deterministic)
         money = MoneyFst(deterministic=deterministic)
         telephone = TelephoneFst(deterministic=deterministic)
-
+        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
+        electronic = ElectronicFst(deterministic=deterministic)
+        
         graph = pynini.union(
             cardinal.fst,
             ordinal.fst,
@@ -63,6 +66,8 @@ class VerbalizeFst(GraphFst):
             time.fst,
             money.fst,
             telephone.fst,
+            measure.fst,
+            electronic.fst,
         )
 
         self.fst = graph.optimize()

@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0003",
+        "words": "he has grave doubts whether sir frederick leighton's work is really greek after all and can discover in it but little of rocky ithaca",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 9.9
+    },
+    {
+        "session_id": "dev-clean-2mix-0003",
+        "words": "it's no better than a badger hole no proper dugout at all",
+        "speaker": "1988",
+        "start_time": 7.13,
+        "end_time": 11.525
+    }
+]

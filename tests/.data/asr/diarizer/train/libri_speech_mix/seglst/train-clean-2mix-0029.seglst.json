@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0029",
+        "words": "where is that",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 1.74
+    },
+    {
+        "session_id": "dev-clean-2mix-0029",
+        "words": "the glory of gwynplaine had not passed london bridge",
+        "speaker": "5895",
+        "start_time": 0.378,
+        "end_time": 3.858
+    }
+]

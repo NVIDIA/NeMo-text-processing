@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0026",
+        "words": "not exactly returned kaliko",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 3.18
+    },
+    {
+        "session_id": "dev-clean-2mix-0026",
+        "words": "what could be the object",
+        "speaker": "2803",
+        "start_time": 0.671,
+        "end_time": 2.851
+    }
+]

@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0019",
+        "words": "the king has fled in disgrace and your friends are asking for you",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 4.225
+    },
+    {
+        "session_id": "dev-clean-2mix-0019",
+        "words": "very truly yours et cetera compromise",
+        "speaker": "2277",
+        "start_time": 3.216,
+        "end_time": 6.666
+    }
+]

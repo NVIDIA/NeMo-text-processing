@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "test-clean-2mix-0005",
+        "words": "the music came nearer and he recalled the words the words of shelley's fragment upon the moon wandering companionless pale for weariness",
+        "speaker": "1089",
+        "start_time": 0.0,
+        "end_time": 9.635
+    },
+    {
+        "session_id": "test-clean-2mix-0005",
+        "words": "since last thursday i ghip ghisizzle have been the lawful boolooroo of the blue country but now that you are conquered by queen trot i suppose i am conquered too and you have no boolooroo at all",
+        "speaker": "8555",
+        "start_time": 3.328,
+        "end_time": 17.228
+    }
+]

@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "test-clean-2mix-0003",
+        "words": "hello bertie any good in your mind",
+        "speaker": "1089",
+        "start_time": 0.0,
+        "end_time": 2.68
+    },
+    {
+        "session_id": "test-clean-2mix-0003",
+        "words": "with one jump anders got out of his chair",
+        "speaker": "7021",
+        "start_time": 1.768,
+        "end_time": 5.023
+    }
+]

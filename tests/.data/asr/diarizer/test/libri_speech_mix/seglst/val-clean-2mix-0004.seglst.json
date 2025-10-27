@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "test-clean-2mix-0004",
+        "words": "number ten fresh nelly is waiting on you good night husband",
+        "speaker": "1089",
+        "start_time": 0.0,
+        "end_time": 5.215
+    },
+    {
+        "session_id": "test-clean-2mix-0004",
+        "words": "i and my wife and son and the two craswellers and three or four others agreed to dine on board the ship on the next",
+        "speaker": "8455",
+        "start_time": 4.324,
+        "end_time": 12.939
+    }
+]

@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "test-clean-2mix-0001",
+        "words": "stuff it into you his belly counselled him",
+        "speaker": "1089",
+        "start_time": 0.0,
+        "end_time": 3.275
+    },
+    {
+        "session_id": "test-clean-2mix-0001",
+        "words": "what do you mean inquired louis",
+        "speaker": "7127",
+        "start_time": 1.907,
+        "end_time": 4.577
+    }
+]

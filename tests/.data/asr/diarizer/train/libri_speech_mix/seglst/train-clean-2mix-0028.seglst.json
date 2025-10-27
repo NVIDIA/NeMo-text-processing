@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0028",
+        "words": "inquired shaggy in the metal forest",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 3.7
+    },
+    {
+        "session_id": "dev-clean-2mix-0028",
+        "words": "at this instant one or two of those squires who were posted as sentinels on the roads to watch who came along them and report what passed to their chief came up and said senor there is a great troop of people not far off coming along the road to barcelona",
+        "speaker": "3576",
+        "start_time": 3.514,
+        "end_time": 21.294
+    }
+]

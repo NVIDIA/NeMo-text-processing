@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0018",
+        "words": "the little girl had been asleep but she heard the raps and opened the door",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 4.755
+    },
+    {
+        "session_id": "dev-clean-2mix-0018",
+        "words": "but deucalion and pyrrha were very sad for they knew that they were the only persons who were left alive in all the land",
+        "speaker": "6319",
+        "start_time": 3.608,
+        "end_time": 12.498
+    }
+]

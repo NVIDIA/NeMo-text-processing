@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0010",
+        "words": "near the fire and the ornaments fred brought home from india on the mantel board",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 5.6
+    },
+    {
+        "session_id": "dev-clean-2mix-0010",
+        "words": "this however may not be for the copyright will probably expire in a little over twelve years",
+        "speaker": "2412",
+        "start_time": 0.538,
+        "end_time": 5.723
+    }
+]

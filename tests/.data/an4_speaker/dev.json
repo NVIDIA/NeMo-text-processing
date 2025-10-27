@@ -1,0 +1,2 @@
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//fash/cen5-fash-b.wav", "duration": 4.5, "label": "fash"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//ffmm/cen6-ffmm-b.wav", "duration": 2.3, "label": "ffmm"}

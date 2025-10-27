@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0022",
+        "words": "he eats and sleeps very steadily replied the new king",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 4.055
+    },
+    {
+        "session_id": "dev-clean-2mix-0022",
+        "words": "the shrieks that followed made everybody sober",
+        "speaker": "2035",
+        "start_time": 3.542,
+        "end_time": 6.957
+    }
+]

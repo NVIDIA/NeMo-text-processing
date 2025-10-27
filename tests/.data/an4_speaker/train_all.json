@@ -1,0 +1,12 @@
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//ffmm/cen5-ffmm-b.wav", "duration": 4.9, "label": "ffmm"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//ffmm/cen2-ffmm-b.wav", "duration": 5.0, "label": "ffmm"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//ffmm/cen4-ffmm-b.wav", "duration": 4.3, "label": "ffmm"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//ffmm/cen1-ffmm-b.wav", "duration": 3.3, "label": "ffmm"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//ffmm/cen6-ffmm-b.wav", "duration": 2.3, "label": "ffmm"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//ffmm/cen3-ffmm-b.wav", "duration": 2.0, "label": "ffmm"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//fash/an254-fash-b.wav", "duration": 0.9, "label": "fash"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//fash/an251-fash-b.wav", "duration": 1.0, "label": "fash"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//fash/an253-fash-b.wav", "duration": 0.7, "label": "fash"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//fash/cen5-fash-b.wav", "duration": 4.5, "label": "fash"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//fash/an255-fash-b.wav", "duration": 2.6, "label": "fash"}
+{"audio_filepath": "tests/data/an4_speaker/an4/wav/an4_clstk//fash/cen7-fash-b.wav", "duration": 2.5, "label": "fash"}

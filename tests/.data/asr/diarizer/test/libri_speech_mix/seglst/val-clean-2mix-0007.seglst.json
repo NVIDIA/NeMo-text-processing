@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "test-clean-2mix-0007",
+        "words": "a cold lucid indifference reigned in his soul",
+        "speaker": "1089",
+        "start_time": 0.0,
+        "end_time": 4.275
+    },
+    {
+        "session_id": "test-clean-2mix-0007",
+        "words": "won't you run into the house and see if martha can't spare one or two more maids",
+        "speaker": "6829",
+        "start_time": 0.564,
+        "end_time": 5.089
+    }
+]

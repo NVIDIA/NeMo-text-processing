@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "test-clean-2mix-0000",
+        "words": "he hoped there would be stew for dinner turnips and carrots and bruised potatoes and fat mutton pieces to be ladled out in thick peppered flour fattened sauce",
+        "speaker": "1089",
+        "start_time": 0.0,
+        "end_time": 10.435
+    },
+    {
+        "session_id": "test-clean-2mix-0000",
+        "words": "friends said montfichet faintly to the wrestlers bear us escort so far as the sheriff's house",
+        "speaker": "61",
+        "start_time": 8.6,
+        "end_time": 15.335
+    }
+]

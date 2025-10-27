@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "test-clean-2mix-0002",
+        "words": "after early nightfall the yellow lamps would light up here and there the squalid quarter of the brothels",
+        "speaker": "1089",
+        "start_time": 0.0,
+        "end_time": 6.625
+    },
+    {
+        "session_id": "test-clean-2mix-0002",
+        "words": "but the actual course of development has been somewhat different from this ideal scheme leisure held the first place at the start and came to hold a rank very much above wasteful consumption of goods both as a direct exponent of wealth and as an element in the standard of decency during the quasi peaceable culture",
+        "speaker": "3570",
+        "start_time": 2.94,
+        "end_time": 19.675
+    }
+]

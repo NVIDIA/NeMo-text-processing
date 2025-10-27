@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "dev-clean-2mix-0027",
+        "words": "where is my brother now",
+        "speaker": "1272",
+        "start_time": 0.0,
+        "end_time": 2.04
+    },
+    {
+        "session_id": "dev-clean-2mix-0027",
+        "words": "he really grieved to see it",
+        "speaker": "6319",
+        "start_time": 1.815,
+        "end_time": 4.58
+    }
+]

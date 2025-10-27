@@ -1,0 +1,16 @@
+[
+    {
+        "session_id": "test-clean-2mix-0006",
+        "words": "the dull light fell more faintly upon the page whereon another equation began to unfold itself slowly and to spread abroad its widening tail",
+        "speaker": "1089",
+        "start_time": 0.0,
+        "end_time": 10.555
+    },
+    {
+        "session_id": "test-clean-2mix-0006",
+        "words": "that summer's emigration however being mainly from the free states greatly changed the relative strength of the two parties",
+        "speaker": "7729",
+        "start_time": 6.048,
+        "end_time": 14.348
+    }
+]
