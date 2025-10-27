@@ -15,18 +15,14 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    delete_space,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+
 
 class MeasureFst(GraphFst):
     """
     Finite state transducer for verbalizing Korean measure tokens into surface text.
         measure { cardinal { integer: "<...>" } units: "<...>" }
-   
+
     Converts tokens like:
         measure { cardinal { integer: "이" } units: "킬로그램" }
         measure { fraction { numerator: "이" denominator: "삼" } units: "킬로미터" }
@@ -52,30 +48,27 @@ class MeasureFst(GraphFst):
         graph_cardinal = cardinal.fst
         graph_decimal = decimal.fst
         graph_fraction = fraction.fst
-        
+
         number_block = graph_cardinal | graph_decimal | graph_fraction
 
         # Extract and output unit string
         units = (
-            delete_space +
-            pynutil.delete("units:") + delete_space +
-            pynutil.delete('"') +
-            pynini.closure(NEMO_NOT_QUOTE, 1) +
-            pynutil.delete('"')
+            delete_space
+            + pynutil.delete("units:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
         )
-        
+
         # Normal form: <number> <unit>
         main = number_block + insert_space + units
-        
+
         # preserve_order form: <unit> <number>
-        preserve_order = (
-            delete_space +
-            pynutil.delete("preserve_order:") + delete_space +
-            pynutil.delete("true")
-        )
+        preserve_order = delete_space + pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true")
         alt = units + insert_space + number_block + pynini.closure(preserve_order)
 
         graph = main | alt
-        
+
         # Merge and clean tokens
         self.fst = self.delete_tokens(graph).optimize()

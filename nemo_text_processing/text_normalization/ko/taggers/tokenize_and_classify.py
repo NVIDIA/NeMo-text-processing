@@ -21,7 +21,9 @@ from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, gen
 from nemo_text_processing.text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ko.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ko.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.ko.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.ko.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.ko.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.ko.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.taggers.punctuation import PunctuationFst
@@ -29,8 +31,6 @@ from nemo_text_processing.text_normalization.ko.taggers.telephone import Telepho
 from nemo_text_processing.text_normalization.ko.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
-from nemo_text_processing.text_normalization.ko.taggers.measure import MeasureFst
-from nemo_text_processing.text_normalization.ko.taggers.electronic import ElectronicFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -80,7 +80,7 @@ class ClassifyFst(GraphFst):
             telephone = TelephoneFst(deterministic=deterministic)
             measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
             electronic = ElectronicFst(cardinal=cardinal, deterministic=deterministic)
-            
+
             classify = pynini.union(
                 pynutil.add_weight(cardinal.fst, 1.1),
                 pynutil.add_weight(date.fst, 1.1),

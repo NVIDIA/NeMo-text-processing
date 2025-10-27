@@ -18,15 +18,16 @@ from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ko.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ko.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ko.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.ko.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.ko.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.ko.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.ko.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ko.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.ko.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.verbalizers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.ko.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.ko.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.ko.verbalizers.electronic import ElectronicFst
+
 
 class VerbalizeFst(GraphFst):
     """
@@ -54,7 +55,7 @@ class VerbalizeFst(GraphFst):
         telephone = TelephoneFst(deterministic=deterministic)
         measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
         electronic = ElectronicFst(deterministic=deterministic)
-        
+
         graph = pynini.union(
             cardinal.fst,
             ordinal.fst,

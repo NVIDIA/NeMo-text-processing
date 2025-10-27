@@ -24,10 +24,11 @@ from nemo_text_processing.text_normalization.ko.graph_utils import (
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
     GraphFst,
-    insert_space,
     delete_space,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
+
 
 class ElectronicFst(GraphFst):
     """
@@ -43,12 +44,12 @@ class ElectronicFst(GraphFst):
         LOWER = pynini.union(*[pynini.accep(c) for c in "abcdefghijklmnopqrstuvwxyz"])
         UPPER = pynini.union(*[pynini.accep(c) for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"])
         ASCII_LETTER = (LOWER | UPPER).optimize()
-        ASCII_ALNUM  = (ASCII_LETTER | NEMO_DIGIT).optimize()
+        ASCII_ALNUM = (ASCII_LETTER | NEMO_DIGIT).optimize()
 
         HYPHEN = pynini.accep("-")
-        DOT    = pynini.accep(".")
-        SLASH  = pynini.accep("/")
-        AT     = pynini.accep("@")
+        DOT = pynini.accep(".")
+        SLASH = pynini.accep("/")
+        AT = pynini.accep("@")
 
         # 숫자 읽기 모드
         numbers = NEMO_DIGIT if deterministic else (pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" "))
@@ -66,17 +67,12 @@ class ElectronicFst(GraphFst):
         username_symbols = pynini.difference(accepted_symbols, AT)
         # 영문/숫자로 시작 + (영문/숫자/허용심볼/숫자읽기) 반복
         username_core = ASCII_ALNUM + pynini.closure(ASCII_ALNUM | numbers | username_symbols)
-        username = (
-            pynutil.insert('username: "')
-            + username_core
-            + pynutil.insert('"')
-            + pynini.cross("@", " ")
-        )
+        username = pynutil.insert('username: "') + username_core + pynutil.insert('"') + pynini.cross("@", " ")
 
         # ---------- domain ----------
         # RFC 단순화: label = [A-Za-z0-9-]+ , TLD = '.' [A-Za-z0-9]{2,}
         label = pynini.closure(ASCII_ALNUM | HYPHEN, 1)
-        tld   = DOT + pynini.closure(ASCII_ALNUM, 2)
+        tld = DOT + pynini.closure(ASCII_ALNUM, 2)
         # 전체 도메인: (label + (tld)+) 또는 (tld만)  → ".com" 같은 케이스 허용
         domain_core = (label + pynini.closure(tld, 1)) | tld
 
@@ -84,9 +80,7 @@ class ElectronicFst(GraphFst):
         domain_with_opt_path = domain_core + pynini.closure(SLASH + pynini.closure(NEMO_NOT_SPACE, 1), 0, 1)
 
         domain_graph_with_class_tags = (
-            pynutil.insert('domain: "')
-            + domain_with_opt_path.optimize()
-            + pynutil.insert('"')
+            pynutil.insert('domain: "') + domain_with_opt_path.optimize() + pynutil.insert('"')
         )
 
         # ---------- protocol ----------
@@ -113,11 +107,7 @@ class ElectronicFst(GraphFst):
         filtered_symbols = pynini.difference(accepted_symbols, excluded_symbols)
         accepted_characters = ASCII_ALNUM | filtered_symbols
         # label + (TLD)+ 또는 TLD 단독 (위 domain_core와 동일 정의 사용)
-        graph_domain = (
-            pynutil.insert('domain: "')
-            + domain_core
-            + pynutil.insert('"')
-        ).optimize()
+        graph_domain = (pynutil.insert('domain: "') + domain_core + pynutil.insert('"')).optimize()
         graph |= graph_domain
 
         # (3) URL (프로토콜 포함)

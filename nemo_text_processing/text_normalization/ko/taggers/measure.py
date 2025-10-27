@@ -15,11 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import (
-    GraphFst,
-    delete_space,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
@@ -40,7 +36,7 @@ class MeasureFst(GraphFst):
         fraction:  FST handling fractional numbers (optional).
         deterministic: If True, provides a single transduction path; otherwise allows multiple.
     """
-    
+
     def __init__(
         self,
         cardinal: GraphFst,
@@ -81,23 +77,13 @@ class MeasureFst(GraphFst):
         # 2) Decimal form: e.g., "12.5km"
         if decimal is not None:
             sub_decimal = (
-                pynutil.insert("decimal { ")
-                + decimal.just_decimal
-                + delete_space
-                + pynutil.insert(" } ")
-                + unit
+                pynutil.insert("decimal { ") + decimal.just_decimal + delete_space + pynutil.insert(" } ") + unit
             )
             pieces.append(sub_decimal)
 
         # 3) Fraction form: e.g., "2/3m" or "삼분의 이 미터"
         if fraction is not None:
-            sub_fraction = (
-                pynutil.insert("fraction { ")
-                + fraction.graph
-                + delete_space
-                + pynutil.insert(" } ")
-                + unit
-            )
+            sub_fraction = pynutil.insert("fraction { ") + fraction.graph + delete_space + pynutil.insert(" } ") + unit
             pieces.append(sub_fraction)
 
         # Union all supported numeric forms (cardinal | decimal | fraction)

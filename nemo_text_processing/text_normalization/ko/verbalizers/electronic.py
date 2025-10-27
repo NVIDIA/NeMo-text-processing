@@ -19,17 +19,17 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ko.graph_utils import (
     NEMO_ALPHA,
     NEMO_CHAR,
+    NEMO_DIGIT,
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
     NEMO_SPACE,
-    NEMO_DIGIT,
     GraphFst,
     delete_extra_space,
     delete_space,
     insert_space,
-    
 )
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
+
 
 class ElectronicFst(GraphFst):
     """
@@ -45,64 +45,48 @@ class ElectronicFst(GraphFst):
 
         # 1. 숫자 (0~9): ko/data/number/digit.tsv
         # (BUG FIX 1: 'invert' 제거)
-        graph_digit_no_zero = pynini.string_file(
-            get_abs_path("data/number/digit.tsv")
-        ).optimize()
-        
+        graph_digit_no_zero = pynini.string_file(get_abs_path("data/number/digit.tsv")).optimize()
+
         graph_zero = pynini.cross("0", "영")
         if not deterministic:
             graph_zero |= pynini.cross("0", "공")
         graph_digit = (graph_digit_no_zero | graph_zero).optimize()
 
         # 2. 심볼: ko/data/electronic/symbol.tsv (예: ".\t점")
-        graph_symbols = pynini.string_file(
-            get_abs_path("data/electronic/symbol.tsv")
-        ).optimize()
+        graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
-        NEMO_NOT_BRACKET = pynini.difference(
-            NEMO_CHAR, pynini.union("{", "}")
-        ).optimize()
+        NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
 
         # 3. 기본 띄어쓰기 규칙 (Fallback용)
         # (BUG FIX 2: 'NEMO_ALPHA' 추가)
         default_chars_symbols = pynini.cdrewrite(
-            pynutil.insert(" ")
-            + (graph_symbols | graph_digit | NEMO_ALPHA)
-            + pynutil.insert(" "),
+            pynutil.insert(" ") + (graph_symbols | graph_digit | NEMO_ALPHA) + pynutil.insert(" "),
             "",
             "",
             NEMO_SIGMA,
         )
-        default_chars_map = pynini.compose(
-            pynini.closure(NEMO_NOT_BRACKET), default_chars_symbols
-        ).optimize()
+        default_chars_map = pynini.compose(pynini.closure(NEMO_NOT_BRACKET), default_chars_symbols).optimize()
 
         # 4. username (띄어쓰기 규칙 적용)
         user_name = (
-            pynutil.delete("username:")
-            + delete_space
-            + pynutil.delete('"')
-            + default_chars_map
-            + pynutil.delete('"')
+            pynutil.delete("username:") + delete_space + pynutil.delete('"') + default_chars_map + pynutil.delete('"')
         )
 
         # 5. domain (domain.tsv 우선 적용)
         # [수정] domain.tsv 파일을 로드
-        domain_common_pairs = pynini.string_file(
-            get_abs_path("data/electronic/domain.tsv")
-        ).optimize()
+        domain_common_pairs = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
 
         # ".com", ".co.kr" 같은 패턴을 원문 어디서든 우선 치환
         tld_rewrite = pynini.cdrewrite(
             domain_common_pairs,  # 입력: ".com"  출력: "닷컴"  등
-            "",                   # 왼쪽 문맥 없음
-            "",                   # 오른쪽 문맥 없음
-            NEMO_SIGMA,           # 전체 문맥에서 적용
+            "",  # 왼쪽 문맥 없음
+            "",  # 오른쪽 문맥 없음
+            NEMO_SIGMA,  # 전체 문맥에서 적용
         )
 
         add_space_before_dot = pynini.cdrewrite(
-            pynini.cross("닷", " 닷"),                 # '닷' -> ' 닷'
-            (NEMO_ALPHA | NEMO_DIGIT | NEMO_CHAR),    # 왼쪽 문맥: 글자/숫자/한글 등
+            pynini.cross("닷", " 닷"),  # '닷' -> ' 닷'
+            (NEMO_ALPHA | NEMO_DIGIT | NEMO_CHAR),  # 왼쪽 문맥: 글자/숫자/한글 등
             "",
             NEMO_SIGMA,
         )
@@ -115,20 +99,14 @@ class ElectronicFst(GraphFst):
             + delete_space
             + pynutil.delete('"')
         ).optimize()
-        
+
         # 6. protocol (태거에서 이미 변환된 값을 그대로 출력)
-        protocol = (
-            pynutil.delete('protocol: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-        )
+        protocol = pynutil.delete('protocol: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
 
         # 7. 조합: (옵션)프로토콜 + (옵션)이메일 아이디 + 도메인
         graph = (
             pynini.closure(protocol + delete_space, 0, 1)
-            + pynini.closure(
-                user_name + delete_space + pynutil.insert(" 골뱅이 ") + delete_space, 0, 1
-            )
+            + pynini.closure(user_name + delete_space + pynutil.insert(" 골뱅이 ") + delete_space, 0, 1)
             + domain
             + delete_space
         ).optimize() @ pynini.cdrewrite(
