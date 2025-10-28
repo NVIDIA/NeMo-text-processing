@@ -62,8 +62,10 @@ class MeasureFst(GraphFst):
             | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         )
         
-        # Load address context keywords
-        address_context = pynini.string_file(get_abs_path("data/address/gpt_context.tsv"))
+        # Load address context keywords (Hindi and English)
+        address_keywords_hi = pynini.string_file(get_abs_path("data/address/context.tsv"))
+        address_keywords_en = pynini.string_file(get_abs_path("data/address/en_context.tsv"))
+        address_keywords = address_keywords_hi | address_keywords_en
         
         # Define character sets
         single_digit = NEMO_DIGIT | NEMO_HI_DIGIT
@@ -76,11 +78,11 @@ class MeasureFst(GraphFst):
         # Character-level processor:
         # - Convertible chars -> add space before and after, then convert
         # - Spaces -> keep as single space
-        # - Commas and other punctuation -> add space before if not already there
+        # - Commas -> add space before and after to separate from surrounding words
         # - Other chars -> keep as-is
         
-        # For comma, add space before it
-        comma_processor = insert_space + pynini.accep(",")
+        # For comma, add space before and after it
+        comma_processor = insert_space + pynini.accep(",") + insert_space
         
         # For other non-space, non-comma chars, keep as-is
         other_char = pynini.difference(non_space_char, pynini.accep(","))
@@ -97,21 +99,15 @@ class MeasureFst(GraphFst):
         # Create patterns that match strings containing address keywords
         any_char = pynini.union(NEMO_CHAR, NEMO_WHITE_SPACE)
         
-        # Pattern: anything + context + anything
+        # Pattern: anything + address keyword + anything
         # This matches any string that contains at least one address context keyword
-        has_context = (
+        has_address_keyword = (
             pynini.closure(any_char) +
-            address_context +
+            address_keywords +
             pynini.closure(any_char)
         )
         
-        # Compose: only process strings that have address context
-        # The composition ensures we only convert when context is present
-        # Note: We need to be careful here - the context check is on the INPUT side,
-        # and the conversion is the OUTPUT side
-        
-        # For simplicity, let's just require that the string contains at least one digit
-        # and at least one address keyword somewhere
+        # Require that the string contains at least one digit
         has_digit = (
             pynini.closure(any_char) +
             pynini.union(single_digit) +
@@ -121,38 +117,15 @@ class MeasureFst(GraphFst):
         # IMPORTANT: Exclude long digit sequences that look like telephone numbers
         # Telephone numbers typically have 10+ consecutive digits
         # Addresses typically have shorter digit sequences (1-5 digits)
-        long_digit_sequence = pynini.closure(single_digit, 10)  # 10+ digits
+        long_digit_sequence = pynini.closure(convertible_char, 10)  # 10+ digits
         has_long_digits = (
             pynini.closure(any_char) +
             long_digit_sequence +
             pynini.closure(any_char)
         )
         
-        # Also exclude if ONLY "नंबर" context without other address keywords
-        # This prevents "मोबाइल नंबर 1234567890" from being matched
-        only_number_context = (
-            pynini.closure(any_char) +
-            pynini.accep("नंबर") +
-            pynini.closure(any_char)
-        )
-        
-        # Require address-specific keywords (not just "नंबर")
-        address_specific_keywords = pynini.union(
-            "स्ट्रीट", "रोड", "मार्ग", "गली", "लेन", "पार्कवे", "एवेन्यू",
-            "मकान", "हाउस", "प्लॉट", "बूथ", "अपार्टमेंट", "फ्लैट",
-            "बिल्डिंग", "भवन", "टावर", "कॉम्प्लेक्स", "सेक्टर", "ब्लॉक",
-            "पार्क", "नगर", "कॉलोनी", "एस्टेट", "सोसाइटी", "क्षेत्र",
-            "डी", "आर डी", "एस टी", "ए वी ई", "पास", "नियर", "सामने"
-        )
-        
-        has_address_keyword = (
-            pynini.closure(any_char) +
-            address_specific_keywords +
-            pynini.closure(any_char)
-        )
-        
         # Input must:
-        # 1. Have address-specific keyword (not just "नंबर")
+        # 1. Have address keyword (Hindi or English)
         # 2. Have digits
         # 3. NOT have long digit sequences (phone numbers)
         input_pattern = pynini.intersect(
