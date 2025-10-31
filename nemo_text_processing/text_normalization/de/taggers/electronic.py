@@ -84,9 +84,9 @@ class ElectronicFst(GraphFst):
         url = protocol + insert_space + (domain_graph)
 
         # id numbers: tag trigger phrase + digits
-        id_cues = pynutil.add_weight(pynini.string_file(get_abs_path("data/electronic/id_cues.tsv")), MIN_NEG_WEIGHT)
+        id_cues = pynini.string_file(get_abs_path("data/electronic/id_cues.tsv"))
 
-        numbers = pynini.closure(NEMO_DIGIT, 4, 16)
+        numbers = NEMO_DIGIT ** 12
         id_number = (
             pynutil.insert('protocol: "') + id_cues + pynutil.insert('" domain: "') + numbers + pynutil.insert('"')
         )
