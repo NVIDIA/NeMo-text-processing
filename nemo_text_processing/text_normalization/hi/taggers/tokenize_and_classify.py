@@ -132,7 +132,7 @@ class ClassifyFst(GraphFst):
             punct = pynini.closure(
                 pynini.union(
                     pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space),
-                    (pynutil.insert(NEMO_SPACE) + punct)
+                    (pynutil.insert(NEMO_SPACE) + punct),
                 ),
                 1,
             )
@@ -148,7 +148,7 @@ class ClassifyFst(GraphFst):
             graph = token_plus_punct + pynini.closure(
                 pynini.union(
                     pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space),
-                    (pynutil.insert(NEMO_SPACE) + punct + pynutil.insert(NEMO_SPACE))
+                    (pynutil.insert(NEMO_SPACE) + punct + pynutil.insert(NEMO_SPACE)),
                 )
                 + token_plus_punct
             )

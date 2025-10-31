@@ -108,9 +108,7 @@ def get_landline(std_length: int, context_keywords: pynini.Fst) -> pynini.Fst:
     landline_start_digit = pynini.union(HI_LANDLINE_START_DIGITS @ digits, HI_LANDLINE_START_DIGITS @ digit_to_word)
 
     std_code_graph = (
-        delete_zero_optional
-        + insert_shunya
-        + pynini.closure(num_token + insert_space, std_length, std_length)
+        delete_zero_optional + insert_shunya + pynini.closure(num_token + insert_space, std_length, std_length)
     )
 
     landline_digit_count = 9 - std_length

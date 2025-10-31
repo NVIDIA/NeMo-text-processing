@@ -16,15 +16,15 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
+    HI_DEDH,
+    HI_DHAI,
+    HI_PAUNE,
+    HI_SADHE,
+    HI_SAVVA,
+    NEMO_SPACE,
     GraphFst,
     delete_space,
     insert_space,
-    NEMO_SPACE,
-    HI_DEDH,
-    HI_DHAI,
-    HI_SAVVA,
-    HI_SADHE,
-    HI_PAUNE,
 )
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
@@ -69,7 +69,7 @@ class MeasureFst(GraphFst):
         decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
-        
+
         # Load quarterly units from separate files: map (FST) and list (FSA)
         quarterly_units_map = pynini.string_file(get_abs_path("data/measure/quarterly_units_map.tsv"))
         quarterly_units_list = pynini.string_file(get_abs_path("data/measure/quarterly_units_list.tsv"))
@@ -160,7 +160,8 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + dedh_dhai_graph
-            + pynutil.insert(NEMO_SPACE) + pynutil.insert("}")
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
             + delete_space
             + units
         )
@@ -169,7 +170,8 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + savva_graph
-            + pynutil.insert(NEMO_SPACE) + pynutil.insert("}")
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
             + delete_space
             + units
         )
@@ -178,7 +180,8 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + sadhe_graph
-            + pynutil.insert(NEMO_SPACE) + pynutil.insert("}")
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
             + delete_space
             + units
         )
@@ -198,7 +201,8 @@ class MeasureFst(GraphFst):
             + pynutil.insert("integer: \"")
             + cardinal_graph
             + pynutil.insert("\"")
-            + pynutil.insert(NEMO_SPACE) + pynutil.insert("}")
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
             + delete_space
             + unit
         )
@@ -211,9 +215,11 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" }")
-            + pynutil.insert(NEMO_SPACE) + pynutil.insert("units: \"")
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("units: \"")
             + symbol_graph
-            + pynutil.insert("\"") + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
             + pynutil.insert("} }")
             + insert_space
             + pynutil.insert("tokens { cardinal { ")

@@ -16,14 +16,14 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
-    GraphFst,
-    insert_space,
-    NEMO_SPACE,
     HI_DEDH,
     HI_DHAI,
-    HI_SAVVA,
-    HI_SADHE,
     HI_PAUNE,
+    HI_SADHE,
+    HI_SAVVA,
+    NEMO_SPACE,
+    GraphFst,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 

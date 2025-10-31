@@ -16,13 +16,13 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
-    GraphFst,
-    NEMO_SPACE,
     HI_DEDH,
     HI_DHAI,
-    HI_SAVVA,
-    HI_SADHE,
     HI_PAUNE,
+    HI_SADHE,
+    HI_SAVVA,
+    NEMO_SPACE,
+    GraphFst,
 )
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
@@ -63,7 +63,9 @@ class FractionFst(GraphFst):
         )
         self.denominator = pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
 
-        dedh_dhai_graph = pynini.string_map([("१" + NEMO_SPACE + HI_ONE_HALF, HI_DEDH), ("२" + NEMO_SPACE + HI_ONE_HALF, HI_DHAI)])
+        dedh_dhai_graph = pynini.string_map(
+            [("१" + NEMO_SPACE + HI_ONE_HALF, HI_DEDH), ("२" + NEMO_SPACE + HI_ONE_HALF, HI_DHAI)]
+        )
 
         savva_numbers = cardinal_graph + pynini.cross(NEMO_SPACE + HI_ONE_QUARTER, "")
         savva_graph = pynutil.insert(HI_SAVVA) + pynutil.insert(NEMO_SPACE) + savva_numbers
