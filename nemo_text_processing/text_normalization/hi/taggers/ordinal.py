@@ -34,9 +34,14 @@ class OrdinalFst(GraphFst):
     def __init__(self, cardinal: CardinalFst, deterministic: bool = True):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
-        suffixes_fst = pynini.string_file(get_abs_path("data/ordinal/suffixes.tsv"))
+        suffixes_list = pynini.string_file(get_abs_path("data/ordinal/suffixes.tsv"))
+        suffixes_map = pynini.string_file(get_abs_path("data/ordinal/suffixes_map.tsv"))
+        suffixes_fst = pynini.union(suffixes_list, suffixes_map)
+        exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
 
         graph = cardinal.final_graph + suffixes_fst
+        exceptions = pynutil.add_weight(exceptions, -0.1)
+        graph = pynini.union(exceptions, graph)
 
         final_graph = pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)

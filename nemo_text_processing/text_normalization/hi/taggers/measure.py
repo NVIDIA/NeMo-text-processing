@@ -15,9 +15,24 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    GraphFst,
+    delete_space,
+    insert_space,
+    NEMO_SPACE,
+    HI_DEDH,
+    HI_DHAI,
+    HI_SAVVA,
+    HI_SADHE,
+    HI_PAUNE,
+)
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
+HI_POINT_FIVE = ".५"  # .5
+HI_ONE_POINT_FIVE = "१.५"  # 1.5
+HI_TWO_POINT_FIVE = "२.५"  # 2.5
+HI_DECIMAL_25 = ".२५"  # .25
+HI_DECIMAL_75 = ".७५"  # .75
 
 digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
@@ -54,7 +69,11 @@ class MeasureFst(GraphFst):
         decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
-        quarterly_units_graph = pynini.string_file(get_abs_path("data/measure/quarterly_units.tsv"))
+        
+        # Load quarterly units from separate files: map (FST) and list (FSA)
+        quarterly_units_map = pynini.string_file(get_abs_path("data/measure/quarterly_units_map.tsv"))
+        quarterly_units_list = pynini.string_file(get_abs_path("data/measure/quarterly_units_list.tsv"))
+        quarterly_units_graph = pynini.union(quarterly_units_map, quarterly_units_list)
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + insert_space,
@@ -65,16 +84,28 @@ class MeasureFst(GraphFst):
         # Define the quarterly measurements
         quarter = pynini.string_map(
             [
-                (".५", "साढ़े"),
-                ("१.५", "डेढ़"),
-                ("२.५", "ढाई"),
+                (HI_POINT_FIVE, HI_SADHE),
+                (HI_ONE_POINT_FIVE, HI_DEDH),
+                (HI_TWO_POINT_FIVE, HI_DHAI),
             ]
         )
         quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\"")
 
         # Define the unit handling
-        unit = pynutil.insert(" units: \"") + unit_graph + pynutil.insert("\" ")
-        units = pynutil.insert(" units: \"") + quarterly_units_graph + pynutil.insert("\" ")
+        unit = (
+            pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("units: \"")
+            + unit_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
+        units = (
+            pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("units: \"")
+            + quarterly_units_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
 
         # Handling symbols like x, X, *
         symbol_graph = pynini.string_map(
@@ -94,24 +125,42 @@ class MeasureFst(GraphFst):
             + unit
         )
 
-        dedh_dhai = pynini.string_map([("१.५", "डेढ़"), ("२.५", "ढाई")])
+        dedh_dhai = pynini.string_map([(HI_ONE_POINT_FIVE, HI_DEDH), (HI_TWO_POINT_FIVE, HI_DHAI)])
         dedh_dhai_graph = pynutil.insert("integer: \"") + dedh_dhai + pynutil.insert("\"")
 
-        savva_numbers = cardinal_graph + pynini.cross(".२५", "")
-        savva_graph = pynutil.insert("integer: \"सवा ") + savva_numbers + pynutil.insert("\"")
+        savva_numbers = cardinal_graph + pynini.cross(HI_DECIMAL_25, "")
+        savva_graph = (
+            pynutil.insert("integer: \"")
+            + pynutil.insert(HI_SAVVA)
+            + pynutil.insert(NEMO_SPACE)
+            + savva_numbers
+            + pynutil.insert("\"")
+        )
 
-        sadhe_numbers = cardinal_graph + pynini.cross(".५", "")
-        sadhe_graph = pynutil.insert("integer: \"साढ़े ") + sadhe_numbers + pynutil.insert("\"")
+        sadhe_numbers = cardinal_graph + pynini.cross(HI_POINT_FIVE, "")
+        sadhe_graph = (
+            pynutil.insert("integer: \"")
+            + pynutil.insert(HI_SADHE)
+            + pynutil.insert(NEMO_SPACE)
+            + sadhe_numbers
+            + pynutil.insert("\"")
+        )
 
         paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
-        paune_numbers = paune + pynini.cross(".७५", "")
-        paune_graph = pynutil.insert("integer: \"पौने ") + paune_numbers + pynutil.insert("\"")
+        paune_numbers = paune + pynini.cross(HI_DECIMAL_75, "")
+        paune_graph = (
+            pynutil.insert("integer: \"")
+            + pynutil.insert(HI_PAUNE)
+            + pynutil.insert(NEMO_SPACE)
+            + paune_numbers
+            + pynutil.insert("\"")
+        )
 
         graph_dedh_dhai = (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + dedh_dhai_graph
-            + pynutil.insert(" }")
+            + pynutil.insert(NEMO_SPACE) + pynutil.insert("}")
             + delete_space
             + units
         )
@@ -120,7 +169,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + savva_graph
-            + pynutil.insert(" }")
+            + pynutil.insert(NEMO_SPACE) + pynutil.insert("}")
             + delete_space
             + units
         )
@@ -129,7 +178,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("cardinal { ")
             + optional_graph_negative
             + sadhe_graph
-            + pynutil.insert(" }")
+            + pynutil.insert(NEMO_SPACE) + pynutil.insert("}")
             + delete_space
             + units
         )
@@ -149,7 +198,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert("integer: \"")
             + cardinal_graph
             + pynutil.insert("\"")
-            + pynutil.insert(" }")
+            + pynutil.insert(NEMO_SPACE) + pynutil.insert("}")
             + delete_space
             + unit
         )
@@ -162,9 +211,9 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert("\"")
             + pynutil.insert(" }")
-            + pynutil.insert(" units: \"")
+            + pynutil.insert(NEMO_SPACE) + pynutil.insert("units: \"")
             + symbol_graph
-            + pynutil.insert("\" ")
+            + pynutil.insert("\"") + pynutil.insert(NEMO_SPACE)
             + pynutil.insert("} }")
             + insert_space
             + pynutil.insert("tokens { cardinal { ")
@@ -175,13 +224,13 @@ class MeasureFst(GraphFst):
         )
 
         graph = (
-            pynutil.add_weight(graph_decimal, 0.01)
-            | pynutil.add_weight(graph_cardinal, 0.01)
-            | pynutil.add_weight(graph_exceptions, 0.01)
-            | pynutil.add_weight(graph_dedh_dhai, 0.001)
-            | pynutil.add_weight(graph_savva, 0.005)
-            | pynutil.add_weight(graph_sadhe, 0.005)
-            | pynutil.add_weight(graph_paune, -0.2)
+            pynutil.add_weight(graph_decimal, 0.1)
+            | pynutil.add_weight(graph_cardinal, 0.1)
+            | pynutil.add_weight(graph_exceptions, 0.1)
+            | pynutil.add_weight(graph_dedh_dhai, -0.2)
+            | pynutil.add_weight(graph_savva, -0.1)
+            | pynutil.add_weight(graph_sadhe, -0.1)
+            | pynutil.add_weight(graph_paune, -0.5)
         )
         self.graph = graph.optimize()
 
