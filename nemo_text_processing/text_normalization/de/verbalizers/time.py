@@ -22,6 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     convert_space,
     delete_preserve_order,
+    NEMO_NON_BREAKING_SPACE,
 )
 
 
@@ -62,9 +63,18 @@ class TimeFst(GraphFst):
             pynini.cross("eins", "ein"), "[BOS]", "[EOS]", NEMO_SIGMA
         ) + pynutil.insert(" uhr")
         minute = pynutil.delete("minutes: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
+        second = pynutil.delete("seconds: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
         zone = pynutil.delete("zone: \"") + time_zone_graph + pynutil.delete("\"")
         optional_zone = pynini.closure(pynini.accep(" ") + zone, 0, 1)
-        second = pynutil.delete("seconds: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
+
+        optional_has_uhr = pynini.closure(
+            pynutil.delete('has_uhr: "') 
+            + pynini.union('true', 'True') 
+            + pynutil.delete('"') 
+            + pynini.closure(pynini.accep(" "), 0, 1
+            ), 0, 1
+        )
+
         graph_hms = (
             hour_verbalized
             + pynini.accep(" ")
@@ -116,6 +126,37 @@ class TimeFst(GraphFst):
             | pynutil.add_weight(graph_m_past_h, weight=0.0001)
             | pynutil.add_weight(graph_m30_h, weight=0.0001)
             | pynutil.add_weight(graph_m_to_h, weight=0.0001)
-        ) + optional_zone
+        ) + optional_zone + optional_has_uhr
+
+        # duration branch: restores the preposition surface at the front and only emits minutes/seconds when present.
+        duration_cues = pynini.string_file(get_abs_path("data/time/duration_cues.tsv"))
+        # accept NBSP and ASCII spaces after the closing quote
+        space_after = pynini.union(" ", NEMO_NON_BREAKING_SPACE)
+        preposition_field = (
+            pynutil.delete('preposition: "')
+            + (convert_space(duration_cues) | duration_cues)
+            + pynutil.delete('"')
+            + pynini.closure(space_after, 1, 1)
+        )
+
+        # numeric fields
+        hour_num = pynutil.delete('hours: "') + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete('"')
+        minute_num = pynutil.delete('minutes: "') + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete('"')
+        second_num = pynutil.delete('seconds: "') + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete('"')
+
+        hour_dur = hour_num @ number_verbalization + pynutil.insert(' stunden')
+        minute_dur = minute_num @ number_verbalization + pynutil.insert(' minuten')
+        second_dur = second_num @ number_verbalization + pynutil.insert(' sekunden')
+
+        # optional minutes/seconds (only emitted if present in the token)
+        optional_min = pynini.closure(pynini.accep(' ') + minute_dur, 0, 1)
+        optional_sec = pynini.closure(pynini.accep(' ') + second_dur, 0, 1)
+
+        duration_prep_hms = preposition_field + hour_dur + optional_min + optional_sec
+        duration_prep_ms = preposition_field + minute_dur + optional_sec
+        duration_graph = duration_prep_hms | duration_prep_ms
+
+        self.graph = duration_graph | self.graph
+
         delete_tokens = self.delete_tokens(self.graph + delete_preserve_order)
         self.fst = delete_tokens.optimize()

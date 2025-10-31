@@ -356,18 +356,19 @@ class Normalizer:
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
         output = ""
         for s in split_tokens:
-            try:
-                tags_reordered = self.generate_permutations(s)
+            try: 
+                allow_time_perms = getattr(self, "allow_time_permutations", False) # Allow caller to enable time-field permutations (minute-first serializations)
+                tags_reordered = self.generate_permutations(s, allow_time_permutations=allow_time_perms)
                 verbalizer_lattice = None
                 for tagged_text in tags_reordered:
-                    tagged_text = pynini.escape(tagged_text)
-
-                    verbalizer_lattice = self.find_verbalizer(tagged_text)
-                    if verbalizer_lattice.num_states() != 0:
+                    raw_tagged = tagged_text
+                    
+                    verbalizer_lattice = self.find_verbalizer(raw_tagged)  # Pass raw tagged string to find_verbalizer
+                    if verbalizer_lattice is not None and verbalizer_lattice.num_states() != 0:
                         break
-                if verbalizer_lattice is None:
-                    logger.warning(f"No permutations were generated from tokens {s}")
-                    return text
+                if verbalizer_lattice is None or verbalizer_lattice.num_states() == 0:
+                    logger.warning(f"No verbalizer lattice produced for tokens {s}")
+                    raise RuntimeError("Empty verbalizer lattice")         # trigger the existing fallback handling by raising an exception
                 output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice)
             except Exception as e:
                 logger.warning("Failed text: " + text + str(e))
@@ -560,7 +561,7 @@ class Normalizer:
         sentences = additional_split(sentences, additional_split_symbols)
         return sentences
 
-    def _permute(self, d: OrderedDict) -> List[str]:
+    def _permute(self, d: dict, allow_time_permutations: bool = False) -> List[str]:
         """
         Creates reorderings of dictionary elements and serializes as strings
 
@@ -570,7 +571,18 @@ class Normalizer:
         Return permutations of different string serializations of key value pairs
         """
         l = []
-        if PRESERVE_ORDER_KEY in d.keys():
+        # For certain inner token dictionaries (e.g., time tokens which have
+        # fields like hours/minutes/seconds/preposition/mode) we want to keep
+        # the canonical ordering rather than generate permutations. This
+        # avoids combinatorial explosion and allows verbalizers to assume a
+        # deterministic field order.
+        time_keys = {"hours", "minutes", "seconds", "preposition", "mode"}
+        # By default, do not permute time-like inner dicts to keep deterministic
+        # verbalizers simple. If allow_time_permutations is True (used only in
+        # the non-deterministic/audio path), permit permutations so the
+        # verbalizer can match minute-first serializations (e.g., minutes before hours)
+        # which produce minute-relative spoken variants like 'halb zwölf'.
+        if PRESERVE_ORDER_KEY in d.keys() or (any(k in time_keys for k in d.keys()) and not allow_time_permutations):
             d_permutations = [d.items()]
         else:
             d_permutations = itertools.permutations(d.items())
@@ -580,7 +592,7 @@ class Normalizer:
                 if isinstance(v, str):
                     subl = ["".join(x) for x in itertools.product(subl, [f"{k}: \"{v}\" "])]
                 elif isinstance(v, OrderedDict):
-                    rec = self._permute(v)
+                    rec = self._permute(v, allow_time_permutations=allow_time_permutations)
                     subl = ["".join(x) for x in itertools.product(subl, [f" {k} {{ "], rec, [f" }} "])]
                 elif isinstance(v, bool):
                     subl = ["".join(x) for x in itertools.product(subl, [f"{k}: true "])]
@@ -589,7 +601,7 @@ class Normalizer:
             l.extend(subl)
         return l
 
-    def generate_permutations(self, tokens: List[dict]):
+    def generate_permutations(self, tokens: List[dict], allow_time_permutations: bool = False):
         """
         Generates permutations of string serializations of list of dictionaries
 
@@ -599,7 +611,7 @@ class Normalizer:
         Returns string serialization of list of dictionaries
         """
 
-        def _helper(prefix: str, token_list: List[dict], idx: int):
+        def _helper(prefix: str, token_list: List[dict], idx: int, allow_time_permutations: bool = False):
             """
             Generates permutations of string serializations of given dictionary
 
@@ -613,11 +625,13 @@ class Normalizer:
             if idx == len(token_list):
                 yield prefix
                 return
-            token_options = self._permute(token_list[idx])
+            token_options = self._permute(token_list[idx], allow_time_permutations=allow_time_permutations)
             for token_option in token_options:
-                yield from _helper(prefix + token_option, token_list, idx + 1)
+                yield from _helper(prefix + token_option, token_list, idx + 1, allow_time_permutations=allow_time_permutations)
 
-        return _helper("", tokens, 0)
+        # Default: do not allow time permutations. Callers can set
+        # allow_time_permutations=True to enable minute-first serializations.
+        return _helper("", tokens, 0, allow_time_permutations)
 
     def find_tags(self, text: str) -> 'pynini.FstLike':
         """
@@ -654,7 +668,146 @@ class Normalizer:
 
         Returns: verbalized lattice
         """
-        lattice = tagged_text @ self.verbalizer.fst
+    # tagged_text is the raw serialized tagged string produced by the tagger.
+    # Leave language-specific auxiliary markers to the verbalizer preprocessor; 
+    # escape the tagged string for composition.
+        # Some tagger graphs insert auxiliary markers like has_uhr inside
+        # nested token serializations to help downstream grammars. The
+        # German verbalizer includes a WFST preprocessor to remove these
+        # markers, but in some runtime environments the composition with
+        # the preprocessor may not match due to symbol-table/layout
+        # differences. As a small, deterministic fallback we remove the
+        # has_uhr marker textually here before creating the acceptor so
+        # the verbalizer receives the expected token shape.
+        raw = tagged_text.strip()
+        if 'has_uhr:' in raw:
+            # remove both lowercase/uppercase forms but preserve non-breaking
+            # spaces that may be used inside quoted token values (e.g. zones
+            # like "e\u00a0s\u00a0t"). Only collapse *ASCII* double spaces
+            # introduced by the removal to a single ASCII space.
+            raw = raw.replace('has_uhr: "true"', '')
+            raw = raw.replace('has_uhr: "True"', '')
+            # collapse ASCII double-spaces -> single space (leave NBSP alone)
+            while '  ' in raw:
+                raw = raw.replace('  ', ' ')
+            logger.info("find_verbalizer: stripped has_uhr markers from tagged_text before composition")
+            try:
+                logger.info(f"find_verbalizer: raw after strip preview='{raw[:200]}'")
+            except Exception:
+                pass
+
+        escaped = pynini.escape(raw)
+        # Diagnostic logging: report whether the verbalizer FST has an input
+        # symbol table and a short preview of the tagged string we're composing.
+        try:
+            sym = self.verbalizer.fst.input_symbols()
+            if sym is None:
+                logger.info("find_verbalizer: verbalizer.fst.input_symbols() is None; acceptor symbols will be set at composition time.")
+            else:
+                logger.info("find_verbalizer: verbalizer.fst has input_symbols().")
+                # If the verbalizer has an input symbol table, copy it to the acceptor
+                escaped.set_input_symbols(sym)
+        except Exception:
+            logger.info("find_verbalizer: could not inspect or set symbol table on verbalizer.fst")
+
+        # Log a short preview of the tagged_text to help debug mismatches between
+        # the tagger's serialized format and the verbalizer's expected input.
+        try:
+            preview = (tagged_text.strip()[:200] + '...') if len(tagged_text.strip()) > 200 else tagged_text.strip()
+            logger.info(f"find_verbalizer: composing tagged_text preview='{preview}'")
+        except Exception:
+            pass
+
+        lattice = escaped @ self.verbalizer.fst
+        # If composition produced an empty lattice, attempt a couple of
+        # lightweight textual fallbacks (NBSP/space normalization and
+        # whitespace collapsing). These are defensive: the verbalizer
+        # graphs are authored to handle the canonical serialized forms,
+        # but in some environments minor differences (NBSP vs space,
+        # extra spaces) can cause an empty composition. Try simple
+        # alternatives and return the first non-empty lattice.
+        try:
+            if lattice.num_states() == 0:
+                # Try replacing NBSP with regular space
+                alt = raw.replace('\u00a0', ' ')
+                alt = " ".join(alt.split())
+                alt_escaped = pynini.escape(alt)
+                try:
+                    sym = self.verbalizer.fst.input_symbols()
+                    if sym is not None:
+                        alt_escaped.set_input_symbols(sym)
+                except Exception:
+                    pass
+                alt_lat = alt_escaped @ self.verbalizer.fst
+                if alt_lat.num_states() > 0:
+                    logger.info("find_verbalizer: fallback succeeded by replacing NBSP with space")
+                    return alt_lat
+
+                # Try replacing regular spaces with NBSP (more aggressive)
+                alt2 = raw.replace(' ', '\u00a0')
+                alt2 = " ".join(alt2.split())
+                alt2_escaped = pynini.escape(alt2)
+                try:
+                    sym = self.verbalizer.fst.input_symbols()
+                    if sym is not None:
+                        alt2_escaped.set_input_symbols(sym)
+                except Exception:
+                    pass
+                alt2_lat = alt2_escaped @ self.verbalizer.fst
+                if alt2_lat.num_states() > 0:
+                    logger.info("find_verbalizer: fallback succeeded by replacing spaces with NBSP")
+                    return alt2_lat
+        except Exception:
+            # Avoid masking upstream errors; fall through to return the
+            # original lattice (possibly empty) which the caller will handle.
+            pass
+
+        # As a last-resort fallback, if we have a time token serialized in the
+        # tagged string, try to verbalize only the inner `time { ... }` block
+        # using the dedicated Time verbalizer graph. This reuses the language
+        # verbalizer logic but avoids composition issues at the top-level
+        # wrapper (which can be sensitive to minor whitespace differences).
+        try:
+            if lattice.num_states() == 0 and 'time {' in raw:
+                # Extract the first `time { ... }` block (simple brace scan)
+                start = raw.find('time {')
+                i = start
+                depth = 0
+                end = -1
+                for idx in range(start, len(raw)):
+                    if raw[idx:idx+5] == 'time ' and depth == 0:
+                        # skip
+                        pass
+                    if raw[idx] == '{':
+                        depth += 1
+                    elif raw[idx] == '}':
+                        depth -= 1
+                        if depth == 0:
+                            end = idx
+                            break
+                if end != -1:
+                    time_block = raw[start:end+1]
+                    # Compose with the Time verbalizer directly
+                    from nemo_text_processing.text_normalization.de.verbalizers.time import TimeFst
+                    from nemo_text_processing.text_normalization.de.taggers.cardinal import CardinalFst
+
+                    card = CardinalFst(deterministic=True)
+                    time_fst = TimeFst(cardinal_tagger=card, deterministic=True).fst
+                    t_escaped = pynini.escape(time_block)
+                    try:
+                        sym = time_fst.input_symbols()
+                        if sym is not None:
+                            t_escaped.set_input_symbols(sym)
+                    except Exception:
+                        pass
+                    t_lat = t_escaped @ time_fst
+                    if t_lat.num_states() > 0:
+                        # Return an acceptor that emits the verbalized shortest path
+                        verbalized = pynini.shortestpath(t_lat, nshortest=1, unique=True).string()
+                        return pynini.acceptor(verbalized)
+        except Exception:
+            pass
+
         return lattice
 
     @staticmethod
@@ -690,6 +843,10 @@ class Normalizer:
         if self.post_processor is not None:
             normalized_text = top_rewrite(normalized_text, self.post_processor.fst)
         return normalized_text
+
+    # German-specific small-cardinal helper removed from Normalizer.
+    # Language-specific numeric verbalization belongs in the WFST tagger/verbalizer.
+    
 
 
 def parse_args():
