@@ -33,32 +33,46 @@ from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 class ElectronicFst(GraphFst):
     """
-    전자식 텍스트 읽기(verbalize):
-      tokens { electronic { username: "cdf1" domain: "abc.edu" } }
-      -> c d f 일 골뱅이 a b c 닷 e d u  (정책에 따라 다름)
+    Finite state transducer (FST) for verbalizing **electronic expressions** (email/URL/domain).
 
-    deterministic=True: 단일 출력
+    Input tokens:
+        tokens { electronic { username: "abc" domain: "abc.com" } }
+
+    Example output (policy-dependent):
+        abc 골뱅이 abc 닷컴
+
+    Args:
+        deterministic: If True, produce a single verbalization.
     """
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
 
-        # 1. 숫자 (0~9): ko/data/number/digit.tsv
-        # (BUG FIX 1: 'invert' 제거)
-        graph_digit_no_zero = pynini.string_file(get_abs_path("data/number/digit.tsv")).optimize()
-
+        # 1) Handle digits (0–9)
+        graph_digit_no_zero = pynini.string_file(
+            get_abs_path("data/number/digit.tsv")
+        ).optimize()
+        
         graph_zero = pynini.cross("0", "영")
         if not deterministic:
             graph_zero |= pynini.cross("0", "공")
         graph_digit = (graph_digit_no_zero | graph_zero).optimize()
 
-        # 2. 심볼: ko/data/electronic/symbol.tsv (예: ".\t점")
-        graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
+        digit_inline_rewrite = pynini.cdrewrite(
+            graph_digit,  
+            "",          
+            "",           
+            NEMO_SIGMA,
+        )
+
+        # 2) Load electronic symbols (ex: "." → "점")
+        graph_symbols = pynini.string_file(
+            get_abs_path("data/electronic/symbol.tsv")
+        ).optimize()
 
         NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
 
-        # 3. 기본 띄어쓰기 규칙 (Fallback용)
-        # (BUG FIX 2: 'NEMO_ALPHA' 추가)
+        # 3) Default spacing for characters, symbols, and digits
         default_chars_symbols = pynini.cdrewrite(
             pynutil.insert(" ") + (graph_symbols | graph_digit | NEMO_ALPHA) + pynutil.insert(" "),
             "",
@@ -67,43 +81,57 @@ class ElectronicFst(GraphFst):
         )
         default_chars_map = pynini.compose(pynini.closure(NEMO_NOT_BRACKET), default_chars_symbols).optimize()
 
-        # 4. username (띄어쓰기 규칙 적용)
+        # 4) username part (add spaces between characters)
+        raw_username = pynini.closure(NEMO_NOT_QUOTE, 1)
+
         user_name = (
-            pynutil.delete("username:") + delete_space + pynutil.delete('"') + default_chars_map + pynutil.delete('"')
+            pynutil.delete("username:")
+            + delete_space
+            + pynutil.delete('"')
+            + (raw_username @ digit_inline_rewrite)
+            + pynutil.delete('"')
         )
 
-        # 5. domain (domain.tsv 우선 적용)
-        # [수정] domain.tsv 파일을 로드
-        domain_common_pairs = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
+        # 5) domain part (handle common endings like .com → 닷컴)
+        domain_common_pairs = pynini.string_file(
+            get_abs_path("data/electronic/domain.tsv")
+        ).optimize()
 
-        # ".com", ".co.kr" 같은 패턴을 원문 어디서든 우선 치환
+        # Rewrite known domains (.com → 닷컴)
         tld_rewrite = pynini.cdrewrite(
-            domain_common_pairs,  # 입력: ".com"  출력: "닷컴"  등
-            "",  # 왼쪽 문맥 없음
-            "",  # 오른쪽 문맥 없음
-            NEMO_SIGMA,  # 전체 문맥에서 적용
+            domain_common_pairs,  
+            "",                   
+            "",                   
+            NEMO_SIGMA,          
         )
-
+        # Add a space before “닷” if needed
         add_space_before_dot = pynini.cdrewrite(
-            pynini.cross("닷", " 닷"),  # '닷' -> ' 닷'
-            (NEMO_ALPHA | NEMO_DIGIT | NEMO_CHAR),  # 왼쪽 문맥: 글자/숫자/한글 등
+            pynini.cross("닷", " 닷"),                 
+            (NEMO_ALPHA | NEMO_DIGIT | NEMO_CHAR),    
             "",
             NEMO_SIGMA,
         )
+        
+        raw_domain = pynini.closure(NEMO_NOT_QUOTE, 1)
 
         domain = (
             pynutil.delete("domain:")
             + delete_space
             + pynutil.delete('"')
-            + (tld_rewrite @ add_space_before_dot)
+            + ((raw_domain @ digit_inline_rewrite) @ tld_rewrite @ add_space_before_dot)
             + delete_space
             + pynutil.delete('"')
         ).optimize()
 
-        # 6. protocol (태거에서 이미 변환된 값을 그대로 출력)
-        protocol = pynutil.delete('protocol: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        # 6) protocol (like “https://” or “file:///”)
+        protocol = (
+            pynutil.delete('protocol: "')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
+            + insert_space
+        )
 
-        # 7. 조합: (옵션)프로토콜 + (옵션)이메일 아이디 + 도메인
+        # 7) Combine: optional protocol + optional username + domain
         graph = (
             pynini.closure(protocol + delete_space, 0, 1)
             + pynini.closure(user_name + delete_space + pynutil.insert(" 골뱅이 ") + delete_space, 0, 1)
@@ -111,6 +139,5 @@ class ElectronicFst(GraphFst):
             + delete_space
         ).optimize() @ pynini.cdrewrite(
             delete_extra_space, "", "", NEMO_SIGMA
-        )  # 최종 여분 공백 제거
-
+        )
         self.fst = self.delete_tokens(graph).optimize()

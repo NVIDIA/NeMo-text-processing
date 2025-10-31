@@ -32,15 +32,24 @@ from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 class ElectronicFst(GraphFst):
     """
-    전자식 텍스트 분류 (이메일/URL/카드 큐 등)
-      예) abc@nvidia.co.kr
-        -> tokens { electronic { username: "abc" domain: "nvidia.co.kr" } }
+    Finite state transducer (FST) for classifying **electronic expressions** such as
+    email addresses, URLs, and domain names in Korean.
+
+    Example conversions:
+        - abc@nvidia.co.kr  →  electronic { username: "abc" domain: "nvidia.co.kr" }
+        - www.nvidia.com    →  electronic { domain: "www.nvidia.com" }
+        - https://nvidia.com → electronic { protocol: "HTTPS colon slash slash" domain: "nvidia.com" }
+        - 1234-5678-9012-3456 → electronic { protocol: "credit card" domain: "1234567890123456" }
+
+    Args:
+        cardinal:  FST for digit/number verbalization (used for numeric parts if non-deterministic).
+        deterministic:  If True, provides a single transduction path; otherwise allows multiple.
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
-        # ---------- 기본 렌지/심볼 ----------
+        # ---------- Basic character ranges and symbols ----------
         LOWER = pynini.union(*[pynini.accep(c) for c in "abcdefghijklmnopqrstuvwxyz"])
         UPPER = pynini.union(*[pynini.accep(c) for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"])
         ASCII_LETTER = (LOWER | UPPER).optimize()
@@ -51,10 +60,10 @@ class ElectronicFst(GraphFst):
         SLASH = pynini.accep("/")
         AT = pynini.accep("@")
 
-        # 숫자 읽기 모드
+        # Handle numeric reading mode (only for non-deterministic mode)
         numbers = NEMO_DIGIT if deterministic else (pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" "))
 
-        # 리소스 로드
+        # ---------- Load resources ----------
         cc_cues = pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv"))
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
         accepted_common_domains = pynini.project(
@@ -62,21 +71,21 @@ class ElectronicFst(GraphFst):
         )
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
-        # ---------- username ----------
-        # '@'는 username에 포함되면 안 되므로 제외
+        # ---------- Username ----------
+        # Exclude '@' from username
         username_symbols = pynini.difference(accepted_symbols, AT)
-        # 영문/숫자로 시작 + (영문/숫자/허용심볼/숫자읽기) 반복
+        # Start with alphanumeric and allow symbols/numbers repeatedly
         username_core = ASCII_ALNUM + pynini.closure(ASCII_ALNUM | numbers | username_symbols)
         username = pynutil.insert('username: "') + username_core + pynutil.insert('"') + pynini.cross("@", " ")
 
-        # ---------- domain ----------
-        # RFC 단순화: label = [A-Za-z0-9-]+ , TLD = '.' [A-Za-z0-9]{2,}
+        # ---------- Domain ----------
+        # Simplified RFC: label = [A-Za-z0-9-]+ , TLD = '.' [A-Za-z0-9]{2,}
         label = pynini.closure(ASCII_ALNUM | HYPHEN, 1)
-        tld = DOT + pynini.closure(ASCII_ALNUM, 2)
-        # 전체 도메인: (label + (tld)+) 또는 (tld만)  → ".com" 같은 케이스 허용
+        tld   = DOT + pynini.closure(ASCII_ALNUM, 2)
+        # Domain can be (label + TLD) or TLD only (e.g., ".com")
         domain_core = (label + pynini.closure(tld, 1)) | tld
 
-        # 도메인 뒤 경로(/...) 1회 옵션
+        # Optional path after domain (e.g., /path)
         domain_with_opt_path = domain_core + pynini.closure(SLASH + pynini.closure(NEMO_NOT_SPACE, 1), 0, 1)
 
         domain_graph_with_class_tags = (
@@ -93,27 +102,31 @@ class ElectronicFst(GraphFst):
         protocol = protocol_file_start | protocol_start | protocol_end | (protocol_start + protocol_end)
         protocol = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
 
-        # ---------- 그래프 조합 ----------
+        # ---------- Combine all graphs ----------
         graph = pynini.Fst()  # empty
 
-        # (1) 이메일
+        # (1) Email pattern
         email_guard = NEMO_SIGMA + AT + NEMO_SIGMA + DOT + NEMO_SIGMA
         graph |= pynini.compose(email_guard, username + domain_graph_with_class_tags)
 
-        # (2) 단독 도메인 (프로토콜 없이)
-        #   money 그래프 충돌 방지를 위해 '$' 제외, 이메일 구분자 '@' 제외
+        # (2) Domain only (without protocol)
+        # Exclude '$' (conflict with money FST) and '@' (email)
         dollar_accep = pynini.accep("$")
         excluded_symbols = DOT | dollar_accep | AT
         filtered_symbols = pynini.difference(accepted_symbols, excluded_symbols)
         accepted_characters = ASCII_ALNUM | filtered_symbols
-        # label + (TLD)+ 또는 TLD 단독 (위 domain_core와 동일 정의 사용)
-        graph_domain = (pynutil.insert('domain: "') + domain_core + pynutil.insert('"')).optimize()
+        # Domain core graph
+        graph_domain = (
+            pynutil.insert('domain: "')
+            + domain_core
+            + pynutil.insert('"')
+        ).optimize()
         graph |= graph_domain
 
-        # (3) URL (프로토콜 포함)
+        # (3) URL with protocol
         graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
 
-        # (4) 크레딧카드 cue + 숫자(4~16)
+        # (4) Credit card pattern: cue + 4–16 digits
         if deterministic:
             cc_digits = pynini.closure(NEMO_DIGIT, 4, 16)
             cc_phrases = (
@@ -125,6 +138,24 @@ class ElectronicFst(GraphFst):
                 + pynutil.insert('"')
             )
             graph |= cc_phrases
+
+            four = pynini.closure(NEMO_DIGIT, 4, 4)
+            sep_token = pynini.union(HYPHEN, " ")
+            sep_del = pynutil.delete(pynini.closure(sep_token, 1))  # allow mix of - or space
+
+            cc16_grouped = four + sep_del + four + sep_del + four + sep_del + four
+
+            cc16_no_cue = (
+                pynutil.insert('protocol: "신용카드 " ')
+                + pynutil.insert('domain: "')
+                + cc16_grouped
+                + pynutil.insert('"')
+            )
+
+            # Give it higher priority over Date FST
+            cc16_no_cue = pynutil.add_weight(cc16_no_cue.optimize(), -1.0)
+
+            graph |= cc16_no_cue
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

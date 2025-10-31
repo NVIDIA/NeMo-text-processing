@@ -57,8 +57,14 @@ class MeasureFst(GraphFst):
         per = pynini.cross("/", "퍼") + opt_space + insert_space + graph_unit
         optional_per = pynini.closure(opt_space + insert_space + per, 0, 1)
 
-        # Final unit FST → "킬로미터" or "킬로미터 퍼 시간"
+        # Final unit FST produces either "<unit>" or "<unit> 퍼 <unit>"
         unit = pynutil.insert('units: "') + (graph_unit + optional_per | per) + pynutil.insert('"')
+
+        minus_as_field = pynutil.insert('negative: "마이너스" ')
+        consume_minus = (pynini.cross("-", "") | pynini.cross("마이너스", ""))
+
+        # Optional minus field + removal of actual sign symbol or word
+        optional_minus = pynini.closure(minus_as_field + consume_minus + opt_space, 0, 1)
 
         # Combine numeric and unit components
         pieces = []
@@ -77,7 +83,12 @@ class MeasureFst(GraphFst):
         # 2) Decimal form: e.g., "12.5km"
         if decimal is not None:
             sub_decimal = (
-                pynutil.insert("decimal { ") + decimal.just_decimal + delete_space + pynutil.insert(" } ") + unit
+                pynutil.insert("decimal { ")
+                + optional_minus
+                + decimal.just_decimal
+                + delete_space
+                + pynutil.insert(" } ")
+                + unit
             )
             pieces.append(sub_decimal)
 
