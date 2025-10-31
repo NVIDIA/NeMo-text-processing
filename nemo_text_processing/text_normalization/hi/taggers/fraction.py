@@ -58,7 +58,7 @@ class FractionFst(GraphFst):
         self.numerator = (
             pynutil.insert("numerator: \"")
             + cardinal_graph
-            + pynini.cross(pynini.union("/", " / "), "\"")
+            + pynini.cross(pynini.union("/", NEMO_SPACE + "/" + NEMO_SPACE), "\"")
             + pynutil.insert(NEMO_SPACE)
         )
         self.denominator = pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
