@@ -30,6 +30,13 @@ NEMO_DIGIT = byte.DIGIT
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_NON_ZERO = pynini.union("१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_ZERO = "०"
+
+HI_DEDH = "डेढ़"  # 1.5
+HI_DHAI = "ढाई"  # 2.5
+HI_SAVVA = "सवा"  # quarter more (1.25)
+HI_SADHE = "साढ़े"  # half more (X.5)
+HI_PAUNE = "पौने"  # quarter less (0.75)
+
 NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
 NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
 NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()

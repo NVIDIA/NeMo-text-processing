@@ -58,9 +58,7 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        graph_digit |= pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-
+        graph_digit = cardinal.digit | cardinal.zero
         cardinal_graph = cardinal.final_graph
 
         self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
