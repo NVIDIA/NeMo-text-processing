@@ -17,11 +17,12 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import (
     NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
     GraphFst,
     delete_space,
     insert_space,
-    NEMO_SIGMA,
 )
+
 
 class MeasureFst(GraphFst):
     """
@@ -53,19 +54,14 @@ class MeasureFst(GraphFst):
         graph_cardinal = cardinal.fst
         graph_decimal = decimal.fst
         graph_fraction = fraction.fst
-        
+
         # Add a space after "마이너스" if it appears within numeric blocks
-        minus_space_rewrite = pynini.cdrewrite(
-            pynini.cross("마이너스", "마이너스 "),  
-            "",                                     
-            "",                                     
-            NEMO_SIGMA
-        ).optimize()
+        minus_space_rewrite = pynini.cdrewrite(pynini.cross("마이너스", "마이너스 "), "", "", NEMO_SIGMA).optimize()
 
         # Apply rewrite to each numeric subgraph to ensure spacing after "마이너스"
         cardinal_spaced = graph_cardinal @ minus_space_rewrite
         fraction_spaced = graph_fraction @ minus_space_rewrite
-        decimal_spaced  = graph_decimal  @ minus_space_rewrite
+        decimal_spaced = graph_decimal @ minus_space_rewrite
 
         # Combine all supported numeric types (cardinal | decimal | fraction)
         number_block = decimal_spaced | cardinal_spaced | fraction_spaced

@@ -81,7 +81,7 @@ class ElectronicFst(GraphFst):
         # ---------- Domain ----------
         # Simplified RFC: label = [A-Za-z0-9-]+ , TLD = '.' [A-Za-z0-9]{2,}
         label = pynini.closure(ASCII_ALNUM | HYPHEN, 1)
-        tld   = DOT + pynini.closure(ASCII_ALNUM, 2)
+        tld = DOT + pynini.closure(ASCII_ALNUM, 2)
         # Domain can be (label + TLD) or TLD only (e.g., ".com")
         domain_core = (label + pynini.closure(tld, 1)) | tld
 
@@ -116,11 +116,7 @@ class ElectronicFst(GraphFst):
         filtered_symbols = pynini.difference(accepted_symbols, excluded_symbols)
         accepted_characters = ASCII_ALNUM | filtered_symbols
         # Domain core graph
-        graph_domain = (
-            pynutil.insert('domain: "')
-            + domain_core
-            + pynutil.insert('"')
-        ).optimize()
+        graph_domain = (pynutil.insert('domain: "') + domain_core + pynutil.insert('"')).optimize()
         graph |= graph_domain
 
         # (3) URL with protocol

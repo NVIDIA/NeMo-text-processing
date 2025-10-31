@@ -49,26 +49,22 @@ class ElectronicFst(GraphFst):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
 
         # 1) Handle digits (0–9)
-        graph_digit_no_zero = pynini.string_file(
-            get_abs_path("data/number/digit.tsv")
-        ).optimize()
-        
+        graph_digit_no_zero = pynini.string_file(get_abs_path("data/number/digit.tsv")).optimize()
+
         graph_zero = pynini.cross("0", "영")
         if not deterministic:
             graph_zero |= pynini.cross("0", "공")
         graph_digit = (graph_digit_no_zero | graph_zero).optimize()
 
         digit_inline_rewrite = pynini.cdrewrite(
-            graph_digit,  
-            "",          
-            "",           
+            graph_digit,
+            "",
+            "",
             NEMO_SIGMA,
         )
 
         # 2) Load electronic symbols (ex: "." → "점")
-        graph_symbols = pynini.string_file(
-            get_abs_path("data/electronic/symbol.tsv")
-        ).optimize()
+        graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
         NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
 
@@ -93,25 +89,23 @@ class ElectronicFst(GraphFst):
         )
 
         # 5) domain part (handle common endings like .com → 닷컴)
-        domain_common_pairs = pynini.string_file(
-            get_abs_path("data/electronic/domain.tsv")
-        ).optimize()
+        domain_common_pairs = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
 
         # Rewrite known domains (.com → 닷컴)
         tld_rewrite = pynini.cdrewrite(
-            domain_common_pairs,  
-            "",                   
-            "",                   
-            NEMO_SIGMA,          
-        )
-        # Add a space before “닷” if needed
-        add_space_before_dot = pynini.cdrewrite(
-            pynini.cross("닷", " 닷"),                 
-            (NEMO_ALPHA | NEMO_DIGIT | NEMO_CHAR),    
+            domain_common_pairs,
+            "",
             "",
             NEMO_SIGMA,
         )
-        
+        # Add a space before “닷” if needed
+        add_space_before_dot = pynini.cdrewrite(
+            pynini.cross("닷", " 닷"),
+            (NEMO_ALPHA | NEMO_DIGIT | NEMO_CHAR),
+            "",
+            NEMO_SIGMA,
+        )
+
         raw_domain = pynini.closure(NEMO_NOT_QUOTE, 1)
 
         domain = (
@@ -125,10 +119,7 @@ class ElectronicFst(GraphFst):
 
         # 6) protocol (like “https://” or “file:///”)
         protocol = (
-            pynutil.delete('protocol: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-            + insert_space
+            pynutil.delete('protocol: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"') + insert_space
         )
 
         # 7) Combine: optional protocol + optional username + domain
@@ -137,7 +128,5 @@ class ElectronicFst(GraphFst):
             + pynini.closure(user_name + delete_space + pynutil.insert(" 골뱅이 ") + delete_space, 0, 1)
             + domain
             + delete_space
-        ).optimize() @ pynini.cdrewrite(
-            delete_extra_space, "", "", NEMO_SIGMA
-        )
+        ).optimize() @ pynini.cdrewrite(delete_extra_space, "", "", NEMO_SIGMA)
         self.fst = self.delete_tokens(graph).optimize()

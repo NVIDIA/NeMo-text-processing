@@ -61,7 +61,7 @@ class MeasureFst(GraphFst):
         unit = pynutil.insert('units: "') + (graph_unit + optional_per | per) + pynutil.insert('"')
 
         minus_as_field = pynutil.insert('negative: "마이너스" ')
-        consume_minus = (pynini.cross("-", "") | pynini.cross("마이너스", ""))
+        consume_minus = pynini.cross("-", "") | pynini.cross("마이너스", "")
 
         # Optional minus field + removal of actual sign symbol or word
         optional_minus = pynini.closure(minus_as_field + consume_minus + opt_space, 0, 1)
