@@ -356,19 +356,23 @@ class Normalizer:
         split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
         output = ""
         for s in split_tokens:
-            try: 
-                allow_time_perms = getattr(self, "allow_time_permutations", False) # Allow caller to enable time-field permutations (minute-first serializations)
+            try:
+                allow_time_perms = getattr(
+                    self, "allow_time_permutations", False
+                )  # Allow caller to enable time-field permutations (minute-first serializations)
                 tags_reordered = self.generate_permutations(s, allow_time_permutations=allow_time_perms)
                 verbalizer_lattice = None
                 for tagged_text in tags_reordered:
                     raw_tagged = tagged_text
-                    
+
                     verbalizer_lattice = self.find_verbalizer(raw_tagged)  # Pass raw tagged string to find_verbalizer
                     if verbalizer_lattice is not None and verbalizer_lattice.num_states() != 0:
                         break
                 if verbalizer_lattice is None or verbalizer_lattice.num_states() == 0:
                     logger.warning(f"No verbalizer lattice produced for tokens {s}")
-                    raise RuntimeError("Empty verbalizer lattice")         # trigger the existing fallback handling by raising an exception
+                    raise RuntimeError(
+                        "Empty verbalizer lattice"
+                    )  # trigger the existing fallback handling by raising an exception
                 output += ' ' + Normalizer.select_verbalizer(verbalizer_lattice)
             except Exception as e:
                 logger.warning("Failed text: " + text + str(e))
@@ -627,7 +631,9 @@ class Normalizer:
                 return
             token_options = self._permute(token_list[idx], allow_time_permutations=allow_time_permutations)
             for token_option in token_options:
-                yield from _helper(prefix + token_option, token_list, idx + 1, allow_time_permutations=allow_time_permutations)
+                yield from _helper(
+                    prefix + token_option, token_list, idx + 1, allow_time_permutations=allow_time_permutations
+                )
 
         # Default: do not allow time permutations. Callers can set
         # allow_time_permutations=True to enable minute-first serializations.
@@ -668,9 +674,9 @@ class Normalizer:
 
         Returns: verbalized lattice
         """
-    # tagged_text is the raw serialized tagged string produced by the tagger.
-    # Leave language-specific auxiliary markers to the verbalizer preprocessor; 
-    # escape the tagged string for composition.
+        # tagged_text is the raw serialized tagged string produced by the tagger.
+        # Leave language-specific auxiliary markers to the verbalizer preprocessor;
+        # escape the tagged string for composition.
         # Some tagger graphs insert auxiliary markers like has_uhr inside
         # nested token serializations to help downstream grammars. The
         # German verbalizer includes a WFST preprocessor to remove these
@@ -702,7 +708,9 @@ class Normalizer:
         try:
             sym = self.verbalizer.fst.input_symbols()
             if sym is None:
-                logger.info("find_verbalizer: verbalizer.fst.input_symbols() is None; acceptor symbols will be set at composition time.")
+                logger.info(
+                    "find_verbalizer: verbalizer.fst.input_symbols() is None; acceptor symbols will be set at composition time."
+                )
             else:
                 logger.info("find_verbalizer: verbalizer.fst has input_symbols().")
                 # If the verbalizer has an input symbol table, copy it to the acceptor
@@ -775,7 +783,7 @@ class Normalizer:
                 depth = 0
                 end = -1
                 for idx in range(start, len(raw)):
-                    if raw[idx:idx+5] == 'time ' and depth == 0:
+                    if raw[idx : idx + 5] == 'time ' and depth == 0:
                         # skip
                         pass
                     if raw[idx] == '{':
@@ -786,10 +794,10 @@ class Normalizer:
                             end = idx
                             break
                 if end != -1:
-                    time_block = raw[start:end+1]
+                    time_block = raw[start : end + 1]
                     # Compose with the Time verbalizer directly
-                    from nemo_text_processing.text_normalization.de.verbalizers.time import TimeFst
                     from nemo_text_processing.text_normalization.de.taggers.cardinal import CardinalFst
+                    from nemo_text_processing.text_normalization.de.verbalizers.time import TimeFst
 
                     card = CardinalFst(deterministic=True)
                     time_fst = TimeFst(cardinal_tagger=card, deterministic=True).fst
@@ -846,7 +854,6 @@ class Normalizer:
 
     # German-specific small-cardinal helper removed from Normalizer.
     # Language-specific numeric verbalization belongs in the WFST tagger/verbalizer.
-    
 
 
 def parse_args():

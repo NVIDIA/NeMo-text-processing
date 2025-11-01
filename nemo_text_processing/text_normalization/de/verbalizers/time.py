@@ -18,11 +18,11 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.de.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
+    NEMO_NON_BREAKING_SPACE,
     NEMO_SIGMA,
     GraphFst,
     convert_space,
     delete_preserve_order,
-    NEMO_NON_BREAKING_SPACE,
 )
 
 
@@ -68,11 +68,12 @@ class TimeFst(GraphFst):
         optional_zone = pynini.closure(pynini.accep(" ") + zone, 0, 1)
 
         optional_has_uhr = pynini.closure(
-            pynutil.delete('has_uhr: "') 
-            + pynini.union('true', 'True') 
-            + pynutil.delete('"') 
-            + pynini.closure(pynini.accep(" "), 0, 1
-            ), 0, 1
+            pynutil.delete('has_uhr: "')
+            + pynini.union('true', 'True')
+            + pynutil.delete('"')
+            + pynini.closure(pynini.accep(" "), 0, 1),
+            0,
+            1,
         )
 
         graph_hms = (
@@ -120,13 +121,17 @@ class TimeFst(GraphFst):
         )
 
         self.graph = (
-            graph_hms
-            | graph_h
-            | graph_hm
-            | pynutil.add_weight(graph_m_past_h, weight=0.0001)
-            | pynutil.add_weight(graph_m30_h, weight=0.0001)
-            | pynutil.add_weight(graph_m_to_h, weight=0.0001)
-        ) + optional_zone + optional_has_uhr
+            (
+                graph_hms
+                | graph_h
+                | graph_hm
+                | pynutil.add_weight(graph_m_past_h, weight=0.0001)
+                | pynutil.add_weight(graph_m30_h, weight=0.0001)
+                | pynutil.add_weight(graph_m_to_h, weight=0.0001)
+            )
+            + optional_zone
+            + optional_has_uhr
+        )
 
         # duration branch: restores the preposition surface at the front and only emits minutes/seconds when present.
         duration_cues = pynini.string_file(get_abs_path("data/time/duration_cues.tsv"))

@@ -17,12 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.de.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    GraphFst,
-    convert_space,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, convert_space, insert_space
 
 
 class TimeFst(GraphFst):
@@ -36,10 +31,10 @@ class TimeFst(GraphFst):
 
     durations (with explicit duration cue)
         "Der kenianische Athlet stellte mit 2:00:35 eine Weltrekordzeit bei den Männern auf."
-        -> ... time { hours: "2" minutes: "0" seconds: "35" mode: "duration" preserve_order: true } 
+        -> ... time { hours: "2" minutes: "0" seconds: "35" mode: "duration" preserve_order: true }
         "Für Frauen wäre eine Zeit unter 04:30 ebenfalls sehr gut."
         -> ... time { minutes: "4" seconds: "30" mode: "duration" }
-    
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based / ITN normalization)
@@ -66,7 +61,7 @@ class TimeFst(GraphFst):
         final_graph_hour = (
             pynutil.insert('hours: "') + delete_leading_zero_to_double_digit @ graph_hour + pynutil.insert('"')
         )
-        
+
         final_graph_minute = (
             pynutil.insert('minutes: "')
             + (pynutil.delete("0").ques + (graph_minute_single | graph_minute_double))
@@ -78,10 +73,7 @@ class TimeFst(GraphFst):
             + pynutil.insert('"')
         )
         final_time_zone_optional = pynini.closure(
-            pynini.accep(" ") 
-            + pynutil.insert('zone: "') 
-            + convert_space(time_zone_graph) 
-            + pynutil.insert('"'), 0, 1
+            pynini.accep(" ") + pynutil.insert('zone: "') + convert_space(time_zone_graph) + pynutil.insert('"'), 0, 1
         )
 
         # accepts explicit 'Uhr' format: 02:30 Uhr, 02.30 Uhr, 2:30 Uhr, 2.30 Uhr
@@ -155,13 +147,7 @@ class TimeFst(GraphFst):
         )
 
         final_graph = (
-            graph_hm
-            | graph_h
-            | graph_hms
-            | graph_ms_dur
-            | graph_hms_dur
-            | graph_hms_no_uhr
-            | graph_hm_no_uhr
+            graph_hm | graph_h | graph_hms | graph_ms_dur | graph_hms_dur | graph_hms_no_uhr | graph_hm_no_uhr
         ).optimize()
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

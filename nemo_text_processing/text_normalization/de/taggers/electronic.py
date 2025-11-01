@@ -86,7 +86,7 @@ class ElectronicFst(GraphFst):
         # id numbers: tag trigger phrase + digits
         id_cues = pynini.string_file(get_abs_path("data/electronic/id_cues.tsv"))
 
-        numbers = NEMO_DIGIT ** 12
+        numbers = NEMO_DIGIT**12
         id_number = (
             pynutil.insert('protocol: "') + id_cues + pynutil.insert('" domain: "') + numbers + pynutil.insert('"')
         )
