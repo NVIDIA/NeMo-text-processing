@@ -577,7 +577,7 @@ class Normalizer:
         l = []
         # keep the canonical ordering rather than generate permutations
         time_keys = {"hours", "minutes", "seconds", "preposition", "mode"}
-        # If allow_time_permutations is True (used only inthe non-deterministic/audio path).
+        # If allow_time_permutations is True (used only inthe non-deterministic/audio path)
         if PRESERVE_ORDER_KEY in d.keys() or (any(k in time_keys for k in d.keys()) and not allow_time_permutations):
             d_permutations = [d.items()]
         else:
@@ -627,7 +627,7 @@ class Normalizer:
                     prefix + token_option, token_list, idx + 1, allow_time_permutations=allow_time_permutations
                 )
 
-        # Default: do not allow time permutations. Callers can set allow_time_permutations=True to enable minute-first serializations.
+        # Default: do not allow permutations. Callers can set allow_time_permutations=True to enable minute-first serializations
         return _helper("", tokens, 0, allow_time_permutations)
 
     def find_tags(self, text: str) -> 'pynini.FstLike':
@@ -665,9 +665,9 @@ class Normalizer:
 
         Returns: verbalized lattice
         """
-        # tagged_text is the raw serialized tagged string produced by the tagger.
-        # remove the has_uhr marker textually before creating the acceptor so the verbalizer may receive the expected token shape.
+        # tagged_text is the raw serialized tagged string produced by the tagger
         raw = tagged_text.strip()
+        # remove the has_uhr marker textually before creating the acceptor so the verbalizer may receive the expected token shape
         if 'has_uhr:' in raw:
             raw = raw.replace('has_uhr: "true"', '')
             raw = raw.replace('has_uhr: "True"', '')
@@ -681,8 +681,7 @@ class Normalizer:
                 pass
 
         escaped = pynini.escape(raw)
-        # Diagnostic logging: report whether the verbalizer FST has an input
-        # symbol table and a short preview of the tagged string we're composing.
+        # Diagnostic logging: report whether verbalizer FST has an input symbol table and a short preview of the tagged string we're composing.
         try:
             sym = self.verbalizer.fst.input_symbols()
             if sym is None:
@@ -691,13 +690,12 @@ class Normalizer:
                 )
             else:
                 logger.info("find_verbalizer: verbalizer.fst has input_symbols().")
-                # If the verbalizer has an input symbol table, copy it to the acceptor
+                # If verbalizer has an input symbol table, copy it to the acceptor
                 escaped.set_input_symbols(sym)
         except Exception:
             logger.info("find_verbalizer: could not inspect or set symbol table on verbalizer.fst")
 
-        # Log a short preview of the tagged_text to help debug mismatches between
-        # the tagger's serialized format and the verbalizer's expected input.
+        # Log a short preview of the tagged_text to help debug mismatches between the tagger's serialized format and the verbalizer's expected input.
         try:
             preview = (tagged_text.strip()[:200] + '...') if len(tagged_text.strip()) > 200 else tagged_text.strip()
             logger.info(f"find_verbalizer: composing tagged_text preview='{preview}'")
@@ -705,8 +703,7 @@ class Normalizer:
             pass
 
         lattice = escaped @ self.verbalizer.fst
-        # If composition produced an empty lattice, attempt a couple of lightweight textual fallbacks
-        # (NBSP/space normalization and whitespace collapsing).
+        # If composition produced an empty lattice, attempt a couple of lightweight textual fallbacks (NBSP/space normalization and whitespace collapsing).
         try:
             if lattice.num_states() == 0:
                 # Try replacing NBSP with regular space
@@ -739,12 +736,10 @@ class Normalizer:
                     logger.info("find_verbalizer: fallback succeeded by replacing spaces with NBSP")
                     return alt2_lat
         except Exception:
-            # Avoid masking upstream errors; fall through to return the
-            # original lattice (possibly empty) which the caller will handle.
+            # Avoid masking upstream errors; fall through to return the original lattice (possibly empty) which the caller will handle.
             pass
 
-        # last-resort fallback: if we have a time token serialized in the tagged string, try to verbalize
-        # only the inner `time { ... }` block using the dedicated Time verbalizer graph.
+        # last-resort fallback: if time token serialized in the tagged string, try to verbalize only the inner `time { ... }` block using the dedicated Time verbalizer graph.
         try:
             if lattice.num_states() == 0 and 'time {' in raw:
                 # Extract the first `time { ... }` block (simple brace scan)
