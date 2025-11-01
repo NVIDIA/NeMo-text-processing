@@ -575,17 +575,9 @@ class Normalizer:
         Return permutations of different string serializations of key value pairs
         """
         l = []
-        # For certain inner token dictionaries (e.g., time tokens which have
-        # fields like hours/minutes/seconds/preposition/mode) we want to keep
-        # the canonical ordering rather than generate permutations. This
-        # avoids combinatorial explosion and allows verbalizers to assume a
-        # deterministic field order.
+        # keep the canonical ordering rather than generate permutations
         time_keys = {"hours", "minutes", "seconds", "preposition", "mode"}
-        # By default, do not permute time-like inner dicts to keep deterministic
-        # verbalizers simple. If allow_time_permutations is True (used only in
-        # the non-deterministic/audio path), permit permutations so the
-        # verbalizer can match minute-first serializations (e.g., minutes before hours)
-        # which produce minute-relative spoken variants like 'halb zwölf'.
+        # If allow_time_permutations is True (used only inthe non-deterministic/audio path).
         if PRESERVE_ORDER_KEY in d.keys() or (any(k in time_keys for k in d.keys()) and not allow_time_permutations):
             d_permutations = [d.items()]
         else:
@@ -635,8 +627,7 @@ class Normalizer:
                     prefix + token_option, token_list, idx + 1, allow_time_permutations=allow_time_permutations
                 )
 
-        # Default: do not allow time permutations. Callers can set
-        # allow_time_permutations=True to enable minute-first serializations.
+        # Default: do not allow time permutations. Callers can set allow_time_permutations=True to enable minute-first serializations.
         return _helper("", tokens, 0, allow_time_permutations)
 
     def find_tags(self, text: str) -> 'pynini.FstLike':
@@ -675,22 +666,9 @@ class Normalizer:
         Returns: verbalized lattice
         """
         # tagged_text is the raw serialized tagged string produced by the tagger.
-        # Leave language-specific auxiliary markers to the verbalizer preprocessor;
-        # escape the tagged string for composition.
-        # Some tagger graphs insert auxiliary markers like has_uhr inside
-        # nested token serializations to help downstream grammars. The
-        # German verbalizer includes a WFST preprocessor to remove these
-        # markers, but in some runtime environments the composition with
-        # the preprocessor may not match due to symbol-table/layout
-        # differences. As a small, deterministic fallback we remove the
-        # has_uhr marker textually here before creating the acceptor so
-        # the verbalizer receives the expected token shape.
+        # remove the has_uhr marker textually before creating the acceptor so the verbalizer may receive the expected token shape.
         raw = tagged_text.strip()
         if 'has_uhr:' in raw:
-            # remove both lowercase/uppercase forms but preserve non-breaking
-            # spaces that may be used inside quoted token values (e.g. zones
-            # like "e\u00a0s\u00a0t"). Only collapse *ASCII* double spaces
-            # introduced by the removal to a single ASCII space.
             raw = raw.replace('has_uhr: "true"', '')
             raw = raw.replace('has_uhr: "True"', '')
             # collapse ASCII double-spaces -> single space (leave NBSP alone)
@@ -727,13 +705,8 @@ class Normalizer:
             pass
 
         lattice = escaped @ self.verbalizer.fst
-        # If composition produced an empty lattice, attempt a couple of
-        # lightweight textual fallbacks (NBSP/space normalization and
-        # whitespace collapsing). These are defensive: the verbalizer
-        # graphs are authored to handle the canonical serialized forms,
-        # but in some environments minor differences (NBSP vs space,
-        # extra spaces) can cause an empty composition. Try simple
-        # alternatives and return the first non-empty lattice.
+        # If composition produced an empty lattice, attempt a couple of lightweight textual fallbacks 
+        # (NBSP/space normalization and whitespace collapsing).
         try:
             if lattice.num_states() == 0:
                 # Try replacing NBSP with regular space
@@ -770,11 +743,8 @@ class Normalizer:
             # original lattice (possibly empty) which the caller will handle.
             pass
 
-        # As a last-resort fallback, if we have a time token serialized in the
-        # tagged string, try to verbalize only the inner `time { ... }` block
-        # using the dedicated Time verbalizer graph. This reuses the language
-        # verbalizer logic but avoids composition issues at the top-level
-        # wrapper (which can be sensitive to minor whitespace differences).
+        # last-resort fallback: if we have a time token serialized in the tagged string, try to verbalize 
+        # only the inner `time { ... }` block using the dedicated Time verbalizer graph.
         try:
             if lattice.num_states() == 0 and 'time {' in raw:
                 # Extract the first `time { ... }` block (simple brace scan)
@@ -851,10 +821,6 @@ class Normalizer:
         if self.post_processor is not None:
             normalized_text = top_rewrite(normalized_text, self.post_processor.fst)
         return normalized_text
-
-    # German-specific small-cardinal helper removed from Normalizer.
-    # Language-specific numeric verbalization belongs in the WFST tagger/verbalizer.
-
 
 def parse_args():
     parser = ArgumentParser()
