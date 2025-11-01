@@ -705,7 +705,7 @@ class Normalizer:
             pass
 
         lattice = escaped @ self.verbalizer.fst
-        # If composition produced an empty lattice, attempt a couple of lightweight textual fallbacks 
+        # If composition produced an empty lattice, attempt a couple of lightweight textual fallbacks
         # (NBSP/space normalization and whitespace collapsing).
         try:
             if lattice.num_states() == 0:
@@ -743,7 +743,7 @@ class Normalizer:
             # original lattice (possibly empty) which the caller will handle.
             pass
 
-        # last-resort fallback: if we have a time token serialized in the tagged string, try to verbalize 
+        # last-resort fallback: if we have a time token serialized in the tagged string, try to verbalize
         # only the inner `time { ... }` block using the dedicated Time verbalizer graph.
         try:
             if lattice.num_states() == 0 and 'time {' in raw:
@@ -821,6 +821,7 @@ class Normalizer:
         if self.post_processor is not None:
             normalized_text = top_rewrite(normalized_text, self.post_processor.fst)
         return normalized_text
+
 
 def parse_args():
     parser = ArgumentParser()
