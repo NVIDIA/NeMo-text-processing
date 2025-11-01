@@ -56,6 +56,7 @@ class DateFst(GraphFst):
         graph_dmy |= final_month + pynini.accep(" ") + year
 
         self.graph = graph_dmy | year
+
         final_graph = self.graph + delete_preserve_order
 
         delete_tokens = self.delete_tokens(final_graph)
