@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Copyright (c) 2025, NVIDIA
-# Licensed under the Apache License, Version 2.0
 
 import pynini
 from pynini.lib import pynutil
@@ -23,6 +21,7 @@ from nemo_text_processing.text_normalization.ko.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
+    NEMO_SPACE,
     GraphFst,
     delete_space,
     insert_space,
@@ -61,7 +60,7 @@ class ElectronicFst(GraphFst):
         AT = pynini.accep("@")
 
         # Handle numeric reading mode (only for non-deterministic mode)
-        numbers = NEMO_DIGIT if deterministic else (pynutil.insert(" ") + cardinal.long_numbers + pynutil.insert(" "))
+        numbers = NEMO_DIGIT if deterministic else (pynutil.insert(NEMO_SPACE) + cardinal.long_numbers + pynutil.insert(NEMO_SPACE))
 
         # ---------- Load resources ----------
         cc_cues = pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv"))
@@ -76,7 +75,7 @@ class ElectronicFst(GraphFst):
         username_symbols = pynini.difference(accepted_symbols, AT)
         # Start with alphanumeric and allow symbols/numbers repeatedly
         username_core = ASCII_ALNUM + pynini.closure(ASCII_ALNUM | numbers | username_symbols)
-        username = pynutil.insert('username: "') + username_core + pynutil.insert('"') + pynini.cross("@", " ")
+        username = pynutil.insert('username: "') + username_core + pynutil.insert('"') + pynini.cross("@", NEMO_SPACE)
 
         # ---------- Domain ----------
         # Simplified RFC: label = [A-Za-z0-9-]+ , TLD = '.' [A-Za-z0-9]{2,}
@@ -86,14 +85,18 @@ class ElectronicFst(GraphFst):
         domain_core = (label + pynini.closure(tld, 1)) | tld
 
         # Optional path after domain (e.g., /path)
-        domain_with_opt_path = domain_core + pynini.closure(SLASH + pynini.closure(NEMO_NOT_SPACE, 1), 0, 1)
+        path_segment = pynini.closure(NEMO_NOT_SPACE, 1)   # at least one non-space character
+        path = SLASH + path_segment                        # /<segment>
+        optional_path = pynini.closure(path, 0, 1)         # optional path
+
+        domain_with_opt_path = domain_core + optional_path
 
         domain_graph_with_class_tags = (
             pynutil.insert('domain: "') + domain_with_opt_path.optimize() + pynutil.insert('"')
         )
 
         # ---------- protocol ----------
-        protocol_symbols = pynini.closure((graph_symbols | pynini.cross(":", "colon")) + pynutil.insert(" "))
+        protocol_symbols = pynini.closure((graph_symbols | pynini.cross(":", "colon")) + pynutil.insert(NEMO_SPACE))
         protocol_start = (pynini.cross("https", "HTTPS ") | pynini.cross("http", "HTTP ")) + (
             pynini.accep("://") @ protocol_symbols
         )
@@ -120,7 +123,7 @@ class ElectronicFst(GraphFst):
         graph |= graph_domain
 
         # (3) URL with protocol
-        graph |= protocol + pynutil.insert(" ") + domain_graph_with_class_tags
+        graph |= protocol + insert_space + domain_graph_with_class_tags
 
         # (4) Credit card pattern: cue + 4–16 digits
         if deterministic:
@@ -136,7 +139,7 @@ class ElectronicFst(GraphFst):
             graph |= cc_phrases
 
             four = pynini.closure(NEMO_DIGIT, 4, 4)
-            sep_token = pynini.union(HYPHEN, " ")
+            sep_token = pynini.union(HYPHEN, NEMO_SPACE)
             sep_del = pynutil.delete(pynini.closure(sep_token, 1))  # allow mix of - or space
 
             cc16_grouped = four + sep_del + four + sep_del + four + sep_del + four
