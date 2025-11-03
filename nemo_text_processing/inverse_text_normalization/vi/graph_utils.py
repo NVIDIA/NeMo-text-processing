@@ -47,6 +47,7 @@ NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
+delete_single_space = pynutil.delete(NEMO_SPACE)
 
 # French frequently compounds numbers with hyphen.
 delete_hyphen = pynutil.delete(pynini.closure("-", 0, 1))

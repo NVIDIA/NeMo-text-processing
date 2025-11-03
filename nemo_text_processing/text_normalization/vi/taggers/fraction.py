@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.vi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path, load_labels
 
@@ -61,7 +61,7 @@ class FractionFst(GraphFst):
         integer_part = pynutil.insert("integer_part: \"") + (number @ cardinal_graph) + pynutil.insert("\" ")
 
         simple_fraction = numerator + denominator
-        mixed_fraction = integer_part + pynutil.delete(" ") + numerator + denominator
+        mixed_fraction = integer_part + pynutil.delete(NEMO_SPACE) + numerator + denominator
 
         # Create graph without negative for reuse in other FSTs (like measure)
         fraction_wo_negative = simple_fraction | mixed_fraction

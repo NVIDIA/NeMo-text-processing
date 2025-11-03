@@ -16,7 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_ALPHA, GraphFst, insert_space
+from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
+    NEMO_ALPHA,
+    GraphFst,
+    delete_single_space,
+    insert_space,
+)
 from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
 
 
@@ -29,7 +34,6 @@ class ElectronicFst(GraphFst):
     def __init__(self):
         super().__init__(name="electronic", kind="classify")
 
-        delete_extra_space = pynutil.delete(" ")
         alpha_num = pynini.union(
             NEMO_ALPHA,
             pynini.string_file(get_abs_path("data/numbers/digit.tsv")),
@@ -45,10 +49,10 @@ class ElectronicFst(GraphFst):
         username = (
             pynutil.insert('username: "')
             + alpha_num
-            + pynini.closure(delete_extra_space + accepted_username)
+            + pynini.closure(delete_single_space + accepted_username)
             + pynutil.insert('"')
         )
-        single_alphanum = pynini.closure(alpha_num + delete_extra_space) + alpha_num
+        single_alphanum = pynini.closure(alpha_num + delete_single_space) + alpha_num
         server = pynini.union(
             single_alphanum,
             pynini.string_file(get_abs_path("data/electronic/server_name.tsv")),
@@ -60,41 +64,40 @@ class ElectronicFst(GraphFst):
             pynini.closure(NEMO_ALPHA, 2),  # At least 2 letters for domain
         )
         multi_domain = (
-            pynini.closure(process_dot + delete_extra_space + domain + delete_extra_space)
+            pynini.closure(process_dot + delete_single_space + domain + delete_single_space)
             + process_dot
-            + delete_extra_space
+            + delete_single_space
             + domain
         )
-        domain_graph = pynutil.insert('domain: "') + server + delete_extra_space + multi_domain + pynutil.insert('"')
+        domain_graph = pynutil.insert('domain: "') + server + delete_single_space + multi_domain + pynutil.insert('"')
         graph = (
             username
-            + delete_extra_space
+            + delete_single_space
             + pynutil.delete(pynini.union("a còng", "a móc", "a vòng"))
             + insert_space
-            + delete_extra_space
+            + delete_single_space
             + domain_graph
         )
 
-        ############# url ###
         protocol_end = pynini.cross(pynini.union("w w w", "www"), "www")
         protocol_start = pynini.union(
             pynini.cross("h t t p", "http"), pynini.cross("h t t p s", "https")
         ) + pynini.cross(" hai chấm sẹc sẹc ", "://")
 
         # Domain part: server.domain (e.g., nvidia.com, www.nvidia.com)
-        url_domain = server + delete_extra_space + process_dot + delete_extra_space + domain
+        url_domain = server + delete_single_space + process_dot + delete_single_space + domain
 
         # Optional endings: /path or .vn or .com.vn
         url_ending = (
-            delete_extra_space
+            delete_single_space
             + url_symbols
-            + delete_extra_space
-            + pynini.union(domain, pynini.closure(accepted_url_chars + delete_extra_space) + accepted_url_chars)
+            + delete_single_space
+            + pynini.union(domain, pynini.closure(accepted_url_chars + delete_single_space) + accepted_url_chars)
         )
         protocol = (
             pynini.closure(protocol_start, 0, 1)  # Optional http://
             + pynini.closure(
-                protocol_end + delete_extra_space + process_dot + delete_extra_space, 0, 1
+                protocol_end + delete_single_space + process_dot + delete_single_space, 0, 1
             )  # Optional www.
             + url_domain  # Required: server.domain
             + pynini.closure(url_ending, 0)  # Optional: /path or .vn
@@ -102,7 +105,6 @@ class ElectronicFst(GraphFst):
 
         protocol = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
         graph = pynini.union(graph, protocol)
-        ########
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

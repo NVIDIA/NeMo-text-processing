@@ -16,7 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 
 
 class TelephoneFst(GraphFst):
@@ -39,8 +44,8 @@ class TelephoneFst(GraphFst):
             pynutil.delete('country_code: "')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
-            + pynutil.delete(' ')
-            + pynutil.insert(' ')
+            + delete_space
+            + insert_space
         )
 
         optional_country_code = pynini.closure(country_code, 0, 1)

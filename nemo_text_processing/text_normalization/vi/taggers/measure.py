@@ -111,7 +111,7 @@ class MeasureFst(GraphFst):
         unit_pattern = simple_unit_pattern | compound_pattern
 
         number = pynini.closure(NEMO_DIGIT, 1)
-        decimal_number = number + NEMO_COMMA + pynini.closure(NEMO_DIGIT, 1)
+        decimal_number = number + NEMO_COMMA + number
 
         # Optional negative sign handling for Vietnamese
         optional_graph_negative = pynini.closure(

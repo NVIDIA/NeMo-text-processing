@@ -45,8 +45,7 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
 
         time_zone = pynini.string_file(get_abs_path("data/time/time_zones.tsv"))
-        digit = NEMO_DIGIT
-        delete_leading_zero = (pynutil.delete("0").ques | (digit - "0")) + digit
+        delete_leading_zero = (pynutil.delete("0").ques | (NEMO_DIGIT - "0")) + NEMO_DIGIT
         cardinal_graph = cardinal.graph
 
         hours = pynini.union(*[str(x) for x in range(0, 25)])

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.vi.utils import get_abs_path, load_labels
 
 
@@ -71,7 +71,7 @@ class RomanFst(GraphFst):
             pynutil.insert("key_cardinal: \"")
             + key_words_fst
             + pynutil.insert("\"")
-            + pynini.accep(" ")
+            + pynini.accep(NEMO_SPACE)
             + pynutil.insert("integer: \"")
             + pynini.compose(roman_to_arabic_fst, cardinal_graph)
             + pynutil.insert("\"")

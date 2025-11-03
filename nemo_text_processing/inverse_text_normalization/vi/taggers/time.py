@@ -53,7 +53,7 @@ class TimeFst(GraphFst):
 
         # Zero prefix patterns for minutes (linh, lẻ, không)
         # Examples: "linh năm" -> "05", "không tám" -> "08"
-        zero_prefix = pynini.union(pynini.cross("linh", "0"), pynini.cross("lẻ", "0"), pynini.cross("không", "0"))
+        zero_prefix = pynini.string_file(get_abs_path("data/time/zero_prefix.tsv"))
         graph_zero_minute = zero_prefix + delete_space + graph_minutes
         graph_minute_extended = graph_minutes | graph_zero_minute
 
