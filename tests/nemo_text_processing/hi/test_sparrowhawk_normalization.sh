@@ -77,8 +77,8 @@ testTNMoney() {
 }
 
 testTNOrdinal() {
-  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_ordinal.txt
-  runtest $input
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_ordinal.txt
+ runtest $input
 }
 
 testTNTelephone() {

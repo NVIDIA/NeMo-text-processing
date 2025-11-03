@@ -1,4 +1,4 @@
-# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOT
 
 class OrdinalFst(GraphFst):
     """
-    Finite state transducer for verbalizing ordinal, e.g.
+    Finite state transducer for verbalizing Hindi ordinals, e.g.
         ordinal { integer: "दसवां" } -> दसवां
         ordinal { integer: "इक्कीसवीं" } -> इक्कीसवीं
 
@@ -32,15 +32,7 @@ class OrdinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
-        # Extract the integer part from ordinal classification
-        integer = pynini.closure(NEMO_NOT_QUOTE)
-        
-        # Build the extraction graph
-        self.integer = delete_space + pynutil.delete("\"") + integer + pynutil.delete("\"")
-        integer = pynutil.delete("integer:") + self.integer
-
-        # The ordinal graph is simply the integer part (which contains the ordinal form)
-        self.numbers = integer
-        delete_tokens = self.delete_tokens(self.numbers)
-
+        integer_value = delete_space + pynutil.delete("\"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        graph = pynutil.delete("integer:") + integer_value
+        delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

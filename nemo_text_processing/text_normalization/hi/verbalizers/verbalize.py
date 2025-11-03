@@ -60,10 +60,10 @@ class VerbalizeFst(GraphFst):
         money = MoneyFst()
         money_graph = money.fst
 
-        ordinal = OrdinalFst(deterministic=deterministic)
-        ordinal_graph = ordinal.fst
         telephone = TelephoneFst()
         telephone_graph = telephone.fst
+        ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal_graph = ordinal.fst
 
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
