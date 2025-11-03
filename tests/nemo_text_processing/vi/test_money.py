@@ -48,11 +48,7 @@ class TestMoney:
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
-        # Add debug print to see what's happening
-        print(f"\nTesting: {test_input}")
         pred = self.normalizer.normalize(test_input, verbose=True, punct_post_process=False)
-        print(f"Predicted: {pred}")
-        print(f"Expected: {expected}")
         assert pred == expected, f"input: {test_input}"
 
         if self.normalizer_with_audio:

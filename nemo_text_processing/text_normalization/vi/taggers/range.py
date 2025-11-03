@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.vi.graph_utils import GraphFst, NEMO_SPACE
 
 
 class RangeFst(GraphFst):
@@ -46,7 +46,7 @@ class RangeFst(GraphFst):
     ):
         super().__init__(name="range", kind="classify", deterministic=deterministic)
 
-        delete_space = pynini.closure(pynutil.delete(" "), 0, 1)
+        delete_space = pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)
 
         # Pattern: X-Y -> X đến Y
         # This will handle time ranges, date ranges, decimal ranges, and money ranges with dash

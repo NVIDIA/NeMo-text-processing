@@ -34,7 +34,7 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-        cardinal_graph = cardinal.graph_with_and
+        cardinal_graph = cardinal.graph
         self.graph = cardinal.single_digits_graph.optimize()
         if not deterministic:
             self.graph = self.graph | cardinal_graph
@@ -48,7 +48,7 @@ class DecimalFst(GraphFst):
         # Common components
         single_digit_map = pynini.union(*[pynini.cross(k, v) for k, v in digit_labels + zero_labels])
         quantity_units = pynini.union(*[v for _, v in magnitude_labels])
-        one_to_three_digits = NEMO_DIGIT + pynini.closure(NEMO_DIGIT, 0, 2)
+        one_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # Building blocks
         integer_part = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")

@@ -18,7 +18,7 @@ from typing import Dict, List
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_SIGMA, generator_main
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_SIGMA, generator_main, NEMO_SPACE
 from nemo_text_processing.utils.logging import logger
 
 
@@ -118,7 +118,7 @@ class PostProcessingFst:
         no_space_before_punct_fst = pynini.union(*no_space_before_punct)
         no_space_after_punct_fst = pynini.union(*no_space_after_punct)
 
-        delete_space = pynutil.delete(" ")
+        delete_space = pynutil.delete(NEMO_SPACE)
 
         # Rule 1: Remove space before punctuation (primary rule)
         remove_space_before = pynini.cdrewrite(

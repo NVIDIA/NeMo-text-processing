@@ -23,6 +23,7 @@ from nemo_text_processing.text_normalization.vi.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    NEMO_SPACE,
 )
 from nemo_text_processing.text_normalization.vi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.vi.taggers.date import DateFst
@@ -74,61 +75,49 @@ class ClassifyFst(GraphFst):
             start_time = time.time()
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
-            logger.debug(f"cardinal: {time.time() - start_time: .2f}s -- {cardinal_graph.num_states()} nodes")
 
             start_time = time.time()
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
-            logger.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
 
             start_time = time.time()
             whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic)
             whitelist_graph = whitelist.fst
-            logger.debug(f"whitelist: {time.time() - start_time: .2f}s -- {whitelist_graph.num_states()} nodes")
 
             start_time = time.time()
             word_graph = WordFst(deterministic=deterministic).fst
-            logger.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
             start_time = time.time()
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
             ordinal_graph = ordinal.fst
-            logger.debug(f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes")
 
             start_time = time.time()
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
-            logger.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
             start_time = time.time()
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
             fraction_graph = fraction.fst
-            logger.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
             start_time = time.time()
             date = DateFst(cardinal=cardinal, deterministic=deterministic)
             date_graph = date.fst
-            logger.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
             start_time = time.time()
             roman = RomanFst(cardinal=cardinal, deterministic=deterministic)
             roman_graph = roman.fst
-            logger.debug(f"roman: {time.time() - start_time: .2f}s -- {roman_graph.num_states()} nodes")
 
             start_time = time.time()
             time_fst = TimeFst(cardinal=cardinal, deterministic=deterministic)
             time_graph = time_fst.fst
-            logger.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
 
             start_time = time.time()
             money = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
             money_graph = money.fst
-            logger.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 
             start_time = time.time()
             measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
             measure_graph = measure.fst
-            logger.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
 
             # Create composed verbalizers for range processing
             start_time = time.time()
@@ -161,7 +150,6 @@ class ClassifyFst(GraphFst):
                 deterministic=deterministic,
             )
             range_graph = range_fst.fst
-            logger.debug(f"range: {time.time() - start_time: .2f}s -- {range_graph.num_states()} nodes")
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
@@ -182,7 +170,7 @@ class ClassifyFst(GraphFst):
             )  # Lower priority than semantic classes
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+                pynini.closure(punct + pynutil.insert(NEMO_SPACE)) + token + pynini.closure(pynutil.insert(NEMO_SPACE) + punct)
             )
 
             graph = token_plus_punct + pynini.closure((delete_extra_space).ques + token_plus_punct)

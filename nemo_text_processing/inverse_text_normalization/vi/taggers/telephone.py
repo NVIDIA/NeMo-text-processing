@@ -59,8 +59,9 @@ class TelephoneFst(GraphFst):
 
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        graph_digit_special = pynini.string_file(get_abs_path("data/numbers/digit_special.tsv"))
         digit = pynini.union(graph_digit, graph_zero)
-        last_digit = pynini.union(digit, pynini.cross("mốt", "1"), pynini.cross("tư", "4"), pynini.cross("lăm", "5"))
+        last_digit = pynini.union(digit, graph_digit_special)
         cardinal_two_digit = pynini.compose(cardinal.graph_no_exception, NEMO_DIGIT**2)
 
         vietnamese_mobile = pynini.compose(
@@ -107,17 +108,17 @@ class TelephoneFst(GraphFst):
         card_16 = pynini.compose(
             sixteen_digits,
             NEMO_DIGIT**4
-            + pynutil.insert(" ")
+            + insert_space
             + NEMO_DIGIT**4
-            + pynutil.insert(" ")
+            + insert_space
             + NEMO_DIGIT**4
-            + pynutil.insert(" ")
+            + insert_space
             + NEMO_DIGIT**4,
         )
 
         fifteen_digits = pynini.closure(digit + delete_space, 14) + digit
         card_15 = pynini.compose(
-            fifteen_digits, NEMO_DIGIT**4 + pynutil.insert(" ") + NEMO_DIGIT**6 + pynutil.insert(" ") + NEMO_DIGIT**5
+            fifteen_digits, NEMO_DIGIT**4 + insert_space + NEMO_DIGIT**6 + insert_space + NEMO_DIGIT**5
         )
 
         card_graph = pynini.union(card_16, card_15)

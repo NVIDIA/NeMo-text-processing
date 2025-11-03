@@ -42,8 +42,6 @@ class CardinalFst(GraphFst):
         )
         self.linh_digits = pynini.union(*[pynini.cross(k, special[k]["std"]) for k in ["1", "4", "5"]], self.digit)
 
-        self.single_digit = self.digit
-
         self.two_digit = pynini.union(
             self.teen,
             self.ties + pynutil.delete("0"),
@@ -55,24 +53,36 @@ class CardinalFst(GraphFst):
         hundred_word = self.magnitudes["hundred"]
         linh_word = self.magnitudes["linh"]
 
-        self.hundreds_pattern = pynini.union(
-            # X00: một trăm, hai trăm, etc.
-            self.single_digit + insert_space + pynutil.insert(hundred_word) + pynutil.delete("00"),
-            # X0Y: một trăm linh một, hai trăm linh năm, etc.
-            self.single_digit
+        # X00: một trăm, hai trăm, etc.
+        hundreds_exact = self.digit + insert_space + pynutil.insert(hundred_word) + pynutil.delete("00")
+
+        # X0Y: một trăm linh một, hai trăm linh năm, etc.
+        hundreds_with_linh = (
+            self.digit
             + insert_space
             + pynutil.insert(hundred_word)
             + pynutil.delete("0")
             + insert_space
             + pynutil.insert(linh_word)
             + insert_space
-            + self.linh_digits,
-            # XYZ: một trăm hai mười ba, etc.
-            self.single_digit + insert_space + pynutil.insert(hundred_word) + insert_space + self.two_digit,
-            # 0YZ: Handle numbers starting with 0 (e.g., 087 -> tám mươi bảy)
-            pynutil.delete("0") + self.two_digit,
-            # 00Z: Handle numbers starting with 00 (e.g., 008 -> tám)
-            pynutil.delete("00") + self.single_digit,
+            + self.linh_digits
+        )
+
+        # XYZ: một trăm hai mười ba, etc.
+        hundreds_with_tens = self.digit + insert_space + pynutil.insert(hundred_word) + insert_space + self.two_digit
+
+        # 0YZ: Handle numbers starting with 0 (e.g., 087 -> tám mươi bảy)
+        leading_zero_tens = pynutil.delete("0") + self.two_digit
+
+        # 00Z: Handle numbers starting with 00 (e.g., 008 -> tám)
+        leading_double_zero = pynutil.delete("00") + self.digit
+
+        self.hundreds_pattern = pynini.union(
+            hundreds_exact,
+            hundreds_with_linh,
+            hundreds_with_tens,
+            leading_zero_tens,
+            leading_double_zero,
         )
 
         self.hundreds = pynini.closure(NEMO_DIGIT, 3, 3) @ self.hundreds_pattern
@@ -85,13 +95,12 @@ class CardinalFst(GraphFst):
             *self.magnitude_patterns.values(),
             self.hundreds,
             self.two_digit,
-            self.single_digit,
+            self.digit,
             self.zero,
         ]
         self.graph = pynini.union(*all_patterns).optimize()
 
-        self.single_digits_graph = self.single_digit | self.zero
-        self.graph_with_and = self.graph
+        self.single_digits_graph = self.digit | self.zero
 
         negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
         final_graph = negative + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
@@ -105,7 +114,7 @@ class CardinalFst(GraphFst):
         for digits in range(min_digits, max_digits + 1):
             leading_digits = digits - zero_count
             if leading_digits == 1:
-                leading_fst = self.single_digit
+                leading_fst = self.digit
             elif leading_digits == 2:
                 leading_fst = self.two_digit
             else:
@@ -220,7 +229,7 @@ class CardinalFst(GraphFst):
         if digit_count <= 0:
             return None
         elif digit_count == 1:
-            return self.single_digit
+            return self.digit
         elif digit_count == 2:
             return self.two_digit
         elif digit_count == 3:

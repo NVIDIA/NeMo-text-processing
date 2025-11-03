@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_SPACE
 
 
 class RomanFst(GraphFst):
@@ -37,7 +37,7 @@ class RomanFst(GraphFst):
         key_cardinal = pynutil.delete("key_cardinal: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         integer = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
 
-        graph_with_key = key_cardinal + delete_space + pynutil.insert(" ") + integer
+        graph_with_key = key_cardinal + delete_space + pynutil.insert(NEMO_SPACE) + integer
         graph_without_key = integer
         graph = pynini.union(graph_with_key, graph_without_key)
         delete_tokens = self.delete_tokens(graph)

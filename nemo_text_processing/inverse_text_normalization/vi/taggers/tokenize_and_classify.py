@@ -23,6 +23,7 @@ from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
     delete_extra_space,
     delete_space,
     generator_main,
+    insert_space,
 )
 from nemo_text_processing.inverse_text_normalization.vi.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.vi.taggers.date import DateFst
@@ -112,7 +113,7 @@ class ClassifyFst(GraphFst):
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+                pynini.closure(punct + insert_space) + token + pynini.closure(insert_space + punct)
             )
 
             graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
