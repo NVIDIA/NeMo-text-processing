@@ -15,7 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, GraphFst, delete_space, NEMO_SPACE
+from nemo_text_processing.text_normalization.vi.graph_utils import (
+    NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+    delete_space,
+)
 
 
 class WhiteListFst(GraphFst):

@@ -15,7 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space, NEMO_SPACE
+from nemo_text_processing.text_normalization.vi.graph_utils import (
+    NEMO_CHAR,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+    delete_space,
+)
 
 
 class RangeFst(GraphFst):

@@ -74,7 +74,7 @@ class DateFst(GraphFst):
         # Thousands pattern with optional hundreds (e.g., "hai nghìn không ba" -> "2003")
         year_hundred_component = pynini.union(
             pynini.union(graph_digit, graph_zero) + delete_space + pynutil.delete("trăm"),
-            pynutil.insert("0", weight=0.01)
+            pynutil.insert("0", weight=0.01),
         )
         year_thousands = (
             graph_digit

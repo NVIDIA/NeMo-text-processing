@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, NEMO_SPACE
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
 
 
 class RomanFst(GraphFst):

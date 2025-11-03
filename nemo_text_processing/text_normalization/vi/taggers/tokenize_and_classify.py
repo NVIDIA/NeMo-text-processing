@@ -19,11 +19,11 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.vi.graph_utils import (
+    NEMO_SPACE,
     GraphFst,
     delete_extra_space,
     delete_space,
     generator_main,
-    NEMO_SPACE,
 )
 from nemo_text_processing.text_normalization.vi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.vi.taggers.date import DateFst
@@ -170,7 +170,9 @@ class ClassifyFst(GraphFst):
             )  # Lower priority than semantic classes
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(NEMO_SPACE)) + token + pynini.closure(pynutil.insert(NEMO_SPACE) + punct)
+                pynini.closure(punct + pynutil.insert(NEMO_SPACE))
+                + token
+                + pynini.closure(pynutil.insert(NEMO_SPACE) + punct)
             )
 
             graph = token_plus_punct + pynini.closure((delete_extra_space).ques + token_plus_punct)

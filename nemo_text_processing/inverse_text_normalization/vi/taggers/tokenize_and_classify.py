@@ -112,9 +112,7 @@ class ClassifyFst(GraphFst):
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-            token_plus_punct = (
-                pynini.closure(punct + insert_space) + token + pynini.closure(insert_space + punct)
-            )
+            token_plus_punct = pynini.closure(punct + insert_space) + token + pynini.closure(insert_space + punct)
 
             graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
             graph = delete_space + graph + delete_space

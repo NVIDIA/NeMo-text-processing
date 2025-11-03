@@ -107,13 +107,7 @@ class TelephoneFst(GraphFst):
         sixteen_digits = pynini.closure(digit + delete_space, 15) + digit
         card_16 = pynini.compose(
             sixteen_digits,
-            NEMO_DIGIT**4
-            + insert_space
-            + NEMO_DIGIT**4
-            + insert_space
-            + NEMO_DIGIT**4
-            + insert_space
-            + NEMO_DIGIT**4,
+            NEMO_DIGIT**4 + insert_space + NEMO_DIGIT**4 + insert_space + NEMO_DIGIT**4 + insert_space + NEMO_DIGIT**4,
         )
 
         fifteen_digits = pynini.closure(digit + delete_space, 14) + digit

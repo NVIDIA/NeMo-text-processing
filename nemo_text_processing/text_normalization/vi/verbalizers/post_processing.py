@@ -18,7 +18,7 @@ from typing import Dict, List
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_SIGMA, generator_main, NEMO_SPACE
+from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_SIGMA, NEMO_SPACE, generator_main
 from nemo_text_processing.utils.logging import logger
 
 

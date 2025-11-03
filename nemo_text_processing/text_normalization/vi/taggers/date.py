@@ -78,7 +78,9 @@ class DateFst(GraphFst):
 
         # DD/MM/YYYY format (Vietnamese standard)
         date_sep = day_part + pynutil.delete(separator) + month_part + pynutil.delete(separator) + year_part
-        patterns.append(pynini.compose(one_or_two_digits + separator + one_or_two_digits + separator + year_digit, date_sep))
+        patterns.append(
+            pynini.compose(one_or_two_digits + separator + one_or_two_digits + separator + year_digit, date_sep)
+        )
         patterns.append(
             pynini.compose(
                 day_prefix + one_or_two_digits + separator + one_or_two_digits + separator + year_digit,
@@ -94,7 +96,9 @@ class DateFst(GraphFst):
         iso_date_sep = (
             iso_year_part + pynutil.delete(separator) + iso_month_part + pynutil.delete(separator) + iso_day_part
         )
-        patterns.append(pynini.compose(year_digit + separator + one_or_two_digits + separator + one_or_two_digits, iso_date_sep))
+        patterns.append(
+            pynini.compose(year_digit + separator + one_or_two_digits + separator + one_or_two_digits, iso_date_sep)
+        )
 
         for sep in [separator, pynini.accep(NEMO_SPACE)]:
             patterns.append(
@@ -106,12 +110,17 @@ class DateFst(GraphFst):
 
         day_month_sep = day_part + pynutil.delete(separator) + month_final
         patterns.append(
-            pynini.compose(day_prefix + one_or_two_digits + separator + one_or_two_digits, delete_day_prefix + day_month_sep)
+            pynini.compose(
+                day_prefix + one_or_two_digits + separator + one_or_two_digits, delete_day_prefix + day_month_sep
+            )
         )
 
         patterns.append(
             pynini.compose(
-                day_prefix + one_or_two_digits + pynini.accep(NEMO_SPACE + MONTH_WORD + NEMO_SPACE) + one_or_two_digits,
+                day_prefix
+                + one_or_two_digits
+                + pynini.accep(NEMO_SPACE + MONTH_WORD + NEMO_SPACE)
+                + one_or_two_digits,
                 delete_day_prefix + day_part + pynutil.delete(NEMO_SPACE + MONTH_WORD + NEMO_SPACE) + month_final,
             )
         )
