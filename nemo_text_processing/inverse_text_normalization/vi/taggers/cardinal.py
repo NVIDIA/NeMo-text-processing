@@ -125,7 +125,10 @@ class CardinalFst(GraphFst):
             + delete_space
             + pynutil.delete(thousand_words)
             + delete_space
-            + (((last_digit | graph_half) + pynutil.insert("00", weight=0.1)) | graph_hundreds_zero),
+            + pynini.union(
+                pynini.union(last_digit, graph_half) + pynutil.insert("00", weight=0.1),
+                graph_hundreds_zero
+            ),
             # Single digits (for non-exception cases)
             graph_digit,
             graph_zero,
