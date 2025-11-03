@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,9 +24,8 @@ from nemo_text_processing.text_normalization.en.utils import load_labels
 
 
 NEMO_ALPHA_HE = pynini.union(*"אבגדהוזחטיכלמםנןסעפףצץקרשת").optimize()
-
-delete_optional_and = pynini.closure(pynutil.delete("ו"))
-delete_and = pynini.cross("ו", "")
+delete_and = pynutil.delete("ו")
+delete_optional_and = delete_and.ques
 
 ####################
 MIN_NEG_WEIGHT = -0.0001

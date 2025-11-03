@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,11 +36,9 @@ def _get_year_graph(graph_two_digits, graph_thousands):
 class DateFst(GraphFst):
     """
     Finite state transducer for classifying date in Hebrew,
-        e.g. אחד במאי אלף תשע מאות שמונים ושלוש -> date { day: "1" month_prefix: "ב" month: "5" year: "1983" }
-        e.g. הראשון ביוני אלפיים ושתיים עשרה -> date { day_prefix: "ה" day: "1" month_prefix: "ב" month: "6" year: "2012" }
-        e.g. העשירי ביוני -> date { day_prefix: "ה" day: "10" month_prefix: "ב" month: "6" }
+        e.g. אחד במאי אלף תשע מאות שמונים ושלוש -> date { day: "1" morphosyntactic_features: "ב" month: "5" year: "1983" }
         e.g. מרץ אלף תשע מאות שמונים ותשע -> date { month: "מרץ" year: "1989" }
-        e.g. בינואר עשרים עשרים -> date { month_prefix: "ב" month: "ינואר" year: "2020" }
+        e.g. בינואר עשרים עשרים -> date { morphosyntactic_features: "ב" month: "ינואר" year: "2020" }
 
     Args:
         cardinal: CardinalFst

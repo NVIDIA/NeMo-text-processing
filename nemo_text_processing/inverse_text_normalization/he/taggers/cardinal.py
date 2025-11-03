@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class CardinalFst(GraphFst):
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         graph_ties += pynini.union(
-            delete_space + delete_and + graph_digit,
+            delete_space + delete_optional_and + graph_digit,
             pynutil.insert("0", weight=0.001),
         )
 
