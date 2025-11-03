@@ -126,8 +126,7 @@ class CardinalFst(GraphFst):
             + pynutil.delete(thousand_words)
             + delete_space
             + pynini.union(
-                pynini.union(last_digit, graph_half) + pynutil.insert("00", weight=0.1),
-                graph_hundreds_zero
+                pynini.union(last_digit, graph_half) + pynutil.insert("00", weight=0.1), graph_hundreds_zero
             ),
             # Single digits (for non-exception cases)
             graph_digit,

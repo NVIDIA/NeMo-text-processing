@@ -38,10 +38,7 @@ class TimeFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="time", kind="verbalize")
-        add_leading_zero_to_double_digit = pynini.union(
-            NEMO_DIGIT + NEMO_DIGIT,
-            pynutil.insert("0") + NEMO_DIGIT
-        )
+        add_leading_zero_to_double_digit = pynini.union(NEMO_DIGIT + NEMO_DIGIT, pynutil.insert("0") + NEMO_DIGIT)
         hour = (
             pynutil.delete("hours:")
             + delete_space
