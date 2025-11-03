@@ -60,7 +60,11 @@ class ElectronicFst(GraphFst):
         AT = pynini.accep("@")
 
         # Handle numeric reading mode (only for non-deterministic mode)
-        numbers = NEMO_DIGIT if deterministic else (pynutil.insert(NEMO_SPACE) + cardinal.long_numbers + pynutil.insert(NEMO_SPACE))
+        numbers = (
+            NEMO_DIGIT
+            if deterministic
+            else (pynutil.insert(NEMO_SPACE) + cardinal.long_numbers + pynutil.insert(NEMO_SPACE))
+        )
 
         # ---------- Load resources ----------
         cc_cues = pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv"))
@@ -85,9 +89,9 @@ class ElectronicFst(GraphFst):
         domain_core = (label + pynini.closure(tld, 1)) | tld
 
         # Optional path after domain (e.g., /path)
-        path_segment = pynini.closure(NEMO_NOT_SPACE, 1)   # at least one non-space character
-        path = SLASH + path_segment                        # /<segment>
-        optional_path = pynini.closure(path, 0, 1)         # optional path
+        path_segment = pynini.closure(NEMO_NOT_SPACE, 1)  # at least one non-space character
+        path = SLASH + path_segment  # /<segment>
+        optional_path = pynini.closure(path, 0, 1)  # optional path
 
         domain_with_opt_path = domain_core + optional_path
 
