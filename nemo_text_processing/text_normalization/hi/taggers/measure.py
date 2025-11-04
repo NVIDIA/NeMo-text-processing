@@ -21,7 +21,11 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     HI_PAUNE,
     HI_SADHE,
     HI_SAVVA,
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    NEMO_HI_DIGIT,
     NEMO_SPACE,
+    NEMO_WHITE_SPACE,
     GraphFst,
     delete_space,
     insert_space,
@@ -78,7 +82,7 @@ class MeasureFst(GraphFst):
         convertible_char = single_digit | special_chars
         
         # Non-convertible characters (everything else except space)
-        non_space_char = pynini.difference(NEMO_CHAR, pynini.union(convertible_char, NEMO_WHITE_SPACE))
+        non_space_char = pynini.difference(NEMO_CHAR, pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(",")))
         
         # Character-level processor:
         # - Convertible chars -> add space before and after, then convert
@@ -90,11 +94,11 @@ class MeasureFst(GraphFst):
         comma_processor = insert_space + pynini.accep(",") + insert_space
         
         # For other non-space, non-comma chars, keep as-is
-        other_char = pynini.difference(non_space_char, pynini.accep(","))
+        # other_char = pynini.difference(non_space_char, pynini.accep(","))
         
         char_processor = (
             insert_space + pynini.compose(convertible_char, char_to_word) + insert_space
-        ) | pynini.accep(NEMO_SPACE) | comma_processor | other_char
+        ) | pynini.accep(NEMO_SPACE) | comma_processor | non_space_char
         
         # Process entire string character by character
         # This creates a graph that converts all digits/special chars and keeps everything else
@@ -104,39 +108,56 @@ class MeasureFst(GraphFst):
         # Create patterns that match strings containing address keywords
         any_char = pynini.union(NEMO_CHAR, NEMO_WHITE_SPACE)
         
-        # Pattern: anything + address keyword + anything
-        # This matches any string that contains at least one address context keyword
-        has_address_keyword = (
-            pynini.closure(any_char) +
-            address_keywords +
-            pynini.closure(any_char)
-        )
+        # # Pattern: anything + address keyword + anything
+        # # This matches any string that contains at least one address context keyword
+        # has_address_keyword = (
+        #     pynini.closure(any_char) +
+        #     address_keywords +
+        #     pynini.closure(any_char)
+        # )
+
+        # Define word boundaries: space, comma, Hindi fullstop
+        word_boundary = pynini.union(NEMO_WHITE_SPACE, pynini.accep(","), pynini.accep("।"))
         
-        # Require that the string contains at least one digit
-        has_digit = (
-            pynini.closure(any_char) +
-            pynini.union(single_digit) +
-            pynini.closure(any_char)
-        )
+        # Define a word as a sequence of non-boundary characters
+        non_boundary_char = pynini.difference(NEMO_CHAR, word_boundary)
+        word = pynini.closure(non_boundary_char, 1)
         
-        # IMPORTANT: Exclude long digit sequences that look like telephone numbers
-        # Telephone numbers typically have 10+ consecutive digits
-        # Addresses typically have shorter digit sequences (1-5 digits)
-        long_digit_sequence = pynini.closure(convertible_char, 10)  # 10+ digits
-        has_long_digits = (
-            pynini.closure(any_char) +
-            long_digit_sequence +
-            pynini.closure(any_char)
-        )
+        # Word with optional boundaries after it (allows multiple: ", " = comma + space)
+        word_with_boundary = word + pynini.closure(word_boundary)
         
-        # Input must:
-        # 1. Have address keyword (Hindi or English)
-        # 2. Have digits
-        # 3. NOT have long digit sequences (phone numbers)
-        input_pattern = pynini.intersect(
-            pynini.intersect(has_address_keyword, has_digit),
-            pynini.difference(pynini.union(any_char).closure(), has_long_digits)
-        )
+        # Up to 4 words (for the window)
+        up_to_4_words = pynini.closure(word_with_boundary, 0, 5)
+        
+        # Match context word with word boundaries to prevent substring matching
+        # Three cases for the context word with boundaries:
+        # 1. Start of string: keyword + boundaries (or end of string)
+        # 2. Middle: boundaries + keyword + boundaries  
+        # 3. End: boundaries + keyword (at end of string)
+        context_at_start = address_keywords + pynini.closure(word_boundary)
+        context_in_middle = pynini.closure(word_boundary, 1) + address_keywords + pynini.closure(word_boundary)
+        context_at_end = pynini.closure(word_boundary, 1) + address_keywords
+        
+        # Pattern that matches strings with context word within a 4-word window
+        # Case 1: Context at start - match: context + up to 4 words after
+        pattern1 = context_at_start + up_to_4_words
+        
+        # Case 2: Context in middle - match: up to 4 words before + context + up to 4 words after
+        pattern2 = up_to_4_words + context_in_middle + up_to_4_words
+        
+        # Case 3: Context at end - match: up to 4 words before + context
+        pattern3 = up_to_4_words + context_at_end
+        
+        # Combine all patterns
+        input_pattern = pattern1 | pattern2 | pattern3
+        
+        # Digit detection (commented out for now - to be checked later)
+        # has_digit = (
+        #     pynini.closure(any_char) +
+        #     pynini.union(single_digit) +
+        #     pynini.closure(any_char)
+        # )
+        # input_pattern = pynini.intersect(input_pattern, has_digit)
         
         # Apply the character processor to inputs matching the pattern
         address_graph = pynini.compose(input_pattern, full_string_processor)
@@ -341,6 +362,7 @@ class MeasureFst(GraphFst):
             | pynutil.add_weight(graph_savva, -0.1)
             | pynutil.add_weight(graph_sadhe, -0.1)
             | pynutil.add_weight(graph_paune, -0.5)
+            | address_graph
         )
         self.graph = graph.optimize()
 

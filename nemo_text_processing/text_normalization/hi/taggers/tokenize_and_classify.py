@@ -113,11 +113,6 @@ class ClassifyFst(GraphFst):
             telephone = TelephoneFst()
             telephone_graph = telephone.fst
 
-            start_time = time.time()
-            telephone = TelephoneFst()
-            telephone_graph = telephone.fst
-            logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
-
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(cardinal_graph, 1.1)
