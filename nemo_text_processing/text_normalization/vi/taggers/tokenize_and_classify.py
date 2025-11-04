@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-import time
 
 import pynini
 from pynini.lib import pynutil
@@ -72,55 +71,42 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating Vietnamese ClassifyFst grammars.")
 
-            start_time = time.time()
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
 
-            start_time = time.time()
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
 
-            start_time = time.time()
             whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic)
             whitelist_graph = whitelist.fst
 
-            start_time = time.time()
             word_graph = WordFst(deterministic=deterministic).fst
 
-            start_time = time.time()
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
             ordinal_graph = ordinal.fst
 
-            start_time = time.time()
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
 
-            start_time = time.time()
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
             fraction_graph = fraction.fst
 
-            start_time = time.time()
             date = DateFst(cardinal=cardinal, deterministic=deterministic)
             date_graph = date.fst
 
-            start_time = time.time()
             roman = RomanFst(cardinal=cardinal, deterministic=deterministic)
             roman_graph = roman.fst
 
-            start_time = time.time()
             time_fst = TimeFst(cardinal=cardinal, deterministic=deterministic)
             time_graph = time_fst.fst
 
-            start_time = time.time()
             money = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
             money_graph = money.fst
 
-            start_time = time.time()
             measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
             measure_graph = measure.fst
 
             # Create composed verbalizers for range processing
-            start_time = time.time()
             v_cardinal = VCardinalFst(deterministic=deterministic)
             v_date = VDateFst(deterministic=deterministic)
             date_final = pynini.compose(date_graph, v_date.fst)
