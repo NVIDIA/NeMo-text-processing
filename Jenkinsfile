@@ -2,7 +2,7 @@ pipeline {
   agent {
         docker {
           image 'tnitn_ci_py310:24.07'
-          args '-v /mnt/jenkins/jenkinsci:/home/jenkins -v $HOME/.cache:/root/.cache --shm-size=4g --entrypoint=""'
+          args '-v /mnt/jenkins/jenkinsci/TestData:/home/jenkins/TestData -v $HOME/.cache:/root/.cache --shm-size=4g --entrypoint=""'
         }
   }
   options {
@@ -10,10 +10,9 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: true)
   }
   environment {
-
     AR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-23-24-0'
-    EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-04-24-0'
+    EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-25-25-0'
     ES_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-25-24-0'
     ES_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-30-24-0'
     FR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-07-25-0'
@@ -28,7 +27,7 @@ pipeline {
     HY_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
-    HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-22-25-0'
+    HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-31-25-0'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
