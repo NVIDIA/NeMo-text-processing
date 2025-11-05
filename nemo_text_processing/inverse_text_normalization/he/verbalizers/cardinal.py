@@ -15,10 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    NEMO_ALPHA_HE, GraphFst)
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, delete_space)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_ALPHA_HE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, delete_space
 
 
 class CardinalFst(GraphFst):
@@ -38,10 +36,7 @@ class CardinalFst(GraphFst):
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # Thousands separator
-        group_by_threes = (
-            at_most_three_digits
-            + (pynutil.insert(",") + exactly_three_digits).closure()
-        )
+        group_by_threes = at_most_three_digits + (pynutil.insert(",") + exactly_three_digits).closure()
 
         # Keep the prefix if exists and add a dash
         optional_prefix = pynini.closure(

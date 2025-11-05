@@ -15,11 +15,14 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import \
-    GraphFst
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE, NEMO_SPACE, delete_space, delete_zero_or_one_space,
-    insert_space)
+    NEMO_NOT_QUOTE,
+    NEMO_SPACE,
+    delete_space,
+    delete_zero_or_one_space,
+    insert_space,
+)
 
 
 class DateFst(GraphFst):
@@ -98,13 +101,7 @@ class DateFst(GraphFst):
         )
 
         # day month and year
-        graph_dmy = (
-            graph_dm
-            + delete_space
-            + pynutil.insert(".")
-            + delete_zero_or_one_space
-            + year
-        )
+        graph_dmy = graph_dm + delete_space + pynutil.insert(".") + delete_zero_or_one_space + year
 
         # only month and year
         graph_my = (

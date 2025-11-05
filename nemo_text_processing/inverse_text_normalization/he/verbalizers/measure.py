@@ -15,10 +15,14 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import \
-    GraphFst
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR, NEMO_NOT_QUOTE, NEMO_SIGMA, NEMO_SPACE, delete_space)
+    NEMO_CHAR,
+    NEMO_NOT_QUOTE,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    delete_space,
+)
 
 
 class MeasureFst(GraphFst):
@@ -96,12 +100,7 @@ class MeasureFst(GraphFst):
         numbers_units = delete_space + unit
         numbers_graph = (graph_cardinal | graph_decimal) + numbers_units
 
-        one_graph = (
-            delete_space
-            + pynutil.insert("1")
-            + unit
-            + pynutil.delete('cardinal { integer: "1" }')
-        )
+        one_graph = delete_space + pynutil.insert("1") + unit + pynutil.delete('cardinal { integer: "1" }')
 
         graph = optional_prefix + (numbers_graph | one_graph)
         delete_tokens = self.delete_tokens(graph)

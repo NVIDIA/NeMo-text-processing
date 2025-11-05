@@ -15,17 +15,17 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import \
-    GraphFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import \
-    CardinalFst
-from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import \
-    DecimalFst
-from nemo_text_processing.inverse_text_normalization.he.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_SPACE, delete_extra_space, delete_space, delete_zero_or_one_space,
-    insert_space)
+    NEMO_SPACE,
+    delete_extra_space,
+    delete_space,
+    delete_zero_or_one_space,
+    insert_space,
+)
 
 
 class MeasureFst(GraphFst):
@@ -55,10 +55,7 @@ class MeasureFst(GraphFst):
 
         prefix_graph = pynini.string_file(get_abs_path("data/prefix.tsv"))
         optional_prefix_graph = pynini.closure(
-            pynutil.insert('morphosyntactic_features: "')
-            + prefix_graph
-            + pynutil.insert('"')
-            + insert_space,
+            pynutil.insert('morphosyntactic_features: "') + prefix_graph + pynutil.insert('"') + insert_space,
             0,
             1,
         )
@@ -92,9 +89,7 @@ class MeasureFst(GraphFst):
 
         spaced_units = pynini.string_file(get_abs_path("data/spaced_measurements.tsv"))
         spaced_units = pynini.invert(spaced_units)
-        spaced_units = (
-            pynutil.insert('units: "\[SPACE\]') + spaced_units + pynutil.insert('"')
-        )  # noqa: W605
+        spaced_units = pynutil.insert('units: "\[SPACE\]') + spaced_units + pynutil.insert('"')  # noqa: W605
 
         # in joint units the unit is concatenated to the number, in spaced unit separate the unit with a space
         units_graph = joined_units | spaced_units
@@ -112,12 +107,8 @@ class MeasureFst(GraphFst):
         )
 
         number_graph = subgraph_decimal | subgraph_cardinal
-        number_unit_graph = (number_graph + units_graph) | (
-            units_graph + delete_space + one_graph
-        )
+        number_unit_graph = (number_graph + units_graph) | (units_graph + delete_space + one_graph)
 
-        final_graph = (
-            optional_prefix_graph + number_unit_graph + delete_zero_or_one_space
-        )
+        final_graph = optional_prefix_graph + number_unit_graph + delete_zero_or_one_space
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

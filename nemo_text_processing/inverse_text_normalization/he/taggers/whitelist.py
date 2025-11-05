@@ -17,12 +17,9 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    GraphFst, string_map_cased)
-from nemo_text_processing.inverse_text_normalization.he.utils import \
-    get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    convert_space, insert_space)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst, string_map_cased
+from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
+from nemo_text_processing.text_normalization.en.graph_utils import convert_space, insert_space
 
 
 class WhiteListFst(GraphFst):
@@ -48,16 +45,11 @@ class WhiteListFst(GraphFst):
             raise ValueError(f"Whitelist file {input_file} not found")
 
         optional_prefix_graph = pynini.closure(
-            pynutil.insert('morphosyntactic_features: "')
-            + prefix_graph
-            + pynutil.insert('"')
-            + insert_space,
+            pynutil.insert('morphosyntactic_features: "') + prefix_graph + pynutil.insert('"') + insert_space,
             0,
             1,
         )
         whitelist = string_map_cased(input_file)
-        graph = (
-            pynutil.insert('name: "') + convert_space(whitelist) + pynutil.insert('"')
-        )
+        graph = pynutil.insert('name: "') + convert_space(whitelist) + pynutil.insert('"')
         final_graph = optional_prefix_graph + graph
         self.fst = final_graph.optimize()

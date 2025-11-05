@@ -15,15 +15,16 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    GraphFst, delete_and)
-from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import \
-    CardinalFst
-from nemo_text_processing.inverse_text_normalization.he.utils import (
-    get_abs_path, integer_to_text)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst, delete_and
+from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path, integer_to_text
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, delete_extra_space, delete_space, delete_zero_or_one_space,
-    insert_space)
+    NEMO_DIGIT,
+    delete_extra_space,
+    delete_space,
+    delete_zero_or_one_space,
+    insert_space,
+)
 
 
 class TimeFst(GraphFst):
@@ -43,18 +44,12 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify")
 
         # hours, minutes, seconds, suffix, zone, style, speak_period
-        midnight_to_hour_graph = pynini.string_file(
-            get_abs_path("data/time/midnight_to_hour.tsv")
-        )
+        midnight_to_hour_graph = pynini.string_file(get_abs_path("data/time/midnight_to_hour.tsv"))
         to_hour_graph = pynini.string_file(get_abs_path("data/time/to_hour.tsv"))
 
-        minute_verbose_graph = pynini.string_file(
-            get_abs_path("data/time/minute_verbose.tsv")
-        )
+        minute_verbose_graph = pynini.string_file(get_abs_path("data/time/minute_verbose.tsv"))
         minute_to_graph = pynini.string_file(get_abs_path("data/time/minute_to.tsv"))
-        minute_to_verbose_graph = pynini.string_file(
-            get_abs_path("data/time/minute_to_verbose.tsv")
-        )
+        minute_to_verbose_graph = pynini.string_file(get_abs_path("data/time/minute_to_verbose.tsv"))
 
         suffix_graph = pynini.union(
             pynini.string_file(get_abs_path("data/time/day_suffix.tsv")),
@@ -65,10 +60,7 @@ class TimeFst(GraphFst):
 
         time_prefix = pynini.string_file(get_abs_path("data/prefix.tsv"))
         time_prefix_graph = (
-            pynutil.insert('morphosyntactic_features: "')
-            + time_prefix
-            + pynutil.insert('"')
-            + insert_space
+            pynutil.insert('morphosyntactic_features: "') + time_prefix + pynutil.insert('"') + insert_space
         )
         optional_time_prefix_graph = pynini.closure(time_prefix_graph, 0, 1)
 
@@ -76,45 +68,31 @@ class TimeFst(GraphFst):
         cardinal = pynutil.add_weight(CardinalFst().graph_no_exception, weight=-0.7)
 
         labels_hour = [integer_to_text(x, only_fem=True)[0] for x in range(1, 13)]
-        labels_minute_single = [
-            integer_to_text(x, only_fem=True)[0] for x in range(2, 10)
-        ]
-        labels_minute_double = [
-            integer_to_text(x, only_fem=True)[0] for x in range(10, 60)
-        ]
+        labels_minute_single = [integer_to_text(x, only_fem=True)[0] for x in range(2, 10)]
+        labels_minute_double = [integer_to_text(x, only_fem=True)[0] for x in range(10, 60)]
 
         graph_hour = pynini.union(*labels_hour) @ cardinal
         graph_hour |= midnight_to_hour_graph
         add_leading_zero_to_double_digit = pynutil.insert("0") + NEMO_DIGIT
-        graph_minute_single = (
-            pynini.union(*labels_minute_single)
-            @ cardinal
-            @ add_leading_zero_to_double_digit
-        )
+        graph_minute_single = pynini.union(*labels_minute_single) @ cardinal @ add_leading_zero_to_double_digit
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal
 
         final_graph_hour = pynutil.insert('hours: "') + graph_hour + pynutil.insert('"')
 
-        graph_minute = pynini.union(
-            pynutil.insert("00"), graph_minute_single, graph_minute_double
-        )
+        graph_minute = pynini.union(pynutil.insert("00"), graph_minute_single, graph_minute_double)
 
         final_suffix = pynutil.insert('suffix: "') + suffix_graph + pynutil.insert('"')
         final_suffix = delete_space + insert_space + final_suffix
 
         time_word = "דקות"
-        optional_delete_time = pynini.closure(
-            delete_space + pynutil.delete(time_word), 0, 1
-        )
+        optional_delete_time = pynini.closure(delete_space + pynutil.delete(time_word), 0, 1)
         graph_h_and_m = (
             final_graph_hour
             + delete_space
             + delete_and
             + insert_space
             + pynutil.insert('minutes: "')
-            + pynini.union(
-                graph_minute_single, graph_minute_double, minute_verbose_graph
-            )
+            + pynini.union(graph_minute_single, graph_minute_double, minute_verbose_graph)
             + pynutil.insert('"')
             + optional_delete_time
         )
@@ -175,9 +153,7 @@ class TimeFst(GraphFst):
             + delete_and
             + insert_space
             + pynutil.insert('minutes: "')
-            + pynini.union(
-                graph_minute_single, graph_minute_double, minute_verbose_graph
-            )
+            + pynini.union(graph_minute_single, graph_minute_double, minute_verbose_graph)
             + pynutil.insert('"')
             + optional_delete_time
         )
@@ -210,22 +186,13 @@ class TimeFst(GraphFst):
         final_graph_midnight = (
             optional_time_prefix_graph
             + delete_zero_or_one_space
-            + (
-                midnight_graph
-                | to_midnight_verbose_graph
-                | graph_m_to_midnight
-                | graph_midnight_and_m
-            )
+            + (midnight_graph | to_midnight_verbose_graph | graph_m_to_midnight | graph_midnight_and_m)
         )
 
         final_graph = (
             optional_time_prefix_graph
             + delete_zero_or_one_space
-            + (
-                graph_h_and_m
-                | graph_special_m_to_h_suffix_time
-                | graph_m_to_h_suffix_time
-            )
+            + (graph_h_and_m | graph_special_m_to_h_suffix_time | graph_m_to_h_suffix_time)
             + final_suffix
         )
         final_graph |= graph_h

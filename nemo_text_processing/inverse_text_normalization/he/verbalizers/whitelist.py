@@ -15,10 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    NEMO_ALPHA_HE, GraphFst)
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_CHAR, NEMO_SIGMA, delete_space)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_ALPHA_HE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_SIGMA, delete_space
 
 
 class WhiteListFst(GraphFst):
@@ -47,8 +45,6 @@ class WhiteListFst(GraphFst):
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete('"')
         )
-        graph = graph @ pynini.cdrewrite(
-            pynini.cross("\u00a0", " "), "", "", NEMO_SIGMA
-        )
+        graph = graph @ pynini.cdrewrite(pynini.cross("\u00a0", " "), "", "", NEMO_SIGMA)
         final_graph = optional_prefix + graph
         self.fst = final_graph.optimize()

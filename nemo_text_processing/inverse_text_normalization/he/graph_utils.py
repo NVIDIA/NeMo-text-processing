@@ -19,8 +19,7 @@ import pynini
 from pynini import Far
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_SIGMA, delete_space)
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, delete_space
 from nemo_text_processing.text_normalization.en.utils import load_labels
 
 NEMO_ALPHA_HE = pynini.union(*"אבגדהוזחטיכלמםנןסעפףצץקרשת").optimize()
@@ -68,13 +67,9 @@ class GraphFst:
         self._fst = None
         self.deterministic = deterministic
 
-        self.far_path = Path(
-            os.path.dirname(__file__) + "/grammars/" + kind + "/" + name + ".far"
-        )
+        self.far_path = Path(os.path.dirname(__file__) + "/grammars/" + kind + "/" + name + ".far")
         if self.far_exist():
-            self._fst = Far(
-                self.far_path, mode="r", arc_type="standard", far_type="default"
-            ).get_fst()
+            self._fst = Far(self.far_path, mode="r", arc_type="standard", far_type="default").get_fst()
 
     def far_exist(self) -> bool:
         """

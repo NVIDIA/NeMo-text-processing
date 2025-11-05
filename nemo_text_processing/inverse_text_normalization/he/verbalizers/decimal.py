@@ -15,10 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    NEMO_ALPHA_HE, GraphFst)
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, NEMO_NOT_QUOTE, delete_space)
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import NEMO_ALPHA_HE, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_NOT_QUOTE, delete_space
 
 
 class DecimalFst(GraphFst):
@@ -32,19 +30,14 @@ class DecimalFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="decimal", kind="verbalize")
-        optionl_sign = pynini.closure(
-            pynini.cross('negative: "true"', "-") + delete_space, 0, 1
-        )
+        optionl_sign = pynini.closure(pynini.cross('negative: "true"', "-") + delete_space, 0, 1)
 
         # Need parser to group digits by threes
         exactly_three_digits = NEMO_DIGIT**3
         at_most_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)
 
         # Thousands separator
-        group_by_threes = (
-            at_most_three_digits
-            + (pynutil.insert(",") + exactly_three_digits).closure()
-        )
+        group_by_threes = at_most_three_digits + (pynutil.insert(",") + exactly_three_digits).closure()
 
         integer = (
             pynutil.delete("integer_part:")
@@ -75,9 +68,7 @@ class DecimalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
         )
-        optional_quantity = pynini.closure(
-            pynutil.insert(" ") + quantity + delete_space, 0, 1
-        )
+        optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
 
         # Keep the prefix if exists and add a dash
         optional_prefix = pynini.closure(
@@ -92,9 +83,7 @@ class DecimalFst(GraphFst):
             1,
         )
 
-        graph = (
-            optional_prefix + optional_integer + optional_fractional + optional_quantity
-        )
+        graph = optional_prefix + optional_integer + optional_fractional + optional_quantity
         self.numbers = graph
         graph = optionl_sign + graph
         delete_tokens = self.delete_tokens(graph)

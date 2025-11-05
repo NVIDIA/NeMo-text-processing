@@ -177,8 +177,6 @@ def _less_than_100(num, only_fem=False):
             else:
                 res.append(f'{tens_dict[num[0]]} {"ו"}{units_feminine_dict[num[1]]}')
                 if not only_fem:
-                    res.append(
-                        f'{tens_dict[num[0]]} {"ו"}{units_masculine_dict[num[1]]}'
-                    )
+                    res.append(f'{tens_dict[num[0]]} {"ו"}{units_masculine_dict[num[1]]}')
 
     return res

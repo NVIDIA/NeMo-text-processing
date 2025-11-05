@@ -15,13 +15,15 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import \
-    GraphFst
-from nemo_text_processing.inverse_text_normalization.he.utils import \
-    get_abs_path
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT, NEMO_NOT_QUOTE, delete_space, delete_zero_or_one_space,
-    insert_space)
+    NEMO_DIGIT,
+    NEMO_NOT_QUOTE,
+    delete_space,
+    delete_zero_or_one_space,
+    insert_space,
+)
 
 
 class TimeFst(GraphFst):
@@ -38,44 +40,20 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="verbalize")
 
         hour_to_noon = pynini.string_file(get_abs_path("data/time/hour_to_noon.tsv"))
-        hour_to_evening = pynini.string_file(
-            get_abs_path("data/time/hour_to_evening.tsv")
-        )
+        hour_to_evening = pynini.string_file(get_abs_path("data/time/hour_to_evening.tsv"))
         hour_to_night = pynini.string_file(get_abs_path("data/time/hour_to_night.tsv"))
 
         day_suffixes = pynini.string_file(get_abs_path("data/time/day_suffix.tsv"))
-        day_suffixes = (
-            insert_space
-            + pynutil.delete('suffix: "')
-            + day_suffixes
-            + pynutil.delete('"')
-        )
+        day_suffixes = insert_space + pynutil.delete('suffix: "') + day_suffixes + pynutil.delete('"')
 
         noon_suffixes = pynini.string_file(get_abs_path("data/time/noon_suffix.tsv"))
-        noon_suffixes = (
-            insert_space
-            + pynutil.delete('suffix: "')
-            + noon_suffixes
-            + pynutil.delete('"')
-        )
+        noon_suffixes = insert_space + pynutil.delete('suffix: "') + noon_suffixes + pynutil.delete('"')
 
-        evening_suffixes = pynini.string_file(
-            get_abs_path("data/time/evening_suffix.tsv")
-        )
-        evening_suffixes = (
-            insert_space
-            + pynutil.delete('suffix: "')
-            + evening_suffixes
-            + pynutil.delete('"')
-        )
+        evening_suffixes = pynini.string_file(get_abs_path("data/time/evening_suffix.tsv"))
+        evening_suffixes = insert_space + pynutil.delete('suffix: "') + evening_suffixes + pynutil.delete('"')
 
         night_suffixes = pynini.string_file(get_abs_path("data/time/night_suffix.tsv"))
-        night_suffixes = (
-            insert_space
-            + pynutil.delete('suffix: "')
-            + night_suffixes
-            + pynutil.delete('"')
-        )
+        night_suffixes = insert_space + pynutil.delete('suffix: "') + night_suffixes + pynutil.delete('"')
 
         hour = (
             pynutil.delete("hours:")
@@ -110,14 +88,7 @@ class TimeFst(GraphFst):
             [hour_to_noon, hour_to_evening, hour_to_night],
             [noon_suffixes, evening_suffixes, night_suffixes],
         ):
-            graph |= (
-                hour @ hour_to
-                + delete_space
-                + pynutil.insert(":")
-                + minute
-                + delete_space
-                + suffix
-            )
+            graph |= hour @ hour_to + delete_space + pynutil.insert(":") + minute + delete_space + suffix
 
         graph |= optional_prefix + graph
         delete_tokens = self.delete_tokens(graph)

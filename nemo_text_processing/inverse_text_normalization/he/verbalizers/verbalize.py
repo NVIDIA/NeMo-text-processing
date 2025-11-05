@@ -12,22 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import \
-    GraphFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.cardinal import \
-    CardinalFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.date import \
-    DateFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal import \
-    DecimalFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.measure import \
-    MeasureFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.ordinal import \
-    OrdinalFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.time import \
-    TimeFst
-from nemo_text_processing.inverse_text_normalization.he.verbalizers.whitelist import \
-    WhiteListFst
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.he.verbalizers.whitelist import WhiteListFst
 
 
 class VerbalizeFst(GraphFst):
@@ -57,12 +49,6 @@ class VerbalizeFst(GraphFst):
         whitelist_graph = WhiteListFst().fst
 
         graph = (
-            time_graph
-            | date_graph
-            | measure_graph
-            | ordinal_graph
-            | decimal_graph
-            | cardinal_graph
-            | whitelist_graph
+            time_graph | date_graph | measure_graph | ordinal_graph | decimal_graph | cardinal_graph | whitelist_graph
         )
         self.fst = graph
