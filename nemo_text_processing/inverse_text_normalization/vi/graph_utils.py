@@ -37,7 +37,7 @@ NEMO_NON_BREAKING_SPACE = "\u00a0"
 NEMO_SPACE = " "
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", "\u00a0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
-NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
+NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, '"').optimize()
 
 NEMO_PUNCT = pynini.union(*map(pynini.escape, string.punctuation)).optimize()
 NEMO_GRAPH = pynini.union(NEMO_ALNUM, NEMO_PUNCT).optimize()
@@ -47,6 +47,7 @@ NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
+delete_single_space = pynutil.delete(NEMO_SPACE)
 
 # French frequently compounds numbers with hyphen.
 delete_hyphen = pynutil.delete(pynini.closure("-", 0, 1))
