@@ -40,10 +40,9 @@ class WordFst(GraphFst):
 
         # Define Hindi characters and symbols using pynini.union
         HINDI_CHAR = pynini.union(
-            *[chr(i) for i in range(ord("ऀ"), ord("ः") + 1)],  # Hindi vowels and consonants
-            *[chr(i) for i in range(ord("अ"), ord("ह") + 1)],  # More Hindi characters
-            *[chr(i) for i in range(ord("ा"), ord("्") + 1)],  # Hindi diacritics
-            *[chr(i) for i in range(ord("०"), ord("९") + 1)],  # Hindi digits
+            *[chr(i) for i in range(0x0900, 0x0903 + 1)],  # Hindi vowels and consonants
+            *[chr(i) for i in range(0x0905, 0x0939 + 1)],  # More Hindi characters
+            *[chr(i) for i in range(0x093E, 0x094D + 1)],  # Hindi diacritics
         ).optimize()
 
         # Include punctuation in the graph
