@@ -15,8 +15,10 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, delete_space
+from nemo_text_processing.inverse_text_normalization.he.graph_utils import \
+    GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT, delete_space)
 
 
 class OrdinalFst(GraphFst):
@@ -30,9 +32,9 @@ class OrdinalFst(GraphFst):
         graph = (
             pynutil.delete("integer:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

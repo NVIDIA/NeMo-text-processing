@@ -16,19 +16,11 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import (
-    NEMO_ALPHA_HE,
-    GraphFst,
-    delete_and,
-    delete_optional_and,
-)
-from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
+    NEMO_ALPHA_HE, GraphFst, delete_and, delete_optional_and)
+from nemo_text_processing.inverse_text_normalization.he.utils import \
+    get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_SIGMA,
-    NEMO_SPACE,
-    delete_space,
-    insert_space,
-)
+    NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, delete_space, insert_space)
 from nemo_text_processing.text_normalization.en.utils import load_labels
 
 
@@ -53,15 +45,19 @@ class CardinalFst(GraphFst):
             delete_space + delete_optional_and + graph_digit,
             pynutil.insert("0", weight=0.001),
         )
-
         graph_two_digit = pynini.union(graph_teen, graph_ties)
-        self.graph_two_digit = pynini.union(graph_digit, graph_ties, pynutil.add_weight(graph_teen, -0.001))
+
+        self.graph_two_digit = pynini.union(
+            graph_digit, graph_ties, pynutil.add_weight(graph_teen, -0.001)
+        )
 
         # hundreds
-        hundred = pynini.string_map([("מאה", "1"), ("מאתיים", "2")])
+        hundred_exception = pynini.string_file(
+            get_abs_path("data/numbers/hundreds_exception.tsv")
+        )
         delete_hundred = pynutil.delete("מאות")
         graph_hundred = delete_optional_and + pynini.union(
-            hundred,
+            hundred_exception,
             graph_digit + delete_space + delete_hundred,
             pynutil.insert("0", weight=0.001),
         )
@@ -76,13 +72,14 @@ class CardinalFst(GraphFst):
             pynutil.insert("0") + graph_two_digit,
             pynutil.insert("00") + graph_digit,
         )
-
         self.graph_hundred = graph_hundred @ (
             pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
         )
 
         # thousands
-        thousand = pynini.string_map([("אלף", "1"), ("אלפיים", "2")])
+        thousand_exception = pynini.string_file(
+            get_abs_path("data/numbers/thousands_exception.tsv")
+        )
         thousand_digit = pynini.string_file(get_abs_path("data/numbers/thousands.tsv"))
         delete_thousand = pynutil.delete("אלפים") | pynutil.delete("אלף", weight=0.001)
 
@@ -92,72 +89,106 @@ class CardinalFst(GraphFst):
             pynutil.insert("00") + thousand_digit,
         )
         many_thousands = large_number_prefix + delete_space + delete_thousand
-
         graph_thousands = delete_optional_and + pynini.union(
-            (pynutil.insert("00") + thousand),
+            (pynutil.insert("00") + thousand_exception),
             many_thousands,
             pynutil.insert("000", weight=0.001),
         )
 
-        self.graph_thousands = pynini.union(graph_thousands + delete_space + graph_hundred, graph_zero)
+        self.graph_thousands = pynini.union(
+            graph_thousands + delete_space + graph_hundred, graph_zero
+        )
         self.graph_thousands @= pynini.union(
-            pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT),
+            pynutil.delete(pynini.closure("0"))
+            + pynini.difference(NEMO_DIGIT, "0")
+            + pynini.closure(NEMO_DIGIT),
             "0",
         )
 
         # millions
-        million = pynini.string_map([("מיליון", "001")])
-
-        delete_millions = pynutil.delete("מיליונים") | pynutil.delete("מיליון", weight=0.001)
+        million_exceptions = pynini.string_file(
+            get_abs_path("data/numbers/millions_exception.tsv")
+        )
+        million_exceptions = pynutil.insert("00") + million_exceptions
+        delete_millions = pynutil.delete("מיליונים") | pynutil.delete(
+            "מיליון", weight=0.001
+        )
         many_millions = large_number_prefix + delete_space + delete_millions
-
-        graph_millions = pynini.union(many_millions, million, pynutil.insert("000", weight=0.001))
-
-        graph = pynini.union(
-            graph_millions + delete_space + graph_thousands + delete_space + graph_hundred,
-            graph_zero,
+        graph_millions = pynini.union(
+            many_millions, million_exceptions, pynutil.insert("000", weight=0.001)
         )
 
+        graph = pynini.union(
+            graph_millions
+            + delete_space
+            + graph_thousands
+            + delete_space
+            + graph_hundred,
+            graph_zero,
+        )
         graph = graph @ pynini.union(
-            pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT),
+            pynutil.delete(pynini.closure("0"))
+            + pynini.difference(NEMO_DIGIT, "0")
+            + pynini.closure(NEMO_DIGIT),
             "0",
         )
 
         labels_exception = load_labels(get_abs_path("data/numbers/digit.tsv"))
-        labels_exception = list(set([x[0] for x in labels_exception] + ["אפס", "עשר", "עשרה"]))
+        labels_exception = list(
+            set([x[0] for x in labels_exception] + ["אפס", "עשר", "עשרה"])
+        )
         labels_exception += ["ו" + label for label in labels_exception]
         graph_exception = pynini.union(*labels_exception).optimize()
-
         graph = ((NEMO_ALPHA_HE + NEMO_SIGMA) @ graph).optimize()
 
         self.graph_no_exception = graph
 
         ### Token insertion
-        minus_graph = pynutil.insert("negative: ") + pynini.cross("מינוס", '"-"') + NEMO_SPACE
+        minus_graph = (
+            pynutil.insert("negative: ") + pynini.cross("מינוס", '"-"') + NEMO_SPACE
+        )
         optional_minus_graph = pynini.closure(minus_graph, 0, 1)
 
         optional_prefix_graph = pynini.closure(
-            pynutil.insert('morphosyntactic_features: "') + prefix_graph + pynutil.insert('"') + insert_space,
+            pynutil.insert('morphosyntactic_features: "')
+            + prefix_graph
+            + pynutil.insert('"')
+            + insert_space,
             0,
             1,
         )
 
-        graph_wo_small_digits = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        graph_wo_small_digits = (
+            pynini.project(graph, "input") - graph_exception.arcsort()
+        ) @ graph
 
-        cardinal_wo_viable_hours = load_labels(get_abs_path("data/numbers/viable_hours.tsv"))
+        cardinal_wo_viable_hours = load_labels(
+            get_abs_path("data/numbers/viable_hours.tsv")
+        )
         cardinal_wo_viable_hours = list(set([x[0] for x in cardinal_wo_viable_hours]))
         viable_hours_exception = pynini.union(*cardinal_wo_viable_hours).optimize()
-        self.graph_wo_viable_hours = (pynini.project(graph, "input") - viable_hours_exception.arcsort()) @ graph
+        self.graph_wo_viable_hours = (
+            pynini.project(graph, "input") - viable_hours_exception.arcsort()
+        ) @ graph
 
         small_number_with_minus = (
-            insert_space + minus_graph + pynutil.insert('integer: "') + self.graph_no_exception + pynutil.insert('"')
+            insert_space
+            + minus_graph
+            + pynutil.insert('integer: "')
+            + self.graph_no_exception
+            + pynutil.insert('"')
         )
 
         big_number_with_optional_minus = (
-            optional_minus_graph + pynutil.insert('integer: "') + graph_wo_small_digits + pynutil.insert('"')
+            optional_minus_graph
+            + pynutil.insert('integer: "')
+            + graph_wo_small_digits
+            + pynutil.insert('"')
         )
 
-        graph = optional_prefix_graph + (small_number_with_minus | big_number_with_optional_minus)
+        graph = optional_prefix_graph + (
+            small_number_with_minus | big_number_with_optional_minus
+        )
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

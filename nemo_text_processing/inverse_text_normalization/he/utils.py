@@ -54,7 +54,10 @@ tens_dict = {
     "9": "תשעים",
 }
 
-ten = {"short": "עשר", "long": "עשרה"}  # double pronunciation: short is 'eser' and 'asar', long is 'esre' and 'asara'
+ten = {
+    "short": "עשר",
+    "long": "עשרה",
+}  # double pronunciation: short is 'eser' and 'asar', long is 'esre' and 'asara'
 
 
 #############
@@ -69,7 +72,7 @@ def get_abs_path(rel_path):
 
     Returns absolute path
     """
-    return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
+    return os.path.dirname(os.path.abspath(__file__)) + "/" + rel_path
 
 
 def augment_labels_with_punct_at_end(labels):
@@ -92,7 +95,7 @@ def augment_labels_with_punct_at_end(labels):
 
 def digit_by_digit(num):
 
-    dbd = [' '.join([units_feminine_dict[digit] for digit in num])]
+    dbd = [" ".join([units_feminine_dict[digit] for digit in num])]
 
     # generate "1" as masculine and as feminine if exists
     if units_feminine_dict["1"] in dbd[0]:
@@ -106,7 +109,7 @@ def integer_to_text(num, only_fem=False):
         num = str(num)
     # number is zero
     if num == len(num) * "0":
-        return ['אפס']
+        return ["אפס"]
     else:
         # remove leading zeros from number
         num = num.lstrip("0")
@@ -174,6 +177,8 @@ def _less_than_100(num, only_fem=False):
             else:
                 res.append(f'{tens_dict[num[0]]} {"ו"}{units_feminine_dict[num[1]]}')
                 if not only_fem:
-                    res.append(f'{tens_dict[num[0]]} {"ו"}{units_masculine_dict[num[1]]}')
+                    res.append(
+                        f'{tens_dict[num[0]]} {"ו"}{units_masculine_dict[num[1]]}'
+                    )
 
     return res
