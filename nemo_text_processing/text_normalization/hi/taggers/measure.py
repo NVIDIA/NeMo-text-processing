@@ -21,6 +21,7 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     HI_PAUNE,
     HI_SADHE,
     HI_SAVVA,
+    INPUT_LOWER_CASED,
     NEMO_CHAR,
     NEMO_DIGIT,
     NEMO_HI_DIGIT,
@@ -30,7 +31,8 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path
+from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
 
 HI_POINT_FIVE = ".५"  # .5
 HI_ONE_POINT_FIVE = "१.५"  # 1.5
@@ -56,36 +58,89 @@ class MeasureFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def get_address_graph(self, cardinal: GraphFst):
+    def get_address_graph(self, cardinal: GraphFst, ordinal: GraphFst, input_case: str):
         """
         Address tagger that converts digits/hyphens/slashes character-by-character
         when address context keywords are present, keeping all surrounding text.
+        English words are converted to Hindi transliterations.
+        Ordinals (e.g., 1st, 2nd, 3rd) are transliterated to Hindi.
         
         Examples:
             "७०० ओक स्ट्रीट" -> "सात शून्य शून्य ओक स्ट्रीट"
             "६६-४ पार्क रोड" -> "छह छह हाइफ़न चार पार्क रोड"
+            "७०० ओक Street" -> "सात शून्य शून्य ओक स्ट्रीट"
+            "यूनिट ३ 1st फ्लोर" -> "यूनिट तीन फ़र्स्ट फ्लोर"
         """
+        # Use the ordinal exceptions graph from OrdinalFst for addresses
+        # This includes both English-style ordinals (1st, 2nd, 3rd) and Hindi-style ordinals (५वां, ६ठा)
+        # Both should be read as complete ordinals in addresses, not digit-by-digit
+        ordinal_graph = ordinal.exceptions_graph
+        
         # Load character mappings
         char_to_word = (
             pynini.string_file(get_abs_path("data/address/address_digits.tsv"))
             | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         )
         
-        # Load address context keywords (Hindi and English)
+        # Load letter transliterations (A-Z, a-z)
+        letter_to_word = pynini.string_file(get_abs_path("data/address/letters.tsv"))
+        
+        # Load address context keywords (Hindi only for context detection)
         address_keywords_hi = pynini.string_file(get_abs_path("data/address/context.tsv"))
-        address_keywords_en = pynini.string_file(get_abs_path("data/address/en_context.tsv"))
+        
+        # Load English-to-Hindi mapping for transliteration with case-insensitive support
+        en_to_hi_mapping = load_labels(get_abs_path("data/address/en_to_hi_mapping.tsv"))
+        
+        # Extract English context keywords from the mapping (first column)
+        en_context_words = []
+        if input_case == INPUT_LOWER_CASED:
+            # For lower_cased input, just use lowercase mappings
+            en_to_hi_mapping_expanded = [[x.lower(), y] for x, y in en_to_hi_mapping]
+            en_context_words = [x.lower() for x, _ in en_to_hi_mapping]
+        else:
+            # For cased input, generate both lowercase and capitalized versions for case-insensitive matching
+            expanded_mapping = []
+            for x, y in en_to_hi_mapping:
+                expanded_mapping.append([x, y])  # lowercase version
+                en_context_words.append(x)  # Add to context words
+                # Add capitalized version (first letter uppercase)
+                if x and x[0].isalpha():
+                    capitalized = x[0].upper() + x[1:]
+                    if capitalized != x:  # avoid duplicates
+                        expanded_mapping.append([capitalized, y])
+                        en_context_words.append(capitalized)  # Add capitalized to context
+            en_to_hi_mapping_expanded = expanded_mapping
+        
+        en_to_hi_map = pynini.string_map(en_to_hi_mapping_expanded)
+        
+        # For context detection, use both Hindi words and English words extracted from mapping
+        address_keywords_en = pynini.string_map([[word, word] for word in en_context_words])
         address_keywords = address_keywords_hi | address_keywords_en
         
         # Define character sets
         single_digit = NEMO_DIGIT | NEMO_HI_DIGIT
         special_chars = pynini.union("-", "/")
+        
+        # Define single English letters (A-Z, a-z) - to be handled separately from words
+        single_letter = pynini.union(
+            *[pynini.accep(chr(i)) for i in range(ord('a'), ord('z')+1)]
+        ) | pynini.union(
+            *[pynini.accep(chr(i)) for i in range(ord('A'), ord('Z')+1)]
+        )
+        
         convertible_char = single_digit | special_chars
         
-        # Non-convertible characters (everything else except space)
-        non_space_char = pynini.difference(NEMO_CHAR, pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(",")))
+        # Non-convertible characters (everything else except space, letters, and convertibles)
+        non_space_char = pynini.difference(
+            NEMO_CHAR, 
+            pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(","), single_letter)
+        )
         
         # Character-level processor:
-        # - Convertible chars -> add space before and after, then convert
+        # - Ordinals (1st, 2nd, etc.) -> convert to Hindi transliteration (highest priority)
+        # - English words -> convert to Hindi transliteration with spaces
+        # - Single letters (A, B, C, etc.) -> convert to Hindi transliteration with spaces
+        # - Convertible chars (digits/hyphens) -> add space before and after, then convert
         # - Spaces -> keep as single space
         # - Commas -> add space before and after to separate from surrounding words
         # - Other chars -> keep as-is
@@ -93,16 +148,52 @@ class MeasureFst(GraphFst):
         # For comma, add space before and after it
         comma_processor = insert_space + pynini.accep(",") + insert_space
         
-        # For other non-space, non-comma chars, keep as-is
-        # other_char = pynini.difference(non_space_char, pynini.accep(","))
+        # Ordinal processor with highest priority
+        # The ordinal graph handles both English and Hindi digit ordinals
+        ordinal_processor = pynutil.add_weight(
+            insert_space + ordinal_graph + insert_space,
+            -20.0  # Highest priority (most negative weight)
+        )
         
-        char_processor = (
-            insert_space + pynini.compose(convertible_char, char_to_word) + insert_space
-        ) | pynini.accep(NEMO_SPACE) | comma_processor | non_space_char
+        # English word processor with priority: match English word and convert to Hindi
+        # Use weight to prefer longer matches (English words) over character matches
+        english_word_processor = pynutil.add_weight(
+            insert_space + en_to_hi_map + insert_space,
+            -10.0  # Very high priority to ensure words match before letters
+        )
         
-        # Process entire string character by character
-        # This creates a graph that converts all digits/special chars and keeps everything else
-        full_string_processor = pynini.closure(char_processor, 1)
+        # Single letter processor - handles isolated English letters
+        # Lower priority than words and digits - only match when nothing else matches
+        letter_processor = pynutil.add_weight(
+            insert_space + pynini.compose(single_letter, letter_to_word) + insert_space,
+            0.5  # Lower priority than words and digits, higher than other chars
+        )
+        
+        # Character-level processors for digits/special chars
+        digit_char_processor = pynutil.add_weight(
+            insert_space + pynini.compose(convertible_char, char_to_word) + insert_space,
+            0.0  # Neutral weight
+        )
+        
+        # Other single characters (lower priority)
+        other_char_processor = pynutil.add_weight(
+            non_space_char,
+            0.1  # Positive weight = lower priority
+        )
+        
+        # Combined processor: Ordinals > English words > Single letters > Digits > Other chars
+        token_processor = (
+            ordinal_processor
+            | english_word_processor
+            | letter_processor
+            | digit_char_processor
+            | pynini.accep(NEMO_SPACE)
+            | comma_processor
+            | other_char_processor
+        )
+        
+        # Process entire string token by token
+        full_string_processor = pynini.closure(token_processor, 1)
         
         # Now we need to only apply this when address context is present
         # Create patterns that match strings containing address keywords
@@ -123,7 +214,9 @@ class MeasureFst(GraphFst):
         non_boundary_char = pynini.difference(NEMO_CHAR, word_boundary)
         word = pynini.closure(non_boundary_char, 1)
         
-        # Word with optional boundaries after it (allows multiple: ", " = comma + space)
+        # Word with optio
+        # 
+        # nal boundaries after it (allows multiple: ", " = comma + space)
         word_with_boundary = word + pynini.closure(word_boundary)
         
         # Up to 4 words (for the window)
@@ -134,8 +227,8 @@ class MeasureFst(GraphFst):
         # 1. Start of string: keyword + boundaries (or end of string)
         # 2. Middle: boundaries + keyword + boundaries  
         # 3. End: boundaries + keyword (at end of string)
-        context_at_start = address_keywords + pynini.closure(word_boundary)
-        context_in_middle = pynini.closure(word_boundary, 1) + address_keywords + pynini.closure(word_boundary)
+        context_at_start = address_keywords + pynini.closure(word_boundary, 1)
+        context_in_middle = pynini.closure(word_boundary, 1) + address_keywords + pynini.closure(word_boundary, 1)
         context_at_end = pynini.closure(word_boundary, 1) + address_keywords
         
         # Pattern that matches strings with context word within a 4-word window
@@ -173,7 +266,7 @@ class MeasureFst(GraphFst):
         # Telephone has weights 0.7-1.0, so use 1.05 to be lower priority
         return pynutil.add_weight(graph, 1.05).optimize()
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, ordinal: GraphFst, input_case: str):
         super().__init__(name="measure", kind="classify")
 
         cardinal_graph = (
@@ -352,7 +445,7 @@ class MeasureFst(GraphFst):
         )
 
         # Get the address graph for digit-by-digit conversion in address contexts
-        address_graph = self.get_address_graph(cardinal)
+        address_graph = self.get_address_graph(cardinal, ordinal, input_case)
         
         graph = (
             pynutil.add_weight(graph_decimal, 0.1)

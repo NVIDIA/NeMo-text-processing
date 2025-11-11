@@ -94,14 +94,14 @@ class ClassifyFst(GraphFst):
             timefst = TimeFst(cardinal=cardinal)
             time_graph = timefst.fst
 
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal)
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            ordinal_graph = ordinal.fst
+
+            measure = MeasureFst(cardinal=cardinal, decimal=decimal, ordinal=ordinal, input_case=input_case)
             measure_graph = measure.fst
 
             money = MoneyFst(cardinal=cardinal)
             money_graph = money.fst
-
-            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
-            ordinal_graph = ordinal.fst
 
             whitelist_graph = WhiteListFst(
                 input_case=input_case, deterministic=deterministic, input_file=whitelist

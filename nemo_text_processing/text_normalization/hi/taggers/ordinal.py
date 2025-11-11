@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_CHAR, GraphFst
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
@@ -39,11 +39,31 @@ class OrdinalFst(GraphFst):
         suffixes_fst = pynini.union(suffixes_list, suffixes_map)
         exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
 
+        # Create English to Hindi digit mapping for preprocessing ordinals
+        en_to_hi_digits = pynini.string_map([
+            ("0", "०"), ("1", "१"), ("2", "२"), ("3", "३"), ("4", "४"),
+            ("5", "५"), ("6", "६"), ("7", "७"), ("8", "८"), ("9", "९")
+        ])
+        
+        # Convert English digits to Hindi for ordinal processing
+        # This handles cases like "1st" -> "१st" before ordinal matching
+        digit_normalizer = pynini.cdrewrite(en_to_hi_digits, "", "", pynini.closure(NEMO_CHAR))
+
         graph = cardinal.final_graph + suffixes_fst
         exceptions = pynutil.add_weight(exceptions, -0.1)
         graph = pynini.union(exceptions, graph)
+        
+        # Apply digit normalization before ordinal matching
+        # This allows both "1st" and "१st" to be processed as ordinals
+        graph_with_normalization = pynini.compose(digit_normalizer, graph)
 
-        final_graph = pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
+        # Store the core graph without token wrapping for use in other contexts (e.g., addresses)
+        # For addresses, only expose exceptions to avoid over-matching (e.g., don't convert "210वीं" to "दो सौ दसवीं")
+        exceptions_with_normalization = pynini.compose(digit_normalizer, exceptions)
+        self.graph = graph_with_normalization.optimize()
+        self.exceptions_graph = exceptions_with_normalization.optimize()
+        
+        final_graph = pynutil.insert("integer: \"") + graph_with_normalization + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
 
         self.fst = final_graph.optimize()
