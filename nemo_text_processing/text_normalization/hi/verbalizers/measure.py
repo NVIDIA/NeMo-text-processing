@@ -69,7 +69,7 @@ class MeasureFst(GraphFst):
         )
 
         graph = (graph_cardinal | graph_decimal) + delete_space + insert_space + unit
-        
+
         # Handle address: delete "units: address" and just output the cardinal
         preserve_order = pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
         address = (
@@ -79,9 +79,9 @@ class MeasureFst(GraphFst):
             + delete_space
             + pynini.closure(preserve_order)
         )
-        
+
         graph |= address
-        
+
         self.decimal = graph_decimal
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

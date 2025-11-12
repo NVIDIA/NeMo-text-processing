@@ -73,7 +73,7 @@ class MeasureFst(GraphFst):
         Address tagger that converts digits/hyphens/slashes character-by-character
         when address context keywords are present.
         English words and ordinals are converted to Hindi transliterations.
-        
+
         Examples:
             "७०० ओक स्ट्रीट" -> "सात शून्य शून्य ओक स्ट्रीट"
             "६६-४ पार्क रोड" -> "छह छह हाइफ़न चार पार्क रोड"
@@ -111,31 +111,28 @@ class MeasureFst(GraphFst):
 
         address_keywords_en = pynini.string_map([[word, word] for word in en_context_words])
         address_keywords = address_keywords_hi | address_keywords_en
-        
+
         # Alphanumeric processing: treat digits, letters, and -/ as convertible tokens
         single_digit = NEMO_DIGIT | NEMO_HI_DIGIT
         special_chars = pynini.union(HYPHEN, SLASH)
         single_letter = pynini.project(letter_to_word, "input")
         convertible_char = single_digit | special_chars | single_letter
         non_space_char = pynini.difference(
-            NEMO_CHAR, 
-            pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(COMMA))
+            NEMO_CHAR, pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(COMMA))
         )
 
         # Token processors with weights: prefer ordinals and known English→Hindi words
         comma_processor = insert_space + pynini.accep(COMMA) + insert_space
         ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph + insert_space, -5.0)
         english_word_processor = pynutil.add_weight(insert_space + en_to_hi_map + insert_space, -3.0)
-        letter_processor = pynutil.add_weight(insert_space + pynini.compose(single_letter, letter_to_word) + insert_space, 0.5)
+        letter_processor = pynutil.add_weight(
+            insert_space + pynini.compose(single_letter, letter_to_word) + insert_space, 0.5
+        )
         digit_char_processor = pynutil.add_weight(
-            insert_space + pynini.compose(convertible_char, char_to_word) + insert_space,
-            0.0
+            insert_space + pynini.compose(convertible_char, char_to_word) + insert_space, 0.0
         )
-        other_char_processor = pynutil.add_weight(
-            non_space_char,
-            0.1
-        )
-        
+        other_char_processor = pynutil.add_weight(non_space_char, 0.1)
+
         token_processor = (
             ordinal_processor
             | english_word_processor
@@ -148,7 +145,9 @@ class MeasureFst(GraphFst):
         full_string_processor = pynini.closure(token_processor, 1)
 
         # Window-based context matching around address keywords for robust detection
-        word_boundary = pynini.union(NEMO_WHITE_SPACE, pynini.accep(COMMA), pynini.accep(HI_PERIOD), pynini.accep(PERIOD))
+        word_boundary = pynini.union(
+            NEMO_WHITE_SPACE, pynini.accep(COMMA), pynini.accep(HI_PERIOD), pynini.accep(PERIOD)
+        )
         non_boundary_char = pynini.difference(NEMO_CHAR, word_boundary)
         word = pynini.closure(non_boundary_char, 1)
         word_with_boundary = word + pynini.closure(word_boundary)
@@ -156,13 +155,13 @@ class MeasureFst(GraphFst):
         boundary = pynini.closure(word_boundary, 1)
         input_pattern = pynini.union(
             address_keywords + boundary + window,
-            window + boundary + address_keywords + pynini.closure(boundary + window, 0, 1)
+            window + boundary + address_keywords + pynini.closure(boundary + window, 0, 1),
         )
         address_graph = pynini.compose(input_pattern, full_string_processor)
         graph = (
-            pynutil.insert('units: "address" cardinal { integer: "') +
-            address_graph +
-            pynutil.insert('" } preserve_order: true')
+            pynutil.insert('units: "address" cardinal { integer: "')
+            + address_graph
+            + pynutil.insert('" } preserve_order: true')
         )
         return pynutil.add_weight(graph, 1.05).optimize()
 
@@ -343,7 +342,7 @@ class MeasureFst(GraphFst):
         )
 
         address_graph = self.get_address_graph(ordinal, input_case)
-        
+
         graph = (
             pynutil.add_weight(graph_decimal, 0.1)
             | pynutil.add_weight(graph_cardinal, 0.1)

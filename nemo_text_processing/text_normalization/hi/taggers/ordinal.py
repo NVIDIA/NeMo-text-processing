@@ -20,8 +20,16 @@ from nemo_text_processing.text_normalization.hi.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 EN_TO_HI_DIGIT_MAPPINGS = [
-    ("0", "०"), ("1", "१"), ("2", "२"), ("3", "३"), ("4", "४"),
-    ("5", "५"), ("6", "६"), ("7", "७"), ("8", "८"), ("9", "९")
+    ("0", "०"),
+    ("1", "१"),
+    ("2", "२"),
+    ("3", "३"),
+    ("4", "४"),
+    ("5", "५"),
+    ("6", "६"),
+    ("7", "७"),
+    ("8", "८"),
+    ("9", "९"),
 ]
 
 
@@ -56,14 +64,14 @@ class OrdinalFst(GraphFst):
             | cardinal.graph_thousands
             | cardinal.graph_ten_thousands
         ).optimize()
-        
+
         graph = limited_cardinal_graph + suffixes_fst
         exceptions = pynutil.add_weight(exceptions, -0.1)
         graph = pynini.union(exceptions, graph)
-        
+
         graph_with_normalization = pynini.compose(digit_normalizer, graph)
         self.graph = graph_with_normalization.optimize()
-        
+
         final_graph = pynutil.insert("integer: \"") + graph_with_normalization + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
 
