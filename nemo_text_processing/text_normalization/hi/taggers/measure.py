@@ -121,7 +121,7 @@ class MeasureFst(GraphFst):
             NEMO_CHAR, 
             pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(COMMA))
         )
-        
+
         # Token processors with weights: prefer ordinals and known English→Hindi words
         comma_processor = insert_space + pynini.accep(COMMA) + insert_space
         ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph + insert_space, -5.0)
@@ -182,7 +182,6 @@ class MeasureFst(GraphFst):
         point = pynutil.delete(".")
         decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
-
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
 
         # Load quarterly units from separate files: map (FST) and list (FSA)
