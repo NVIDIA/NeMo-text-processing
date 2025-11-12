@@ -21,18 +21,34 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     HI_PAUNE,
     HI_SADHE,
     HI_SAVVA,
+    INPUT_LOWER_CASED,
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    NEMO_HI_DIGIT,
     NEMO_SPACE,
+    NEMO_WHITE_SPACE,
     GraphFst,
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path
+from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
 
-HI_POINT_FIVE = ".५"  # .5
-HI_ONE_POINT_FIVE = "१.५"  # 1.5
-HI_TWO_POINT_FIVE = "२.५"  # 2.5
-HI_DECIMAL_25 = ".२५"  # .25
-HI_DECIMAL_75 = ".७५"  # .75
+HI_POINT_FIVE = ".५"
+HI_ONE_POINT_FIVE = "१.५"
+HI_TWO_POINT_FIVE = "२.५"
+HI_DECIMAL_25 = ".२५"
+HI_DECIMAL_75 = ".७५"
+HI_BY = "बाई"
+
+LOWERCASE_X = "x"
+UPPERCASE_X = "X"
+ASTERISK = "*"
+HYPHEN = "-"
+SLASH = "/"
+COMMA = ","
+PERIOD = "."
+HI_PERIOD = "।"
 
 digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
@@ -52,7 +68,96 @@ class MeasureFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
+    def get_address_graph(self, ordinal: GraphFst, input_case: str):
+        """
+        Address tagger that converts digits/hyphens/slashes character-by-character
+        when address context keywords are present.
+        English words and ordinals are converted to Hindi transliterations.
+        
+        Examples:
+            "७०० ओक स्ट्रीट" -> "सात शून्य शून्य ओक स्ट्रीट"
+            "६६-४ पार्क रोड" -> "छह छह हाइफ़न चार पार्क रोड"
+        """
+        ordinal_graph = ordinal.graph
+        char_to_word = (
+            digit
+            | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+            | pynini.string_file(get_abs_path("data/address/special_characters.tsv"))
+            | pynini.string_file(get_abs_path("data/telephone/number.tsv"))
+        )
+        letter_to_word = pynini.string_file(get_abs_path("data/address/letters.tsv"))
+        address_keywords_hi = pynini.string_file(get_abs_path("data/address/context.tsv"))
+        en_to_hi_mapping = load_labels(get_abs_path("data/address/en_to_hi_mapping.tsv"))
+        en_context_words = []
+        if input_case == INPUT_LOWER_CASED:
+            en_to_hi_mapping_expanded = [[x.lower(), y] for x, y in en_to_hi_mapping]
+            en_context_words = [x.lower() for x, _ in en_to_hi_mapping]
+        else:
+            expanded_mapping = []
+            for x, y in en_to_hi_mapping:
+                expanded_mapping.append([x, y])
+                en_context_words.append(x)
+                if x and x[0].isalpha():
+                    capitalized = x[0].upper() + x[1:]
+                    if capitalized != x:
+                        expanded_mapping.append([capitalized, y])
+                        en_context_words.append(capitalized)
+            en_to_hi_mapping_expanded = expanded_mapping
+        en_to_hi_map = pynini.string_map(en_to_hi_mapping_expanded)
+
+        address_keywords_en = pynini.string_map([[word, word] for word in en_context_words])
+        address_keywords = address_keywords_hi | address_keywords_en
+        
+        single_digit = NEMO_DIGIT | NEMO_HI_DIGIT
+        special_chars = pynini.union(HYPHEN, SLASH)
+        single_letter = pynini.project(letter_to_word, "input")
+        convertible_char = single_digit | special_chars | single_letter
+        non_space_char = pynini.difference(
+            NEMO_CHAR, 
+            pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(COMMA))
+        )
+        comma_processor = insert_space + pynini.accep(COMMA) + insert_space
+        ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph + insert_space, -5.0)
+        english_word_processor = pynutil.add_weight(insert_space + en_to_hi_map + insert_space, -3.0)
+        letter_processor = pynutil.add_weight(insert_space + pynini.compose(single_letter, letter_to_word) + insert_space, 0.5)
+        digit_char_processor = pynutil.add_weight(
+            insert_space + pynini.compose(convertible_char, char_to_word) + insert_space,
+            0.0
+        )
+        other_char_processor = pynutil.add_weight(
+            non_space_char,
+            0.1
+        )
+        
+        token_processor = (
+            ordinal_processor
+            | english_word_processor
+            | letter_processor
+            | digit_char_processor
+            | pynini.accep(NEMO_SPACE)
+            | comma_processor
+            | other_char_processor
+        )
+        full_string_processor = pynini.closure(token_processor, 1)
+        word_boundary = pynini.union(NEMO_WHITE_SPACE, pynini.accep(COMMA), pynini.accep(HI_PERIOD), pynini.accep(PERIOD))
+        non_boundary_char = pynini.difference(NEMO_CHAR, word_boundary)
+        word = pynini.closure(non_boundary_char, 1)
+        word_with_boundary = word + pynini.closure(word_boundary)
+        window = pynini.closure(word_with_boundary, 0, 5)
+        boundary = pynini.closure(word_boundary, 1)
+        input_pattern = pynini.union(
+            address_keywords + boundary + window,
+            window + boundary + address_keywords + pynini.closure(boundary + window, 0, 1)
+        )
+        address_graph = pynini.compose(input_pattern, full_string_processor)
+        graph = (
+            pynutil.insert('units: "address" cardinal { integer: "') +
+            address_graph +
+            pynutil.insert('" } preserve_order: true')
+        )
+        return pynutil.add_weight(graph, 1.05).optimize()
+
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, ordinal: GraphFst, input_case: str):
         super().__init__(name="measure", kind="classify")
 
         cardinal_graph = (
@@ -68,6 +173,7 @@ class MeasureFst(GraphFst):
         point = pynutil.delete(".")
         decimal_integers = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
+
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
 
         # Load quarterly units from separate files: map (FST) and list (FSA)
@@ -107,12 +213,11 @@ class MeasureFst(GraphFst):
             + pynutil.insert(NEMO_SPACE)
         )
 
-        # Handling symbols like x, X, *
         symbol_graph = pynini.string_map(
             [
-                ("x", "बाई"),
-                ("X", "बाई"),
-                ("*", "बाई"),
+                (LOWERCASE_X, HI_BY),
+                (UPPERCASE_X, HI_BY),
+                (ASTERISK, HI_BY),
             ]
         )
 
@@ -229,6 +334,8 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
+        address_graph = self.get_address_graph(ordinal, input_case)
+        
         graph = (
             pynutil.add_weight(graph_decimal, 0.1)
             | pynutil.add_weight(graph_cardinal, 0.1)
@@ -237,6 +344,7 @@ class MeasureFst(GraphFst):
             | pynutil.add_weight(graph_savva, -0.1)
             | pynutil.add_weight(graph_sadhe, -0.1)
             | pynutil.add_weight(graph_paune, -0.5)
+            | address_graph
         )
         self.graph = graph.optimize()
 
