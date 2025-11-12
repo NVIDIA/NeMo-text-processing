@@ -19,6 +19,11 @@ from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_CHAR, Gr
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
+EN_TO_HI_DIGIT_MAPPINGS = [
+    ("0", "०"), ("1", "१"), ("2", "२"), ("3", "३"), ("4", "४"),
+    ("5", "५"), ("6", "६"), ("7", "७"), ("8", "८"), ("9", "९")
+]
+
 
 class OrdinalFst(GraphFst):
     """
@@ -39,29 +44,25 @@ class OrdinalFst(GraphFst):
         suffixes_fst = pynini.union(suffixes_list, suffixes_map)
         exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
 
-        # Create English to Hindi digit mapping for preprocessing ordinals
-        en_to_hi_digits = pynini.string_map([
-            ("0", "०"), ("1", "१"), ("2", "२"), ("3", "३"), ("4", "४"),
-            ("5", "५"), ("6", "६"), ("7", "७"), ("8", "८"), ("9", "९")
-        ])
-        
-        # Convert English digits to Hindi for ordinal processing
-        # This handles cases like "1st" -> "१st" before ordinal matching
+        en_to_hi_digits = pynini.string_map(EN_TO_HI_DIGIT_MAPPINGS)
         digit_normalizer = pynini.cdrewrite(en_to_hi_digits, "", "", pynini.closure(NEMO_CHAR))
 
-        graph = cardinal.final_graph + suffixes_fst
+        # Limit cardinal graph to thousands range for faster compilation
+        limited_cardinal_graph = (
+            cardinal.digit
+            | cardinal.zero
+            | cardinal.teens_and_ties
+            | cardinal.graph_hundreds
+            | cardinal.graph_thousands
+            | cardinal.graph_ten_thousands
+        ).optimize()
+        
+        graph = limited_cardinal_graph + suffixes_fst
         exceptions = pynutil.add_weight(exceptions, -0.1)
         graph = pynini.union(exceptions, graph)
         
-        # Apply digit normalization before ordinal matching
-        # This allows both "1st" and "१st" to be processed as ordinals
         graph_with_normalization = pynini.compose(digit_normalizer, graph)
-
-        # Store the core graph without token wrapping for use in other contexts (e.g., addresses)
-        # For addresses, only expose exceptions to avoid over-matching (e.g., don't convert "210वीं" to "दो सौ दसवीं")
-        exceptions_with_normalization = pynini.compose(digit_normalizer, exceptions)
         self.graph = graph_with_normalization.optimize()
-        self.exceptions_graph = exceptions_with_normalization.optimize()
         
         final_graph = pynutil.insert("integer: \"") + graph_with_normalization + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
