@@ -79,14 +79,18 @@ class MeasureFst(GraphFst):
             "६६-४ पार्क रोड" -> "छह छह हाइफ़न चार पार्क रोड"
         """
         ordinal_graph = ordinal.graph
+        # Alphanumeric to word mappings (digits, special characters, telephone digits)
         char_to_word = (
             digit
             | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
             | pynini.string_file(get_abs_path("data/address/special_characters.tsv"))
             | pynini.string_file(get_abs_path("data/telephone/number.tsv"))
         )
+        # Letter to transliterated word mapping (A -> ए, B -> बी, ...)
         letter_to_word = pynini.string_file(get_abs_path("data/address/letters.tsv"))
         address_keywords_hi = pynini.string_file(get_abs_path("data/address/context.tsv"))
+
+        # Making it case-insensitive: expand English context and mappings by input_case
         en_to_hi_mapping = load_labels(get_abs_path("data/address/en_to_hi_mapping.tsv"))
         en_context_words = []
         if input_case == INPUT_LOWER_CASED:
@@ -108,6 +112,7 @@ class MeasureFst(GraphFst):
         address_keywords_en = pynini.string_map([[word, word] for word in en_context_words])
         address_keywords = address_keywords_hi | address_keywords_en
         
+        # Alphanumeric processing: treat digits, letters, and -/ as convertible tokens
         single_digit = NEMO_DIGIT | NEMO_HI_DIGIT
         special_chars = pynini.union(HYPHEN, SLASH)
         single_letter = pynini.project(letter_to_word, "input")
@@ -116,6 +121,8 @@ class MeasureFst(GraphFst):
             NEMO_CHAR, 
             pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(COMMA))
         )
+        
+        # Token processors with weights: prefer ordinals and known English→Hindi words
         comma_processor = insert_space + pynini.accep(COMMA) + insert_space
         ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph + insert_space, -5.0)
         english_word_processor = pynutil.add_weight(insert_space + en_to_hi_map + insert_space, -3.0)
@@ -139,6 +146,8 @@ class MeasureFst(GraphFst):
             | other_char_processor
         )
         full_string_processor = pynini.closure(token_processor, 1)
+
+        # Window-based context matching around address keywords for robust detection
         word_boundary = pynini.union(NEMO_WHITE_SPACE, pynini.accep(COMMA), pynini.accep(HI_PERIOD), pynini.accep(PERIOD))
         non_boundary_char = pynini.difference(NEMO_CHAR, word_boundary)
         word = pynini.closure(non_boundary_char, 1)
