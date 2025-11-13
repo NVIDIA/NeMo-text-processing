@@ -107,7 +107,7 @@ testTNWord() {
 }
 
 testTNAddress() {
- input=$PROJECT_DIR/en/data_text_normalization/test_cases_address.txt
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_address.txt
  runtest $input
 }
 
