@@ -122,7 +122,7 @@ class MeasureFst(GraphFst):
         )
 
         # Token processors with weights: prefer ordinals and known English→Hindi words
-        comma_processor = insert_space + pynini.accep(COMMA) + insert_space
+        comma_processor = pynini.accep(COMMA) + insert_space
         ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph + insert_space, -5.0)
         english_word_processor = pynutil.add_weight(insert_space + en_to_hi_map + insert_space, -3.0)
         letter_processor = pynutil.add_weight(

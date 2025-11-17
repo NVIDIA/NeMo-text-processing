@@ -10,16 +10,16 @@ runtest () {
   while read testcase; do
     IFS='~' read written spoken <<< $testcase
     
-    # replace non breaking space with breaking space
-    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
+    # replace non breaking space with breaking space, and convert COMMA back to comma
+    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g' | sed 's/ \+COMMA /, /g')
 
     # trim white space
     # spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     # denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
     # trim white space and remove space before punctuation
-    spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.]\)/\1/g')"
-    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.]\)/\1/g')"
+    spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.,]\)/\1/g')"
+    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.,]\)/\1/g')"
 
     # input expected actual
     assertEquals "$written" "$spoken" "$denorm_pred"

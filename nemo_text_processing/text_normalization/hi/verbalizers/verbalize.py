@@ -23,6 +23,7 @@ from nemo_text_processing.text_normalization.hi.verbalizers.ordinal import Ordin
 from nemo_text_processing.text_normalization.hi.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hi.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.hi.verbalizers.word import WordFst
 
 
 class VerbalizeFst(GraphFst):
@@ -67,6 +68,9 @@ class VerbalizeFst(GraphFst):
         telephone_graph = telephone.fst
 
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
+        
+        word = WordFst(deterministic=deterministic)
+        word_graph = word.fst
 
         graph = (
             cardinal_graph
@@ -78,6 +82,7 @@ class VerbalizeFst(GraphFst):
             | money_graph
             | ordinal_graph
             | whitelist_graph
+            | word_graph
             | telephone_graph
         )
 
