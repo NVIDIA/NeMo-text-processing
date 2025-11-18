@@ -77,13 +77,15 @@ class MeasureFst(GraphFst):
             pynini.cross(" , ", " COMMA "),
             "",
             "",
-            pynini.closure(NEMO_NOT_QUOTE | pynini.accep(",") | pynini.accep(" "))
+            pynini.closure(NEMO_NOT_QUOTE | pynini.accep(",") | pynini.accep(" ")),
         )
         address_content_raw = pynini.closure(NEMO_NOT_QUOTE, 1)
         address_content_processed = pynini.compose(address_content_raw, comma_marker)
         address_content = pynutil.delete("integer: \"") + address_content_processed + pynutil.delete("\"")
-        address_cardinal = pynutil.delete("cardinal {") + delete_space + address_content + delete_space + pynutil.delete("}")
-        
+        address_cardinal = (
+            pynutil.delete("cardinal {") + delete_space + address_content + delete_space + pynutil.delete("}")
+        )
+
         preserve_order = pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
         address = (
             pynutil.delete("units: \"address\" ")

@@ -68,7 +68,7 @@ class VerbalizeFst(GraphFst):
         telephone_graph = telephone.fst
 
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
-        
+
         word = WordFst(deterministic=deterministic)
         word_graph = word.fst
 
