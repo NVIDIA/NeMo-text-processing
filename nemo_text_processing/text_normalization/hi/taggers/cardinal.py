@@ -15,18 +15,18 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
 class CardinalFst(GraphFst):
     """
-      Finite state transducer for classifying cardinals, e.g.
-          -२३ -> cardinal { negative: "true"  integer: "तेइस" } }
-    s
-      Args:
-          deterministic: if True will provide a single transduction option,
-              for False multiple transduction are generated (used for audio-based normalization)
+    Finite state transducer for classifying cardinals, e.g.
+        -२३ -> cardinal { negative: "true"  integer: "तेइस" }
+
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
@@ -36,6 +36,10 @@ class CardinalFst(GraphFst):
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
         teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
+
+        self.digit = digit
+        self.zero = zero
+        self.teens_and_ties = teens_and_ties
 
         def create_graph_suffix(digit_graph, suffix, zeros_counts):
             zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
@@ -294,6 +298,12 @@ class CardinalFst(GraphFst):
         graph_ten_shankhs |= create_larger_number_graph(teens_and_ties, suffix_shankhs, 0, graph_ten_padmas)
         graph_ten_shankhs.optimize()
 
+        # Only match exactly 2 digits to avoid interfering with telephone numbers, decimals, etc.
+        # e.g., "०५" -> "शून्य पाँच"
+        single_digit = digit | zero
+        graph_leading_zero = zero + insert_space + single_digit
+        graph_leading_zero = pynutil.add_weight(graph_leading_zero, 0.5)
+
         final_graph = (
             digit
             | zero
@@ -315,6 +325,7 @@ class CardinalFst(GraphFst):
             | graph_ten_padmas
             | graph_shankhs
             | graph_ten_shankhs
+            | graph_leading_zero
         )
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
