@@ -19,7 +19,7 @@ pipeline {
     HU_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-16-24-0'
     PT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
     RU_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
-    VI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
+    VI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-29-25-0'
     SV_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
     ZH_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/11-13-24-0'
     IT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-22-24-0'
@@ -171,7 +171,7 @@ pipeline {
       }
     }
 
-    stage('L0: Create FR TN/ITN & VI ITN & HU TN & IT TN') {
+    stage('L0: Create FR TN/ITN & VI TN/ITN & HU TN & IT TN') {
       when {
         anyOf {
           branch 'main' 
@@ -195,6 +195,11 @@ pipeline {
         stage('L0: VI ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=vi --text="một ngàn " --cache_dir ${VI_TN_CACHE}'
+          }
+        }
+        stage('L0: VI TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=vi --text="100" --cache_dir ${VI_TN_CACHE}'
           }
         }
         stage('L0: HU TN grammars') {

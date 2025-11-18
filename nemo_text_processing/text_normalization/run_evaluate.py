@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument(
         "--lang",
         help="language",
-        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh', 'hy', 'hi'],
+        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh', 'hy', 'hi', 'vi'],
         default="en",
         type=str,
     )
@@ -102,8 +102,6 @@ if __name__ == "__main__":
         token_count_per_type[token_type] * accuracy for token_type, accuracy in token_accuracy.items()
     ]
     print("- Accuracy: " + str(sum(token_weighted_accuracy) / sum(token_count_per_type.values())))
-    print(" - Total: " + str(sum(token_count_per_type.values())), '\n')
-
     print(" - Total: " + str(sum(token_count_per_type.values())), '\n')
 
     for token_type in token_accuracy:
