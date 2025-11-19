@@ -33,7 +33,7 @@ class TimeFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="time", kind="classify")
-        
+
         cardinal_graph = cardinal.fst
 
         # 1-9 in cardinals for minutes and seconds
@@ -83,12 +83,12 @@ class TimeFst(GraphFst):
         graph_regular = hour + minute + second
 
         # 오전 = AM, 오후 = PM
-        prefix_words = pynini.union(
-            (pynini.accep("오전")),
-            (pynini.accep("오후")),
-            (pynini.accep("새벽")),
-            (pynini.accep("아침"))
-        ) + spacing
+        prefix_words = (
+            pynini.union(
+                (pynini.accep("오전")), (pynini.accep("오후")), (pynini.accep("새벽")), (pynini.accep("아침"))
+            )
+            + spacing
+        )
         prefix_tag = pynutil.insert("prefix: \"") + prefix_words + pynutil.insert("\"")
 
         # 전 = before, 후 = after
@@ -100,8 +100,6 @@ class TimeFst(GraphFst):
             + graph_regular
             + pynini.closure(delete_space + suffix_tag, 0, 1)
         )
-
-
 
         # Adding cardinal graph to prevent processing out of range numbers
         final_graph = pynini.union(time_graph, cardinal_graph)

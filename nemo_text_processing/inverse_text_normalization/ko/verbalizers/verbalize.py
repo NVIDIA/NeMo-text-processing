@@ -20,10 +20,10 @@ from nemo_text_processing.inverse_text_normalization.ko.verbalizers.cardinal imp
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.telephone import TelephoneFst
-from nemo_text_processing.inverse_text_normalization.ko.verbalizers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
@@ -66,15 +66,16 @@ class VerbalizeFst(GraphFst):
         word = WordFst()
         word_graph = word.fst
 
-        graph = pynini.union(cardinal_graph,
-                              ordinal_graph,
-                              decimal_graph,
-                              fraction_graph,
-                              time_graph,
-                              date_graph,
-                              money_graph,
-                              telephone_graph,
-                              measure_graph,
-                              word_graph
-                            )
+        graph = pynini.union(
+            cardinal_graph,
+            ordinal_graph,
+            decimal_graph,
+            fraction_graph,
+            time_graph,
+            date_graph,
+            money_graph,
+            telephone_graph,
+            measure_graph,
+            word_graph,
+        )
         self.fst = graph

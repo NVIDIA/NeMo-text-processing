@@ -16,10 +16,10 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
+    NEMO_SPACE,
     GraphFst,
     convert_space,
     delete_extra_space,
-    NEMO_SPACE
 )
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
@@ -41,28 +41,24 @@ class MeasureFst(GraphFst):
         graph_unit = pynini.string_file(get_abs_path("data/measure_units.tsv"))
 
         delete_any_space = pynini.closure(pynutil.delete(NEMO_SPACE))
-        #Negative sign
+        # Negative sign
         negative_word = pynini.union("마이너스", "영하")
         graph_negative = pynini.cross(negative_word, 'negative: "true"') + delete_extra_space
         optional_graph_negative = pynini.closure(graph_negative, 0, 1)
-        #Graphing measurement units
+        # Graphing measurement units
         unit_singular = convert_space(graph_unit)
-        #For units that has "/", like km/h 
+        # For units that has "/", like km/h
         unit_per = (
             unit_singular
             + delete_any_space
             + pynini.cross(pynini.union("퍼", "당"), "/")
-            + delete_any_space 
+            + delete_any_space
             + unit_singular
         )
-        
-        graph_unit_final = (
-            pynutil.insert('units: "')
-            + (unit_singular | unit_per)
-            + pynutil.insert('"')
-        )
 
-        #Graphing decimal
+        graph_unit_final = pynutil.insert('units: "') + (unit_singular | unit_per) + pynutil.insert('"')
+
+        # Graphing decimal
         graph_digit_tsv = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_zero = pynini.cross("영", "0") | pynini.cross("공", "0")
         decimal_fractional_part = pynini.closure(graph_digit_tsv | graph_zero, 1)
@@ -79,7 +75,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert('"')
         )
 
-        #Graphing fraction
+        # Graphing fraction
         graph_fraction = (
             pynutil.insert("fraction { ")
             + pynutil.insert('denominator: "')
@@ -108,7 +104,7 @@ class MeasureFst(GraphFst):
         )
 
         final_graph_decimal = (
-            delete_any_space 
+            delete_any_space
             + pynutil.insert("decimal { ")
             + optional_graph_negative
             + graph_decimal
@@ -117,16 +113,12 @@ class MeasureFst(GraphFst):
             + delete_any_space
             + graph_unit_final
         )
-        
+
         final_graph_fraction = (
-            delete_any_space
-            + graph_fraction
-            + pynutil.insert(" ")
-            + delete_any_space
-            + graph_unit_final
+            delete_any_space + graph_fraction + pynutil.insert(" ") + delete_any_space + graph_unit_final
         )
 
         final_graph = final_graph_cardinal | final_graph_decimal | final_graph_fraction
-        
+
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
