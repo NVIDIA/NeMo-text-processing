@@ -23,6 +23,7 @@ pipeline {
     SV_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
     ZH_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/11-13-24-0'
     IT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-22-24-0'
+    HE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-24-25-0'
     HY_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
@@ -257,7 +258,24 @@ pipeline {
         }
       }
     }
-
+ stage('L0: Create He TN/ITN Grammars & MR') {
+      when {
+        anyOf {
+          branch 'main' 
+          branch 'staging/**'
+          branch 'staging_*'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: HE ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=he --text="ת " --cache_dir ${HE_TN_CACHE}'
+          }
+        }
+      }
+    }
     stage('L0: Create HY TN/ITN Grammars & MR') {
       when {
         anyOf {
@@ -415,6 +433,11 @@ pipeline {
         stage('L1: Run all HY TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/hy/ -m "not pleasefixme" --cpu --tn_cache_dir ${HY_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all HE TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/he/ -m "not pleasefixme" --cpu --tn_cache_dir ${HE_TN_CACHE}'
           }
         }
       }
