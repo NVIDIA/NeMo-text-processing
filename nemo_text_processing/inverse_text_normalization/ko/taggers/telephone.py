@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, delete_extra_space, NEMO_SPACE
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, NEMO_SPACE
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -34,21 +34,21 @@ class TelephoneFst(GraphFst):
 
         digit = graph_digit | graph_zero | graph_zero_alt
 
-        separator = pynini.cross(pynini.union(" ", "에"), "-").optimize()
+        separator = pynini.cross(pynini.union(NEMO_SPACE, "에"), "-")
 
-        digit_block_3 = digit + digit + digit
-        digit_block_4 = digit_block_3 + digit    
+        digit2 = digit**2
+        digit3 = digit**3
+        digit4 = digit**4  
 
         optional_separator = pynini.closure(separator, 0, 1)
-        spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
 
         phone_number_graph = (
             pynutil.insert('number_part: "') +
-            digit_block_3 
+            pynini.union(digit2,digit3) 
             + optional_separator
-            + digit_block_4 
+            + digit4 
             + optional_separator
-            + digit_block_4
+            + digit4
             + pynutil.insert('"')
         )
 

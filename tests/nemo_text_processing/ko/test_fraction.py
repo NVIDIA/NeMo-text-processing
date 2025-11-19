@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.normalize import Normalizer
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
-class TestOrdinal:
+class TestFraction:
     inverse_normalizer = InverseNormalizer(lang='ko', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('ko/data_inverse_text_normalization/test_cases_fraction.txt'))
