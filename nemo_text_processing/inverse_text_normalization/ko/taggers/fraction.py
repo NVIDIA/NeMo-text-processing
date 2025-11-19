@@ -25,7 +25,7 @@ class FractionFst(GraphFst):
         Fitite state transducer for classifying fractions
         e.g.,
         fraction { denominator: "사" numerator: "삼" } -> 3/4
-        fraction { mixed number: "일" denominator: "사" numerator: "삼" } -> 1 3/4
+        fraction { integer_part: "일" denominator: "사" numerator: "삼" } -> 1 3/4
         fraction { denominator: "루트삼" numerator: "일" } -> 1/√3
         fraction { denominator: "일점육오" numerator: "오십" } -> 50/1.65
         fraction { denominator: "이루트육" numerator: "삼" } -> 3/2√6

@@ -12,12 +12,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pynini
+from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
@@ -42,5 +48,34 @@ class VerbalizeFst(GraphFst):
         fraction = FractionFst()
         fraction_graph = fraction.fst
 
-        graph = cardinal_graph | ordinal_graph | decimal_graph | fraction_graph
+        time = TimeFst()
+        time_graph = time.fst
+
+        date = DateFst()
+        date_graph = date.fst
+
+        money = MoneyFst()
+        money_graph = money.fst
+
+        telephone = TelephoneFst()
+        telephone_graph = telephone.fst
+
+        measure = MeasureFst()
+        measure_graph = measure.fst
+
+        word = WordFst()
+        word_graph = word.fst
+
+        graph = pynini.union(
+            cardinal_graph,
+            ordinal_graph,
+            decimal_graph,
+            fraction_graph,
+            time_graph,
+            date_graph,
+            money_graph,
+            telephone_graph,
+            measure_graph,
+            word_graph,
+        )
         self.fst = graph
