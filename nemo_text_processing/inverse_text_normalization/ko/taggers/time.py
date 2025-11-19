@@ -16,8 +16,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -103,10 +103,7 @@ class TimeFst(GraphFst):
 
 
 
-        #Adding cardinal graph to prevent processing out of range numbers
-        final_graph = pynini.union(
-            time_graph,
-            cardinal_graph
-        )
+        # Adding cardinal graph to prevent processing out of range numbers
+        final_graph = pynini.union(time_graph, cardinal_graph)
 
         self.fst = self.add_tokens(final_graph).optimize()

@@ -15,10 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
-    GraphFst,
-    NEMO_SPACE
-)
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -40,22 +37,11 @@ class MoneyFst(GraphFst):
         # Accepting space if there are one between integer and currency
         spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
 
-        graph_integer = (
-            pynutil.insert("integer_part: \"")
-            + cardinals
-            + pynutil.insert("\"")
-            + spacing
-        )
+        graph_integer = pynutil.insert("integer_part: \"") + cardinals + pynutil.insert("\"") + spacing
 
-        graph_unit = (
-            pynutil.insert(" currency: \"") 
-            + currency 
-            + pynutil.insert("\"")
-        )
+        graph_unit = pynutil.insert(" currency: \"") + currency + pynutil.insert("\"")
 
-        graph_final = (
-            graph_integer + graph_unit
-        )
+        graph_final = graph_integer + graph_unit
 
         final_graph = self.add_tokens(graph_final)
         self.fst = final_graph.optimize()
