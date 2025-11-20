@@ -19,19 +19,6 @@ from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_CHAR, Gr
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
-EN_TO_HI_DIGIT_MAPPINGS = [
-    ("0", "०"),
-    ("1", "१"),
-    ("2", "२"),
-    ("3", "३"),
-    ("4", "४"),
-    ("5", "५"),
-    ("6", "६"),
-    ("7", "७"),
-    ("8", "८"),
-    ("9", "९"),
-]
-
 
 class OrdinalFst(GraphFst):
     """
@@ -52,7 +39,7 @@ class OrdinalFst(GraphFst):
         suffixes_fst = pynini.union(suffixes_list, suffixes_map)
         exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
 
-        en_to_hi_digits = pynini.string_map(EN_TO_HI_DIGIT_MAPPINGS)
+        en_to_hi_digits = pynini.string_file(get_abs_path("data/ordinal/en_to_hi_digit.tsv"))
         digit_normalizer = pynini.cdrewrite(en_to_hi_digits, "", "", pynini.closure(NEMO_CHAR))
 
         # Limit cardinal graph to thousands range for faster compilation

@@ -374,11 +374,6 @@ class Normalizer:
                 return text
         output = SPACE_DUP.sub(' ', output[1:])
 
-        # Hindi-specific: Convert COMMA marker back to actual comma
-        # (Used in address verbalization to avoid "sil" token in Sparrowhawk)
-        if self.lang == "hi":
-            output = output.replace(" COMMA ", ", ")
-
         if self.lang == "en" and hasattr(self, 'post_processor'):
             output = self.post_process(output)
 

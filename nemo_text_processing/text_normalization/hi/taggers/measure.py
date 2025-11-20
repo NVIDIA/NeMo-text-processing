@@ -16,11 +16,16 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
+    HI_DECIMAL_25,
+    HI_DECIMAL_75,
     HI_DEDH,
     HI_DHAI,
+    HI_ONE_POINT_FIVE,
     HI_PAUNE,
+    HI_POINT_FIVE,
     HI_SADHE,
     HI_SAVVA,
+    HI_TWO_POINT_FIVE,
     INPUT_LOWER_CASED,
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -28,17 +33,13 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     NEMO_SPACE,
     NEMO_WHITE_SPACE,
     GraphFst,
+    capitalized_input_graph,
     delete_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
 
-HI_POINT_FIVE = ".५"
-HI_ONE_POINT_FIVE = "१.५"
-HI_TWO_POINT_FIVE = "२.५"
-HI_DECIMAL_25 = ".२५"
-HI_DECIMAL_75 = ".७५"
 HI_BY = "बाई"
 
 LOWERCASE_X = "x"
@@ -90,26 +91,17 @@ class MeasureFst(GraphFst):
         letter_to_word = pynini.string_file(get_abs_path("data/address/letters.tsv"))
         address_keywords_hi = pynini.string_file(get_abs_path("data/address/context.tsv"))
 
-        # Making it case-insensitive: expand English context and mappings by input_case
+        # Making it case-insensitive: use capitalized_input_graph to handle capitalization
         en_to_hi_mapping = load_labels(get_abs_path("data/address/en_to_hi_mapping.tsv"))
-        en_context_words = []
-        if input_case == INPUT_LOWER_CASED:
-            en_to_hi_mapping_expanded = [[x.lower(), y] for x, y in en_to_hi_mapping]
-            en_context_words = [x.lower() for x, _ in en_to_hi_mapping]
-        else:
-            expanded_mapping = []
-            for x, y in en_to_hi_mapping:
-                expanded_mapping.append([x, y])
-                en_context_words.append(x)
-                if x and x[0].isalpha():
-                    capitalized = x[0].upper() + x[1:]
-                    if capitalized != x:
-                        expanded_mapping.append([capitalized, y])
-                        en_context_words.append(capitalized)
-            en_to_hi_mapping_expanded = expanded_mapping
-        en_to_hi_map = pynini.string_map(en_to_hi_mapping_expanded)
+        en_to_hi_map = pynini.string_map(en_to_hi_mapping)
+        if input_case != INPUT_LOWER_CASED:
+            en_to_hi_map = capitalized_input_graph(en_to_hi_map)
 
+        # Create context words graph (identity map for matching)
+        en_context_words = [word for word, _ in en_to_hi_mapping]
         address_keywords_en = pynini.string_map([[word, word] for word in en_context_words])
+        if input_case != INPUT_LOWER_CASED:
+            address_keywords_en = capitalized_input_graph(address_keywords_en)
         address_keywords = address_keywords_hi | address_keywords_en
 
         # Alphanumeric processing: treat digits, letters, and -/ as convertible tokens
@@ -122,16 +114,21 @@ class MeasureFst(GraphFst):
         )
 
         # Token processors with weights: prefer ordinals and known English→Hindi words
-        comma_processor = pynini.accep(COMMA) + insert_space
-        ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph + insert_space, -5.0)
-        english_word_processor = pynutil.add_weight(insert_space + en_to_hi_map + insert_space, -3.0)
+        # Delete space before comma to avoid Sparrowhawk "sil" issue
+        comma_processor = pynutil.add_weight(
+            delete_space + pynini.accep(COMMA), 0.0
+        )
+        ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph, -5.0)
+        english_word_processor = pynutil.add_weight(insert_space + en_to_hi_map, -3.0)
         letter_processor = pynutil.add_weight(
-            insert_space + pynini.compose(single_letter, letter_to_word) + insert_space, 0.5
+            insert_space + pynini.compose(single_letter, letter_to_word), 0.5
         )
         digit_char_processor = pynutil.add_weight(
-            insert_space + pynini.compose(convertible_char, char_to_word) + insert_space, 0.0
+            insert_space + pynini.compose(convertible_char, char_to_word), 0.0
         )
-        other_char_processor = pynutil.add_weight(non_space_char, 0.1)
+        other_word_processor = pynutil.add_weight(
+            insert_space + pynini.closure(non_space_char, 1), 0.1
+        )
 
         token_processor = (
             ordinal_processor
@@ -140,7 +137,7 @@ class MeasureFst(GraphFst):
             | digit_char_processor
             | pynini.accep(NEMO_SPACE)
             | comma_processor
-            | other_char_processor
+            | other_word_processor
         )
         full_string_processor = pynini.closure(token_processor, 1)
 
