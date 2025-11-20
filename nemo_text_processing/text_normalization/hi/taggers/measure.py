@@ -115,20 +115,12 @@ class MeasureFst(GraphFst):
 
         # Token processors with weights: prefer ordinals and known English→Hindi words
         # Delete space before comma to avoid Sparrowhawk "sil" issue
-        comma_processor = pynutil.add_weight(
-            delete_space + pynini.accep(COMMA), 0.0
-        )
+        comma_processor = pynutil.add_weight(delete_space + pynini.accep(COMMA), 0.0)
         ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph, -5.0)
         english_word_processor = pynutil.add_weight(insert_space + en_to_hi_map, -3.0)
-        letter_processor = pynutil.add_weight(
-            insert_space + pynini.compose(single_letter, letter_to_word), 0.5
-        )
-        digit_char_processor = pynutil.add_weight(
-            insert_space + pynini.compose(convertible_char, char_to_word), 0.0
-        )
-        other_word_processor = pynutil.add_weight(
-            insert_space + pynini.closure(non_space_char, 1), 0.1
-        )
+        letter_processor = pynutil.add_weight(insert_space + pynini.compose(single_letter, letter_to_word), 0.5)
+        digit_char_processor = pynutil.add_weight(insert_space + pynini.compose(convertible_char, char_to_word), 0.0)
+        other_word_processor = pynutil.add_weight(insert_space + pynini.closure(non_space_char, 1), 0.1)
 
         token_processor = (
             ordinal_processor
