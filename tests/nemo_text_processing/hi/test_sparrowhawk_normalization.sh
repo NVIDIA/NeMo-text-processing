@@ -18,8 +18,8 @@ runtest () {
     # denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
     # trim white space and remove space before punctuation
-    spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.,]\)/\1/g')"
-    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.,]\)/\1/g')"
+    spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.]\)/\1/g')"
+    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/ \([!?.]\)/\1/g')"
 
     # input expected actual
     assertEquals "$written" "$spoken" "$denorm_pred"
