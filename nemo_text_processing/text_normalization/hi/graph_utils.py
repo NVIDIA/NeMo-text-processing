@@ -37,6 +37,13 @@ HI_SAVVA = "सवा"  # quarter more (1.25)
 HI_SADHE = "साढ़े"  # half more (X.5)
 HI_PAUNE = "पौने"  # quarter less (0.75)
 
+# Hindi decimal representations
+HI_POINT_FIVE = ".५"  # .5
+HI_ONE_POINT_FIVE = "१.५"  # 1.5
+HI_TWO_POINT_FIVE = "२.५"  # 2.5
+HI_DECIMAL_25 = ".२५"  # .25
+HI_DECIMAL_75 = ".७५"  # .75
+
 NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
 NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
 NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()

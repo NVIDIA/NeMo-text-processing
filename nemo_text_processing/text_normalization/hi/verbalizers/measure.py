@@ -27,7 +27,7 @@ class MeasureFst(GraphFst):
 
     Args:
         decimal: DecimalFst
-        cardinal: CardinalFs
+        cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
@@ -41,7 +41,12 @@ class MeasureFst(GraphFst):
             1,
         )
 
-        unit = pynutil.delete("units: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"") + delete_space
+        unit = (
+            pynutil.delete("units: \"")
+            + pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.accep("address"))
+            + pynutil.delete("\"")
+            + delete_space
+        )
 
         graph_decimal = (
             pynutil.delete("decimal {")
@@ -64,6 +69,18 @@ class MeasureFst(GraphFst):
         )
 
         graph = (graph_cardinal | graph_decimal) + delete_space + insert_space + unit
+
+        preserve_order = pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
+        address = (
+            pynutil.delete("units: \"address\" ")
+            + delete_space
+            + graph_cardinal
+            + delete_space
+            + pynini.closure(preserve_order)
+        )
+
+        graph |= address
+
         self.decimal = graph_decimal
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
