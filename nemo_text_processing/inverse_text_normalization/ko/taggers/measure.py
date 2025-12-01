@@ -115,11 +115,7 @@ class MeasureFst(GraphFst):
         )
 
         final_graph_fraction = (
-            delete_any_space
-            + graph_fraction
-            + pynutil.insert(NEMO_SPACE)
-            + delete_any_space
-            + graph_unit_final
+            delete_any_space + graph_fraction + pynutil.insert(NEMO_SPACE) + delete_any_space + graph_unit_final
         )
 
         final_graph = final_graph_cardinal | final_graph_decimal | final_graph_fraction

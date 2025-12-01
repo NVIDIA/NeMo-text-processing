@@ -25,7 +25,6 @@ from nemo_text_processing.inverse_text_normalization.ko.verbalizers.money import
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.ko.verbalizers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
