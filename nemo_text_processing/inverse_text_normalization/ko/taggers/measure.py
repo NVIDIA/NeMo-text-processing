@@ -72,7 +72,7 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert('"')
             + delete_any_space
-            + pynini.cross("점", " ")
+            + pynini.cross("점", NEMO_SPACE)
             + delete_any_space
             + pynutil.insert('fractional_part: "')
             + decimal_fractional_part
@@ -102,7 +102,7 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert('"')
             + pynutil.insert(" }")
-            + pynutil.insert(" ")
+            + pynutil.insert(NEMO_SPACE)
             + delete_any_space
             + graph_unit_final
         )
@@ -113,7 +113,7 @@ class MeasureFst(GraphFst):
             + optional_graph_negative
             + graph_decimal
             + pynutil.insert(" }")
-            + pynutil.insert(" ")
+            + pynutil.insert(NEMO_SPACE)
             + delete_any_space
             + graph_unit_final
         )
@@ -121,7 +121,7 @@ class MeasureFst(GraphFst):
         final_graph_fraction = (
             delete_any_space
             + graph_fraction
-            + pynutil.insert(" ")
+            + pynutil.insert(NEMO_SPACE)
             + delete_any_space
             + graph_unit_final
         )

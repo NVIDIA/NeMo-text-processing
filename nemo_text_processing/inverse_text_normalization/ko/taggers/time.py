@@ -31,18 +31,15 @@ class TimeFst(GraphFst):
         e.g. 오후 두시반 -> time { prefix: "오후" hours: "2" minutes: "30" }
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self):
         super().__init__(name="time", kind="classify")
-        
-        cardinal_graph = cardinal.fst
 
         # 1-9 in cardinals for minutes and seconds
         cardinal_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        cardinal_zero = pynini.cross("영", "0")
+        cardinal_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
 
-        graph_tens_prefix = pynini.union(
-            pynini.cross("이", "2"), pynini.cross("삼", "3"), pynini.cross("사", "4"), pynini.cross("오", "5")
-        )
+        graph_tens_prefix = pynini.string_file(get_abs_path("data/time/ten_prefix.tsv"))
+
         # Graphing 10-19
         graph_ten = pynini.union(pynini.cross("십", "10"), pynini.cross("십", "1") + cardinal_digit).optimize()
         # Graphing 20-59
@@ -104,6 +101,6 @@ class TimeFst(GraphFst):
 
 
         # Adding cardinal graph to prevent processing out of range numbers
-        final_graph = pynini.union(time_graph, cardinal_graph)
+        final_graph = time_graph
 
         self.fst = self.add_tokens(final_graph).optimize()

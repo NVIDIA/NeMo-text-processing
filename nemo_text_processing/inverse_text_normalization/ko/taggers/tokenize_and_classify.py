@@ -26,6 +26,7 @@ from nemo_text_processing.inverse_text_normalization.ko.taggers.fraction import 
 from nemo_text_processing.inverse_text_normalization.ko.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.telephone import TelephoneFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
 
@@ -74,7 +75,7 @@ class ClassifyFst(GraphFst):
             fraction = FractionFst(cardinal, decimal)
             fraction_graph = fraction.fst
 
-            time = TimeFst(cardinal)
+            time = TimeFst()
             time_graph = time.fst
 
             date = DateFst(cardinal)

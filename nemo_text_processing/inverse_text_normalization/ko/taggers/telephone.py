@@ -46,7 +46,7 @@ class TelephoneFst(GraphFst):
             pynutil.insert('number_part: "') +
             pynini.union(digit2,digit3) 
             + optional_separator
-            + digit4 
+            + pynini.union(digit3,digit4) 
             + optional_separator
             + digit4
             + pynutil.insert('"')
