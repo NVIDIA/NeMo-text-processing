@@ -15,11 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    delete_space,
-)
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class MeasureFst(GraphFst):
@@ -30,23 +26,15 @@ class MeasureFst(GraphFst):
     Args:
         cardinal: CardinalFst
     """
+
     def __init__(self):
         super().__init__(name="measure", kind="verbalize")
 
         measurement = pynini.closure(NEMO_NOT_QUOTE, 1)
 
-        optional_sign = pynini.closure(
-            pynutil.delete('negative: "true"') 
-            + delete_space 
-            + pynutil.insert("-"), 
-            0, 1
-        )
+        optional_sign = pynini.closure(pynutil.delete('negative: "true"') + delete_space + pynutil.insert("-"), 0, 1)
 
-        unit = (
-            pynutil.delete('units: "')
-            + measurement
-            + pynutil.delete('"')
-        )
+        unit = pynutil.delete('units: "') + measurement + pynutil.delete('"')
 
         graph_cardinal = (
             pynutil.delete("cardinal {")
@@ -92,12 +80,7 @@ class MeasureFst(GraphFst):
             + pynutil.delete("}")
         )
 
-        graph = (
-            (graph_cardinal | graph_decimal | graph_fraction)
-            + delete_space 
-            + pynutil.insert(" ")
-            + unit
-        )
+        graph = (graph_cardinal | graph_decimal | graph_fraction) + delete_space + pynutil.insert(" ") + unit
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
