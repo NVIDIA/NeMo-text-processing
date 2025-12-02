@@ -42,6 +42,31 @@ testITNFraction() {
   runtest $input
 }
 
+testITNTime() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_time.txt
+  runtest $input
+}
+
+testITNDate() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_date.txt
+  runtest $input
+}
+
+testITNMoney() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_money.txt
+  runtest $input
+}
+
+testITNTelephone() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_telephone.txt
+  runtest $input
+}
+
+testITNMeasure() {
+  input=$TEST_DIR/data_inverse_text_normalization/test_cases_measure.txt
+  runtest $input
+}
+
 # Remove all command-line arguments
 shift $#
 
