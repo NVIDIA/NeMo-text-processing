@@ -37,7 +37,6 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
 
 HI_BY = "बाई"
