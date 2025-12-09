@@ -37,7 +37,7 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.hi.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 HI_BY = "बाई"
 
@@ -90,17 +90,11 @@ class MeasureFst(GraphFst):
         letter_to_word = pynini.string_file(get_abs_path("data/address/letters.tsv"))
         address_keywords_hi = pynini.string_file(get_abs_path("data/address/context.tsv"))
 
-        # Making it case-insensitive: use capitalized_input_graph to handle capitalization
-        en_to_hi_mapping = load_labels(get_abs_path("data/address/en_to_hi_mapping.tsv"))
-        en_to_hi_map = pynini.string_map(en_to_hi_mapping)
+        # English address keywords with Hindi translation (case-insensitive)
+        en_to_hi_map = pynini.string_file(get_abs_path("data/address/en_to_hi_mapping.tsv"))
         if input_case != INPUT_LOWER_CASED:
             en_to_hi_map = capitalized_input_graph(en_to_hi_map)
-
-        # Create context words graph (identity map for matching)
-        en_context_words = [word for word, _ in en_to_hi_mapping]
-        address_keywords_en = pynini.string_map([[word, word] for word in en_context_words])
-        if input_case != INPUT_LOWER_CASED:
-            address_keywords_en = capitalized_input_graph(address_keywords_en)
+        address_keywords_en = pynini.project(en_to_hi_map, "input")
         address_keywords = address_keywords_hi | address_keywords_en
 
         # Alphanumeric processing: treat digits, letters, and -/ as convertible tokens
