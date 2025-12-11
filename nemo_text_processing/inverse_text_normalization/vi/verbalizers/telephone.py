@@ -16,19 +16,41 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 
 
 class TelephoneFst(GraphFst):
     """
     Finite state transducer for verbalizing telephone, e.g.
-        telephone { number_part: "1231235678" }
-        -> 1231235678
+        telephone { number_part: "123-123-5678" } -> 123-123-5678
+        telephone { country_code: "+84" number_part: "936-555-449" } -> +84 936-555-449
+        telephone { number_part: "192.168.0.1" } -> 192.168.0.1
+        telephone { number_part: "1234 5678 9101 2345" } -> 1234 5678 9101 2345
+        telephone { number_part: "x86" } -> x86
     """
 
     def __init__(self):
         super().__init__(name="telephone", kind="verbalize")
 
         number_part = pynutil.delete('number_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
-        delete_tokens = self.delete_tokens(number_part)
+
+        # Optional country code
+        country_code = (
+            pynutil.delete('country_code: "')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
+            + delete_space
+            + insert_space
+        )
+
+        optional_country_code = pynini.closure(country_code, 0, 1)
+
+        graph = optional_country_code + number_part
+
+        delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
