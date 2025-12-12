@@ -70,182 +70,103 @@ class MeasureFst(GraphFst):
 
     def get_structured_address_graph(self, ordinal: GraphFst, input_case: str):
         """
-        Address tagger for Indian addresses with state/city context.
-        Uses bounded closures for performance optimization.
-        Requires a state or city token from curated lists.
+        Minimal address tagger for state/city + pincode patterns only.
+        Highly optimized for performance.
 
         Examples:
-            "चक्रधरपुर, झारखंड ७३६५५७" -> "चक्रधरपुर, झारखंड सात तीन छह पाँच पाँच सात"
             "मुंबई ८८४४०४" -> "मुंबई आठ आठ चार चार शून्य चार"
-            "७५१ नारायण बालासुब्रमणियम असम" -> "सात पाँच एक नारायण बालासुब्रमणियम असम"
+            "गोवा" (with following digits) -> digit-by-digit
         """
-        # 1. Context Keywords (Safety Anchor) - REQUIRED
+        # State/city keywords
         states = pynini.string_file(get_abs_path("data/address/states.tsv"))
         cities = pynini.string_file(get_abs_path("data/address/cities.tsv"))
         context_keywords = (states | cities).optimize()
 
-        # 2. Single digit to Hindi word mappings (digit-by-digit reading)
+        # Digit mappings
         num_token = (
             digit
             | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
             | pynini.string_file(get_abs_path("data/telephone/number.tsv"))
         ).optimize()
 
-        # 3. Pincode - OPTIONAL (5 or 6 digits) - digit-by-digit with spaces
-        digit_with_space = insert_space + num_token
-        pincode_6 = num_token + digit_with_space + digit_with_space + digit_with_space + digit_with_space + digit_with_space
-        pincode_5 = num_token + digit_with_space + digit_with_space + digit_with_space + digit_with_space
-        pincode_graph = (pincode_6 | pincode_5).optimize()
+        # Pincode (6 digits)
+        d = insert_space + num_token
+        pincode = (num_token + d + d + d + d + d).optimize()
 
-        # Make pincode OPTIONAL (0 or 1 occurrence)
-        space = pynini.accep(NEMO_SPACE)
-        optional_pincode = pynini.closure(space + pincode_graph, 0, 1)
+        # Street number (1-4 digits)
+        street_num = (num_token + pynini.closure(insert_space + num_token, 0, 3)).optimize()
 
-        # 4. Special characters with conversion (/, -)
-        special_chars = pynini.string_file(get_abs_path("data/address/special_characters.tsv"))
-
-        # 5. Street number: digit sequence with spaces between digits (bounded for performance)
-        # First digit, then up to 7 more digits with space prefix
-        street_number = num_token + pynini.closure(insert_space + num_token, 0, 7)
-        # Street number with special char in middle: "१९/७९८८" -> "एक नौ बटा सात नौ आठ आठ"
-        street_number_with_special = (
-            num_token
-            + pynini.closure(insert_space + num_token, 0, 3)
-            + insert_space + special_chars
-            + insert_space + num_token
-            + pynini.closure(insert_space + num_token, 0, 3)
-        )
-        single_num_graph = (street_number_with_special | street_number).optimize()
-
-        # Handle ordinals (e.g., "१६वीं" -> "सोलहवीं") using the ordinal FST graph
-        ordinal_graph = ordinal.graph
-
-        # Multiple number groups: "४३६२ १६वीं" or "२५१३ ५३" (for US-style addresses)
-        street_num_graph = (
-            single_num_graph
-            + pynini.closure(
-                pynini.accep(NEMO_SPACE) + (ordinal_graph | single_num_graph),
-                0, 2
-            )
-        ).optimize()
-
-        # 6. Bounded Prefix Components (KEY PERFORMANCE FIX)
-        any_digit = NEMO_HI_DIGIT | NEMO_DIGIT
-
-        # Text chunk: words (sequences of non-special chars, can include spaces within)
-        non_special = pynini.difference(NEMO_CHAR, any_digit | pynini.union("/", "-", ","))
-        # A word is one or more non-special chars (letter sequences)
-        word_char = pynini.difference(NEMO_CHAR, any_digit | pynini.union("/", "-", ",", " "))
+        # Text: words separated by space or comma
+        any_digit = (NEMO_HI_DIGIT | NEMO_DIGIT).optimize()
+        word_char = pynini.difference(NEMO_CHAR, any_digit | pynini.union(",", " ")).optimize()
         word = pynini.closure(word_char, 1)
+        text_seg = (pynini.accep(NEMO_SPACE) + word) | (pynini.accep(COMMA) + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1) + word)
+        text = pynini.closure(text_seg, 0, 5).optimize()
 
-        # Text segment: word or space+word or comma+space+word
-        text_segment = (
-            word
-            | (pynini.accep(NEMO_SPACE) + word)
-            | (pynini.accep(COMMA) + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1) + word)
-        )
+        # Separators
+        sep = pynini.closure(pynini.accep(COMMA) + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1), 0, 1) | pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
 
-        # BOUNDED prefix pattern - max 10 text segments for performance
-        bounded_text_prefix = pynini.closure(text_segment, 0, 10).optimize()
-
-        # 7. Optional separator before state/city (comma or space)
-        optional_separator = pynini.closure(
-            pynini.accep(COMMA) + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1), 0, 1
-        ) | pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
-
-        # 8. Final Patterns
-        # Pattern A: Street number + comma + text prefix + state/city + optional pincode
-        # e.g., "१०५४, सिम वड़दो, अंजुना, गोवा"
-        pattern_num_comma = (
-            street_num_graph
-            + pynini.accep(COMMA)
-            + bounded_text_prefix
-            + optional_separator
+        # Pattern: [street_num sep] [word] text sep state/city [space pincode]
+        pattern = (
+            pynini.closure(street_num + (pynini.accep(COMMA) | pynini.accep(NEMO_SPACE)), 0, 1)
+            + pynini.closure(word, 0, 1) + text + sep
             + context_keywords
-            + optional_pincode
-        )
-
-        # Pattern B: Street number + space + text prefix + state/city + optional pincode
-        # e.g., "७५१ नारायण बालासुब्रमणियम असम"
-        pattern_num_space = (
-            street_num_graph
-            + pynini.accep(NEMO_SPACE)
-            + bounded_text_prefix
-            + optional_separator
-            + context_keywords
-            + optional_pincode
-        )
-
-        # Pattern C: Just text prefix + state/city + optional pincode (no street number)
-        # e.g., "चक्रधरपुर, झारखंड ७३६५५७"
-        pattern_text_only = (
-            bounded_text_prefix
-            + optional_separator
-            + context_keywords
-            + optional_pincode
-        )
-
-        address_graph = (
-            pynutil.add_weight(pattern_num_comma, -0.2)
-            | pynutil.add_weight(pattern_num_space, -0.1)
-            | pattern_text_only
+            + pynini.closure(pynini.accep(NEMO_SPACE) + pincode, 0, 1)
         ).optimize()
 
-        # Wrap in measure format
         graph = (
             pynutil.insert('units: "address" cardinal { integer: "')
-            + address_graph
+            + pattern
             + pynutil.insert('" } preserve_order: true')
         )
-        # Weight slightly lower than context-based address (1.05) to prefer structured when state/city present
         return pynutil.add_weight(graph, 1.0).optimize()
 
     def get_address_graph(self, ordinal: GraphFst, input_case: str):
         """
         Address tagger that converts digits/hyphens/slashes character-by-character
         when address context keywords are present.
-        English words and ordinals are converted to Hindi transliterations.
+        Optimized for performance.
 
         Examples:
             "७०० ओक स्ट्रीट" -> "सात शून्य शून्य ओक स्ट्रीट"
             "६६-४ पार्क रोड" -> "छह छह हाइफ़न चार पार्क रोड"
         """
         ordinal_graph = ordinal.graph
-        # Alphanumeric to word mappings (digits, special characters, telephone digits)
+
+        # Char-to-word mappings - pre-optimized
         char_to_word = (
             digit
             | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
             | pynini.string_file(get_abs_path("data/address/special_characters.tsv"))
             | pynini.string_file(get_abs_path("data/telephone/number.tsv"))
-        )
-        # Letter to transliterated word mapping (A -> ए, B -> बी, ...)
+        ).optimize()
+
         letter_to_word = pynini.string_file(get_abs_path("data/address/letters.tsv"))
         address_keywords_hi = pynini.string_file(get_abs_path("data/address/context.tsv"))
 
-        # Making it case-insensitive: use capitalized_input_graph to handle capitalization
+        # English to Hindi mapping with case handling
         en_to_hi_mapping = load_labels(get_abs_path("data/address/en_to_hi_mapping.tsv"))
         en_to_hi_map = pynini.string_map(en_to_hi_mapping)
         if input_case != INPUT_LOWER_CASED:
             en_to_hi_map = capitalized_input_graph(en_to_hi_map)
 
-        # Create context words graph (identity map for matching)
+        # Context words for matching
         en_context_words = [word for word, _ in en_to_hi_mapping]
         address_keywords_en = pynini.string_map([[word, word] for word in en_context_words])
         if input_case != INPUT_LOWER_CASED:
             address_keywords_en = capitalized_input_graph(address_keywords_en)
-        address_keywords = address_keywords_hi | address_keywords_en
+        address_keywords = (address_keywords_hi | address_keywords_en).optimize()
 
-        # Alphanumeric processing: treat digits, letters, and -/ as convertible tokens
-        single_digit = NEMO_DIGIT | NEMO_HI_DIGIT
-        special_chars = pynini.union(HYPHEN, SLASH)
-        single_letter = pynini.project(letter_to_word, "input")
-        convertible_char = single_digit | special_chars | single_letter
+        # Token categories - pre-optimized
+        single_digit = (NEMO_DIGIT | NEMO_HI_DIGIT).optimize()
+        special_chars = pynini.union(HYPHEN, SLASH).optimize()
+        single_letter = pynini.project(letter_to_word, "input").optimize()
+        convertible_char = (single_digit | special_chars | single_letter).optimize()
         non_space_char = pynini.difference(
             NEMO_CHAR, pynini.union(NEMO_WHITE_SPACE, convertible_char, pynini.accep(COMMA))
-        )
+        ).optimize()
 
-        # Token processors with weights: prefer ordinals and known English→Hindi words
-        # Delete space before comma to avoid Sparrowhawk "sil" issue
+        # Optimized token processors - delete space before comma to avoid Sparrowhawk "sil" issue
         comma_processor = pynutil.add_weight(delete_space + pynini.accep(COMMA), 0.0)
         ordinal_processor = pynutil.add_weight(insert_space + ordinal_graph, -5.0)
         english_word_processor = pynutil.add_weight(insert_space + en_to_hi_map, -3.0)
@@ -261,23 +182,28 @@ class MeasureFst(GraphFst):
             | pynini.accep(NEMO_SPACE)
             | comma_processor
             | other_word_processor
-        )
-        full_string_processor = pynini.closure(token_processor, 1)
+        ).optimize()
 
-        # Window-based context matching around address keywords for robust detection
+        full_string_processor = pynini.closure(token_processor, 1).optimize()
+
+        # Window-based context matching
         word_boundary = pynini.union(
             NEMO_WHITE_SPACE, pynini.accep(COMMA), pynini.accep(HI_PERIOD), pynini.accep(PERIOD)
-        )
-        non_boundary_char = pynini.difference(NEMO_CHAR, word_boundary)
+        ).optimize()
+        non_boundary_char = pynini.difference(NEMO_CHAR, word_boundary).optimize()
         word = pynini.closure(non_boundary_char, 1)
-        word_with_boundary = word + pynini.closure(word_boundary)
-        window = pynini.closure(word_with_boundary, 0, 5)
+        word_with_boundary = (word + pynini.closure(word_boundary)).optimize()
+
+        # Window of 5 words for context detection
+        window = pynini.closure(word_with_boundary, 0, 5).optimize()
         boundary = pynini.closure(word_boundary, 1)
+
         input_pattern = pynini.union(
             address_keywords + boundary + window,
             window + boundary + address_keywords + pynini.closure(boundary + window, 0, 1),
-        )
-        address_graph = pynini.compose(input_pattern, full_string_processor)
+        ).optimize()
+
+        address_graph = pynini.compose(input_pattern, full_string_processor).optimize()
         graph = (
             pynutil.insert('units: "address" cardinal { integer: "')
             + address_graph
