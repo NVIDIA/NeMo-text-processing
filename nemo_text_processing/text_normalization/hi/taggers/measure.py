@@ -100,16 +100,22 @@ class MeasureFst(GraphFst):
         any_digit = (NEMO_HI_DIGIT | NEMO_DIGIT).optimize()
         word_char = pynini.difference(NEMO_CHAR, any_digit | pynini.union(",", " ")).optimize()
         word = pynini.closure(word_char, 1)
-        text_seg = (pynini.accep(NEMO_SPACE) + word) | (pynini.accep(COMMA) + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1) + word)
+        text_seg = (pynini.accep(NEMO_SPACE) + word) | (
+            pynini.accep(COMMA) + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1) + word
+        )
         text = pynini.closure(text_seg, 0, 5).optimize()
 
         # Separators
-        sep = pynini.closure(pynini.accep(COMMA) + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1), 0, 1) | pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
+        sep = pynini.closure(
+            pynini.accep(COMMA) + pynini.closure(pynini.accep(NEMO_SPACE), 0, 1), 0, 1
+        ) | pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
 
         # Pattern: [street_num sep] [word] text sep state/city [space pincode]
         pattern = (
             pynini.closure(street_num + (pynini.accep(COMMA) | pynini.accep(NEMO_SPACE)), 0, 1)
-            + pynini.closure(word, 0, 1) + text + sep
+            + pynini.closure(word, 0, 1)
+            + text
+            + sep
             + context_keywords
             + pynini.closure(pynini.accep(NEMO_SPACE) + pincode, 0, 1)
         ).optimize()
@@ -185,7 +191,7 @@ class MeasureFst(GraphFst):
         ).optimize()
         non_boundary_char = pynini.difference(NEMO_CHAR, word_boundary)
         word = pynini.closure(non_boundary_char, 1).optimize()
-        word_with_boundary = (word + pynini.closure(word_boundary))
+        word_with_boundary = word + pynini.closure(word_boundary)
         window = pynini.closure(word_with_boundary, 0, 5).optimize()
         boundary = pynini.closure(word_boundary, 1).optimize()
         input_pattern = pynini.union(
