@@ -32,8 +32,8 @@ class FractionFst(GraphFst):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
 
         # Handles square root symbols like "√3" → "루트3"
-        denominator_root = pynini.cross("√", "루트") + pynini.closure(NEMO_NOT_QUOTE)
-        numerator_root = pynini.cross("√", "루트") + pynini.closure(NEMO_NOT_QUOTE)
+        denominator_root = pynini.cross("√", "루트") + pynutil.insert(NEMO_SPACE) + pynini.closure(NEMO_NOT_QUOTE)
+        numerator_root = pynini.cross("√", "루트") + pynutil.insert(NEMO_SPACE) + pynini.closure(NEMO_NOT_QUOTE)
 
         # Matches non-root numeric content
         denominator = pynini.closure(NEMO_NOT_QUOTE - "√")
@@ -56,6 +56,7 @@ class FractionFst(GraphFst):
                 1,
             )
             + pynutil.insert("분의")
+            + pynutil.insert(NEMO_SPACE)
             + numerator_component
         )
 
@@ -66,6 +67,7 @@ class FractionFst(GraphFst):
             + pynutil.delete('"')
             + pynini.closure(pynini.union("√", ".", NEMO_NOT_QUOTE - '"'))
             + pynutil.delete('"')
+            + pynutil.insert(NEMO_SPACE)
         )
         graph_integer_fraction = graph_integer + delete_space + graph_fraction
 
@@ -77,6 +79,7 @@ class FractionFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE - '"')
             + pynutil.delete('"')
             + delete_space
+            + pynutil.insert(NEMO_SPACE)
         )
 
         # Final graph handles optional negative + (integer + fraction | fraction only)
