@@ -50,7 +50,7 @@ class ElectronicFst(GraphFst):
         )
 
         graph = user_name + delete_space + pynutil.insert("@") + domain
-        graph |= protocol
+        graph = pynini.union(graph, protocol)
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

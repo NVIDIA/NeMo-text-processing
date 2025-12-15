@@ -65,11 +65,11 @@ class DateFst(GraphFst):
             (NEMO_HI_DIGIT + NEMO_HI_NON_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_hundreds_as_thousand
         )
 
-        cardinal_graph = (
-            digit | teens_and_ties | cardinal.graph_hundreds | graph_year_thousands | graph_year_hundreds_as_thousands
+        cardinal_graph = pynini.union(
+            digit, teens_and_ties, cardinal.graph_hundreds, graph_year_thousands, graph_year_hundreds_as_thousands
         )
 
-        graph_year = graph_year_thousands | graph_year_hundreds_as_thousands
+        graph_year = pynini.union(graph_year_thousands, graph_year_hundreds_as_thousands)
 
         delete_dash = pynutil.delete("-")
         delete_slash = pynutil.delete("/")
@@ -102,13 +102,10 @@ class DateFst(GraphFst):
         # Updated logic to use prefix_union
         year_prefix = pynutil.insert("era: \"") + prefix_union + insert_space + graph_year + pynutil.insert("\"")
 
-        graph_dd_mm_yyyy = (
-            days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
-        )
+        delete_separator = pynini.union(delete_dash, delete_slash)
+        graph_dd_mm_yyyy = days_graph + delete_separator + months_graph + delete_separator + years_graph
 
-        graph_mm_dd_yyyy = (
-            months_graph + (delete_dash | delete_slash) + days_graph + (delete_dash | delete_slash) + years_graph
-        )
+        graph_mm_dd_yyyy = months_graph + delete_separator + days_graph + delete_separator + years_graph
 
         graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
 

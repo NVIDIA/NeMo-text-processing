@@ -14,12 +14,12 @@
 
 import logging
 import os
-import time
 
 import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
+    NEMO_SPACE,
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_extra_space,
@@ -32,7 +32,9 @@ from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFs
 from nemo_text_processing.text_normalization.hi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.hi.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
@@ -77,51 +79,39 @@ class ClassifyFst(GraphFst):
         else:
             logging.info(f"Creating ClassifyFst grammars.")
 
-            start_time = time.time()
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
-            logging.debug(f"cardinal: {time.time() - start_time: .2f}s -- {cardinal_graph.num_states()} nodes")
 
-            start_time = time.time()
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
-            logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
-            start_time = time.time()
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
             fraction_graph = fraction.fst
-            logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
-            start_time = time.time()
             date = DateFst(cardinal=cardinal)
             date_graph = date.fst
-            logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
-            start_time = time.time()
-            timefst = TimeFst()
+            timefst = TimeFst(cardinal=cardinal)
             time_graph = timefst.fst
-            logging.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
 
-            start_time = time.time()
             measure = MeasureFst(cardinal=cardinal, decimal=decimal)
             measure_graph = measure.fst
-            logging.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
 
-            start_time = time.time()
             money = MoneyFst(cardinal=cardinal)
             money_graph = money.fst
-            logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 
-            start_time = time.time()
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            ordinal_graph = ordinal.fst
+
             whitelist_graph = WhiteListFst(
                 input_case=input_case, deterministic=deterministic, input_file=whitelist
             ).fst
-            logging.debug(f"whitelist: {time.time() - start_time: .2f}s -- {whitelist_graph.num_states()} nodes")
 
-            start_time = time.time()
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
-            logging.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
+
+            telephone = TelephoneFst()
+            telephone_graph = telephone.fst
 
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
@@ -132,35 +122,39 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
+                | pynutil.add_weight(telephone_graph, 1.1)
+                | pynutil.add_weight(ordinal_graph, 1.1)
             )
 
-            start_time = time.time()
             word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
-            logging.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             punct = pynini.closure(
-                pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                | (pynutil.insert(" ") + punct),
+                pynini.union(
+                    pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space),
+                    (pynutil.insert(NEMO_SPACE) + punct),
+                ),
                 1,
             )
 
-            classify |= pynutil.add_weight(word_graph, 100)
+            classify = pynini.union(classify, pynutil.add_weight(word_graph, 100))
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+                pynini.closure(punct + pynutil.insert(NEMO_SPACE))
+                + token
+                + pynini.closure(pynutil.insert(NEMO_SPACE) + punct)
             )
 
             graph = token_plus_punct + pynini.closure(
-                (
-                    pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                    | (pynutil.insert(" ") + punct + pynutil.insert(" "))
+                pynini.union(
+                    pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space),
+                    (pynutil.insert(NEMO_SPACE) + punct + pynutil.insert(NEMO_SPACE)),
                 )
                 + token_plus_punct
             )
 
             graph = delete_space + graph + delete_space
-            graph |= punct
+            graph = pynini.union(graph, punct)
 
             self.fst = graph.optimize()
 
