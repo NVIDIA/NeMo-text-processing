@@ -13,8 +13,8 @@
 # limitations under the License.
 
 from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_SPACE, GraphFst
+import pynini
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_SPACE, NEMO_DIGIT, GraphFst
 
 
 class WordFst(GraphFst):
@@ -25,5 +25,11 @@ class WordFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
-        word = pynutil.insert("name: \"") + NEMO_NOT_SPACE + pynutil.insert("\"")
+        
+        word_char = pynini.difference(NEMO_NOT_SPACE, NEMO_DIGIT)
+
+        word = pynutil.insert('name: "')
+        word += pynini.closure(word_char, 1)
+        word += pynutil.insert('"')
+        
         self.fst = word.optimize()
