@@ -18,13 +18,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import (
-    GraphFst,
-    generator_main,
-    delete_space,
-    delete_extra_space,
     NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
 )
-
 from nemo_text_processing.text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ko.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ko.taggers.decimal import DecimalFst
