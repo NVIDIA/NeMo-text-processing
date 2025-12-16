@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst, NEMO_SIGMA
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SIGMA, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
@@ -31,7 +31,7 @@ class DecimalFst(GraphFst):
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
-        
+
         # Use the base cardinal graph for the integer part
         base_integer_graph = cardinal.graph
         # Only special-case 10000 -> 만 for decimal integer part (if needed)
@@ -39,7 +39,7 @@ class DecimalFst(GraphFst):
 
         # Try the special mapping first, then fall back to normal cardinal
         cardinal_before_decimal = (specials_input | base_integer_graph).optimize()
-        
+
         cardinal_after_decimal = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
 

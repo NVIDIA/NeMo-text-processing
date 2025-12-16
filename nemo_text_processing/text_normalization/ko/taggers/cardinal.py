@@ -23,9 +23,9 @@ from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
-        
+
         # Grouping separators to remove inside numbers (e.g., "1,234", "1’234", NBSP)
-        SEP = pynini.union(",", "’", "'", "\u00A0", "\u2009", "\u202F")
+        SEP = pynini.union(",", "’", "'", "\u00a0", "\u2009", "\u202f")
         # Optional small whitespace inside parentheses or after signs
         WS = pynini.closure(pynini.accep(" "), 0, 2)
 
@@ -59,7 +59,9 @@ class CardinalFst(GraphFst):
         graph_thousand = thousands @ graph_thousand_component
 
         ten_thousands = NEMO_DIGIT**5
-        graph_ten_thousand_component = (pynini.cross('1', '만') | (graph_digit_no_zero_one + pynutil.insert('만'))) + pynini.union(
+        graph_ten_thousand_component = (
+            pynini.cross('1', '만') | (graph_digit_no_zero_one + pynutil.insert('만'))
+        ) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_thousand_component,
             (pynutil.delete('0') + graph_hundred_component),
@@ -281,7 +283,7 @@ class CardinalFst(GraphFst):
             NEMO_DIGIT,
             NEMO_SIGMA,
         )
-        
+
         # Let the number graph accept numbers with separators
         graph_num_accepting_separators = delete_sep_between_digits @ graph_num
 
@@ -292,18 +294,15 @@ class CardinalFst(GraphFst):
         #  - minus sets negative flag
         #  - plus is ignored (positive number)
         minus_prefix = pynutil.insert('negative: "true" ') + pynutil.delete("-")
-        plus_prefix  = pynutil.delete("+")
+        plus_prefix = pynutil.delete("+")
 
         # Accounting negative: "( 1,234 )" -> negative + integer:"1234"
         paren_negative = (
-            pynutil.insert('negative: "true" ')
-            + pynutil.delete("(") + WS
-            + integer_token
-            + WS + pynutil.delete(")")
+            pynutil.insert('negative: "true" ') + pynutil.delete("(") + WS + integer_token + WS + pynutil.delete(")")
         )
 
         # Signed number: optional (+|-) + integer
-        signed_integer = ( (minus_prefix | plus_prefix).ques + integer_token )
+        signed_integer = (minus_prefix | plus_prefix).ques + integer_token
 
         # Prefer accounting-form first, then signed form
         final_graph = paren_negative | signed_integer

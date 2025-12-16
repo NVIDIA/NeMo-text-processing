@@ -65,11 +65,9 @@ class OrdinalFst(GraphFst):
         graph_ordinal_from40 = graph_cardinal_from40_filtered + pynini.accep("번째")
 
         graph_ordinal = (graph_ordinal_1to39 | graph_ordinal_from40).optimize()  # Handles 1-39  # Handles 40+
-        
+
         # Single-character particles (가, 이, 은, 는, 로, 도 ...)
-        josa_single = pynini.union(
-            "가", "이", "은", "는", "를", "을", "로", "도", "다"
-        )
+        josa_single = pynini.union("가", "이", "은", "는", "를", "을", "로", "도", "다")
 
         # Multi-character particles (부터, 까지)
         josa_multi = pynini.union("부터", "까지")
@@ -82,10 +80,6 @@ class OrdinalFst(GraphFst):
         graph_ordinal_with_josa = (graph_ordinal + josa).optimize()
 
         # Build the “integer: …” token structure
-        final_graph = (
-            pynutil.insert('integer: "')
-            + graph_ordinal_with_josa
-            + pynutil.insert('"')
-        )
+        final_graph = pynutil.insert('integer: "') + graph_ordinal_with_josa + pynutil.insert('"')
 
         self.fst = self.add_tokens(final_graph).optimize()

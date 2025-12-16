@@ -39,7 +39,7 @@ class DateFst(GraphFst):
         )
 
         SPACE = pynini.closure(delete_space, 0, 1) + insert_space
-        
+
         # This graph now correctly uses the 'delete_space' variable defined above.
         graph_basic_date = (
             pynini.closure(era_component + SPACE, 0, 1)
