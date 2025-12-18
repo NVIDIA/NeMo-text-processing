@@ -121,10 +121,27 @@ class ElectronicFst(GraphFst):
         dollar_accep = pynini.accep("$")
         excluded_symbols = DOT | dollar_accep | AT
         filtered_symbols = pynini.difference(accepted_symbols, excluded_symbols)
-        accepted_characters = ASCII_ALNUM | filtered_symbols
         # Domain core graph
         graph_domain = (pynutil.insert('domain: "') + domain_core + pynutil.insert('"')).optimize()
         graph |= graph_domain
+
+        known_extensions = pynini.project(
+            pynini.string_file(get_abs_path("data/electronic/extensions.tsv")),
+            "input",
+        )
+
+        filename_stem = pynini.closure(
+            pynini.difference(NEMO_NOT_SPACE, pynini.union(SLASH, DOT)),
+            1,
+        )
+
+        file_with_extension = filename_stem + known_extensions 
+
+        graph |= (
+            pynutil.insert('domain: "')
+            + file_with_extension
+            + pynutil.insert('"')
+        ).optimize()
 
         # (3) URL with protocol
         graph |= protocol + insert_space + domain_graph_with_class_tags
@@ -144,9 +161,9 @@ class ElectronicFst(GraphFst):
 
             four = pynini.closure(NEMO_DIGIT, 4, 4)
             sep_token = pynini.union(HYPHEN, NEMO_SPACE)
-            sep_del = pynutil.delete(pynini.closure(sep_token, 1))  # allow mix of - or space
-
-            cc16_grouped = four + sep_del + four + sep_del + four + sep_del + four
+            sep_to_space = pynutil.delete(pynini.closure(sep_token, 0, 1)) + insert_space
+            cc16_grouped = four + sep_to_space + four + sep_to_space + four + sep_to_space + four
+            cc16_grouped = cc16_grouped + delete_space
 
             cc16_no_cue = (
                 pynutil.insert('protocol: "신용카드 " ')
