@@ -41,7 +41,7 @@ class TelephoneFst(GraphFst):
         add_sep = pynutil.delete("-") | pynutil.delete(".")
         # Optional space inserted between blocks
         sep_space = insert_space
-        
+
         # 1) safe digit mapping: force 0 -> "영" (do not rely on zero.tsv invert)
         digit = pynini.string_file(get_abs_path("data/number/digit.tsv")).optimize()
         zero_map = pynini.cross("0", "영")
@@ -61,7 +61,7 @@ class TelephoneFst(GraphFst):
             + pynini.closure(pynutil.delete("-") | pynutil.delete(" "), 0, 1)
             + delete_space
         )
-        
+
         # area part: "123-" | "123." | "(123)" [space?] or "(123)-"
         area_core = three_digits
         area_part = (
@@ -74,7 +74,6 @@ class TelephoneFst(GraphFst):
                 + pynini.closure(add_sep, 0, 1)
             )
         ) + sep_space
-
 
         # 2) allow 3 **or 4** digits in the middle block (to support 010-3713-7050)
         mid = pynini.union(three_digits, four_digits)

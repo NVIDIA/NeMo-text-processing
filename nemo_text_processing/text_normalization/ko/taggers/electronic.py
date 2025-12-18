@@ -135,13 +135,9 @@ class ElectronicFst(GraphFst):
             1,
         )
 
-        file_with_extension = filename_stem + known_extensions 
+        file_with_extension = filename_stem + known_extensions
 
-        graph |= (
-            pynutil.insert('domain: "')
-            + file_with_extension
-            + pynutil.insert('"')
-        ).optimize()
+        graph |= (pynutil.insert('domain: "') + file_with_extension + pynutil.insert('"')).optimize()
 
         # (3) URL with protocol
         graph |= protocol + insert_space + domain_graph_with_class_tags
