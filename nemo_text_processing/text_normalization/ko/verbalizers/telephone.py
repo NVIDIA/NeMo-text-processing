@@ -29,9 +29,9 @@ class TelephoneFst(GraphFst):
         [country_code + " "] + number_part [+ ", 내선 " + extension]
 
     Examples:
-        telephone { country_code: "플러스 팔 이," number_part: "영일영, 삼칠일삼, 칠영오영" }
+        telephone { country_code: "국가번호 팔이," number_part: "영일영 삼칠일삼 칠영오영" }
             -> 플러스 팔 이, 영일영, 삼칠일삼, 칠영오영
-        telephone { number_part: "팔영영, 오오오, 영영영영" extension: "이삼사" }
+        telephone { number_part: "팔영영 오오오 영영영영" extension: "이삼사" }
             -> 팔영영, 오오오, 영영영영, 내선 이삼사
 
     Args:
@@ -45,6 +45,7 @@ class TelephoneFst(GraphFst):
         country = (
             pynini.closure(delete_space, 0, 1)
             + pynutil.delete('country_code: "')
+            + pynutil.insert("국가번호 ")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
             + insert_space
