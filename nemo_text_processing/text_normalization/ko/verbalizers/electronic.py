@@ -129,11 +129,7 @@ class ElectronicFst(GraphFst):
             pynutil.delete('protocol: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"') + insert_space
         )
 
-        protocol_raw = (
-            pynutil.delete('protocol: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-        )
+        protocol_raw = pynutil.delete('protocol: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         cc_protocol_guard = pynini.accep("신용카드") + pynini.closure(NEMO_NOT_QUOTE, 0)
         cc_protocol = (protocol_raw @ cc_protocol_guard) + insert_space
 
