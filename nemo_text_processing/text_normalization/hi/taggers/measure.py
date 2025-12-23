@@ -80,7 +80,7 @@ class MeasureFst(GraphFst):
         # State/city keywords
         states = pynini.string_file(get_abs_path("data/address/states.tsv"))
         cities = pynini.string_file(get_abs_path("data/address/cities.tsv"))
-        context_keywords = (states | cities).optimize()
+        state_city_names = (states | cities).optimize()
 
         # Digit mappings
         num_token = (
@@ -116,7 +116,7 @@ class MeasureFst(GraphFst):
             + pynini.closure(word, 0, 1)
             + text
             + sep
-            + context_keywords
+            + state_city_names
             + pynini.closure(pynini.accep(NEMO_SPACE) + pincode, 0, 1)
         ).optimize()
 
