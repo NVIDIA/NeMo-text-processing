@@ -44,6 +44,17 @@ HI_TWO_POINT_FIVE = "२.५"  # 2.5
 HI_DECIMAL_25 = ".२५"  # .25
 HI_DECIMAL_75 = ".७५"  # .75
 
+# Symbol constants
+HI_BY = "बाई"
+LOWERCASE_X = "x"
+UPPERCASE_X = "X"
+ASTERISK = "*"
+HYPHEN = "-"
+SLASH = "/"
+COMMA = ","
+PERIOD = "."
+HI_PERIOD = "।"
+
 NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
 NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
 NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
