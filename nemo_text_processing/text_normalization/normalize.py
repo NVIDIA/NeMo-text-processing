@@ -161,8 +161,8 @@ class Normalizer:
             from nemo_text_processing.text_normalization.ar.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'hi':
             from nemo_text_processing.text_normalization.hi.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.hi.verbalizers.verbalize_final import VerbalizeFinalFst
             from nemo_text_processing.text_normalization.hi.verbalizers.post_processing import PostProcessingFst
+            from nemo_text_processing.text_normalization.hi.verbalizers.verbalize_final import VerbalizeFinalFst
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
