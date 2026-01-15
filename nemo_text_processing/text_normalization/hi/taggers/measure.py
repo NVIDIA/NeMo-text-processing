@@ -223,10 +223,7 @@ class MeasureFst(GraphFst):
         year_formal = pynini.string_file(get_abs_path("data/measure/unit_year_formal.tsv"))
 
         # All units EXCEPT year
-        unit_inputs_except_yr = pynini.difference(
-            pynini.project(unit_graph, "input"),
-            pynini.accep("yr")
-        )
+        unit_inputs_except_yr = pynini.difference(pynini.project(unit_graph, "input"), pynini.accep("yr"))
         unit_graph_no_year = pynini.compose(unit_inputs_except_yr, unit_graph)
 
         # Load quarterly units from separate files: map (FST) and list (FSA)
@@ -287,12 +284,7 @@ class MeasureFst(GraphFst):
         cardinal_large = cardinal.graph_without_leading_zeros
 
         # Cardinal < 1000 -> informal year (साल)
-        cardinal_small = (
-            cardinal.zero
-            | cardinal.digit
-            | cardinal.teens_and_ties
-            | cardinal.graph_hundreds
-        )
+        cardinal_small = cardinal.zero | cardinal.digit | cardinal.teens_and_ties | cardinal.graph_hundreds
 
         symbol_graph = pynini.string_map(
             [
