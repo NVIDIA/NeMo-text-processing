@@ -218,6 +218,17 @@ class MeasureFst(GraphFst):
         decimal_graph = decimal_integers + point + insert_space + decimal.graph_fractional
         unit_graph = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
 
+        # Year unit variants for formal/informal handling
+        year_informal = pynini.string_map([("yr", "साल")])
+        year_formal = pynini.string_file(get_abs_path("data/measure/unit_year_formal.tsv"))
+
+        # All units EXCEPT year
+        unit_inputs_except_yr = pynini.difference(
+            pynini.project(unit_graph, "input"),
+            pynini.accep("yr")
+        )
+        unit_graph_no_year = pynini.compose(unit_inputs_except_yr, unit_graph)
+
         # Load quarterly units from separate files: map (FST) and list (FSA)
         quarterly_units_map = pynini.string_file(get_abs_path("data/measure/quarterly_units_map.tsv"))
         quarterly_units_list = pynini.string_file(get_abs_path("data/measure/quarterly_units_list.tsv"))
@@ -243,7 +254,7 @@ class MeasureFst(GraphFst):
         unit = (
             pynutil.insert(NEMO_SPACE)
             + pynutil.insert("units: \"")
-            + unit_graph
+            + unit_graph_no_year
             + pynutil.insert("\"")
             + pynutil.insert(NEMO_SPACE)
         )
@@ -253,6 +264,34 @@ class MeasureFst(GraphFst):
             + quarterly_units_graph
             + pynutil.insert("\"")
             + pynutil.insert(NEMO_SPACE)
+        )
+
+        # Year-specific unit wrappers
+        unit_year_informal = (
+            pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("units: \"")
+            + year_informal
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
+        unit_year_formal = (
+            pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("units: \"")
+            + year_formal
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
+
+        # Cardinal >= 1000 -> formal year (वर्ष)
+        # Use graph_without_leading_zeros which covers all number ranges (thousands to shankhs)
+        cardinal_large = cardinal.graph_without_leading_zeros
+
+        # Cardinal < 1000 -> informal year (साल)
+        cardinal_small = (
+            cardinal.zero
+            | cardinal.digit
+            | cardinal.teens_and_ties
+            | cardinal.graph_hundreds
         )
 
         symbol_graph = pynini.string_map(
@@ -354,6 +393,42 @@ class MeasureFst(GraphFst):
             + unit
         )
 
+        # Large numbers (>=1000) + yr -> formal (वर्ष)
+        graph_cardinal_year_formal = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_large
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
+            + delete_space
+            + unit_year_formal
+        )
+
+        # Small numbers (<1000) + yr -> informal (साल)
+        graph_cardinal_year_informal = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_small
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
+            + delete_space
+            + unit_year_informal
+        )
+
+        # Regular decimals (e.g., 16.07) + yr -> formal (वर्ष)
+        graph_decimal_year_formal = (
+            pynutil.insert("decimal { ")
+            + optional_graph_negative
+            + decimal_graph
+            + pynutil.insert(" }")
+            + delete_space
+            + unit_year_formal
+        )
+
         # Handling cardinal clubbed with symbol as single token
         graph_exceptions = (
             pynutil.insert("cardinal { ")
@@ -381,7 +456,10 @@ class MeasureFst(GraphFst):
 
         graph = (
             pynutil.add_weight(graph_decimal, 0.1)
+            | pynutil.add_weight(graph_decimal_year_formal, 0.1)
             | pynutil.add_weight(graph_cardinal, 0.1)
+            | pynutil.add_weight(graph_cardinal_year_formal, 0.1)
+            | pynutil.add_weight(graph_cardinal_year_informal, -0.1)  # Higher priority for small numbers
             | pynutil.add_weight(graph_exceptions, 0.1)
             | pynutil.add_weight(graph_dedh_dhai, -0.2)
             | pynutil.add_weight(graph_savva, -0.1)

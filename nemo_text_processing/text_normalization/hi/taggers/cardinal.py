@@ -15,7 +15,11 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    GraphFst,
+    NEMO_HI_DIGIT,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
@@ -40,6 +44,11 @@ class CardinalFst(GraphFst):
         self.digit = digit
         self.zero = zero
         self.teens_and_ties = teens_and_ties
+
+        # Single digit graph for digit-by-digit reading
+        # e.g., "०७३" -> "शून्य सात तीन"
+        single_digit_graph = digit | zero
+        self.single_digits_graph = single_digit_graph + pynini.closure(insert_space + single_digit_graph)
 
         def create_graph_suffix(digit_graph, suffix, zeros_counts):
             zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
@@ -298,13 +307,8 @@ class CardinalFst(GraphFst):
         graph_ten_shankhs |= create_larger_number_graph(teens_and_ties, suffix_shankhs, 0, graph_ten_padmas)
         graph_ten_shankhs.optimize()
 
-        # Only match exactly 2 digits to avoid interfering with telephone numbers, decimals, etc.
-        # e.g., "०५" -> "शून्य पाँच"
-        single_digit = digit | zero
-        graph_leading_zero = zero + insert_space + single_digit
-        graph_leading_zero = pynutil.add_weight(graph_leading_zero, 0.5)
-
-        final_graph = (
+        # Graph without leading zeros - used by other taggers like ordinal, decimal and measure
+        graph_without_leading_zeros = (
             digit
             | zero
             | teens_and_ties
@@ -325,8 +329,18 @@ class CardinalFst(GraphFst):
             | graph_ten_padmas
             | graph_shankhs
             | graph_ten_shankhs
-            | graph_leading_zero
         )
+        self.graph_without_leading_zeros = graph_without_leading_zeros.optimize()
+
+        # Handle numbers with leading zeros by reading digit-by-digit
+        # e.g., "०७३" -> "शून्य सात तीन", "००५" -> "शून्य शून्य पाँच"
+        cardinal_with_leading_zeros = pynini.compose(
+            pynini.accep("०") + pynini.closure(NEMO_HI_DIGIT), self.single_digits_graph
+        )
+        cardinal_with_leading_zeros = pynutil.add_weight(cardinal_with_leading_zeros, 0.5)
+
+        # Full graph including leading zeros - for standalone cardinal matching
+        final_graph = graph_without_leading_zeros | cardinal_with_leading_zeros
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
