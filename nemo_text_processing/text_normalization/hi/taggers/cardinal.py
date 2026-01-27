@@ -303,8 +303,13 @@ class CardinalFst(GraphFst):
         graph_ten_shankhs |= create_larger_number_graph(teens_and_ties, suffix_shankhs, 0, graph_ten_padmas)
         graph_ten_shankhs.optimize()
 
-        # Graph without leading zeros - used by other taggers like ordinal, decimal and measure
-        graph_without_leading_zeros = (
+        # Only match exactly 2 digits to avoid interfering with telephone numbers, decimals, etc.
+        # e.g., "०५" -> "शून्य पाँच"
+        single_digit = digit | zero
+        graph_leading_zero = zero + insert_space + single_digit
+        graph_leading_zero = pynutil.add_weight(graph_leading_zero, 0.5)
+
+        final_graph = (
             digit
             | zero
             | teens_and_ties
@@ -325,6 +330,7 @@ class CardinalFst(GraphFst):
             | graph_ten_padmas
             | graph_shankhs
             | graph_ten_shankhs
+            | graph_leading_zero
         )
         self.graph_without_leading_zeros = graph_without_leading_zeros.optimize()
 

@@ -38,7 +38,6 @@ class TimeFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="time", kind="classify")
-        # hours, minutes, seconds, suffix, zone, style, speak_period
 
         graph_hours_to = pynini.string_file(get_abs_path("data/time/hours_to.tsv"))
         graph_minutes_to = pynini.string_file(get_abs_path("data/time/minutes_to.tsv"))
@@ -52,9 +51,17 @@ class TimeFst(GraphFst):
         optional_minute = pynini.closure(delete_space + minute, 0, 1)
         second = pynini.cross("giây", "")
 
+        # Zero prefix patterns for minutes (linh, lẻ, không)
+        # Examples: "linh năm" -> "05", "không tám" -> "08"
+        zero_prefix = pynini.string_file(get_abs_path("data/time/zero_prefix.tsv"))
+        graph_zero_minute = zero_prefix + delete_space + graph_minutes
+        graph_minute_extended = graph_minutes | graph_zero_minute
+
         final_graph_hour = pynutil.insert('hours: "') + graph_hours + pynutil.insert('"') + delete_space + oclock
-        graph_minute = graph_minutes + optional_minute
-        graph_second = graph_minutes + delete_space + second
+        graph_minute = graph_minute_extended + optional_minute
+        graph_second = graph_minute_extended + delete_space + second
+
+        # Optional time zone support
         final_time_zone_optional = pynini.closure(
             delete_space
             + insert_space
@@ -65,6 +72,8 @@ class TimeFst(GraphFst):
             1,
         )
 
+        # Time pattern combinations
+        # Pattern 1: Hour + Minutes (e.g., "tám giờ hai mươi" -> 8:20)
         graph_hm = (
             final_graph_hour
             + delete_extra_space
@@ -73,6 +82,7 @@ class TimeFst(GraphFst):
             + pynutil.insert('"')
         )
 
+        # Pattern 2: Hour + Minutes + Seconds (e.g., "tám giờ hai mươi phút ba mươi giây" -> 8:20:30)
         graph_hms = (
             final_graph_hour
             + delete_extra_space
@@ -87,6 +97,7 @@ class TimeFst(GraphFst):
             + pynutil.insert('"')
         )
 
+        # Pattern 3: Minutes + Seconds only (e.g., "ba phút hai mươi giây" -> 3p20s)
         graph_ms = (
             pynutil.insert('minutes: "')
             + graph_minutes
@@ -99,9 +110,22 @@ class TimeFst(GraphFst):
             + pynutil.insert('"')
         )
 
+        # Pattern 4: Hour + Seconds only (e.g., "ba giờ mười giây" -> 3:00:10)
+        graph_hs = (
+            final_graph_hour
+            + delete_extra_space
+            + pynutil.insert('minutes: "0"')
+            + delete_extra_space
+            + pynutil.insert('seconds: "')
+            + graph_second
+            + pynutil.insert('"')
+        )
+
+        # "Kém" pattern components (e.g., "chín giờ kém hai mươi" -> 8:40)
         graph_hours_to_component = graph_hours @ graph_hours_to
         graph_minutes_to_component = graph_minutes @ graph_minutes_to
 
+        # Pattern 5: "Kém" time format (hour minus minutes)
         graph_time_to = (
             pynutil.insert('hours: "')
             + graph_hours_to_component
@@ -117,10 +141,18 @@ class TimeFst(GraphFst):
             + optional_minute
         )
 
-        final_graph = (final_graph_hour | graph_hm | graph_hms) + final_time_zone_optional
-        final_graph |= graph_ms
-        final_graph |= graph_time_to
+        # Combine all time patterns
+        final_graph = (
+            pynini.union(
+                final_graph_hour,  # Hour only
+                graph_hm,  # Hour + Minutes
+                graph_hms,  # Hour + Minutes + Seconds
+                graph_hs,  # Hour + Seconds
+                graph_ms,  # Minutes + Seconds only
+                graph_time_to,  # "Kém" pattern
+            )
+            + final_time_zone_optional
+        )
 
         final_graph = self.add_tokens(final_graph)
-
         self.fst = final_graph.optimize()
