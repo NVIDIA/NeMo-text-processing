@@ -18,18 +18,15 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.hi.graph_utils import (
     ASTERISK,
     COMMA,
+    DECIMAL_25,
+    DECIMAL_75,
     HI_BY,
-    HI_DECIMAL_25,
-    HI_DECIMAL_75,
     HI_DEDH,
     HI_DHAI,
-    HI_ONE_POINT_FIVE,
     HI_PAUNE,
     HI_PERIOD,
-    HI_POINT_FIVE,
     HI_SADHE,
     HI_SAVVA,
-    HI_TWO_POINT_FIVE,
     HYPHEN,
     INPUT_LOWER_CASED,
     LOWERCASE_X,
@@ -39,8 +36,11 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     NEMO_NOT_SPACE,
     NEMO_SPACE,
     NEMO_WHITE_SPACE,
+    ONE_POINT_FIVE,
     PERIOD,
+    POINT_FIVE,
     SLASH,
+    TWO_POINT_FIVE,
     UPPERCASE_X,
     GraphFst,
     capitalized_input_graph,
@@ -50,7 +50,10 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+# Load both Hindi (Devanagari) and English (Arabic) number mappings
+teens_ties_hi = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+teens_ties_en = pynini.string_file(get_abs_path("data/numbers/teens_and_ties_en.tsv"))
+teens_ties = pynini.union(teens_ties_hi, teens_ties_en)
 teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
 
@@ -237,13 +240,11 @@ class MeasureFst(GraphFst):
             1,
         )
 
-        # Define the quarterly measurements
-        quarter = pynini.string_map(
-            [
-                (HI_POINT_FIVE, HI_SADHE),
-                (HI_ONE_POINT_FIVE, HI_DEDH),
-                (HI_TWO_POINT_FIVE, HI_DHAI),
-            ]
+        # Define the quarterly measurements - support both Devanagari and Arabic digits
+        quarter = pynini.union(
+            pynini.cross(POINT_FIVE, HI_SADHE),
+            pynini.cross(ONE_POINT_FIVE, HI_DEDH),
+            pynini.cross(TWO_POINT_FIVE, HI_DHAI),
         )
         quarter_graph = pynutil.insert("integer_part: \"") + quarter + pynutil.insert("\"")
 
@@ -303,10 +304,15 @@ class MeasureFst(GraphFst):
             + unit
         )
 
-        dedh_dhai = pynini.string_map([(HI_ONE_POINT_FIVE, HI_DEDH), (HI_TWO_POINT_FIVE, HI_DHAI)])
+        # Support both Devanagari and Arabic digits for dedh/dhai patterns
+        dedh_dhai = pynini.union(
+            pynini.cross(ONE_POINT_FIVE, HI_DEDH),
+            pynini.cross(TWO_POINT_FIVE, HI_DHAI),
+        )
         dedh_dhai_graph = pynutil.insert("integer: \"") + dedh_dhai + pynutil.insert("\"")
 
-        savva_numbers = cardinal_graph + pynini.cross(HI_DECIMAL_25, "")
+        # Support both Devanagari and Arabic digits for savva pattern
+        savva_numbers = cardinal_graph + pynini.cross(DECIMAL_25, "")
         savva_graph = (
             pynutil.insert("integer: \"")
             + pynutil.insert(HI_SAVVA)
@@ -315,7 +321,8 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        sadhe_numbers = cardinal_graph + pynini.cross(HI_POINT_FIVE, "")
+        # Support both Devanagari and Arabic digits for sadhe pattern
+        sadhe_numbers = cardinal_graph + pynini.cross(POINT_FIVE, "")
         sadhe_graph = (
             pynutil.insert("integer: \"")
             + pynutil.insert(HI_SADHE)
@@ -325,7 +332,8 @@ class MeasureFst(GraphFst):
         )
 
         paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
-        paune_numbers = paune + pynini.cross(HI_DECIMAL_75, "")
+        # Support both Devanagari and Arabic digits for paune pattern
+        paune_numbers = paune + pynini.cross(DECIMAL_75, "")
         paune_graph = (
             pynutil.insert("integer: \"")
             + pynutil.insert(HI_PAUNE)
