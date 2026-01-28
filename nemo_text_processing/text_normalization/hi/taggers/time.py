@@ -73,16 +73,18 @@ class TimeFst(GraphFst):
         graph_h = self.hours + delete_colon + pynutil.delete(HI_DOUBLE_ZERO)
 
         # Support all combinations of Devanagari and Arabic digits for dedh/dhai patterns
-        dedh_dhai_graph = pynini.string_map([
-            ("१:३०", HI_DEDH),
-            ("१:30", HI_DEDH),
-            ("1:३०", HI_DEDH),
-            ("1:30", HI_DEDH),
-            ("२:३०", HI_DHAI),
-            ("२:30", HI_DHAI),
-            ("2:३०", HI_DHAI),
-            ("2:30", HI_DHAI),
-        ])
+        dedh_dhai_graph = pynini.string_map(
+            [
+                ("१:३०", HI_DEDH),
+                ("१:30", HI_DEDH),
+                ("1:३०", HI_DEDH),
+                ("1:30", HI_DEDH),
+                ("२:३०", HI_DHAI),
+                ("२:30", HI_DHAI),
+                ("2:३०", HI_DHAI),
+                ("2:30", HI_DHAI),
+            ]
+        )
 
         savva_numbers = cardinal_graph + pynini.cross(HI_TIME_FIFTEEN, "")
         savva_graph = pynutil.insert(HI_SAVVA) + pynutil.insert(NEMO_SPACE) + savva_numbers
