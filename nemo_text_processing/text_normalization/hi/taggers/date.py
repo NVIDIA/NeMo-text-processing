@@ -16,9 +16,9 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
-    NEMO_HI_DIGIT,
-    NEMO_HI_NON_ZERO,
-    NEMO_HI_ZERO,
+    NEMO_ALL_DIGIT,
+    NEMO_ALL_NON_ZERO,
+    NEMO_ALL_ZERO,
     GraphFst,
     insert_space,
 )
@@ -28,7 +28,9 @@ days = pynini.string_file(get_abs_path("data/date/days.tsv"))
 months = pynini.string_file(get_abs_path("data/date/months.tsv"))
 year_suffix = pynini.string_file(get_abs_path("data/date/year_suffix.tsv"))
 digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+teens_ties_hi = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+teens_ties_en = pynini.string_file(get_abs_path("data/numbers/teens_and_ties_en.tsv"))
+teens_ties = pynini.union(teens_ties_hi, teens_ties_en)
 teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
 # Read suffixes from file into a list
@@ -59,10 +61,10 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="classify")
 
         graph_year_thousands = pynini.compose(
-            (NEMO_HI_DIGIT + NEMO_HI_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_thousands
+            (NEMO_ALL_DIGIT + NEMO_ALL_ZERO + NEMO_ALL_DIGIT + NEMO_ALL_DIGIT), cardinal.graph_thousands
         )
         graph_year_hundreds_as_thousands = pynini.compose(
-            (NEMO_HI_DIGIT + NEMO_HI_NON_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_hundreds_as_thousand
+            (NEMO_ALL_DIGIT + NEMO_ALL_NON_ZERO + NEMO_ALL_DIGIT + NEMO_ALL_DIGIT), cardinal.graph_hundreds_as_thousand
         )
 
         cardinal_graph = pynini.union(
@@ -92,7 +94,7 @@ class DateFst(GraphFst):
         range_graph = pynini.cross("-", "से")
 
         # Graph for year
-        century_number = pynini.compose(pynini.closure(NEMO_HI_DIGIT, 1), cardinal_graph) + pynini.accep("वीं")
+        century_number = pynini.compose(pynini.closure(NEMO_ALL_DIGIT, 1), cardinal_graph) + pynini.accep("वीं")
         century_text = pynutil.insert("era: \"") + century_number + pynutil.insert("\"") + insert_space
 
         # Updated logic to use suffix_union

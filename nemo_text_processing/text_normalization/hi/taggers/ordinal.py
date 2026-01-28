@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_CHAR, GraphFst
+from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
@@ -24,7 +24,7 @@ class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying Hindi ordinals, e.g.
         १०वां -> ordinal { integer: "दसवां" }
-        २१वीं -> ordinal { integer: "इक्कीसवीं" }
+        12वीं -> ordinal { integer: "इक्कीसवीं" } # English/arabic digits also supported
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -39,9 +39,21 @@ class OrdinalFst(GraphFst):
         suffixes_fst = pynini.union(suffixes_list, suffixes_map)
         exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
 
-        graph = cardinal.final_graph + suffixes_fst
+        # Limit cardinal graph to thousands range for faster compilation
+        limited_cardinal_graph = (
+            cardinal.digit
+            | cardinal.zero
+            | cardinal.teens_and_ties
+            | cardinal.graph_hundreds
+            | cardinal.graph_thousands
+            | cardinal.graph_ten_thousands
+        ).optimize()
+
+        graph = limited_cardinal_graph + suffixes_fst
         exceptions = pynutil.add_weight(exceptions, -0.1)
         graph = pynini.union(exceptions, graph)
+
+        self.graph = graph.optimize()
 
         final_graph = pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
         final_graph = self.add_tokens(final_graph)
