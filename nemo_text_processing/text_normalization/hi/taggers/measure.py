@@ -252,7 +252,7 @@ class MeasureFst(GraphFst):
         unit = (
             pynutil.insert(NEMO_SPACE)
             + pynutil.insert("units: \"")
-            + unit_graph
+            + unit_graph_no_year
             + pynutil.insert("\"")
             + pynutil.insert(NEMO_SPACE)
         )

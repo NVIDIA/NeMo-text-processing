@@ -317,7 +317,7 @@ class CardinalFst(GraphFst):
         graph_leading_zero = zero + insert_space + single_digit
         graph_leading_zero = pynutil.add_weight(graph_leading_zero, 0.5)
 
-        final_graph = (
+        graph_without_leading_zeros = (
             digit
             | zero
             | teens_and_ties
