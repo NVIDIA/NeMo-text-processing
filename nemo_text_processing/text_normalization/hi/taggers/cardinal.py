@@ -338,7 +338,6 @@ class CardinalFst(GraphFst):
             | graph_ten_padmas
             | graph_shankhs
             | graph_ten_shankhs
-            | graph_leading_zero
         )
         self.graph_without_leading_zeros = graph_without_leading_zeros.optimize()
 
