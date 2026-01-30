@@ -41,7 +41,7 @@ class TelephoneFst(GraphFst):
         delete_sep = pynutil.delete("-") | pynutil.delete(".")
         # Optional space inserted between blocks
         insert_block_space = insert_space
-        
+
         # 1) safe digit mapping: force 0 -> "영" (do not rely on zero.tsv invert)
         digit = pynini.string_file(get_abs_path("data/number/digit.tsv")).optimize()
         zero_map = pynini.cross("0", "영")
