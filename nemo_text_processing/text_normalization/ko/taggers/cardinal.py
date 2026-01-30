@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, NEMO_SPACE
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
@@ -24,10 +24,8 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
-        # Grouping separators to remove inside numbers (e.g., "1,234", "1’234", NBSP)
-        SEP = pynini.union(",", "’", "'", "\u00a0", "\u2009", "\u202f")
         # Optional small whitespace inside parentheses or after signs
-        WS = pynini.closure(pynini.accep(" "), 0, 2)
+        WS = pynini.closure(NEMO_SPACE, 0, 2)
 
         # Load base .tsv files
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
@@ -50,32 +48,41 @@ class CardinalFst(GraphFst):
 
         thousands = NEMO_DIGIT**4
         graph_thousand_component = (
-            pynini.cross('1', '천') | (graph_digit_no_zero_one + pynutil.insert('천'))
-        ) + pynini.union(
-            pynini.closure(pynutil.delete('0')),
-            graph_hundred_component,
-            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
+            pynini.union(
+                pynini.cross('1', '천'),
+                graph_digit_no_zero_one + pynutil.insert('천'),
+            )
+            + pynini.union(
+                pynini.closure(pynutil.delete('0')),
+                graph_hundred_component,
+                (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
+            )
         )
         graph_thousand = thousands @ graph_thousand_component
 
         ten_thousands = NEMO_DIGIT**5
         graph_ten_thousand_component = (
-            pynini.cross('1', '만') | (graph_digit_no_zero_one + pynutil.insert('만'))
-        ) + pynini.union(
-            pynini.closure(pynutil.delete('0')),
-            graph_thousand_component,
-            (pynutil.delete('0') + graph_hundred_component),
-            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
+            pynini.union(
+                pynini.cross('1', '만'),
+                graph_digit_no_zero_one + pynutil.insert('만'),
+            )
+            + pynini.union(
+                pynini.closure(pynutil.delete('0')),
+                graph_thousand_component,
+                (pynutil.delete('0') + graph_hundred_component),
+                (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
+            )
         )
         graph_ten_thousand = ten_thousands @ graph_ten_thousand_component
 
         hundred_thousands = NEMO_DIGIT**6
-
-        graph_hundred_thousand_component = ((NEMO_DIGIT**2 @ graph_1_to_99) + pynutil.insert('만')) + pynini.union(
-            pynini.closure(pynutil.delete('0')),
+        graph_hundred_thousand_component = (
+            (NEMO_DIGIT**2 @ graph_1_to_99) + pynutil.insert("만")
+        ) + pynini.union(
+            pynini.closure(pynutil.delete("0")),
             graph_thousand_component,
-            (pynutil.delete('0') + graph_hundred_component),
-            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
+            (pynutil.delete("0") + graph_hundred_component),
+            (pynini.closure(pynutil.delete("0")) + graph_1_to_99),
         )
         graph_hundred_thousand = hundred_thousands @ graph_hundred_thousand_component
 
@@ -276,19 +283,8 @@ class CardinalFst(GraphFst):
         ).optimize()
 
         # Sign and final formatting
-        # Delete group separators when they appear between digits (e.g., "1,234" -> "1234")
-        delete_sep_between_digits = pynini.cdrewrite(
-            pynutil.delete(SEP),
-            NEMO_DIGIT,
-            NEMO_DIGIT,
-            NEMO_SIGMA,
-        )
-
-        # Let the number graph accept numbers with separators
-        graph_num_accepting_separators = delete_sep_between_digits @ graph_num
-
         # Build the integer token (integer: "...")
-        integer_token = pynutil.insert('integer: "') + graph_num_accepting_separators + pynutil.insert('"')
+        integer_token = pynutil.insert('integer: "') + graph_num + pynutil.insert('"')
 
         # Sign handling:
         #  - minus sets negative flag
@@ -310,4 +306,4 @@ class CardinalFst(GraphFst):
         # Wrap with class tokens and finalize
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-        self.graph = graph_num_accepting_separators.optimize()
+        self.graph = graph_num

@@ -38,10 +38,10 @@ class TelephoneFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
         # Separator between digit blocks (e.g., "-" or ".")
-        add_sep = pynutil.delete("-") | pynutil.delete(".")
+        delete_sep = pynutil.delete("-") | pynutil.delete(".")
         # Optional space inserted between blocks
-        sep_space = insert_space
-
+        insert_block_space = insert_space
+        
         # 1) safe digit mapping: force 0 -> "영" (do not rely on zero.tsv invert)
         digit = pynini.string_file(get_abs_path("data/number/digit.tsv")).optimize()
         zero_map = pynini.cross("0", "영")
@@ -65,22 +65,22 @@ class TelephoneFst(GraphFst):
         # area part: "123-" | "123." | "(123)" [space?] or "(123)-"
         area_core = three_digits
         area_part = (
-            (area_core + add_sep)
+            (area_core + delete_sep)
             | (
                 pynutil.delete("(")
                 + area_core
                 + pynutil.delete(")")
                 + pynini.closure(pynutil.delete(" "), 0, 1)
-                + pynini.closure(add_sep, 0, 1)
+                + pynini.closure(delete_sep, 0, 1)
             )
-        ) + sep_space
+        ) + insert_block_space
 
         # 2) allow 3 **or 4** digits in the middle block (to support 010-3713-7050)
         mid = pynini.union(three_digits, four_digits)
         last4 = four_digits
 
         # consume '-' or '.' between middle and last blocks
-        number_part_core = area_part + mid + add_sep + sep_space + last4
+        number_part_core = area_part + mid + delete_sep + insert_block_space + last4
         number_part = pynutil.insert('number_part: "') + number_part_core + pynutil.insert('"')
 
         # final graph: with or without country code

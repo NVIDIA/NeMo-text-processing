@@ -104,9 +104,8 @@ class ClassifyFst(GraphFst):
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-            space = pynini.closure(NEMO_WHITE_SPACE, 1)
-            space = pynini.compose(space, delete_extra_space)
-
+            space = NEMO_WHITE_SPACE @ delete_extra_space
+            
             space_opt = pynini.closure(space, 0, 1)
 
             graph = delete_space + token + pynini.closure(space_opt + token) + delete_space
