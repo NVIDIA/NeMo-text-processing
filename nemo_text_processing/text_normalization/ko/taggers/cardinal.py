@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, NEMO_SPACE
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
@@ -47,38 +47,30 @@ class CardinalFst(GraphFst):
         graph_hundred = hundreds @ graph_hundred_component
 
         thousands = NEMO_DIGIT**4
-        graph_thousand_component = (
-            pynini.union(
-                pynini.cross('1', '천'),
-                graph_digit_no_zero_one + pynutil.insert('천'),
-            )
-            + pynini.union(
-                pynini.closure(pynutil.delete('0')),
-                graph_hundred_component,
-                (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
-            )
+        graph_thousand_component = pynini.union(
+            pynini.cross('1', '천'),
+            graph_digit_no_zero_one + pynutil.insert('천'),
+        ) + pynini.union(
+            pynini.closure(pynutil.delete('0')),
+            graph_hundred_component,
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_thousand = thousands @ graph_thousand_component
 
         ten_thousands = NEMO_DIGIT**5
-        graph_ten_thousand_component = (
-            pynini.union(
-                pynini.cross('1', '만'),
-                graph_digit_no_zero_one + pynutil.insert('만'),
-            )
-            + pynini.union(
-                pynini.closure(pynutil.delete('0')),
-                graph_thousand_component,
-                (pynutil.delete('0') + graph_hundred_component),
-                (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
-            )
+        graph_ten_thousand_component = pynini.union(
+            pynini.cross('1', '만'),
+            graph_digit_no_zero_one + pynutil.insert('만'),
+        ) + pynini.union(
+            pynini.closure(pynutil.delete('0')),
+            graph_thousand_component,
+            (pynutil.delete('0') + graph_hundred_component),
+            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
         )
         graph_ten_thousand = ten_thousands @ graph_ten_thousand_component
 
         hundred_thousands = NEMO_DIGIT**6
-        graph_hundred_thousand_component = (
-            (NEMO_DIGIT**2 @ graph_1_to_99) + pynutil.insert("만")
-        ) + pynini.union(
+        graph_hundred_thousand_component = ((NEMO_DIGIT**2 @ graph_1_to_99) + pynutil.insert("만")) + pynini.union(
             pynini.closure(pynutil.delete("0")),
             graph_thousand_component,
             (pynutil.delete("0") + graph_hundred_component),
