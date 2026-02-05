@@ -30,12 +30,48 @@ NEMO_DIGIT = byte.DIGIT
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_NON_ZERO = pynini.union("१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 NEMO_HI_ZERO = "०"
+# Combined Hindi and Arabic digits for graphs that need to accept both
+NEMO_ALL_DIGIT = pynini.union(NEMO_HI_DIGIT, NEMO_DIGIT).optimize()
+NEMO_ALL_ZERO = pynini.union("०", "0").optimize()
+NEMO_ALL_NON_ZERO = pynini.union(NEMO_HI_NON_ZERO, "1", "2", "3", "4", "5", "6", "7", "8", "9").optimize()
 
 HI_DEDH = "डेढ़"  # 1.5
 HI_DHAI = "ढाई"  # 2.5
 HI_SAVVA = "सवा"  # quarter more (1.25)
 HI_SADHE = "साढ़े"  # half more (X.5)
 HI_PAUNE = "पौने"  # quarter less (0.75)
+
+# Hindi decimal representations
+HI_POINT_FIVE = ".५"  # .5
+HI_ONE_POINT_FIVE = "१.५"  # 1.5
+HI_TWO_POINT_FIVE = "२.५"  # 2.5
+HI_DECIMAL_25 = ".२५"  # .25
+HI_DECIMAL_75 = ".७५"  # .75
+
+# Arabic/English decimal representations
+EN_POINT_FIVE = ".5"
+EN_ONE_POINT_FIVE = "1.5"
+EN_TWO_POINT_FIVE = "2.5"
+EN_DECIMAL_25 = ".25"
+EN_DECIMAL_75 = ".75"
+
+# Combined Hindi and English decimal patterns
+POINT_FIVE = pynini.union(HI_POINT_FIVE, EN_POINT_FIVE).optimize()
+ONE_POINT_FIVE = pynini.union(HI_ONE_POINT_FIVE, EN_ONE_POINT_FIVE).optimize()
+TWO_POINT_FIVE = pynini.union(HI_TWO_POINT_FIVE, EN_TWO_POINT_FIVE).optimize()
+DECIMAL_25 = pynini.union(HI_DECIMAL_25, EN_DECIMAL_25).optimize()
+DECIMAL_75 = pynini.union(HI_DECIMAL_75, EN_DECIMAL_75).optimize()
+
+# Symbol constants
+HI_BY = "बाई"
+LOWERCASE_X = "x"
+UPPERCASE_X = "X"
+ASTERISK = "*"
+HYPHEN = "-"
+SLASH = "/"
+COMMA = ","
+PERIOD = "."
+HI_PERIOD = "।"
 
 NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
 NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()

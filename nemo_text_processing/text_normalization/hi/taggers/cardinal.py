@@ -15,7 +15,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    NEMO_ALL_DIGIT,
+    NEMO_ALL_ZERO,
+    GraphFst,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
@@ -34,15 +39,23 @@ class CardinalFst(GraphFst):
 
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+        # Load both Hindi (Devanagari) and English (Arabic) number mappings
+        teens_ties_hi = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+        teens_ties_en = pynini.string_file(get_abs_path("data/numbers/teens_and_ties_en.tsv"))
+        teens_ties = pynini.union(teens_ties_hi, teens_ties_en)
         teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
         self.digit = digit
         self.zero = zero
         self.teens_and_ties = teens_and_ties
 
+        # Single digit graph for digit-by-digit reading
+        # e.g., "०७३" -> "शून्य सात तीन"
+        single_digit_graph = digit | zero
+        self.single_digits_graph = single_digit_graph + pynini.closure(insert_space + single_digit_graph)
+
         def create_graph_suffix(digit_graph, suffix, zeros_counts):
-            zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
+            zero = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
             if zeros_counts == 0:
                 return digit_graph + suffix
 
@@ -50,7 +63,7 @@ class CardinalFst(GraphFst):
 
         def create_larger_number_graph(digit_graph, suffix, zeros_counts, sub_graph):
             insert_space = pynutil.insert(" ")
-            zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
+            zero = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
             if zeros_counts == 0:
                 return digit_graph + suffix + insert_space + sub_graph
 
@@ -304,7 +317,7 @@ class CardinalFst(GraphFst):
         graph_leading_zero = zero + insert_space + single_digit
         graph_leading_zero = pynutil.add_weight(graph_leading_zero, 0.5)
 
-        final_graph = (
+        graph_without_leading_zeros = (
             digit
             | zero
             | teens_and_ties
@@ -325,8 +338,18 @@ class CardinalFst(GraphFst):
             | graph_ten_padmas
             | graph_shankhs
             | graph_ten_shankhs
-            | graph_leading_zero
         )
+        self.graph_without_leading_zeros = graph_without_leading_zeros.optimize()
+
+        # Handle numbers with leading zeros by reading digit-by-digit
+        # e.g., English/arabic "073" -> "शून्य सात तीन", Hindi/devnagri "००५" -> "शून्य शून्य पाँच"
+        cardinal_with_leading_zeros = pynini.compose(
+            NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph
+        )
+        cardinal_with_leading_zeros = pynutil.add_weight(cardinal_with_leading_zeros, 0.5)
+
+        # Full graph including leading zeros - for standalone cardinal matching
+        final_graph = graph_without_leading_zeros | cardinal_with_leading_zeros
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
