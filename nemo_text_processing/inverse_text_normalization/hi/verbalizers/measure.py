@@ -23,6 +23,7 @@ class MeasureFst(GraphFst):
     Finite state transducer for verbalizing measure, e.g.
         measure { negative: "true" cardinal { integer: "१२" } units: "kg" } -> -१२ kg
         measure { decimal { negative: "true"  integer_part: "१२"  fractional_part: "५०"} units: "kg" } -> -१२.५० kg
+        measure { units: "address" cardinal { integer: "७०० ओक स्ट्रीट" } preserve_order: true } -> ७०० ओक स्ट्रीट
 
     Args:
         decimal: DecimalFst
@@ -32,11 +33,13 @@ class MeasureFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="measure", kind="verbalize")
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-"), 0, 1)
+
+        # Exclude "address" from regular unit matching so address path handles it
         unit = (
             pynutil.delete("units:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynini.difference(pynini.closure(NEMO_CHAR - " ", 1), pynini.accep("address"))
             + pynutil.delete("\"")
             + delete_space
         )
@@ -63,6 +66,25 @@ class MeasureFst(GraphFst):
         )
         graph = (graph_cardinal | graph_decimal) + delete_space + pynutil.insert(" ") + unit
         graph |= graph_exception_bai + pynini.closure(delete_space + pynutil.insert(" ") + unit)
+
+        # Address verbalizer: units: "address" cardinal { integer: "..." } preserve_order: true
+        preserve_order = (
+            pynutil.delete("preserve_order:")
+            + delete_space
+            + pynutil.delete("true")
+            + delete_space
+        )
+        address_graph = (
+            pynutil.delete("units:")
+            + delete_space
+            + pynutil.delete("\"address\"")
+            + delete_space
+            + graph_cardinal
+            + delete_space
+            + pynini.closure(preserve_order)
+        )
+        graph |= address_graph
+
         delete_tokens = self.delete_tokens(graph)
         self.decimal = graph_decimal
         self.fst = delete_tokens.optimize()
