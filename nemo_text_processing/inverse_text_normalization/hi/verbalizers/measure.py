@@ -68,12 +68,7 @@ class MeasureFst(GraphFst):
         graph |= graph_exception_bai + pynini.closure(delete_space + pynutil.insert(" ") + unit)
 
         # Address verbalizer: units: "address" cardinal { integer: "..." } preserve_order: true
-        preserve_order = (
-            pynutil.delete("preserve_order:")
-            + delete_space
-            + pynutil.delete("true")
-            + delete_space
-        )
+        preserve_order = pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
         address_graph = (
             pynutil.delete("units:")
             + delete_space

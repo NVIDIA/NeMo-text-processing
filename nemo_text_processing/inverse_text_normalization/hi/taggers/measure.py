@@ -149,11 +149,15 @@ class MeasureFst(GraphFst):
 
         # Shared digit word -> Devanagari digit mapping
         num_word = (
-            pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-            | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-            | pynini.string_file(get_abs_path("data/telephone/eng_digit.tsv"))
-            | pynini.string_file(get_abs_path("data/telephone/eng_zero.tsv"))
-        ).invert().optimize()
+            (
+                pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+                | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+                | pynini.string_file(get_abs_path("data/telephone/eng_digit.tsv"))
+                | pynini.string_file(get_abs_path("data/telephone/eng_zero.tsv"))
+            )
+            .invert()
+            .optimize()
+        )
 
         delete_one_space = pynutil.delete(" ")
 
@@ -166,10 +170,9 @@ class MeasureFst(GraphFst):
 
         structured_pattern = (
             state_city_names
-            + pynini.closure(
-                pynini.accep(",") + pynini.accep(" ") + state_city_names, 0, 1
-            )
-            + pynini.accep(" ") + pincode
+            + pynini.closure(pynini.accep(",") + pynini.accep(" ") + state_city_names, 0, 1)
+            + pynini.accep(" ")
+            + pincode
         ).optimize()
 
         structured_address_graph = (
@@ -184,10 +187,20 @@ class MeasureFst(GraphFst):
         ordinal_word = pynini.string_file(get_abs_path("data/address/ordinals.tsv"))
         context_keywords_fsa = pynini.string_file(get_abs_path("data/address/context_cues.tsv"))
 
-        digit_passthrough = pynini.string_map([
-            ("۰", "۰"), ("۱", "۱"), ("۲", "۲"), ("۳", "۳"), ("۴", "۴"),
-            ("۵", "۵"), ("۶", "۶"), ("۷", "۷"), ("۸", "۸"), ("۹", "۹"),
-        ]).optimize()
+        digit_passthrough = pynini.string_map(
+            [
+                ("۰", "۰"),
+                ("۱", "۱"),
+                ("۲", "۲"),
+                ("۳", "۳"),
+                ("۴", "۴"),
+                ("۵", "۵"),
+                ("۶", "۶"),
+                ("۷", "۷"),
+                ("۸", "۸"),
+                ("۹", "۹"),
+            ]
+        ).optimize()
         digit_unit = pynini.union(num_word, digit_passthrough).optimize()
 
         all_digit_inputs = pynini.project(digit_unit, "input").optimize()
@@ -198,13 +211,9 @@ class MeasureFst(GraphFst):
         ).optimize()
         any_word = pynini.closure(non_space_non_comma, 1).optimize()
 
-        text_word = pynini.difference(
-            any_word, pynini.union(all_digit_inputs, all_ordinal_inputs)
-        ).optimize()
+        text_word = pynini.difference(any_word, pynini.union(all_digit_inputs, all_ordinal_inputs)).optimize()
 
-        digit_block = digit_unit + pynini.closure(
-            pynutil.add_weight(delete_one_space + digit_unit, -1.0)
-        )
+        digit_block = digit_unit + pynini.closure(pynutil.add_weight(delete_one_space + digit_unit, -1.0))
 
         connector = delete_one_space + special_word + delete_one_space
 
@@ -214,9 +223,7 @@ class MeasureFst(GraphFst):
             pynutil.add_weight(text_word, 0.1),
         ).optimize()
 
-        chain = matchable + pynini.closure(
-            pynutil.add_weight(connector + matchable, -0.5)
-        )
+        chain = matchable + pynini.closure(pynutil.add_weight(connector + matchable, -0.5))
 
         opt_comma = pynini.closure(pynini.accep(","), 0, 1)
         element = chain + opt_comma
