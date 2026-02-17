@@ -28,16 +28,18 @@ class MoneyFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="money", kind="classify")
 
         cardinals = cardinal.just_cardinals
+        decimals = decimal.just_decimal
         currency = pynini.string_file(get_abs_path("data/currency.tsv"))
 
         # Accepting space if there are one between integer and currency
         spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
 
-        graph_integer = pynutil.insert("integer_part: \"") + cardinals + pynutil.insert("\"") + spacing
+        number = decimals | cardinals
+        graph_integer = pynutil.insert("integer_part: \"") + number + pynutil.insert("\"") + spacing
 
         graph_unit = pynutil.insert(" currency: \"") + currency + pynutil.insert("\"")
 

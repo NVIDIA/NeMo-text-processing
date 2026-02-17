@@ -73,31 +73,29 @@ class TimeFst(GraphFst):
             pynutil.insert("seconds: \"") + (graph_0_to_59 + spacing + second_suffix) + pynutil.insert("\"")
         )
 
-        hour = pynini.closure(hour_component, 0, 1)
-        minute = pynini.closure(delete_space + minute_component, 0, 1)
-        second = pynini.closure(delete_space + second_component, 0, 1)
+        hm_opt = pynini.closure(delete_space + minute_component, 0, 1)
+        hs_opt = pynini.closure(delete_space + second_component, 0, 1)
 
-        graph_regular = hour + minute + second
+        hms = hour_component + hm_opt + hs_opt
+        ms = minute_component + pynini.closure(delete_space + second_component, 0, 1)
+        s_only = second_component
+
+        graph_regular = pynini.union(hms, ms, s_only).optimize()
 
         # 오전 = AM, 오후 = PM
-        prefix_words = (
-            pynini.union(
-                (pynini.accep("오전")), (pynini.accep("오후")), (pynini.accep("새벽")), (pynini.accep("아침"))
-            )
-            + spacing
-        )
-        prefix_tag = pynutil.insert("prefix: \"") + prefix_words + pynutil.insert("\"")
-
+        ampm_words = pynini.union("오전", "오후", "새벽", "아침")
+        ampm_tag = pynutil.insert('suffix: "') + ampm_words + pynutil.insert('"')
+        
         # 전 = before, 후 = after
         suffix_words = pynini.accep("전") | pynini.accep("후")
         suffix_tag = pynutil.insert("suffix: \"") + suffix_words + pynutil.insert("\"")
 
         time_graph = (
-            pynini.closure(delete_space + prefix_tag, 0, 1)
+            pynini.closure(delete_space + ampm_tag, 0, 1)
             + graph_regular
             + pynini.closure(delete_space + suffix_tag, 0, 1)
         )
-
+        
         # Adding cardinal graph to prevent processing out of range numbers
         final_graph = time_graph
 
