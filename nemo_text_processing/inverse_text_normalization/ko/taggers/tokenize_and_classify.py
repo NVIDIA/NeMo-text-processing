@@ -18,7 +18,14 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import INPUT_LOWER_CASED, GraphFst, generator_main, NEMO_WHITE_SPACE, delete_extra_space, delete_space
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
+    INPUT_LOWER_CASED,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.decimal import DecimalFst
@@ -28,8 +35,9 @@ from nemo_text_processing.inverse_text_normalization.ko.taggers.money import Mon
 from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
+
 
 class ClassifyFst(GraphFst):
     """

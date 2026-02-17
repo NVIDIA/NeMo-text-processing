@@ -85,7 +85,7 @@ class TimeFst(GraphFst):
         # 오전 = AM, 오후 = PM
         ampm_words = pynini.union("오전", "오후", "새벽", "아침")
         ampm_tag = pynutil.insert('suffix: "') + ampm_words + pynutil.insert('"')
-        
+
         # 전 = before, 후 = after
         suffix_words = pynini.accep("전") | pynini.accep("후")
         suffix_tag = pynutil.insert("suffix: \"") + suffix_words + pynutil.insert("\"")
@@ -95,7 +95,7 @@ class TimeFst(GraphFst):
             + graph_regular
             + pynini.closure(delete_space + suffix_tag, 0, 1)
         )
-        
+
         # Adding cardinal graph to prevent processing out of range numbers
         final_graph = time_graph
 

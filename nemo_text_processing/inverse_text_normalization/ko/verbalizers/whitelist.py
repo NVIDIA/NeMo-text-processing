@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst, NEMO_NOT_QUOTE
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class WhiteListFst(GraphFst):

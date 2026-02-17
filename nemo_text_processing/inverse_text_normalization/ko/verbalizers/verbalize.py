@@ -25,8 +25,8 @@ from nemo_text_processing.inverse_text_normalization.ko.verbalizers.money import
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.time import TimeFst
-from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.ko.verbalizers.word import WordFst
 
 
 class VerbalizeFst(GraphFst):
@@ -69,7 +69,7 @@ class VerbalizeFst(GraphFst):
         word_graph = word.fst
 
         whitelist_graph = WhiteListFst().fst
-        
+
         graph = pynini.union(
             cardinal_graph,
             ordinal_graph,

@@ -37,19 +37,13 @@ class DateFst(GraphFst):
         year_suffix = pynini.cross("년", "")
         month_suffix = pynini.cross("월", "")
         day_suffix = pynini.cross("일", "")
-        
+
         delete_space = pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)
         between_fields = delete_space + pynutil.insert(NEMO_SPACE)
 
-        year_component = (
-            pynutil.insert("year: \"") + cardinal + year_suffix + pynutil.insert("\"")
-        )
-        month_component = (
-            pynutil.insert("month: \"") + month + month_suffix + pynutil.insert("\"")
-        )
-        day_component = (
-            pynutil.insert("day: \"") + cardinal + day_suffix + pynutil.insert("\"")
-        )
+        year_component = pynutil.insert("year: \"") + cardinal + year_suffix + pynutil.insert("\"")
+        month_component = pynutil.insert("month: \"") + month + month_suffix + pynutil.insert("\"")
+        day_component = pynutil.insert("day: \"") + cardinal + day_suffix + pynutil.insert("\"")
 
         graph_component = year_component | month_component
 
