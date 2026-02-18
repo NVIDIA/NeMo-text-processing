@@ -157,8 +157,7 @@ class ElectronicFst(GraphFst):
 
             four = pynini.closure(NEMO_DIGIT, 4, 4)
             sep_token = pynini.union(HYPHEN, NEMO_SPACE)
-            sep_to_space = pynutil.delete(sep_token) + insert_space
-            cc16_grouped = four + sep_to_space + four + sep_to_space + four + sep_to_space + four
+            cc16_grouped = (four + pynini.cross(sep_token, " ")) ** 3 + four
             cc16_grouped = cc16_grouped + delete_space
 
             cc16_no_cue = (
