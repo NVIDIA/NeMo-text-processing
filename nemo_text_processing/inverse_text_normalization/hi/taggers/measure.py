@@ -187,20 +187,7 @@ class MeasureFst(GraphFst):
         ordinal_word = pynini.string_file(get_abs_path("data/address/ordinals.tsv"))
         context_keywords_fsa = pynini.string_file(get_abs_path("data/address/context_cues.tsv"))
 
-        digit_passthrough = pynini.string_map(
-            [
-                ("۰", "۰"),
-                ("۱", "۱"),
-                ("۲", "۲"),
-                ("۳", "۳"),
-                ("۴", "۴"),
-                ("۵", "۵"),
-                ("۶", "۶"),
-                ("۷", "۷"),
-                ("۸", "۸"),
-                ("۹", "۹"),
-            ]
-        ).optimize()
+        digit_passthrough = pynini.string_file(get_abs_path("data/address/digit_passthrough.tsv")).optimize()
         digit_unit = pynini.union(num_word, digit_passthrough).optimize()
 
         all_digit_inputs = pynini.project(digit_unit, "input").optimize()
