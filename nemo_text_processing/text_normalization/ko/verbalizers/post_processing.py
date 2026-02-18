@@ -57,14 +57,6 @@ class PostProcessingFst:
         """
         sigma = pynini.project(pynini.closure(NEMO_SIGMA), "input").optimize()
 
-        # Collapse spaces around the particle "부터"
-        collapse_multi_space = pynini.cdrewrite(
-            pynini.cross("  ", " "),
-            "",
-            "",
-            sigma,
-        )
-
         # Join "<Month> <day-word> ... 부터" -> "<Month><day-word>부터"
         SP = pynini.project(NEMO_SPACE, "input").optimize()
         BUHTEO = pynini.accep("부터")
@@ -89,4 +81,4 @@ class PostProcessingFst:
         NUMHEAD = pynini.union("일", "이", "삼", "사", "오", "육", "칠", "팔", "구", "십")
 
         # Apply Rule 1, then Rule 2
-        return pynini.closure(collapse_multi_space, 1).optimize()
+        return sigma

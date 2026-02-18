@@ -25,7 +25,7 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
         # Optional small whitespace inside parentheses or after signs
-        WS = pynini.closure(NEMO_SPACE, 0, 2)
+        ws = pynini.closure(NEMO_SPACE, 0, 2)
 
         # Load base .tsv files
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
@@ -286,7 +286,7 @@ class CardinalFst(GraphFst):
 
         # Accounting negative: "( 1,234 )" -> negative + integer:"1234"
         paren_negative = (
-            pynutil.insert('negative: "true" ') + pynutil.delete("(") + WS + integer_token + WS + pynutil.delete(")")
+            pynutil.insert('negative: "true" ') + pynutil.delete("(") + ws + integer_token + ws + pynutil.delete(")")
         )
 
         # Signed number: optional (+|-) + integer
