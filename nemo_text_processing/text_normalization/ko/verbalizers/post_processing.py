@@ -58,8 +58,8 @@ class PostProcessingFst:
         sigma = pynini.project(pynini.closure(NEMO_SIGMA), "input").optimize()
 
         # Collapse spaces around the particle "부터"
-        delete_space_around_particle = pynini.cdrewrite(
-            pynini.cross(" 부터 ", "부터"),
+        collapse_multi_space = pynini.cdrewrite(
+            pynini.cross("  ", " "),
             "",
             "",
             sigma,
@@ -88,12 +88,5 @@ class PostProcessingFst:
         # First syllable of the day number word (enough to detect the pattern)
         NUMHEAD = pynini.union("일", "이", "삼", "사", "오", "육", "칠", "팔", "구", "십")
 
-        rm_space_month_num_bu = pynini.cdrewrite(
-            pynini.cross(NEMO_SPACE, ""),
-            MONTH_WORD,
-            NUMHEAD + pynini.closure(SP) + BUHTEO,
-            sigma,
-        )
-
         # Apply Rule 1, then Rule 2
-        return (delete_space_around_particle @ rm_space_month_num_bu).optimize()
+        return pynini.closure(collapse_multi_space, 1).optimize()
