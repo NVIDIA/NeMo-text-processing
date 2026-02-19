@@ -105,7 +105,9 @@ class ClassifyFst(GraphFst):
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
 
-            graph = delete_space + token + pynini.closure((delete_extra_space | pynini.accep("")) + token) + delete_space
+            graph = (
+                delete_space + token + pynini.closure((delete_extra_space | pynini.accep("")) + token) + delete_space
+            )
 
             self.fst = graph.optimize()
 
