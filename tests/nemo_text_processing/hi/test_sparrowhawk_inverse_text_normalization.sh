@@ -58,6 +58,11 @@ testITNMeasure() {
   runtest $input
 }
 
+testITNAddress() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_address.txt
+  runtest $input
+}
+
 testITNMoney() {
   input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_money.txt
   runtest $input
