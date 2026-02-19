@@ -16,7 +16,7 @@
 # Dockerfile for C++ (inverse) text normalization backend Sparrowhawk https://github.com/google/sparrowhawk
 
 # set base image (host OS)
-FROM continuumio/miniconda3 
+FROM continuumio/miniconda3:25.3.1-1
 
 
 # set the working directory in the container
