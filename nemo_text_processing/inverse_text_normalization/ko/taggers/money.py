@@ -38,11 +38,11 @@ class MoneyFst(GraphFst):
         # Accepting space if there are one between integer and currency
         spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
         graph_integer = (
-            pynutil.insert("integer_part: \"")
-            + (decimals | cardinals)
-            + pynutil.insert("\"")
+            pynutil.insert('integer_part: "')
+            + decimals
+            + pynutil.insert('"')
             + spacing
-        )
+        )        
         graph_unit = pynutil.insert(" currency: \"") + currency + pynutil.insert("\"")
 
         graph_final = graph_integer + graph_unit

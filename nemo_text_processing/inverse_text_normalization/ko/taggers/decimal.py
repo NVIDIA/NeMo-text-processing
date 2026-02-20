@@ -55,7 +55,7 @@ class DecimalFst(GraphFst):
         )  # If decimal is used to express big numbers like  15000 -> "1.5만"
 
         self.decimal = graph_decimal_regular | graph_deicimal_larger
-        self.just_decimal = cardinals + pynini.cross("점", ".") + decimal_part
+        self.just_decimal = cardinals | (cardinals + pynini.cross("점", ".") + decimal_part)
 
         graph_sign = (
             pynutil.insert("negative: \"") + (pynini.cross("마이너스", "-") | pynini.accep("-")) + pynutil.insert("\"")
