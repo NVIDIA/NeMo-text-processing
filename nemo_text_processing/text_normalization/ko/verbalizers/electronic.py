@@ -89,7 +89,10 @@ class ElectronicFst(GraphFst):
         )
 
         # 5) domain part (handle common endings like .com → 닷컴)
-        domain_common_pairs = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
+        domain_common_pairs = (
+            pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
+            | pynini.string_file(get_abs_path("data/electronic/extensions.tsv"))
+        ).optimize()
 
         # Rewrite known domains (.com → 닷컴)
         tld_rewrite = pynini.cdrewrite(
@@ -108,6 +111,10 @@ class ElectronicFst(GraphFst):
 
         raw_domain = pynini.closure(NEMO_NOT_QUOTE, 1)
 
+        four = pynini.closure(NEMO_DIGIT, 4, 4)
+        cc16_grouped = four + pynutil.insert(" ") + four + pynutil.insert(" ") + four + pynutil.insert(" ") + four
+        cc_domain = (cc16_grouped @ digit_inline_rewrite).optimize()
+
         domain = (
             pynutil.delete("domain:")
             + delete_space
@@ -122,11 +129,29 @@ class ElectronicFst(GraphFst):
             pynutil.delete('protocol: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"') + insert_space
         )
 
+        protocol_raw = pynutil.delete('protocol: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        cc_protocol_guard = pynini.accep("신용카드") + pynini.closure(NEMO_NOT_QUOTE, 0)
+        cc_protocol = (protocol_raw @ cc_protocol_guard) + insert_space
+
+        # Credit card case: "신용카드 ..." protocol + 16-digit domain grouped as 4-4-4-4
+        cc_graph = (
+            cc_protocol
+            + delete_space
+            + pynutil.delete("domain:")
+            + delete_space
+            + pynutil.delete('"')
+            + cc_domain
+            + pynutil.delete('"')
+            + delete_space
+        ).optimize()
+
         # 7) Combine: optional protocol + optional username + domain
-        graph = (
+        default_graph = (
             pynini.closure(protocol + delete_space, 0, 1)
             + pynini.closure(user_name + delete_space + pynutil.insert(" 골뱅이 ") + delete_space, 0, 1)
             + domain
             + delete_space
-        ).optimize() @ pynini.cdrewrite(delete_extra_space, "", "", NEMO_SIGMA)
+        ).optimize()
+
+        graph = (cc_graph | default_graph) @ pynini.cdrewrite(delete_extra_space, "", "", NEMO_SIGMA)
         self.fst = self.delete_tokens(graph).optimize()

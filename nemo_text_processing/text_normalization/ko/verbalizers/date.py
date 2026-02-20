@@ -38,14 +38,16 @@ class DateFst(GraphFst):
             + pynutil.delete("\"")
         )
 
+        SPACE = pynini.closure(delete_space, 0, 1) + insert_space
+
         # This graph now correctly uses the 'delete_space' variable defined above.
         graph_basic_date = (
-            pynini.closure(era_component + delete_space, 0, 1)
-            + pynini.closure(year_component + delete_space, 0, 1)
-            + pynini.closure(month_component + delete_space, 0, 1)
+            pynini.closure(era_component + SPACE, 0, 1)
+            + pynini.closure(year_component + SPACE, 0, 1)
+            + pynini.closure(month_component + SPACE, 0, 1)
             + pynini.closure(day_component, 0, 1)
-            + pynini.closure((delete_space + week_component) | (week_component), 0, 1)
-        ) | month_component + delete_space + week_component
+            + pynini.closure(SPACE + week_component, 0, 1)
+        ) | (month_component + SPACE + week_component)
 
         final_graph = graph_basic_date
 
