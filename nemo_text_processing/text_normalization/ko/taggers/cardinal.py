@@ -16,13 +16,17 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
 class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
+
+        # Optional small whitespace inside parentheses or after signs
+        ws = pynini.closure(NEMO_SPACE, 0, 2)
+
         # Load base .tsv files
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
@@ -43,8 +47,9 @@ class CardinalFst(GraphFst):
         graph_hundred = hundreds @ graph_hundred_component
 
         thousands = NEMO_DIGIT**4
-        graph_thousand_component = (
-            pynini.cross('1', '천') | (graph_digit_no_zero_one + pynutil.insert('천'))
+        graph_thousand_component = pynini.union(
+            pynini.cross('1', '천'),
+            graph_digit_no_zero_one + pynutil.insert('천'),
         ) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_hundred_component,
@@ -53,7 +58,10 @@ class CardinalFst(GraphFst):
         graph_thousand = thousands @ graph_thousand_component
 
         ten_thousands = NEMO_DIGIT**5
-        graph_ten_thousand_component = (pynini.cross('1', '만') | (graph_digit + pynutil.insert('만'))) + pynini.union(
+        graph_ten_thousand_component = pynini.union(
+            pynini.cross('1', '만'),
+            graph_digit_no_zero_one + pynutil.insert('만'),
+        ) + pynini.union(
             pynini.closure(pynutil.delete('0')),
             graph_thousand_component,
             (pynutil.delete('0') + graph_hundred_component),
@@ -62,12 +70,11 @@ class CardinalFst(GraphFst):
         graph_ten_thousand = ten_thousands @ graph_ten_thousand_component
 
         hundred_thousands = NEMO_DIGIT**6
-
-        graph_hundred_thousand_component = ((NEMO_DIGIT**2 @ graph_1_to_99) + pynutil.insert('만')) + pynini.union(
-            pynini.closure(pynutil.delete('0')),
+        graph_hundred_thousand_component = ((NEMO_DIGIT**2 @ graph_1_to_99) + pynutil.insert("만")) + pynini.union(
+            pynini.closure(pynutil.delete("0")),
             graph_thousand_component,
-            (pynutil.delete('0') + graph_hundred_component),
-            (pynini.closure(pynutil.delete('0')) + graph_1_to_99),
+            (pynutil.delete("0") + graph_hundred_component),
+            (pynini.closure(pynutil.delete("0")) + graph_1_to_99),
         )
         graph_hundred_thousand = hundred_thousands @ graph_hundred_thousand_component
 
@@ -268,8 +275,27 @@ class CardinalFst(GraphFst):
         ).optimize()
 
         # Sign and final formatting
-        optional_sign = pynini.closure(pynutil.insert('negative: "true" ') + pynini.cross("-", ""), 0, 1)
-        final_graph = optional_sign + pynutil.insert('integer: "') + graph_num + pynutil.insert('"')
+        # Build the integer token (integer: "...")
+        integer_token = pynutil.insert('integer: "') + graph_num + pynutil.insert('"')
+
+        # Sign handling:
+        #  - minus sets negative flag
+        #  - plus is ignored (positive number)
+        minus_prefix = pynutil.insert('negative: "true" ') + pynutil.delete("-")
+        plus_prefix = pynutil.delete("+")
+
+        # Accounting negative: "( 1,234 )" -> negative + integer:"1234"
+        paren_negative = (
+            pynutil.insert('negative: "true" ') + pynutil.delete("(") + ws + integer_token + ws + pynutil.delete(")")
+        )
+
+        # Signed number: optional (+|-) + integer
+        signed_integer = (minus_prefix | plus_prefix).ques + integer_token
+
+        # Prefer accounting-form first, then signed form
+        final_graph = paren_negative | signed_integer
+
+        # Wrap with class tokens and finalize
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
-        self.graph = graph_num.optimize()
+        self.graph = graph_num

@@ -17,7 +17,14 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, delete_space, generator_main
+from nemo_text_processing.text_normalization.ko.graph_utils import (
+    NEMO_SIGMA,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.text_normalization.ko.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.utils.logging import logger
 
@@ -52,7 +59,14 @@ class VerbalizeFinalFst(GraphFst):
                 pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
             )
 
-            verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
+            space_between_tokens = pynini.closure(NEMO_WHITE_SPACE, 1)
+
+            verbalizer = (
+                delete_space
+                + token_verbalizer
+                + pynini.closure(space_between_tokens + token_verbalizer)
+                + delete_space
+            )
 
             self.fst = verbalizer.optimize()
 
