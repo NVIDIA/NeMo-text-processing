@@ -34,27 +34,25 @@ class DateFst(GraphFst):
         cardinal = cardinal.just_cardinals
         month = pynini.string_file(get_abs_path("data/months.tsv"))
 
-        spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
-
         year_suffix = pynini.cross("년", "")
         month_suffix = pynini.cross("월", "")
         day_suffix = pynini.cross("일", "")
 
-        year_component = (
-            pynutil.insert("year: \"") + cardinal + pynini.closure(year_suffix, 0, 1) + pynutil.insert("\"")
-        )
+        delete_space = pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)
+        between_fields = delete_space + pynutil.insert(NEMO_SPACE)
 
-        month_component = (
-            pynutil.insert("month: \"") + spacing + month + pynini.closure(month_suffix, 0, 1) + pynutil.insert("\"")
-        )
+        year_component = pynutil.insert("year: \"") + cardinal + year_suffix + pynutil.insert("\"")
+        month_component = pynutil.insert("month: \"") + month + month_suffix + pynutil.insert("\"")
+        day_component = pynutil.insert("day: \"") + cardinal + day_suffix + pynutil.insert("\"")
 
-        day_component = pynutil.insert("day: \"") + spacing + cardinal + day_suffix + spacing + pynutil.insert("\"")
+        graph_component = year_component | month_component
 
-        graph_component = year_component | month_component | day_component
         graph_date = (
-            pynini.closure(year_component, 0, 1)
-            + pynini.closure((pynutil.insert(NEMO_SPACE)) + month_component, 0, 1)
-            + pynini.closure((pynutil.insert(NEMO_SPACE)) + day_component, 0, 1)
+            year_component
+            | month_component
+            | (year_component + between_fields + month_component)
+            | (month_component + between_fields + day_component)
+            | (year_component + between_fields + month_component + between_fields + day_component)
         )
 
         final_graph = graph_component | graph_date

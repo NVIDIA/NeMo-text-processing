@@ -68,11 +68,13 @@ class MeasureFst(GraphFst):
         graph_fraction = (
             pynutil.delete("fraction {")
             + delete_space
-            + pynutil.delete('denominator: "')
+            + optional_sign
+            + delete_space
+            + pynutil.delete('numerator: "')
             + measurement
             + pynutil.delete('"')
             + delete_space
-            + pynutil.delete('numerator: "')
+            + pynutil.delete('denominator: "')
             + pynutil.insert("/")
             + measurement
             + pynutil.delete('"')

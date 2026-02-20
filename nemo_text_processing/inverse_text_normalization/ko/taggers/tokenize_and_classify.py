@@ -18,7 +18,14 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import INPUT_LOWER_CASED, GraphFst, generator_main
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
+    INPUT_LOWER_CASED,
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.decimal import DecimalFst
@@ -28,6 +35,7 @@ from nemo_text_processing.inverse_text_normalization.ko.taggers.money import Mon
 from nemo_text_processing.inverse_text_normalization.ko.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.ko.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.ko.taggers.word import WordFst
 
 
@@ -56,7 +64,7 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"jp_itn_{input_case}.far")
+            far_file = os.path.join(cache_dir, f"ko_itn_{input_case}_tokenize.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -81,7 +89,7 @@ class ClassifyFst(GraphFst):
             date = DateFst(cardinal)
             date_graph = date.fst
 
-            money = MoneyFst(cardinal)
+            money = MoneyFst(cardinal, decimal)
             money_graph = money.fst
 
             telephone = TelephoneFst()
@@ -91,6 +99,7 @@ class ClassifyFst(GraphFst):
             measure_graph = measure.fst
 
             word_graph = WordFst().fst
+            whitelist_graph = WhiteListFst().fst
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)
@@ -103,12 +112,15 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
+                | pynutil.add_weight(whitelist_graph, 1.01)
             )
 
-            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-            tagger = pynini.closure(token, 1)
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
+            space = NEMO_WHITE_SPACE @ delete_extra_space
+            space_opt = pynini.closure(space, 0, 1)
 
-            self.fst = tagger
+            graph = delete_space + token + pynini.closure(space_opt + token) + delete_space
+            self.fst = graph.optimize()
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
