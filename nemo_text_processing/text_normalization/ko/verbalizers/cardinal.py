@@ -37,12 +37,17 @@ class CardinalFst(GraphFst):
             self.optional_sign |= pynini.cross("negative: \"true\"", "- ")
 
         self.optional_sign = pynini.closure(self.optional_sign + delete_space, 0, 1)
-
-        integer = pynini.closure(NEMO_NOT_QUOTE)
-
-        self.integer = delete_space + pynutil.delete("\"") + integer + pynutil.delete("\"")
-        integer = pynutil.delete("integer:") + self.integer
-
-        self.numbers = self.optional_sign + integer
+        
+        # quoted: parses a quoted string value like "십", "명"
+        quoted = delete_space + pynutil.delete('"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('"')
+        
+        # integer: mandatory field
+        integer = pynutil.delete("integer:") + quoted
+        
+        # counter: optional field (e.g., 명/개/살).
+        counter = pynutil.delete("counter:") + quoted
+        counter = pynini.closure(delete_space + counter, 0, 1)
+        self.numbers = self.optional_sign + integer + counter
+        
         delete_tokens = self.delete_tokens(self.numbers)
         self.fst = delete_tokens.optimize()
