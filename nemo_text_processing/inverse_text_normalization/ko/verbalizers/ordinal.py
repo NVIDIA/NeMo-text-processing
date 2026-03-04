@@ -32,9 +32,14 @@ class OrdinalFst(GraphFst):
 
         integer_component = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         counter_component = pynutil.delete("counter: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        suffix_component =  pynutil.delete('suffix: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
-        
-        graph_with_counter = integer_component + delete_space + counter_component + pynini.closure(delete_space + suffix_component, 0, 1)
+        suffix_component = pynutil.delete('suffix: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+
+        graph_with_counter = (
+            integer_component
+            + delete_space
+            + counter_component
+            + pynini.closure(delete_space + suffix_component, 0, 1)
+        )
 
         ordinal_verbalizer = pynini.union(graph_with_counter, integer_component)
 

@@ -65,20 +65,18 @@ class TimeFst(GraphFst):
 
         # half minute only allowed after hours: "두시반" / "두시 반"
         half_minute_component = pynutil.insert('minutes: "30"') + spacing + pynini.cross("반", "")
-        
+
         minute_component = (
-            pynutil.insert("minutes: \"")
-            + (graph_0_to_59 + spacing + minute_suffix)
-            + pynutil.insert("\"")
+            pynutil.insert("minutes: \"") + (graph_0_to_59 + spacing + minute_suffix) + pynutil.insert("\"")
         )
-        
+
         second_component = (
             pynutil.insert("seconds: \"") + (graph_0_to_59 + spacing + second_suffix) + pynutil.insert("\"")
         )
 
         hm_opt = pynini.closure(delete_space + minute_component, 0, 1)
         hs_opt = pynini.closure(delete_space + second_component, 0, 1)
-        
+
         h_half = hour_component + delete_space + half_minute_component + hs_opt
         hms = hour_component + hm_opt + hs_opt
         ms = minute_component + pynini.closure(delete_space + second_component, 0, 1)

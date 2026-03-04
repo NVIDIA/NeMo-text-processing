@@ -58,7 +58,7 @@ class FractionFst(GraphFst):
             + pynutil.delete('"')
         )
         optional_suffix = pynini.closure(pynutil.insert(" ") + suffix_component, 0, 1)
-        
+
         regular_graph = (
             pynini.closure((sign_component + pynutil.delete(NEMO_SPACE)), 0, 1)
             + pynini.closure(

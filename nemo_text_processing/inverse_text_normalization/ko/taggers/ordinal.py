@@ -27,7 +27,7 @@ def get_counter(ordinal):
     josa_single = pynini.union("만", "이", "가", "은", "는", "을", "를", "로", "도", "다")
     josa_multi = pynini.union("부터", "까지")
     josa = (josa_single | josa_multi | (josa_single + josa_multi)).optimize()
-    
+
     counter_field = pynutil.insert('" counter: "') + suffix
     suffix_field = pynutil.insert('" suffix: "') + josa
 
@@ -37,6 +37,7 @@ def get_counter(ordinal):
         + counter_field
         + pynini.closure(pynini.closure(delete_space, 0, 1) + suffix_field, 0, 1)
     )
+
 
 class OrdinalFst(GraphFst):
     """
@@ -107,7 +108,9 @@ class OrdinalFst(GraphFst):
         # 1 to 39 in ordinal, everything else cardinal
         ordinal_final = pynini.union(ordinals, cardinal_ordinal_suffix, man_as_10000)
 
-        ordinal_graph = pynutil.insert("integer: \"") + ((ordinal_final + delete_space + ordinals_suffix)) + pynutil.insert("\"")
+        ordinal_graph = (
+            pynutil.insert("integer: \"") + ((ordinal_final + delete_space + ordinals_suffix)) + pynutil.insert("\"")
+        )
 
         # Adding various counter suffix for ordinal
         # For counting, Korean does not use the speical "첫" for 1. Instead the regular "한"

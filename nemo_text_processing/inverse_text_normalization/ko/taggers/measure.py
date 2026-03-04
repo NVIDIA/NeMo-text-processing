@@ -41,7 +41,7 @@ class MeasureFst(GraphFst):
         cardinal_graph = base_cardinal | man_as_10000
         # Graphing fraction (extended to support root denominators like "√")
         root_word = pynini.accep("√") | pynini.cross("루트", "√")
-        root_cardinal = (root_word + cardinal_graph).optimize()   # e.g., 루트구 -> √9
+        root_cardinal = (root_word + cardinal_graph).optimize()  # e.g., 루트구 -> √9
         den_for_fraction = (cardinal_graph | root_cardinal).optimize()
         num_for_fraction = (cardinal_graph | root_cardinal).optimize()
         graph_unit = pynini.string_file(get_abs_path("data/measure_units.tsv"))

@@ -126,11 +126,12 @@ class FractionFst(GraphFst):
         josa = (josa_single | josa_multi | (josa_single + josa_multi)).optimize()
 
         trailing_josa = pynini.closure(
-            pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)   # optional space
+            pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)  # optional space
             + pynutil.insert(' suffix: "')
             + josa
             + pynutil.insert('"'),
-            0, 1
+            0,
+            1,
         )
 
         final_graph = (graph_fractions | graph_mixed_number_fraction) + trailing_josa
