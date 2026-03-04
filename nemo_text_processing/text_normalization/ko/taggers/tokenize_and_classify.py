@@ -17,7 +17,13 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, generator_main
+from nemo_text_processing.text_normalization.ko.graph_utils import (
+    NEMO_WHITE_SPACE,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ko.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ko.taggers.decimal import DecimalFst
@@ -98,9 +104,12 @@ class ClassifyFst(GraphFst):
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-            tagger = pynini.closure(token, 1)
 
-            self.fst = tagger.optimize()
+            graph = (
+                delete_space + token + pynini.closure((delete_extra_space | pynini.accep("")) + token) + delete_space
+            )
+
+            self.fst = graph.optimize()
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
