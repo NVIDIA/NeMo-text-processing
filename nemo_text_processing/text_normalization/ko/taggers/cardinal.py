@@ -274,6 +274,32 @@ class CardinalFst(GraphFst):
             graph_zero,
         ).optimize()
 
+        # ----------------------------
+        # Native counting + counters
+        # e.g., 3개, 2명, 10살
+        #
+        # In Korean, counters require native numeral forms
+        # for small numbers (한/두/세…, 열/스무/서른…).
+        counter_suffix = pynini.string_file(get_abs_path("data/number/counter_suffix.tsv"))
+        counter_suffix_accep = pynini.project(counter_suffix, "input").optimize()
+
+        native_ones = pynini.string_file(get_abs_path("data/number/native_ones.tsv"))  # 1~9: 한/두/세/...
+        ordinal_tens = pynini.string_file(get_abs_path("data/ordinal/tens.tsv"))  # 10=열, 20=스무, 30=서른
+        ordinal_tens_prefix = pynini.string_file(get_abs_path("data/ordinal/tens_prefix.tsv"))  # 열/스물/서른
+
+        native_11_to_39 = (ordinal_tens_prefix + native_ones).optimize()
+        native_1_to_39 = pynini.union(native_ones, ordinal_tens, native_11_to_39).optimize()
+
+        # Compose number + counter as one cardinal token
+        counter_case = (
+            pynutil.insert('integer: "')
+            + native_1_to_39
+            + pynutil.insert('" ')
+            + pynutil.insert('counter: "')
+            + counter_suffix_accep
+            + pynutil.insert('"')
+        ).optimize()
+
         # Sign and final formatting
         # Build the integer token (integer: "...")
         integer_token = pynutil.insert('integer: "') + graph_num + pynutil.insert('"')
@@ -293,7 +319,7 @@ class CardinalFst(GraphFst):
         signed_integer = (minus_prefix | plus_prefix).ques + integer_token
 
         # Prefer accounting-form first, then signed form
-        final_graph = paren_negative | signed_integer
+        final_graph = paren_negative | signed_integer | counter_case
 
         # Wrap with class tokens and finalize
         final_graph = self.add_tokens(final_graph)
