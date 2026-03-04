@@ -17,12 +17,7 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import (
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    generator_main,
-)
+from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst, delete_space, generator_main
 from nemo_text_processing.text_normalization.ko.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.utils.logging import logger
 
@@ -46,29 +41,20 @@ class VerbalizeFinalFst(GraphFst):
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             far_file = os.path.join(cache_dir, f"ko_tn_{deterministic}_verbalizer.far")
+
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
             logger.info(f'VerbalizeFinalFst graph was restored from {far_file}.')
         else:
-            verbalize = VerbalizeFst(deterministic=deterministic).fst
-            # word = WordFst(deterministic=deterministic).fst
-            types = verbalize
+            token_graph = VerbalizeFst(deterministic=deterministic)
 
-            if deterministic:
-                graph = (
-                    pynutil.delete("tokens")
-                    + delete_space
-                    + pynutil.delete("{")
-                    + delete_space
-                    + types
-                    + delete_space
-                    + pynutil.delete("}")
-                )
-            else:
-                graph = delete_space + types + delete_space
+            token_verbalizer = (
+                pynutil.delete("tokens {") + delete_space + token_graph.fst + delete_space + pynutil.delete(" }")
+            )
 
-            graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
+            verbalizer = pynini.closure(delete_space + token_verbalizer + delete_space)
 
-            self.fst = graph.optimize()
+            self.fst = verbalizer.optimize()
+
             if far_file:
                 generator_main(far_file, {"verbalize": self.fst})
