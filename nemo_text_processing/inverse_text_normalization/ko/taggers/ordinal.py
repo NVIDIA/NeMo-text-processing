@@ -16,16 +16,27 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_CHAR, GraphFst
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_CHAR, GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
 def get_counter(ordinal):
+    # counter suffix file (개, 명, 병, 마리, ...)
     suffix = pynini.string_file(get_abs_path("data/ordinals/counter_suffix.tsv"))
-    numbers = ordinal
-    res = numbers + pynutil.insert('" counter: "') + suffix
+    # allowed trailing josa (optional) to capture forms like "네개를", "여섯명만"
+    josa_single = pynini.union("만", "이", "가", "은", "는", "을", "를", "로", "도", "다")
+    josa_multi = pynini.union("부터", "까지")
+    josa = (josa_single | josa_multi | (josa_single + josa_multi)).optimize()
 
-    return res
+    counter_field = pynutil.insert('" counter: "') + suffix
+    suffix_field = pynutil.insert('" suffix: "') + josa
+
+    return (
+        ordinal
+        + pynini.closure(delete_space, 0, 1)
+        + counter_field
+        + pynini.closure(pynini.closure(delete_space, 0, 1) + suffix_field, 0, 1)
+    )
 
 
 class OrdinalFst(GraphFst):
@@ -41,6 +52,7 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify")
 
         cardinals = cardinal.just_cardinals
+        man_as_10000 = pynini.cross("만", "10000")
         ordinals_suffix = pynini.accep("번째")  # Korean ordinal's morphosyntactic feature
 
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))  # 1-9 in ordinals
@@ -94,15 +106,17 @@ class OrdinalFst(GraphFst):
         cardinal_ordinal_suffix = cardinal_over_40 @ cardinals
 
         # 1 to 39 in ordinal, everything else cardinal
-        ordinal_final = pynini.union(ordinals, cardinal_ordinal_suffix)
+        ordinal_final = pynini.union(ordinals, cardinal_ordinal_suffix, man_as_10000)
 
-        ordinal_graph = pynutil.insert("integer: \"") + ((ordinal_final + ordinals_suffix)) + pynutil.insert("\"")
+        ordinal_graph = (
+            pynutil.insert("integer: \"") + ((ordinal_final + delete_space + ordinals_suffix)) + pynutil.insert("\"")
+        )
 
         # Adding various counter suffix for ordinal
         # For counting, Korean does not use the speical "첫" for 1. Instead the regular "한"
         counters = pynini.union(graph_digit, graph_tens, graph_twenties, graph_thirties).optimize()
 
-        counter_final = get_counter(counters) | get_counter(cardinal_ordinal_suffix)
+        counter_final = get_counter(counters) | get_counter(cardinal_ordinal_suffix) | get_counter(man_as_10000)
 
         counter_graph = pynutil.insert("integer: \"") + counter_final + pynutil.insert("\"")
 

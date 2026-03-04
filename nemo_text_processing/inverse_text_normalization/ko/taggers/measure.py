@@ -36,8 +36,14 @@ class MeasureFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="measure", kind="classify")
 
-        cardinal_graph = cardinal.just_cardinals
-
+        base_cardinal = cardinal.just_cardinals
+        man_as_10000 = pynini.cross("만", "10000")
+        cardinal_graph = base_cardinal | man_as_10000
+        # Graphing fraction (extended to support root denominators like "√")
+        root_word = pynini.accep("√") | pynini.cross("루트", "√")
+        root_cardinal = (root_word + cardinal_graph).optimize()  # e.g., 루트구 -> √9
+        den_for_fraction = (cardinal_graph | root_cardinal).optimize()
+        num_for_fraction = (cardinal_graph | root_cardinal).optimize()
         graph_unit = pynini.string_file(get_abs_path("data/measure_units.tsv"))
 
         delete_any_space = pynini.closure(pynutil.delete(NEMO_SPACE))
@@ -79,13 +85,13 @@ class MeasureFst(GraphFst):
         graph_fraction = (
             pynutil.insert("fraction { ")
             + pynutil.insert('denominator: "')
-            + cardinal_graph
+            + den_for_fraction
             + pynutil.insert('"')
             + delete_any_space
             + pynutil.delete("분의")
             + delete_any_space
             + pynutil.insert(' numerator: "')
-            + cardinal_graph
+            + num_for_fraction
             + pynutil.insert('"')
             + pynutil.insert(" }")
         )

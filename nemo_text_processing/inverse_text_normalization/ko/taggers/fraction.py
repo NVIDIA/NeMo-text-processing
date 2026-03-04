@@ -93,7 +93,7 @@ class FractionFst(GraphFst):
                     | (cardinal + root_word + cardinal)
                     | (root_word + cardinal)
                 )
-                + pynini.closure(pynutil.delete(NEMO_SPACE))
+                + pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)
             )
             + pynutil.insert("\"")
         )
@@ -120,7 +120,20 @@ class FractionFst(GraphFst):
             + graph_numerator
         )
 
-        final_graph = graph_fractions | graph_mixed_number_fraction
+        # ---- NEW: optional josa after fraction (prevents "이"/"만" from being re-tokenized as cardinal) ----
+        josa_single = pynini.union("만", "이", "가", "은", "는", "을", "를", "로", "도", "다")
+        josa_multi = pynini.union("부터", "까지")
+        josa = (josa_single | josa_multi | (josa_single + josa_multi)).optimize()
 
+        trailing_josa = pynini.closure(
+            pynini.closure(pynutil.delete(NEMO_SPACE), 0, 1)  # optional space
+            + pynutil.insert(' suffix: "')
+            + josa
+            + pynutil.insert('"'),
+            0,
+            1,
+        )
+
+        final_graph = (graph_fractions | graph_mixed_number_fraction) + trailing_josa
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
