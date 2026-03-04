@@ -66,6 +66,15 @@ testTNTelephoneText() {
   runtest $input
 }
 
+testTNMeasureText() {
+ input=$TEST_DIR/ko/data_text_normalization/test_cases_measure.txt
+  runtest $input
+}
+
+testTNElectronicText() {
+ input=$TEST_DIR/ko/data_text_normalization/test_cases_electronic.txt
+  runtest $input
+}
 
 # Remove all command-line arguments
 shift $#
