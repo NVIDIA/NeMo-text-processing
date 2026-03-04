@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst, delete_space
 from nemo_text_processing.text_normalization.ko.utils import get_abs_path
 
 
@@ -53,7 +53,7 @@ class FractionFst(GraphFst):
             + pynutil.insert(DOUBLE_QUOTE)
         )
 
-        integer_component_with_space = integer_component + pynutil.insert(NEMO_SPACE)
+        integer_component_with_space = integer_component + delete_space + pynutil.insert(NEMO_SPACE)
 
         # Denominator and numerator
         denominator_component = pynutil.insert(f'denominator: {DOUBLE_QUOTE}') + numeral + pynutil.insert(DOUBLE_QUOTE)

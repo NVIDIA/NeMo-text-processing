@@ -24,11 +24,11 @@ class TelephoneFst(GraphFst):
     Finite state transducer for classifying Korean telephone numbers.
 
     Example inputs → tokens:
-        +82-10-3713-7050  -> telephone { country_code: "플러스 팔 이," number_part: "영일영, 삼칠일삼, 칠영오영" }
-        +1 (415) 555-0123 -> telephone { country_code: "플러스 일,"   number_part: "사일오, 오오오, 영일이삼" }
-        (031)371-3700     -> telephone { number_part: "영삼일, 삼칠일, 삼칠영영" }
-        010-3713-7050     -> telephone { number_part: "영일영, 삼칠일삼, 칠영오영" }
-        010.777.8888      -> telephone { number_part: "영일영, 칠칠칠, 팔팔팔팔" }
+        +82 010-3713-7050  -> telephone { country_code: "국가번호 팔이," number_part: "영일영 삼칠일삼 칠영오영" }
+        +1 (415) 555-0123 -> telephone { country_code: "국가번호 일,"   number_part: "사일오 오오오 영일이삼" }
+        (031)371-3700     -> telephone { number_part: "영삼일 삼칠일 삼칠영영" }
+        010-3713-7050     -> telephone { number_part: "영일영 삼칠일삼 칠영오영" }
+        010.777.8888      -> telephone { number_part: "영일영 칠칠칠 팔팔팔팔" }
 
     Args:
         deterministic (bool, optional): If True, provide a single transduction;
@@ -37,8 +37,10 @@ class TelephoneFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
-
-        add_sep = pynutil.insert(", ")  # standard block separator ", "
+        # Separator between digit blocks (e.g., "-" or ".")
+        delete_sep = pynutil.delete("-") | pynutil.delete(".")
+        # Optional space inserted between blocks
+        insert_block_space = insert_space
 
         # 1) safe digit mapping: force 0 -> "영" (do not rely on zero.tsv invert)
         digit = pynini.string_file(get_abs_path("data/number/digit.tsv")).optimize()
@@ -49,35 +51,39 @@ class TelephoneFst(GraphFst):
         four_digits = digit_ko**4
 
         # country code: "+1", "+82", "+1-"
-        country_core = (
-            pynini.cross("+", "플러스 ")
-            + pynini.closure(digit_ko + insert_space, 0, 2)
-            + digit_ko
-            + pynutil.insert(",")
+        cc_digits = pynini.closure(digit_ko, 1, 3)
+
+        country_code = (
+            pynutil.delete("+")
+            + pynutil.insert('country_code: "')
+            + cc_digits
+            + pynutil.insert('"')
+            + pynini.closure(pynutil.delete("-") | pynutil.delete(" "), 0, 1)
+            + delete_space
         )
-        country_code = pynutil.insert('country_code: "') + country_core + pynutil.insert('"')
-        country_code = country_code + pynini.closure(pynutil.delete("-"), 0, 1) + delete_space + insert_space
 
         # area part: "123-" | "123." | "(123)" [space?] or "(123)-"
         area_core = three_digits
         area_part = (
-            (area_core + (pynutil.delete("-") | pynutil.delete(".")))
+            (area_core + delete_sep)
             | (
                 pynutil.delete("(")
                 + area_core
-                + ((pynutil.delete(")") + pynini.closure(pynutil.delete(" "), 0, 1)) | pynutil.delete(")-"))
+                + pynutil.delete(")")
+                + pynini.closure(pynutil.delete(" "), 0, 1)
+                + pynini.closure(delete_sep, 0, 1)
             )
-        ) + add_sep
+        ) + insert_block_space
 
         # 2) allow 3 **or 4** digits in the middle block (to support 010-3713-7050)
         mid = pynini.union(three_digits, four_digits)
         last4 = four_digits
 
         # consume '-' or '.' between middle and last blocks
-        number_part_core = area_part + mid + (pynutil.delete("-") | pynutil.delete(".")) + add_sep + last4
+        number_part_core = area_part + mid + delete_sep + insert_block_space + last4
         number_part = pynutil.insert('number_part: "') + number_part_core + pynutil.insert('"')
 
         # final graph: with or without country code
-        graph = pynini.union(country_code + number_part, number_part).optimize()
+        graph = pynini.union(country_code + insert_space + number_part, number_part).optimize()
 
         self.fst = self.add_tokens(graph).optimize()
