@@ -63,24 +63,28 @@ class TimeFst(GraphFst):
 
         hour_component = pynutil.insert("hours: \"") + (graph_hours + spacing + hour_suffix) + pynutil.insert("\"")
 
+        # half minute only allowed after hours: "두시반" / "두시 반"
+        half_minute_component = pynutil.insert('minutes: "30"') + spacing + pynini.cross("반", "")
+        
         minute_component = (
             pynutil.insert("minutes: \"")
-            + pynini.union((graph_0_to_59 + spacing + minute_suffix) | graph_half)
+            + (graph_0_to_59 + spacing + minute_suffix)
             + pynutil.insert("\"")
         )
-
+        
         second_component = (
             pynutil.insert("seconds: \"") + (graph_0_to_59 + spacing + second_suffix) + pynutil.insert("\"")
         )
 
         hm_opt = pynini.closure(delete_space + minute_component, 0, 1)
         hs_opt = pynini.closure(delete_space + second_component, 0, 1)
-
+        
+        h_half = hour_component + delete_space + half_minute_component + hs_opt
         hms = hour_component + hm_opt + hs_opt
         ms = minute_component + pynini.closure(delete_space + second_component, 0, 1)
         s_only = second_component
 
-        graph_regular = pynini.union(hms, ms, s_only).optimize()
+        graph_regular = pynini.union(h_half, hms, ms, s_only).optimize()
 
         # 오전 = AM, 오후 = PM
         ampm_words = pynini.union("오전", "오후", "새벽", "아침")

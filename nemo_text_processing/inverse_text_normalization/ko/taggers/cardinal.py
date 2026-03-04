@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_DIGIT, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_DIGIT, GraphFst, delete_space, NEMO_SPACE
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -51,15 +51,27 @@ class CardinalFst(GraphFst):
         graph_thousand_component = pynini.union(((graph_digit + thousand) | thousand_alt), pynutil.insert("0"))
         graph_thousand_component += graph_hundred_component
 
+        # "만" marks the 10,000 unit.
+        # It shifts the number by four digits (Korean units grow in 4-digit groups).
         tenthousand = pynutil.delete("만")
-        tenthousand_alt = pynini.cross("만", "1")
-        ### "만" can express next four digits of numbers until the next unit "억", so insert "0000" to allocate four digit worth of space
-        ### From "만", keep adding four digits and graph_thousand_component(0000-9999), because Korean units increase every four digits
-        graph_tenthousand_component = pynini.union(
-            ((graph_thousand_component + tenthousand) | tenthousand_alt), pynutil.insert("0000")
-        )
-        graph_tenthousand_component += graph_thousand_component
+        tenthousand_alt = pynini.cross("만", "1")   # "만"을 leading 1로 취급
 
+        # thousand_component가 "0"만 출력하는 케이스를 막고 싶으면(선택)
+        thousand_input = pynini.project(graph_thousand_component, "input").optimize()
+        thousand_input_nonempty = pynini.difference(thousand_input, pynini.accep("")).optimize()
+        graph_thousand_component_nonempty = (thousand_input_nonempty @ graph_thousand_component).optimize()
+
+        # Handle the "만" unit (10,000).
+        # Korean numbers increase by 4-digit units, so "만" shifts the value by four digits.
+        # Supports patterns like <number>만<number>, 만, and 만<number>.        
+        graph_tenthousand_component = pynini.union(
+            (graph_thousand_component + tenthousand) + graph_thousand_component,
+            tenthousand_alt + pynutil.insert("0000"),
+            # "만" + <1~9999>
+            tenthousand_alt + graph_thousand_component_nonempty,
+            # implicit leading part: <0000> + <0~9999>
+            pynutil.insert("0000") + graph_thousand_component,
+        ).optimize()        
         hundredmillion = pynutil.delete("억")
         hundredmillion_alt = pynini.cross("억", "1")
         graph_hundredmillion_component = pynini.union(
@@ -93,7 +105,7 @@ class CardinalFst(GraphFst):
         graph = (graph @ leading_zero) | graph_zero
 
         self.just_cardinals = graph
-
+        
         negative_sign = pynini.closure(
             (pynini.cross("마이너스", 'negative: "-"') | pynini.cross("-", 'negative: "-"')) + delete_space, 0, 1
         )
