@@ -35,9 +35,12 @@ class MoneyFst(GraphFst):
         decimals = decimal.just_decimal
         currency = pynini.string_file(get_abs_path("data/currency.tsv"))
 
+        man_as_10000 = pynini.cross("만", "10000")
+        number_for_money = decimals | man_as_10000
+
         # Accepting space if there are one between integer and currency
         spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
-        graph_integer = pynutil.insert('integer_part: "') + decimals + pynutil.insert('"') + spacing
+        graph_integer = pynutil.insert('integer_part: "') + number_for_money + pynutil.insert('"') + spacing
         graph_unit = pynutil.insert(" currency: \"") + currency + pynutil.insert("\"")
 
         graph_final = graph_integer + graph_unit
