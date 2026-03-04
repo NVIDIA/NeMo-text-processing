@@ -67,6 +67,8 @@ class FractionFst(GraphFst):
             + slash
             + pynutil.insert(NEMO_SPACE)
             + denominator_component
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert('morphosyntactic_features: "분의"')
         )
 
         # Format 2: Korean native "4분의3" style
@@ -90,5 +92,6 @@ class FractionFst(GraphFst):
 
         # Combine full graph
         graph = pynini.closure(optional_sign, 0, 1) + (graph_fraction_slash | graph_fraction_word)
+        self.graph = graph.optimize()
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()
