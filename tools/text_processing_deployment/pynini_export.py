@@ -329,6 +329,12 @@ if __name__ == '__main__':
         )
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'ko':
+        from nemo_text_processing.inverse_text_normalization.ko.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
         from nemo_text_processing.text_normalization.ko.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )

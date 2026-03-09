@@ -15,15 +15,14 @@
 import pytest
 from parameterized import parameterized
 
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-from ..utils import parse_test_case_file
+from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestCardinal:
-    normalizer_ko = Normalizer(
-        lang='ko', cache_dir='export/ko_tn_grammars_lower_cased', overwrite_cache=False, input_case='lower_cased'
-    )
+    normalizer_ko = Normalizer(lang='ko', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='lower_cased')
 
     @parameterized.expand(parse_test_case_file('ko/data_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
@@ -31,3 +30,12 @@ class TestCardinal:
     def test_norm(self, test_input, expected):
         preds = self.normalizer_ko.normalize(test_input)
         assert expected == preds
+
+    inverse_normalizer_ko = InverseNormalizer(lang='ko', cache_dir=CACHE_DIR, overwrite_cache=False)
+
+    @parameterized.expand(parse_test_case_file('ko/data_inverse_text_normalization/test_cases_cardinal.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm(self, test_input, expected):
+        pred = self.inverse_normalizer_ko.inverse_normalize(test_input, verbose=False)
+        assert pred == expected

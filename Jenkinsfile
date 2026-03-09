@@ -80,31 +80,7 @@ pipeline {
       }
     }
 
-    stage('L0: Create HI TN/ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          branch 'staging/**'
-          branch 'staging_*'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-        stage('L0: Hi TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hi --text="१" --cache_dir ${HI_TN_CACHE}'
-          }
-        }
-        stage('L0: Hi ITN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
-          }
-        }
-      }
-    }
-
-    stage('L0: Create DE/ES TN/ITN Grammars') {
+    stage('L0: Create DE/ES/FR TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -140,44 +116,6 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=es_en --text="ciento uno " --cache_dir ${ES_EN_TN_CACHE}'
           }
         }
-      }
-    }
-
-    stage('L0: Create AR TN/ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          branch 'staging/**'
-          branch 'staging_*'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-        stage('L0: AR TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ar --text="2" --cache_dir ${AR_TN_CACHE}'
-          }
-        }
-        stage('L0: AR ITN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ar --text="اثنان " --cache_dir ${AR_TN_CACHE}'
-          }
-        }
-      }
-    }
-
-    stage('L0: Create FR TN/ITN & VI TN/ITN & HU TN & IT TN') {
-      when {
-        anyOf {
-          branch 'main'
-          branch 'staging/**'
-          branch 'staging_*'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
         stage('L0: FR TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=fr --text="2" --cache_dir ${FR_TN_CACHE}'
@@ -188,30 +126,11 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=fr --text="cent " --cache_dir ${FR_TN_CACHE}'
           }
         }
-        stage('L0: VI ITN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=vi --text="một ngàn " --cache_dir ${VI_TN_CACHE}'
-          }
-        }
-        stage('L0: VI TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=vi --text="100" --cache_dir ${VI_TN_CACHE}'
-          }
-        }
-        stage('L0: HU TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hu --text="100" --cache_dir ${HU_TN_CACHE}'
-          }
-        }
-        stage('L0: IT TN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=it --text="122" --cache_dir ${IT_TN_CACHE}'
-          }
-        }
       }
     }
 
-    stage('L0: Create RU TN/ITN Grammars & SV & PT') {
+
+    stage('L0: Create HI/VI/RU TN/ITN') {
       when {
         anyOf {
           branch 'main'
@@ -222,6 +141,16 @@ pipeline {
       }
       failFast true
       parallel {
+        stage('L0: VI ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=vi --text="một ngàn " --cache_dir ${VI_TN_CACHE}'
+          }
+        }
+        stage('L0: VI TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=vi --text="100" --cache_dir ${VI_TN_CACHE}'
+          }
+        }
         stage('L0: RU TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize_with_audio.py --lang=ru --text="03" --cache_dir ${RU_TN_CACHE}'
@@ -232,9 +161,48 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ru --text="три " --cache_dir ${RU_TN_CACHE}'
           }
         }
+        stage('L0: Hi TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hi --text="१" --cache_dir ${HI_TN_CACHE}'
+          }
+        }
+        stage('L0: Hi ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
+          }
+        }
+      }
+    }
+
+    stage('L0: Create AR/HU/SV/PT/IT TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          branch 'staging/**'
+          branch 'staging_*'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
         stage('L0: SV TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=sv --text="100" --cache_dir ${SV_TN_CACHE}'
+          }
+        }
+        stage('L0: HU TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hu --text="100" --cache_dir ${HU_TN_CACHE}'
+          }
+        }
+        stage('L0: AR TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ar --text="2" --cache_dir ${AR_TN_CACHE}'
+          }
+        }
+        stage('L0: AR ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ar --text="اثنان " --cache_dir ${AR_TN_CACHE}'
           }
         }
         // stage('L0: SV ITN grammars') {
@@ -252,29 +220,15 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=pt --text="dez " --cache_dir ${PT_TN_CACHE}'
           }
         }
-      }
-    }
-
-    stage('L0: Create He TN/ITN Grammars & MR') {
-      when {
-        anyOf {
-          branch 'main'
-          branch 'staging/**'
-          branch 'staging_*'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-        stage('L0: HE ITN grammars') {
+        stage('L0: IT TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=he --text="ת " --cache_dir ${HE_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=it --text="122" --cache_dir ${IT_TN_CACHE}'
           }
         }
       }
     }
 
-    stage('L0: Create HY TN/ITN Grammars & MR') {
+    stage('L0: Create MR/HE/HY TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -300,10 +254,15 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hy --text="վեց " --cache_dir ${HY_TN_CACHE}'
           }
         }
+        stage('L0: HE ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=he --text="ת " --cache_dir ${HE_TN_CACHE}'
+          }
+        }
       }
     }
 
-    stage('L0: Create ZH TN/ITN Grammar') {
+    stage('L0: Create CJK TN/ITN Grammar') {
       when {
         anyOf {
           branch 'main'
@@ -324,40 +283,19 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=zh --text="6" --cache_dir ${ZH_TN_CACHE}'
           }
         }
-      }
-    }
-
-    stage('L0: Create JA ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          branch 'staging/**'
-          branch 'staging_*'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
         stage('L0: JA ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ja --text="100" --cache_dir ${JA_TN_CACHE}'
           }
         }
-      }
-    }
-
-    stage('L0: Create KO TN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
         stage('L0: KO TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ko --text="100" --cache_dir ${KO_TN_CACHE}'
+          }
+        }
+        stage('L0: KO ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ko --text="백" --cache_dir ${KO_TN_CACHE}'
           }
         }
       }

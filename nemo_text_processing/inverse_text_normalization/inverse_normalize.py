@@ -136,6 +136,13 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.he.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'ko':  # Korean
+            from nemo_text_processing.inverse_text_normalization.ko.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
+        else:
+            raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
         self.tagger = ClassifyFst(
             cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case
