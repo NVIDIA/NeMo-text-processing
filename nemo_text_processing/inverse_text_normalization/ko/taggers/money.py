@@ -31,7 +31,6 @@ class MoneyFst(GraphFst):
     def __init__(self, cardinal: GraphFst, decimal: GraphFst):
         super().__init__(name="money", kind="classify")
 
-        cardinals = cardinal.just_cardinals
         decimals = decimal.just_decimal
         currency = pynini.string_file(get_abs_path("data/currency.tsv"))
 

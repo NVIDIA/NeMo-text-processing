@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ko.verbalizers.cardinal import CardinalFst

@@ -17,7 +17,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import NEMO_SPACE, GraphFst, delete_space
-from nemo_text_processing.inverse_text_normalization.ko.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.ko.utils import get_abs_path
 
 
@@ -51,9 +50,7 @@ class TimeFst(GraphFst):
 
         # 1-12 for hours
         graph_hours = pynini.string_file(get_abs_path("data/time/time_hours.tsv"))
-        # Special expression for 30 minute
-        graph_half = pynini.cross("반", "30")
-
+        
         # Adding space if there are one
         spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
 

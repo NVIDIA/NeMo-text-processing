@@ -17,7 +17,6 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ko.graph_utils import (
     NEMO_DIGIT,
-    NEMO_SPACE,
     GraphFst,
     delete_space,
 )
