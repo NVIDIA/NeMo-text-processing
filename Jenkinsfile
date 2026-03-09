@@ -457,9 +457,11 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/he/ -m "not pleasefixme" --cpu --tn_cache_dir ${HE_TN_CACHE}'
           }
         }
-	stage('L1: Run all KO TN/ITN tests (restore grammars from cache)') {
+	      stage('L1: Run all KO TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ko/ -m "not pleasefixme" --cpu --tn_cache_dir ${KO_TN_CACHE}'
+          }
+        }
       }
     }
 
