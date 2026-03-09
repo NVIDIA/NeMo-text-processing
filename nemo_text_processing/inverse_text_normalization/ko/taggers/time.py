@@ -50,7 +50,7 @@ class TimeFst(GraphFst):
 
         # 1-12 for hours
         graph_hours = pynini.string_file(get_abs_path("data/time/time_hours.tsv"))
-        
+
         # Adding space if there are one
         spacing = pynini.closure(pynini.accep(NEMO_SPACE), 0, 1)
 
