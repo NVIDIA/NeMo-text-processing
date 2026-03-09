@@ -36,7 +36,6 @@ class FractionFst(GraphFst):
 
         DOUBLE_QUOTE = '"'
         slash = pynutil.delete('/')
-        morphemes = pynini.accep('분의')
         root = pynini.accep('√')
 
         # Decimal number (e.g., 1.23 → 일점이삼)

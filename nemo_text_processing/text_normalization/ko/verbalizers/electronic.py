@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pynini
-from pynini.examples import plurals
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import (
@@ -22,7 +21,6 @@ from nemo_text_processing.text_normalization.ko.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
-    NEMO_SPACE,
     GraphFst,
     delete_extra_space,
     delete_space,
@@ -63,21 +61,7 @@ class ElectronicFst(GraphFst):
             NEMO_SIGMA,
         )
 
-        # 2) Load electronic symbols (ex: "." → "점")
-        graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
-
-        NEMO_NOT_BRACKET = pynini.difference(NEMO_CHAR, pynini.union("{", "}")).optimize()
-
-        # 3) Default spacing for characters, symbols, and digits
-        default_chars_symbols = pynini.cdrewrite(
-            pynutil.insert(" ") + (graph_symbols | graph_digit | NEMO_ALPHA) + pynutil.insert(" "),
-            "",
-            "",
-            NEMO_SIGMA,
-        )
-        default_chars_map = pynini.compose(pynini.closure(NEMO_NOT_BRACKET), default_chars_symbols).optimize()
-
-        # 4) username part (add spaces between characters)
+        # 3) username part (add spaces between characters)
         raw_username = pynini.closure(NEMO_NOT_QUOTE, 1)
 
         user_name = (
@@ -88,7 +72,7 @@ class ElectronicFst(GraphFst):
             + pynutil.delete('"')
         )
 
-        # 5) domain part (handle common endings like .com → 닷컴)
+        # 4) domain part (handle common endings like .com → 닷컴)
         domain_common_pairs = (
             pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
             | pynini.string_file(get_abs_path("data/electronic/extensions.tsv"))

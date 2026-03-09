@@ -17,7 +17,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import (
-    NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
@@ -69,9 +68,6 @@ class ElectronicFst(GraphFst):
         # ---------- Load resources ----------
         cc_cues = pynini.string_file(get_abs_path("data/electronic/cc_cues.tsv"))
         accepted_symbols = pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "input")
-        accepted_common_domains = pynini.project(
-            pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
-        )
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
 
         # ---------- Username ----------
@@ -116,11 +112,7 @@ class ElectronicFst(GraphFst):
         email_guard = NEMO_SIGMA + AT + NEMO_SIGMA + DOT + NEMO_SIGMA
         graph |= pynini.compose(email_guard, username + domain_graph_with_class_tags)
 
-        # (2) Domain only (without protocol)
-        # Exclude '$' (conflict with money FST) and '@' (email)
-        dollar_accep = pynini.accep("$")
-        excluded_symbols = DOT | dollar_accep | AT
-        filtered_symbols = pynini.difference(accepted_symbols, excluded_symbols)
+        # (2) Domain only (without protocol))
         # Domain core graph
         graph_domain = (pynutil.insert('domain: "') + domain_core + pynutil.insert('"')).optimize()
         graph |= graph_domain
