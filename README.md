@@ -86,6 +86,14 @@ We welcome community contributions! Please refer to the [CONTRIBUTING.md](CONTRI
 
 
 
+Alternative Implementations
+---------------------------
+
+| Project | Language | Description |
+|---------|----------|-------------|
+| [text-processing-rs](https://github.com/FluidInference/text-processing-rs) | Rust | ITN and TN for 7 languages (EN, DE, ES, FR, HI, JA, ZH) with C FFI for Swift/Python integration. 100% compatible with NeMo test suite. |
+
+
 Citation
 --------
 
