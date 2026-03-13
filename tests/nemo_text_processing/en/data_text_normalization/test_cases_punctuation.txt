@@ -9,7 +9,6 @@ abbreviation USA.~abbreviation USA.
 abbreviation U.S.A.~abbreviation USA
 abbreviation. U.S.A..~abbreviation. USA..
 1-4=5~one minus four equals five
-&hi;&hi;~and hi; and hi;
 abbreviation USA,~abbreviation USA,
 23rd july, 1998~the twenty third of july, nineteen ninety eight
 April 29th’s meeting~april twenty ninth’s meeting

@@ -64,6 +64,9 @@ class SerialFst(GraphFst):
         symbols_graph = pynini.string_file(get_abs_path("data/whitelist/symbol.tsv")).optimize() | pynini.cross(
             "#", "hash"
         )
+        # exclude "&" to handle acronyms separately
+        accepted_symbols = pynini.difference(pynini.project(symbols_graph, "input"), pynini.accep("&"))
+        symbols_graph = accepted_symbols @ symbols_graph
         num_graph |= symbols_graph
 
         if not self.deterministic and not lm:
