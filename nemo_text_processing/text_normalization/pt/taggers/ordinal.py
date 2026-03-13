@@ -16,10 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_DIGIT,
-    GraphFst,
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
 
@@ -60,10 +57,7 @@ class OrdinalFst(GraphFst):
             graph_ties + pynini.closure(conn + graph_digit, 0, 1),
         )
         graph_hundred_component = pynini.union(
-            graph_hundreds
-            + pynini.closure(
-                conn + pynini.union(graph_tens, graph_digit), 0, 1
-            ),
+            graph_hundreds + pynini.closure(conn + pynini.union(graph_tens, graph_digit), 0, 1),
             graph_tens,
             graph_digit,
         )
@@ -84,10 +78,6 @@ class OrdinalFst(GraphFst):
             + pynutil.insert('" morphosyntactic_features: "gender_masc"')
         )
         graph_fem = (
-            pynutil.insert('integer: "')
-            + to_ordinal_fem
-            + pynutil.insert('" morphosyntactic_features: "gender_fem"')
+            pynutil.insert('integer: "') + to_ordinal_fem + pynutil.insert('" morphosyntactic_features: "gender_fem"')
         )
-        self.fst = self.add_tokens(
-            pynini.union(graph_masc, graph_fem)
-        ).optimize()
+        self.fst = self.add_tokens(pynini.union(graph_masc, graph_fem)).optimize()

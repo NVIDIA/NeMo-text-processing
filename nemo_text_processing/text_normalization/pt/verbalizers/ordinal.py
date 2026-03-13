@@ -15,12 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_NOT_QUOTE,
-    NEMO_SIGMA,
-    NEMO_SPACE,
-    GraphFst,
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path
 
 
@@ -37,15 +32,9 @@ class OrdinalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
-        integer = (
-            pynutil.delete('integer: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-        )
+        integer = pynutil.delete('integer: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
 
-        fem_rewrite = pynini.string_file(
-            get_abs_path("data/ordinals/feminine.tsv")
-        )
+        fem_rewrite = pynini.string_file(get_abs_path("data/ordinals/feminine.tsv"))
         feminine_rewrite = pynini.cdrewrite(
             fem_rewrite,
             "",
@@ -53,14 +42,6 @@ class OrdinalFst(GraphFst):
             NEMO_SIGMA,
         )
 
-        graph_masc = (
-            integer
-            + pynutil.delete(' morphosyntactic_features: "gender_masc"')
-        )
-        graph_fem = (
-            (integer @ feminine_rewrite)
-            + pynutil.delete(' morphosyntactic_features: "gender_fem"')
-        )
-        self.fst = self.delete_tokens(
-            pynini.union(graph_masc, graph_fem)
-        ).optimize()
+        graph_masc = integer + pynutil.delete(' morphosyntactic_features: "gender_masc"')
+        graph_fem = (integer @ feminine_rewrite) + pynutil.delete(' morphosyntactic_features: "gender_fem"')
+        self.fst = self.delete_tokens(pynini.union(graph_masc, graph_fem)).optimize()

@@ -19,8 +19,8 @@ from nemo_text_processing.text_normalization.pt.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
     NEMO_WHITE_SPACE,
-    insert_space,
     GraphFst,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
@@ -44,34 +44,22 @@ class FractionFst(GraphFst):
         cardinal_graph = cardinal.graph
 
         # Denominators 2–10 use ordinal form (no data file: fixed set)
-        two_to_ten = pynini.union(
-            *[pynini.accep(str(d)) for d in range(2, 11)]
-        ).optimize()
+        two_to_ten = pynini.union(*[pynini.accep(str(d)) for d in range(2, 11)]).optimize()
 
         ord_digit_rows = load_labels(get_abs_path("data/ordinals/digit.tsv"))
-        ordinal_digit = pynini.string_map(
-            [(r[1], r[0]) for r in ord_digit_rows if len(r) >= 2]
-        ).optimize()
+        ordinal_digit = pynini.string_map([(r[1], r[0]) for r in ord_digit_rows if len(r) >= 2]).optimize()
 
         ord_exc_rows = load_labels(get_abs_path("data/fractions/ordinal_exceptions.tsv"))
-        ordinal_exceptions = pynini.string_map(
-            [(r[0], r[1]) for r in ord_exc_rows if len(r) >= 2]
-        ).optimize()
+        ordinal_exceptions = pynini.string_map([(r[0], r[1]) for r in ord_exc_rows if len(r) >= 2]).optimize()
 
         ord_hundreds_rows = load_labels(get_abs_path("data/ordinals/hundreds.tsv"))
-        ordinal_hundreds = pynini.string_map(
-            [(r[1], r[0]) for r in ord_hundreds_rows if len(r) >= 2]
-        ).optimize()
+        ordinal_hundreds = pynini.string_map([(r[1], r[0]) for r in ord_hundreds_rows if len(r) >= 2]).optimize()
 
         powers_rows = load_labels(get_abs_path("data/fractions/powers_of_ten.tsv"))
-        powers_of_ten = pynini.string_map(
-            [(r[0], r[1]) for r in powers_rows if len(r) >= 2]
-        ).optimize()
+        powers_of_ten = pynini.string_map([(r[0], r[1]) for r in powers_rows if len(r) >= 2]).optimize()
 
         denom_ordinal_form = two_to_ten @ cardinal_graph @ ordinal_digit
-        denom_ordinal_form = denom_ordinal_form @ pynini.cdrewrite(
-            ordinal_exceptions, "", "", NEMO_SIGMA
-        )
+        denom_ordinal_form = denom_ordinal_form @ pynini.cdrewrite(ordinal_exceptions, "", "", NEMO_SIGMA)
         denom_ordinal = (
             pynutil.insert('denominator: "')
             + denom_ordinal_form
@@ -89,9 +77,7 @@ class FractionFst(GraphFst):
             + pynutil.insert('" morphosyntactic_features: "ordinal"')
         )
 
-        denom_ordinal_2_10_100_1000 = pynini.union(
-            denom_ordinal, denom_100, denom_1000
-        )
+        denom_ordinal_2_10_100_1000 = pynini.union(denom_ordinal, denom_100, denom_1000)
         digit_plus = pynini.closure(NEMO_DIGIT, 1)
         denom_avos_input = pynini.difference(
             digit_plus,
@@ -113,34 +99,19 @@ class FractionFst(GraphFst):
         slash_or_space_slash = pynini.union(
             pynini.cross("/", '" '),
             pynini.cross(" / ", '" '),
-            pynini.cross("\u2044", '" '),   # fraction slash ⁄
+            pynini.cross("\u2044", '" '),  # fraction slash ⁄
             pynini.cross(" \u2044 ", '" '),
-            pynini.cross("\u2215", '" '),   # division slash ∕
+            pynini.cross("\u2215", '" '),  # division slash ∕
             pynini.cross(" \u2215 ", '" '),
         )
-        numerator = (
-            pynutil.insert('numerator: "')
-            + cardinal_graph
-            + slash_or_space_slash
-        )
+        numerator = pynutil.insert('numerator: "') + cardinal_graph + slash_or_space_slash
         fraction_core = numerator + denominator
 
-        integer_part = (
-            pynutil.insert('integer_part: "')
-            + cardinal_graph
-            + pynutil.insert('"')
-            + insert_space
-        )
+        integer_part = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"') + insert_space
 
-        optional_minus = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1
-        )
+        optional_minus = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
 
-        mixed = (
-            integer_part
-            + pynini.closure(NEMO_WHITE_SPACE, 1)
-            + fraction_core
-        )
+        mixed = integer_part + pynini.closure(NEMO_WHITE_SPACE, 1) + fraction_core
         graph = optional_minus + pynini.union(mixed, fraction_core)
 
         self.fst = self.add_tokens(graph).optimize()

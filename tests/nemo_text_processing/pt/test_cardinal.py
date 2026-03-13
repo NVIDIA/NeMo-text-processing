@@ -33,6 +33,7 @@ class TestCardinal:
         assert pred == expected
 
     normalizer = Normalizer(lang='pt', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
+
     @parameterized.expand(parse_test_case_file('pt/data_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit

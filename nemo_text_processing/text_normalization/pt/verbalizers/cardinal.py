@@ -16,11 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    shift_cardinal_gender_pt,
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_NOT_QUOTE, GraphFst, shift_cardinal_gender_pt
 
 
 class CardinalFst(GraphFst):
@@ -47,7 +43,7 @@ class CardinalFst(GraphFst):
 
         # Generate masculine form (default)
         graph_masc = optional_sign + integer
-        
+
         # Generate feminine form using Portuguese gender conversion
         graph_fem = shift_cardinal_gender_pt(graph_masc)
 
