@@ -15,12 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    delete_space,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
 
@@ -43,20 +38,10 @@ class DecimalFst(GraphFst):
         sep = spec.get("separator", "vírgula")
         minus = spec.get("minus", "menos")
 
-        optional_sign = pynini.closure(
-            pynini.cross('negative: "true" ', minus + " "), 0, 1
-        )
+        optional_sign = pynini.closure(pynini.cross('negative: "true" ', minus + " "), 0, 1)
 
-        integer = (
-            pynutil.delete('integer_part: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-        )
-        fractional = (
-            pynutil.delete('fractional_part: "')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-        )
+        integer = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        fractional = pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         quantity = (
             delete_space
             + insert_space

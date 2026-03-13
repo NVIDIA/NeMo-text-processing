@@ -47,9 +47,7 @@ NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")
-delete_extra_space = pynini.cross(
-    pynini.closure(NEMO_WHITE_SPACE, 1), " "
-).optimize()
+delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ").optimize()
 
 
 def generator_main(file_name: str, graphs: Dict[str, "pynini.FstLike"]) -> None:
@@ -84,13 +82,9 @@ class GraphFst:
         self._fst = None
         self.deterministic = deterministic
 
-        self.far_path = Path(
-            os.path.dirname(os.path.abspath(__file__)) + "/grammars/" + kind + "/" + name + ".far"
-        )
+        self.far_path = Path(os.path.dirname(os.path.abspath(__file__)) + "/grammars/" + kind + "/" + name + ".far")
         if self.far_exist():
-            self._fst = Far(
-                self.far_path, mode="r", arc_type="standard", far_type="default"
-            ).get_fst()
+            self._fst = Far(self.far_path, mode="r", arc_type="standard", far_type="default").get_fst()
 
     def far_exist(self) -> bool:
         return self.far_path.exists()
@@ -116,9 +110,7 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
-        return res @ pynini.cdrewrite(
-            pynini.cross("\u00a0", " "), "", "", NEMO_SIGMA
-        )
+        return res @ pynini.cdrewrite(pynini.cross("\u00a0", " "), "", "", NEMO_SIGMA)
 
 
 # ---- PT-specific (Brazilian: 1.000.000 or 1 000 000) ----
@@ -172,9 +164,7 @@ def shift_cardinal_gender_pt(fst: "pynini.FstLike") -> "pynini.FstLike":
     )
     fem_hundreds = pynini.cdrewrite(
         pynini.cross("entos", "entas"),
-        pynini.union(
-            "duz", "trez", "quatroc", "quinh", "seisc", "setec", "oitoc", "novec"
-        ),
+        pynini.union("duz", "trez", "quatroc", "quinh", "seisc", "setec", "oitoc", "novec"),
         pynini.union(NEMO_SPACE, pynini.accep("[EOS]"), pynini.accep('"')),
         NEMO_SIGMA,
     )

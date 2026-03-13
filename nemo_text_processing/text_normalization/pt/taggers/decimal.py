@@ -16,12 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_DIGIT,
-    GraphFst,
-    insert_space,
-    delete_space
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_DIGIT, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path
 
 
@@ -43,9 +38,7 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph
-        _num = lambda name: pynini.string_file(
-            get_abs_path(f"data/numbers/{name}")
-        ).optimize()
+        _num = lambda name: pynini.string_file(get_abs_path(f"data/numbers/{name}")).optimize()
 
         comma = pynutil.delete(",")
         quantity_words = _num("quantity_words.tsv")
@@ -53,22 +46,13 @@ class DecimalFst(GraphFst):
         zero = _num("zero.tsv")
         fractional_specials = _num("decimal_fractional_specials.tsv")
         graph_digit_or_zero = pynini.union(digit, zero)
-        digit_by_digit = (
-            graph_digit_or_zero
-            + pynini.closure(insert_space + graph_digit_or_zero)
-        ).optimize()
+        digit_by_digit = (graph_digit_or_zero + pynini.closure(insert_space + graph_digit_or_zero)).optimize()
 
         # Fractional: strip leading zeros → rest @ cardinal; all zeros → "zero"
         delete_leading_zero = pynini.cross("0", "")
-        rest = pynini.difference(NEMO_DIGIT, pynini.accep("0")) + pynini.closure(
-            NEMO_DIGIT, 0
-        )
-        with_rest = (pynini.closure(delete_leading_zero, 0) + rest) @ (
-            pynini.closure(NEMO_DIGIT, 1) @ cardinal_graph
-        )
-        only_zeros = pynini.closure(delete_leading_zero, 1) + pynini.cross(
-            "0", "zero"
-        )
+        rest = pynini.difference(NEMO_DIGIT, pynini.accep("0")) + pynini.closure(NEMO_DIGIT, 0)
+        with_rest = (pynini.closure(delete_leading_zero, 0) + rest) @ (pynini.closure(NEMO_DIGIT, 1) @ cardinal_graph)
+        only_zeros = pynini.closure(delete_leading_zero, 1) + pynini.cross("0", "zero")
         fractional_strip = pynini.union(with_rest, only_zeros).optimize()
         # Prefer specials (001→mil e um, 010→mil e dez, 100→mil e cem) over strip when both match
         fractional_with_specials = pynini.union(
@@ -82,10 +66,7 @@ class DecimalFst(GraphFst):
 
         # Integer "0" → fractional strip only (no specials)
         graph_integer_zero = (
-            pynutil.insert('integer_part: "')
-            + pynini.cross("0", "zero")
-            + pynutil.insert('"')
-            + insert_space
+            pynutil.insert('integer_part: "') + pynini.cross("0", "zero") + pynutil.insert('"') + insert_space
         )
         graph_fractional_zero = (
             pynutil.insert('fractional_part: "')
@@ -95,9 +76,7 @@ class DecimalFst(GraphFst):
             )
             + pynutil.insert('"')
         )
-        decimal_when_zero = (
-            graph_integer_zero + comma + insert_space + graph_fractional_zero
-        )
+        decimal_when_zero = graph_integer_zero + comma + insert_space + graph_fractional_zero
 
         # Integer non-zero → fractional: specials | strip + cardinal | digit-by-digit
         graph_integer_pos = (
@@ -114,9 +93,7 @@ class DecimalFst(GraphFst):
             )
             + pynutil.insert('"')
         )
-        decimal_when_pos = (
-            graph_integer_pos + comma + insert_space + graph_fractional_pos
-        )
+        decimal_when_pos = graph_integer_pos + comma + insert_space + graph_fractional_pos
 
         decimal_core = pynini.union(decimal_when_zero, decimal_when_pos)
         integer_quantity = (
@@ -130,18 +107,10 @@ class DecimalFst(GraphFst):
             + pynutil.insert('"')
         )
         decimal_quantity = (
-            decimal_core
-            + delete_space
-            + pynutil.insert('quantity: "')
-            + quantity_words
-            + pynutil.insert('"')
+            decimal_core + delete_space + pynutil.insert('quantity: "') + quantity_words + pynutil.insert('"')
         )
-        final_graph_wo_sign = pynini.union(
-            decimal_core, integer_quantity, decimal_quantity
-        )
-        optional_minus = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1
-        )
+        final_graph_wo_sign = pynini.union(decimal_core, integer_quantity, decimal_quantity)
+        optional_minus = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
         final_graph = optional_minus + final_graph_wo_sign
 
         self.fst = self.add_tokens(final_graph).optimize()

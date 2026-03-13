@@ -15,11 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
 
@@ -46,26 +42,14 @@ class FractionFst(GraphFst):
         numerator_one_val = spec.get("numerator_one", "um")
         denominator_half_val = spec.get("denominator_half", "meio")
 
-        optional_sign = pynini.closure(
-            pynini.cross('negative: "true" ', minus) + insert_space, 0, 1
-        )
+        optional_sign = pynini.closure(pynini.cross('negative: "true" ', minus) + insert_space, 0, 1)
 
-        integer = (
-            pynutil.delete('integer_part: "')
-            + pynini.closure(NEMO_NOT_QUOTE)
-            + pynutil.delete('" ')
-        )
+        integer = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('" ')
 
-        numerator_one = (
-            pynutil.delete('numerator: "')
-            + pynini.accep(numerator_one_val)
-            + pynutil.delete('" ')
-        )
+        numerator_one = pynutil.delete('numerator: "') + pynini.accep(numerator_one_val) + pynutil.delete('" ')
         numerator_rest = (
             pynutil.delete('numerator: "')
-            + pynini.difference(
-                pynini.closure(NEMO_NOT_QUOTE), pynini.accep(numerator_one_val)
-            )
+            + pynini.difference(pynini.closure(NEMO_NOT_QUOTE), pynini.accep(numerator_one_val))
             + pynutil.delete('" ')
         )
 
@@ -86,30 +70,16 @@ class FractionFst(GraphFst):
         )
 
         fraction_ordinal_singular = numerator_one + insert_space + denom_ordinal
-        fraction_ordinal_plural = (
-            numerator_rest + insert_space + denom_ordinal + pynutil.insert(plural_suffix)
-        )
-        fraction_ordinal = pynini.union(
-            fraction_ordinal_singular, fraction_ordinal_plural
-        )
+        fraction_ordinal_plural = numerator_rest + insert_space + denom_ordinal + pynutil.insert(plural_suffix)
+        fraction_ordinal = pynini.union(fraction_ordinal_singular, fraction_ordinal_plural)
 
         fraction_avos = (
-            pynini.union(numerator_one, numerator_rest)
-            + insert_space
-            + denom_avos
-            + pynutil.insert(avos_suffix)
+            pynini.union(numerator_one, numerator_rest) + insert_space + denom_avos + pynutil.insert(avos_suffix)
         )
 
         fraction = pynini.union(fraction_ordinal, fraction_avos)
-        mixed_um_meio = (
-            integer
-            + connector
-            + pynutil.delete('numerator: "' + numerator_one_val + '" " ')
-            + denom_meio
-        )
-        optional_integer = pynini.closure(
-            integer + connector + insert_space, 0, 1
-        )
+        mixed_um_meio = integer + connector + pynutil.delete('numerator: "' + numerator_one_val + '" " ') + denom_meio
+        optional_integer = pynini.closure(integer + connector + insert_space, 0, 1)
         graph = optional_sign + pynini.union(
             pynutil.add_weight(mixed_um_meio, -0.01),
             optional_integer + fraction,

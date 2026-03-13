@@ -18,6 +18,9 @@ import os
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.en.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.pt.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
@@ -25,13 +28,10 @@ from nemo_text_processing.text_normalization.pt.graph_utils import (
     delete_space,
     generator_main,
 )
-from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.pt.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.pt.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.pt.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.pt.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.en.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -94,13 +94,15 @@ class ClassifyFst(GraphFst):
 
             # Wrap tokens properly
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-            punct_graph = pynutil.insert("tokens { ") + pynutil.add_weight(punctuation.fst, weight=2.1) + pynutil.insert(" }")
-            
+            punct_graph = (
+                pynutil.insert("tokens { ") + pynutil.add_weight(punctuation.fst, weight=2.1) + pynutil.insert(" }")
+            )
+
             # Simple graph structure
             graph = token + pynini.closure(
                 pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space) + token
             )
-            
+
             # Allow punctuation
             graph |= punct_graph
 
