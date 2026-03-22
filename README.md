@@ -85,6 +85,11 @@ Contributing
 We welcome community contributions! Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 
+Alternative Implementations
+---------------------------
+
+[text-processing-rs](https://github.com/FluidInference/FluidAudio/tree/main/text-processing-rs) - Rust alternative with C FFI bindings.
+
 
 Citation
 --------
