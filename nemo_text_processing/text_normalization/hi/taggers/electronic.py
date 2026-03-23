@@ -15,12 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_HI_DIGIT,
-    GraphFst,
-)
+from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_ALPHA, NEMO_DIGIT, NEMO_HI_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
@@ -46,18 +41,10 @@ class ElectronicFst(GraphFst):
 
         # email
         username_chars = NEMO_ALPHA | NEMO_DIGIT | pynini.accep(".") | pynini.accep("-") | pynini.accep("_")
-        username = (
-            pynutil.insert("username: \"")
-            + pynini.closure(username_chars, 1)
-            + pynutil.insert("\"")
-        )
+        username = pynutil.insert("username: \"") + pynini.closure(username_chars, 1) + pynutil.insert("\"")
 
         domain_chars = NEMO_ALPHA | NEMO_DIGIT | pynini.accep(".") | pynini.accep("-")
-        domain = (
-            pynutil.insert(" domain: \"")
-            + pynini.closure(domain_chars, 1)
-            + pynutil.insert("\"")
-        )
+        domain = pynutil.insert(" domain: \"") + pynini.closure(domain_chars, 1) + pynutil.insert("\"")
 
         email_graph = username + pynini.cross("@", "") + domain
 
@@ -89,11 +76,7 @@ class ElectronicFst(GraphFst):
         )
         url_path = pynini.closure(url_path_chars, 1)
 
-        url_domain = (
-            pynutil.insert(" domain: \"")
-            + url_path
-            + pynutil.insert("\"")
-        )
+        url_domain = pynutil.insert(" domain: \"") + url_path + pynutil.insert("\"")
 
         url_graph = protocol + url_domain
 
@@ -125,10 +108,7 @@ class ElectronicFst(GraphFst):
             pynini.accep("$"),
         )
         unix_path = (
-            pynutil.insert("path: \"")
-            + pynini.accep("/")
-            + pynini.closure(unix_path_chars, 1)
-            + pynutil.insert("\"")
+            pynutil.insert("path: \"") + pynini.accep("/") + pynini.closure(unix_path_chars, 1) + pynutil.insert("\"")
         )
 
         backslash_path_chars = alphanumeric | pynini.union(
@@ -148,19 +128,13 @@ class ElectronicFst(GraphFst):
         # ip addresses: exactly 4 dot-separated octets
         ip_octet = pynini.closure(NEMO_DIGIT, 1, 3)
         dot_octet = pynini.accep(".") + ip_octet
-        ip_address = (
-            pynutil.insert("ip: \"")
-            + ip_octet + pynini.closure(dot_octet, 3, 3)
-            + pynutil.insert("\"")
-        )
+        ip_address = pynutil.insert("ip: \"") + ip_octet + pynini.closure(dot_octet, 3, 3) + pynutil.insert("\"")
 
         # domains: simple TLD-based (abc.com) and government/education suffixes (.gov.in, .ac.in)
         domain_segment_chars = NEMO_ALPHA | NEMO_DIGIT | pynini.accep("-")
         domain_segment = pynini.closure(domain_segment_chars, 1)
 
-        tld = pynini.project(
-            pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input"
-        )
+        tld = pynini.project(pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input")
 
         govt_edu_suffix = pynini.project(
             pynini.string_file(get_abs_path("data/electronic/govt_edu_suffixes.tsv")), "input"
@@ -182,20 +156,12 @@ class ElectronicFst(GraphFst):
         )
         filename_stem_chars = NEMO_ALPHA | NEMO_DIGIT | pynini.accep("-") | pynini.accep("_")
         filename_stem = pynini.closure(filename_stem_chars, 1)
-        file_with_extension = (
-            pynutil.insert("domain: \"")
-            + filename_stem
-            + known_extensions
-            + pynutil.insert("\"")
-        )
+        file_with_extension = pynutil.insert("domain: \"") + filename_stem + known_extensions + pynutil.insert("\"")
 
         # chemical formulas with subscript digits: e.g. H₂O, CO₂
         chemical_chars = NEMO_ALPHA | subscript_digit
         chemical_formula = (
-            pynutil.insert("domain: \"")
-            + NEMO_ALPHA
-            + pynini.closure(chemical_chars, 1)
-            + pynutil.insert("\"")
+            pynutil.insert("domain: \"") + NEMO_ALPHA + pynini.closure(chemical_chars, 1) + pynutil.insert("\"")
         )
 
         # alphanumeric codes: strings containing both letters and digits,
@@ -210,11 +176,7 @@ class ElectronicFst(GraphFst):
             pynini.intersect(alphanumeric_pattern, contains_alpha), contains_digit
         ).optimize()
 
-        alphanumeric_code = (
-            pynutil.insert("domain: \"")
-            + alphanumeric_code_fst
-            + pynutil.insert("\"")
-        )
+        alphanumeric_code = pynutil.insert("domain: \"") + alphanumeric_code_fst + pynutil.insert("\"")
 
         # Weights use 3 tiers: structurally unambiguous (1.0), moderately general (1.1), greedy (1.2)
         graph = (
