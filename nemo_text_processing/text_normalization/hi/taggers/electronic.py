@@ -137,16 +137,11 @@ class ElectronicFst(GraphFst):
         tld = pynini.project(pynini.string_file(get_abs_path("data/electronic/domain.tsv")), "input")
 
         domain_body = (
-            pynini.closure(domain_segment + pynini.accep("."), 1)
-            + tld
-            + pynini.closure(pynini.accep(".") + tld, 0, 1)
+            pynini.closure(domain_segment + pynini.accep("."), 1) + tld + pynini.closure(pynini.accep(".") + tld, 0, 1)
         )
 
         combined_domain = (
-            pynutil.insert("domain: \"")
-            + domain_body
-            + pynini.closure(pynini.accep("/"), 0, 1)
-            + pynutil.insert("\"")
+            pynutil.insert("domain: \"") + domain_body + pynini.closure(pynini.accep("/"), 0, 1) + pynutil.insert("\"")
         )
 
         # file extensions: e.g. report.pdf, data.csv
@@ -156,11 +151,7 @@ class ElectronicFst(GraphFst):
         filename_stem_chars = NEMO_ALPHA | NEMO_DIGIT | pynini.accep("-") | pynini.accep("_")
         filename_stem = pynini.closure(filename_stem_chars, 1)
         file_with_extension = (
-            pynutil.insert("domain: \"")
-            + filename_stem
-            + pynini.accep(".")
-            + known_extensions
-            + pynutil.insert("\"")
+            pynutil.insert("domain: \"") + filename_stem + pynini.accep(".") + known_extensions + pynutil.insert("\"")
         )
 
         # chemical formulas with subscript digits: e.g. H₂O, CO₂
