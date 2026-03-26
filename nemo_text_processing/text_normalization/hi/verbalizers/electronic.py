@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_QUOTE,
     GraphFst,
+    capitalized_input_graph,
     delete_space,
     insert_space,
 )
@@ -50,7 +51,8 @@ class ElectronicFst(GraphFst):
         domain_graph = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
         server_name_graph = pynini.string_file(get_abs_path("data/electronic/server_name.tsv")).optimize()
         common_words_graph = pynini.string_file(get_abs_path("data/electronic/common_words.tsv")).optimize()
-        latin_to_hindi_graph = pynini.string_file(get_abs_path("data/electronic/latin_to_hindi.tsv")).optimize()
+        latin_to_hindi_graph = pynini.string_file(get_abs_path("data/address/letters.tsv"))
+        latin_to_hindi_graph = capitalized_input_graph(latin_to_hindi_graph).optimize()
 
         # Digit mappings - use telephone number mappings for ASCII digits
         ascii_digit_graph = pynini.string_file(get_abs_path("data/telephone/number.tsv")).optimize()
