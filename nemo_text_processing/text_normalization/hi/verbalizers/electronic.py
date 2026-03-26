@@ -96,13 +96,8 @@ class ElectronicFst(GraphFst):
         domain_ext_verbalization = pynini.cross(".", "डॉट ") + domain_graph + insert_space
 
         # ============ PROTOCOL VERBALIZATION ============
-        # https -> एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश
-        https_verb = pynini.cross("https", "एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश ")
-        http_verb = pynini.cross("http", "एच टी टी पी कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश ")
-        www_verb = pynini.cross("www", "डब्ल्यू डब्ल्यू डब्ल्यू डॉट ")
-        httpswww_verb = pynini.cross("httpswww", "एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश डब्ल्यू डब्ल्यू डब्ल्यू डॉट ")
-        httpwww_verb = pynini.cross("httpwww", "एच टी टी पी कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश डब्ल्यू डब्ल्यू डब्ल्यू डॉट ")
-        protocol_verbalization = https_verb | http_verb | www_verb | httpswww_verb | httpwww_verb
+        protocol_graph = pynini.string_file(get_abs_path("data/electronic/protocols.tsv")).optimize()
+        protocol_verbalization = protocol_graph + insert_space
 
         # ============ CONTENT VERBALIZATION ============
         # General content: mix of words, symbols, and characters
