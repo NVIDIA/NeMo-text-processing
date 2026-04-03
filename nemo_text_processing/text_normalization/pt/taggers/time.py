@@ -15,12 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_DIGIT,
-    GraphFst,
-    delete_space,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_DIGIT, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
 
@@ -50,35 +45,23 @@ class TimeFst(GraphFst):
             pynini.closure(pynutil.delete("0"), 0, 1) + NEMO_DIGIT
         )
 
-        graph_hour = (
-            delete_leading_zero_to_double_digit
-            @ pynini.union(*labels_hour)
-            @ cardinal_graph
-        )
+        graph_hour = delete_leading_zero_to_double_digit @ pynini.union(*labels_hour) @ cardinal_graph
 
         graph_minute_single = pynini.union(*labels_minute_single) @ cardinal_graph
         graph_minute_double = pynini.union(*labels_minute_double) @ cardinal_graph
         final_graph_minute = (
             pynutil.insert('minutes: "')
-            + (
-                pynutil.delete("0") + graph_minute_single
-                | graph_minute_double
-            )
+            + (pynutil.delete("0") + graph_minute_single | graph_minute_double)
             + pynutil.insert('"')
         )
 
         final_graph_second = (
             pynutil.insert('seconds: "')
-            + (
-                pynutil.delete("0") + graph_minute_single
-                | graph_minute_double
-            )
+            + (pynutil.delete("0") + graph_minute_single | graph_minute_double)
             + pynutil.insert('"')
         )
 
-        final_graph_hour = (
-            pynutil.insert('hours: "') + graph_hour + pynutil.insert('"')
-        )
+        final_graph_hour = pynutil.insert('hours: "') + graph_hour + pynutil.insert('"')
 
         delete_h = pynini.union(
             pynutil.delete(pynini.accep(pynini.escape("h"))),
@@ -96,15 +79,8 @@ class TimeFst(GraphFst):
             if len(row) < 2 or not row[0].strip():
                 continue
             tail, tag_val = row[0].strip(), row[1].strip()
-            period_branches.append(
-                pynutil.delete(tail) + pynutil.insert(f'suffix: "{tag_val}"')
-            )
-        suffix_tail = (
-            delete_space
-            + pynutil.delete("da")
-            + delete_space
-            + pynini.union(*period_branches)
-        )
+            period_branches.append(pynutil.delete(tail) + pynutil.insert(f'suffix: "{tag_val}"'))
+        suffix_tail = delete_space + pynutil.delete("da") + delete_space + pynini.union(*period_branches)
         optional_suffix = pynini.closure(insert_space + suffix_tail, 0, 1)
 
         graph_hm = (
@@ -123,12 +99,7 @@ class TimeFst(GraphFst):
             + pynutil.insert(" preserve_order: true")
         )
 
-        graph_h_only = (
-            final_graph_hour
-            + delete_h
-            + optional_suffix
-            + pynutil.insert(" preserve_order: true")
-        )
+        graph_h_only = final_graph_hour + delete_h + optional_suffix + pynutil.insert(" preserve_order: true")
 
         graph_hms = (
             final_graph_hour

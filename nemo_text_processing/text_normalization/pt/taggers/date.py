@@ -42,12 +42,8 @@ class DateFst(GraphFst):
         month_pairs = [(r[0], r[1]) for r in month_rows if len(r) >= 2]
         month_to_word = pynini.string_map(month_pairs).optimize()
 
-        day_10_31 = (
-            (NEMO_DIGIT - "0") + NEMO_DIGIT
-        ) @ pynini.union(*[str(x) for x in range(10, 32)]) @ numbers
-        day_02_09 = pynutil.delete("0") + (
-            pynini.union(*[str(x) for x in range(2, 10)]) @ numbers
-        )
+        day_10_31 = ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ pynini.union(*[str(x) for x in range(10, 32)]) @ numbers
+        day_02_09 = pynutil.delete("0") + (pynini.union(*[str(x) for x in range(2, 10)]) @ numbers)
         day_2_9 = pynini.union(*[str(x) for x in range(2, 10)]) @ numbers
         day_inner = pynini.union(
             pynini.cross("01", "primeiro"),
@@ -92,9 +88,7 @@ class DateFst(GraphFst):
         day_spokens = set()
         for n in range(1, 32):
             for key in (str(n), f"{n:02d}"):
-                dstr = pynini.shortestpath(
-                    pynini.compose(pynini.accep(key), day_inner.optimize())
-                ).string()
+                dstr = pynini.shortestpath(pynini.compose(pynini.accep(key), day_inner.optimize())).string()
                 day_spokens.add(dstr)
 
         _preserve_tail = " preserve_order: true"
@@ -109,9 +103,7 @@ class DateFst(GraphFst):
                     pynutil.insert('day: "' + day + '" month: "' + month + '" ')
                     + pynini.accep("year:")
                     + NEMO_SIGMA
-                    + pynutil.delete(
-                        ' month: "' + month + '" day: "' + day + '"' + _preserve_tail
-                    )
+                    + pynutil.delete(' month: "' + month + '" day: "' + day + '"' + _preserve_tail)
                 )
                 ymd_to_dmy_graph = ymd_curr if ymd_to_dmy_graph is None else pynini.union(ymd_to_dmy_graph, ymd_curr)
 
@@ -131,36 +123,9 @@ class DateFst(GraphFst):
             sep_accep = pynini.accep(pynini.escape(sep))
             del_sep = pynutil.delete(sep_accep)
 
-            dmy_core = (
-                day_part
-                + del_sep
-                + insert_space
-                + month_part
-                + del_sep
-                + insert_space
-                + year_part
-                + preserve
-            )
-            iso_core = (
-                year_part
-                + del_sep
-                + insert_space
-                + month_part
-                + del_sep
-                + insert_space
-                + day_part
-                + preserve
-            )
-            mdy_core = (
-                month_part
-                + del_sep
-                + insert_space
-                + day_part
-                + del_sep
-                + insert_space
-                + year_part
-                + preserve
-            )
+            dmy_core = day_part + del_sep + insert_space + month_part + del_sep + insert_space + year_part + preserve
+            iso_core = year_part + del_sep + insert_space + month_part + del_sep + insert_space + day_part + preserve
+            mdy_core = month_part + del_sep + insert_space + day_part + del_sep + insert_space + year_part + preserve
 
             lhs_dmy = one_or_two_digits + sep_accep + one_or_two_digits + sep_accep + year_four
             lhs_iso = year_four + sep_accep + one_or_two_digits + sep_accep + one_or_two_digits

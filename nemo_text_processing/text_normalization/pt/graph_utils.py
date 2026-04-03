@@ -49,9 +49,7 @@ delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ").optimize()
 
-delete_preserve_order = pynini.closure(
-    pynutil.delete(" preserve_order: true")
-)
+delete_preserve_order = pynini.closure(pynutil.delete(" preserve_order: true"))
 
 
 def generator_main(file_name: str, graphs: Dict[str, "pynini.FstLike"]) -> None:

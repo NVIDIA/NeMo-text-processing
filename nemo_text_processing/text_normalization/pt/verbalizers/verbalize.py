@@ -42,13 +42,6 @@ class VerbalizeFst(GraphFst):
         decimal = DecimalFst(deterministic=deterministic)
         date = DateFst(deterministic=deterministic)
         time = TimeFst(deterministic=deterministic)
-        graph = (
-            fraction.fst
-            | decimal.fst
-            | date.fst
-            | time.fst
-            | ordinal.fst
-            | cardinal.fst
-        )
+        graph = fraction.fst | decimal.fst | date.fst | time.fst | ordinal.fst | cardinal.fst
 
         self.fst = graph
