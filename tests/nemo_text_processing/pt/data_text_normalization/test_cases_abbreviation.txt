@@ -1,0 +1,46 @@
+# Portuguese TN Abbreviation Test Cases
+# Format: input~expected_output
+
+# Titles and honorifics
+Dr.~doutor
+Dra.~doutora
+Sr.~senhor
+Sra.~senhora
+Prof.~professor
+Profa.~professora
+
+# Academic degrees
+Ph.D.~doutor / PhD
+M.Sc.~mestre
+B.A.~bacharel em artes
+
+# Common abbreviations
+etc.~etcétera
+vs.~versus
+ex.~exemplo
+obs.~observação
+p.ex.~por exemplo
+
+# Units (when not in measure context)
+kg.~quilograma
+m.~metro
+km.~quilômetro
+l.~litro
+
+# Business abbreviations
+Ltda.~limitada
+S.A.~sociedade anônima
+CIA.~companhia
+Inc.~incorporada
+
+# Time abbreviations
+a.m.~ante meridiem / da manhã
+p.m.~post meridiem / da tarde
+seg.~segundo
+min.~minuto
+
+# Location abbreviations
+Av.~avenida
+R.~rua
+Pça.~praça
+Est.~estado

@@ -1,0 +1,27 @@
+# Portuguese TN Electronic Test Cases
+# Format: input~expected_output
+# Based on reverse engineering from ITN test cases
+
+# Email addresses
+test@gmail.com~test arroba gmail ponto com
+user@hotmail.com~user arroba hotmail ponto com
+admin@company.com.br~admin arroba company ponto com ponto br
+contact@site.org~contact arroba site ponto org
+
+# Websites/URLs
+www.google.com~www ponto google ponto com
+https://www.example.com~https dois pontos barra barra www ponto example ponto com
+http://site.com.br~http dois pontos barra barra site ponto com ponto br
+
+# IP addresses
+192.168.1.1~um nove dois ponto um seis oito ponto um ponto um
+127.0.0.1~um dois sete ponto zero ponto zero ponto um
+
+# Social media handles
+@username~arroba username
+#hashtag~cerquilha hashtag / sustenido hashtag
+
+# File extensions
+file.pdf~file ponto pdf
+document.docx~document ponto docx
+image.jpg~image ponto jpg

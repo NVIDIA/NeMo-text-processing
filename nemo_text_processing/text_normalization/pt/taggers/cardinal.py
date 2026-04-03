@@ -77,9 +77,10 @@ class CardinalFst(GraphFst):
             (connector_e + graph_tens),
             (connector_e + digit),
         )
+        # "100" -> cem only (cross("1", cento)+delete("00") would also match "100" but
+        # yields "cento"; OpenFst vs pynini top_rewrite can disagree on ties — Sparrowhawk).
         graph_hundreds |= pynini.cross("100", hundred_100)
         graph_hundreds |= pynini.cross("1", hundred_1) + pynini.union(
-            pynutil.delete("00"),
             (connector_e + graph_tens),
             (connector_e + pynutil.delete("0") + digit),
         )
@@ -116,7 +117,8 @@ class CardinalFst(GraphFst):
             pynutil.delete("000"),
             (connector_e + graph_pure_components),
             (insert_space + graph_compound_hundreds),
-            (insert_space + pynutil.delete("0") + graph_compound_tens),
+            # Use connector_e so "2024" -> dois mil e vinte e quatro (not dois mil vinte e quatro).
+            (connector_e + pynutil.delete("0") + graph_compound_tens),
         )
 
         t_comp = pynini.union(

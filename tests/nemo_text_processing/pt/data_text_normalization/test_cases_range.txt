@@ -1,0 +1,29 @@
+# Portuguese TN Range Test Cases
+# Format: input~expected_output
+
+# Number ranges
+1-5~um a cinco
+10-20~dez a vinte
+100-200~cem a duzentos
+1000-2000~mil a dois mil
+
+# Date ranges
+Jan-Feb~janeiro a fevereiro
+Janeiro-Março~janeiro a março
+2020-2023~dois mil e vinte a dois mil e vinte e três
+
+# Time ranges
+9:00-17:00~nove horas às dezessete horas
+8-12~oito às doze
+
+# Age ranges
+18-25~dezoito a vinte e cinco anos
+30-40~trinta a quarenta anos
+
+# Page ranges
+pp. 10-15~páginas dez a quinze
+p. 5-8~páginas cinco a oito
+
+# Temperature ranges
+20-25°C~vinte a vinte e cinco graus Celsius
+-5-0°C~menos cinco a zero graus Celsius

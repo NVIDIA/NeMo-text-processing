@@ -25,10 +25,9 @@
 3,256~três vírgula duzentos e cinquenta e seis
 3,999~três vírgula novecentos e noventa e nove
 3,1415~três vírgula mil quatrocentos e quinze
-3,14159~três vírgula quatorze mil cento e cinquenta e nove
 3,1001~três vírgula mil e um
 3,2003~três vírgula dois mil e três
-3,014~três vírgula quatorze
+3,014~três vírgula catorze
 3,0141~três vírgula cento e quarenta e um
 3,1005~três vírgula mil e cinco
 3,1050~três vírgula mil e cinquenta
@@ -51,8 +50,8 @@
 10,001~dez vírgula mil e um
 100,5~cem vírgula cinco
 100,05~cem vírgula cinco
-3,14~três vírgula quatorze
+3,14~três vírgula catorze
 3,141~três vírgula cento e quarenta e um
 3,1415~três vírgula mil quatrocentos e quinze
-3,14159~três vírgula quatorze mil cento e cinquenta e nove
+3,14159~três vírgula catorze mil cento e cinquenta e nove
 3,1415926535~três vírgula um quatro um cinco nove dois seis cinco três cinco

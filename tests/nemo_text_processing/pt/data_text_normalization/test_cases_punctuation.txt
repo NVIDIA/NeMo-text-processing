@@ -1,0 +1,36 @@
+# Portuguese TN Punctuation Test Cases
+# Format: input~expected_output
+
+# Basic punctuation marks
+!~exclamação
+?~interrogação / ponto de interrogação
+.~ponto
+,~vírgula
+;~ponto e vírgula
+:~dois pontos
+
+# Quotation marks
+"~aspas / aspas duplas
+'~apóstrofe / aspas simples
+
+# Mathematical and special symbols
++~mais
+-~menos / hífen
+*~asterisco
+/~barra
+=~igual
+%~por cento
+
+# Brackets and parentheses
+(~abre parênteses
+)~fecha parênteses
+[~abre colchetes
+]~fecha colchetes
+{~abre chaves
+}~fecha chaves
+
+# Other symbols
+@~arroba
+#~cerquilha / sustenido / hashtag
+&~e comercial / ampersand
+$~cifrão

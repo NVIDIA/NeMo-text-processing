@@ -1,0 +1,32 @@
+# Portuguese TN Address Test Cases
+# Format: input~expected_output
+# Brazilian address format specific
+
+# Street addresses
+Rua das Flores, 123~rua das Flores número cento e vinte e três
+Av. Paulista, 1000~avenida Paulista número mil
+R. Augusta, 456~rua Augusta número quatrocentos e cinquenta e seis
+
+# Apartment/suite numbers
+Rua A, 123 Apt 45~rua A número cento e vinte e três apartamento quarenta e cinco
+Av. B, 789 Sala 12~avenida B número setecentos e oitenta e nove sala doze
+
+# Postal codes (CEP - Brazilian format)
+01310-100~zero um três um zero hífen um zero zero
+04038-001~zero quatro zero três oito hífen zero zero um
+22071-900~dois dois zero sete um hífen nove zero zero
+
+# Neighborhoods and cities
+São Paulo, SP~São Paulo São Paulo
+Rio de Janeiro, RJ~Rio de Janeiro Rio de Janeiro
+Belo Horizonte, MG~Belo Horizonte Minas Gerais
+
+# Complete addresses
+Rua das Palmeiras, 456 - Copacabana - Rio de Janeiro, RJ - 22070-000~rua das Palmeiras número quatrocentos e cinquenta e seis Copacabana Rio de Janeiro Rio de Janeiro CEP dois dois zero sete zero hífen zero zero zero
+
+# Building numbers with letters
+123A~cento e vinte e três A
+456B~quatrocentos e cinquenta e seis B
+
+# Complex addresses
+Av. Brigadeiro Faria Lima, 2232 - 4º andar - Itaim Bibi~avenida Brigadeiro Faria Lima número dois mil duzentos e trinta e dois quarto andar Itaim Bibi

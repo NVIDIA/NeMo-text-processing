@@ -1,0 +1,33 @@
+# Portuguese TN Measure Test Cases
+# Format: input~expected_output
+# Based on reverse engineering from ITN test cases
+
+# Weight measurements
+200 g~duzentos gramas
+1 kg~um quilo / um quilograma
+5 kg~cinco quilos / cinco quilogramas
+200 m~duzentos metros
+
+# Distance measurements  
+1 km~um quilômetro
+5 km~cinco quilômetros
+100 m~cem metros
+
+# Volume measurements
+1 l~um litro
+2 l~dois litros
+500 ml~quinhentos mililitros
+
+# Area measurements
+1 m²~um metro quadrado
+10 m²~dez metros quadrados
+
+# Temperature
+25°C~vinte e cinco graus Celsius
+-5°C~menos cinco graus Celsius
+
+# Time measurements
+1 h~uma hora
+2 h~duas horas
+30 min~trinta minutos
+45 s~quarenta e cinco segundos
