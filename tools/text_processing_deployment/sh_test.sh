@@ -19,7 +19,7 @@
 
 GRAMMARS="itn_grammars" # tn_grammars
 INPUT_CASE="lower_cased" # cased
-LANGUAGE="en" # language, {'en', 'es', 'de','zh'} supports both TN and ITN, {'pt', 'ru', 'fr', 'vi'} supports ITN only
+LANGUAGE="en" # language, {'en', 'es', 'de','zh', 'pt'} supports both TN and ITN, {'ru', 'fr', 'vi', 'pt'} supports ITN only
 OVERWRITE_CACHE="False" # Set to False to re-use .far files
 WHITELIST="" # Path to a whitelist file, if None the default will be used
 FAR_PATH=$(pwd) # Path where the grammars should be written
