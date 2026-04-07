@@ -38,7 +38,7 @@ from nemo_text_processing.text_normalization.hi.taggers.telephone import Telepho
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
-
+from nemo_text_processing.text_normalization.hi.taggers.electronic import ElectronicFst
 
 class ClassifyFst(GraphFst):
     """
@@ -113,6 +113,9 @@ class ClassifyFst(GraphFst):
             telephone = TelephoneFst()
             telephone_graph = telephone.fst
 
+            electronic = ElectronicFst(deterministic=deterministic)
+            electronic_graph = electronic.fst
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(cardinal_graph, 1.1)
@@ -124,6 +127,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(electronic_graph, 1.1)
             )
 
             word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
