@@ -38,10 +38,7 @@ class PostProcessingFst:
     def get_postprocess_graph(self):
         delete_space = pynutil.delete(NEMO_SPACE)
 
-        vowel_final = pynini.union(
-            "아", "야", "어", "여", "오", "요", "우", "유", "이", "애", "에",
-            "사", "오", "구"
-        )
+        vowel_final = pynini.union("아", "야", "어", "여", "오", "요", "우", "유", "이", "애", "에", "사", "오", "구")
 
         rule_i_to_ga = pynini.cdrewrite(
             delete_space + pynini.cross("이 ", "가 "),

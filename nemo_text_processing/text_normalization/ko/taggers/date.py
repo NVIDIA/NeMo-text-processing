@@ -259,7 +259,7 @@ class DateFst(GraphFst):
             + pynini.closure(month_josa, 0, 1)
             + pynutil.insert('"')
         ).optimize()
-        
+
         individual_day_component = (
             pynutil.insert("day: \"")
             + cardinal_lz
