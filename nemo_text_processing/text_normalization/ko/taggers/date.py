@@ -249,6 +249,17 @@ class DateFst(GraphFst):
             + pynutil.insert("\"")
         )
 
+        month_josa = pynini.union("에", "은", "는", "에는").optimize()
+
+        individual_month_component_with_josa = (
+            pynutil.insert('month: "')
+            + month_cardinal
+            + pynutil.delete("월")
+            + pynutil.insert("월")
+            + pynini.closure(month_josa, 0, 1)
+            + pynutil.insert('"')
+        ).optimize()
+        
         individual_day_component = (
             pynutil.insert("day: \"")
             + cardinal_lz
@@ -272,6 +283,7 @@ class DateFst(GraphFst):
             day_and_weekday_component
             | month_and_weekday_component
             | individual_year_component
+            | individual_month_component_with_josa
             | individual_month_component
             | individual_day_component
             | week_component
