@@ -29,6 +29,7 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
 from nemo_text_processing.text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.hi.taggers.date import DateFst
 from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.hi.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.hi.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
@@ -38,7 +39,7 @@ from nemo_text_processing.text_normalization.hi.taggers.telephone import Telepho
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
-from nemo_text_processing.text_normalization.hi.taggers.electronic import ElectronicFst
+
 
 class ClassifyFst(GraphFst):
     """
