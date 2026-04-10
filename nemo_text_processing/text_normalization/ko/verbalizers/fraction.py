@@ -17,6 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ko.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
 
+
 class FractionFst(GraphFst):
     """
     Finite state transducer for verbalizing Korean fractions, e.g.
@@ -67,7 +68,7 @@ class FractionFst(GraphFst):
             + delete_space
             + pynutil.delete('"분의_subject"')
             + delete_space
-            + pynutil.insert("이")   # 일단 기본값
+            + pynutil.insert("이")  # 일단 기본값
         )
 
         # Handle topic particle feature (분의_topic)
@@ -89,14 +90,11 @@ class FractionFst(GraphFst):
             + delete_space
             + pynutil.insert("을")
         )
-        
+
         # Combine fraction + optional particle suffix
         # Particle is always inserted first in default form and later corrected
-        graph_fraction_all = (
-            graph_fraction
-            + pynini.closure(subject_suffix | topic_suffix | object_suffix, 0, 1)
-        )
-               
+        graph_fraction_all = graph_fraction + pynini.closure(subject_suffix | topic_suffix | object_suffix, 0, 1)
+
         # Handle integer + fraction (e.g., "2과 3/4")
         # integer_part is removed and replaced with proper spacing
         graph_integer = (
@@ -109,7 +107,7 @@ class FractionFst(GraphFst):
         )
         # Combine integer part with fraction
         graph_integer_fraction = graph_integer + delete_space + graph_fraction_all
-        
+
         # Handle optional negative prefix (e.g., "마이너스")
         optional_sign = (
             pynutil.delete('negative:')
@@ -124,13 +122,13 @@ class FractionFst(GraphFst):
         # Final structure:
         # [optional negative] + (integer + fraction OR fraction only)
         graph = pynini.closure(optional_sign, 0, 1) + (graph_integer_fraction | graph_fraction_all)
-        
+
         # Remove token wrappers
         final_graph = self.delete_tokens(graph)
-        
+
         # Sigma for rewrite context (entire string)
         sigma = pynini.closure(NEMO_NOT_QUOTE | NEMO_SPACE)
-        
+
         # Fix subject particle agreement (이 → 가 for vowel-ending numerals)
         # e.g., 사이 → 사가, 구이 → 구가
         subject_rewrite = pynini.cdrewrite(
@@ -144,7 +142,7 @@ class FractionFst(GraphFst):
             "",
             sigma,
         )
-        
+
         # Fix topic particle agreement (은 → 는)
         # e.g., 이은 → 이는, 사은 → 사는
         topic_rewrite = pynini.cdrewrite(
@@ -172,7 +170,7 @@ class FractionFst(GraphFst):
             "",
             sigma,
         )
-        
+
         # Apply all rewrite rules sequentially and final optimized FST
         final_graph = final_graph @ subject_rewrite @ topic_rewrite @ object_rewrite
         self.fst = final_graph.optimize()

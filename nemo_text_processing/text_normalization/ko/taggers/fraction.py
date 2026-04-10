@@ -82,17 +82,14 @@ class FractionFst(GraphFst):
         )
 
         # Optional particles following the fraction
-        particle_subject = (
-            pynutil.insert('morphosyntactic_features: "분의_subject"')
-            + (pynutil.delete("이") | pynutil.delete("가"))
+        particle_subject = pynutil.insert('morphosyntactic_features: "분의_subject"') + (
+            pynutil.delete("이") | pynutil.delete("가")
         )
-        particle_topic = (
-            pynutil.insert('morphosyntactic_features: "분의_topic"')
-            + (pynutil.delete("은") | pynutil.delete("는"))
+        particle_topic = pynutil.insert('morphosyntactic_features: "분의_topic"') + (
+            pynutil.delete("은") | pynutil.delete("는")
         )
-        particle_object = (
-            pynutil.insert('morphosyntactic_features: "분의_object"')
-            + (pynutil.delete("을") | pynutil.delete("를"))
+        particle_object = pynutil.insert('morphosyntactic_features: "분의_object"') + (
+            pynutil.delete("을") | pynutil.delete("를")
         )
 
         optional_particle = pynini.closure(
@@ -100,7 +97,7 @@ class FractionFst(GraphFst):
             0,
             1,
         )
-        
+
         # Optional minus sign
         optional_sign = (
             pynutil.insert(f'negative: {DOUBLE_QUOTE}')
