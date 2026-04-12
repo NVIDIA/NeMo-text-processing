@@ -27,11 +27,11 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
 )
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
-# Time patterns specific to time tagger
-HI_DOUBLE_ZERO = "००"
-HI_TIME_FIFTEEN = ":१५"  # :15
-HI_TIME_THIRTY = ":३०"  # :30
-HI_TIME_FORTYFIVE = ":४५"  # :45
+# Time patterns specific to time tagger - support both Devanagari and Arabic digits
+HI_DOUBLE_ZERO = pynini.union("००", "00")
+HI_TIME_FIFTEEN = pynini.union(":१५", ":15")
+HI_TIME_THIRTY = pynini.union(":३०", ":30")
+HI_TIME_FORTYFIVE = pynini.union(":४५", ":45")
 
 hours_graph = pynini.string_file(get_abs_path("data/time/hours.tsv"))
 minutes_graph = pynini.string_file(get_abs_path("data/time/minutes.tsv"))
@@ -72,7 +72,19 @@ class TimeFst(GraphFst):
         # hour
         graph_h = self.hours + delete_colon + pynutil.delete(HI_DOUBLE_ZERO)
 
-        dedh_dhai_graph = pynini.string_map([("१" + HI_TIME_THIRTY, HI_DEDH), ("२" + HI_TIME_THIRTY, HI_DHAI)])
+        # Support all combinations of Devanagari and Arabic digits for dedh/dhai patterns
+        dedh_dhai_graph = pynini.string_map(
+            [
+                ("१:३०", HI_DEDH),
+                ("१:30", HI_DEDH),
+                ("1:३०", HI_DEDH),
+                ("1:30", HI_DEDH),
+                ("२:३०", HI_DHAI),
+                ("२:30", HI_DHAI),
+                ("2:३०", HI_DHAI),
+                ("2:30", HI_DHAI),
+            ]
+        )
 
         savva_numbers = cardinal_graph + pynini.cross(HI_TIME_FIFTEEN, "")
         savva_graph = pynutil.insert(HI_SAVVA) + pynutil.insert(NEMO_SPACE) + savva_numbers

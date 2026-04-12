@@ -59,7 +59,7 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
         graph_digit = cardinal.digit | cardinal.zero
-        cardinal_graph = cardinal.final_graph
+        cardinal_graph = cardinal.graph_without_leading_zeros
 
         self.graph = graph_digit + pynini.closure(insert_space + graph_digit).optimize()
 

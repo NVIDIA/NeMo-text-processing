@@ -54,6 +54,9 @@ class VerbalizeFst(GraphFst):
         time = TimeFst(cardinal=cardinal)
         time_graph = time.fst
 
+        ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal_graph = ordinal.fst
+
         measure = MeasureFst(cardinal=cardinal, decimal=decimal)
         measure_graph = measure.fst
 
@@ -62,8 +65,6 @@ class VerbalizeFst(GraphFst):
 
         telephone = TelephoneFst()
         telephone_graph = telephone.fst
-        ordinal = OrdinalFst(deterministic=deterministic)
-        ordinal_graph = ordinal.fst
 
         whitelist_graph = WhiteListFst(deterministic=deterministic).fst
 
