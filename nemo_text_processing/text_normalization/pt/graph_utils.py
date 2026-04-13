@@ -41,6 +41,7 @@ NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
 NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
 NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
 NEMO_SPACE = " "
+NEMO_NON_BREAKING_SPACE = "\u00a0"
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", "\u00a0").optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, pynini.accep('"')).optimize()
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
@@ -171,3 +172,16 @@ def shift_cardinal_gender_pt(fst: "pynini.FstLike") -> "pynini.FstLike":
         NEMO_SIGMA,
     )
     return fst @ fem_ones @ fem_twos @ fem_hundreds
+
+def convert_space(fst) -> "pynini.FstLike":
+    """
+    Converts space to nonbreaking space.
+    Used only in tagger grammars for transducing token values within quotes, e.g. name: "hello kitty"
+    This is making transducer significantly slower, so only use when there could be potential spaces within quotes, otherwise leave it.
+
+    Args:
+        fst: input fst
+
+    Returns output fst where breaking spaces are converted to non breaking spaces
+    """
+    return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)

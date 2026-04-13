@@ -35,10 +35,11 @@ class FractionFst(GraphFst):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
         labels = load_labels(get_abs_path("data/fractions/specials.tsv"))
         spec = {r[0]: r[1] for r in labels if len(r) >= 2}
-        connector = pynutil.insert(spec.get("connector", " e "))
-        minus = spec.get("minus", "menos ")
+        connector_raw = spec.get("connector", " e ").strip()
+        connector = insert_space + pynutil.insert(connector_raw) + insert_space
+        minus = spec.get("minus", "menos ").rstrip()
         plural_suffix = spec.get("plural_suffix", "s")
-        avos_suffix = spec.get("avos_suffix", " avos")
+        avos_word = spec.get("avos_suffix", " avos").strip()
         numerator_one_val = spec.get("numerator_one", "um")
         denominator_half_val = spec.get("denominator_half", "meio")
 
@@ -74,7 +75,7 @@ class FractionFst(GraphFst):
         fraction_ordinal = pynini.union(fraction_ordinal_singular, fraction_ordinal_plural)
 
         fraction_avos = (
-            pynini.union(numerator_one, numerator_rest) + insert_space + denom_avos + pynutil.insert(avos_suffix)
+            pynini.union(numerator_one, numerator_rest) + insert_space + denom_avos + insert_space + pynutil.insert(avos_word)
         )
 
         fraction = pynini.union(fraction_ordinal, fraction_avos)
@@ -85,4 +86,5 @@ class FractionFst(GraphFst):
             optional_integer + fraction,
         )
 
+        self.inner_graph = graph.optimize()
         self.fst = self.delete_tokens(graph).optimize()

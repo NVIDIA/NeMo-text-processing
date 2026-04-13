@@ -110,6 +110,7 @@ class DecimalFst(GraphFst):
             decimal_core + delete_space + pynutil.insert('quantity: "') + quantity_words + pynutil.insert('"')
         )
         final_graph_wo_sign = pynini.union(decimal_core, integer_quantity, decimal_quantity)
+        self.final_graph_wo_negative = final_graph_wo_sign.optimize()
         optional_minus = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
         final_graph = optional_minus + final_graph_wo_sign
 

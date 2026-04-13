@@ -55,10 +55,16 @@ class TimeFst(GraphFst):
         graph_hms = (
             hours
             + gap
-            + pynutil.insert("horas e ")
+            + pynutil.insert("horas")
+            + insert_space
+            + pynutil.insert("e")
+            + insert_space
             + minutes_val
             + gap
-            + pynutil.insert("minutos e ")
+            + pynutil.insert("minutos")
+            + insert_space
+            + pynutil.insert("e")
+            + insert_space
             + seconds_val
             + gap
             + pynutil.insert("segundos")
@@ -71,7 +77,8 @@ class TimeFst(GraphFst):
             + gap
             + pynutil.insert("horas")
             + gap
-            + pynutil.insert("e ")
+            + pynutil.insert("e")
+            + insert_space
             + gap
             + minutes_val
             + suffix_out

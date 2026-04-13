@@ -37,7 +37,7 @@ class DateFst(GraphFst):
 
         vrows = load_labels(get_abs_path("data/date/verbal_phrases.tsv"))
         vp = {r[0].strip(): r[1].strip() for r in vrows if len(r) >= 2 and r[0].strip()}
-        prep = vp.get("preposition", "de") + " "
+        prep_word = vp.get("preposition", "de")
 
         quoted = pynini.closure(NEMO_NOT_QUOTE, 1)
 
@@ -46,7 +46,7 @@ class DateFst(GraphFst):
         year_expr = pynutil.delete('year: "') + quoted + pynutil.delete('"')
 
         ws = delete_space + insert_space
-        glue = ws + pynutil.insert(prep) + ws
+        glue = ws + pynutil.insert(prep_word) + insert_space + ws
 
         graph_dmy = day_expr + glue + month_expr + glue + year_expr + delete_preserve_order
         self.fst = self.delete_tokens(graph_dmy).optimize()

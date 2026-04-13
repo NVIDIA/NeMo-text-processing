@@ -16,7 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_NOT_QUOTE, GraphFst, shift_cardinal_gender_pt
+from nemo_text_processing.text_normalization.pt.graph_utils import (
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    insert_space,
+    shift_cardinal_gender_pt,
+)
 
 
 class CardinalFst(GraphFst):
@@ -33,7 +38,7 @@ class CardinalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
-        optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", "menos "), 0, 1)
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", "menos") + insert_space, 0, 1)
         self.optional_sign = optional_sign
 
         integer = pynini.closure(NEMO_NOT_QUOTE, 1)

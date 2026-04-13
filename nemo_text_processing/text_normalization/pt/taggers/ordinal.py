@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_DIGIT, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
 
@@ -39,7 +39,7 @@ class OrdinalFst(GraphFst):
         spec_rows = load_labels(get_abs_path("data/ordinals/specials.tsv"))
         spec = {r[0]: r[1] for r in spec_rows if len(r) >= 2}
         conn_in = spec.get("connector_in", " e ")
-        conn_out = spec.get("connector_out", " ")
+        conn_out = spec.get("connector_out", NEMO_SPACE)
         conn = pynini.cross(conn_in, conn_out)
 
         # Data: ordinal \t cardinal → FST cardinal→ordinal via load_labels
