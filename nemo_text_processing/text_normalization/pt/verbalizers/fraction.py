@@ -75,7 +75,11 @@ class FractionFst(GraphFst):
         fraction_ordinal = pynini.union(fraction_ordinal_singular, fraction_ordinal_plural)
 
         fraction_avos = (
-            pynini.union(numerator_one, numerator_rest) + insert_space + denom_avos + insert_space + pynutil.insert(avos_word)
+            pynini.union(numerator_one, numerator_rest)
+            + insert_space
+            + denom_avos
+            + insert_space
+            + pynutil.insert(avos_word)
         )
 
         fraction = pynini.union(fraction_ordinal, fraction_avos)

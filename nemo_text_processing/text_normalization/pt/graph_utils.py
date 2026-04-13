@@ -173,6 +173,7 @@ def shift_cardinal_gender_pt(fst: "pynini.FstLike") -> "pynini.FstLike":
     )
     return fst @ fem_ones @ fem_twos @ fem_hundreds
 
+
 def convert_space(fst) -> "pynini.FstLike":
     """
     Converts space to nonbreaking space.
