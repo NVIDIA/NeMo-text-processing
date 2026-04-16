@@ -16,9 +16,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_NOT_QUOTE,
     GraphFst,
     capitalized_input_graph,
     delete_space,
@@ -74,25 +71,6 @@ class ElectronicFst(GraphFst):
         # ============ SYMBOL VERBALIZATION ============
         symbol_to_hindi = symbols_graph + insert_space
 
-        # ============ WORD SEGMENTATION & VERBALIZATION ============
-        # Try to match complete words first, then fall back to letter-by-letter
-        word_char = NEMO_ALPHA | NEMO_DIGIT
-
-        # For a sequence of word characters, try phonetic first, else letter-by-letter
-        word_segment = pynini.closure(word_char, 1)
-
-        # Phonetic word verbalization (higher priority)
-        phonetic_verbalization = phonetic_word + insert_space
-
-        # Letter-by-letter verbalization (fallback)
-        letter_by_letter = pynini.closure(char_with_space, 1)
-
-        # Combined: try phonetic first, fall back to letter-by-letter
-        # This is done by using weights - phonetic has lower weight (higher priority)
-        word_verbalization = pynutil.add_weight(phonetic_verbalization, 0.9) | pynutil.add_weight(
-            letter_by_letter, 1.1
-        )
-
         # ============ DOMAIN VERBALIZATION ============
         # Domain extension verbalization (.com -> डॉट कॉम)
         domain_ext_verbalization = pynini.cross(".", "डॉट ") + domain_graph + insert_space
@@ -101,23 +79,12 @@ class ElectronicFst(GraphFst):
         protocol_graph = pynini.string_file(get_abs_path("data/electronic/protocols.tsv")).optimize()
         protocol_verbalization = protocol_graph + insert_space
 
-        # ============ CONTENT VERBALIZATION ============
-        # General content: mix of words, symbols, and characters
-        # Process character by character with symbol handling
-        content_char = pynutil.add_weight(symbol_to_hindi, 1.0) | pynutil.add_weight(  # Symbol
-            char_with_space, 1.1
-        )  # Single char
-
-        # Full content verbalization
-        content_verbalization = pynini.closure(content_char, 1)
-
         # ============ FIELD EXTRACTION ============
         # Extract username field
         delete_username_tag = pynutil.delete("username: \"")
         delete_domain_tag = pynutil.delete("domain: \"")
         delete_protocol_tag = pynutil.delete("protocol: \"")
         delete_path_tag = pynutil.delete("path: \"")
-        delete_ip_tag = pynutil.delete("ip: \"")
         delete_quote = pynutil.delete("\"")
 
         # Username verbalization: letter-by-letter with symbol handling
