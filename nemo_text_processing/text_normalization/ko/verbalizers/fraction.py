@@ -132,12 +132,12 @@ class FractionFst(GraphFst):
         # Fix subject particle agreement (이 → 가 for vowel-ending numerals)
         # e.g., 사이 → 사가, 구이 → 구가
         subject_rewrite = pynini.cdrewrite(
-            pynini.union(
-                pynini.cross("이이", "이가"),
-                pynini.cross("사이", "사가"),
-                pynini.cross("오이", "오가"),
-                pynini.cross("구이", "구가"),
-            ),
+            pynini.string_map([
+                ("이이", "이가"),
+                ("사이", "사가"),
+                ("오이", "오가"),
+                ("구이", "구가"),
+            ]),
             "",
             "",
             sigma,
@@ -146,12 +146,12 @@ class FractionFst(GraphFst):
         # Fix topic particle agreement (은 → 는)
         # e.g., 이은 → 이는, 사은 → 사는
         topic_rewrite = pynini.cdrewrite(
-            pynini.union(
-                pynini.cross("이은", "이는"),
-                pynini.cross("사은", "사는"),
-                pynini.cross("오은", "오는"),
-                pynini.cross("구은", "구는"),
-            ),
+            pynini.string_map([
+                ("이은", "이는"),
+                ("사은", "사는"),
+                ("오은", "오는"),
+                ("구은", "구는"),
+            ]),
             "",
             "",
             sigma,
@@ -160,12 +160,12 @@ class FractionFst(GraphFst):
         # Fix object particle agreement (을 → 를)
         # e.g., 오을 → 오를, 이을 → 이를
         object_rewrite = pynini.cdrewrite(
-            pynini.union(
-                pynini.cross("이을", "이를"),
-                pynini.cross("사을", "사를"),
-                pynini.cross("오을", "오를"),
-                pynini.cross("구을", "구를"),
-            ),
+            pynini.string_map([
+                ("이을", "이를"),
+                ("사을", "사를"),
+                ("오을", "오를"),
+                ("구을", "구를"),
+            ]),
             "",
             "",
             sigma,
