@@ -103,11 +103,11 @@ def parse_args():
             'es_en',
             'he',
             'hi',
+            'hi_en',
             'hy',
             'mr',
             'ja',
             'rw',
-            'ko',
         ],
         type=str,
         default='en',
@@ -139,7 +139,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    if args.language in ['pt', 'ru', 'es_en', 'mr'] and args.grammars == 'tn_grammars':
+    if args.language in ['pt', 'ru', 'es_en', 'hi_en', 'mr'] and args.grammars == 'tn_grammars':
         raise ValueError('Only ITN grammars could be deployed in Sparrowhawk for the selected languages.')
     TNPostProcessingFst = None
     ITNPostProcessingFst = None
@@ -285,6 +285,13 @@ if __name__ == '__main__':
         from nemo_text_processing.inverse_text_normalization.es_en.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
+    elif args.language == 'hi_en':
+        from nemo_text_processing.inverse_text_normalization.hi_en.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.hi_en.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
     elif args.language == 'mr':
         from nemo_text_processing.inverse_text_normalization.mr.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
@@ -328,17 +335,6 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.rw.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
-    elif args.language == 'ko':
-        from nemo_text_processing.inverse_text_normalization.ko.taggers.tokenize_and_classify import (
-            ClassifyFst as ITNClassifyFst,
-        )
-        from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize import (
-            VerbalizeFst as ITNVerbalizeFst,
-        )
-        from nemo_text_processing.text_normalization.ko.taggers.tokenize_and_classify import (
-            ClassifyFst as TNClassifyFst,
-        )
-        from nemo_text_processing.text_normalization.ko.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     else:
         raise KeyError(f"Language {args.language} is not defined for export.")
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
