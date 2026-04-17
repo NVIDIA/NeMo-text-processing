@@ -16,12 +16,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_SPACE,
     NEMO_SIGMA,
+    NEMO_SPACE,
     GraphFst,
+    convert_space,
     delete_space,
     insert_space,
-    convert_space,
 )
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path
 
@@ -56,12 +56,7 @@ class MeasureFst(GraphFst):
         unit_plural = pynutil.insert('units: "') + graph_unit_plural + pynutil.insert('"')
         unit_singular_graph = pynutil.insert('units: "') + graph_unit_singular + pynutil.insert('"')
 
-        subgraph_decimal = (
-            decimal.fst
-            + insert_space
-            + pynini.closure(NEMO_SPACE, 0, 1)
-            + unit_plural
-        )
+        subgraph_decimal = decimal.fst + insert_space + pynini.closure(NEMO_SPACE, 0, 1) + unit_plural
 
         subgraph_cardinal = (
             (optional_graph_negative + (NEMO_SIGMA - "1")) @ cardinal.fst
@@ -77,12 +72,7 @@ class MeasureFst(GraphFst):
             + unit_singular_graph
         )
 
-        subgraph_fraction = (
-            fraction.fst
-            + insert_space
-            + pynini.closure(delete_space, 0, 1)
-            + unit_plural
-        )
+        subgraph_fraction = fraction.fst + insert_space + pynini.closure(delete_space, 0, 1) + unit_plural
 
         final_graph = subgraph_decimal | subgraph_cardinal | subgraph_fraction
         self.fst = self.add_tokens(final_graph).optimize()

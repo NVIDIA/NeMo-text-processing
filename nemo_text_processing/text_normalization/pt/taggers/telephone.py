@@ -15,12 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_SPACE,
-    NEMO_WHITE_SPACE,
-    GraphFst,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_SPACE, NEMO_WHITE_SPACE, GraphFst, insert_space
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path
 
 
@@ -62,9 +57,7 @@ class TelephoneFst(GraphFst):
             + pynutil.insert('"')
         )
 
-        area_code = (
-            pynutil.delete("(") + n_digits(2) + pynutil.delete(")")
-        ) | n_digits(2)
+        area_code = (pynutil.delete("(") + n_digits(2) + pynutil.delete(")")) | n_digits(2)
 
         eleven_digit_graph = (
             area_code

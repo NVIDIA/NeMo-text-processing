@@ -42,7 +42,9 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="verbalize", deterministic=deterministic)
 
         hours_unit = (
-            pynutil.delete('units: "') + pynini.union(pynini.accep("hora"), pynini.accep("horas")) + pynutil.delete('"')
+            pynutil.delete('units: "')
+            + pynini.union(pynini.accep("hora"), pynini.accep("horas"))
+            + pynutil.delete('"')
         )
         non_hours_unit = (
             pynutil.delete('units: "')

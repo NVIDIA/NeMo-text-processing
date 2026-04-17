@@ -82,9 +82,7 @@ class MoneyFst(GraphFst):
             graph_maj_plural + pynini.closure(delete_space, 0, 1) + insert_space + decimal_with_quantity,
         )
 
-        graph_integer = (
-            pynutil.insert('integer_part: "') + ((NEMO_SIGMA - "1") @ cardinal_graph) + pynutil.insert('"')
-        )
+        graph_integer = pynutil.insert('integer_part: "') + ((NEMO_SIGMA - "1") @ cardinal_graph) + pynutil.insert('"')
 
         graph_integer_only = pynini.union(
             graph_maj_singular + pynini.closure(delete_space, 0, 1) + insert_space + graph_integer_one,
@@ -126,9 +124,7 @@ class MoneyFst(GraphFst):
             )
 
             graph_fractional = (
-                two_digits_fractional_part
-                @ (pynini.closure(NEMO_DIGIT, 1, 2) - "1")
-                @ cardinal.two_digit_non_zero
+                two_digits_fractional_part @ (pynini.closure(NEMO_DIGIT, 1, 2) - "1") @ cardinal.two_digit_non_zero
             )
             graph_fractional = pynutil.insert('fractional_part: "') + graph_fractional + pynutil.insert('"')
 

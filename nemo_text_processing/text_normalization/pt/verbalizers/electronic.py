@@ -48,11 +48,7 @@ class ElectronicFst(GraphFst):
 
         verbalize_characters = pynini.cdrewrite(graph_symbols | graph_digit, "", "", NEMO_SIGMA)
 
-        user_name = (
-            pynutil.delete('username: "')
-            + add_space_after_char()
-            + pynutil.delete('"')
-        )
+        user_name = pynutil.delete('username: "') + add_space_after_char() + pynutil.delete('"')
         user_name @= verbalize_characters
 
         convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | domain_common | server_common

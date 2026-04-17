@@ -15,12 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_SPACE,
-    GraphFst,
-)
+from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_ALPHA, NEMO_DIGIT, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
 
