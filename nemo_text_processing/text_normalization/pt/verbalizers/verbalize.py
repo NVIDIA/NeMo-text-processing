@@ -17,8 +17,12 @@ from nemo_text_processing.text_normalization.pt.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.pt.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.pt.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.pt.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.pt.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.pt.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.pt.verbalizers.measure import MeasureFst
+from nemo_text_processing.text_normalization.pt.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.pt.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.pt.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.pt.verbalizers.time import TimeFst
 
 
@@ -40,8 +44,23 @@ class VerbalizeFst(GraphFst):
         ordinal = OrdinalFst(deterministic=deterministic)
         fraction = FractionFst(deterministic=deterministic)
         decimal = DecimalFst(deterministic=deterministic)
+        measure = MeasureFst(decimal=decimal, cardinal=cardinal, fraction=fraction, deterministic=deterministic)
+        money = MoneyFst(decimal=decimal, deterministic=deterministic)
         date = DateFst(deterministic=deterministic)
         time = TimeFst(deterministic=deterministic)
-        graph = fraction.fst | decimal.fst | date.fst | time.fst | ordinal.fst | cardinal.fst
+        telephone = TelephoneFst(deterministic=deterministic)
+        electronic = ElectronicFst(deterministic=deterministic)
+        graph = (
+            fraction.fst
+            | decimal.fst
+            | date.fst
+            | time.fst
+            | measure.fst
+            | money.fst
+            | ordinal.fst
+            | cardinal.fst
+            | telephone.fst
+            | electronic.fst
+        )
 
         self.fst = graph

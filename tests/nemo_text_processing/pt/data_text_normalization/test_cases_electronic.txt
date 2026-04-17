@@ -1,0 +1,8 @@
+test@gmail.com~t e s t arroba gmail ponto com
+a.bc@gmail.com~a ponto b c arroba gmail ponto com
+admin@company.com.br~a d m i n arroba c o m p a n y ponto com ponto br
+www.google.com~w w w ponto g o o g l e ponto com
+https://www.nvidia.com~h t t p s dois pontos barra barra w w w ponto nvidia ponto com
+http://site.com.br~h t t p dois pontos barra barra s i t e ponto com ponto br
+nvidia.com~nvidia ponto com
+@usuario~arroba u s u a r i o

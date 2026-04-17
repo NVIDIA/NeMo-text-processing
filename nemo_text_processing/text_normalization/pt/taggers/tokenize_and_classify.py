@@ -31,8 +31,12 @@ from nemo_text_processing.text_normalization.pt.graph_utils import (
 from nemo_text_processing.text_normalization.pt.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.pt.taggers.date import DateFst
 from nemo_text_processing.text_normalization.pt.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.pt.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.pt.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.pt.taggers.measure import MeasureFst
+from nemo_text_processing.text_normalization.pt.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.pt.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.pt.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.pt.taggers.time import TimeFst
 from nemo_text_processing.utils.logging import logger
 
@@ -80,8 +84,12 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal, deterministic=deterministic)
             fraction = FractionFst(cardinal, ordinal, deterministic=deterministic)
             decimal = DecimalFst(cardinal, deterministic=deterministic)
+            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+            money = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
             date = DateFst(cardinal, deterministic=deterministic)
             time = TimeFst(cardinal, deterministic=deterministic)
+            telephone = TelephoneFst(deterministic=deterministic)
+            electronic = ElectronicFst(deterministic=deterministic)
 
             punctuation = PunctuationFst(deterministic=deterministic)
             word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
@@ -89,12 +97,16 @@ class ClassifyFst(GraphFst):
 
             classify = (
                 pynutil.add_weight(whitelist.fst, 1.01)
-                | pynutil.add_weight(date.fst, 1.09)
+                | pynutil.add_weight(date.fst, 1.1)
                 | pynutil.add_weight(time.fst, 1.1)
+                | pynutil.add_weight(measure.fst, 1.1)
                 | pynutil.add_weight(fraction.fst, 1.1)
                 | pynutil.add_weight(decimal.fst, 1.1)
                 | pynutil.add_weight(ordinal.fst, 1.1)
                 | pynutil.add_weight(cardinal.fst, 1.1)
+                | pynutil.add_weight(money.fst, 1.1)
+                | pynutil.add_weight(telephone.fst, 1.11)
+                | pynutil.add_weight(electronic.fst, 1.11)
                 | pynutil.add_weight(word_graph, 100)
             )
 
