@@ -51,9 +51,7 @@ class DecimalFst(GraphFst):
 
         fractional_digits = pynini.closure(NEMO_DIGIT, 1, 15)
         graph_fractional = (
-            pynutil.insert('fractional_part: "')
-            + (fractional_digits @ digit_by_digit)
-            + pynutil.insert('"')
+            pynutil.insert('fractional_part: "') + (fractional_digits @ digit_by_digit) + pynutil.insert('"')
         )
 
         non_zero_lead = pynini.difference(NEMO_DIGIT, pynini.accep("0"))

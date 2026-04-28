@@ -101,20 +101,14 @@ class TelephoneFst(GraphFst):
         # "ramal" -> spoken "ramal …"; "extensão" / "ext." -> spoken "extensão …" (not "ext." letter-by-letter).
         ext_core = n_digits(1) + pynini.closure(insert_space + n_digits(1), 0, 3)
         extension_intro = delete_optional_spaces + (
-            (
-                pynutil.delete("ramal")
-                + delete_optional_spaces
-                + pynutil.insert("ramal ")
-            )
+            (pynutil.delete("ramal") + delete_optional_spaces + pynutil.insert("ramal "))
             | (
                 (pynutil.delete("extensão") | pynutil.delete("ext."))
                 + delete_optional_spaces
                 + pynutil.insert("extensão ")
             )
         )
-        ext_graph = (
-            pynutil.insert('extension: "') + extension_intro + ext_core + pynutil.insert('"')
-        )
+        ext_graph = pynutil.insert('extension: "') + extension_intro + ext_core + pynutil.insert('"')
 
         graph = (
             pynini.closure(country_code_graph + delete_optional_spaces + insert_space, 0, 1)

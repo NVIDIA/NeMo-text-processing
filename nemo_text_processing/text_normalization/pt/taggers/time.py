@@ -36,7 +36,6 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
         cardinal_graph = cardinal.graph.optimize()
@@ -50,9 +49,7 @@ class TimeFst(GraphFst):
         hour_delete_fsts = []
         for h in range(24):
             if h < 10:
-                hour_delete_fsts.append(
-                    pynini.union(pynutil.delete(str(h)), pynutil.delete(f"0{h}")).optimize()
-                )
+                hour_delete_fsts.append(pynini.union(pynutil.delete(str(h)), pynutil.delete(f"0{h}")).optimize())
             else:
                 hour_delete_fsts.append(pynutil.delete(str(h)))
 
@@ -76,16 +73,10 @@ class TimeFst(GraphFst):
         # HMS verbalizer always expects ``minutes`` and ``seconds`` tags; bare ``delete("00")`` omits them.
         zero_word = hour_words[0]
         minutes_zero = (
-            pynutil.delete("00")
-            + pynutil.insert('minutes: "')
-            + pynutil.insert(zero_word)
-            + pynutil.insert('"')
+            pynutil.delete("00") + pynutil.insert('minutes: "') + pynutil.insert(zero_word) + pynutil.insert('"')
         )
         seconds_zero = (
-            pynutil.delete("00")
-            + pynutil.insert('seconds: "')
-            + pynutil.insert(zero_word)
-            + pynutil.insert('"')
+            pynutil.delete("00") + pynutil.insert('seconds: "') + pynutil.insert(zero_word) + pynutil.insert('"')
         )
 
         delete_h = pynini.union(
@@ -161,7 +152,6 @@ class TimeFst(GraphFst):
 
         final_graph = pynini.union(*graph_chunks).optimize()
         self.fst = self.add_tokens(final_graph).optimize()
-
 
     @staticmethod
     def _resolve_suffix_hour(h: int, period_tail: str, allowed: frozenset) -> tuple[bool, int]:

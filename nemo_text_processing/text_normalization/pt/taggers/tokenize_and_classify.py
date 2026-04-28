@@ -18,9 +18,6 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.pt.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.pt.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.pt.taggers.word import WordFst
 from nemo_text_processing.text_normalization.pt.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
@@ -36,8 +33,11 @@ from nemo_text_processing.text_normalization.pt.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.pt.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.pt.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.pt.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.pt.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.pt.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.pt.taggers.time import TimeFst
+from nemo_text_processing.text_normalization.pt.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.pt.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
 
 

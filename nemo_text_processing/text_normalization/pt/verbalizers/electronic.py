@@ -50,9 +50,7 @@ class ElectronicFst(GraphFst):
         verbalize_characters = pynini.cdrewrite(graph_symbols | graph_digit, "", "", NEMO_SIGMA)
 
         # Prefer whole tokens (server names, TLDs, company/common words) over letter-by-letter.
-        user_segment = (
-            pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | server_common | spoken_unit
-        )
+        user_segment = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | server_common | spoken_unit
         user_name = (
             pynutil.delete('username: "')
             + (user_segment + pynini.closure(pynutil.insert(NEMO_SPACE) + user_segment))
