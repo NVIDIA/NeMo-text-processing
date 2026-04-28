@@ -32,20 +32,6 @@ HI_THREE_QUARTERS = "३/४"  # 3/4
 
 
 class FractionFst(GraphFst):
-    """
-    Finite state transducer for classifying fraction
-    "२३ ४/६" ->
-    fraction { integer: "तेईस" numerator: "चार" denominator: "छः"}
-    ४/६" ->
-    fraction { numerator: "चार" denominator: "छः"}
-
-
-    Args:
-        cardinal: cardinal GraphFst
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
-    """
-
     def __init__(self, cardinal, deterministic: bool = True):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
 
@@ -54,14 +40,19 @@ class FractionFst(GraphFst):
         self.optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + pynutil.insert(NEMO_SPACE), 0, 1
         )
+
         self.integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
+
         self.numerator = (
             pynutil.insert("numerator: \"")
             + cardinal_graph
             + pynini.cross(pynini.union("/", NEMO_SPACE + "/" + NEMO_SPACE), "\"")
             + pynutil.insert(NEMO_SPACE)
         )
+
         self.denominator = pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
+
+        # ---------------- EXISTING SPECIAL FORMS ----------------
 
         dedh_dhai_graph = pynini.string_map(
             [("१" + NEMO_SPACE + HI_ONE_HALF, HI_DEDH), ("२" + NEMO_SPACE + HI_ONE_HALF, HI_DHAI)]
@@ -76,6 +67,25 @@ class FractionFst(GraphFst):
         paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
         paune_numbers = paune + pynini.cross(NEMO_SPACE + HI_THREE_QUARTERS, "")
         paune_graph = pynutil.insert(HI_PAUNE) + pynutil.insert(NEMO_SPACE) + paune_numbers
+
+        # ---------------- COMMON FRACTION FORMS ----------------
+
+        common_fraction_map = pynini.string_map([
+            ("१/२", "आधा"),
+            ("१/३", "तिहाई"),
+            ("२/३", "दो तिहाई"),
+            ("१/४", "चौथाई"),
+            ("३/४", "तीन चौथाई"),
+        ])
+
+        graph_common_fraction = (
+            pynutil.insert("morphosyntactic_features: \"")
+            + common_fraction_map
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
+
+        # ---------------- WRAPPING GRAPHS ----------------
 
         graph_dedh_dhai = (
             pynutil.insert("morphosyntactic_features: \"")
@@ -105,6 +115,8 @@ class FractionFst(GraphFst):
             + pynutil.insert(NEMO_SPACE)
         )
 
+        # ---------------- DEFAULT FRACTION ----------------
+
         final_graph = (
             self.optional_graph_negative
             + pynini.closure(self.integer + pynini.accep(NEMO_SPACE), 0, 1)
@@ -112,12 +124,15 @@ class FractionFst(GraphFst):
             + self.denominator
         )
 
+        # ---------------- PRIORITY HANDLING ----------------
+
         weighted_graph = (
             final_graph
+            | pynutil.add_weight(graph_common_fraction, -0.3)  # ensures override of "बटा"
             | pynutil.add_weight(graph_dedh_dhai, -0.2)
+            | pynutil.add_weight(graph_paune, -0.2)
             | pynutil.add_weight(graph_savva, -0.1)
             | pynutil.add_weight(graph_sadhe, -0.1)
-            | pynutil.add_weight(graph_paune, -0.2)
         )
 
         self.graph = weighted_graph
