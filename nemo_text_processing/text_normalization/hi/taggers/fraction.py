@@ -70,13 +70,15 @@ class FractionFst(GraphFst):
 
         # ---------------- COMMON FRACTION FORMS ----------------
 
-        common_fraction_map = pynini.string_map([
-            ("१/२", "आधा"),
-            ("१/३", "तिहाई"),
-            ("२/३", "दो तिहाई"),
-            ("१/४", "चौथाई"),
-            ("३/४", "तीन चौथाई"),
-        ])
+        common_fraction_map = pynini.string_map(
+            [
+                ("१/२", "आधा"),
+                ("१/३", "तिहाई"),
+                ("२/३", "दो तिहाई"),
+                ("१/४", "चौथाई"),
+                ("३/४", "तीन चौथाई"),
+            ]
+        )
 
         graph_common_fraction = (
             pynutil.insert("morphosyntactic_features: \"")
