@@ -45,6 +45,11 @@ NEMO_NON_BREAKING_SPACE = "\u00a0"
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", "\u00a0").optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, pynini.accep('"')).optimize()
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
+NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
+
+MIN_NEG_WEIGHT = -0.0001
+INPUT_CASED = "cased"
+INPUT_LOWER_CASED = "lower_cased"
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")

@@ -26,6 +26,15 @@ class FractionFst(GraphFst):
         fraction { integer_part: "dois" numerator: "três" denominator: "quarto" } -> dois e três quartos
         fraction { numerator: "dois" denominator: "onze" morphosyntactic_features: "avos" } -> dois onze avos
 
+    Denominator routing (set by the tagger, unchanged here):
+
+    * **Ordinal** (``morphosyntactic_features: "ordinal"``): denominators 2–10, 100, 1000 — spoken as
+      ordinals with plural ``s`` on the denominator when the numerator is not ``um`` (``três quartos``).
+    * **Avos** (``… "avos"``): all other positive integer denominators — cardinal denominator + the word
+      ``avos`` (``três onze avos``). Optional ``sobre`` between numerator and denominator is controlled by
+      ``data/fractions/specials.tsv`` key ``avos_between`` (empty = single space; ``sobre`` = ``… sobre …``).
+    * **Mixed** numbers use ``connector`` from the same TSV (default `` e ``) after the integer part.
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple options (used for audio-based normalization)
@@ -40,6 +49,7 @@ class FractionFst(GraphFst):
         minus = spec.get("minus", "menos ").rstrip()
         plural_suffix = spec.get("plural_suffix", "s")
         avos_word = spec.get("avos_suffix", " avos").strip()
+        avos_between = spec.get("avos_between", "").strip()
         numerator_one_val = spec.get("numerator_one", "um")
         denominator_half_val = spec.get("denominator_half", "meio")
 
@@ -74,9 +84,14 @@ class FractionFst(GraphFst):
         fraction_ordinal_plural = numerator_rest + insert_space + denom_ordinal + pynutil.insert(plural_suffix)
         fraction_ordinal = pynini.union(fraction_ordinal_singular, fraction_ordinal_plural)
 
+        if avos_between:
+            avos_mid = insert_space + pynutil.insert(avos_between) + insert_space
+        else:
+            avos_mid = insert_space
+
         fraction_avos = (
             pynini.union(numerator_one, numerator_rest)
-            + insert_space
+            + avos_mid
             + denom_avos
             + insert_space
             + pynutil.insert(avos_word)

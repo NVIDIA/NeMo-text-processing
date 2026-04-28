@@ -18,9 +18,9 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
-from nemo_text_processing.text_normalization.en.taggers.whitelist import WhiteListFst
-from nemo_text_processing.text_normalization.en.taggers.word import WordFst
+from nemo_text_processing.text_normalization.pt.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.pt.taggers.whitelist import WhiteListFst
+from nemo_text_processing.text_normalization.pt.taggers.word import WordFst
 from nemo_text_processing.text_normalization.pt.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,

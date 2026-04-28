@@ -37,7 +37,11 @@ class TelephoneFst(GraphFst):
         # Only strip grouping punctuation between digit blocks; do not delete spaces
         # (deleting spaces would glue spoken digit words together in the output).
         separators = pynini.union("-", ".")
-        delete_separator = pynini.closure(pynutil.delete(separators), 0, 1)
+        # Optional separator after country / prompt (still allow +55 11 …).
+        delete_optional_sep = pynini.closure(pynutil.delete(separators), 0, 1)
+        # Require an explicit separator between local digit blocks so plain long cardinals
+        # (e.g. 3022110709) are not misclassified as telephone.
+        delete_required_separator = pynutil.delete(separators)
         delete_optional_spaces = pynini.closure(pynutil.delete(NEMO_WHITE_SPACE), 0)
 
         def n_digits(n: int):
@@ -53,7 +57,7 @@ class TelephoneFst(GraphFst):
         country_code_graph = (
             pynutil.insert('country_code: "')
             + (country_code | ip_prompts | tel_prompt_sequence)
-            + delete_separator
+            + delete_optional_sep
             + pynutil.insert('"')
         )
 
@@ -64,7 +68,7 @@ class TelephoneFst(GraphFst):
             + delete_optional_spaces
             + insert_space
             + n_digits(5)
-            + delete_separator
+            + delete_required_separator
             + insert_space
             + n_digits(4)
         )
@@ -73,13 +77,13 @@ class TelephoneFst(GraphFst):
             + delete_optional_spaces
             + insert_space
             + n_digits(4)
-            + delete_separator
+            + delete_required_separator
             + insert_space
             + n_digits(4)
         )
-        nine_digit_graph = n_digits(5) + delete_separator + insert_space + n_digits(4)
-        eight_digit_graph = n_digits(4) + delete_separator + insert_space + n_digits(4)
-        seven_digit_graph = n_digits(3) + delete_separator + insert_space + n_digits(4)
+        nine_digit_graph = n_digits(5) + delete_required_separator + insert_space + n_digits(4)
+        eight_digit_graph = n_digits(4) + delete_required_separator + insert_space + n_digits(4)
+        seven_digit_graph = n_digits(3) + delete_required_separator + insert_space + n_digits(4)
 
         digit_to_str_graph = single_digits + pynini.closure(pynutil.insert(" ") + single_digits, 0, 2)
         ip_graph = digit_to_str_graph + (pynini.cross(".", " ponto ") + digit_to_str_graph) ** 3
@@ -94,17 +98,22 @@ class TelephoneFst(GraphFst):
         )
         number_part = pynutil.insert('number_part: "') + number_part + pynutil.insert('"')
 
-        extension_prompt = pynini.string_file(get_abs_path("data/telephone/extension_prompt.tsv"))
-        delete_ext = pynini.cross(pynini.project(extension_prompt, "input"), "")
+        # "ramal" -> spoken "ramal …"; "extensão" / "ext." -> spoken "extensão …" (not "ext." letter-by-letter).
+        ext_core = n_digits(1) + pynini.closure(insert_space + n_digits(1), 0, 3)
+        extension_intro = delete_optional_spaces + (
+            (
+                pynutil.delete("ramal")
+                + delete_optional_spaces
+                + pynutil.insert("ramal ")
+            )
+            | (
+                (pynutil.delete("extensão") | pynutil.delete("ext."))
+                + delete_optional_spaces
+                + pynutil.insert("extensão ")
+            )
+        )
         ext_graph = (
-            pynutil.insert('extension: "')
-            + delete_optional_spaces
-            + delete_ext
-            + delete_optional_spaces
-            + pynutil.insert("ramal ")
-            + n_digits(1)
-            + pynini.closure(insert_space + n_digits(1), 0, 3)
-            + pynutil.insert('"')
+            pynutil.insert('extension: "') + extension_intro + ext_core + pynutil.insert('"')
         )
 
         graph = (

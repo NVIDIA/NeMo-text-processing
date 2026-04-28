@@ -29,6 +29,7 @@ zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
 graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv"))
 server_common = pynini.string_file(get_abs_path("data/electronic/server_name.tsv"))
 domain_common = pynini.string_file(get_abs_path("data/electronic/domain.tsv"))
+spoken_unit = pynini.string_file(get_abs_path("data/electronic/electronic_spoken_unit.tsv"))
 
 
 class ElectronicFst(GraphFst):
@@ -48,10 +49,20 @@ class ElectronicFst(GraphFst):
 
         verbalize_characters = pynini.cdrewrite(graph_symbols | graph_digit, "", "", NEMO_SIGMA)
 
-        user_name = pynutil.delete('username: "') + add_space_after_char() + pynutil.delete('"')
+        # Prefer whole tokens (server names, TLDs, company/common words) over letter-by-letter.
+        user_segment = (
+            pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | server_common | spoken_unit
+        )
+        user_name = (
+            pynutil.delete('username: "')
+            + (user_segment + pynini.closure(pynutil.insert(NEMO_SPACE) + user_segment))
+            + pynutil.delete('"')
+        )
         user_name @= verbalize_characters
 
-        convert_defaults = pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | domain_common | server_common
+        convert_defaults = (
+            pynutil.add_weight(NEMO_NOT_QUOTE, weight=0.0001) | domain_common | server_common | spoken_unit
+        )
         domain = convert_defaults + pynini.closure(pynutil.insert(NEMO_SPACE) + convert_defaults)
         domain @= verbalize_characters
         domain = pynutil.delete('domain: "') + domain + pynutil.delete('"')

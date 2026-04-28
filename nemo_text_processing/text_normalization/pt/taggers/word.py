@@ -1,4 +1,4 @@
-# Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,34 +13,69 @@
 # limitations under the License.
 
 import pynini
+from pynini.examples import plurals
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.vi.graph_utils import NEMO_ALPHA, NEMO_DIGIT, NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.pt.graph_utils import (
+    MIN_NEG_WEIGHT,
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_NOT_SPACE,
+    NEMO_SIGMA,
+    GraphFst,
+    convert_space,
+)
+from nemo_text_processing.text_normalization.pt.utils import get_abs_path
 
 
 class WordFst(GraphFst):
     """
-    Finite state transducer for classifying Vietnamese words.
-        e.g. ngày -> name: "ngày"
-
-    Args:
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
+    Finite state transducer for classifying words (pt-BR pipeline).
+    Same structure as the English word tagger; uses PT data paths and the passed PunctuationFst.
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, punctuation: GraphFst, deterministic: bool = True):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
 
-        # Symbols that should cause token breaks
-        # Include measure symbols, currency symbols, and digits
-        symbols_to_exclude = pynini.union("°", "′", "″", "$", "€", "₩", "£", "¥", "#", "%", "₫", NEMO_DIGIT).optimize()
+        punct = punctuation.graph
+        default_graph = pynini.closure(pynini.difference(NEMO_NOT_SPACE, punct.project("input")), 1)
+        symbols_to_exclude = (pynini.union("$", "€", "₩", "£", "¥", "#", "%") | NEMO_DIGIT).optimize()
+        graph = pynini.closure(pynini.difference(NEMO_NOT_SPACE, symbols_to_exclude), 1)
+        graph = pynutil.add_weight(graph, MIN_NEG_WEIGHT) | default_graph
 
-        word_chars = pynini.closure(pynini.difference(NEMO_NOT_SPACE, symbols_to_exclude), 1)
-        default_word_graph = word_chars
+        phoneme_unit = pynini.closure(NEMO_ALPHA, 1) + pynini.closure(NEMO_DIGIT)
+        phoneme = (
+            pynini.accep(pynini.escape("["))
+            + pynini.closure(phoneme_unit + pynini.accep(" "))
+            + phoneme_unit
+            + pynini.accep(pynini.escape("]"))
+        )
 
-        alpha_word_graph = pynini.closure(NEMO_ALPHA, 1)
+        punct_marks = pynini.union(*punctuation.punct_marks).optimize()
+        stress = pynini.union("ˈ", "'", "ˌ")
+        ipa_phoneme_unit = pynini.string_file(get_abs_path("data/whitelist/ipa_symbols.tsv"))
+        ipa_phonemes = (
+            pynini.closure(stress, 0, 1)
+            + pynini.closure(ipa_phoneme_unit, 1)
+            + pynini.closure(stress | ipa_phoneme_unit)
+        )
+        delim = (punct_marks | pynini.accep(" ")) ** (1, ...)
+        ipa_phonemes = ipa_phonemes + pynini.closure(delim + ipa_phonemes) + pynini.closure(delim, 0, 1)
+        ipa_phonemes = (pynini.accep(pynini.escape("[")) + ipa_phonemes + pynini.accep(pynini.escape("]"))).optimize()
 
-        graph = pynutil.add_weight(alpha_word_graph, -1.0) | default_word_graph
+        if not deterministic:
+            phoneme = (
+                pynini.accep(pynini.escape("["))
+                + pynini.closure(pynini.accep(" "), 0, 1)
+                + pynini.closure(phoneme_unit + pynini.accep(" "))
+                + phoneme_unit
+                + pynini.closure(pynini.accep(" "), 0, 1)
+                + pynini.accep(pynini.escape("]"))
+            ).optimize()
+            ipa_phonemes = (
+                pynini.accep(pynini.escape("[")) + ipa_phonemes + pynini.accep(pynini.escape("]"))
+            ).optimize()
 
-        word = pynutil.insert("name: \"") + graph + pynutil.insert("\"")
-        self.fst = word.optimize()
+        phoneme |= ipa_phonemes
+        self.graph = plurals._priority_union(convert_space(phoneme.optimize()), graph, NEMO_SIGMA)
+        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()

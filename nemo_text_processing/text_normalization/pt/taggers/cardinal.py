@@ -112,6 +112,7 @@ class CardinalFst(GraphFst):
             hundreds
             + pynini.union(
                 (connector_e + graph_tens),
+                (connector_e + pynutil.delete("0") + digit),
                 (connector_e + digit),
             ),
         )

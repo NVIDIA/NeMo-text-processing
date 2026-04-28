@@ -31,7 +31,8 @@ class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money (pt-BR), e.g.
         R$ 12 -> money { currency_maj: "reais" integer_part: "doze" }
-        R$ 12,05 -> money { ... fractional_part: "cinco" currency_min: "centavos" preserve_order: true }
+        R$ 12,05 -> money { currency_maj: "reais" integer_part: "doze" fractional_part: "cinco"
+            currency_min: "centavos" preserve_order: true }
         R$ 0,20 -> money { fractional_part: "vinte" currency_min: "centavos" preserve_order: true }
 
     Args:
