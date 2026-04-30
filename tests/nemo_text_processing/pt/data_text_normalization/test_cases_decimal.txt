@@ -54,3 +54,5 @@
 3,14159~três vírgula um quatro um cinco nove
 1,1234567~um vírgula um dois três quatro cinco seis sete
 3,1415926535~três vírgula um quatro um cinco nove dois seis cinco três cinco
+12,27~doze vírgula dois sete
+87,69~oitenta e sete vírgula seis nove

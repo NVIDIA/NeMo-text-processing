@@ -23,6 +23,7 @@ from nemo_text_processing.text_normalization.pt.graph_utils import (
     delete_preserve_order,
     insert_space,
 )
+from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
 
 class MoneyFst(GraphFst):
@@ -39,6 +40,24 @@ class MoneyFst(GraphFst):
 
     def __init__(self, decimal: GraphFst, deterministic: bool = True):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)
+
+        scales_data = load_labels(get_abs_path("data/numbers/scales.tsv"))
+        currency_plural_data = load_labels(get_abs_path("data/money/currency_major_plural.tsv"))
+
+        scale_words = []
+        for row in scales_data[1:]:
+            if len(row) < 2:
+                continue
+            one_label = row[0].strip()
+            plural = row[1].strip()
+            if not one_label or not plural:
+                continue
+            scale_words.extend((one_label.split()[-1], plural))
+
+        curr_words = [row[1].strip() for row in currency_plural_data if len(row) >= 2 and row[1].strip()]
+
+        scales = pynini.union(*[pynini.accep(w) + NEMO_SPACE for w in scale_words]).optimize()
+        currencies = pynini.union(*curr_words).optimize()
 
         maj = pynutil.delete('currency_maj: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         min_unit = pynutil.delete('currency_min: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
@@ -71,16 +90,6 @@ class MoneyFst(GraphFst):
         graph_minor = fractional_part + NEMO_SPACE + min_unit + delete_preserve_order
 
         graph = graph_integer | graph_integer_with_minor | graph_decimal | graph_minor
-        # um milhão reais -> um milhão de reais (not applied to mil reais)
-        scale_words = ("milhão", "milhões", "bilhão", "bilhões", "trilhão", "trilhões")
-        scales = pynini.union(*[pynini.accep(w) + NEMO_SPACE for w in scale_words])
-        currencies = pynini.union(
-            "reais",
-            "dólares",
-            "euros",
-            "libras esterlinas",
-            "dólares americanos",
-        )
         graph @= pynini.cdrewrite(pynutil.insert("de") + insert_space, scales, currencies, NEMO_SIGMA)
 
         delete_tokens = self.delete_tokens(graph)

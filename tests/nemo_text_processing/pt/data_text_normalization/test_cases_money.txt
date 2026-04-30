@@ -20,3 +20,6 @@ R$ 1000~mil reais
 R$ 1000000~um milhão de reais
 $ 1000~mil dólares
 $ 1000000~um milhão de dólares
+R$ 181809~cento e oitenta e um mil oitocentos e nove reais
+R$ 181819~cento e oitenta e um mil oitocentos e dezenove reais
+R$ 1811605~um milhão oitocentos e onze mil seiscentos e cinco reais
