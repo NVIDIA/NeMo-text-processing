@@ -10,15 +10,20 @@ runtest () {
 
   # read test file
   while read testcase; do
-    IFS='~' read written spoken <<< $testcase
-    norm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1)
+    IFS='~' read -a testcase_tokenized <<< $testcase
+    written=${testcase_tokenized[0]}
+    # only tests against first possible option when there are multiple shortest paths
+    spoken=${testcase_tokenized[1]}
+
+    # replace non breaking space with breaking space
+    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
     # trim white space
     spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    norm_pred="$(echo -e "${norm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
     # input expected actual
-    assertEquals "$written" "$spoken" "$norm_pred"
+    assertEquals "$written" "$spoken" "$denorm_pred"
   done < "$input"
 }
 
@@ -52,30 +57,30 @@ testTNTime() {
   runtest $input
 }
 
-# testTNMeasure() {
-#   input=$PROJECT_DIR/pt/data_text_normalization/test_cases_measure.txt
-#   runtest $input
-# }
+testTNMeasure() {
+  input=$PROJECT_DIR/pt/data_text_normalization/test_cases_measure.txt
+  runtest $input
+}
 
-# testTNMoney() {
-#   input=$PROJECT_DIR/pt/data_text_normalization/test_cases_money.txt
-#   runtest $input
-# }
+testTNMoney() {
+  input=$PROJECT_DIR/pt/data_text_normalization/test_cases_money.txt
+  runtest $input
+}
 
 # testTNWhitelist() {
 #   input=$PROJECT_DIR/pt/data_text_normalization/test_cases_whitelist.txt
 #   runtest $input
 # }
 
-# testTNTelephone() {
-#   input=$PROJECT_DIR/pt/data_text_normalization/test_cases_telephone.txt
-#   runtest $input
-# }
+testTNTelephone() {
+  input=$PROJECT_DIR/pt/data_text_normalization/test_cases_telephone.txt
+  runtest $input
+}
 
-# testTNElectronic() {
-#   input=$PROJECT_DIR/pt/data_text_normalization/test_cases_electronic.txt
-#   runtest $input
-# }
+testTNElectronic() {
+  input=$PROJECT_DIR/pt/data_text_normalization/test_cases_electronic.txt
+  runtest $input
+}
 
 # testTNWord() {
 #   input=$PROJECT_DIR/pt/data_text_normalization/test_cases_word.txt

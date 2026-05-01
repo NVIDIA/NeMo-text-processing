@@ -22,17 +22,17 @@ from nemo_text_processing.text_normalization.pt.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.pt.utils import get_abs_path, load_labels
 
 
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing Portuguese time, e.g.
         time { hours: "catorze" minutes: "trinta" preserve_order: true } -> catorze horas e trinta
-        time { hours: "catorze" minutes: "trinta" seconds: "cinco" preserve_order: true }
-        -> catorze horas e trinta minutos e cinco segundos
+        time { hours: "um" minutes: "trinta" preserve_order: true } -> uma hora e trinta
+        time { hours: "dois" minutes: "quinze" preserve_order: true } -> duas horas e quinze
         time { hours: "onze" suffix: "da manhã" preserve_order: true } -> onze horas da manhã
-        time { hours: "doze" preserve_order: true } -> doze horas
+        time { hours: "vinte e um" minutes: "dezoito" suffix: "da tarde" preserve_order: true }
+            -> vinte e uma horas e dezoito da tarde
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -44,7 +44,6 @@ class TimeFst(GraphFst):
 
         quoted = pynini.closure(NEMO_NOT_QUOTE, 1)
 
-        hours = pynutil.delete('hours: "') + quoted + pynutil.delete('"')
         minutes_val = pynutil.delete('minutes: "') + quoted + pynutil.delete('"')
         seconds_val = pynutil.delete('seconds: "') + quoted + pynutil.delete('"')
         suffix_val = pynutil.delete('suffix: "') + quoted + pynutil.delete('"')
@@ -52,10 +51,48 @@ class TimeFst(GraphFst):
         gap = delete_space + insert_space
         suffix_out = pynini.closure(gap + suffix_val, 0, 1)
 
+        hours_default = pynutil.delete('hours: "') + quoted + pynutil.delete('"') + gap + pynutil.insert("horas")
+        # Match whitespace after the closing quote (same as hours_default's gap) so the path composes
+        # with minutes/suffix fields; otherwise only the generic "… horas" branch accepts the token.
+        hours_um = (
+            pynutil.delete('hours: "')
+            + pynutil.delete("um")
+            + pynutil.delete('"')
+            + delete_space
+            + pynutil.insert("uma hora")
+        )
+        hours_dois = (
+            pynutil.delete('hours: "')
+            + pynutil.delete("dois")
+            + pynutil.delete('"')
+            + delete_space
+            + pynutil.insert("duas horas")
+        )
+        hours_vinte_um = (
+            pynutil.delete('hours: "')
+            + pynutil.delete("vinte e um")
+            + pynutil.delete('"')
+            + delete_space
+            + pynutil.insert("vinte e uma horas")
+        )
+        hours_vinte_dois = (
+            pynutil.delete('hours: "')
+            + pynutil.delete("vinte e dois")
+            + pynutil.delete('"')
+            + delete_space
+            + pynutil.insert("vinte e duas horas")
+        )
+        # Prefer feminine hour phrases over the generic ``… horas`` path (tie-break by weight).
+        hour_phrase = (
+            pynutil.add_weight(hours_um, -0.01)
+            | pynutil.add_weight(hours_dois, -0.01)
+            | pynutil.add_weight(hours_vinte_um, -0.01)
+            | pynutil.add_weight(hours_vinte_dois, -0.01)
+            | hours_default
+        ).optimize()
+
         graph_hms = (
-            hours
-            + gap
-            + pynutil.insert("horas")
+            hour_phrase
             + insert_space
             + pynutil.insert("e")
             + insert_space
@@ -73,19 +110,16 @@ class TimeFst(GraphFst):
         )
 
         with_minutes = (
-            hours
-            + gap
-            + pynutil.insert("horas")
-            + gap
+            hour_phrase
+            + insert_space
             + pynutil.insert("e")
             + insert_space
-            + gap
             + minutes_val
             + suffix_out
             + delete_preserve_order
         )
 
-        hours_only = hours + gap + pynutil.insert("horas") + suffix_out + delete_preserve_order
+        hours_only = hour_phrase + suffix_out + delete_preserve_order
 
         graph = pynini.union(graph_hms, with_minutes, hours_only).optimize()
         self.fst = self.delete_tokens(graph).optimize()

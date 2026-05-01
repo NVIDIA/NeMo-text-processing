@@ -72,9 +72,12 @@ class CardinalFst(GraphFst):
         self.tens = graph_tens.optimize()
         self.two_digit_non_zero = pynini.union(digit, graph_tens, (pynini.cross("0", NEMO_SPACE) + digit)).optimize()
 
+        # After "X00" hundreds (oitocentos, …), suffix "01"-"09" needs leading zero stripped
+        # (graph_tens has no path for "09"; connector+digit only consumes one digit).
         graph_hundreds = hundreds + pynini.union(
             pynutil.delete("00"),
             (connector_e + graph_tens),
+            (connector_e + pynutil.delete("0") + digit),
             (connector_e + digit),
         )
         # "100" -> cem only (cross("1", cento)+delete("00") would also match "100" but
@@ -109,6 +112,7 @@ class CardinalFst(GraphFst):
             hundreds
             + pynini.union(
                 (connector_e + graph_tens),
+                (connector_e + pynutil.delete("0") + digit),
                 (connector_e + digit),
             ),
         )

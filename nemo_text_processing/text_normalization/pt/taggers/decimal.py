@@ -23,11 +23,13 @@ from nemo_text_processing.text_normalization.pt.utils import get_abs_path
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying Portuguese decimal numbers, e.g.
-        "1,26" -> decimal { integer_part: "um" fractional_part: "vinte e seis" }
-        "0,01" -> decimal { integer_part: "zero" fractional_part: "um" } (leading zeros stripped)
-        "1,001" -> decimal { integer_part: "um" fractional_part: "mil e um" } (data: decimal_fractional_specials)
+        "1,26" -> decimal { integer_part: "um" fractional_part: "dois seis" }
+        "0,01" -> decimal { integer_part: "zero" fractional_part: "zero um" }
         "-1,26" -> decimal { negative: "true" ... }
         "1,33 milhões" / "1 milhão" -> decimal { ... quantity: "milhões" / "milhão" }
+
+    The fractional mantissa (after the comma) is always read digit-by-digit (0–9),
+    including leading zeros. Integer part and quantities still use cardinals.
 
     Args:
         cardinal: CardinalFst instance for integer verbalization in tags.
@@ -44,56 +46,28 @@ class DecimalFst(GraphFst):
         quantity_words = _num("quantity_words.tsv")
         digit = _num("digit.tsv")
         zero = _num("zero.tsv")
-        fractional_specials = _num("decimal_fractional_specials.tsv")
         graph_digit_or_zero = pynini.union(digit, zero)
         digit_by_digit = (graph_digit_or_zero + pynini.closure(insert_space + graph_digit_or_zero)).optimize()
 
-        # Fractional: strip leading zeros → rest @ cardinal; all zeros → "zero"
-        delete_leading_zero = pynini.cross("0", "")
-        rest = pynini.difference(NEMO_DIGIT, pynini.accep("0")) + pynini.closure(NEMO_DIGIT, 0)
-        with_rest = (pynini.closure(delete_leading_zero, 0) + rest) @ (pynini.closure(NEMO_DIGIT, 1) @ cardinal_graph)
-        only_zeros = pynini.closure(delete_leading_zero, 1) + pynini.cross("0", "zero")
-        fractional_strip = pynini.union(with_rest, only_zeros).optimize()
-        # Prefer specials (001→mil e um, 010→mil e dez, 100→mil e cem) over strip when both match
-        fractional_with_specials = pynini.union(
-            pynutil.add_weight(fractional_specials, -0.01),
-            fractional_strip,
-        ).optimize()
+        fractional_digits = pynini.closure(NEMO_DIGIT, 1, 15)
+        graph_fractional = (
+            pynutil.insert('fractional_part: "') + (fractional_digits @ digit_by_digit) + pynutil.insert('"')
+        )
 
-        fractional_short = pynini.closure(NEMO_DIGIT, 1, 9)
-        fractional_long = pynini.closure(NEMO_DIGIT, 10, 15)
         non_zero_lead = pynini.difference(NEMO_DIGIT, pynini.accep("0"))
 
-        # Integer "0" → fractional strip only (no specials)
         graph_integer_zero = (
             pynutil.insert('integer_part: "') + pynini.cross("0", "zero") + pynutil.insert('"') + insert_space
         )
-        graph_fractional_zero = (
-            pynutil.insert('fractional_part: "')
-            + pynini.union(
-                fractional_short @ fractional_strip,
-                fractional_long @ digit_by_digit,
-            )
-            + pynutil.insert('"')
-        )
-        decimal_when_zero = graph_integer_zero + comma + insert_space + graph_fractional_zero
+        decimal_when_zero = graph_integer_zero + comma + insert_space + graph_fractional
 
-        # Integer non-zero → fractional: specials | strip + cardinal | digit-by-digit
         graph_integer_pos = (
             pynutil.insert('integer_part: "')
             + (non_zero_lead + pynini.closure(NEMO_DIGIT, 0, 11)) @ cardinal_graph
             + pynutil.insert('"')
             + insert_space
         )
-        graph_fractional_pos = (
-            pynutil.insert('fractional_part: "')
-            + pynini.union(
-                fractional_short @ fractional_with_specials,
-                fractional_long @ digit_by_digit,
-            )
-            + pynutil.insert('"')
-        )
-        decimal_when_pos = graph_integer_pos + comma + insert_space + graph_fractional_pos
+        decimal_when_pos = graph_integer_pos + comma + insert_space + graph_fractional
 
         decimal_core = pynini.union(decimal_when_zero, decimal_when_pos)
         integer_quantity = (

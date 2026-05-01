@@ -115,3 +115,7 @@
 1000001~um milhão e um
 1001100~um milhão mil e cem
 1001110~um milhão mil cento e dez
+47701~quarenta e sete mil setecentos e um
+394506~trezentos e noventa e quatro mil quinhentos e seis
+3022110709~três bilhões vinte e dois milhões cento e dez mil setecentos e nove
+302210709~trezentos e dois milhões duzentos e dez mil setecentos e nove

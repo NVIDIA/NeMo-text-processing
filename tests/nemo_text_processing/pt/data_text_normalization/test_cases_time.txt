@@ -17,8 +17,14 @@
 00h~zero horas
 12h30~doze horas e trinta
 14:30:05~catorze horas e trinta minutos e cinco segundos
+09:00:31~nove horas e zero minutos e trinta e um segundos
+14:30:00~catorze horas e trinta minutos e zero segundos
+09:00:00~nove horas e zero minutos e zero segundos
 11:00 da manhã~onze horas da manhã
 3:30 da tarde~três horas e trinta da tarde
-15h da tarde~quinze horas da tarde
-16:00 da tarde~dezesseis horas da tarde
-14:30:05 da tarde~catorze horas e trinta minutos e cinco segundos da tarde
+15h da tarde~três horas da tarde
+16:00 da tarde~quatro horas da tarde
+14:30:05 da tarde~duas horas e trinta minutos e cinco segundos da tarde
+21:18:14 da manhã~vinte e uma horas e dezoito minutos e catorze segundos da manhã
+23:18 da tarde~vinte e três horas e dezoito da tarde
+22h09 da tarde~vinte e duas horas e nove da tarde
