@@ -110,24 +110,36 @@ class DateFst(GraphFst):
 
         unambiguous_ascii = pynini.union(*[str(i) for i in range(13, 32)])
         unambiguous_deva = pynini.union(
-            "१३", "१४", "१५", "१६", "१७", "१८", "१९",
-            "२०", "२१", "२२", "२३", "२४", "२५", "२६", "२७", "२८", "२९",
-            "३०", "३१",
+            "१३",
+            "१४",
+            "१५",
+            "१६",
+            "१७",
+            "१८",
+            "१९",
+            "२०",
+            "२१",
+            "२२",
+            "२३",
+            "२४",
+            "२५",
+            "२६",
+            "२७",
+            "२८",
+            "२९",
+            "३०",
+            "३१",
         )
         unambiguous_inputs = pynini.union(unambiguous_ascii, unambiguous_deva)
         unambiguous_day_num = pynini.compose(unambiguous_inputs, days)
 
-        unambiguous_days_graph = (
-            pynutil.insert("day: \"") + unambiguous_day_num + pynutil.insert("\"") + insert_space
-        )
+        unambiguous_days_graph = pynutil.insert("day: \"") + unambiguous_day_num + pynutil.insert("\"") + insert_space
 
         month_name_acceptor = pynini.project(months, "output")
 
         months_numeric_fst = months
 
-        months_graph_numeric = (
-            pynutil.insert("month: \"") + months_numeric_fst + pynutil.insert("\"") + insert_space
-        )
+        months_graph_numeric = pynutil.insert("month: \"") + months_numeric_fst + pynutil.insert("\"") + insert_space
 
         months_fst = pynini.union(months_numeric_fst, month_name_acceptor)
         months_graph = pynutil.insert("month: \"") + months_fst + pynutil.insert("\"") + insert_space
@@ -181,9 +193,7 @@ class DateFst(GraphFst):
         graph_mm_dd = months_graph + delete_numeric_sep + unambiguous_days_graph
         graph_mm_dd += pynutil.insert(" preserve_order: true ")
 
-        graph_dd_mm_yyyy = (
-            days_graph_with_year + delete_numeric_sep + months_graph + delete_numeric_sep + years_graph
-        )
+        graph_dd_mm_yyyy = days_graph_with_year + delete_numeric_sep + months_graph + delete_numeric_sep + years_graph
 
         graph_mm_dd_yyyy = (
             months_graph + delete_numeric_sep + unambiguous_days_graph + delete_numeric_sep + years_graph
