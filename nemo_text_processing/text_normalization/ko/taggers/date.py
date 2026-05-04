@@ -226,8 +226,7 @@ class DateFst(GraphFst):
                 + insert_space
                 + pynutil.insert("year: \"")
                 + (YEAR_ERA_1TO4 @ graph_cardinal)
-                + pynutil.delete("년")
-                + pynutil.insert("년")
+                + pynini.accep("년")
                 + pynutil.insert("\"")
             )
             |
@@ -235,27 +234,26 @@ class DateFst(GraphFst):
             (
                 pynutil.insert("year: \"")
                 + (YEAR_NO_ERA_1TO4 @ graph_cardinal)
-                + pynutil.delete("년")
-                + pynutil.insert("년")
+                + pynini.accep("년")
                 + pynutil.insert("\"")
             )
         ).optimize()
 
         individual_month_component = (
-            pynutil.insert("month: \"")
-            + month_cardinal
-            + pynutil.delete("월")
-            + pynutil.insert("월")
-            + pynutil.insert("\"")
+            pynutil.insert("month: \"") + month_cardinal + pynini.accep("월") + pynutil.insert("\"")
         )
 
-        individual_day_component = (
-            pynutil.insert("day: \"")
-            + cardinal_lz
-            + pynutil.delete("일")
-            + pynutil.insert("일")
-            + pynutil.insert("\"")
-        )
+        month_josa = pynini.union("에", "은", "는", "에는")
+
+        individual_month_component_with_josa = (
+            pynutil.insert('month: "')
+            + month_cardinal
+            + pynini.accep("월")
+            + pynini.closure(month_josa, 0, 1)
+            + pynutil.insert('"')
+        ).optimize()
+
+        individual_day_component = pynutil.insert("day: \"") + cardinal_lz + pynini.accep("일") + pynutil.insert("\"")
 
         week_full_word_acceptor = pynini.project(week, "output")
         week_component_full_word = pynutil.insert("weekday: \"") + week_full_word_acceptor + pynutil.insert("\"")
@@ -272,6 +270,7 @@ class DateFst(GraphFst):
             day_and_weekday_component
             | month_and_weekday_component
             | individual_year_component
+            | individual_month_component_with_josa
             | individual_month_component
             | individual_day_component
             | week_component
