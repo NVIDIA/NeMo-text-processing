@@ -53,7 +53,6 @@ class DateFst(GraphFst):
     """
     Finite state transducer for classifying date, e.g.
         "०१-०४-२०२४" -> date { day: "एक" month: "अप्रैल" year: "दो हज़ार चौबीस" }
-        "०४-०१-२०२४" -> date { month: "अप्रैल" day: "एक" year: "दो हज़ार चौबीस" }
         "६ मार्च, २०१०" -> date { day: "छह" month: "मार्च" year: "दो हज़ार दस" }
         "३१ मई, १९९० ई." -> date { day: "इकतीस" month: "मई" year: "उन्नीस सौ नब्बे" era: "ईसवी" }
         "उन्नीस सौ बीस में" -> date { era: "उन्नीस सौ बीस में" }
@@ -110,25 +109,9 @@ class DateFst(GraphFst):
 
         unambiguous_ascii = pynini.union(*[str(i) for i in range(13, 32)])
         unambiguous_deva = pynini.union(
-            "१३",
-            "१४",
-            "१५",
-            "१६",
-            "१७",
-            "१८",
-            "१९",
-            "२०",
-            "२१",
-            "२२",
-            "२३",
-            "२४",
-            "२५",
-            "२६",
-            "२७",
-            "२८",
-            "२९",
-            "३०",
-            "३१",
+            "१३", "१४", "१५", "१६", "१७", "१८", "१९",
+            "२०", "२१", "२२", "२३", "२४", "२५", "२६", "२७", "२८", "२९",
+            "३०", "३१",
         )
         unambiguous_inputs = pynini.union(unambiguous_ascii, unambiguous_deva)
         unambiguous_day_num = pynini.compose(unambiguous_inputs, days)
