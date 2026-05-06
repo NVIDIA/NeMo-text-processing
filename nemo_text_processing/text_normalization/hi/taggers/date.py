@@ -48,12 +48,8 @@ verbalized_year_sou = (
     verbalized_hundreds + pynini.accep(" सौ") + pynini.closure(pynini.accep(" ") + verbalized_unit, 0, 1)
 )
 
-pad_latin = pynini.union(
-    *[pynini.cross(str(i), f"0{i}") for i in range(1, 10)]
-)
-pad_devanagari = pynini.union(
-    *[pynini.cross(d, f"०{d}") for d in "१२३४५६७८९"]
-)
+pad_latin = pynini.union(*[pynini.cross(str(i), f"0{i}") for i in range(1, 10)])
+pad_devanagari = pynini.union(*[pynini.cross(d, f"०{d}") for d in "१२३४५६७८९"])
 
 
 class DateFst(GraphFst):
@@ -130,18 +126,12 @@ class DateFst(GraphFst):
         )
 
         months_fst_padded = pynini.union(months_numeric_padded, month_name_acceptor)
-        months_graph_padded = (
-            pynutil.insert("month: \"") + months_fst_padded + pynutil.insert("\"") + insert_space
-        )
+        months_graph_padded = pynutil.insert("month: \"") + months_fst_padded + pynutil.insert("\"") + insert_space
 
         months_fst_bare = pynini.union(months_numeric_bare, month_name_acceptor)
-        months_graph_bare = (
-            pynutil.insert("month: \"") + months_fst_bare + pynutil.insert("\"") + insert_space
-        )
+        months_graph_bare = pynutil.insert("month: \"") + months_fst_bare + pynutil.insert("\"") + insert_space
 
-        month_name_graph = (
-            pynutil.insert("month: \"") + month_name_acceptor + pynutil.insert("\"") + insert_space
-        )
+        month_name_graph = pynutil.insert("month: \"") + month_name_acceptor + pynutil.insert("\"") + insert_space
 
         years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
 
@@ -191,13 +181,9 @@ class DateFst(GraphFst):
 
         graph_d_m = days_graph_bare + delete_dash + months_graph_bare
 
-        graph_dd_mm_yyyy = (
-            days_graph_padded + delete_dash + months_graph_padded + delete_dash + years_graph
-        )
+        graph_dd_mm_yyyy = days_graph_padded + delete_dash + months_graph_padded + delete_dash + years_graph
 
-        graph_d_m_yyyy = (
-            days_graph_bare + delete_dash + months_graph_bare + delete_dash + years_graph
-        )
+        graph_d_m_yyyy = days_graph_bare + delete_dash + months_graph_bare + delete_dash + years_graph
 
         graph_dd_month = days_graph_padded + delete_space + months_graph_numeric_padded
 
