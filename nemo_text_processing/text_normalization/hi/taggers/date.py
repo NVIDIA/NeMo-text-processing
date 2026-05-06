@@ -48,6 +48,13 @@ verbalized_year_sou = (
     verbalized_hundreds + pynini.accep(" सौ") + pynini.closure(pynini.accep(" ") + verbalized_unit, 0, 1)
 )
 
+pad_latin = pynini.union(
+    *[pynini.cross(str(i), f"0{i}") for i in range(1, 10)]
+)
+pad_devanagari = pynini.union(
+    *[pynini.cross(d, f"०{d}") for d in "१२३४५६७८९"]
+)
+
 
 class DateFst(GraphFst):
     """
@@ -56,8 +63,7 @@ class DateFst(GraphFst):
         "६ मार्च, २०१०" -> date { day: "छह" month: "मार्च" year: "दो हज़ार दस" }
         "३१ मई, १९९० ई." -> date { day: "इकतीस" month: "मई" year: "उन्नीस सौ नब्बे" era: "ईसवी" }
         "उन्नीस सौ बीस में" -> date { era: "उन्नीस सौ बीस में" }
-        "०३-२०१०" -> date { month: "मार्च" year: "दो हज़ार दस" }
-        "11-2024" -> date { month: "नवंबर" year: "दो हज़ार चौबीस" }
+        "02-07-1970" -> date { day: "दो" month: "जुलाई" year: "उन्नीस सौ सत्तर" }
 
     Args:
         cardinal: cardinal GraphFst
@@ -92,56 +98,50 @@ class DateFst(GraphFst):
         )
 
         delete_dash = pynutil.delete("-")
-        delete_slash = pynutil.delete("/")
         delete_comma = pynutil.delete(",")
         delete_space = pynutil.delete(" ")
         delete_optional_space = pynini.closure(pynutil.delete(" "), 0, 1)
         delete_comma_sep = delete_comma + delete_optional_space
-        delete_numeric_sep = pynini.union(delete_dash, delete_slash)
 
-        day_num = pynini.union(
+        day_num_padded = pynini.union(
             days,
             teens_and_ties,
         )
 
-        days_graph = pynutil.insert("day: \"") + day_num + pynutil.insert("\"") + insert_space
-        days_graph_with_year = days_graph
-
-        unambiguous_ascii = pynini.union(*[str(i) for i in range(13, 32)])
-        unambiguous_deva = pynini.union(
-            "१३",
-            "१४",
-            "१५",
-            "१६",
-            "१७",
-            "१८",
-            "१९",
-            "२०",
-            "२१",
-            "२२",
-            "२३",
-            "२४",
-            "२५",
-            "२६",
-            "२७",
-            "२८",
-            "२९",
-            "३०",
-            "३१",
+        day_num_bare = pynini.union(
+            pynini.compose(pad_latin, days),
+            pynini.compose(pad_devanagari, days),
         )
-        unambiguous_inputs = pynini.union(unambiguous_ascii, unambiguous_deva)
-        unambiguous_day_num = pynini.compose(unambiguous_inputs, days)
 
-        unambiguous_days_graph = pynutil.insert("day: \"") + unambiguous_day_num + pynutil.insert("\"") + insert_space
+        days_graph_padded = pynutil.insert("day: \"") + day_num_padded + pynutil.insert("\"") + insert_space
+        days_graph_bare = pynutil.insert("day: \"") + day_num_bare + pynutil.insert("\"") + insert_space
 
         month_name_acceptor = pynini.project(months, "output")
 
-        months_numeric_fst = months
+        months_numeric_padded = months
 
-        months_graph_numeric = pynutil.insert("month: \"") + months_numeric_fst + pynutil.insert("\"") + insert_space
+        months_numeric_bare = pynini.union(
+            pynini.compose(pad_latin, months),
+            pynini.compose(pad_devanagari, months),
+        )
 
-        months_fst = pynini.union(months_numeric_fst, month_name_acceptor)
-        months_graph = pynutil.insert("month: \"") + months_fst + pynutil.insert("\"") + insert_space
+        months_graph_numeric_padded = (
+            pynutil.insert("month: \"") + months_numeric_padded + pynutil.insert("\"") + insert_space
+        )
+
+        months_fst_padded = pynini.union(months_numeric_padded, month_name_acceptor)
+        months_graph_padded = (
+            pynutil.insert("month: \"") + months_fst_padded + pynutil.insert("\"") + insert_space
+        )
+
+        months_fst_bare = pynini.union(months_numeric_bare, month_name_acceptor)
+        months_graph_bare = (
+            pynutil.insert("month: \"") + months_fst_bare + pynutil.insert("\"") + insert_space
+        )
+
+        month_name_graph = (
+            pynutil.insert("month: \"") + month_name_acceptor + pynutil.insert("\"") + insert_space
+        )
 
         years_graph = pynutil.insert("year: \"") + graph_year + pynutil.insert("\"") + insert_space
 
@@ -187,31 +187,33 @@ class DateFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        graph_dd_mm = days_graph + delete_numeric_sep + months_graph
+        graph_dd_mm = days_graph_padded + delete_dash + months_graph_padded
 
-        graph_mm_dd = months_graph + delete_numeric_sep + unambiguous_days_graph
-        graph_mm_dd += pynutil.insert(" preserve_order: true ")
+        graph_d_m = days_graph_bare + delete_dash + months_graph_bare
 
-        graph_dd_mm_yyyy = days_graph_with_year + delete_numeric_sep + months_graph + delete_numeric_sep + years_graph
-
-        graph_mm_dd_yyyy = (
-            months_graph + delete_numeric_sep + unambiguous_days_graph + delete_numeric_sep + years_graph
+        graph_dd_mm_yyyy = (
+            days_graph_padded + delete_dash + months_graph_padded + delete_dash + years_graph
         )
-        graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
 
-        graph_dd_month = days_graph + delete_space + months_graph_numeric
+        graph_d_m_yyyy = (
+            days_graph_bare + delete_dash + months_graph_bare + delete_dash + years_graph
+        )
 
-        graph_dd_month_comma_yyyy = days_graph + delete_space + months_graph + delete_comma_sep + years_graph
+        graph_dd_month = days_graph_padded + delete_space + months_graph_numeric_padded
+
+        graph_dd_month_comma_yyyy = (
+            days_graph_padded + delete_space + months_graph_padded + delete_comma_sep + years_graph
+        )
 
         graph_dd_month_comma_yyyy_era = (
-            days_graph + delete_space + months_graph + delete_comma_sep + years_graph + era_graph
+            days_graph_padded + delete_space + months_graph_padded + delete_comma_sep + years_graph + era_graph
         )
 
-        graph_month_comma_yyyy = months_graph + delete_comma_sep + years_graph
+        graph_month_comma_yyyy = months_graph_padded + delete_comma_sep + years_graph
 
-        graph_month_comma_yyyy_era = months_graph + delete_comma_sep + years_graph + era_graph
+        graph_month_comma_yyyy_era = months_graph_padded + delete_comma_sep + years_graph + era_graph
 
-        graph_mm_yyyy = months_graph + pynini.union(delete_space, delete_dash) + years_graph
+        graph_month_name_yyyy = month_name_graph + delete_space + years_graph
 
         graph_year_era_only = (
             pynutil.insert("era: \"")
@@ -239,12 +241,12 @@ class DateFst(GraphFst):
             pynutil.add_weight(graph_dd_month_comma_yyyy_era, -0.003)
             | pynutil.add_weight(graph_month_comma_yyyy_era, -0.003)
             | pynutil.add_weight(graph_dd_mm_yyyy, -0.001)
-            | graph_mm_dd_yyyy
+            | pynutil.add_weight(graph_d_m_yyyy, -0.001)
             | pynutil.add_weight(graph_dd_month_comma_yyyy, -0.001)
             | pynutil.add_weight(graph_dd_mm, -0.001)
+            | pynutil.add_weight(graph_d_m, -0.001)
             | pynutil.add_weight(graph_dd_month, -0.001)
-            | graph_mm_dd
-            | pynutil.add_weight(graph_mm_yyyy, -0.2)
+            | pynutil.add_weight(graph_month_name_yyyy, -0.2)
             | pynutil.add_weight(graph_month_comma_yyyy, -0.2)
             | pynutil.add_weight(graph_year_era_only, -0.005)
             | pynutil.add_weight(graph_range, -0.005)
