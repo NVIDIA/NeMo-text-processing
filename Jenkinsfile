@@ -17,7 +17,7 @@ pipeline {
     ES_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-30-24-0'
     FR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-07-25-0'
     HU_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-16-24-0'
-    PT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
+    PT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/05-01-26-1'
     RU_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-29-25-0'
     SV_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
@@ -242,16 +242,16 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=sv --text="100" --cache_dir ${SV_TN_CACHE}'
           }
         }
-      //  stage('L0: SV ITN grammars') {
-      //    steps {
-      //      sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=sv --text="hundra " --cache_dir ${SV_TN_CACHE}'
-      //    }
-      //  }
-      // stage('L0: PT TN grammars') {
-       //  steps {
-       //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=pt --text="2" --cache_dir ${DEFAULT_TN_CACHE}'
-       //   }
-       // }
+        // stage('L0: SV ITN grammars') {
+        //   steps {
+        //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=sv --text="hundra " --cache_dir ${SV_TN_CACHE}'
+        //   }
+        // }
+        stage('L0: PT TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=pt --text="2" --cache_dir ${PT_TN_CACHE}'
+          }
+        }
         stage('L0: PT ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=pt --text="dez " --cache_dir ${PT_TN_CACHE}'
