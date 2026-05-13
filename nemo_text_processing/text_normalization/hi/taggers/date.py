@@ -34,13 +34,11 @@ teens_ties = pynini.union(teens_ties_hi, teens_ties_en)
 teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
 with open(get_abs_path("data/date/suffixes.tsv"), "r", encoding="utf-8") as f:
-    suffixes_list = [line.rstrip("\n") for line in f if line.strip()]
+    suffix_union = pynini.string_map([line.rstrip("\n") for line in f if line.strip()])
+
 with open(get_abs_path("data/date/prefixes.tsv"), "r", encoding="utf-8") as f:
-    prefixes_list = [line.rstrip("\n") for line in f if line.strip()]
-
-suffix_union = pynini.union(*suffixes_list)
-prefix_union = pynini.union(*prefixes_list)
-
+    prefix_union = pynini.string_map([line.rstrip("\n") for line in f if line.strip()])
+    
 verbalized_hundreds = teens_ties_hi.project("output")
 verbalized_unit = pynini.union(verbalized_hundreds, digit.project("output"))
 
