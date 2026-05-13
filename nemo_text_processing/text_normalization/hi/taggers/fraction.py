@@ -26,9 +26,9 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
 )
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
-HI_ONE_HALF = "१/२"  
-HI_ONE_QUARTER = "१/४"  
-HI_THREE_QUARTERS = "३/४"  
+HI_ONE_HALF = "१/२"
+HI_ONE_QUARTER = "१/४"
+HI_THREE_QUARTERS = "३/४"
 
 
 class FractionFst(GraphFst):
@@ -81,7 +81,7 @@ class FractionFst(GraphFst):
         paune_graph = pynutil.insert(HI_PAUNE) + pynutil.insert(NEMO_SPACE) + paune_numbers
 
         common_fraction_map = pynini.string_file(get_abs_path("data/fraction/common_fractions.tsv"))
-        
+
         graph_common_fraction = (
             pynutil.insert("morphosyntactic_features: \"")
             + common_fraction_map
