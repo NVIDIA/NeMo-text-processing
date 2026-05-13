@@ -38,7 +38,7 @@ with open(get_abs_path("data/date/suffixes.tsv"), "r", encoding="utf-8") as f:
 
 with open(get_abs_path("data/date/prefixes.tsv"), "r", encoding="utf-8") as f:
     prefix_union = pynini.string_map([line.rstrip("\n") for line in f if line.strip()])
-    
+
 verbalized_hundreds = teens_ties_hi.project("output")
 verbalized_unit = pynini.union(verbalized_hundreds, digit.project("output"))
 
