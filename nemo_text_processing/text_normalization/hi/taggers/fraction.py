@@ -80,23 +80,8 @@ class FractionFst(GraphFst):
         paune_numbers = paune + pynini.cross(NEMO_SPACE + HI_THREE_QUARTERS, "")
         paune_graph = pynutil.insert(HI_PAUNE) + pynutil.insert(NEMO_SPACE) + paune_numbers
 
-<<<<<<< HEAD
-        # ---------------- COMMON FRACTION FORMS ----------------
-
-        common_fraction_map = pynini.string_map(
-            [
-                ("१/२", "आधा"),
-                ("१/३", "तिहाई"),
-                ("२/३", "दो तिहाई"),
-                ("१/४", "चौथाई"),
-                ("३/४", "तीन चौथाई"),
-            ]
-        )
-
-=======
         common_fraction_map = pynini.string_file(get_abs_path("data/fraction/common_fractions.tsv"))
         
->>>>>>> 9f8266e4 (move common fraction mappings to TSV and add ASCII digit support)
         graph_common_fraction = (
             pynutil.insert("morphosyntactic_features: \"")
             + common_fraction_map
