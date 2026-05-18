@@ -14,6 +14,7 @@
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.text_normalization.es.taggers.address import AddressUSSurfaceFst
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_NON_BREAKING_SPACE,
@@ -199,6 +200,13 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\" } preserve_order: true")
         )
 
+        address_us_es_inner = AddressUSSurfaceFst(cardinal, deterministic=deterministic).graph
+        address_us_es = (
+            pynutil.insert('units: "address_us_es" cardinal { integer: "')
+            + address_us_es_inner
+            + pynutil.insert('" } preserve_order: true')
+        )
+
         final_graph = (
             subgraph_decimal
             | subgraph_cardinal
@@ -210,6 +218,7 @@ class MeasureFst(GraphFst):
             | cardinal_times
             | alpha_dash_decimal
             | math
+            | address_us_es
         )
         final_graph = self.add_tokens(final_graph)
 

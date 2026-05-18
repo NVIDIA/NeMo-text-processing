@@ -169,6 +169,10 @@ class CardinalFst(GraphFst):
 
         self.graph = filter_punctuation(self.graph).optimize()
 
+        self.graph_hundreds_component_at_least_one_none_zero_digit = (
+            graph_hundreds_component_at_least_one_none_zero_digit.optimize()
+        )
+
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")

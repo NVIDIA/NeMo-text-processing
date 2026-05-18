@@ -23,6 +23,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_preserve_order,
     delete_space,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.es.graph_utils import ones
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
@@ -65,12 +66,26 @@ class MeasureFst(GraphFst):
             NEMO_WHITE_SPACE + "por" + pynini.closure(NEMO_NOT_QUOTE, 1), 0, 1
         )
         unit_masc |= "por" + pynini.closure(NEMO_NOT_QUOTE, 1)
-        unit_masc = pynutil.delete("units: \"") + (pynini.closure(NEMO_NOT_QUOTE) @ unit_masc) + pynutil.delete("\"")
+        unit_masc = (
+            pynutil.delete("units: \"")
+            + (
+                pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.union("math", "address_us_es"))
+                @ unit_masc
+            )
+            + pynutil.delete("\"")
+        )
 
         unit_fem = (unit_plural_fem | unit_singular_fem) + pynini.closure(
             NEMO_WHITE_SPACE + "por" + pynini.closure(NEMO_NOT_QUOTE, 1), 0, 1
         )
-        unit_fem = pynutil.delete("units: \"") + (pynini.closure(NEMO_NOT_QUOTE) @ unit_fem) + pynutil.delete("\"")
+        unit_fem = (
+            pynutil.delete("units: \"")
+            + (
+                pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.union("math", "address_us_es"))
+                @ unit_fem
+            )
+            + pynutil.delete("\"")
+        )
 
         graph_masc = (graph_cardinal_masc | graph_decimal_masc) + NEMO_WHITE_SPACE + unit_masc
         graph_masc |= graph_fraction_masc + NEMO_WHITE_SPACE + pynutil.insert("de ") + unit_masc
@@ -96,7 +111,11 @@ class MeasureFst(GraphFst):
         graph @= pynini.cdrewrite(pynini.cross(ones, "uno"), "", NEMO_WHITE_SPACE + "por", NEMO_SIGMA)
 
         # To manage alphanumeric combonations ("a-8, 5x"), we let them use a weighted default path.
-        alpha_num_unit = pynutil.delete("units: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        alpha_num_unit = (
+            pynutil.delete("units: \"")
+            + pynini.difference(pynini.closure(NEMO_NOT_QUOTE), pynini.union("math", "address_us_es"))
+            + pynutil.delete("\"")
+        )
         graph_alpha_num = pynini.union(
             (graph_cardinal_masc | graph_decimal_masc) + NEMO_SPACE + alpha_num_unit,
             alpha_num_unit + delete_extra_space + (graph_cardinal_masc | graph_decimal_masc),
@@ -106,8 +125,25 @@ class MeasureFst(GraphFst):
             pynutil.delete("units: \"math\"") + delete_space + graph_cardinal_masc + delete_space, -1
         )
 
+        preserve_order_tail = (
+            pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
+        )
+        address_us_es = (
+            pynutil.delete('units: "address_us_es" ')
+            + delete_space
+            + pynutil.delete("cardinal { integer: \"")
+            + delete_space
+            + pynini.closure(NEMO_NOT_QUOTE)
+            + pynutil.delete("\"")
+            + delete_space
+            + pynutil.delete("}")
+            + delete_space
+            + pynini.closure(preserve_order_tail)
+        )
+
         graph |= pynutil.add_weight(graph_alpha_num, 0.01)
         graph |= math
+        graph |= address_us_es
 
         graph += delete_preserve_order
 
