@@ -64,7 +64,7 @@ class AddressUSSurfaceFst(GraphFst):
         graph_apt_designator = pynini.string_file(get_abs_path("data/address/apt_designator.tsv"))
         graph_unit_designator = pynini.string_file(get_abs_path("data/address/unit_designator.tsv"))
         graph_po_box = pynini.string_file(get_abs_path("data/address/po_box.tsv"))
-        
+
         en_cardinal = EnCardinalFst(deterministic=deterministic)
         g = cardinal.graph
 
@@ -128,12 +128,8 @@ class AddressUSSurfaceFst(GraphFst):
         )
         tail = pynini.closure(city + state + zip_code, 0, 1).optimize()
 
-        suite_num = normalize_spanish_cardinal_for_us_address_street(
-            (pynini.closure(NEMO_DIGIT, 1, 4) @ g).optimize()
-        )
-        unit_num = normalize_spanish_cardinal_for_us_address_street(
-            (pynini.closure(NEMO_DIGIT, 1, 3) @ g).optimize()
-        )
+        suite_num = normalize_spanish_cardinal_for_us_address_street((pynini.closure(NEMO_DIGIT, 1, 4) @ g).optimize())
+        unit_num = normalize_spanish_cardinal_for_us_address_street((pynini.closure(NEMO_DIGIT, 1, 3) @ g).optimize())
 
         comma_sp = pynini.accep(",") + pynini.accep(NEMO_SPACE)
         suite = graph_suite_designator + pynini.closure(NEMO_SPACE, 0, 1) + suite_num

@@ -68,10 +68,7 @@ class MeasureFst(GraphFst):
         unit_masc |= "por" + pynini.closure(NEMO_NOT_QUOTE, 1)
         unit_masc = (
             pynutil.delete("units: \"")
-            + (
-                pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.union("math", "address_us_es"))
-                @ unit_masc
-            )
+            + (pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.union("math", "address_us_es")) @ unit_masc)
             + pynutil.delete("\"")
         )
 
@@ -80,10 +77,7 @@ class MeasureFst(GraphFst):
         )
         unit_fem = (
             pynutil.delete("units: \"")
-            + (
-                pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.union("math", "address_us_es"))
-                @ unit_fem
-            )
+            + (pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.union("math", "address_us_es")) @ unit_fem)
             + pynutil.delete("\"")
         )
 
@@ -125,9 +119,7 @@ class MeasureFst(GraphFst):
             pynutil.delete("units: \"math\"") + delete_space + graph_cardinal_masc + delete_space, -1
         )
 
-        preserve_order_tail = (
-            pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
-        )
+        preserve_order_tail = pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
         address_us_es = (
             pynutil.delete('units: "address_us_es" ')
             + delete_space
