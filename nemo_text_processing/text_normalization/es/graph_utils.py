@@ -144,6 +144,7 @@ def normalize_spanish_cardinal_for_us_address_street(fst: "pynini.FstLike") -> "
     out = out @ pynini.cdrewrite(pynini.cross("veintiún", "veintiuno"), "", "", NEMO_SIGMA)
     out = out @ pynini.cdrewrite(pynini.cross("treintún", "treinta y uno"), "", "", NEMO_SIGMA)
     out = out @ pynini.cdrewrite(pynini.cross(" y ún", " y uno"), "", "", NEMO_SIGMA)
+    out = out @ pynini.cdrewrite(pynini.cross(" y un", " y uno"), "", "", NEMO_SIGMA)
     return strip_cardinal_apocope(out)
 
 

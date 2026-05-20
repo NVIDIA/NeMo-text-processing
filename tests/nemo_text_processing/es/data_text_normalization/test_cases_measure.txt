@@ -30,13 +30,3 @@ a-5~a cinco
 40 ° k~cuarenta grados kelvin
 180 psi~ciento ochenta p s i
 2 + 2 - 1 = 3~dos más dos menos uno es igual a tres
-Mi dirección es 1234 Maple St., Springfield, IL 62704~Mi dirección es mil doscientos treinta y cuatro Maple Street, Springfield, Illinois seis dos siete cero cuatro
-La oficina está ubicada en 567 Main St., Ste. 200, Dallas, TX 75201~La oficina está ubicada en quinientos sesenta y siete Main Street, Suite doscientos, Dallas, Texas siete cinco dos cero uno
-Por favor envía el paquete a 890 Oak Ave., Apt. 5B, Brooklyn, NY 11201~Por favor envía el paquete a ochocientos noventa Oak Avenue, Apartamento 5B, Brooklyn, New York uno uno dos cero uno
-Vivo en 4321 Sunset Blvd., Los Angeles, CA 90028, cerca del centro~Vivo en cuatro mil trescientos veintiuno Sunset Boulevard, Los Angeles, California nueve cero cero dos ocho, cerca del centro
-La nueva tienda abrirá en 100 Market Rd., San Francisco, CA 94105~La nueva tienda abrirá en cien Market Road, San Francisco, California nueve cuatro uno cero cinco
-Su casa queda en 25 W 42nd St., New York, NY 10036~Su casa queda en veinticinco West forty second Street, New York, New York uno cero cero tres seis
-El hospital se encuentra en 7890 Lincoln Dr., Miami, FL 33133~El hospital se encuentra en siete mil ochocientos noventa Lincoln Drive, Miami, Florida tres tres uno tres tres
-Mándame la carta a P.O. Box 456, Austin, TX 78701, por favor~Mándame la carta a P.O. Box cuatrocientos cincuenta y seis, Austin, Texas siete ocho siete cero uno, por favor
-La escuela de mis hijos está en 321 Elm St., Boston, MA 02108~La escuela de mis hijos está en trescientos veintiuno Elm Street, Boston, Massachusetts cero dos uno cero ocho
-Nos mudamos a 9876 Pine Rd., Unit 12, Seattle, WA 98101 el mes pasado~Nos mudamos a nueve mil ochocientos setenta y seis Pine Road, Unit doce, Seattle, Washington nueve ocho uno cero uno el mes pasado

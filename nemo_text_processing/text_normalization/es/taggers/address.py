@@ -59,7 +59,11 @@ class AddressUSSurfaceFst(GraphFst):
         super().__init__(name="address_us_es_surface", kind="classify", deterministic=deterministic)
 
         graph_direction = pynini.string_file(get_abs_path("data/address/direction.tsv"))
-        graph_zip_digit = pynini.string_file(get_abs_path("data/address/zip_digit.tsv"))
+        graph_zip_digit = pynini.invert(
+            pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+            | pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        ).optimize()
+        graph_zip_digit @= pynini.cdrewrite(pynini.cross("un", "uno"), "", "", NEMO_SIGMA)
         graph_suite_designator = pynini.string_file(get_abs_path("data/address/suite_designator.tsv"))
         graph_apt_designator = pynini.string_file(get_abs_path("data/address/apt_designator.tsv"))
         graph_unit_designator = pynini.string_file(get_abs_path("data/address/unit_designator.tsv"))
@@ -98,17 +102,7 @@ class AddressUSSurfaceFst(GraphFst):
             + address_words
         )
 
-        zip_five = (
-            graph_zip_digit
-            + insert_space
-            + graph_zip_digit
-            + insert_space
-            + graph_zip_digit
-            + insert_space
-            + graph_zip_digit
-            + insert_space
-            + graph_zip_digit
-        ).optimize()
+        zip_five = (pynini.closure(graph_zip_digit + insert_space, 4) + graph_zip_digit).optimize()
 
         city = pynini.closure(NEMO_ALPHA | pynini.accep(NEMO_SPACE), 1)
         city = pynini.closure(pynini.accep(",") + pynini.accep(NEMO_SPACE) + city, 0, 1)
@@ -120,9 +114,8 @@ class AddressUSSurfaceFst(GraphFst):
             pynini.accep(",") + pynini.accep(NEMO_SPACE) + pynini.invert(pynini.string_map(states)), 0, 1
         )
 
-        zip_code = pynini.compose(NEMO_DIGIT**5, zip_five)
         zip_code = pynini.closure(
-            pynini.closure(pynini.accep(","), 0, 1) + pynini.accep(NEMO_SPACE) + zip_code,
+            pynini.closure(pynini.accep(","), 0, 1) + pynini.accep(NEMO_SPACE) + zip_five,
             0,
             1,
         )
@@ -130,10 +123,12 @@ class AddressUSSurfaceFst(GraphFst):
 
         suite_num = normalize_spanish_cardinal_for_us_address_street((pynini.closure(NEMO_DIGIT, 1, 4) @ g).optimize())
         unit_num = normalize_spanish_cardinal_for_us_address_street((pynini.closure(NEMO_DIGIT, 1, 3) @ g).optimize())
+        apt_char = graph_zip_digit | NEMO_UPPER
+        apt_num = (apt_char + pynini.closure(insert_space + apt_char, 0, 3)).optimize()
 
         comma_sp = pynini.accep(",") + pynini.accep(NEMO_SPACE)
         suite = graph_suite_designator + pynini.closure(NEMO_SPACE, 0, 1) + suite_num
-        apt = graph_apt_designator + pynini.closure(NEMO_DIGIT | NEMO_UPPER, 1, 4)
+        apt = graph_apt_designator + pynini.closure(NEMO_SPACE, 0, 1) + apt_num
         unit = graph_unit_designator + unit_num
         middle = pynini.closure(comma_sp + (suite | apt | unit), 0, 3).optimize()
 

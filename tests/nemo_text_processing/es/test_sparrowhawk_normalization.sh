@@ -77,6 +77,11 @@ testTNMeasure() {
   runtest $input
 }
 
+testTNAddress() {
+  input=$PROJECT_DIR/es/data_text_normalization/test_cases_address.txt
+  runtest $input
+}
+
 testTNWhitelist() {
   input=$PROJECT_DIR/es/data_text_normalization/test_cases_whitelist.txt
   runtest $input
