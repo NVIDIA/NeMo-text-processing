@@ -143,7 +143,11 @@ class Normalizer:
             from nemo_text_processing.text_normalization.de.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'es':
             from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.es.verbalizers.post_processing import PostProcessingFst
             from nemo_text_processing.text_normalization.es.verbalizers.verbalize_final import VerbalizeFinalFst
+
+            if post_process:
+                self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
         elif lang == 'fr':
             from nemo_text_processing.text_normalization.fr.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.fr.verbalizers.verbalize_final import VerbalizeFinalFst
@@ -391,7 +395,7 @@ class Normalizer:
                 return text
         output = SPACE_DUP.sub(' ', output[1:])
 
-        if self.lang in ["en", "hi", "vi"] and hasattr(self, 'post_processor') and self.post_processor is not None:
+        if self.lang in ["en", "es", "hi", "vi"] and hasattr(self, 'post_processor') and self.post_processor is not None:
             output = self.post_process(output)
 
         if punct_post_process:
