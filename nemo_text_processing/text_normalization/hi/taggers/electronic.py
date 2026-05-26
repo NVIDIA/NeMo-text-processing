@@ -26,7 +26,7 @@ class ElectronicFst(GraphFst):
         e.g. kumar@gmail.com -> tokens { electronic { username: "kumar" domain: "gmail.com" } }
         e.g. https://google.com/ -> tokens { electronic { protocol: "https" domain: "google.com/" } }
         e.g. C:\\Users\\HP\\Desktop -> tokens { electronic { path: "C:\\Users\\HP\\Desktop" } }
-        e.g. 192.168.1.1 -> tokens { electronic { ip: "192.168.1.1" } }
+        e.g. 192.168.1.1 -> tokens { electronic { domain: "192.168.1.1" } }
 
     """
 
@@ -39,7 +39,6 @@ class ElectronicFst(GraphFst):
 
         alphanumeric = NEMO_ALPHA | NEMO_DIGIT | NEMO_HI_DIGIT | subscript_digit
 
-        # email
         username_chars = NEMO_ALPHA | NEMO_DIGIT | pynini.accep(".") | pynini.accep("-") | pynini.accep("_")
         username = pynutil.insert("username: \"") + pynini.closure(username_chars, 1) + pynutil.insert("\"")
 
@@ -48,7 +47,6 @@ class ElectronicFst(GraphFst):
 
         email_graph = username + pynini.cross("@", "") + domain
 
-        # url: protocol handling for https://, http://, www., and combined forms
         protocol_start = pynini.cross("https://", "https") | pynini.cross("http://", "http")
         protocol_end = pynini.cross("www.", "www")
         protocol = (
@@ -80,7 +78,6 @@ class ElectronicFst(GraphFst):
 
         url_graph = protocol + url_domain
 
-        # file paths: Windows (C:\...), Unix (/...), and backslash-prefixed (\...)
         drive_letter = NEMO_ALPHA
         windows_path_chars = alphanumeric | pynini.union(
             pynini.accep("\\"),
@@ -107,8 +104,23 @@ class ElectronicFst(GraphFst):
             pynini.accep("_"),
             pynini.accep("$"),
         )
+        
+        unix_segment_chars = alphanumeric | pynini.union(
+            pynini.accep("."),
+            pynini.accep("-"),
+            pynini.accep("_"),
+            pynini.accep("$"),
+        )
+        unix_segment = pynini.closure(unix_segment_chars, 1)
+
+        abs_unix_path = pynini.accep("/") + pynini.closure(unix_path_chars, 1)
+        
+        rel_unix_path = unix_segment + pynini.accep("/") + pynini.closure(unix_path_chars, 0)
+        
         unix_path = (
-            pynutil.insert("path: \"") + pynini.accep("/") + pynini.closure(unix_path_chars, 1) + pynutil.insert("\"")
+            pynutil.insert("path: \"") 
+            + (abs_unix_path | rel_unix_path) 
+            + pynutil.insert("\"")
         )
 
         backslash_path_chars = alphanumeric | pynini.union(
@@ -125,12 +137,10 @@ class ElectronicFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        # ip addresses: exactly 4 dot-separated octets
         ip_octet = pynini.closure(NEMO_DIGIT, 1, 3)
         dot_octet = pynini.accep(".") + ip_octet
         ip_address = pynutil.insert("domain: \"") + ip_octet + pynini.closure(dot_octet, 3, 3) + pynutil.insert("\"")
 
-        # domains: simple TLD-based (abc.com) and government/education suffixes (.gov.in, .ac.in)
         domain_segment_chars = NEMO_ALPHA | NEMO_DIGIT | pynini.accep("-")
         domain_segment = pynini.closure(domain_segment_chars, 1)
 
@@ -144,7 +154,6 @@ class ElectronicFst(GraphFst):
             pynutil.insert("domain: \"") + domain_body + pynini.closure(pynini.accep("/"), 0, 1) + pynutil.insert("\"")
         )
 
-        # file extensions: e.g. report.pdf, data.csv
         known_extensions = pynini.project(
             pynini.string_file(get_abs_path("data/electronic/file_extensions.tsv")), "input"
         )
@@ -154,27 +163,50 @@ class ElectronicFst(GraphFst):
             pynutil.insert("domain: \"") + filename_stem + pynini.accep(".") + known_extensions + pynutil.insert("\"")
         )
 
-        # chemical formulas with subscript digits: e.g. H₂O, CO₂
-        chemical_chars = NEMO_ALPHA | subscript_digit
-        chemical_formula = (
-            pynutil.insert("domain: \"") + NEMO_ALPHA + pynini.closure(chemical_chars, 1) + pynutil.insert("\"")
+        chemical_chars = (
+            NEMO_ALPHA 
+            | NEMO_DIGIT 
+            | subscript_digit 
+            | pynini.accep("(") 
+            | pynini.accep(")")
+            | pynini.accep("+")
+            | pynini.accep("-")
+            | pynini.accep("–") 
         )
-
-        # alphanumeric codes: strings containing both letters and digits,
-        # optionally separated by hyphens, e.g. IELF004, N95, GSAT-18, F-35B
+        
+        raw_chemical = NEMO_ALPHA + pynini.closure(chemical_chars, 1)
+        
+        any_chem = pynini.closure(chemical_chars)
+        has_open = any_chem + pynini.accep("(") + any_chem
+        no_open = pynini.difference(any_chem, has_open)
+        ends_with_close = any_chem + pynini.accep(")")
+        
+        unbalanced_trailing = pynini.intersect(no_open, ends_with_close)
+        
+        valid_chemical = pynini.difference(raw_chemical, unbalanced_trailing).optimize()
+        
+        chemical_formula = (
+            pynutil.insert("domain: \"") 
+            + valid_chemical 
+            + pynutil.insert("\"")
+        )
+    
         alnum_seg = pynini.closure(NEMO_ALPHA | NEMO_DIGIT, 1)
-        alphanumeric_pattern = alnum_seg + pynini.closure(pynini.accep("-") + alnum_seg)
+        
+        separator = pynini.accep("-") | pynini.accep(".")
+        alphanumeric_pattern = alnum_seg + pynini.closure(separator + alnum_seg)
 
-        alnum_hyp_sigma = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | pynini.accep("-"))
-        contains_alpha = alnum_hyp_sigma + NEMO_ALPHA + alnum_hyp_sigma
-        contains_digit = alnum_hyp_sigma + NEMO_DIGIT + alnum_hyp_sigma
+        alnum_hyp_dot_sigma = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | pynini.accep("-") | pynini.accep("."))
+        
+        contains_alpha = alnum_hyp_dot_sigma + NEMO_ALPHA + alnum_hyp_dot_sigma
+        contains_digit = alnum_hyp_dot_sigma + NEMO_DIGIT + alnum_hyp_dot_sigma
+        
         alphanumeric_code_fst = pynini.intersect(
             pynini.intersect(alphanumeric_pattern, contains_alpha), contains_digit
         ).optimize()
 
         alphanumeric_code = pynutil.insert("domain: \"") + alphanumeric_code_fst + pynutil.insert("\"")
 
-        # Weights use 3 tiers: structurally unambiguous (1.0), moderately general (1.1), greedy (1.2)
         graph = (
             pynutil.add_weight(url_graph, 1.0)
             | pynutil.add_weight(email_graph, 1.0)
