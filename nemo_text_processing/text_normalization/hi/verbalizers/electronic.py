@@ -43,37 +43,30 @@ class ElectronicFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
 
-        symbols_graph         = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).optimize()
-        domain_graph          = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
-        server_name_graph     = pynini.string_file(get_abs_path("data/electronic/server_name.tsv")).optimize()
-        chemical_graph        = pynini.string_file(get_abs_path("data/electronic/chemical_names.tsv")).optimize()
-        common_words_graph    = pynini.string_file(get_abs_path("data/electronic/common_words.tsv")).optimize()
-        latin_to_hindi_graph  = pynini.string_file(get_abs_path("data/address/letters.tsv"))
-        latin_to_hindi_graph  = capitalized_input_graph(latin_to_hindi_graph).optimize()
+        symbols_graph = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).optimize()
+        domain_graph = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
+        server_name_graph = pynini.string_file(get_abs_path("data/electronic/server_name.tsv")).optimize()
+        chemical_graph = pynini.string_file(get_abs_path("data/electronic/chemical_names.tsv")).optimize()
+        common_words_graph = pynini.string_file(get_abs_path("data/electronic/common_words.tsv")).optimize()
+        latin_to_hindi_graph = pynini.string_file(get_abs_path("data/address/letters.tsv"))
+        latin_to_hindi_graph = capitalized_input_graph(latin_to_hindi_graph).optimize()
 
-        ascii_digit_graph     = pynini.string_file(get_abs_path("data/telephone/number.tsv")).optimize()
-        hindi_digit_graph     = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()
-        hindi_zero_graph      = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).optimize()
+        ascii_digit_graph = pynini.string_file(get_abs_path("data/telephone/number.tsv")).optimize()
+        hindi_digit_graph = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()
+        hindi_zero_graph = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).optimize()
         subscript_digit_graph = pynini.string_file(get_abs_path("data/electronic/subscript_digit.tsv")).optimize()
-        digit_verbalization   = (
-            ascii_digit_graph | hindi_digit_graph | hindi_zero_graph | subscript_digit_graph
-        )
+        digit_verbalization = ascii_digit_graph | hindi_digit_graph | hindi_zero_graph | subscript_digit_graph
 
         protocol_graph = pynini.string_file(get_abs_path("data/electronic/protocols.tsv")).optimize()
 
         single_letter = latin_to_hindi_graph + insert_space
-        single_digit  = digit_verbalization  + insert_space
-        single_symbol = symbols_graph        + insert_space
+        single_digit = digit_verbalization + insert_space
+        single_symbol = symbols_graph + insert_space
 
-        single_non_alpha = (
-            pynutil.add_weight(single_symbol, 1.0)
-            | pynutil.add_weight(single_digit,  1.0)
-        )
+        single_non_alpha = pynutil.add_weight(single_symbol, 1.0) | pynutil.add_weight(single_digit, 1.0)
 
         def make_alpha_run_verbalizer(tsv_graphs):
-            phonetic = pynini.union(
-                *[pynutil.add_weight(g + insert_space, w) for g, w in tsv_graphs]
-            )
+            phonetic = pynini.union(*[pynutil.add_weight(g + insert_space, w) for g, w in tsv_graphs])
             literal = pynutil.add_weight(pynini.closure(single_letter, 1), 1.1)
             return phonetic | literal
 
@@ -89,64 +82,58 @@ class ElectronicFst(GraphFst):
             )
 
         delete_username_tag = pynutil.delete("username: \"")
-        delete_domain_tag   = pynutil.delete("domain: \"")
+        delete_domain_tag = pynutil.delete("domain: \"")
         delete_protocol_tag = pynutil.delete("protocol: \"")
-        delete_path_tag     = pynutil.delete("path: \"")
-        delete_quote        = pynutil.delete("\"")
+        delete_path_tag = pynutil.delete("path: \"")
+        delete_quote = pynutil.delete("\"")
 
-        username_alpha_run = make_alpha_run_verbalizer([
-            (server_name_graph,  0.85),
-            (domain_graph,       0.87),   
-            (common_words_graph, 0.90),
-        ])
+        username_alpha_run = make_alpha_run_verbalizer(
+            [
+                (server_name_graph, 0.85),
+                (domain_graph, 0.87),
+                (common_words_graph, 0.90),
+            ]
+        )
         username_content = make_content(username_alpha_run)
-        username_graph = (
-            delete_username_tag
-            + username_content
-            + delete_quote
-            + delete_space
-            + pynutil.insert("एट ")
+        username_graph = delete_username_tag + username_content + delete_quote + delete_space + pynutil.insert("एट ")
+
+        domain_alpha_run = make_alpha_run_verbalizer(
+            [
+                (server_name_graph, 0.85),
+                (domain_graph, 0.87),
+                (common_words_graph, 0.90),
+            ]
         )
 
-        domain_alpha_run = make_alpha_run_verbalizer([
-            (server_name_graph,  0.85),
-            (domain_graph,       0.87),
-            (common_words_graph, 0.90),
-        ])
-        
-        domain_content = (
-            pynutil.add_weight(chemical_graph + insert_space, 0.8)
-            | pynutil.add_weight(make_content(domain_alpha_run), 1.0)
+        domain_content = pynutil.add_weight(chemical_graph + insert_space, 0.8) | pynutil.add_weight(
+            make_content(domain_alpha_run), 1.0
         )
-        
+
         domain_only_graph = delete_domain_tag + domain_content + delete_quote
 
-        protocol_only_graph = (
-            delete_protocol_tag
-            + protocol_graph + insert_space
-            + delete_quote
-            + delete_space
+        protocol_only_graph = delete_protocol_tag + protocol_graph + insert_space + delete_quote + delete_space
+
+        path_alpha_run = make_alpha_run_verbalizer(
+            [
+                (domain_graph, 0.87),
+                (common_words_graph, 0.90),
+            ]
         )
-
-        path_alpha_run = make_alpha_run_verbalizer([
-            (domain_graph,       0.87),
-            (common_words_graph, 0.90),
-        ])
         path_content = make_content(path_alpha_run)
-        path_graph   = delete_path_tag + path_content + delete_quote
+        path_graph = delete_path_tag + path_content + delete_quote
 
-        ip_char    = single_symbol | single_digit
+        ip_char = single_symbol | single_digit
         ip_content = pynini.closure(ip_char, 1)
-        ip_graph   = delete_domain_tag + ip_content + delete_quote
+        ip_graph = delete_domain_tag + ip_content + delete_quote
 
         email_full = username_graph + domain_only_graph
-        url_full   = protocol_only_graph + domain_only_graph
+        url_full = protocol_only_graph + domain_only_graph
 
         graph = (
-            pynutil.add_weight(url_full,           1.0)
-            | pynutil.add_weight(email_full,        1.01)
-            | pynutil.add_weight(path_graph,        1.02)
-            | pynutil.add_weight(ip_graph,          1.03)
+            pynutil.add_weight(url_full, 1.0)
+            | pynutil.add_weight(email_full, 1.01)
+            | pynutil.add_weight(path_graph, 1.02)
+            | pynutil.add_weight(ip_graph, 1.03)
             | pynutil.add_weight(domain_only_graph, 1.04)
         )
 

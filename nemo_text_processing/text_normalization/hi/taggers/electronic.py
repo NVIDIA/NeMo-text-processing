@@ -104,7 +104,7 @@ class ElectronicFst(GraphFst):
             pynini.accep("_"),
             pynini.accep("$"),
         )
-        
+
         unix_segment_chars = alphanumeric | pynini.union(
             pynini.accep("."),
             pynini.accep("-"),
@@ -114,14 +114,10 @@ class ElectronicFst(GraphFst):
         unix_segment = pynini.closure(unix_segment_chars, 1)
 
         abs_unix_path = pynini.accep("/") + pynini.closure(unix_path_chars, 1)
-        
+
         rel_unix_path = unix_segment + pynini.accep("/") + pynini.closure(unix_path_chars, 0)
-        
-        unix_path = (
-            pynutil.insert("path: \"") 
-            + (abs_unix_path | rel_unix_path) 
-            + pynutil.insert("\"")
-        )
+
+        unix_path = pynutil.insert("path: \"") + (abs_unix_path | rel_unix_path) + pynutil.insert("\"")
 
         backslash_path_chars = alphanumeric | pynini.union(
             pynini.accep("\\"),
@@ -164,43 +160,39 @@ class ElectronicFst(GraphFst):
         )
 
         chemical_chars = (
-            NEMO_ALPHA 
-            | NEMO_DIGIT 
-            | subscript_digit 
-            | pynini.accep("(") 
+            NEMO_ALPHA
+            | NEMO_DIGIT
+            | subscript_digit
+            | pynini.accep("(")
             | pynini.accep(")")
             | pynini.accep("+")
             | pynini.accep("-")
-            | pynini.accep("–") 
+            | pynini.accep("–")
         )
-        
+
         raw_chemical = NEMO_ALPHA + pynini.closure(chemical_chars, 1)
-        
+
         any_chem = pynini.closure(chemical_chars)
         has_open = any_chem + pynini.accep("(") + any_chem
         no_open = pynini.difference(any_chem, has_open)
         ends_with_close = any_chem + pynini.accep(")")
-        
+
         unbalanced_trailing = pynini.intersect(no_open, ends_with_close)
-        
+
         valid_chemical = pynini.difference(raw_chemical, unbalanced_trailing).optimize()
-        
-        chemical_formula = (
-            pynutil.insert("domain: \"") 
-            + valid_chemical 
-            + pynutil.insert("\"")
-        )
-    
+
+        chemical_formula = pynutil.insert("domain: \"") + valid_chemical + pynutil.insert("\"")
+
         alnum_seg = pynini.closure(NEMO_ALPHA | NEMO_DIGIT, 1)
-        
+
         separator = pynini.accep("-") | pynini.accep(".")
         alphanumeric_pattern = alnum_seg + pynini.closure(separator + alnum_seg)
 
         alnum_hyp_dot_sigma = pynini.closure(NEMO_ALPHA | NEMO_DIGIT | pynini.accep("-") | pynini.accep("."))
-        
+
         contains_alpha = alnum_hyp_dot_sigma + NEMO_ALPHA + alnum_hyp_dot_sigma
         contains_digit = alnum_hyp_dot_sigma + NEMO_DIGIT + alnum_hyp_dot_sigma
-        
+
         alphanumeric_code_fst = pynini.intersect(
             pynini.intersect(alphanumeric_pattern, contains_alpha), contains_digit
         ).optimize()
