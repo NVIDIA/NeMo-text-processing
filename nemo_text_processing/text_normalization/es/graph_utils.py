@@ -133,6 +133,21 @@ def strip_cardinal_apocope(fst: "pynini.FstLike") -> "pynini.FstLike":
     return fst @ strip
 
 
+def normalize_spanish_cardinal_for_us_address_street(fst: "pynini.FstLike") -> "pynini.FstLike":
+    """
+    Spanish cardinals often apocopate before a following vowel (e.g. ``veintiún``). US street names
+    are ASCII and usually start with a consonant, but the cardinal FST does not see that context when
+    materializing digits alone. Normalize common ``…ún`` spoken forms to ``…uno`` / ``… y uno`` for
+    address surfaces (same intent as ``strip_cardinal_apocope`` but not restricted to string end).
+    """
+    out = fst
+    out = out @ pynini.cdrewrite(pynini.cross("veintiún", "veintiuno"), "", "", NEMO_SIGMA)
+    out = out @ pynini.cdrewrite(pynini.cross("treintún", "treinta y uno"), "", "", NEMO_SIGMA)
+    out = out @ pynini.cdrewrite(pynini.cross(" y ún", " y uno"), "", "", NEMO_SIGMA)
+    out = out @ pynini.cdrewrite(pynini.cross(" y un", " y uno"), "", "", NEMO_SIGMA)
+    return strip_cardinal_apocope(out)
+
+
 def add_cardinal_apocope_fem(fst: "pynini.FstLike") -> "pynini.FstLike":
     """
     Adds apocope on cardinal strings in line with stressing rules. e.g. "una" -> "un". This only occurs when "una" precedes a stressed "a" sound in formal speech. This is not predictable

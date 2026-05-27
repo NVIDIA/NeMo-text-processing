@@ -25,6 +25,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.es.graph_utils import strip_cardinal_apocope
+from nemo_text_processing.text_normalization.es.taggers.address import AddressUSSurfaceFst
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
 
 unit = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
@@ -199,6 +200,13 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\" } preserve_order: true")
         )
 
+        address_us_es_inner = AddressUSSurfaceFst(cardinal, deterministic=deterministic).graph
+        address_us_es = (
+            pynutil.insert('units: "address_us_es" cardinal { integer: "')
+            + address_us_es_inner
+            + pynutil.insert('" } preserve_order: true')
+        )
+
         final_graph = (
             subgraph_decimal
             | subgraph_cardinal
@@ -210,6 +218,7 @@ class MeasureFst(GraphFst):
             | cardinal_times
             | alpha_dash_decimal
             | math
+            | address_us_es
         )
         final_graph = self.add_tokens(final_graph)
 

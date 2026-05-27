@@ -16,7 +16,9 @@ runtest () {
     spoken=${testcase_tokenized[1]}
 
     # replace non breaking space with breaking space
-    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
+    # Use sparrowhawk_configuration_pp.ascii_proto so POSTPROCESSOR (verbalize/post_process.far) runs.
+    # Default sparrowhawk_configuration.ascii_proto skips post-processing -> spurious spaces before "," "." etc.
+    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration_pp.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
     # trim white space
     spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
@@ -74,6 +76,11 @@ testTNTime() {
 
 testTNMeasure() {
   input=$PROJECT_DIR/es/data_text_normalization/test_cases_measure.txt
+  runtest $input
+}
+
+testTNAddress() {
+  input=$PROJECT_DIR/es/data_text_normalization/test_cases_address.txt
   runtest $input
 }
 
