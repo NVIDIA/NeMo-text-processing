@@ -33,3 +33,7 @@ seven nine nine~799
 a b nine~ab9
 a b c~a b c
 five w k r a three one~5wkra31
+नंबर nine eight seven six five four three two one zero~नंबर 987-654-3210
+मोबाइल one two three four five six seven eight nine zero~मोबाइल 123-456-7890
+मोबाइल nine eight seven six five four three two one zero~मोबाइल 987-654-3210
+phone एक एक एक एक एक एक एक एक एक एक~phone ११११११११११

@@ -56,3 +56,6 @@ twenty one hundred~2100
 twenty one hundred and eleven~2111
 eleven hundred twenty one~1121
 twenty one crore ninety eight lakh thirty six thousand five hundred and ninety three~219836593
+दस and twenty~१० and 20
+सौ and one hundred~१०० and 100
+two hundred और तीन सौ~200 और ३००

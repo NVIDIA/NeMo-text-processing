@@ -41,7 +41,6 @@ from nemo_text_processing.inverse_text_normalization.hi.taggers.telephone import
 from nemo_text_processing.inverse_text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.hi_en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_LOWER_CASED,
     GraphFst,
@@ -61,7 +60,10 @@ class ClassifyFst(GraphFst):
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
-        whitelist: path to a file with whitelist replacements
+        whitelist: path to a file with Hindi whitelist replacements. If None, defaults to the Hindi whitelist at
+            nemo_text_processing/inverse_text_normalization/hi/data/whitelist/whitelist.tsv
+        en_whitelist: path to a file with English whitelist replacements. If None, defaults to the English whitelist at
+            nemo_text_processing/inverse_text_normalization/en/data/whitelist.tsv
         input_case: accepting either "lower_cased" or "cased" input.
     """
 
@@ -76,10 +78,6 @@ class ClassifyFst(GraphFst):
         super().__init__(name="tokenize_and_classify", kind="classify")
 
         far_file = None
-        if whitelist is None:
-            whitelist = get_abs_path("data/hi_whitelist.tsv")
-        if en_whitelist is None:
-            en_whitelist = get_abs_path("data/en_whitelist.tsv")
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             far_file = os.path.join(cache_dir, f"hi_en_itn_{input_case}.far")

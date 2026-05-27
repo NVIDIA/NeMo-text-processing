@@ -34,3 +34,8 @@ fifteen thousand dollars~$15000
 twenty dollar~$20
 eighteen dollars~$18
 fifteen hundred dollars~$1500
+one hundred रुपये~100 रुपये
+fifty रुपये~50 रुपये
+सौ डॉलर~$१००
+twenty dollars और fifty cents~$20 और $0.50
+दस rupees~१० rupees
