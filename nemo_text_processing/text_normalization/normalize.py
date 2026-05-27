@@ -185,6 +185,9 @@ class Normalizer:
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
+        elif lang == 'pt':
+            from nemo_text_processing.text_normalization.pt.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.pt.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'ko':
             from nemo_text_processing.text_normalization.ko.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.ko.verbalizers.verbalize_final import VerbalizeFinalFst
@@ -734,7 +737,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it", "hy", "ja", "hi", "ko", "vi"],
+        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it", "hy", "ja", "hi", "ko", "vi", "pt"],
         default="en",
         type=str,
     )
