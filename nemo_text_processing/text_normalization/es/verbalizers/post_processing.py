@@ -58,9 +58,7 @@ class PostProcessingFst:
         brackets = ["<", "{", "(", r"\["]
         allow_space_before_punct = quotes + dashes + brackets
 
-        no_space_before_punct = [
-            m for m in punct_marks_all if m not in allow_space_before_punct and m != "."
-        ]
+        no_space_before_punct = [m for m in punct_marks_all if m not in allow_space_before_punct and m != "."]
         # Keep a space before "." (e.g. "punto net ." for "www.enveedya.net."); only strip before , ; : ! ?
         no_space_before_punct = list(set(no_space_before_punct + [",", ";", ":", "!", "?"]))
         no_space_before_punct = pynini.union(*no_space_before_punct)
