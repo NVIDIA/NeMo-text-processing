@@ -39,10 +39,10 @@ class ElectronicFst(GraphFst):
         alphanumeric = NEMO_ALPHA | NEMO_DIGIT | NEMO_HI_DIGIT | subscript_digit
 
         symbol_dict = {"email": [], "url": [], "unix": [], "windows": [], "chem": []}
-        
+
         with open(get_abs_path("data/electronic/symbol_classes.tsv"), "r", encoding="utf-8") as f:
             for line in f:
-                if not line.strip(): 
+                if not line.strip():
                     continue
                 parts = line.strip().split("\t")
                 if len(parts) == 2:
@@ -57,7 +57,7 @@ class ElectronicFst(GraphFst):
         unix_symbols = pynini.union(*symbol_dict["unix"])
         win_symbols = pynini.union(*symbol_dict["windows"])
         chemical_symbols = pynini.union(*symbol_dict["chem"])
-        
+
         unix_segment_syms = pynini.union(*[s for s in symbol_dict["unix"] if s != "/"])
 
         username_chars = NEMO_ALPHA | NEMO_DIGIT | email_symbols
@@ -140,15 +140,15 @@ class ElectronicFst(GraphFst):
         )
 
         elements = pynini.project(pynini.string_file(get_abs_path("data/electronic/elements.tsv")), "input")
-        
+
         chem_number = pynini.closure(NEMO_DIGIT | subscript_digit, 1)
-        
+
         chem_block = elements + pynini.closure(chem_number, 0, 1)
-        
+
         chem_sequence_chars = chem_block | chemical_symbols | chem_number
-        
+
         raw_chemical = pynini.closure(chemical_symbols) + chem_block + pynini.closure(chem_sequence_chars)
-        
+
         any_chem = pynini.closure(chem_sequence_chars)
         has_open = any_chem + pynini.accep("(") + any_chem
         no_open = pynini.difference(any_chem, has_open)
@@ -188,4 +188,4 @@ class ElectronicFst(GraphFst):
         )
 
         self.graph = graph.optimize()
-        self.fst = self.add_tokens(graph).optimize()  
+        self.fst = self.add_tokens(graph).optimize()

@@ -43,12 +43,12 @@ class ElectronicFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
 
-        symbols_graph         = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).optimize()
-        domain_graph          = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
-        server_name_graph     = pynini.string_file(get_abs_path("data/electronic/server_name.tsv")).optimize()
-        common_words_graph    = pynini.string_file(get_abs_path("data/electronic/common_words.tsv")).optimize()
-        latin_to_hindi_graph  = pynini.string_file(get_abs_path("data/address/letters.tsv"))
-        latin_to_hindi_graph  = capitalized_input_graph(latin_to_hindi_graph).optimize()
+        symbols_graph = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).optimize()
+        domain_graph = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
+        server_name_graph = pynini.string_file(get_abs_path("data/electronic/server_name.tsv")).optimize()
+        common_words_graph = pynini.string_file(get_abs_path("data/electronic/common_words.tsv")).optimize()
+        latin_to_hindi_graph = pynini.string_file(get_abs_path("data/address/letters.tsv"))
+        latin_to_hindi_graph = capitalized_input_graph(latin_to_hindi_graph).optimize()
 
         ascii_digit_graph = pynini.string_file(get_abs_path("data/telephone/number.tsv")).optimize()
         hindi_digit_graph = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()
@@ -104,14 +104,16 @@ class ElectronicFst(GraphFst):
             ]
         )
 
-        domain_alpha_run = make_alpha_run_verbalizer([
-            (server_name_graph,  0.85),
-            (domain_graph,       0.87),
-            (common_words_graph, 0.90),
-        ])
-        
+        domain_alpha_run = make_alpha_run_verbalizer(
+            [
+                (server_name_graph, 0.85),
+                (domain_graph, 0.87),
+                (common_words_graph, 0.90),
+            ]
+        )
+
         domain_content = pynutil.add_weight(make_content(domain_alpha_run), 1.0)
-        
+
         domain_only_graph = delete_domain_tag + domain_content + delete_quote
 
         protocol_only_graph = delete_protocol_tag + protocol_graph + insert_space + delete_quote + delete_space
