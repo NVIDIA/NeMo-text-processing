@@ -30,10 +30,10 @@ class ElectronicFst(GraphFst):
     Uses a phonetic-first approach with letter-by-letter fallback.
 
     Examples:
-        electronic { username: "kumar" domain: "gmail.com" } -> "कुमार एट जीमेल डॉट कॉम"
+        electronic { username: "kumar" domain: "gmail.com" } -> "के यू एम ए आर एट जीमेल डॉट कॉम"
         electronic { protocol: "https" domain: "google.com/" } -> "एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश गूगल डॉट कॉम फॉरवर्ड स्लैश"
-        electronic { path: "C:\\Users\\HP" } -> "सी कोलन बैकवर्ड स्लैश यूज़र्स बैकवर्ड स्लैश एच पी"
-        electronic { ip: "192.168.1.1" } -> "एक नौ दो डॉट एक छह आठ डॉट एक डॉट एक"
+        electronic { path: "C:\\Users\\HP\\Desktop" } -> "सी कोलन बैकवर्ड स्लैश यूज़र्स बैकवर्ड स्लैश एच पी बैकवर्ड स्लैश डेस्कटॉप"
+        electronic { domain: "192.168.1.1" } -> "एक नौ दो डॉट एक छह आठ डॉट एक डॉट एक"
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -43,7 +43,6 @@ class ElectronicFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="electronic", kind="verbalize", deterministic=deterministic)
 
-        # Load data files
         symbols_graph = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).optimize()
         domain_graph = pynini.string_file(get_abs_path("data/electronic/domain.tsv")).optimize()
         server_name_graph = pynini.string_file(get_abs_path("data/electronic/server_name.tsv")).optimize()
@@ -51,94 +50,90 @@ class ElectronicFst(GraphFst):
         latin_to_hindi_graph = pynini.string_file(get_abs_path("data/address/letters.tsv"))
         latin_to_hindi_graph = capitalized_input_graph(latin_to_hindi_graph).optimize()
 
-        # Digit mappings - use telephone number mappings for ASCII digits
         ascii_digit_graph = pynini.string_file(get_abs_path("data/telephone/number.tsv")).optimize()
         hindi_digit_graph = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()
         hindi_zero_graph = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).optimize()
         subscript_digit_graph = pynini.string_file(get_abs_path("data/electronic/subscript_digit.tsv")).optimize()
         digit_verbalization = ascii_digit_graph | hindi_digit_graph | hindi_zero_graph | subscript_digit_graph
 
-        # Combined phonetic word graph: server names + common words
-        phonetic_word = server_name_graph | common_words_graph
-
-        # ============ CHARACTER VERBALIZATION ============
-        # Single character to Hindi verbalization with space insertion
-        char_to_hindi = pynutil.add_weight(latin_to_hindi_graph, 1.0) | pynutil.add_weight(  # Letter mapping
-            digit_verbalization, 1.0
-        )  # Digit mapping
-        char_with_space = char_to_hindi + insert_space
-
-        # ============ SYMBOL VERBALIZATION ============
-        symbol_to_hindi = symbols_graph + insert_space
-
-        # ============ DOMAIN VERBALIZATION ============
-        # Domain extension verbalization (.com -> डॉट कॉम)
-        domain_ext_verbalization = pynini.cross(".", "डॉट ") + domain_graph + insert_space
-
-        # ============ PROTOCOL VERBALIZATION ============
         protocol_graph = pynini.string_file(get_abs_path("data/electronic/protocols.tsv")).optimize()
-        protocol_verbalization = protocol_graph + insert_space
 
-        # ============ FIELD EXTRACTION ============
-        # Extract username field
+        single_letter = latin_to_hindi_graph + insert_space
+        single_digit = digit_verbalization + insert_space
+        single_symbol = symbols_graph + insert_space
+
+        single_non_alpha = pynutil.add_weight(single_symbol, 1.0) | pynutil.add_weight(single_digit, 1.0)
+
+        def make_alpha_run_verbalizer(tsv_graphs):
+            phonetic = pynini.union(*[pynutil.add_weight(g + insert_space, w) for g, w in tsv_graphs])
+            literal = pynutil.add_weight(pynini.closure(single_letter, 1), 1.1)
+            return phonetic | literal
+
+        def make_content(alpha_run_verb, non_alpha_sep=None):
+            if non_alpha_sep is None:
+                non_alpha_sep = single_non_alpha
+            mandatory_sep = pynini.closure(non_alpha_sep, 1)
+            return (
+                pynini.closure(non_alpha_sep, 0)
+                + pynini.closure(alpha_run_verb + mandatory_sep, 0)
+                + pynini.closure(alpha_run_verb, 0, 1)
+                + pynini.closure(non_alpha_sep, 0)
+            )
+
         delete_username_tag = pynutil.delete("username: \"")
         delete_domain_tag = pynutil.delete("domain: \"")
         delete_protocol_tag = pynutil.delete("protocol: \"")
         delete_path_tag = pynutil.delete("path: \"")
         delete_quote = pynutil.delete("\"")
 
-        # Username verbalization: letter-by-letter with symbol handling
-        username_content = pynini.closure(
-            pynutil.add_weight(phonetic_word + insert_space, 0.9)
-            | pynutil.add_weight(symbol_to_hindi, 1.0)
-            | pynutil.add_weight(char_with_space, 1.1),
-            1,
+        username_alpha_run = make_alpha_run_verbalizer(
+            [
+                (server_name_graph, 0.85),
+                (domain_graph, 0.87),
+                (common_words_graph, 0.90),
+            ]
+        )
+        username_content = make_content(username_alpha_run)
+        username_graph = delete_username_tag + username_content + delete_quote + delete_space + pynutil.insert("एट ")
+
+        domain_alpha_run = make_alpha_run_verbalizer(
+            [
+                (server_name_graph, 0.85),
+                (domain_graph, 0.87),
+                (common_words_graph, 0.90),
+            ]
         )
 
-        username_graph = (
-            delete_username_tag + username_content + delete_quote + delete_space + pynutil.insert("एट ")  # @ symbol
+        domain_alpha_run = make_alpha_run_verbalizer(
+            [
+                (server_name_graph, 0.85),
+                (domain_graph, 0.87),
+                (common_words_graph, 0.90),
+            ]
         )
 
-        # Domain verbalization
-        domain_content = pynini.closure(
-            pynutil.add_weight(phonetic_word + insert_space, 0.9)
-            | pynutil.add_weight(domain_ext_verbalization, 0.95)
-            | pynutil.add_weight(symbol_to_hindi, 1.0)
-            | pynutil.add_weight(char_with_space, 1.1),
-            1,
-        )
+        domain_content = pynutil.add_weight(make_content(domain_alpha_run), 1.0)
 
         domain_only_graph = delete_domain_tag + domain_content + delete_quote
 
-        # Protocol verbalization
-        protocol_only_graph = delete_protocol_tag + protocol_verbalization + delete_quote + delete_space
+        protocol_only_graph = delete_protocol_tag + protocol_graph + insert_space + delete_quote + delete_space
 
-        # Path verbalization (Windows/Unix file paths)
-        path_content = pynini.closure(
-            pynutil.add_weight(common_words_graph + insert_space, 0.9)
-            | pynutil.add_weight(symbol_to_hindi, 1.0)
-            | pynutil.add_weight(char_with_space, 1.1),
-            1,
+        path_alpha_run = make_alpha_run_verbalizer(
+            [
+                (domain_graph, 0.87),
+                (common_words_graph, 0.90),
+            ]
         )
-
+        path_content = make_content(path_alpha_run)
         path_graph = delete_path_tag + path_content + delete_quote
 
-        # IP address verbalization (digit by digit)
-        ip_char = pynutil.add_weight(symbols_graph + insert_space, 1.0) | pynutil.add_weight(
-            digit_verbalization + insert_space, 1.0
-        )
+        ip_char = single_symbol | single_digit
         ip_content = pynini.closure(ip_char, 1)
-
         ip_graph = delete_domain_tag + ip_content + delete_quote
 
-        # ============ COMBINED GRAPH ============
-        # Email: username + domain
         email_full = username_graph + domain_only_graph
-
-        # URL with protocol: protocol + domain
         url_full = protocol_only_graph + domain_only_graph
 
-        # Combined final graph
         graph = (
             pynutil.add_weight(url_full, 1.0)
             | pynutil.add_weight(email_full, 1.01)
