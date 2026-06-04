@@ -165,30 +165,6 @@ pipeline {
       parallel {
         stage('L0: AR TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=fr --text="2" --cache_dir ${FR_TN_CACHE}'
-          }
-        }
-        stage('L0: FR ITN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=fr --text="cent " --cache_dir ${FR_TN_CACHE}'
-          }
-        }
-      }
-    }
-
-    stage('L0: Create AR TN/ITN Grammars') {
-      when {
-        anyOf {
-          branch 'main' 
-          branch 'staging/**'
-          branch 'staging_*'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-        stage('L0: AR TN grammars') {
-          steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ar --text="2" --cache_dir ${AR_TN_CACHE}'
           }
         }
