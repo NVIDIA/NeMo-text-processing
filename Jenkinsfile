@@ -12,10 +12,10 @@ pipeline {
   environment {
     AR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-23-24-0'
-    EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-0'
+    EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-3'
     ES_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-25-24-0'
     ES_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-30-24-0'
-    HI_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-1'
+    HI_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-4'
     FR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-07-25-0'
     HU_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-16-24-0'
     PT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/05-01-26-1'
@@ -28,7 +28,7 @@ pipeline {
     HY_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
-    HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-2'
+    HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-5'
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-03-25-0'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
   }
