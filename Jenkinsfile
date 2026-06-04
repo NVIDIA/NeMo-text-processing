@@ -149,12 +149,21 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=es_en --text="ciento uno " --cache_dir ${ES_EN_TN_CACHE}'
           }
         }
-        stage('L0: Codeswitched HI/EN ITN grammars') {
-          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi_en --text="एक" --cache_dir ${HI_EN_TN_CACHE}'
-          }
+      }
+    }
+
+    stage('L0: Create AR TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main' 
+          branch 'staging/**'
+          branch 'staging_*'
+          changeRequest target: 'main'
         }
-        stage('L0: FR TN grammars') {
+      }
+      failFast true
+      parallel {
+        stage('L0: AR TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=fr --text="2" --cache_dir ${FR_TN_CACHE}'
           }
