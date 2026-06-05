@@ -1,3 +1,4 @@
+# copyright (c) 2026 NVIDIA Corporation
 import pynini 
 from pynini.lib import pynutil 
  
@@ -10,16 +11,13 @@ from nemo_text_processing.text_normalization.kn.graph_utils import (
  
 class CardinalFst(GraphFst): 
     """ 
-    Verbalizes cardinals, e.g.  cardinal { integer: "<word>" }  ->  <word> 
+    Verbalizes cardinals, e.g.  cardinal { integer: "5" }  ->  ಐದು
     """ 
  
     def __init__(self, deterministic: bool = True): 
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic) 
  
-        # TODO 3: Remove  integer: "  before the word and the closing  "  after it, 
-        #         keeping the word itself. 
-        #         Hint: pynutil.delete("text") deletes literal text; 
-        #               NEMO_NOT_QUOTE matches any character that is not a quote. 
+        
         graph = ( 
             pynutil.delete("integer:") 
             + delete_space 
