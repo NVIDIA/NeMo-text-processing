@@ -17,6 +17,7 @@ class CardinalFst(GraphFst):
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")) 
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")) 
         teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")) 
+        #hundreds = pynini.string_file(get_abs_path("data/numbers/hundreds.tsv"))
  
         # TODO 1: Combine the three transducers into one grammar so it accepts 
         #         a single digit (1-9), zero (0), OR a two-digit number. 
