@@ -12,9 +12,10 @@ pipeline {
   environment {
     AR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-23-24-0'
-    EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-25-25-0'
+    EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-3'
     ES_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-25-24-0'
     ES_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-30-24-0'
+    HI_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-4'
     FR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-07-25-0'
     HU_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-16-24-0'
     PT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/05-01-26-1'
@@ -27,8 +28,8 @@ pipeline {
     HY_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
-    KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-23-26-0'
-    HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-23-26-0'
+    HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-5'
+    KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-25-6'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -104,7 +105,11 @@ pipeline {
                 sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
             }
         }
-        
+        stage('L0: Codeswitched HI/EN ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi_en --text="एक" --cache_dir ${HI_EN_TN_CACHE}'
+          }
+        }
       }
     }
 
@@ -168,7 +173,6 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ar --text="اثنان " --cache_dir ${AR_TN_CACHE}'
           }
         }
-
       }
     }
 
@@ -407,6 +411,11 @@ pipeline {
         stage('L1: Run all Codeswitched ES/EN TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/es_en/ -m "not pleasefixme" --cpu --tn_cache_dir ${ES_EN_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all Codeswitched HI/EN TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/hi_en/ -m "not pleasefixme" --cpu --tn_cache_dir ${HI_EN_TN_CACHE}'
           }
         }
         stage('L1: Run all AR TN/ITN tests (restore grammars from cache)') {
