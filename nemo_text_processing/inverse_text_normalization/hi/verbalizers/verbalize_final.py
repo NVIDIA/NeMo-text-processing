@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_CHAR, GraphFst, delete_extra_space, delete_space
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.inverse_text_normalization.hi.verbalizers.word import WordFst
 
@@ -42,4 +42,11 @@ class VerbalizeFinalFst(GraphFst):
             + pynutil.delete("}")
         )
         graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
-        self.fst = graph
+        # Remove space before sentence-ending punctuation: "CODE ." -> "CODE."
+        remove_space_before_punct = pynini.cdrewrite(
+            pynutil.delete(" "),
+            "",
+            pynini.union(".", "।", ",", "!", "?", ";", ":"),
+            pynini.closure(NEMO_CHAR),
+        )
+        self.fst = graph @ remove_space_before_punct
