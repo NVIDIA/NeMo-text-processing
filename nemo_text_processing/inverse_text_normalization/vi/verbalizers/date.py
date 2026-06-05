@@ -68,7 +68,9 @@ class DateFst(GraphFst):
             + delete_space
         )
 
-        final_graph = (graph_y | graph_m | graph_dm | graph_dmy | graph_my) + delete_space + optional_preserve_order
+        final_graph = (
+            pynini.union(graph_y, graph_m, graph_dm, graph_dmy, graph_my) + delete_space + optional_preserve_order
+        )
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

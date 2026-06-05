@@ -5,39 +5,38 @@
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import pytest
 from parameterized import parameterized
 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+from nemo_text_processing.text_normalization.normalize import Normalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestElectronic:
-    """
-    ITN Electronic test suite — Hindi.
-
-    Covers: email · https/http/www URL · plain domain · Windows path ·
-            Unix path · IP address · alphanumeric codes ·
-            chemical formulas (named + subscript) ·
-            subdomain patterns (srv- db- lt- web- laptop- desktop- email-)
-
-    Test cases: hi/data_inverse_text_normalization/test_cases_electronic.txt
-    Format per line: spoken_hindi~expected_written_form
-    """
-
+    normalizer = Normalizer(
+        input_case='cased', lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=False
+    )
     inverse_normalizer = InverseNormalizer(lang='hi', cache_dir=CACHE_DIR, overwrite_cache=False)
 
-    @parameterized.expand(
-        parse_test_case_file('hi/data_inverse_text_normalization/test_cases_electronic.txt')
-    )
+    @parameterized.expand(parse_test_case_file('hi/data_text_normalization/test_cases_electronic.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm(self, test_input, expected):
+        pred = self.normalizer.normalize(test_input, verbose=False)
+        assert pred.strip() == expected.strip()
+
+    @parameterized.expand(parse_test_case_file('hi/data_inverse_text_normalization/test_cases_electronic.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
-        assert pred == expected, (
-            f"\nInput:    {test_input}"
-            f"\nExpected: {expected}"
-            f"\nGot:      {pred}"
-        )
+        assert pred.strip() == expected.strip()

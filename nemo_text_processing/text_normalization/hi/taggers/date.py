@@ -16,9 +16,9 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.hi.graph_utils import (
-    NEMO_HI_DIGIT,
-    NEMO_HI_NON_ZERO,
-    NEMO_HI_ZERO,
+    NEMO_ALL_DIGIT,
+    NEMO_ALL_NON_ZERO,
+    NEMO_ALL_ZERO,
     GraphFst,
     insert_space,
 )
@@ -28,7 +28,9 @@ days = pynini.string_file(get_abs_path("data/date/days.tsv"))
 months = pynini.string_file(get_abs_path("data/date/months.tsv"))
 year_suffix = pynini.string_file(get_abs_path("data/date/year_suffix.tsv"))
 digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+teens_ties_hi = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+teens_ties_en = pynini.string_file(get_abs_path("data/numbers/teens_and_ties_en.tsv"))
+teens_ties = pynini.union(teens_ties_hi, teens_ties_en)
 teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
 # Read suffixes from file into a list
@@ -59,17 +61,17 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="classify")
 
         graph_year_thousands = pynini.compose(
-            (NEMO_HI_DIGIT + NEMO_HI_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_thousands
+            (NEMO_ALL_DIGIT + NEMO_ALL_ZERO + NEMO_ALL_DIGIT + NEMO_ALL_DIGIT), cardinal.graph_thousands
         )
         graph_year_hundreds_as_thousands = pynini.compose(
-            (NEMO_HI_DIGIT + NEMO_HI_NON_ZERO + NEMO_HI_DIGIT + NEMO_HI_DIGIT), cardinal.graph_hundreds_as_thousand
+            (NEMO_ALL_DIGIT + NEMO_ALL_NON_ZERO + NEMO_ALL_DIGIT + NEMO_ALL_DIGIT), cardinal.graph_hundreds_as_thousand
         )
 
-        cardinal_graph = (
-            digit | teens_and_ties | cardinal.graph_hundreds | graph_year_thousands | graph_year_hundreds_as_thousands
+        cardinal_graph = pynini.union(
+            digit, teens_and_ties, cardinal.graph_hundreds, graph_year_thousands, graph_year_hundreds_as_thousands
         )
 
-        graph_year = graph_year_thousands | graph_year_hundreds_as_thousands
+        graph_year = pynini.union(graph_year_thousands, graph_year_hundreds_as_thousands)
 
         delete_dash = pynutil.delete("-")
         delete_slash = pynutil.delete("/")
@@ -92,7 +94,7 @@ class DateFst(GraphFst):
         range_graph = pynini.cross("-", "से")
 
         # Graph for year
-        century_number = pynini.compose(pynini.closure(NEMO_HI_DIGIT, 1), cardinal_graph) + pynini.accep("वीं")
+        century_number = pynini.compose(pynini.closure(NEMO_ALL_DIGIT, 1), cardinal_graph) + pynini.accep("वीं")
         century_text = pynutil.insert("era: \"") + century_number + pynutil.insert("\"") + insert_space
 
         # Updated logic to use suffix_union
@@ -102,13 +104,10 @@ class DateFst(GraphFst):
         # Updated logic to use prefix_union
         year_prefix = pynutil.insert("era: \"") + prefix_union + insert_space + graph_year + pynutil.insert("\"")
 
-        graph_dd_mm_yyyy = (
-            days_graph + (delete_dash | delete_slash) + months_graph + (delete_dash | delete_slash) + years_graph
-        )
+        delete_separator = pynini.union(delete_dash, delete_slash)
+        graph_dd_mm_yyyy = days_graph + delete_separator + months_graph + delete_separator + years_graph
 
-        graph_mm_dd_yyyy = (
-            months_graph + (delete_dash | delete_slash) + days_graph + (delete_dash | delete_slash) + years_graph
-        )
+        graph_mm_dd_yyyy = months_graph + delete_separator + days_graph + delete_separator + years_graph
 
         graph_mm_dd_yyyy += pynutil.insert(" preserve_order: true ")
 
