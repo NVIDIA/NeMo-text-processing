@@ -7,11 +7,12 @@ runtest () {
   cd /workspace/sparrowhawk/documentation/grammars
 
   # read test file
-  while read testcase; do
-    IFS='~' read written spoken <<< $testcase
+  while IFS= read -r testcase; do
+    IFS='~' read -r written spoken <<< "$testcase"
     
-    # replace non breaking space with breaking space
-    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
+    # Escape backslashes and replace non breaking space with breaking space
+    escaped_written=$(printf '%s' "$written" | sed 's/\\/\\\\/g')
+    denorm_pred=$(echo "$escaped_written" | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
     # trim white space
     # spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
@@ -61,10 +62,10 @@ testTNDecimal() {
 #  runtest $input
 #}
 
-#testTNElectronic() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_electronic.txt
-#  runtest $input
-#}
+testTNElectronic() {
+  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_electronic.txt
+  runtest $input
+}
 
 testTNFraction() {
   input=$PROJECT_DIR/hi/data_text_normalization/test_cases_fraction.txt
@@ -76,15 +77,15 @@ testTNMoney() {
   runtest $input
 }
 
-#testTNOrdinal() {
-#  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_ordinal.txt
-#  runtest $input
-#}
+testTNOrdinal() {
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_ordinal.txt
+ runtest $input
+}
 
-#testTNTelephone() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_telephone.txt
-#  runtest $input
-#}
+testTNTelephone() {
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_telephone.txt
+ runtest $input
+}
 
 testTNTime() {
   input=$PROJECT_DIR/hi/data_text_normalization/test_cases_time.txt
@@ -106,10 +107,10 @@ testTNWord() {
  runtest $input
 }
 
-#testTNAddress() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_address.txt
-#  runtest $input
-#}
+testTNAddress() {
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_address.txt
+ runtest $input
+}
 
 #testTNMath() {
 #  input=$PROJECT_DIR/en/data_text_normalization/test_cases_math.txt

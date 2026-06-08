@@ -16,10 +16,7 @@
 # Dockerfile for C++ (inverse) text normalization backend Sparrowhawk https://github.com/google/sparrowhawk
 
 # set base image (host OS)
-# Pinned to 4.6.14 (Debian stretch / g++ 6.3). The default `latest` tag now ships
-# g++ 14, which cannot compile openfst 1.7.9's headers (fst/fst.h) used by
-# Sparrowhawk's ./configure. g++ 6 compiles them cleanly.
-FROM continuumio/miniconda3:4.6.14
+FROM continuumio/miniconda3:25.3.1-1
 
 
 # set the working directory in the container

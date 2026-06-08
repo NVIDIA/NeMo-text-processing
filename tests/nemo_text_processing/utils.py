@@ -63,7 +63,7 @@ def get_test_cases_multiple(file_name: str = 'data_text_normalization/en/test_ca
     Prepares tests pairs for audio based TN tests
     """
     test_pairs = []
-    with open(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + file_name, 'r') as f:
+    with open(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + file_name, 'r', encoding='utf-8') as f:
         written = None
         normalized_options = []
         for line in f:

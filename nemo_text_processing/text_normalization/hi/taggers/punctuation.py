@@ -36,9 +36,9 @@ class PunctuationFst(GraphFst):
 
         emphasis = (
             pynini.accep("<")
-            + (
-                (pynini.closure(NEMO_NOT_SPACE - pynini.union("<", ">"), 1) + pynini.closure(pynini.accep("/"), 0, 1))
-                | (pynini.accep("/") + pynini.closure(NEMO_NOT_SPACE - pynini.union("<", ">"), 1))
+            + pynini.union(
+                (pynini.closure(NEMO_NOT_SPACE - pynini.union("<", ">"), 1) + pynini.closure(pynini.accep("/"), 0, 1)),
+                (pynini.accep("/") + pynini.closure(NEMO_NOT_SPACE - pynini.union("<", ">"), 1)),
             )
             + pynini.accep(">")
         )

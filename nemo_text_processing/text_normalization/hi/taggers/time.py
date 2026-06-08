@@ -15,8 +15,23 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst, insert_space
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    HI_DEDH,
+    HI_DHAI,
+    HI_PAUNE,
+    HI_SADHE,
+    HI_SAVVA,
+    NEMO_SPACE,
+    GraphFst,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
+
+# Time patterns specific to time tagger - support both Devanagari and Arabic digits
+HI_DOUBLE_ZERO = pynini.union("००", "00")
+HI_TIME_FIFTEEN = pynini.union(":१५", ":15")
+HI_TIME_THIRTY = pynini.union(":३०", ":30")
+HI_TIME_FORTYFIVE = pynini.union(":४५", ":45")
 
 hours_graph = pynini.string_file(get_abs_path("data/time/hours.tsv"))
 minutes_graph = pynini.string_file(get_abs_path("data/time/minutes.tsv"))
@@ -36,10 +51,11 @@ class TimeFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self):
+    def __init__(self, cardinal: GraphFst):
         super().__init__(name="time", kind="classify")
 
         delete_colon = pynutil.delete(":")
+        cardinal_graph = cardinal.digit | cardinal.teens_and_ties
 
         self.hours = pynutil.insert("hours: \"") + hours_graph + pynutil.insert("\" ")
         self.minutes = pynutil.insert("minutes: \"") + minutes_graph + pynutil.insert("\" ")
@@ -54,9 +70,69 @@ class TimeFst(GraphFst):
         graph_hm = self.hours + delete_colon + insert_space + self.minutes
 
         # hour
-        graph_h = self.hours + delete_colon + pynutil.delete("००")
+        graph_h = self.hours + delete_colon + pynutil.delete(HI_DOUBLE_ZERO)
 
-        final_graph = graph_hms | graph_hm | graph_h
+        # Support all combinations of Devanagari and Arabic digits for dedh/dhai patterns
+        dedh_dhai_graph = pynini.string_map(
+            [
+                ("१:३०", HI_DEDH),
+                ("१:30", HI_DEDH),
+                ("1:३०", HI_DEDH),
+                ("1:30", HI_DEDH),
+                ("२:३०", HI_DHAI),
+                ("२:30", HI_DHAI),
+                ("2:३०", HI_DHAI),
+                ("2:30", HI_DHAI),
+            ]
+        )
+
+        savva_numbers = cardinal_graph + pynini.cross(HI_TIME_FIFTEEN, "")
+        savva_graph = pynutil.insert(HI_SAVVA) + pynutil.insert(NEMO_SPACE) + savva_numbers
+
+        sadhe_numbers = cardinal_graph + pynini.cross(HI_TIME_THIRTY, "")
+        sadhe_graph = pynutil.insert(HI_SADHE) + pynutil.insert(NEMO_SPACE) + sadhe_numbers
+
+        paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
+        paune_numbers = paune + pynini.cross(HI_TIME_FORTYFIVE, "")
+        paune_graph = pynutil.insert(HI_PAUNE) + pynutil.insert(NEMO_SPACE) + paune_numbers
+
+        graph_dedh_dhai = (
+            pynutil.insert("morphosyntactic_features: \"")
+            + dedh_dhai_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
+
+        graph_savva = (
+            pynutil.insert("morphosyntactic_features: \"")
+            + savva_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
+
+        graph_sadhe = (
+            pynutil.insert("morphosyntactic_features: \"")
+            + sadhe_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
+
+        graph_paune = (
+            pynutil.insert("morphosyntactic_features: \"")
+            + paune_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
+
+        final_graph = (
+            graph_hms
+            | pynutil.add_weight(graph_hm, 0.3)
+            | pynutil.add_weight(graph_h, 0.3)
+            | pynutil.add_weight(graph_dedh_dhai, 0.1)
+            | pynutil.add_weight(graph_savva, 0.2)
+            | pynutil.add_weight(graph_sadhe, 0.2)
+            | pynutil.add_weight(graph_paune, 0.1)
+        )
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
