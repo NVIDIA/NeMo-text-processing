@@ -29,9 +29,7 @@ from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_
 
 
 def _leading_zero_graph(cardinal: GraphFst) -> "pynini.FstLike":
-    return pynini.compose(
-        pynini.accep("0") + pynini.closure(NEMO_DIGIT), cardinal.single_digits_graph
-    ).optimize()
+    return pynini.compose(pynini.accep("0") + pynini.closure(NEMO_DIGIT), cardinal.single_digits_graph).optimize()
 
 
 def _num_graph_alphanumeric(cardinal: GraphFst) -> "pynini.FstLike":
@@ -42,10 +40,10 @@ def _num_graph_alphanumeric(cardinal: GraphFst) -> "pynini.FstLike":
     """
 
     single_digit_followed_by_zeros = pynini.compose(NEMO_DIGIT, pynini.closure("0", 1))
-    three_not_00 = pynini.difference(NEMO_DIGIT ** 3, NEMO_DIGIT + NEMO_DIGIT + "00")
+    three_not_00 = pynini.difference(NEMO_DIGIT**3, NEMO_DIGIT + NEMO_DIGIT + "00")
     return (
         pynini.compose(NEMO_DIGIT, cardinal.graph)
-        | pynini.compose(NEMO_DIGIT ** 2, cardinal.graph)
+        | pynini.compose(NEMO_DIGIT**2, cardinal.graph)
         | pynini.compose(NEMO_DIGIT + pynini.closure("0", 1), cardinal.graph)
         | pynini.compose(three_not_00, cardinal.single_digits_graph)
         | pynini.compose(NEMO_DIGIT ** (4, ...), cardinal.single_digits_graph)
@@ -89,9 +87,7 @@ def _build_serial_graph(
 
     serial_graph = letter_num + next_alpha_or_num
     serial_graph |= num_letter + next_alpha_or_num
-    serial_graph |= (
-        num_graph + delimiter + num_graph + delimiter + num_graph + pynini.closure(delimiter + num_graph)
-    )
+    serial_graph |= num_graph + delimiter + num_graph + delimiter + num_graph + pynini.closure(delimiter + num_graph)
 
     symbols = [x[0] for x in load_labels(get_abs_path("data/whitelist/symbol.tsv"))]
     symbols = pynini.union(*symbols)
@@ -103,8 +99,7 @@ def _build_serial_graph(
 
     serial_graph = pynutil.add_weight(serial_graph, 0.0001)
     serial_graph |= (
-        pynini.closure(NEMO_NOT_SPACE, 1)
-        + (pynini.cross("^2", " squared") | pynini.cross("^3", " cubed")).optimize()
+        pynini.closure(NEMO_NOT_SPACE, 1) + (pynini.cross("^2", " squared") | pynini.cross("^3", " cubed")).optimize()
     )
 
     serial_graph = (
