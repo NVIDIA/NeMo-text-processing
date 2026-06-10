@@ -29,15 +29,19 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True): 
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic) 
  
-        graph = ( 
-            pynutil.delete("integer:") 
-            + delete_space 
-            + pynutil.delete('"') 
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"') 
-        ) 
- 
-        # delete_tokens() removes the surrounding  cardinal { ... } 
-        delete_tokens = self.delete_tokens(graph) 
-        self.fst = delete_tokens.optimize() 
- 
+        self.optional_sign = pynini.cross("negative: \"true\"", "minus ")
+        if not deterministic:
+            self.optional_sign |= pynini.cross("negative: \"true\"", "negative ")
+            self.optional_sign |= pynini.cross("negative: \"true\"", "dash ")
+
+        self.optional_sign = pynini.closure(self.optional_sign + delete_space, 0, 1)
+
+        integer = pynini.closure(NEMO_NOT_QUOTE)
+
+        self.integer = delete_space + pynutil.delete("\"") + integer + pynutil.delete("\"")
+        integer = pynutil.delete("integer:") + self.integer
+
+        self.numbers = self.optional_sign + integer
+        delete_tokens = self.delete_tokens(self.numbers)
+
+        self.fst = delete_tokens.optimize()

@@ -18,13 +18,13 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import (
+from nemo_text_processing.text_normalization.kn.graph_utils import (
     MIN_NEG_WEIGHT,
     NEMO_CHAR,
     NEMO_SIGMA,
     generator_main,
 )
-from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.kn.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -43,7 +43,7 @@ class PostProcessingFst:
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, "hi_tn_post_processing.far")
+            far_file = os.path.join(cache_dir, "kn_tn_post_processing.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["post_process_graph"]
             logger.info(f'Post processing graph was restored from {far_file}.')

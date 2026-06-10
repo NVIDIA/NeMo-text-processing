@@ -27,26 +27,26 @@ from pynini.lib import byte, pynutil, utf8
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 NEMO_DIGIT = byte.DIGIT
 
-NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
-NEMO_HI_NON_ZERO = pynini.union("१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
-NEMO_HI_ZERO = "०"
-# Combined Hindi and Arabic digits for graphs that need to accept both
-NEMO_ALL_DIGIT = pynini.union(NEMO_HI_DIGIT, NEMO_DIGIT).optimize()
-NEMO_ALL_ZERO = pynini.union("०", "0").optimize()
-NEMO_ALL_NON_ZERO = pynini.union(NEMO_HI_NON_ZERO, "1", "2", "3", "4", "5", "6", "7", "8", "9").optimize()
+NEMO_KN_DIGIT = pynini.union("೦", "೧", "೨", "೩", "೪", "೫", "೬", "೭", "೮", "೯").optimize()
+NEMO_KN_NON_ZERO = pynini.union("೧", "೨", "೩", "೪", "೫", "೬", "೭", "೮", "೯").optimize()
+NEMO_KN_ZERO = "೦"
+# Combined Kannada and Arabic digits for graphs that need to accept both
+NEMO_ALL_DIGIT = pynini.union(NEMO_KN_DIGIT, NEMO_DIGIT).optimize()
+NEMO_ALL_ZERO = pynini.union("೦", "0").optimize()
+NEMO_ALL_NON_ZERO = pynini.union(NEMO_KN_NON_ZERO, "1", "2", "3", "4", "5", "6", "7", "8", "9").optimize()
 
-HI_DEDH = "डेढ़"  # 1.5
-HI_DHAI = "ढाई"  # 2.5
-HI_SAVVA = "सवा"  # quarter more (1.25)
-HI_SADHE = "साढ़े"  # half more (X.5)
-HI_PAUNE = "पौने"  # quarter less (0.75)
+KN_DEDH = "ಒಂದೂವರೆ"  # 1.5
+KN_DHAI = "ಎರಡೂವರೆ"  # 2.5
+KN_SAVVA = "ಒಂದೂವರೆ ಕಾಲು"  # quarter more (1.25)
+KN_SADHE = "ಅರ್ಧ ಹಿಂದೆ"  # half more (X.5)
+KN_PAUNE = "ಮುಕ್ಕಾಲು ಭಾಗ"  # quarter less (0.75)
 
-# Hindi decimal representations
-HI_POINT_FIVE = ".५"  # .5
-HI_ONE_POINT_FIVE = "१.५"  # 1.5
-HI_TWO_POINT_FIVE = "२.५"  # 2.5
-HI_DECIMAL_25 = ".२५"  # .25
-HI_DECIMAL_75 = ".७५"  # .75
+# Kannada decimal representations
+KN_POINT_FIVE = ".೫"  # .5
+KN_ONE_POINT_FIVE = "೧.೫"  # 1.5
+KN_TWO_POINT_FIVE = "೨.೫"  # 2.5
+KN_DECIMAL_25 = ".೨೫"  # .25
+KN_DECIMAL_75 = ".೭೫"  # .75
 
 # Arabic/English decimal representations
 EN_POINT_FIVE = ".5"
@@ -55,15 +55,15 @@ EN_TWO_POINT_FIVE = "2.5"
 EN_DECIMAL_25 = ".25"
 EN_DECIMAL_75 = ".75"
 
-# Combined Hindi and English decimal patterns
-POINT_FIVE = pynini.union(HI_POINT_FIVE, EN_POINT_FIVE).optimize()
-ONE_POINT_FIVE = pynini.union(HI_ONE_POINT_FIVE, EN_ONE_POINT_FIVE).optimize()
-TWO_POINT_FIVE = pynini.union(HI_TWO_POINT_FIVE, EN_TWO_POINT_FIVE).optimize()
-DECIMAL_25 = pynini.union(HI_DECIMAL_25, EN_DECIMAL_25).optimize()
-DECIMAL_75 = pynini.union(HI_DECIMAL_75, EN_DECIMAL_75).optimize()
+# Combined Kannada and English decimal patterns
+POINT_FIVE = pynini.union(KN_POINT_FIVE, EN_POINT_FIVE).optimize()
+ONE_POINT_FIVE = pynini.union(KN_ONE_POINT_FIVE, EN_ONE_POINT_FIVE).optimize()
+TWO_POINT_FIVE = pynini.union(KN_TWO_POINT_FIVE, EN_TWO_POINT_FIVE).optimize()
+DECIMAL_25 = pynini.union(KN_DECIMAL_25, EN_DECIMAL_25).optimize()
+DECIMAL_75 = pynini.union(KN_DECIMAL_75, EN_DECIMAL_75).optimize()
 
 # Symbol constants
-HI_BY = "बाई"
+KN_BY = "ಬಾಯಿ"
 LOWERCASE_X = "x"
 UPPERCASE_X = "X"
 ASTERISK = "*"
@@ -101,7 +101,7 @@ MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
-MINUS = pynini.union(" ऋणात्मक ", " ऋणात्मक ").optimize()
+MINUS = pynini.union(" ಋಣಾತ್ಮಕ ", " ಋಣಾತ್ಮಕ ").optimize()
 
 
 def capitalized_input_graph(

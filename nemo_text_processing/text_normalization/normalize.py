@@ -163,6 +163,11 @@ class Normalizer:
             from nemo_text_processing.text_normalization.hi.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.hi.verbalizers.post_processing import PostProcessingFst
             from nemo_text_processing.text_normalization.hi.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'kn':
+            from nemo_text_processing.text_normalization.kn.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.kn.verbalizers.post_processing import PostProcessingFst
+            from nemo_text_processing.text_normalization.kn.verbalizers.verbalize_final import VerbalizeFinalFst
+
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
@@ -391,7 +396,7 @@ class Normalizer:
                 return text
         output = SPACE_DUP.sub(' ', output[1:])
 
-        if self.lang in ["en", "hi", "vi"] and hasattr(self, 'post_processor') and self.post_processor is not None:
+        if self.lang in ["en", "hi", "vi" , "kn"] and hasattr(self, 'post_processor') and self.post_processor is not None:
             output = self.post_process(output)
 
         if punct_post_process:
@@ -737,7 +742,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it", "hy", "ja", "hi", "ko", "vi", "pt"],
+        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it", "hy", "ja", "hi", "kn", "ko", "vi", "pt"],
         default="en",
         type=str,
     )
