@@ -5,11 +5,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    delete_space,
-)
+from nemo_text_processing.inverse_text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class ElectronicFst(GraphFst):
@@ -30,17 +26,12 @@ class ElectronicFst(GraphFst):
                 + pynutil.delete("\"")
             )
 
-        ip_graph       = field_graph("ip")
-        domain_graph   = field_graph("domain")
+        ip_graph = field_graph("ip")
+        domain_graph = field_graph("domain")
         username_graph = field_graph("username")
-        path_graph     = field_graph("path")
+        path_graph = field_graph("path")
 
-        email_graph = (
-            username_graph
-            + pynutil.insert("@")
-            + delete_space
-            + domain_graph
-        )
+        email_graph = username_graph + pynutil.insert("@") + delete_space + domain_graph
 
         # email before domain (both use domain: field)
         graph = ip_graph | email_graph | path_graph | domain_graph

@@ -26,9 +26,9 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.hi.taggers.electronic import ElectronicFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.electronic import ElectronicFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.money import MoneyFst
