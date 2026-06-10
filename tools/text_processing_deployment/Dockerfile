@@ -24,17 +24,23 @@ WORKDIR /workspace
 
 # install dependencies
 RUN echo "deb http://archive.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list
-RUN apt-get update &&  apt-get upgrade -y &&   apt-get install -y --reinstall build-essential pkg-config  git make  wget
+# stretch is EOL: its archive Release file is expired, so apt needs
+# Check-Valid-Until=false and --allow-unauthenticated to install anything.
+RUN apt-get -o Acquire::Check-Valid-Until=false update && \
+    apt-get install -y --allow-unauthenticated build-essential pkg-config git make wget ca-certificates
+# the old base ships outdated CA certs; skip TLS verification for the github/
+# wget downloads below (ephemeral build container, fixed open-source URLs).
+RUN git config --global http.sslVerify false
 RUN conda install conda-build -y
 RUN conda install -c conda-forge thrax=1.3.4 -y
 RUN git clone https://github.com/google/re2 
 RUN cd re2 && git checkout tags/2022-02-01 && make && make install
-RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
+RUN wget --no-check-certificate https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
 RUN tar xzvf protobuf-2.5.0.tar.gz
 RUN cd protobuf-2.5.0 && ./configure && make && make install && ldconfig
 RUN printf  "# Conda lib path \n/opt/conda/lib" > /etc/ld.so.conf.d/conda.so.conf
 ENV CPPFLAGS="-I/opt/conda/include"
 ENV LDFLAGS="-L/opt/conda/lib"
-RUN git clone https://github.com/anand-nv/sparrowhawk.git && cd sparrowhawk &&  git checkout nemo_tests &&   apt-get install -y autoconf &&     bash autoreconf && ./configure && make && make install && ldconfig
+RUN git clone https://github.com/anand-nv/sparrowhawk.git && cd sparrowhawk &&  git checkout nemo_tests &&   apt-get -o Acquire::Check-Valid-Until=false install -y --allow-unauthenticated autoconf &&     bash autoreconf && ./configure && make && make install && ldconfig
 RUN git clone https://github.com/kward/shunit2.git
 RUN echo "DONE"

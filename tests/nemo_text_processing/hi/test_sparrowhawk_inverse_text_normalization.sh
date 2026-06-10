@@ -6,14 +6,29 @@ runtest () {
   input=$1
   cd /workspace/sparrowhawk/documentation/grammars
 
+  # per-case timeout (seconds): bounds any input that causes a lattice blow-up
+  # so the suite can never hang forever. Override with CASE_TIMEOUT env var.
+  : ${CASE_TIMEOUT:=20}
+  total=$(wc -l < "$input")
+  n=0
+
   # read test file
   while read testcase; do
+    n=$((n+1))
     IFS='~' read spoken written <<< $testcase
-    denorm_pred=$(echo $spoken | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1)
+
+    # run with a timeout; if it times out, mark the prediction so it fails loudly
+    denorm_pred=$(echo $spoken | timeout ${CASE_TIMEOUT} normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1)
+    if [ $? -eq 124 ]; then
+      denorm_pred="<<TIMEOUT after ${CASE_TIMEOUT}s>>"
+    fi
 
     # trim white space
     written="$(echo -e "${written}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+    # progress to stderr so you can see it moving (not part of test output)
+    echo "[$n/$total] '$spoken' -> '$denorm_pred'" >&2
 
     # input expected actual
     assertEquals "$spoken" "$written" "$denorm_pred"
@@ -80,6 +95,11 @@ testITNWord() {
 
 testITNWhiteList() {
   input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_whitelist.txt
+  runtest $input
+}
+
+testITNElectronic() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_electronic.txt
   runtest $input
 }
 
