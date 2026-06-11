@@ -18,6 +18,8 @@ from pynini.examples import plurals
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    MIN_NEG_WEIGHT,
+    MIN_POS_WEIGHT,
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
@@ -30,44 +32,6 @@ from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_
 
 def _leading_zero_graph(cardinal: GraphFst) -> "pynini.FstLike":
     return pynini.compose(pynini.accep("0") + pynini.closure(NEMO_DIGIT), cardinal.single_digits_graph).optimize()
-
-
-def _num_graph_alphanumeric(cardinal: GraphFst) -> "pynini.FstLike":
-    """
-    For digit runs inside letter-digit tokens:
-    - 1-2 digits, or single digits followed by zeros -> cardinal
-    - 3 digits not ending in 00, or 4+ digits -> single-digit reading
-    """
-
-    single_digit_followed_by_zeros = pynini.compose(NEMO_DIGIT, pynini.closure("0", 1))
-    three_not_00 = pynini.difference(NEMO_DIGIT**3, NEMO_DIGIT + NEMO_DIGIT + "00")
-    return (
-        pynini.compose(NEMO_DIGIT, cardinal.graph)
-        | pynini.compose(NEMO_DIGIT**2, cardinal.graph)
-        | pynini.compose(NEMO_DIGIT + pynini.closure("0", 1), cardinal.graph)
-        | pynini.compose(three_not_00, cardinal.single_digits_graph)
-        | pynini.compose(NEMO_DIGIT ** (4, ...), cardinal.single_digits_graph)
-        | _leading_zero_graph(cardinal)
-    ).optimize()
-
-
-def _num_graph_pure(cardinal: GraphFst) -> "pynini.FstLike":
-    """Digit-only serial segments between non-slash delimiters."""
-    return (
-        pynini.compose(NEMO_DIGIT ** (1, 3), cardinal.graph)
-        | pynini.compose(NEMO_DIGIT ** (4, ...), cardinal.single_digits_graph)
-        | _leading_zero_graph(cardinal)
-    ).optimize()
-
-
-def _num_graph_slash(cardinal: GraphFst) -> "pynini.FstLike":
-    """Slash-separated digit-only tokens use cardinal (5+ digits stay single-digit)."""
-    return (
-        pynini.compose(NEMO_DIGIT ** (1, 4), cardinal.graph)
-        | pynini.compose(NEMO_DIGIT ** (5, ...), cardinal.single_digits_graph)
-        | _leading_zero_graph(cardinal)
-    ).optimize()
-
 
 def _build_serial_graph(
     num_graph: "pynini.FstLike",
@@ -97,7 +61,7 @@ def _build_serial_graph(
         pynini.difference(NEMO_SIGMA, pynini.project(ordinal.graph, "input")), serial_graph
     ).optimize()
 
-    serial_graph = pynutil.add_weight(serial_graph, 0.0001)
+    serial_graph = pynutil.add_weight(serial_graph, MIN_POS_WEIGHT)
     serial_graph |= (
         pynini.closure(NEMO_NOT_SPACE, 1) + (pynini.cross("^2", " squared") | pynini.cross("^3", " cubed")).optimize()
     )
@@ -134,12 +98,36 @@ class SerialFst(GraphFst):
         Finite state transducer for classifying serial (handles only cases without delimiters,
         values with delimiters are handled by default).
             The serial is a combination of digits, letters and dashes, e.g.:
-            c325b -> tokens { cardinal { integer: "c three two five b" } }
+            "H800" -> tokens { name: "H eight hundred" }
+            "a320b" -> tokens { name: "a three two zero b" }
+            "12/345/67890" -> tokens { name: "twelve/three hundred forty five/six seven eight nine zero" }
+
         """
         if deterministic:
-            num_graph_pure = _num_graph_pure(cardinal)
-            num_graph_alnum = _num_graph_alphanumeric(cardinal)
-            num_graph_slash = _num_graph_slash(cardinal)
+            num_graph_pure = (
+                pynini.compose(NEMO_DIGIT ** (1, 3), cardinal.graph)
+                | pynini.compose(NEMO_DIGIT ** (4, ...), cardinal.single_digits_graph)
+                | _leading_zero_graph(cardinal)
+            ).optimize()
+
+            num_graph_alnum = (
+                pynini.compose(NEMO_DIGIT, cardinal.graph)
+                | pynini.compose(NEMO_DIGIT ** 2, cardinal.graph)
+                | pynutil.add_weight(pynini.compose(NEMO_DIGIT + pynini.closure("0", 1), cardinal.graph), MIN_NEG_WEIGHT)
+                | pynini.compose(
+                    pynini.difference(NEMO_DIGIT ** 3, NEMO_DIGIT + NEMO_DIGIT + "00"), 
+                    cardinal.single_digits_graph
+                )
+                | pynini.compose(NEMO_DIGIT ** (4, ...), cardinal.single_digits_graph)
+                | _leading_zero_graph(cardinal)
+            ).optimize()
+
+            num_graph_slash = (
+                pynini.compose(NEMO_DIGIT ** (1, 4), cardinal.graph)
+                | pynini.compose(NEMO_DIGIT ** (5, ...), cardinal.single_digits_graph)
+                | _leading_zero_graph(cardinal)
+            ).optimize()
+
         else:
             num_graph_pure = cardinal.final_graph
             num_graph_alnum = cardinal.final_graph
@@ -156,7 +144,7 @@ class SerialFst(GraphFst):
             num_graph_pure |= cardinal.single_digits_graph
             num_graph_pure |= pynini.compose(num_graph_pure, NEMO_SIGMA + pynutil.delete("hundred ") + NEMO_SIGMA)
             num_graph_pure |= pynutil.add_weight(
-                NEMO_DIGIT**2 @ cardinal.graph_hundred_component_at_least_one_none_zero_digit, weight=0.0001
+                NEMO_DIGIT**2 @ cardinal.graph_hundred_component_at_least_one_none_zero_digit, weight=MIN_POS_WEIGHT
             )
             num_graph_alnum = num_graph_pure
 
@@ -188,7 +176,7 @@ class SerialFst(GraphFst):
             slash_digit_token,
             pynini.closure(num_graph_slash + pynini.accep("/"), 1) + num_graph_slash,
         ).optimize()
-        serial_graph |= pynutil.add_weight(slash_serial, -0.0001)
+        serial_graph |= pynutil.add_weight(slash_serial, MIN_NEG_WEIGHT)
 
         serial_graph |= pynini.compose(graph_with_space, serial_graph_alnum.optimize()).optimize()
         serial_graph = pynini.compose(pynini.closure(NEMO_NOT_SPACE, 2), serial_graph).optimize()

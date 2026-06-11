@@ -12,7 +12,7 @@ pipeline {
   environment {
     AR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/04-24-24-0'
     DE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-23-24-0'
-    EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-3'
+    EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-11-26-1'
     ES_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-25-24-0'
     ES_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-30-24-0'
     HI_EN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-4'
