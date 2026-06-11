@@ -61,12 +61,8 @@ class SerialFst(GraphFst):
         any_digit = pynini.union(NEMO_DIGIT, devanagari_digits).optimize()
 
         not_quote = pynini.closure(pynini.difference(NEMO_SIGMA, pynini.accep('"')), 1)
-        strip_cardinal_tags = (
-            pynutil.delete('cardinal { integer: "')
-            + not_quote
-            + pynutil.delete('" }')
-        )
-       
+        strip_cardinal_tags = pynutil.delete('cardinal { integer: "') + not_quote + pynutil.delete('" }')
+
         pure_cardinal_words = pynini.compose(cardinal.fst, strip_cardinal_tags).optimize()
 
         length_filter = pynini.closure(any_digit, 1, 3)
@@ -74,9 +70,7 @@ class SerialFst(GraphFst):
 
         num_graph = limited_cardinal
 
-        symbols_graph = pynini.string_file(
-            get_abs_path("data/serial/special_symbols.tsv")
-        ).optimize()
+        symbols_graph = pynini.string_file(get_abs_path("data/serial/special_symbols.tsv")).optimize()
 
         devanagari_chars = pynini.project(
             pynini.string_file(get_abs_path("data/serial/chars.tsv")),
@@ -101,55 +95,35 @@ class SerialFst(GraphFst):
 
         all_alphas = pynini.union(NEMO_ALPHA, devanagari_chars).optimize()
 
-        insert_space_alpha_digit = pynini.cdrewrite(
-            pynutil.insert(" "), all_alphas, any_digit, NEMO_SIGMA
-        )
-        insert_space_digit_alpha = pynini.cdrewrite(
-            pynutil.insert(" "), any_digit, all_alphas, NEMO_SIGMA
-        )
+        insert_space_alpha_digit = pynini.cdrewrite(pynutil.insert(" "), all_alphas, any_digit, NEMO_SIGMA)
+        insert_space_digit_alpha = pynini.cdrewrite(pynutil.insert(" "), any_digit, all_alphas, NEMO_SIGMA)
         space_inserter = pynini.compose(insert_space_alpha_digit, insert_space_digit_alpha).optimize()
 
         glued_serial = pynini.compose(space_inserter, serial_core).optimize()
         serial_graph = pynini.union(serial_graph, glued_serial).optimize()
 
         power_special = pynutil.add_weight(
-            pynini.string_file(get_abs_path("data/serial/power_special.tsv")),
-            -1.0  
+            pynini.string_file(get_abs_path("data/serial/power_special.tsv")), -1.0
         ).optimize()
 
         power_generic = pynutil.add_weight(
-            (
-                pynutil.delete("^")
-                + pynutil.insert(" टु द पावर ")
-                + num_graph
-            ),
-            1.0  
+            (pynutil.delete("^") + pynutil.insert(" टु द पावर ") + num_graph), 1.0
         ).optimize()
 
         power_suffix = pynini.union(power_special, power_generic).optimize()
         power_graph = num_graph + power_suffix
         serial_graph = pynini.union(serial_graph, power_graph).optimize()
 
-        serial_graph = pynini.compose(
-            pynini.closure(NEMO_NOT_SPACE, 2), serial_graph
-        ).optimize()
+        serial_graph = pynini.compose(pynini.closure(NEMO_NOT_SPACE, 2), serial_graph).optimize()
 
-        pure_word_slash = (
-            pynini.closure(NEMO_ALPHA, 1)
-            + pynini.accep("/")
-            + pynini.closure(NEMO_ALPHA, 1)
-        )
+        pure_word_slash = pynini.closure(NEMO_ALPHA, 1) + pynini.accep("/") + pynini.closure(NEMO_ALPHA, 1)
 
         dimension_pattern = (
-            pynini.closure(any_digit, 1)
-            + (pynini.accep("x") | pynini.accep("X"))
-            + pynini.closure(any_digit, 1)
+            pynini.closure(any_digit, 1) + (pynini.accep("x") | pynini.accep("X")) + pynini.closure(any_digit, 1)
         )
 
         _opt_delim = pynini.closure(pynini.accep("-") | pynini.accep(" "), 0, 1)
-        latin_alphanum = (
-            pynini.closure(NEMO_ALPHA, 1) + _opt_delim + pynini.closure(any_digit, 1)
-        ) | (
+        latin_alphanum = (pynini.closure(NEMO_ALPHA, 1) + _opt_delim + pynini.closure(any_digit, 1)) | (
             pynini.closure(any_digit, 1) + _opt_delim + pynini.closure(NEMO_ALPHA, 1)
         )
 
@@ -183,9 +157,5 @@ class SerialFst(GraphFst):
         serial_graph = pynini.compose(accepted_inputs, serial_graph).optimize()
 
         self.graph = serial_graph.optimize()
-        graph = (
-            pynutil.insert('name: "')
-            + convert_space(self.graph).optimize()
-            + pynutil.insert('"')
-        )
+        graph = pynutil.insert('name: "') + convert_space(self.graph).optimize() + pynutil.insert('"')
         self.fst = graph.optimize()
