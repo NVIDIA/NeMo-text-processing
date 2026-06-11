@@ -33,6 +33,7 @@ from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_
 def _leading_zero_graph(cardinal: GraphFst) -> "pynini.FstLike":
     return pynini.compose(pynini.accep("0") + pynini.closure(NEMO_DIGIT), cardinal.single_digits_graph).optimize()
 
+
 def _build_serial_graph(
     num_graph: "pynini.FstLike",
     delimiter: "pynini.FstLike",
@@ -112,11 +113,12 @@ class SerialFst(GraphFst):
 
             num_graph_alnum = (
                 pynini.compose(NEMO_DIGIT, cardinal.graph)
-                | pynini.compose(NEMO_DIGIT ** 2, cardinal.graph)
-                | pynutil.add_weight(pynini.compose(NEMO_DIGIT + pynini.closure("0", 1), cardinal.graph), MIN_NEG_WEIGHT)
+                | pynini.compose(NEMO_DIGIT**2, cardinal.graph)
+                | pynutil.add_weight(
+                    pynini.compose(NEMO_DIGIT + pynini.closure("0", 1), cardinal.graph), MIN_NEG_WEIGHT
+                )
                 | pynini.compose(
-                    pynini.difference(NEMO_DIGIT ** 3, NEMO_DIGIT + NEMO_DIGIT + "00"), 
-                    cardinal.single_digits_graph
+                    pynini.difference(NEMO_DIGIT**3, NEMO_DIGIT + NEMO_DIGIT + "00"), cardinal.single_digits_graph
                 )
                 | pynini.compose(NEMO_DIGIT ** (4, ...), cardinal.single_digits_graph)
                 | _leading_zero_graph(cardinal)
