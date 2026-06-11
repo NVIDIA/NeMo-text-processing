@@ -84,7 +84,7 @@ class MoneyFst(GraphFst):
         # Currency-first tagging for exactly one major unit (e.g. $1 -> دولار واحد).
         graph_integer_one_unit = graph_maj_singular + insert_space + graph_integer_one + currency_first
 
-        # For local currency "5د.ك"
+        # For local currency "9د.ك"
         graph_integer_only_ar = graph_integer + insert_space + graph_ar_cur
 
         graph = (graph_integer_one_unit + optional_delete_fractional_zeros) | graph_integer_only_ar
@@ -144,9 +144,7 @@ class MoneyFst(GraphFst):
                 graph_fractional_up_to_ten + insert_space + pynutil.insert(curr_symbol) @ graph_min_plural
             )
 
-            graph_with_no_minor_curr = integer_plus_maj_no_minor
-
-            graph_with_no_minor_curr = pynutil.delete(curr_symbol) + graph_with_no_minor_curr + preserve_order
+            graph_with_no_minor_curr = pynutil.delete(curr_symbol) + integer_plus_maj_no_minor + preserve_order
 
             graph_with_no_minor = (
                 graph_with_no_minor_curr
