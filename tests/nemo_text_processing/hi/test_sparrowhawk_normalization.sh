@@ -52,10 +52,10 @@ testTNDecimal() {
 #  runtest $input
 #}
 
-#testTNSerial() {
-#  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_serial.txt
-#  runtest $input
-#}
+testTNSerial() {
+  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_serial.txt
+  runtest $input
+}
 
 #testTNRoman() {
 #  input=$PROJECT_DIR/en/data_text_normalization/test_cases_roman.txt
