@@ -80,14 +80,14 @@ class MoneyFst(GraphFst):
             pynutil.insert("integer_part: \"") + ((NEMO_SIGMA - "1") @ cardinal_graph) + pynutil.insert("\"")
         )
 
-        graph_integer_only = graph_maj_singular + insert_space + graph_integer_one
-        graph_integer_only |= graph_maj_plural + insert_space + graph_integer
+        currency_first = pynutil.insert(' morphosyntactic_features: "currency_first"')
+        # Currency-first tagging for exactly one major unit (e.g. $1 -> دولار واحد).
+        graph_integer_one_unit = graph_maj_singular + insert_space + graph_integer_one + currency_first
 
         # For local currency "9د.ك"
         graph_integer_only_ar = graph_integer + insert_space + graph_ar_cur
-        # graph_decimal_ar = graph_decimal_final + insert_space  + graph_ar_cur
 
-        graph = (graph_integer_only + optional_delete_fractional_zeros) | graph_integer_only_ar
+        graph = (graph_integer_one_unit + optional_delete_fractional_zeros) | graph_integer_only_ar
 
         # remove trailing zeros of non zero number in the first 2 digits and fill up to 2 digits
         # e.g. 2000 -> 20, 0200->02, 01 -> 01, 10 -> 10
@@ -112,9 +112,12 @@ class MoneyFst(GraphFst):
 
             preserve_order = pynutil.insert(" preserve_order: true")
             integer_plus_maj = graph_integer + insert_space + pynutil.insert(curr_symbol) @ graph_maj_plural
-            integer_plus_maj |= graph_integer_one + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
-            # non zero integer part
-            integer_plus_maj = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj
+            integer_plus_maj_with_one = integer_plus_maj | (
+                graph_integer_one + insert_space + pynutil.insert(curr_symbol) @ graph_maj_singular
+            )
+            # Amount == 1 without fractional part uses graph_integer_one_unit / graph_one_prefix.
+            integer_plus_maj_no_minor = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj
+            integer_plus_maj_with_minor = (pynini.closure(NEMO_DIGIT) - "0") @ integer_plus_maj_with_one
 
             graph_fractional_one = two_digits_fractional_part @ pynini.cross("1", "")
             graph_fractional_one = pynutil.insert("fractional_part: \"") + graph_fractional_one + pynutil.insert("\"")
@@ -141,22 +144,16 @@ class MoneyFst(GraphFst):
                 graph_fractional_up_to_ten + insert_space + pynutil.insert(curr_symbol) @ graph_min_plural
             )
 
-            graph_with_no_minor_curr = integer_plus_maj
-            graph_with_no_minor_curr |= pynutil.add_weight(
-                integer_plus_maj,
-                weight=0.0001,
-            )
-
-            graph_with_no_minor_curr = pynutil.delete(curr_symbol) + graph_with_no_minor_curr + preserve_order
+            graph_with_no_minor_curr = pynutil.delete(curr_symbol) + integer_plus_maj_no_minor + preserve_order
 
             graph_with_no_minor = (
                 graph_with_no_minor_curr
                 if graph_with_no_minor is None
                 else pynini.union(graph_with_no_minor, graph_with_no_minor_curr)
             )
-            decimal_graph_with_minor_curr = integer_plus_maj + pynini.cross(".", " ") + fractional_plus_min
+            decimal_graph_with_minor_curr = integer_plus_maj_with_minor + pynini.cross(".", " ") + fractional_plus_min
             decimal_graph_with_minor_curr |= pynutil.add_weight(
-                integer_plus_maj
+                integer_plus_maj_with_minor
                 + pynini.cross(".", " ")
                 + pynutil.insert("fractional_part: \"")
                 + two_digits_fractional_part @ cardinal_graph
