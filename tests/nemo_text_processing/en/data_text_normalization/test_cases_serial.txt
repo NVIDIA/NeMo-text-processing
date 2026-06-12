@@ -1,10 +1,10 @@
 t-0t25d12-f~t-zero t twenty five d twelve-f
-133-ABC~one hundred thirty three-ABC
+133-ABC~one three three-ABC
 B2A23C~B two A twenty three C
 25d08A~twenty five d zero eight A
 C24~C twenty four
 W2s~W two s
-1-413-te-b-1-5~one-four hundred thirteen-te-b-one-five
+1-413-te-b-1-5~one-four one three-te-b-one-five
 b-c-1-5-b-s-b~b-c-one-five-b-s-b
 MIG-25/235212-asdg~MIG-twenty five/two three five two one two-asdg
 1/f-4s~one/f-four s
@@ -31,3 +31,4 @@ a 4-kilogram bag~a four-kilogram bag
 2*8~two asterisk eight
 my pnr is t2000~my pnr is t two thousand
 your otp is ab9453~your otp is ab nine four five three
+password is a/b&c12&d~password is a/b&c twelve &d
