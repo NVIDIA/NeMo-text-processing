@@ -146,6 +146,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'kn':  # Kannada
+            from nemo_text_processing.inverse_text_normalization.kn.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.kn.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
@@ -211,6 +216,7 @@ def parse_args():
             'mr',
             'ja',
             'ko',
+            'kn',
         ],
         default="en",
         type=str,
