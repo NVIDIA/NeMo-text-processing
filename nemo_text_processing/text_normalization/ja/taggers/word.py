@@ -15,7 +15,7 @@
 
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_SPACE, GraphFst
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class WordFst(GraphFst):
@@ -26,5 +26,5 @@ class WordFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
-        word = pynutil.insert("name: \"") + NEMO_NOT_SPACE + pynutil.insert("\"")
+        word = pynutil.insert("name: \"") + NEMO_NOT_QUOTE + pynutil.insert("\"")
         self.fst = word.optimize()
