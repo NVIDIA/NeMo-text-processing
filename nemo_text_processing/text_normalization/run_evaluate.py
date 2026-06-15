@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument(
         "--lang",
         help="language",
-        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh', 'hy', 'hi', 'ko', 'vi', 'pt'],
+        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh', 'hy', 'hi', 'kn', 'ko', 'vi', 'pt'],
         default="en",
         type=str,
     )
@@ -66,6 +66,10 @@ if __name__ == "__main__":
     print("Loading training data: " + file_path)
     to_lower = args.input_case == "lower_cased"
     training_data = load_files([file_path], to_lower=to_lower)
+
+    # print("Loading training data: " + file_path)
+    # to_lower = True if args.input_case == "lower_cased" else False
+    # training_data = load_files([file_path], to_lower=to_lower)
 
     if args.filter:
         training_data = filter_loaded_data(training_data)
