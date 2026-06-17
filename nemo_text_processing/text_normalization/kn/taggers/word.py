@@ -27,7 +27,7 @@ from nemo_text_processing.text_normalization.kn.taggers.punctuation import Punct
 class WordFst(GraphFst):
     """
     Finite state transducer for classifying Kannada words.
-        e.g. सोना -> tokens { name: "सोना" }
+        e.g. ಚಿನ್ನ -> tokens { name: "ಚಿನ್ನ" }
 
     Args:
         punctuation: PunctuationFst
