@@ -26,14 +26,12 @@ class ElectronicFst(GraphFst):
                 + pynutil.delete("\"")
             )
 
-        ip_graph = field_graph("ip")
         domain_graph = field_graph("domain")
         username_graph = field_graph("username")
         path_graph = field_graph("path")
 
         email_graph = username_graph + pynutil.insert("@") + delete_space + domain_graph
 
-        # email before domain (both use domain: field)
-        graph = ip_graph | email_graph | path_graph | domain_graph
+        graph = email_graph | path_graph | domain_graph
 
         self.fst = self.delete_tokens(graph).optimize()

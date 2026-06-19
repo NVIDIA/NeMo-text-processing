@@ -14,10 +14,7 @@
 
 from typing import Dict
 
-try:
-    from cdifflib import CSequenceMatcher
-except ImportError:
-    from difflib import SequenceMatcher as CSequenceMatcher
+from cdifflib import CSequenceMatcher
 
 from nemo_text_processing.utils.logging import logger
 
