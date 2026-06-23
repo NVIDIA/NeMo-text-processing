@@ -83,6 +83,34 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     logging.info(f'Created {file_name}')
 
 
+def load_symbols(path):
+    """
+    Builds a dict mapping a symbol name to an FST that deletes a spoken Hindi
+    phrase and inserts its written form. TSV columns: name, spoken phrase, output
+    (optional). Rows sharing a name are unioned; "<space>" in the output inserts a
+    space.
+    """
+    table = {}
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.rstrip("\r\n")
+            if not line or line.startswith("#"):
+                continue
+            cols = line.split("\t")
+            name = cols[0]
+            words = cols[1].split(" ")
+            out = cols[2] if len(cols) > 2 else ""
+            if out == "<space>":
+                out = " "
+            fst = pynutil.delete(words[0])
+            for word in words[1:]:
+                fst += delete_space + pynutil.delete(word)
+            if out:
+                fst += pynutil.insert(out)
+            table[name] = (table[name] | fst) if name in table else fst
+    return table
+
+
 def convert_space(fst) -> 'pynini.FstLike':
     """
     Converts space to nonbreaking space.

@@ -17,41 +17,13 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     DEVANAGARI_DIGIT,
-    NEMO_SIGMA,
     GraphFst,
     delete_space,
     delete_zero_or_one_space,
+    load_symbols,
 )
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import TO_LOWER, TO_UPPER
-
-
-def _load_symbols(path):
-    """
-    Builds a dict mapping a symbol name to an FST that deletes a spoken Hindi
-    phrase and inserts its written form. TSV columns: name, spoken phrase, output
-    (optional). Rows sharing a name are unioned; "<space>" in the output inserts a
-    space.
-    """
-    table = {}
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            line = line.rstrip("\r\n")
-            if not line or line.startswith("#"):
-                continue
-            cols = line.split("\t")
-            name = cols[0]
-            words = cols[1].split(" ")
-            out = cols[2] if len(cols) > 2 else ""
-            if out == "<space>":
-                out = " "
-            fst = pynutil.delete(words[0])
-            for word in words[1:]:
-                fst += delete_space + pynutil.delete(word)
-            if out:
-                fst += pynutil.insert(out)
-            table[name] = (table[name] | fst) if name in table else fst
-    return table
 
 
 class ElectronicFst(GraphFst):
@@ -59,7 +31,7 @@ class ElectronicFst(GraphFst):
     Finite state transducer for classifying electronic expressions in Hindi
     inverse text normalization: converts spoken Hindi words into written
     electronic forms such as email addresses, URLs, file paths, IP addresses,
-    domains, chemical formulas, and alphanumeric codes.
+    domains, and chemical formulas.
 
         e-mail:
         e.g. कुमार एट जीमेल डॉट कॉम
@@ -79,9 +51,6 @@ class ElectronicFst(GraphFst):
         chemical formula:
         e.g. एन ए ओ एच
              -> tokens { electronic { domain: "NaOH" } }
-        alphanumeric code:
-        e.g. ए बी सी एक दो तीन
-             -> tokens { electronic { domain: "ABC123" } }
 
     """
 
@@ -91,9 +60,10 @@ class ElectronicFst(GraphFst):
         digit_glyphs = pynini.union(
             *[pynini.cross(glyph, str(value)) for value, glyph in enumerate(DEVANAGARI_DIGIT)]
         ).optimize()
-        cardinal_digit_words = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert() | pynini.string_file(
-            get_abs_path("data/numbers/zero.tsv")
-        ).invert()
+        cardinal_digit_words = (
+            pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
+            | pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
+        )
         digit_words = (cardinal_digit_words @ digit_glyphs).optimize()
         single_digit = pynutil.add_weight(digit_glyphs, 0.8) | pynutil.add_weight(digit_words, 0.50)
         digit_seq = pynutil.add_weight(digit_glyphs + pynini.closure(digit_glyphs, 0), 0.8) | pynutil.add_weight(
@@ -105,7 +75,7 @@ class ElectronicFst(GraphFst):
         server_map = pynini.string_file(get_abs_path("data/electronic/server_name.tsv")).invert()
         common_map = pynini.string_file(get_abs_path("data/electronic/common_words.tsv")).invert()
 
-        sym = _load_symbols(get_abs_path("data/electronic/symbols.tsv"))
+        sym = load_symbols(get_abs_path("data/electronic/symbols.tsv"))
 
         letter_map_upper = (letter_map_lower @ TO_UPPER).optimize()
         letter_map = letter_map_lower | letter_map_upper
@@ -155,37 +125,17 @@ class ElectronicFst(GraphFst):
         hp_token = sym["hp"]
         tilde_delete = sym["tilde"]
 
-        single_token = (
-            pynutil.add_weight(server_map, 0.90)
-            | pynutil.add_weight(common_map, 0.95)
-            | pynutil.add_weight(letter_map_lower, 1.00)
-        )
+        single_token = pynutil.add_weight(server_map | common_map, 0.90) | pynutil.add_weight(letter_map_lower, 1.00)
         token_seq = single_token + pynini.closure(delete_space + single_token, 0)
 
-        path_atom = (
-            pynutil.add_weight(hp_token, 0.76)
-            | pynutil.add_weight(www_token, 0.77)
-            | pynutil.add_weight(or_word, 0.80)
-            | pynutil.add_weight(and_as_letters, 0.84)
-            | pynutil.add_weight(common_map, 0.90)
-            | pynutil.add_weight(server_map, 0.92)
-            | pynutil.add_weight(digit_words, 0.94)
-            | pynutil.add_weight(digit_glyphs, 0.95)
-            | pynutil.add_weight(latin_run, 0.97)
-            | pynutil.add_weight(letter_map, 1.00)
-        )
-        path_atom_lower = (
-            pynutil.add_weight(common_map_lower, 0.90)
-            | pynutil.add_weight(server_map, 0.92)
-            | pynutil.add_weight(digit_words, 0.94)
-            | pynutil.add_weight(digit_glyphs, 0.95)
-            | pynutil.add_weight(latin_run_lower, 0.97)
-            | pynutil.add_weight(letter_map_lower, 1.00)
+        path_atom = pynutil.add_weight(
+            hp_token | www_token | or_word | and_as_letters | common_map | server_map, 0.90
+        ) | pynutil.add_weight(digit_words | digit_glyphs | latin_run | letter_map, 1.00)
+        path_atom_lower = pynutil.add_weight(common_map_lower | server_map, 0.90) | pynutil.add_weight(
+            digit_words | digit_glyphs | latin_run_lower | letter_map_lower, 1.00
         )
         unix_path_atom = (
-            pynutil.add_weight(www_token, 0.77)
-            | pynutil.add_weight(or_word, 0.80)
-            | pynutil.add_weight(and_as_letters, 0.84)
+            pynutil.add_weight(www_token | or_word | and_as_letters, 0.84)
             | pynutil.add_weight(pynini.cross("CI", "c"), 0.86)
             | path_atom_lower
         )
@@ -207,24 +157,23 @@ class ElectronicFst(GraphFst):
         file_ext = single_ext + pynini.closure(single_ext | ext_hyphen, 0)
 
         win_hyphen = (
-            delete_space
-            + sym["hyphen"]
-            + delete_space
-            + path_atom
-            + pynini.closure(delete_space + path_atom, 0)
+            delete_space + sym["hyphen"] + delete_space + path_atom + pynini.closure(delete_space + path_atom, 0)
         )
         win_underscore = delete_space + sym["underscore"]
         path_segment = (
             path_atom
             + pynini.closure(
-                pynutil.add_weight(delete_space + path_atom, 1.0)
-                | pynutil.add_weight(win_hyphen, 1.0)
-                | pynutil.add_weight(win_underscore, 1.0)
-                | pynutil.add_weight(literal_space, 1.0)
-                | pynutil.add_weight(open_bracket, 1.0)
-                | pynutil.add_weight(close_bracket, 1.0)
-                | pynutil.add_weight(lit_open_paren, 1.0)
-                | pynutil.add_weight(lit_close_paren, 1.0),
+                pynutil.add_weight(
+                    (delete_space + path_atom)
+                    | win_hyphen
+                    | win_underscore
+                    | literal_space
+                    | open_bracket
+                    | close_bracket
+                    | lit_open_paren
+                    | lit_close_paren,
+                    1.0,
+                ),
                 0,
             )
             + pynini.closure(file_ext, 0, 1)
@@ -264,9 +213,10 @@ class ElectronicFst(GraphFst):
                 | pynutil.add_weight(unix_path_atom, 1.00)
             )
             + pynini.closure(
-                pynutil.add_weight(delete_space + unix_path_atom, 1.0)
-                | pynutil.add_weight(unix_hyphen, 1.0)
-                | pynutil.add_weight(unix_underscore, 1.0),
+                pynutil.add_weight(
+                    (delete_space + unix_path_atom) | unix_hyphen | unix_underscore,
+                    1.0,
+                ),
                 0,
             )
             + pynini.closure(file_ext, 0, 1)
@@ -321,9 +271,10 @@ class ElectronicFst(GraphFst):
         lit_seg = (
             unix_path_atom
             + pynini.closure(
-                pynutil.add_weight(delete_space + unix_path_atom, 1.0)
-                | pynutil.add_weight(unix_hyphen, 1.0)
-                | pynutil.add_weight(lit_hyphen_seg, 1.0),
+                pynutil.add_weight(
+                    (delete_space + unix_path_atom) | unix_hyphen | lit_hyphen_seg,
+                    1.0,
+                ),
                 0,
             )
             + pynini.closure(file_ext, 0, 1)
@@ -338,10 +289,8 @@ class ElectronicFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        domain_single = (
-            pynutil.add_weight(server_map, 0.90)
-            | pynutil.add_weight(common_map_lower, 0.95)
-            | pynutil.add_weight(letter_map_lower, 1.00)
+        domain_single = pynutil.add_weight(server_map | common_map_lower, 0.90) | pynutil.add_weight(
+            letter_map_lower, 1.00
         )
         domain_token_seq = domain_single + pynini.closure(delete_space + domain_single, 0)
 
@@ -362,12 +311,10 @@ class ElectronicFst(GraphFst):
         full_domain_bare = pynini.closure(domain_body + dot, 0, 4) + domain_body
 
         uname_atom = (
-            pynutil.add_weight(and_as_letters, 0.84)
-            | pynutil.add_weight(digit_words, 0.88)
-            | pynutil.add_weight(digit_glyphs, 0.88)
+            pynutil.add_weight(and_as_letters | letter_map_lower, 0.84)
+            | pynutil.add_weight(digit_words | digit_glyphs, 0.88)
             | pynutil.add_weight(server_map, 0.90)
             | pynutil.add_weight(common_map, 0.95)
-            | pynutil.add_weight(letter_map_lower, 0.84)
         )
         uname_sep = (
             (delete_space + sym["dot"] + delete_space)
@@ -457,7 +404,7 @@ class ElectronicFst(GraphFst):
             + pynini.closure(hash_frag, 0, 1)
         )
 
-        protocol = pynutil.add_weight(sym["https"], 1.0) | pynutil.add_weight(sym["http"], 1.01)
+        protocol = pynutil.add_weight(sym["https"] | sym["http"], 1.0)
 
         url_fst = (
             pynutil.insert("domain: \"")
@@ -482,69 +429,21 @@ class ElectronicFst(GraphFst):
 
         chem_token = pynutil.add_weight(digit_glyphs, 0.90) | pynutil.add_weight(letter_map, 1.00)
         chem_more = pynini.closure(
-            pynutil.add_weight(delete_space + chem_token, 1.0)
-            | pynutil.add_weight(open_bracket, 1.0)
-            | pynutil.add_weight(close_bracket, 1.0)
-            | pynutil.add_weight(delete_space + sym["chemopen"], 1.0)
-            | pynutil.add_weight(delete_space + sym["chemclose"], 1.0)
-            | pynutil.add_weight(delete_space + sym["minus"], 1.0),
+            pynutil.add_weight(
+                (delete_space + chem_token)
+                | open_bracket
+                | close_bracket
+                | (delete_space + sym["chemopen"])
+                | (delete_space + sym["chemclose"])
+                | (delete_space + sym["minus"]),
+                1.0,
+            ),
             0,
         )
 
         chem_spelled_fst = (
             pynutil.insert("domain: \"") + (chem_token + delete_space + chem_token + chem_more) + pynutil.insert("\"")
         )
-
-        alnum_token = (
-            pynutil.add_weight(digit_glyphs, 0.77)
-            | pynutil.add_weight(digit_words, 0.10)
-            | pynutil.add_weight(letter_map_upper, 0.84)
-        )
-        alnum_run = alnum_token + delete_space + alnum_token + pynini.closure(delete_space + alnum_token, 0)
-
-        alnum_hyphen_ext = (
-            delete_space
-            + sym["hyphen"]
-            + delete_space
-            + alnum_token
-            + pynini.closure(delete_space + alnum_token, 0)
-        )
-        alnum_body_start = alnum_run | (alnum_token + alnum_hyphen_ext)
-        alnum_body = alnum_body_start + pynini.closure(
-            pynutil.add_weight(alnum_hyphen_ext, 1.0)
-            | pynutil.add_weight(
-                delete_space
-                + (sym["dot"] | sym["point"])
-                + delete_space
-                + alnum_token
-                + pynini.closure(delete_space + alnum_token, 0),
-                1.0,
-            )
-            | pynutil.add_weight(
-                delete_space
-                + sym["space"]
-                + delete_space
-                + alnum_token
-                + pynini.closure(delete_space + alnum_token, 0),
-                1.0,
-            )
-            | pynutil.add_weight(lit_open_paren + alnum_token + pynini.closure(delete_space + alnum_token, 0), 1.0)
-            | pynutil.add_weight(lit_close_paren + alnum_token + pynini.closure(delete_space + alnum_token, 0), 1.0)
-            | pynutil.add_weight(lit_close_paren, 1.0),
-            0,
-        )
-
-        ascii_alpha = pynini.union(
-            *[chr(c) for c in range(ord("A"), ord("Z") + 1)],
-            *[chr(c) for c in range(ord("a"), ord("z") + 1)],
-        )
-        ascii_digit = pynini.union(*[str(d) for d in range(10)])
-        contains_alpha = NEMO_SIGMA + ascii_alpha + NEMO_SIGMA
-        contains_digit = NEMO_SIGMA + ascii_digit + NEMO_SIGMA
-        alnum_mix = pynini.intersect(contains_alpha, contains_digit).optimize()
-        alnum_body = (alnum_body @ alnum_mix).optimize()
-
-        alnum_letterdigit_fst = pynutil.insert("domain: \"") + alnum_body + pynutil.insert("\"")
 
         graph = (
             pynutil.add_weight(ip_fst, 1.00)
@@ -560,7 +459,6 @@ class ElectronicFst(GraphFst):
             | pynutil.add_weight(unix_rel_path_fst, 15.00)
             | pynutil.add_weight(literal_rel_path_fst, 1.15)
             | pynutil.add_weight(chem_spelled_fst, 1.18)
-            | pynutil.add_weight(alnum_letterdigit_fst, 0.90)
             | pynutil.add_weight(plain_fst, 1.30)
         )
 
