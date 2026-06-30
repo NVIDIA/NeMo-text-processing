@@ -16,11 +16,10 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
-    DEVANAGARI_DIGIT,
-    NEMO_SIGMA,
     GraphFst,
     delete_space,
     insert_space,
+    integer_to_devanagari,
 )
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path, load_labels
 
@@ -33,8 +32,8 @@ class RomanFst(GraphFst):
     predictable contexts; regnal, papal and product names (e.g. भास्कर-II) are a
     documented limitation because the same number is ambiguous between Arabic and
     Roman form.
-        e.g. अध्याय तीन -> tokens { roman { key: "अध्याय" integer: "III" } }
-        e.g. कक्षा दस -> tokens { roman { key: "कक्षा" integer: "X" } }
+        e.g. अध्याय तीन -> tokens { roman { key_cardinal: "अध्याय" integer: "III" } }
+        e.g. कक्षा दस -> tokens { roman { key_cardinal: "कक्षा" integer: "X" } }
 
     Args:
         cardinal: CardinalFst, used to read spoken numbers.
@@ -48,41 +47,27 @@ class RomanFst(GraphFst):
         key_words = [label[0] for label in load_labels(get_abs_path("data/roman/key_words.tsv"))]
         key_words_fst = pynini.union(*[pynini.accep(word) for word in key_words]).optimize()
 
-        roman_to_value = {
-            roman: int(value) for roman, value in load_labels(get_abs_path("data/roman/roman_numerals.tsv"))
+        value_to_roman = {
+            int(value): roman for roman, value in load_labels(get_abs_path("data/roman/roman_numerals.tsv"))
         }
-        value_to_roman = {value: roman for roman, value in roman_to_value.items()}
 
-        not_quote = pynini.closure(pynini.difference(NEMO_SIGMA, pynini.accep('"')), 1)
-        strip_cardinal_tags = pynutil.delete('cardinal { integer: "') + not_quote + pynutil.delete('" }')
-        cardinal_to_devanagari = pynini.compose(cardinal.fst, strip_cardinal_tags).optimize()
-
-        single_digit_to_devanagari = (
-            pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
-            | pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
-        )
-        glyph_to_ascii = pynini.union(
-            *[pynini.cross(glyph, str(value)) for value, glyph in enumerate(DEVANAGARI_DIGIT)]
-        )
-        devanagari_to_ascii = pynini.cdrewrite(glyph_to_ascii, "", "", NEMO_SIGMA)
-        spoken_to_ascii = pynini.compose(
-            cardinal_to_devanagari | single_digit_to_devanagari, devanagari_to_ascii
+        devanagari_to_roman = pynini.string_map(
+            [
+                (integer_to_devanagari(value), self._int_to_roman(value, value_to_roman))
+                for value in range(1, self.MAX_NUMBER + 1)
+            ]
         ).optimize()
-
-        ascii_to_roman = pynini.string_map(
-            [(str(value), self._int_to_roman(value, value_to_roman)) for value in range(1, self.MAX_NUMBER + 1)]
-        ).optimize()
-        spoken_to_roman = pynini.compose(spoken_to_ascii, ascii_to_roman).optimize()
+        spoken_to_roman = pynini.compose(cardinal.graph_no_exception, devanagari_to_roman).optimize()
 
         graph = (
-            pynutil.insert("key: \"")
+            pynutil.insert('key_cardinal: "')
             + key_words_fst
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
             + delete_space
             + insert_space
-            + pynutil.insert("integer: \"")
+            + pynutil.insert('integer: "')
             + spoken_to_roman
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
         )
         self.fst = self.add_tokens(graph).optimize()
 

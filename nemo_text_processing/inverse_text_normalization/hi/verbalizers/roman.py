@@ -26,13 +26,13 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
 class RomanFst(GraphFst):
     """
     Finite state transducer for verbalizing Roman numerals
-        e.g. tokens { roman { key: "अध्याय" integer: "III" } } -> अध्याय III
+        e.g. tokens { roman { key_cardinal: "अध्याय" integer: "III" } } -> अध्याय III
     """
 
     def __init__(self):
         super().__init__(name="roman", kind="verbalize")
-        key = pynutil.delete("key: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        key_cardinal = pynutil.delete("key_cardinal: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         integer = pynutil.delete("integer: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        graph = key + delete_space + insert_space + integer
+        graph = key_cardinal + delete_space + insert_space + integer
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
