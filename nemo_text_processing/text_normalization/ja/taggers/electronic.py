@@ -58,7 +58,9 @@ class ElectronicFst(GraphFst):
         raw_label = pynini.closure(NEMO_ALPHA | NEMO_DIGIT, 1)
         alpha_label = pynini.closure(NEMO_ALPHA, 1)
         digit_label = pynini.closure(NEMO_DIGIT, 1)
-        raw_label_with_hyphen = raw_label + pynini.closure(pynutil.delete("-") + pynutil.insert(" ハイフン ") + raw_label)
+        raw_label_with_hyphen = raw_label + pynini.closure(
+            pynutil.delete("-") + pynutil.insert(" ハイフン ") + raw_label
+        )
 
         insert_alpha_digit_space = pynini.cdrewrite(pynutil.insert(" "), NEMO_ALPHA, NEMO_DIGIT, NEMO_SIGMA)
         insert_digit_alpha_space = pynini.cdrewrite(pynutil.insert(" "), NEMO_DIGIT, NEMO_ALPHA, NEMO_SIGMA)
@@ -92,13 +94,18 @@ class ElectronicFst(GraphFst):
 
         four_digits = NEMO_DIGIT**4 @ (digit_zero_maru**4)
         card_separator = (pynutil.delete("-") | pynutil.delete(" ")) + insert_space
-        credit_card = four_digits + card_separator + four_digits + card_separator + four_digits + card_separator + four_digits
+        credit_card = (
+            four_digits + card_separator + four_digits + card_separator + four_digits + card_separator + four_digits
+        )
 
         card_cue = pynini.string_file(get_abs_path("data/electronic/card_cues.tsv"))
         card_with_cue = card_cue + credit_card
         card_tail_with_cue = card_cue + four_digits
-        card_tail = pynini.accep("カード下") + (NEMO_DIGIT @ cardinal.just_cardinals) + pynini.accep("桁") + (
-            NEMO_DIGIT**4 @ (digit_zero_maru**4)
+        card_tail = (
+            pynini.accep("カード下")
+            + (NEMO_DIGIT @ cardinal.just_cardinals)
+            + pynini.accep("桁")
+            + (NEMO_DIGIT**4 @ (digit_zero_maru**4))
         )
 
         extension = pynini.string_file(get_abs_path("data/electronic/file_extensions.tsv"))

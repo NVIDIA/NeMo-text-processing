@@ -32,7 +32,9 @@ class RomanFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="roman", kind="classify", deterministic=deterministic)
 
-        roman_values = {roman: int(value) for roman, value in load_labels(get_abs_path("data/roman/roman_numerals.tsv"))}
+        roman_values = {
+            roman: int(value) for roman, value in load_labels(get_abs_path("data/roman/roman_numerals.tsv"))
+        }
         valid_roman_pairs = []
         for number in range(1, 4000):
             roman = self._int_to_roman(number, roman_values)
@@ -45,8 +47,12 @@ class RomanFst(GraphFst):
         japanese_suffix = pynini.union("章", "条", "巻", "回")
         japanese_context = pynini.accep("第") + roman_to_cardinal + japanese_suffix
 
-        key_cardinal = pynini.union(*[pynini.accep(x[0]) for x in load_labels(get_abs_path("data/roman/key_cardinal.tsv"))])
-        key_ordinal = pynini.union(*[pynini.accep(x[0]) for x in load_labels(get_abs_path("data/roman/key_ordinal.tsv"))])
+        key_cardinal = pynini.union(
+            *[pynini.accep(x[0]) for x in load_labels(get_abs_path("data/roman/key_cardinal.tsv"))]
+        )
+        key_ordinal = pynini.union(
+            *[pynini.accep(x[0]) for x in load_labels(get_abs_path("data/roman/key_ordinal.tsv"))]
+        )
 
         cardinal_context = key_cardinal + pynutil.delete(" ") + insert_space + roman_to_cardinal
         ordinal_context = key_ordinal + pynutil.delete(" ") + insert_space + roman_to_cardinal + pynutil.insert("世")

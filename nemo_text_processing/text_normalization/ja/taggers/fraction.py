@@ -58,10 +58,7 @@ class FractionFst(GraphFst):
         )
         integer_component_with_char = (
             pynutil.insert('integer_part: \"')
-            + (
-                (cardinal | (root + cardinal) | decimal_number | (root + decimal_number))
-                + pynini.accep("と")
-            )
+            + ((cardinal | (root + cardinal) | decimal_number | (root + decimal_number)) + pynini.accep("と"))
             + pynutil.insert("\"")
             + pynutil.insert(NEMO_SPACE)
         )

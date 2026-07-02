@@ -62,24 +62,18 @@ class SerialFst(GraphFst):
         unit_input = pynini.project(pynini.string_file(get_abs_path("data/measure/unit.tsv")), "input")
         numeric_measure_segment = pynini.closure(NEMO_DIGIT, 1) + unit_input
         raw_alnum_segment = pynini.difference(raw_alnum, numeric_measure_segment)
-        raw_alnum_with_letter = pynini.closure(letter_input | NEMO_DIGIT) + letter_input + pynini.closure(
-            letter_input | NEMO_DIGIT
+        raw_alnum_with_letter = (
+            pynini.closure(letter_input | NEMO_DIGIT) + letter_input + pynini.closure(letter_input | NEMO_DIGIT)
         )
         raw_alnum_with_letter = pynini.difference(raw_alnum_with_letter, numeric_measure_segment)
         segment = (raw_alnum_segment @ alnum_spacing @ alnum_reader).optimize()
         segment_with_letter = (raw_alnum_with_letter @ alnum_spacing @ alnum_reader).optimize()
-        delimited = (
-            segment_with_letter + pynini.closure(delimiter + segment, 1)
-            | segment + delimiter + segment_with_letter + pynini.closure(delimiter + segment)
-        )
+        delimited = segment_with_letter + pynini.closure(
+            delimiter + segment, 1
+        ) | segment + delimiter + segment_with_letter + pynini.closure(delimiter + segment)
 
         special_word = pynini.string_file(get_abs_path("data/serial/words.tsv"))
-        covid_style = (
-            special_word
-            + pynutil.delete("-")
-            + insert_space
-            + (NEMO_DIGIT**2 @ cardinal.just_cardinals)
-        )
+        covid_style = special_word + pynutil.delete("-") + insert_space + (NEMO_DIGIT**2 @ cardinal.just_cardinals)
 
         model_number = pynini.accep("型番") + insert_space + delimited
         room_number = pynini.accep("Room") + pynutil.delete(" ") + insert_space + digit_group

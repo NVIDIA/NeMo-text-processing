@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.normalize import Normalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
+
 class TestElectronic:
     normalizer_ja = Normalizer(lang='ja', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='cased')
 

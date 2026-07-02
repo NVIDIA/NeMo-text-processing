@@ -16,12 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import (
-    NEMO_SIGMA,
-    GraphFst,
-    TO_LOWER,
-    TO_UPPER,
-)
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_SIGMA, TO_LOWER, TO_UPPER, GraphFst
 from nemo_text_processing.text_normalization.ja.taggers.punctuation import PunctuationFst
 
 

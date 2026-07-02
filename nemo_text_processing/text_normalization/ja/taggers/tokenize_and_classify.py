@@ -18,7 +18,12 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_extra_space, delete_space, generator_main
+from nemo_text_processing.text_normalization.ja.graph_utils import (
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
 from nemo_text_processing.text_normalization.ja.taggers.address import AddressFst
 from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.taggers.date import DateFst

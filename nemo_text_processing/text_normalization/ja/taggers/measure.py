@@ -120,10 +120,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert(" }")
         )
         fraction_graph = (
-            pynutil.insert("fraction { ")
-            + pynini.closure(optional_sign, 0, 1)
-            + fraction.graph
-            + pynutil.insert(" }")
+            pynutil.insert("fraction { ") + pynini.closure(optional_sign, 0, 1) + fraction.graph + pynutil.insert(" }")
         )
 
         speed_kmh_number = (
@@ -143,16 +140,8 @@ class MeasureFst(GraphFst):
 
         number = cardinal_graph | decimal_graph | fraction_graph
 
-        speed_kmh_graph = (
-            speed_kmh_number
-            + speed_kmh_unit
-            + pynutil.insert(" preserve_order: true")
-        )
-        speed_ms_graph = (
-            speed_ms_number
-            + speed_ms_unit
-            + pynutil.insert(" preserve_order: true")
-        )
+        speed_kmh_graph = speed_kmh_number + speed_kmh_unit + pynutil.insert(" preserve_order: true")
+        speed_ms_graph = speed_ms_number + speed_ms_unit + pynutil.insert(" preserve_order: true")
         general_graph = number + unit_component + pynutil.insert(" preserve_order: true")
 
         graph = speed_kmh_graph | speed_ms_graph | general_graph

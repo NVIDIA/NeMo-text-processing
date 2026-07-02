@@ -71,24 +71,16 @@ class MoneyFst(GraphFst):
         currency_minor_by_major = dict(load_labels(get_abs_path("data/money/currency_minor_by_major.tsv")))
         currency_minor = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))
         non_zero_digit = pynini.difference(NEMO_DIGIT, "0")
-        minor_decimal_input = (
-            (NEMO_DIGIT**2 @ graph_cardinal) | (pynutil.delete("0") + (non_zero_digit @ graph_digit))
-        )
+        minor_decimal_input = (NEMO_DIGIT**2 @ graph_cardinal) | (pynutil.delete("0") + (non_zero_digit @ graph_digit))
 
-        suffix_graph = (
-            number_component
-            + pynini.closure(quantity_component, 0, 1)
-            + currency_major_component
-        )
+        suffix_graph = number_component + pynini.closure(quantity_component, 0, 1) + currency_major_component
         for written, spoken in currency_major_labels:
             minor_spoken = currency_minor_by_major.get(written)
             if not minor_spoken:
                 continue
 
             currency_major_suffix = (
-                delete_space
-                + pynutil.delete(written)
-                + pynutil.insert(f' currency_maj: "{spoken}"')
+                delete_space + pynutil.delete(written) + pynutil.insert(f' currency_maj: "{spoken}"')
             )
             minor_suffix = (
                 delete_space
@@ -99,11 +91,7 @@ class MoneyFst(GraphFst):
                 + (currency_minor @ pynini.cross(minor_spoken, ""))
                 + pynutil.insert(f' currency_min: "{minor_spoken}"')
             )
-            suffix_graph |= (
-                signed_integer_component
-                + currency_major_suffix
-                + minor_suffix
-            )
+            suffix_graph |= signed_integer_component + currency_major_suffix + minor_suffix
 
         prefix_graph = pynini.Fst()
         for written, spoken in currency_prefix_labels:
@@ -112,10 +100,7 @@ class MoneyFst(GraphFst):
             minor_spoken = currency_minor_by_major.get(written)
 
             prefix_graph |= (
-                currency_prefix
-                + number_component
-                + pynini.closure(quantity_component, 0, 1)
-                + currency_field
+                currency_prefix + number_component + pynini.closure(quantity_component, 0, 1) + currency_field
             )
             prefix_graph |= (
                 pynutil.insert('integer_part: "')

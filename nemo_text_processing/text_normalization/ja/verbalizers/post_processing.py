@@ -92,9 +92,7 @@ class PostProcessingFst:
         protect_ascii_word_space = pynini.cdrewrite(
             protect_space, ascii_char**2, ascii_char**2, pynini.closure(NEMO_SIGMA)
         )
-        protect_ascii_before_desu = pynini.cdrewrite(
-            protect_space, ascii_char**2, "です", pynini.closure(NEMO_SIGMA)
-        )
+        protect_ascii_before_desu = pynini.cdrewrite(protect_space, ascii_char**2, "です", pynini.closure(NEMO_SIGMA))
         protect_ascii_before_japanese_number = pynini.cdrewrite(
             protect_space, ascii_char**2, japanese_number, pynini.closure(NEMO_SIGMA)
         )

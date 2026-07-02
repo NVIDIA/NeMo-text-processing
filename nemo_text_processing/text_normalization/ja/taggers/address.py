@@ -40,9 +40,12 @@ class AddressFst(GraphFst):
         digit_for_room = digit | zero_maru
         digit_for_postal = digit | zero
 
-        hyphen_to_no = pynini.closure(pynutil.delete(" "), 0, 1) + (
-            pynutil.delete("-") | pynutil.delete("－") | pynutil.delete("ー")
-        ) + pynini.closure(pynutil.delete(" "), 0, 1) + pynutil.insert("の")
+        hyphen_to_no = (
+            pynini.closure(pynutil.delete(" "), 0, 1)
+            + (pynutil.delete("-") | pynutil.delete("－") | pynutil.delete("ー"))
+            + pynini.closure(pynutil.delete(" "), 0, 1)
+            + pynutil.insert("の")
+        )
 
         address_chain = address_number + hyphen_to_no + address_number + hyphen_to_no + address_number
 

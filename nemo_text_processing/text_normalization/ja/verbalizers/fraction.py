@@ -81,9 +81,7 @@ class FractionFst(GraphFst):
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(pynini.cross("√", "ルート"), 0, 1)
-            + pynini.closure(
-                NEMO_NOT_QUOTE - pynini.union("と", "√")
-            )
+            + pynini.closure(NEMO_NOT_QUOTE - pynini.union("と", "√"))
             + pynutil.insert("と")
             + pynutil.delete("\"")
         )
