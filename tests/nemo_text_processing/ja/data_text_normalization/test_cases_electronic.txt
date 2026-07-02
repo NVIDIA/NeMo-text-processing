@@ -1,0 +1,36 @@
+a@hotmail.de~a アット hotmail ドット de
+a@hotmail.fr~a アット hotmail ドット fr
+a@hotmail.it~a アット hotmail ドット it
+a@aol.it~a アット aol ドット it
+a@msn.it~a アット msn ドット it
+abc@nvidia.app~abc アット nvidia ドット app
+nvidia.co.jp~nvidia ドット co ドット jp
+a.bc@gmail.com~a ドット bc アット gmail ドット com
+cdf@abc.edu~cdf アット abc ドット edu
+abc@gmail.abc~abc アット gmail ドット abc
+abc@abc.com~abc アット abc ドット com
+asdf123@abc.com~asdf 一二三 アット abc ドット com
+ab3.sdd.3@gmail.com~ab 三 ドット sdd ドット 3 アット gmail ドット com
+ab3-sdd-3@gmail.com~ab 三 ハイフン sdd ハイフン 3 アット gmail ドット com
+www.nvidia.com~www ドット nvidia ドット com
+nvidia.com~nvidia ドット com
+google.co.jp~google ドット co ドット jp
+www.google.co.jp~www ドット google ドット co ドット jp
+nvidia.ai~nvidia ドット ai
+http://www.nvidia.com~http コロン スラッシュ スラッシュ www ドット nvidia ドット com
+https://www.nvidia.com~https コロン スラッシュ スラッシュ www ドット nvidia ドット com
+https://developer.nvidia.com/drive-cuda/early-access~https コロン スラッシュ スラッシュ developer ドット nvidia ドット com スラッシュ drive ハイフン cuda スラッシュ early ハイフン access
+email abc@abc.com です~email abc アット abc ドット com です
+abc@abc.com.~abc アット abc ドット com.
+1234-5678-9012-3456~一二三四 五六七八 九〇一二 三四五六
+2345-2222-3333-4444~二三四五 二二二二 三三三三 四四四四
+9090-1234-5555-9876~九〇九〇 一二三四 五五五五 九八七六
+カード末尾3456~カード末尾三四五六
+カード下4桁7890~カード下四桁七八九〇
+カード番号1234-5678-9012-3456~カード番号一二三四 五六七八 九〇一二 三四五六
+写真.jpg~写真 ドット jpg
+写真.JPG~写真 ドット JPG
+写真.png~写真 ドット png
+写真.PNG~写真 ドット PNG
+資料.pdf~資料 ドット pdf
+資料.PDF~資料 ドット PDF

@@ -46,6 +46,42 @@ testTNDateText() {
   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_date.txt
   runtest $input
 }
+testTNMoneyText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_money.txt
+  runtest $input
+}
+testTNMeasureText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_measure.txt
+  runtest $input
+}
+testTNTelephoneText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_telephone.txt
+  runtest $input
+}
+testTNElectronicText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_electronic.txt
+  runtest $input
+}
+testTNSerialText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_serial.txt
+  runtest $input
+}
+# testTNRangeText() {
+#   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_range.txt
+#   runtest $input
+# }
+testTNAddressText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_address.txt
+  runtest $input
+}
+testTNRomanText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_roman.txt
+  runtest $input
+}
+testTNWhitelistText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_whitelist.txt
+  runtest $input
+}
 
 
 # Load shUnit2

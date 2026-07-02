@@ -25,7 +25,7 @@ class FractionFst(GraphFst):
     Finite state transducer for classifying fractions, e.g.
     1/2 -> tokens { fraction { denominator: "二" numerator: "一"} }
     1と3/4 -> fraction { integer: "一" denominator: "四" numerator: "三" }
-    一荷四分の三 -> fraction { integer: "1" denominator: "4" numerator: "3" }
+    一と四分の三 -> fraction { integer: "1" denominator: "4" numerator: "3" }
     ルート三分の一 -> fraction { denominator: "√3" numerator: "1" }
     一点六五分の五十 -> fraction { denominator: "1.65" numerator: "50" }
     マイナス1/2 -> tokens { fraction { denominator: "二" numerator: "一"} }
@@ -60,7 +60,7 @@ class FractionFst(GraphFst):
             pynutil.insert('integer_part: \"')
             + (
                 (cardinal | (root + cardinal) | decimal_number | (root + decimal_number))
-                + (pynini.accep("と") | pynini.accep("荷"))
+                + pynini.accep("と")
             )
             + pynutil.insert("\"")
             + pynutil.insert(NEMO_SPACE)
@@ -115,9 +115,8 @@ class FractionFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        graph_fraction_slash_sigh = pynini.closure(optional_sign + pynutil.insert(NEMO_SPACE), 0, 1) + (
-            graph_fraction_slash | graph_fraction_word
-        )
+        self.graph = (graph_fraction_slash | graph_fraction_word).optimize()
+        graph_fraction_slash_sigh = pynini.closure(optional_sign + pynutil.insert(NEMO_SPACE), 0, 1) + self.graph
 
         graph = graph_fraction_slash_sigh  # |
 

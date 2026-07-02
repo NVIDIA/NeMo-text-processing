@@ -37,7 +37,7 @@ class PunctuationFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
-        s = "!#$%&'()*+,-./:;<=>?@^_`{|}。，；：《》“”·~【】！？、‘’.<>-——_、。.「」『』‘`／・；’”“”‷･〔〕々〃ゝゞヽ〲〱〳〴〵ヾ〆，~"
+        s = "!#$%&'()*+,-./:;<=>?@^_`{|}~"
 
         punct_symbols_to_exclude = ["[", "]"]
         punct_unicode = [
@@ -62,9 +62,7 @@ class PunctuationFst(GraphFst):
             + pynini.accep(">")
         )
         punct = plurals._priority_union(emphasis, punct, NEMO_SIGMA)
-        range_component = pynini.cross("〜", "から") | pynini.accep(
-            "から"
-        )  # forcing this conversion for special tilde
+        range_component = pynini.cross("〜", "から")
 
-        self.graph = punct | pynutil.add_weight(range_component, -1.0)
+        self.graph = plurals._priority_union(range_component, punct, NEMO_SIGMA)
         self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()

@@ -16,13 +16,17 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
+from nemo_text_processing.text_normalization.ja.graph_utils import (
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_NON_BREAKING_SPACE,
     NEMO_NOT_SPACE,
     NEMO_SIGMA,
-    delete_space,
     generator_main,
 )
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
 from nemo_text_processing.utils.logging import logger
 
 
@@ -41,73 +45,92 @@ class PostProcessingFst:
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, "zh_tn_post_processing.far")
+            far_file = os.path.join(cache_dir, "ja_tn_post_processing.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["post_process_graph"]
             logger.info(f'Post processing graph was restored from {far_file}.')
         else:
-            self.set_punct_dict()
             self.fst = self.get_punct_postprocess_graph()
 
             if far_file:
                 generator_main(far_file, {"post_process_graph": self.fst})
 
-    def set_punct_dict(self):
-        self.punct_marks = {
-            "'": [
-                "'",
-                '´',
-                'ʹ',
-                'ʻ',
-                'ʼ',
-                'ʽ',
-                'ʾ',
-                'ˈ',
-                'ˊ',
-                'ˋ',
-                '˴',
-                'ʹ',
-                '΄',
-                '՚',
-                '՝',
-                'י',
-                '׳',
-                'ߴ',
-                'ߵ',
-                'ᑊ',
-                'ᛌ',
-                '᾽',
-                '᾿',
-                '`',
-                '´',
-                '῾',
-                '‘',
-                '’',
-                '‛',
-                '′',
-                '‵',
-                'ꞌ',
-                '＇',
-                '｀',
-                '𖽑',
-                '𖽒',
-            ],
-        }
-
     def get_punct_postprocess_graph(self):
         """
-        Returns graph to post process punctuation marks.
+        Returns graph to post process Japanese TN output.
 
-        {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
-        By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
+        Japanese verbalizers need ordinary inter-token spaces removed, but some
+        classes intentionally use spaces internally. Protect those spaces as NBSP
+        before deleting remaining technical spaces; Sparrowhawk tests convert NBSP
+        back to regular spaces after normalization.
         """
 
-        remove_space_around_single_quote = pynini.cdrewrite(
-            delete_space, NEMO_NOT_SPACE, NEMO_NOT_SPACE, pynini.closure(NEMO_SIGMA)
-        )
-        # this works if spaces in between (good)
-        # delete space between 2 NEMO_NOT_SPACE（left and right to the space) that are with in a content of NEMO_SIGMA
+        protect_space = pynini.cross(" ", NEMO_NON_BREAKING_SPACE)
+        ascii_char = NEMO_ALPHA | NEMO_DIGIT
+        phone_digit = pynini.union("ゼロ", "零", "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九")
+        space_sensitive_tokens = (
+            pynini.project(pynini.string_file(get_abs_path("data/electronic/symbol.tsv")), "output")
+            | pynini.project(pynini.string_file(get_abs_path("data/latin/letters.tsv")), "output")
+            | pynini.project(pynini.string_file(get_abs_path("data/serial/words.tsv")), "output")
+        ).optimize()
+        title_tokens = pynini.union(
+            *{spoken for _, spoken in load_labels(get_abs_path("data/whitelist_title.tsv"))}
+        ).optimize()
+        japanese_number = pynini.union("零", "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十")
+        collapse_double_space = pynini.cdrewrite(pynini.cross("  ", " "), "", "", pynini.closure(NEMO_SIGMA))
 
-        graph = remove_space_around_single_quote.optimize()
+        protect_whitelist_internal_space = pynini.closure(NEMO_SIGMA)
+        for spoken in {spoken for _, spoken in load_labels(get_abs_path("data/whitelist.tsv")) if " " in spoken}:
+            parts = spoken.split()
+            for left, right in zip(parts, parts[1:]):
+                protect_whitelist_internal_space @= pynini.cdrewrite(
+                    protect_space, left, right, pynini.closure(NEMO_SIGMA)
+                )
+        delete_ascii_inner_space = pynini.cdrewrite(
+            pynutil.delete(" "), ascii_char, ascii_char, pynini.closure(NEMO_SIGMA)
+        )
+        protect_ascii_word_space = pynini.cdrewrite(
+            protect_space, ascii_char**2, ascii_char**2, pynini.closure(NEMO_SIGMA)
+        )
+        protect_ascii_before_desu = pynini.cdrewrite(
+            protect_space, ascii_char**2, "です", pynini.closure(NEMO_SIGMA)
+        )
+        protect_ascii_before_japanese_number = pynini.cdrewrite(
+            protect_space, ascii_char**2, japanese_number, pynini.closure(NEMO_SIGMA)
+        )
+        protect_title_before_ascii = pynini.cdrewrite(
+            protect_space, title_tokens, ascii_char**2, pynini.closure(NEMO_SIGMA)
+        )
+        protect_after_space_sensitive_token = pynini.cdrewrite(
+            protect_space, space_sensitive_tokens, "", pynini.closure(NEMO_SIGMA)
+        )
+        protect_before_space_sensitive_token = pynini.cdrewrite(
+            protect_space, "", space_sensitive_tokens, pynini.closure(NEMO_SIGMA)
+        )
+        protect_phone_group_separator = pynini.cdrewrite(
+            protect_space, "、", phone_digit**2 | phone_digit**3 | phone_digit**4, pynini.closure(NEMO_SIGMA)
+        )
+        protect_credit_card_group_separator = pynini.cdrewrite(
+            protect_space, phone_digit**4, phone_digit**4, pynini.closure(NEMO_SIGMA)
+        )
+        delete_technical_space = pynini.cdrewrite(
+            pynutil.delete(" "), NEMO_NOT_SPACE, NEMO_NOT_SPACE, pynini.closure(NEMO_SIGMA)
+        )
+
+        graph = (
+            collapse_double_space
+            @ collapse_double_space
+            @ protect_whitelist_internal_space
+            @ protect_ascii_word_space
+            @ delete_ascii_inner_space
+            @ protect_ascii_before_desu
+            @ protect_ascii_before_japanese_number
+            @ protect_title_before_ascii
+            @ protect_after_space_sensitive_token
+            @ protect_before_space_sensitive_token
+            @ protect_phone_group_separator
+            @ protect_credit_card_group_separator
+            @ delete_technical_space
+        ).optimize()
 
         return graph

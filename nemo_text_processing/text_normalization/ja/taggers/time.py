@@ -41,9 +41,10 @@ class TimeFst(GraphFst):
         division = pynini.string_file(get_abs_path("data/time/division.tsv"))
 
         division_component = pynutil.insert("suffix: \"") + division + pynutil.insert("\"")
+        hour_number = pynutil.add_weight(pynini.cross("0", "零"), -0.1) | graph_cardinal
         hour_component = (
             pynutil.insert("hours: \"")
-            + (graph_cardinal | (graph_cardinal + pynini.cross(".", "点") + graph_cardinal))
+            + (hour_number | (graph_cardinal + pynini.cross(".", "点") + graph_cardinal))
             + (pynini.accep("時") | pynini.accep("時間") | pynini.accep("時頃"))
             + pynutil.insert("\"")
         )

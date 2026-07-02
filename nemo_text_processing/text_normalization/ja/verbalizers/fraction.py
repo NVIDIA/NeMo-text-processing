@@ -24,7 +24,7 @@ class FractionFst(GraphFst):
     Finite state transducer for verbalizing fractionss, e.g.
     tokens { fraction { denominator: "二" numerator: "一"} } ->     1/2
     tokens { fraction { integer: "一" denominator: "四" numerator: "三" } } -> 1と3/4
-    tokens { fraction { integer: "1" denominator: "4" numerator: "3" } } -> 一荷四分の三
+    tokens { fraction { integer: "1" denominator: "4" numerator: "3" } } -> 一と四分の三
     tokens { fraction { denominator: "√3" numerator: "1" } } -> ルート三分の一
     tokens { fraction { denominator: "1.65" numerator: "50" } } -> 一点六五分の五十
     tokens { fraction { denominator: "二" numerator: "一"} } -> マイナス1/2
@@ -82,9 +82,9 @@ class FractionFst(GraphFst):
             + pynutil.delete("\"")
             + pynini.closure(pynini.cross("√", "ルート"), 0, 1)
             + pynini.closure(
-                NEMO_NOT_QUOTE - pynini.union("荷", "と", "√")
-            )  # had to remove these 3 items fron nemo_not _quote so the root is properly converted in a deterministic way.
-            + pynutil.insert("荷")
+                NEMO_NOT_QUOTE - pynini.union("と", "√")
+            )
+            + pynutil.insert("と")
             + pynutil.delete("\"")
         )
 
@@ -93,8 +93,8 @@ class FractionFst(GraphFst):
             + delete_space
             + pynutil.delete("\"")
             + pynini.closure(pynini.cross("√", "ルート"), 0, 1)
-            + pynini.closure(NEMO_NOT_QUOTE - pynini.union("荷", "と", "√"))
-            + (pynini.accep("と") | pynini.accep("荷"))
+            + pynini.closure(NEMO_NOT_QUOTE - pynini.union("と", "√"))
+            + pynini.accep("と")
             + pynutil.delete("\"")
         )
 

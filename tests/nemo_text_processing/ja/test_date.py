@@ -37,6 +37,6 @@ class TestDate:
     @parameterized.expand(parse_test_case_file('ja/data_text_normalization/test_cases_date.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
-    def test_denorm(self, test_input, expected):
+    def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
