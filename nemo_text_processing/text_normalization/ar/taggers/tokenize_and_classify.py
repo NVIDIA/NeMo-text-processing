@@ -30,6 +30,7 @@ from nemo_text_processing.text_normalization.ar.taggers.decimal import DecimalFs
 from nemo_text_processing.text_normalization.ar.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.ar.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.ar.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.ar.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ar.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
@@ -86,6 +87,8 @@ class ClassifyFst(GraphFst):
                 cardinal=self.cardinal, decimal=self.decimal, fraction=self.fraction, deterministic=deterministic
             )
             measure_graph = self.measure.fst
+            self.time = TimeFst(deterministic=deterministic)
+            time_graph = self.time.fst
             word_graph = WordFst(deterministic=deterministic).fst
             punct_graph = PunctuationFst(deterministic=deterministic).fst
 
@@ -95,6 +98,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(fraction_graph, 1.0)
                 | pynutil.add_weight(money_graph, 1.0)
                 | pynutil.add_weight(measure_graph, 1.0)
+                | pynutil.add_weight(time_graph, 1.0)
             )
 
             classify |= pynutil.add_weight(word_graph, 100)
