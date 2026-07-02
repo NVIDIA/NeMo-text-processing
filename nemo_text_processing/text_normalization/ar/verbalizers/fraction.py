@@ -33,7 +33,7 @@ class FractionFst(GraphFst):
         # create unions for special cases
         denominator_singular = pynini.union("نصف", "ثلث", "ربع", "خمس", "سدس", "سبع", "ثمن", "تسع", "عشر")
         denominator_dual = pynini.union(
-            "نصفين", "ثلثين", "ربعين", "خمسين", "سدسين", "سبعين", "ثمنين", "تسعين", "عشرين"
+            "نصفي", "ثلثي", "ربعي", "خمسي", "سدسي", "سبعي", "ثمني", "تسعي", "عشري"
         )
         denominator_plural = pynini.union("أخماس", "أرباع", "أثلاث", "أسداس", "أسباع", "أثمان", "أتساع", "أعشار")
         numerator_three_to_ten = pynini.union("خمسة", "سبعة", "عشرة", "ثلاثة", "أربعة", "ستة", "ثمانية", "تسعة")
@@ -64,7 +64,13 @@ class FractionFst(GraphFst):
         # verbalize from integer and one over half -->  integer and half e.g واحد ونصف
         numerator_one = pynutil.delete("numerator: \"واحد\"") + pynutil.delete(" ") + graph_denominator_singular
         # verbalize from integer and two over half(dual) -->  integer and half(dual) e.g. واحد وثلثين
-        numerator_two = pynutil.delete("numerator: \"اثنان\"") + pynutil.delete(" ") + graph_denominator_dual
+        numerator_two = (
+            pynutil.delete("numerator: \"")
+            + pynutil.delete(pynini.union("اثنان", "اثنين"))
+            + pynutil.delete("\"")
+            + pynutil.delete(" ")
+            + graph_denominator_dual
+        )
         # verbalize from integer and three over thirds(plural) -->  integer and  three thirds(plural) e.g.  واحد وثلاثة أرباع
         numerator_three_to_ten = (
             pynutil.delete("numerator: \"")

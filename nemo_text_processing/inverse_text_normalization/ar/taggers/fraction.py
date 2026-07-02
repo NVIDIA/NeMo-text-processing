@@ -46,7 +46,7 @@ class FractionFst(GraphFst):
         # create unions for special cases
         denominator_singular = pynini.union("نصف", "ثلث", "ربع", "خمس", "سدس", "سبع", "ثمن", "تسع", "عشر")
         denominator_dual = pynini.union(
-            "نصفين", "ثلثين", "ربعين", "خمسين", "سدسين", "سبعين", "ثمنين", "تسعين", "عشرين"
+            "نصفي", "ثلثي", "ربعي", "خمسي", "سدسي", "سبعي", "ثمني", "تسعي", "عشري"
         )
         denominator_plural = pynini.union("أخماس", "أرباع", "أثلاث", "أسداس", "أسباع", "أثمان", "أتساع", "أعشار")
         numerator_three_to_ten = pynini.union("خمسة", "سبعة", "عشرة", "ثلاثة", "أربعة", "ستة", "ثمانية", "تسعة")
