@@ -1,0 +1,95 @@
+# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2026 and onwards Google, Inc.
+#
+# Licensed under the Apache License, Version 2.0
+
+import logging
+import os
+
+import pynini
+from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.te.graph_utils import (
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
+from nemo_text_processing.inverse_text_normalization.te.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.word import WordFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.decimal import DecimalFst
+
+
+class ClassifyFst(GraphFst):
+    """
+    Final classification grammar for Telugu ITN.
+
+    Supports:
+        - Fraction
+        - Ordinal
+        - Cardinal
+        - Word
+    """
+
+    def __init__(
+        self,
+        cache_dir: str = None,
+        overwrite_cache: bool = False,
+        whitelist: str = None,
+        input_case: str = None,
+    ):
+        super().__init__(name="tokenize_and_classify", kind="classify")
+
+        far_file = None
+        if cache_dir is not None and cache_dir != "None":
+            os.makedirs(cache_dir, exist_ok=True)
+            far_file = os.path.join(cache_dir, "te_itn.far")
+
+        if not overwrite_cache and far_file and os.path.exists(far_file):
+            self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
+            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+        else:
+            logging.info("Creating Telugu ClassifyFst grammars.")
+
+            cardinal = CardinalFst()
+            decimal = DecimalFst(cardinal)
+            fraction = FractionFst(cardinal)
+            ordinal = OrdinalFst(cardinal)
+
+            decimal_graph = decimal.fst
+            fraction_graph = fraction.fst
+            ordinal_graph = ordinal.fst
+            cardinal_graph = cardinal.fst
+            word_graph = WordFst().fst
+
+            classify = (
+                pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.1)
+                | pynutil.add_weight(ordinal_graph, 1.1)
+                | pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(word_graph, 100)
+            )
+
+            token = (
+                pynutil.insert("tokens { ")
+                + classify
+                + pynutil.insert(" }")
+            )
+
+            graph = token + pynini.closure(
+                pynutil.add_weight(delete_extra_space + token, 1000.0)
+            )
+            graph = delete_space + graph + delete_space
+
+            self.fst = graph.optimize()
+
+            if far_file:
+                generator_main(
+                    far_file,
+                    {"tokenize_and_classify": self.fst},
+                )
+                logging.info(
+                    f"ClassifyFst grammars are saved to {far_file}."
+                )
