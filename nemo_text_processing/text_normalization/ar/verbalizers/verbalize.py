@@ -15,6 +15,7 @@
 from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ar.taggers.cardinal import CardinalFst as CardinalTagger
 from nemo_text_processing.text_normalization.ar.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.ar.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ar.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.ar.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.ar.verbalizers.measure import MeasureFst
@@ -48,6 +49,16 @@ class VerbalizeFst(GraphFst):
         measure_graph = measure.fst
         time = TimeFst(cardinal_tagger=cardinal_tagger, deterministic=deterministic)
         time_graph = time.fst
+        date = DateFst(deterministic=deterministic)
+        date_graph = date.fst
 
-        graph = cardinal_graph | decimal_graph | fraction_graph | money_graph | measure_graph | time_graph
+        graph = (
+            cardinal_graph
+            | decimal_graph
+            | fraction_graph
+            | money_graph
+            | measure_graph
+            | time_graph
+            | date_graph
+        )
         self.fst = graph
