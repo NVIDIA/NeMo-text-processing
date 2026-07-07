@@ -58,20 +58,11 @@ class ClassifyFst(GraphFst):
             cardinal_graph = cardinal.fst
             word_graph = WordFst().fst
 
-            classify = (
-                pynutil.add_weight(cardinal_graph, 1.1)
-                | pynutil.add_weight(word_graph, 100)
-            )
+            classify = pynutil.add_weight(cardinal_graph, 1.1) | pynutil.add_weight(word_graph, 100)
 
-            token = (
-                pynutil.insert("tokens { ")
-                + classify
-                + pynutil.insert(" }")
-            )
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
 
-            graph = token + pynini.closure(
-                pynutil.add_weight(delete_extra_space + token, 1000.0)
-            )
+            graph = token + pynini.closure(pynutil.add_weight(delete_extra_space + token, 1000.0))
             graph = delete_space + graph + delete_space
 
             self.fst = graph.optimize()
@@ -81,6 +72,4 @@ class ClassifyFst(GraphFst):
                     far_file,
                     {"tokenize_and_classify": self.fst},
                 )
-                logging.info(
-                    f"ClassifyFst grammars are saved to {far_file}."
-                )
+                logging.info(f"ClassifyFst grammars are saved to {far_file}.")

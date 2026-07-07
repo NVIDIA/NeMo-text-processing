@@ -18,16 +18,13 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.te.graph_utils import (
     INPUT_LOWER_CASED,
     MINUS,
-    NEMO_TE_DIGIT,
     NEMO_SPACE,
+    NEMO_TE_DIGIT,
     GraphFst,
     delete_space,
     integer_to_telugu,
 )
-from nemo_text_processing.inverse_text_normalization.te.utils import (
-    get_abs_path,
-    load_labels,
-)
+from nemo_text_processing.inverse_text_normalization.te.utils import get_abs_path, load_labels
 
 
 class CardinalFst(GraphFst):
@@ -41,40 +38,26 @@ class CardinalFst(GraphFst):
 
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
 
-        graph_digit = pynini.string_file(
-            get_abs_path("data/numbers/digit.tsv")
-        ).invert()
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
 
-        graph_digit_people = pynini.string_file(
-            get_abs_path("data/numbers/digit_people.tsv")
-        )
+        graph_digit_people = pynini.string_file(get_abs_path("data/numbers/digit_people.tsv"))
 
         graph_digit |= graph_digit_people
         graph_digit |= pynini.cross("ఒక", "౧")
-        
-        
 
         graph_teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")).invert()
 
-        graph_special = pynini.string_file(
-            get_abs_path("data/numbers/special_numbers.tsv")
-        )
+        graph_special = pynini.string_file(get_abs_path("data/numbers/special_numbers.tsv"))
 
         graph_teens_and_ties |= graph_special
-                
 
         self.graph_zero = graph_zero
         self.graph_digit = graph_digit
-        graph_leading_zero_sequence = (
-            graph_zero
-            + pynini.closure(
-                delete_space + (graph_zero | graph_digit),
-                1,
-            )
+        graph_leading_zero_sequence = graph_zero + pynini.closure(
+            delete_space + (graph_zero | graph_digit),
+            1,
         )
-        graph_ties_prefix = pynini.string_file(
-            get_abs_path("data/numbers/ties_prefix.tsv")
-        )
+        graph_ties_prefix = pynini.string_file(get_abs_path("data/numbers/ties_prefix.tsv"))
 
         graph_okkati = pynini.cross("ఒకటి", "౧")
         graph_ties_plus_okkati = graph_ties_prefix + delete_space + graph_okkati
@@ -101,70 +84,37 @@ class CardinalFst(GraphFst):
         graph_hundreds_component += delete_space
         graph_hundreds_component += self.graph_two_digit | pynutil.insert("౦౦")
 
-        graph_hundred_standalone = pynini.union(
-            *[pynini.cross(word, "౧౦౦") for word in hundred_words]
-        )
-      
+        graph_hundred_standalone = pynini.union(*[pynini.cross(word, "౧౦౦") for word in hundred_words])
+
         two_digit_hundred_values = pynini.string_map(
-            [
-                (integer_to_telugu(i), integer_to_telugu(i * 100))
-                for i in range(10, 100)
-            ]
+            [(integer_to_telugu(i), integer_to_telugu(i * 100)) for i in range(10, 100)]
         ).optimize()
 
-        graph_hundred_as_thousand = (
-            (self.graph_two_digit @ two_digit_hundred_values)
-            + delete_space
-            + delete_hundred
-        )
-   
-       
+        graph_hundred_as_thousand = (self.graph_two_digit @ two_digit_hundred_values) + delete_space + delete_hundred
+
         graph_nuta_component = (
-            pynutil.delete(
-                pynini.union("నూట", "వంద")
-            )
-            + pynutil.insert("౧")
-            + delete_space
-            + self.graph_two_digit
+            pynutil.delete(pynini.union("నూట", "వంద")) + pynutil.insert("౧") + delete_space + self.graph_two_digit
         )
         self.graph_hundreds = (
-            graph_hundred_as_thousand
-            | graph_hundreds_component
-            | graph_hundred_standalone
-            | graph_nuta_component
+            graph_hundred_as_thousand | graph_hundreds_component | graph_hundred_standalone | graph_nuta_component
         )
 
         self.graph_hundred_component_at_least_one_none_zero_digit = graph_hundreds_component @ (
-            pynini.closure(NEMO_TE_DIGIT)
-            + (NEMO_TE_DIGIT - "౦")
-            + pynini.closure(NEMO_TE_DIGIT)
+            pynini.closure(NEMO_TE_DIGIT) + (NEMO_TE_DIGIT - "౦") + pynini.closure(NEMO_TE_DIGIT)
         )
 
-        graph_below_thousand = (
-            self.graph_hundreds
-            | self.graph_two_digit
-            | graph_digit
-        )
+        graph_below_thousand = self.graph_hundreds | self.graph_two_digit | graph_digit
 
         graph_remainder_three_digit = (
-            self.graph_hundreds
-            | (pynutil.insert("౦") + self.graph_two_digit)
-            | pynutil.insert("౦౦౦")
+            self.graph_hundreds | (pynutil.insert("౦") + self.graph_two_digit) | pynutil.insert("౦౦౦")
         )
 
         graph_group_two_digit_leading = self.graph_two_digit | graph_digit
         graph_group_two_digit_padded = (
-            self.graph_two_digit
-            | (pynutil.insert("౦") + graph_digit)
-            | pynutil.insert("౦౦")
+            self.graph_two_digit | (pynutil.insert("౦") + graph_digit) | pynutil.insert("౦౦")
         )
 
-        case_suffixes = [
-            row[0]
-            for row in load_labels(
-                get_abs_path("data/numbers/case_suffix.tsv")
-            )
-        ]
+        case_suffixes = [row[0] for row in load_labels(get_abs_path("data/numbers/case_suffix.tsv"))]
 
         graph_case_suffix = pynini.union(*case_suffixes)
 
@@ -182,33 +132,18 @@ class CardinalFst(GraphFst):
         )
 
         graph_thousands = (
-            graph_group_two_digit_leading
-            + delete_space
-            + delete_thousand
-            + delete_space
-            + graph_remainder_three_digit
+            graph_group_two_digit_leading + delete_space + delete_thousand + delete_space + graph_remainder_three_digit
         )
 
         graph_thousands_padded = (
-            graph_group_two_digit_padded
-            + delete_space
-            + delete_thousand
-            + delete_space
-            + graph_remainder_three_digit
+            graph_group_two_digit_padded + delete_space + delete_thousand + delete_space + graph_remainder_three_digit
         )
 
         graph_bare_thousand = (
-            pynutil.delete(thousand_words[0])
-            + pynutil.insert("౧")
-            + delete_space
-            + graph_remainder_three_digit
+            pynutil.delete(thousand_words[0]) + pynutil.insert("౧") + delete_space + graph_remainder_three_digit
         )
 
-        graph_bare_thousand_terminal = (
-            pynutil.delete(thousand_words[0])
-            + pynutil.insert("౧౦౦౦")
-        )
-    
+        graph_bare_thousand_terminal = pynutil.delete(thousand_words[0]) + pynutil.insert("౧౦౦౦")
 
         graph_lakhs = (
             graph_group_two_digit_leading
@@ -233,16 +168,13 @@ class CardinalFst(GraphFst):
         )
 
         graph_lakh_terminal = (
-            (
-                pynini.union(
-                    pynini.cross("లక్ష", "౧"),
-                    pynini.cross("లక్షలు", "౧"),
-                    pynini.cross("లక్షల", "౧"),
-                )
-                | (graph_group_two_digit_leading + delete_space + delete_lakh)
+            pynini.union(
+                pynini.cross("లక్ష", "౧"),
+                pynini.cross("లక్షలు", "౧"),
+                pynini.cross("లక్షల", "౧"),
             )
-            + pynutil.insert("౦౦౦౦౦")
-        )
+            | (graph_group_two_digit_leading + delete_space + delete_lakh)
+        ) + pynutil.insert("౦౦౦౦౦")
 
         graph_crore_prefix_simple = (
             graph_group_two_digit_leading
@@ -293,8 +225,6 @@ class CardinalFst(GraphFst):
             + graph_remainder_three_digit
         )
 
-       
-      
         graph_lower_seven = (
             graph_lakhs
             | graph_bare_lakh
@@ -305,10 +235,7 @@ class CardinalFst(GraphFst):
             | (pynutil.insert("౦౦౦౦") + graph_remainder_three_digit)
         )
         graph_one_lakh = (
-            (
-                pynutil.delete("లక్ష")
-                | pynutil.delete("లక్షా")
-            )
+            (pynutil.delete("లక్ష") | pynutil.delete("లక్షా"))
             + delete_space
             + (
                 (pynutil.insert("౧౦౦౦౦") + graph_digit)
@@ -357,10 +284,7 @@ class CardinalFst(GraphFst):
             graph_large_crore_prefix
             + delete_space
             + delete_crore
-            + (
-                pynutil.insert("౦౦౦౦౦౦౦")
-                | (delete_space + graph_lower_seven)
-            )
+            + (pynutil.insert("౦౦౦౦౦౦౦") | (delete_space + graph_lower_seven))
         )
 
         graph_no_prefix = pynutil.add_weight(
@@ -374,27 +298,21 @@ class CardinalFst(GraphFst):
         )
 
         graph_base = pynini.union(
-
             graph_large_crores,
             graph_crores,
             graph_bare_crore,
             graph_one_crore,
-            
-
             graph_lakhs,
             graph_bare_lakh,
             graph_one_lakh,
             graph_lakh_terminal,
-
             graph_thousands,
             graph_bare_thousand,
             graph_bare_thousand_terminal,
-
             graph_zero,
             graph_no_prefix,
             graph_below_thousand,
         )
-
 
         graph_normal = graph_base | (graph_base + graph_case_suffix)
 
@@ -413,19 +331,12 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph
         self.graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
         optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ")
-            + pynini.cross(MINUS, "\"-\"")
-            + NEMO_SPACE,
+            pynutil.insert("negative: ") + pynini.cross(MINUS, "\"-\"") + NEMO_SPACE,
             0,
             1,
         )
 
-        final_graph = (
-            optional_minus_graph
-            + pynutil.insert("integer: \"")
-            + self.graph
-            + pynutil.insert("\"")
-        )
+        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph
