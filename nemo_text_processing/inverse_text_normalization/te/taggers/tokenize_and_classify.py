@@ -16,21 +16,11 @@ from nemo_text_processing.inverse_text_normalization.te.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.inverse_text_normalization.te.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.te.taggers.fraction import FractionFst
-from nemo_text_processing.inverse_text_normalization.te.taggers.ordinal import OrdinalFst
-from nemo_text_processing.inverse_text_normalization.te.taggers.word import WordFst
-from nemo_text_processing.inverse_text_normalization.te.taggers.decimal import DecimalFst
 
 
 class ClassifyFst(GraphFst):
     """
-    Final classification grammar for Telugu ITN.
-
-    Supports:
-        - Fraction
-        - Ordinal
-        - Cardinal
-        - Word
+    Final classification grammar for Telugu ITN cardinal processing.
     """
 
     def __init__(
@@ -51,26 +41,12 @@ class ClassifyFst(GraphFst):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info("Creating Telugu ClassifyFst grammars.")
+            logging.info("Creating Telugu ClassifyFst grammar.")
 
             cardinal = CardinalFst()
-            decimal = DecimalFst(cardinal)
-            fraction = FractionFst(cardinal)
-            ordinal = OrdinalFst(cardinal)
-
-            decimal_graph = decimal.fst
-            fraction_graph = fraction.fst
-            ordinal_graph = ordinal.fst
             cardinal_graph = cardinal.fst
-            word_graph = WordFst().fst
 
-            classify = (
-                pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(fraction_graph, 1.1)
-                | pynutil.add_weight(ordinal_graph, 1.1)
-                | pynutil.add_weight(cardinal_graph, 1.1)
-                | pynutil.add_weight(word_graph, 100)
-            )
+            classify = pynutil.add_weight(cardinal_graph, 1.1)
 
             token = (
                 pynutil.insert("tokens { ")
