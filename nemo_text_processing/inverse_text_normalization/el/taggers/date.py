@@ -24,8 +24,12 @@ class DateFst(GraphFst):
 
         year_graph = pynutil.insert("year: \"") + cardinal_graph + pynutil.insert("\"")
 
-        graph_dmy = day_graph + delete_extra_space + month_graph + pynini.closure(delete_extra_space + year_graph, 0, 1)
-        graph_mdy = month_graph + delete_extra_space + day_graph + pynini.closure(delete_extra_space + year_graph, 0, 1)
+        graph_dmy = (
+            day_graph + delete_extra_space + month_graph + pynini.closure(delete_extra_space + year_graph, 0, 1)
+        )
+        graph_mdy = (
+            month_graph + delete_extra_space + day_graph + pynini.closure(delete_extra_space + year_graph, 0, 1)
+        )
 
         final_graph = graph_dmy | graph_mdy
         final_graph += pynutil.insert(" preserve_order: true")

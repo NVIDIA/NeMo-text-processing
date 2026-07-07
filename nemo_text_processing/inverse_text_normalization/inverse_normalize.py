@@ -49,7 +49,6 @@ class InverseNormalizer(Normalizer):
         overwrite_cache: bool = False,
         max_number_of_permutations_per_split: int = 729,
     ):
-
         assert input_case in ["lower_cased", "cased"]
 
         if lang == 'en':  # English

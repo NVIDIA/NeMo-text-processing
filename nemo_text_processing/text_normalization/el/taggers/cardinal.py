@@ -92,16 +92,10 @@ class CardinalFst(GraphFst):
 
         # --- fixed-width 3-digit group blocks, used for the remainders of large numbers ---
         # a non-zero group of exactly three digits (001-999), neuter
-        group_nonzero = (
-            (pynutil.delete("00") + graph_digit)
-            | (pynutil.delete("0") + graph_tens)
-            | graph_hundreds
-        )
+        group_nonzero = (pynutil.delete("00") + graph_digit) | (pynutil.delete("0") + graph_tens) | graph_hundreds
         # same but excluding 001 (used where "one" needs a scale word instead)
         group_nonzero_no_one = (
-            (pynutil.delete("00") + graph_digit_no_one)
-            | (pynutil.delete("0") + graph_tens)
-            | graph_hundreds
+            (pynutil.delete("00") + graph_digit_no_one) | (pynutil.delete("0") + graph_tens) | graph_hundreds
         )
 
         # each *_group_sp consumes exactly three digits and emits a leading space when non-zero
@@ -109,7 +103,12 @@ class CardinalFst(GraphFst):
         thousands_group_sp = (
             pynutil.delete("000")
             | (insert_space + pynini.cross("001", "χίλια"))
-            | (insert_space + shift_cardinal_gender_fem(group_nonzero_no_one) + insert_space + pynutil.insert("χιλιάδες"))
+            | (
+                insert_space
+                + shift_cardinal_gender_fem(group_nonzero_no_one)
+                + insert_space
+                + pynutil.insert("χιλιάδες")
+            )
         )
         millions_group_sp = (
             pynutil.delete("000")
@@ -133,13 +132,7 @@ class CardinalFst(GraphFst):
         graph_billions = billion_head + rem9
         self.graph_billions = graph_billions.optimize()
 
-        graph = (
-            self.zero
-            | graph_one_to_999
-            | graph_thousands
-            | graph_millions
-            | graph_billions
-        )
+        graph = self.zero | graph_one_to_999 | graph_thousands | graph_millions | graph_billions
         self.graph_no_tokens = graph.optimize()
 
         final_graph = pynutil.insert("integer: \"") + self.graph_no_tokens + pynutil.insert("\"")

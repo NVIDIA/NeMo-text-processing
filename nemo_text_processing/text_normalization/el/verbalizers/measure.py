@@ -31,12 +31,7 @@ class MeasureFst(GraphFst):
 
         units = pynutil.delete(pynini.union("units: \"address\" ", "units: \"math\" "))
 
-        graph |= (
-            units
-            + graph_cardinal
-            + delete_space
-            + pynini.closure(preserve_order)
-        )
+        graph |= units + graph_cardinal + delete_space + pynini.closure(preserve_order)
 
         address_flat = (
             pynutil.delete("units: \"address\" ")

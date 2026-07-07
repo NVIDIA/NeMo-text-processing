@@ -24,7 +24,9 @@ class MoneyFst(GraphFst):
         unit_plural = get_singulars(unit_singular)
 
         graph_unit_singular = pynutil.insert("currency: \"") + convert_space(unit_singular) + pynutil.insert("\"")
-        graph_unit_plural = pynutil.insert("currency: \"") + convert_space(unit_plural | unit_singular) + pynutil.insert("\"")
+        graph_unit_plural = (
+            pynutil.insert("currency: \"") + convert_space(unit_plural | unit_singular) + pynutil.insert("\"")
+        )
 
         graph_integer = (
             pynutil.insert("integer_part: \"")

@@ -51,5 +51,18 @@ class VerbalizeFst(GraphFst):
         electronic_graph = ElectronicFst(deterministic=deterministic).fst
         whitelist_graph = WhiteListFst().fst
         roman_graph = RomanFst(deterministic=deterministic).fst
-        graph = cardinal_graph | ordinal_graph | decimal_graph | fraction_graph | money_graph | date_graph | time_graph | measure_graph | telephone_graph | electronic_graph | whitelist_graph | roman_graph
+        graph = (
+            cardinal_graph
+            | ordinal_graph
+            | decimal_graph
+            | fraction_graph
+            | money_graph
+            | date_graph
+            | time_graph
+            | measure_graph
+            | telephone_graph
+            | electronic_graph
+            | whitelist_graph
+            | roman_graph
+        )
         self.fst = graph.optimize()

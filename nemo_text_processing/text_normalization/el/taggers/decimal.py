@@ -48,8 +48,6 @@ class DecimalFst(GraphFst):
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         graph_fractional = pynutil.insert("fractional_part: \"") + fractional + pynutil.insert("\"")
 
-        final_graph = (
-            optional_negative + graph_integer + pynutil.delete(",") + insert_space + graph_fractional
-        )
+        final_graph = optional_negative + graph_integer + pynutil.delete(",") + insert_space + graph_fractional
         self.final_graph = final_graph
         self.fst = self.add_tokens(final_graph).optimize()

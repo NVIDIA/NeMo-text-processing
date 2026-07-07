@@ -12,14 +12,58 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 
-
 GREEK_LOWER = pynini.union(
-    "α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι", "κ", "λ", "μ",
-    "ν", "ξ", "ο", "π", "ρ", "σ", "ς", "τ", "υ", "φ", "χ", "ψ", "ω",
+    "α",
+    "β",
+    "γ",
+    "δ",
+    "ε",
+    "ζ",
+    "η",
+    "θ",
+    "ι",
+    "κ",
+    "λ",
+    "μ",
+    "ν",
+    "ξ",
+    "ο",
+    "π",
+    "ρ",
+    "σ",
+    "ς",
+    "τ",
+    "υ",
+    "φ",
+    "χ",
+    "ψ",
+    "ω",
 )
 GREEK_UPPER = pynini.union(
-    "Α", "Β", "Γ", "Δ", "Ε", "Ζ", "Η", "Θ", "Ι", "Κ", "Λ", "Μ",
-    "Ν", "Ξ", "Ο", "Π", "Ρ", "Σ", "Τ", "Υ", "Φ", "Χ", "Ψ", "Ω",
+    "Α",
+    "Β",
+    "Γ",
+    "Δ",
+    "Ε",
+    "Ζ",
+    "Η",
+    "Θ",
+    "Ι",
+    "Κ",
+    "Λ",
+    "Μ",
+    "Ν",
+    "Ξ",
+    "Ο",
+    "Π",
+    "Ρ",
+    "Σ",
+    "Τ",
+    "Υ",
+    "Φ",
+    "Χ",
+    "Ψ",
+    "Ω",
 )
 GREEK_ALPHA = pynini.union(GREEK_LOWER, GREEK_UPPER)
 
@@ -33,11 +77,7 @@ class MeasureFst(GraphFst):
 
         delete_opt_space = pynini.closure(pynutil.delete(" "), 0, 1)
 
-        cardinal_space = (
-            pynutil.insert("integer: \"")
-            + cardinal_graph
-            + pynutil.insert("\"")
-        )
+        cardinal_space = pynutil.insert("integer: \"") + cardinal_graph + pynutil.insert("\"")
 
         default_units = pynutil.insert("units: \"") + graph_unit + pynutil.insert("\"")
 
@@ -80,28 +120,18 @@ class MeasureFst(GraphFst):
         )
 
         math = (
-            pynutil.insert('units: "math" cardinal { integer: "')
-            + math
-            + pynutil.insert('" } preserve_order: true')
+            pynutil.insert('units: "math" cardinal { integer: "') + math + pynutil.insert('" } preserve_order: true')
         )
 
         address = self.get_address_graph(cardinal)
-        address = (
-            pynutil.insert('units: "address" integer: "')
-            + address
-            + pynutil.insert('" preserve_order: true')
-        )
+        address = pynutil.insert('units: "address" integer: "') + address + pynutil.insert('" preserve_order: true')
 
         graph = graph_standard | math | address
         self.fst = self.add_tokens(graph).optimize()
 
     def get_address_graph(self, cardinal):
         address_num = pynini.compose(NEMO_DIGIT ** (1, 2), cardinal.graph_no_tokens)
-        address_num |= (
-            address_num
-            + insert_space
-            + pynini.compose(NEMO_DIGIT ** (3, 4), cardinal.graph_no_tokens)
-        )
+        address_num |= address_num + insert_space + pynini.compose(NEMO_DIGIT ** (3, 4), cardinal.graph_no_tokens)
 
         direction = (
             pynini.cross("β", "Βόρεια")
@@ -134,7 +164,7 @@ class MeasureFst(GraphFst):
         state = pynini.invert(state_graph)
         state = pynini.closure(comma_space + state, 0, 1)
 
-        zip_code = pynini.compose(NEMO_DIGIT ** 5, cardinal.single_digits_graph)
+        zip_code = pynini.compose(NEMO_DIGIT**5, cardinal.single_digits_graph)
         zip_code = pynini.closure(comma_space + zip_code, 0, 1)
 
         address = address_num + direction + address_words + pynini.closure(city + state + zip_code, 0, 1)

@@ -73,7 +73,9 @@ class RangeFst(GraphFst):
             + delete_space
             + (date_year_four_digit | date_year_two_digit | (NEMO_DIGIT**2 @ cardinal_graph))
         )
-        mid_year_graph = pynini.cross("mid", "μέσα") + pynini.cross("-", " ") + (date_year_four_digit | date_year_two_digit)
+        mid_year_graph = (
+            pynini.cross("mid", "μέσα") + pynini.cross("-", " ") + (date_year_four_digit | date_year_two_digit)
+        )
 
         self.graph |= year_to_year_graph
         self.graph |= mid_year_graph

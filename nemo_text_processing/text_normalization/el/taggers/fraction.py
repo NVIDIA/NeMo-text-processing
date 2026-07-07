@@ -52,9 +52,15 @@ class FractionFst(GraphFst):
         numerator_one = pynutil.insert("numerator: \"") + pynini.cross("1", "ένα") + pynutil.insert("\"")
         numerator_multi = pynutil.insert("numerator: \"") + num_no_one + pynutil.insert("\"")
 
-        branch_one = numerator_one + pynutil.delete("/") + pynutil.insert(" denominator: \"") + denom_sg + pynutil.insert("\"")
+        branch_one = (
+            numerator_one + pynutil.delete("/") + pynutil.insert(" denominator: \"") + denom_sg + pynutil.insert("\"")
+        )
         branch_multi = (
-            numerator_multi + pynutil.delete("/") + pynutil.insert(" denominator: \"") + denom_pl + pynutil.insert("\"")
+            numerator_multi
+            + pynutil.delete("/")
+            + pynutil.insert(" denominator: \"")
+            + denom_pl
+            + pynutil.insert("\"")
         )
 
         graph = branch_one | branch_multi

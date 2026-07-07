@@ -23,7 +23,12 @@ class TelephoneFst(GraphFst):
         separator = pynini.union("-", ".", " ")
         digit_group = (digit + pynini.closure(insert_space + digit)).optimize()
 
-        number_part = digit_group + pynini.cross(separator, " ") + digit_group + pynini.closure(pynini.cross(separator, " ") + digit_group)
+        number_part = (
+            digit_group
+            + pynini.cross(separator, " ")
+            + digit_group
+            + pynini.closure(pynini.cross(separator, " ") + digit_group)
+        )
         number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
 
         tagger_graph = number_part.optimize()

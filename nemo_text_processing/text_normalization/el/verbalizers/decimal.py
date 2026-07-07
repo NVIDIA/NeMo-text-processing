@@ -27,13 +27,9 @@ class DecimalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        optional_sign = pynini.closure(
-            pynini.cross("negative: \"true\"", "μείον ") + delete_space, 0, 1
-        )
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "μείον ") + delete_space, 0, 1)
         integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        fractional = (
-            pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        )
+        fractional = pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         graph = integer + delete_space + pynutil.insert(" κόμμα ") + fractional
         graph = optional_sign + graph

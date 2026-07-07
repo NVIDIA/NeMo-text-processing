@@ -21,16 +21,15 @@ class DecimalFst(GraphFst):
         graph_digit_seq = pynini.closure(graph_digit + delete_space) + graph_digit
         self.graph = graph_digit
 
-        graph_fractional = pynutil.insert("fractional_part: \"") + (cardinal_graph | graph_digit_seq) + pynutil.insert("\"")
+        graph_fractional = (
+            pynutil.insert("fractional_part: \"") + (cardinal_graph | graph_digit_seq) + pynutil.insert("\"")
+        )
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
 
         point = pynutil.delete("κόμμα") | pynutil.delete("κομμα")
 
         final_graph_wo_sign = (
-            pynini.closure(graph_integer + delete_extra_space, 0, 1)
-            + point
-            + delete_extra_space
-            + graph_fractional
+            pynini.closure(graph_integer + delete_extra_space, 0, 1) + point + delete_extra_space + graph_fractional
         )
         self.final_graph_wo_negative = final_graph_wo_sign
 

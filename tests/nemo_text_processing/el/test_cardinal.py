@@ -21,7 +21,6 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestCardinal:
-
     normalizer = Normalizer(lang='el', cache_dir=CACHE_DIR, overwrite_cache=False, input_case='lower_cased')
 
     @parameterized.expand(parse_test_case_file('el/data_text_normalization/test_cases_cardinal.txt'))

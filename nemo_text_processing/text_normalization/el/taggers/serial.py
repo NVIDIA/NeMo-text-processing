@@ -16,6 +16,7 @@ import pynini
 from pynini.examples import plurals
 from pynini.lib import pynutil
 
+from nemo_text_processing.text_normalization.el.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.graph_utils import (
     MIN_NEG_WEIGHT,
     MIN_POS_WEIGHT,
@@ -26,7 +27,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     convert_space,
 )
-from nemo_text_processing.text_normalization.el.utils import get_abs_path, load_labels
 
 
 def _leading_zero_graph(cardinal: GraphFst) -> "pynini.FstLike":
@@ -102,17 +102,16 @@ class SerialFst(GraphFst):
 
             num_graph_alnum = (
                 pynini.compose(NEMO_DIGIT, cardinal_graph)  # single digit → cardinal
-                | pynini.compose(NEMO_DIGIT ** 2, cardinal_graph)  # two digits → cardinal
+                | pynini.compose(NEMO_DIGIT**2, cardinal_graph)  # two digits → cardinal
                 | pynutil.add_weight(
-                    pynini.compose(NEMO_DIGIT + pynini.closure("0", 1), cardinal_graph), MIN_NEG_WEIGHT  # X0 → cardinal
+                    pynini.compose(NEMO_DIGIT + pynini.closure("0", 1), cardinal_graph),
+                    MIN_NEG_WEIGHT,  # X0 → cardinal
                 )
                 | pynini.compose(
-                    pynini.difference(NEMO_DIGIT ** 3, NEMO_DIGIT + NEMO_DIGIT + "00"),
+                    pynini.difference(NEMO_DIGIT**3, NEMO_DIGIT + NEMO_DIGIT + "00"),
                     cardinal.single_digits_graph,  # 3-digit not ending in 00 → single-digit
                 )
-                | pynini.compose(
-                    NEMO_DIGIT ** (4, ...), cardinal.single_digits_graph
-                )  # 4+ digits → single-digit
+                | pynini.compose(NEMO_DIGIT ** (4, ...), cardinal.single_digits_graph)  # 4+ digits → single-digit
                 | _leading_zero_graph(cardinal)
             ).optimize()
 
@@ -134,7 +133,7 @@ class SerialFst(GraphFst):
             num_graph_pure |= cardinal.single_digits_graph
             num_graph_pure |= pynini.compose(num_graph_pure, NEMO_SIGMA + pynutil.delete("hundred ") + NEMO_SIGMA)
             num_graph_pure |= pynutil.add_weight(
-                NEMO_DIGIT ** 2 @ cardinal.graph_hundred_component_at_least_one_none_zero_digit,
+                NEMO_DIGIT**2 @ cardinal.graph_hundred_component_at_least_one_none_zero_digit,
                 weight=MIN_POS_WEIGHT,
             )
             num_graph_alnum = num_graph_pure

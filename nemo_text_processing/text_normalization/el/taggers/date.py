@@ -40,7 +40,7 @@ class DateFst(GraphFst):
         # beat the -0.1 leading-zero bonus inside month_num so 01/03/04/07 don't tie.
         month = pynutil.insert("month: \"") + (month_name | pynutil.add_weight(month_num, 1.0)) + pynutil.insert("\"")
 
-        year = pynini.compose(NEMO_DIGIT ** 4, cardinal_graph).optimize()
+        year = pynini.compose(NEMO_DIGIT**4, cardinal_graph).optimize()
         year = pynutil.insert("year: \"") + year + pynutil.insert("\"")
         year_optional = pynini.closure(delete_sep + year, 0, 1)
 

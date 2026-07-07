@@ -29,9 +29,7 @@ class FractionFst(GraphFst):
 
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "μείον ") + delete_space, 0, 1)
         numerator = pynutil.delete("numerator: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        denominator = (
-            pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        )
+        denominator = pynutil.delete("denominator: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         graph = numerator + delete_space + pynutil.insert(" ") + denominator
         graph = optional_sign + graph

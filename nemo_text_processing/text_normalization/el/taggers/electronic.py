@@ -37,9 +37,7 @@ class ElectronicFst(GraphFst):
             pynutil.delete("username:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.closure(
-                pynutil.add_weight(NEMO_NOT_QUOTE + insert_space, 1.1)
-            )
+            + pynini.closure(pynutil.add_weight(NEMO_NOT_QUOTE + insert_space, 1.1))
             + pynutil.delete("\"")
         )
 
@@ -50,9 +48,7 @@ class ElectronicFst(GraphFst):
             + pynini.closure(insert_space + NEMO_NOT_QUOTE)
         )
 
-        server_default = (
-            pynini.closure((NEMO_ALPHA | NEMO_DIGIT) + insert_space, 1)
-        )
+        server_default = pynini.closure((NEMO_ALPHA | NEMO_DIGIT) + insert_space, 1)
 
         domain = (
             pynutil.delete("domain:")

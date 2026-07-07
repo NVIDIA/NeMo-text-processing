@@ -23,7 +23,9 @@ class CardinalFst(GraphFst):
         graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
 
-        self.graph_two_digit = graph_teen | ((graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")))
+        self.graph_two_digit = graph_teen | (
+            (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0"))
+        )
 
         graph_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
         graph_hundred_digit = pynini.union(graph_hundred, pynutil.insert("0"))
@@ -65,11 +67,29 @@ class CardinalFst(GraphFst):
         self.graph_no_exception = graph.optimize()
 
         labels_exception = [
-            "μηδέν", "ένα", "μία", "μια", "ένας",
-            "δύο", "δυο", "τρία", "τρεις",
-            "τέσσερα", "τέσσερις", "πέντε", "έξι",
-            "εφτά", "επτά", "οχτώ", "οκτώ", "εννιά", "εννέα",
-            "δέκα", "έντεκα", "ένδεκα", "δώδεκα",
+            "μηδέν",
+            "ένα",
+            "μία",
+            "μια",
+            "ένας",
+            "δύο",
+            "δυο",
+            "τρία",
+            "τρεις",
+            "τέσσερα",
+            "τέσσερις",
+            "πέντε",
+            "έξι",
+            "εφτά",
+            "επτά",
+            "οχτώ",
+            "οκτώ",
+            "εννιά",
+            "εννέα",
+            "δέκα",
+            "έντεκα",
+            "ένδεκα",
+            "δώδεκα",
         ]
         if input_case == INPUT_CASED:
             labels_exception += [x.capitalize() for x in labels_exception]

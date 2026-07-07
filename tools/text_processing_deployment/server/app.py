@@ -34,9 +34,8 @@ from typing import Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import run_in_threadpool
-from pydantic import BaseModel, Field
-
 from normalizer import EnginePool, pool_from_env
+from pydantic import BaseModel, Field
 
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "INFO").upper(),
@@ -52,7 +51,9 @@ ENGINES: Dict[str, EnginePool] = {}
 
 
 def _config_present(direction_dir: str) -> bool:
-    return os.path.isfile(os.path.join(direction_dir, os.environ.get("SPARROWHAWK_CONFIG", "sparrowhawk_configuration.ascii_proto")))
+    return os.path.isfile(
+        os.path.join(direction_dir, os.environ.get("SPARROWHAWK_CONFIG", "sparrowhawk_configuration.ascii_proto"))
+    )
 
 
 @asynccontextmanager

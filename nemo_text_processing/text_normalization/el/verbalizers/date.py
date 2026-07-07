@@ -29,7 +29,13 @@ class DateFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        graph_dmy = day + delete_space + pynutil.insert(" ") + month + pynini.closure(delete_space + pynutil.insert(" ") + year, 0, 1)
+        graph_dmy = (
+            day
+            + delete_space
+            + pynutil.insert(" ")
+            + month
+            + pynini.closure(delete_space + pynutil.insert(" ") + year, 0, 1)
+        )
         graph = graph_dmy | year
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
