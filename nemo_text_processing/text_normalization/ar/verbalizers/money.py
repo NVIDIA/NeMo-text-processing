@@ -28,6 +28,7 @@ class MoneyFst(GraphFst):
     Finite state transducer for verbalizing money, e.g.
         money { integer_part: "تسعة" currency_maj: "يورو" preserve_order: true} -> "تسعة يورو"
         money { integer_part: "تسعة" currency_maj: "دولار" preserve_order: true} -> "تسعة دولار"
+        money { currency_maj: "دولار" integer_part: "واحد" morphosyntactic_features: "currency_first"} -> "دولار واحد"
         money { integer_part: "خمسة" currency_maj: "دينار كويتي"} -> "خمسة دينار كويتي"
 
     Args:
@@ -49,9 +50,10 @@ class MoneyFst(GraphFst):
 
         integer_part = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         add_and = pynutil.insert(" و")
+        morph_currency_first = pynutil.delete(' morphosyntactic_features: "currency_first"')
 
-        #  *** currency_maj
-        graph_integer = maj + keep_space + integer_part
+        # currency_maj before integer_part; disambiguated via morphosyntactic_features for Sparrowhawk.
+        graph_currency_first = maj + keep_space + integer_part + delete_space + morph_currency_first
 
         #  *** currency_maj + (***) (و) *** current_min
         graph_integer_with_minor = (
@@ -65,12 +67,10 @@ class MoneyFst(GraphFst):
             + pynini.closure(keep_space + min, 0, 1)
             + delete_preserve_order
         )
-        # this graph fix word order from dollar three (دولار تسعة)--> three dollar (تسعة دولار)
         graph_integer_no_minor = integer_part + keep_space + maj + delete_space + delete_preserve_order
-        # *** current_min
         graph_minor = fractional_part + keep_space + delete_space + min + delete_preserve_order
 
-        graph = graph_integer | graph_integer_with_minor | graph_minor | graph_integer_no_minor
+        graph = graph_currency_first | graph_integer_with_minor | graph_minor | graph_integer_no_minor
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
