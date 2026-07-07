@@ -1,0 +1,5 @@
+grammar_file: "verbalize/verbalize.far"
+
+grammar_name: "Verbalizer"
+
+rules { main: "ALL" redup: "REDUP" }

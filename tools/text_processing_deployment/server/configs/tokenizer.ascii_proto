@@ -1,0 +1,5 @@
+grammar_file: "classify/tokenize_and_classify.far"
+
+grammar_name: "TokenizerClassifier"
+
+rules { main: "TOKENIZE_AND_CLASSIFY" }
