@@ -156,6 +156,11 @@ cifar-10-batches-py
 tests/.data
 tests/data
 
+# Sparrowhawk grammar build cache (regenerable; redundant with the exported
+# classify/tokenize_and_classify.far and verbalize/verbalize.far that we do commit).
+tools/text_processing_deployment/**/_*_deterministic.far
+tools/text_processing_deployment/**/*_itn_*cased.far
+
 # outputs folder
 examples/*/outputs
 examples/*/NeMo_experiments

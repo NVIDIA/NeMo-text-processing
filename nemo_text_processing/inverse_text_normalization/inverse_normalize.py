@@ -146,6 +146,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'el':  # Greek
+            from nemo_text_processing.inverse_text_normalization.el.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.el.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
