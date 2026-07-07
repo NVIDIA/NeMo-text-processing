@@ -40,7 +40,7 @@ class WordFst(GraphFst):
 
         # Define Kannada characters and symbols using pynini.union
         KANNADA_CHAR = pynini.union(
-            *[chr(i) for i in range(0x0C85, 0x0CB9 + 1)],  # Kannada vowels and consonants 
+            *[chr(i) for i in range(0x0C85, 0x0CB9 + 1)],  # Kannada vowels and consonants
             *[chr(i) for i in range(0x0CBE, 0x0CCD + 1)],  # More Kannada characters
             *[chr(i) for i in range(0x0CE6, 0x0CEF + 1)],  # Kannada diacritics
         ).optimize()

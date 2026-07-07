@@ -12,23 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pynini 
-from pynini.lib import pynutil 
- 
-from nemo_text_processing.text_normalization.kn.graph_utils import ( 
-    NEMO_NOT_QUOTE, 
-    GraphFst, 
-    delete_space, 
-) 
- 
-class CardinalFst(GraphFst): 
-    """ 
+import pynini
+from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+
+
+class CardinalFst(GraphFst):
+    """
     Verbalizes cardinals, e.g.  cardinal { integer: "5" }  ->  ಐದು
-    """ 
- 
-    def __init__(self, deterministic: bool = True): 
-        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic) 
- 
+    """
+
+    def __init__(self, deterministic: bool = True):
+        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
+
         self.optional_sign = pynini.cross("negative: \"true\"", "minus ")
         if not deterministic:
             self.optional_sign |= pynini.cross("negative: \"true\"", "negative ")

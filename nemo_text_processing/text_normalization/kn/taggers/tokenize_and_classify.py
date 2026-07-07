@@ -1,14 +1,14 @@
-# Copyright (c) 2026, NVIDIA CORPORATION. All rights reserved. 
+# Copyright (c) 2026, NVIDIA CORPORATION. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at 
-# 
+# You may obtain a copy of the License at
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
@@ -27,6 +27,7 @@ from nemo_text_processing.text_normalization.kn.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.kn.taggers.cardinal import CardinalFst
+
 # from nemo_text_processing.text_normalization.hi.taggers.date import DateFst
 # from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
 # from nemo_text_processing.text_normalization.hi.taggers.electronic import ElectronicFst
@@ -35,6 +36,7 @@ from nemo_text_processing.text_normalization.kn.taggers.cardinal import Cardinal
 # from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
 # from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.kn.taggers.punctuation import PunctuationFst
+
 # from nemo_text_processing.text_normalization.hi.taggers.telephone import TelephoneFst
 # from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 # from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
@@ -118,7 +120,7 @@ class ClassifyFst(GraphFst):
             # electronic_graph = electronic.fst
 
             classify = (
-                # pynutil.add_weight(whitelist_graph, 1.01)| 
+                # pynutil.add_weight(whitelist_graph, 1.01)|
                 pynutil.add_weight(cardinal_graph, 1.1)
                 # | pynutil.add_weight(decimal_graph, 1.1)
                 # | pynutil.add_weight(fraction_graph, 1.1)

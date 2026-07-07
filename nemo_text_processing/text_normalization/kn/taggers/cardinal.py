@@ -31,14 +31,14 @@ class CardinalFst(GraphFst):
         123 -> cardinal { integer: "ನೂರ ಇಪ್ಪತ್ತಮೂರು" }
         500 -> cardinal { integer: "ಐನೂರು" }
         1001 -> cardinal { integer: "ಒಂದು ಸಾವಿರದ ಒಂದು" }
-        
+
     Uses contracted hundred forms (ಐನೂರು, ಇನ್ನೂರು) and genitive connectors
     (ಸಾವಿರದ, ಲಕ್ಷದ, ಕೋಟಿಯ) when followed by non-zero remainders.
-    
+
     Numbers above ಕೋಟಿ (10^7) use ಕೋಟಿ as base unit:
         10^9 -> ನೂರು ಕೋಟಿ (not ಅರಬ್)
         10^11 -> ಹತ್ತು ಸಾವಿರ ಕೋಟಿ (not ಖರಬ್)
-    
+
     Coverage limit: Numbers up to 99 lakh crore (99,99,999 crore or ~10^14) are supported.
     Numbers with crore coefficients > 99,99,999 (i.e., requiring 8+ digit coefficient
     normalization) will fall through as raw text. This covers practical TTS use cases.
@@ -105,8 +105,12 @@ class CardinalFst(GraphFst):
         graph_thousands_with_teens = digit + delete_zero + suffix_thousand_genitive + insert_space + teens_ties
         graph_thousands_with_hundreds = digit + suffix_thousand_genitive + insert_space + graph_hundreds
 
-        graph_ten_thousands_with_digit = teens_and_ties + (delete_zero**2) + suffix_thousand_genitive + insert_space + digit
-        graph_ten_thousands_with_teens = teens_and_ties + delete_zero + suffix_thousand_genitive + insert_space + teens_ties
+        graph_ten_thousands_with_digit = (
+            teens_and_ties + (delete_zero**2) + suffix_thousand_genitive + insert_space + digit
+        )
+        graph_ten_thousands_with_teens = (
+            teens_and_ties + delete_zero + suffix_thousand_genitive + insert_space + teens_ties
+        )
         graph_ten_thousands_with_hundreds = teens_and_ties + suffix_thousand_genitive + insert_space + graph_hundreds
 
         graph_thousands = (
@@ -145,9 +149,15 @@ class CardinalFst(GraphFst):
         graph_lakhs_with_ten_thousands = digit + suffix_lakh_genitive + insert_space + graph_ten_thousands
 
         graph_ten_lakhs_with_digit = teens_and_ties + (delete_zero**4) + suffix_lakh_genitive + insert_space + digit
-        graph_ten_lakhs_with_teens = teens_and_ties + (delete_zero**3) + suffix_lakh_genitive + insert_space + teens_ties
-        graph_ten_lakhs_with_hundreds = teens_and_ties + (delete_zero**2) + suffix_lakh_genitive + insert_space + graph_hundreds
-        graph_ten_lakhs_with_thousands = teens_and_ties + delete_zero + suffix_lakh_genitive + insert_space + graph_thousands
+        graph_ten_lakhs_with_teens = (
+            teens_and_ties + (delete_zero**3) + suffix_lakh_genitive + insert_space + teens_ties
+        )
+        graph_ten_lakhs_with_hundreds = (
+            teens_and_ties + (delete_zero**2) + suffix_lakh_genitive + insert_space + graph_hundreds
+        )
+        graph_ten_lakhs_with_thousands = (
+            teens_and_ties + delete_zero + suffix_lakh_genitive + insert_space + graph_thousands
+        )
         graph_ten_lakhs_with_ten_thousands = teens_and_ties + suffix_lakh_genitive + insert_space + graph_ten_thousands
 
         graph_lakhs = (
@@ -188,15 +198,25 @@ class CardinalFst(GraphFst):
         graph_crores_with_teens = digit + (delete_zero**5) + suffix_crore_genitive + insert_space + teens_ties
         graph_crores_with_hundreds = digit + (delete_zero**4) + suffix_crore_genitive + insert_space + graph_hundreds
         graph_crores_with_thousands = digit + (delete_zero**3) + suffix_crore_genitive + insert_space + graph_thousands
-        graph_crores_with_ten_thousands = digit + (delete_zero**2) + suffix_crore_genitive + insert_space + graph_ten_thousands
+        graph_crores_with_ten_thousands = (
+            digit + (delete_zero**2) + suffix_crore_genitive + insert_space + graph_ten_thousands
+        )
         graph_crores_with_lakhs = digit + delete_zero + suffix_crore_genitive + insert_space + graph_lakhs
         graph_crores_with_ten_lakhs = digit + suffix_crore_genitive + insert_space + graph_ten_lakhs
 
         graph_ten_crores_with_digit = teens_and_ties + (delete_zero**6) + suffix_crore_genitive + insert_space + digit
-        graph_ten_crores_with_teens = teens_and_ties + (delete_zero**5) + suffix_crore_genitive + insert_space + teens_ties
-        graph_ten_crores_with_hundreds = teens_and_ties + (delete_zero**4) + suffix_crore_genitive + insert_space + graph_hundreds
-        graph_ten_crores_with_thousands = teens_and_ties + (delete_zero**3) + suffix_crore_genitive + insert_space + graph_thousands
-        graph_ten_crores_with_ten_thousands = teens_and_ties + (delete_zero**2) + suffix_crore_genitive + insert_space + graph_ten_thousands
+        graph_ten_crores_with_teens = (
+            teens_and_ties + (delete_zero**5) + suffix_crore_genitive + insert_space + teens_ties
+        )
+        graph_ten_crores_with_hundreds = (
+            teens_and_ties + (delete_zero**4) + suffix_crore_genitive + insert_space + graph_hundreds
+        )
+        graph_ten_crores_with_thousands = (
+            teens_and_ties + (delete_zero**3) + suffix_crore_genitive + insert_space + graph_thousands
+        )
+        graph_ten_crores_with_ten_thousands = (
+            teens_and_ties + (delete_zero**2) + suffix_crore_genitive + insert_space + graph_ten_thousands
+        )
         graph_ten_crores_with_lakhs = teens_and_ties + delete_zero + suffix_crore_genitive + insert_space + graph_lakhs
         graph_ten_crores_with_ten_lakhs = teens_and_ties + suffix_crore_genitive + insert_space + graph_ten_lakhs
 
@@ -230,7 +250,7 @@ class CardinalFst(GraphFst):
         # HUNDRED CRORES and above (10^9+)
         # Instead of ಅರಬ್/ಖರಬ್, use natural Kannada: ನೂರು ಕೋಟಿ, ಸಾವಿರ ಕೋಟಿ
         # ============================================================
-        
+
         # Combined graph for any crore remainder (1 to 99,99,99,999)
         graph_crore_remainder = (
             digit
@@ -243,17 +263,29 @@ class CardinalFst(GraphFst):
             | graph_crores
             | graph_ten_crores
         )
-        
+
         # Hundred crores (10^9): 100-999 ಕೋಟಿ with any remainder
         graph_hundred_crores_standalone = graph_hundreds + (delete_zero**7) + suffix_crore_standalone
-        graph_hundred_crores_with_digit = graph_hundreds + (delete_zero**6) + suffix_crore_genitive + insert_space + digit
-        graph_hundred_crores_with_teens = graph_hundreds + (delete_zero**5) + suffix_crore_genitive + insert_space + teens_ties
-        graph_hundred_crores_with_hundreds = graph_hundreds + (delete_zero**4) + suffix_crore_genitive + insert_space + graph_hundreds
-        graph_hundred_crores_with_thousands = graph_hundreds + (delete_zero**3) + suffix_crore_genitive + insert_space + graph_thousands
-        graph_hundred_crores_with_ten_thousands = graph_hundreds + (delete_zero**2) + suffix_crore_genitive + insert_space + graph_ten_thousands
-        graph_hundred_crores_with_lakhs = graph_hundreds + delete_zero + suffix_crore_genitive + insert_space + graph_lakhs
+        graph_hundred_crores_with_digit = (
+            graph_hundreds + (delete_zero**6) + suffix_crore_genitive + insert_space + digit
+        )
+        graph_hundred_crores_with_teens = (
+            graph_hundreds + (delete_zero**5) + suffix_crore_genitive + insert_space + teens_ties
+        )
+        graph_hundred_crores_with_hundreds = (
+            graph_hundreds + (delete_zero**4) + suffix_crore_genitive + insert_space + graph_hundreds
+        )
+        graph_hundred_crores_with_thousands = (
+            graph_hundreds + (delete_zero**3) + suffix_crore_genitive + insert_space + graph_thousands
+        )
+        graph_hundred_crores_with_ten_thousands = (
+            graph_hundreds + (delete_zero**2) + suffix_crore_genitive + insert_space + graph_ten_thousands
+        )
+        graph_hundred_crores_with_lakhs = (
+            graph_hundreds + delete_zero + suffix_crore_genitive + insert_space + graph_lakhs
+        )
         graph_hundred_crores_with_ten_lakhs = graph_hundreds + suffix_crore_genitive + insert_space + graph_ten_lakhs
-        
+
         graph_hundred_crores = (
             graph_hundred_crores_standalone
             | graph_hundred_crores_with_digit
@@ -265,44 +297,101 @@ class CardinalFst(GraphFst):
             | graph_hundred_crores_with_ten_lakhs
         )
         graph_hundred_crores.optimize()
-        
+
         # Thousand crores (10^10): 1000-9999 ಕೋಟಿ
         # Use coefficient patterns that output ಸಾವಿರದ (not ಸಾವಿರ ಕೋಟಿ) and append ಕೋಟಿ at end
         # This prevents ಕೋಟಿ from appearing twice
-        
+
         # For X000 crore (e.g., 1000 crore = 10000000000)
         graph_thousand_crores_standalone = digit + (delete_zero**10) + pynutil.insert(" ಸಾವಿರ ಕೋಟಿ")
-        
+
         # For X000 crore with sub-crore remainder (uses "ಸಾವಿರ ಕೋಟಿಯ")
         suffix_thousand_crore_genitive = pynutil.insert(" ಸಾವಿರ ಕೋಟಿಯ")
-        graph_thousand_crores_with_digit = digit + (delete_zero**9) + suffix_thousand_crore_genitive + insert_space + digit
-        graph_thousand_crores_with_teens = digit + (delete_zero**8) + suffix_thousand_crore_genitive + insert_space + teens_ties
-        graph_thousand_crores_with_hundreds = digit + (delete_zero**7) + suffix_thousand_crore_genitive + insert_space + graph_hundreds
-        graph_thousand_crores_with_thousands = digit + (delete_zero**6) + suffix_thousand_crore_genitive + insert_space + graph_thousands
-        graph_thousand_crores_with_ten_thousands = digit + (delete_zero**5) + suffix_thousand_crore_genitive + insert_space + graph_ten_thousands
-        graph_thousand_crores_with_lakhs = digit + (delete_zero**4) + suffix_thousand_crore_genitive + insert_space + graph_lakhs
-        graph_thousand_crores_with_ten_lakhs = digit + (delete_zero**3) + suffix_thousand_crore_genitive + insert_space + graph_ten_lakhs
-        
+        graph_thousand_crores_with_digit = (
+            digit + (delete_zero**9) + suffix_thousand_crore_genitive + insert_space + digit
+        )
+        graph_thousand_crores_with_teens = (
+            digit + (delete_zero**8) + suffix_thousand_crore_genitive + insert_space + teens_ties
+        )
+        graph_thousand_crores_with_hundreds = (
+            digit + (delete_zero**7) + suffix_thousand_crore_genitive + insert_space + graph_hundreds
+        )
+        graph_thousand_crores_with_thousands = (
+            digit + (delete_zero**6) + suffix_thousand_crore_genitive + insert_space + graph_thousands
+        )
+        graph_thousand_crores_with_ten_thousands = (
+            digit + (delete_zero**5) + suffix_thousand_crore_genitive + insert_space + graph_ten_thousands
+        )
+        graph_thousand_crores_with_lakhs = (
+            digit + (delete_zero**4) + suffix_thousand_crore_genitive + insert_space + graph_lakhs
+        )
+        graph_thousand_crores_with_ten_lakhs = (
+            digit + (delete_zero**3) + suffix_thousand_crore_genitive + insert_space + graph_ten_lakhs
+        )
+
         # For X00Y, X0YZ, XYZW crore patterns (e.g., 1001 crore, 1234 crore)
         # Use "ಸಾವಿರದ" (genitive), not "ಸಾವಿರ ಕೋಟಿ", then append ಕೋಟಿ at end
         # X00Y crore standalone (e.g., 1001 crore = 10010000000)
-        graph_thousand_crores_x00y = (digit + (delete_zero**2) + suffix_thousand_genitive + insert_space + digit 
-                                      + (delete_zero**7) + suffix_crore_standalone)
+        graph_thousand_crores_x00y = (
+            digit
+            + (delete_zero**2)
+            + suffix_thousand_genitive
+            + insert_space
+            + digit
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
         # X0YZ crore standalone (e.g., 1023 crore)
-        graph_thousand_crores_x0yz = (digit + delete_zero + suffix_thousand_genitive + insert_space + teens_ties
-                                      + (delete_zero**7) + suffix_crore_standalone)
+        graph_thousand_crores_x0yz = (
+            digit
+            + delete_zero
+            + suffix_thousand_genitive
+            + insert_space
+            + teens_ties
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
         # XYZW crore standalone (e.g., 1234 crore)
-        graph_thousand_crores_xyzw = (digit + suffix_thousand_genitive + insert_space + graph_hundreds
-                                      + (delete_zero**7) + suffix_crore_standalone)
-        
+        graph_thousand_crores_xyzw = (
+            digit
+            + suffix_thousand_genitive
+            + insert_space
+            + graph_hundreds
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+
         # X00Y, X0YZ, XYZW crore with sub-crore remainder
-        graph_thousand_crores_x00y_with_rem = (digit + (delete_zero**2) + suffix_thousand_genitive + insert_space + digit
-                                               + suffix_crore_genitive + insert_space + graph_ten_lakhs)
-        graph_thousand_crores_x0yz_with_rem = (digit + delete_zero + suffix_thousand_genitive + insert_space + teens_ties
-                                               + suffix_crore_genitive + insert_space + graph_ten_lakhs)
-        graph_thousand_crores_xyzw_with_rem = (digit + suffix_thousand_genitive + insert_space + graph_hundreds
-                                               + suffix_crore_genitive + insert_space + graph_ten_lakhs)
-        
+        graph_thousand_crores_x00y_with_rem = (
+            digit
+            + (delete_zero**2)
+            + suffix_thousand_genitive
+            + insert_space
+            + digit
+            + suffix_crore_genitive
+            + insert_space
+            + graph_ten_lakhs
+        )
+        graph_thousand_crores_x0yz_with_rem = (
+            digit
+            + delete_zero
+            + suffix_thousand_genitive
+            + insert_space
+            + teens_ties
+            + suffix_crore_genitive
+            + insert_space
+            + graph_ten_lakhs
+        )
+        graph_thousand_crores_xyzw_with_rem = (
+            digit
+            + suffix_thousand_genitive
+            + insert_space
+            + graph_hundreds
+            + suffix_crore_genitive
+            + insert_space
+            + graph_ten_lakhs
+        )
+
         graph_thousand_crores = (
             graph_thousand_crores_standalone
             | graph_thousand_crores_with_digit
@@ -320,43 +409,100 @@ class CardinalFst(GraphFst):
             | graph_thousand_crores_xyzw_with_rem
         )
         graph_thousand_crores.optimize()
-        
+
         # Ten thousand crores (10^11): 10000-99999 ಕೋಟಿ
         # Use coefficient patterns with ಸಾವಿರದ and append ಕೋಟಿ at end
-        
+
         # For XY000 crore (e.g., 12000 crore = 120000000000)
         graph_ten_thousand_crores_standalone = teens_and_ties + (delete_zero**10) + pynutil.insert(" ಸಾವಿರ ಕೋಟಿ")
-        
+
         # For XY000 crore with sub-crore remainder
         suffix_ten_thousand_crore_genitive = pynutil.insert(" ಸಾವಿರ ಕೋಟಿಯ")
-        graph_ten_thousand_crores_with_digit = teens_and_ties + (delete_zero**9) + suffix_ten_thousand_crore_genitive + insert_space + digit
-        graph_ten_thousand_crores_with_teens = teens_and_ties + (delete_zero**8) + suffix_ten_thousand_crore_genitive + insert_space + teens_ties
-        graph_ten_thousand_crores_with_hundreds = teens_and_ties + (delete_zero**7) + suffix_ten_thousand_crore_genitive + insert_space + graph_hundreds
-        graph_ten_thousand_crores_with_thousands = teens_and_ties + (delete_zero**6) + suffix_ten_thousand_crore_genitive + insert_space + graph_thousands
-        graph_ten_thousand_crores_with_ten_thousands = teens_and_ties + (delete_zero**5) + suffix_ten_thousand_crore_genitive + insert_space + graph_ten_thousands
-        graph_ten_thousand_crores_with_lakhs = teens_and_ties + (delete_zero**4) + suffix_ten_thousand_crore_genitive + insert_space + graph_lakhs
-        graph_ten_thousand_crores_with_ten_lakhs = teens_and_ties + (delete_zero**3) + suffix_ten_thousand_crore_genitive + insert_space + graph_ten_lakhs
-        
+        graph_ten_thousand_crores_with_digit = (
+            teens_and_ties + (delete_zero**9) + suffix_ten_thousand_crore_genitive + insert_space + digit
+        )
+        graph_ten_thousand_crores_with_teens = (
+            teens_and_ties + (delete_zero**8) + suffix_ten_thousand_crore_genitive + insert_space + teens_ties
+        )
+        graph_ten_thousand_crores_with_hundreds = (
+            teens_and_ties + (delete_zero**7) + suffix_ten_thousand_crore_genitive + insert_space + graph_hundreds
+        )
+        graph_ten_thousand_crores_with_thousands = (
+            teens_and_ties + (delete_zero**6) + suffix_ten_thousand_crore_genitive + insert_space + graph_thousands
+        )
+        graph_ten_thousand_crores_with_ten_thousands = (
+            teens_and_ties + (delete_zero**5) + suffix_ten_thousand_crore_genitive + insert_space + graph_ten_thousands
+        )
+        graph_ten_thousand_crores_with_lakhs = (
+            teens_and_ties + (delete_zero**4) + suffix_ten_thousand_crore_genitive + insert_space + graph_lakhs
+        )
+        graph_ten_thousand_crores_with_ten_lakhs = (
+            teens_and_ties + (delete_zero**3) + suffix_ten_thousand_crore_genitive + insert_space + graph_ten_lakhs
+        )
+
         # For XY00Z, XY0ZW, XYZWV crore patterns (e.g., 12001, 12034, 12345 crore)
         # Use "ಸಾವಿರದ" (genitive), not "ಸಾವಿರ ಕೋಟಿ", then append ಕೋಟಿ at end
         # XY00Z crore standalone
-        graph_ten_thousand_crores_xy00z = (teens_and_ties + (delete_zero**2) + suffix_thousand_genitive + insert_space + digit
-                                           + (delete_zero**7) + suffix_crore_standalone)
+        graph_ten_thousand_crores_xy00z = (
+            teens_and_ties
+            + (delete_zero**2)
+            + suffix_thousand_genitive
+            + insert_space
+            + digit
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
         # XY0ZW crore standalone
-        graph_ten_thousand_crores_xy0zw = (teens_and_ties + delete_zero + suffix_thousand_genitive + insert_space + teens_ties
-                                           + (delete_zero**7) + suffix_crore_standalone)
+        graph_ten_thousand_crores_xy0zw = (
+            teens_and_ties
+            + delete_zero
+            + suffix_thousand_genitive
+            + insert_space
+            + teens_ties
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
         # XYZWV crore standalone (e.g., 12345 crore)
-        graph_ten_thousand_crores_xyzwv = (teens_and_ties + suffix_thousand_genitive + insert_space + graph_hundreds
-                                           + (delete_zero**7) + suffix_crore_standalone)
-        
+        graph_ten_thousand_crores_xyzwv = (
+            teens_and_ties
+            + suffix_thousand_genitive
+            + insert_space
+            + graph_hundreds
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+
         # With sub-crore remainder
-        graph_ten_thousand_crores_xy00z_with_rem = (teens_and_ties + (delete_zero**2) + suffix_thousand_genitive + insert_space + digit
-                                                    + suffix_crore_genitive + insert_space + graph_ten_lakhs)
-        graph_ten_thousand_crores_xy0zw_with_rem = (teens_and_ties + delete_zero + suffix_thousand_genitive + insert_space + teens_ties
-                                                    + suffix_crore_genitive + insert_space + graph_ten_lakhs)
-        graph_ten_thousand_crores_xyzwv_with_rem = (teens_and_ties + suffix_thousand_genitive + insert_space + graph_hundreds
-                                                    + suffix_crore_genitive + insert_space + graph_ten_lakhs)
-        
+        graph_ten_thousand_crores_xy00z_with_rem = (
+            teens_and_ties
+            + (delete_zero**2)
+            + suffix_thousand_genitive
+            + insert_space
+            + digit
+            + suffix_crore_genitive
+            + insert_space
+            + graph_ten_lakhs
+        )
+        graph_ten_thousand_crores_xy0zw_with_rem = (
+            teens_and_ties
+            + delete_zero
+            + suffix_thousand_genitive
+            + insert_space
+            + teens_ties
+            + suffix_crore_genitive
+            + insert_space
+            + graph_ten_lakhs
+        )
+        graph_ten_thousand_crores_xyzwv_with_rem = (
+            teens_and_ties
+            + suffix_thousand_genitive
+            + insert_space
+            + graph_hundreds
+            + suffix_crore_genitive
+            + insert_space
+            + graph_ten_lakhs
+        )
+
         graph_ten_thousand_crores = (
             graph_ten_thousand_crores_standalone
             | graph_ten_thousand_crores_with_digit
@@ -377,34 +523,80 @@ class CardinalFst(GraphFst):
 
         # Lakh crores (10^12): 1-9 lakh ಕೋಟಿ
         # Use "ಲಕ್ಷದ" (genitive) for coefficient composition, append ಕೋಟಿ at end
-        
+
         # For X00000 crore (e.g., 1 lakh crore = 1000000000000)
         graph_lakh_crores_standalone = digit + (delete_zero**12) + pynutil.insert(" ಲಕ್ಷ ಕೋಟಿ")
-        
+
         # For X00000 crore with sub-crore remainder (uses "ಲಕ್ಷ ಕೋಟಿಯ")
         suffix_lakh_crore_genitive = pynutil.insert(" ಲಕ್ಷ ಕೋಟಿಯ")
         graph_lakh_crores_with_digit = digit + (delete_zero**11) + suffix_lakh_crore_genitive + insert_space + digit
-        graph_lakh_crores_with_teens = digit + (delete_zero**10) + suffix_lakh_crore_genitive + insert_space + teens_ties
-        graph_lakh_crores_with_hundreds = digit + (delete_zero**9) + suffix_lakh_crore_genitive + insert_space + graph_hundreds
-        graph_lakh_crores_with_thousands = digit + (delete_zero**8) + suffix_lakh_crore_genitive + insert_space + graph_thousands
-        graph_lakh_crores_with_ten_thousands = digit + (delete_zero**7) + suffix_lakh_crore_genitive + insert_space + graph_ten_thousands
-        graph_lakh_crores_with_lakhs = digit + (delete_zero**6) + suffix_lakh_crore_genitive + insert_space + graph_lakhs
-        graph_lakh_crores_with_ten_lakhs = digit + (delete_zero**5) + suffix_lakh_crore_genitive + insert_space + graph_ten_lakhs
-        
+        graph_lakh_crores_with_teens = (
+            digit + (delete_zero**10) + suffix_lakh_crore_genitive + insert_space + teens_ties
+        )
+        graph_lakh_crores_with_hundreds = (
+            digit + (delete_zero**9) + suffix_lakh_crore_genitive + insert_space + graph_hundreds
+        )
+        graph_lakh_crores_with_thousands = (
+            digit + (delete_zero**8) + suffix_lakh_crore_genitive + insert_space + graph_thousands
+        )
+        graph_lakh_crores_with_ten_thousands = (
+            digit + (delete_zero**7) + suffix_lakh_crore_genitive + insert_space + graph_ten_thousands
+        )
+        graph_lakh_crores_with_lakhs = (
+            digit + (delete_zero**6) + suffix_lakh_crore_genitive + insert_space + graph_lakhs
+        )
+        graph_lakh_crores_with_ten_lakhs = (
+            digit + (delete_zero**5) + suffix_lakh_crore_genitive + insert_space + graph_ten_lakhs
+        )
+
         # For X000YZ, X00YZW, etc. crore patterns (coefficient > 1 lakh)
         # Use "ಲಕ್ಷದ" for coefficient, append ಕೋಟಿ at end (avoid crore duplication)
         # X000Y crore (e.g., 100100 crore = 1,00,100 crore = 1 lakh 100 crore)
-        graph_lakh_crores_x000y = (digit + (delete_zero**4) + suffix_lakh_genitive + insert_space + digit
-                                  + (delete_zero**7) + suffix_crore_standalone)
-        graph_lakh_crores_x00yz = (digit + (delete_zero**3) + suffix_lakh_genitive + insert_space + teens_ties
-                                  + (delete_zero**7) + suffix_crore_standalone)
-        graph_lakh_crores_x0yzw = (digit + (delete_zero**2) + suffix_lakh_genitive + insert_space + graph_hundreds
-                                  + (delete_zero**7) + suffix_crore_standalone)
-        graph_lakh_crores_xyzwv = (digit + delete_zero + suffix_lakh_genitive + insert_space + graph_thousands
-                                  + (delete_zero**7) + suffix_crore_standalone)
-        graph_lakh_crores_full = (digit + suffix_lakh_genitive + insert_space + graph_ten_thousands
-                                  + (delete_zero**7) + suffix_crore_standalone)
-        
+        graph_lakh_crores_x000y = (
+            digit
+            + (delete_zero**4)
+            + suffix_lakh_genitive
+            + insert_space
+            + digit
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+        graph_lakh_crores_x00yz = (
+            digit
+            + (delete_zero**3)
+            + suffix_lakh_genitive
+            + insert_space
+            + teens_ties
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+        graph_lakh_crores_x0yzw = (
+            digit
+            + (delete_zero**2)
+            + suffix_lakh_genitive
+            + insert_space
+            + graph_hundreds
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+        graph_lakh_crores_xyzwv = (
+            digit
+            + delete_zero
+            + suffix_lakh_genitive
+            + insert_space
+            + graph_thousands
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+        graph_lakh_crores_full = (
+            digit
+            + suffix_lakh_genitive
+            + insert_space
+            + graph_ten_thousands
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+
         graph_lakh_crores = (
             graph_lakh_crores_standalone
             | graph_lakh_crores_with_digit
@@ -424,32 +616,80 @@ class CardinalFst(GraphFst):
 
         # Ten lakh crores (10^13): 10-99 lakh ಕೋಟಿ
         # Use "ಲಕ್ಷದ" for coefficient composition, append ಕೋಟಿ at end
-        
+
         # For XY00000 crore (e.g., 10 lakh crore)
         graph_ten_lakh_crores_standalone = teens_and_ties + (delete_zero**12) + pynutil.insert(" ಲಕ್ಷ ಕೋಟಿ")
-        
+
         # With sub-crore remainder
         suffix_ten_lakh_crore_genitive = pynutil.insert(" ಲಕ್ಷ ಕೋಟಿಯ")
-        graph_ten_lakh_crores_with_digit = teens_and_ties + (delete_zero**11) + suffix_ten_lakh_crore_genitive + insert_space + digit
-        graph_ten_lakh_crores_with_teens = teens_and_ties + (delete_zero**10) + suffix_ten_lakh_crore_genitive + insert_space + teens_ties
-        graph_ten_lakh_crores_with_hundreds = teens_and_ties + (delete_zero**9) + suffix_ten_lakh_crore_genitive + insert_space + graph_hundreds
-        graph_ten_lakh_crores_with_thousands = teens_and_ties + (delete_zero**8) + suffix_ten_lakh_crore_genitive + insert_space + graph_thousands
-        graph_ten_lakh_crores_with_ten_thousands = teens_and_ties + (delete_zero**7) + suffix_ten_lakh_crore_genitive + insert_space + graph_ten_thousands
-        graph_ten_lakh_crores_with_lakhs = teens_and_ties + (delete_zero**6) + suffix_ten_lakh_crore_genitive + insert_space + graph_lakhs
-        graph_ten_lakh_crores_with_ten_lakhs = teens_and_ties + (delete_zero**5) + suffix_ten_lakh_crore_genitive + insert_space + graph_ten_lakhs
-        
+        graph_ten_lakh_crores_with_digit = (
+            teens_and_ties + (delete_zero**11) + suffix_ten_lakh_crore_genitive + insert_space + digit
+        )
+        graph_ten_lakh_crores_with_teens = (
+            teens_and_ties + (delete_zero**10) + suffix_ten_lakh_crore_genitive + insert_space + teens_ties
+        )
+        graph_ten_lakh_crores_with_hundreds = (
+            teens_and_ties + (delete_zero**9) + suffix_ten_lakh_crore_genitive + insert_space + graph_hundreds
+        )
+        graph_ten_lakh_crores_with_thousands = (
+            teens_and_ties + (delete_zero**8) + suffix_ten_lakh_crore_genitive + insert_space + graph_thousands
+        )
+        graph_ten_lakh_crores_with_ten_thousands = (
+            teens_and_ties + (delete_zero**7) + suffix_ten_lakh_crore_genitive + insert_space + graph_ten_thousands
+        )
+        graph_ten_lakh_crores_with_lakhs = (
+            teens_and_ties + (delete_zero**6) + suffix_ten_lakh_crore_genitive + insert_space + graph_lakhs
+        )
+        graph_ten_lakh_crores_with_ten_lakhs = (
+            teens_and_ties + (delete_zero**5) + suffix_ten_lakh_crore_genitive + insert_space + graph_ten_lakhs
+        )
+
         # For XY000Z, XY00ZW, etc. crore patterns
-        graph_ten_lakh_crores_xy000z = (teens_and_ties + (delete_zero**4) + suffix_lakh_genitive + insert_space + digit
-                                        + (delete_zero**7) + suffix_crore_standalone)
-        graph_ten_lakh_crores_xy00zw = (teens_and_ties + (delete_zero**3) + suffix_lakh_genitive + insert_space + teens_ties
-                                        + (delete_zero**7) + suffix_crore_standalone)
-        graph_ten_lakh_crores_xy0zwv = (teens_and_ties + (delete_zero**2) + suffix_lakh_genitive + insert_space + graph_hundreds
-                                        + (delete_zero**7) + suffix_crore_standalone)
-        graph_ten_lakh_crores_xyzwvu = (teens_and_ties + delete_zero + suffix_lakh_genitive + insert_space + graph_thousands
-                                        + (delete_zero**7) + suffix_crore_standalone)
-        graph_ten_lakh_crores_full = (teens_and_ties + suffix_lakh_genitive + insert_space + graph_ten_thousands
-                                      + (delete_zero**7) + suffix_crore_standalone)
-        
+        graph_ten_lakh_crores_xy000z = (
+            teens_and_ties
+            + (delete_zero**4)
+            + suffix_lakh_genitive
+            + insert_space
+            + digit
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+        graph_ten_lakh_crores_xy00zw = (
+            teens_and_ties
+            + (delete_zero**3)
+            + suffix_lakh_genitive
+            + insert_space
+            + teens_ties
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+        graph_ten_lakh_crores_xy0zwv = (
+            teens_and_ties
+            + (delete_zero**2)
+            + suffix_lakh_genitive
+            + insert_space
+            + graph_hundreds
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+        graph_ten_lakh_crores_xyzwvu = (
+            teens_and_ties
+            + delete_zero
+            + suffix_lakh_genitive
+            + insert_space
+            + graph_thousands
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+        graph_ten_lakh_crores_full = (
+            teens_and_ties
+            + suffix_lakh_genitive
+            + insert_space
+            + graph_ten_thousands
+            + (delete_zero**7)
+            + suffix_crore_standalone
+        )
+
         graph_ten_lakh_crores = (
             graph_ten_lakh_crores_standalone
             | graph_ten_lakh_crores_with_digit
@@ -502,23 +742,21 @@ class CardinalFst(GraphFst):
         # COMMA-SEPARATED NUMBERS (strict validation)
         # ============================================================
         delete_comma = pynutil.delete(",")
-        
+
         def exactly_n_digits(n):
             return pynini.closure(NEMO_ALL_DIGIT, n, n)
-        
+
         # Western format: 1,000 | 1,000,000
-        western_format = (
-            pynini.closure(NEMO_ALL_DIGIT, 1, 3) +
-            pynini.closure(delete_comma + exactly_n_digits(3), 1)
-        )
-        
+        western_format = pynini.closure(NEMO_ALL_DIGIT, 1, 3) + pynini.closure(delete_comma + exactly_n_digits(3), 1)
+
         # Indian format: 1,00,000 | 12,34,567
         indian_format = (
-            pynini.closure(NEMO_ALL_DIGIT, 1, 2) +
-            pynini.closure(delete_comma + exactly_n_digits(2)) +
-            delete_comma + exactly_n_digits(3)
+            pynini.closure(NEMO_ALL_DIGIT, 1, 2)
+            + pynini.closure(delete_comma + exactly_n_digits(2))
+            + delete_comma
+            + exactly_n_digits(3)
         )
-        
+
         comma_number = western_format | indian_format
         cardinal_with_commas = pynini.compose(comma_number, graph_without_leading_zeros)
         cardinal_with_commas = pynutil.add_weight(cardinal_with_commas, 0.1)
