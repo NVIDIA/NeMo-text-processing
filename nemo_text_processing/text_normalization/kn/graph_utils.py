@@ -34,11 +34,11 @@ NEMO_ALL_DIGIT = pynini.union(NEMO_KN_DIGIT, NEMO_DIGIT).optimize()
 NEMO_ALL_ZERO = pynini.union("೦", "0").optimize()
 NEMO_ALL_NON_ZERO = pynini.union(NEMO_KN_NON_ZERO, "1", "2", "3", "4", "5", "6", "7", "8", "9").optimize()
 
-KN_DEDH = "ಒಂದೂವರೆ"  # 1.5
-KN_DHAI = "ಎರಡೂವರೆ"  # 2.5
-KN_SAVVA = "ಒಂದೂವರೆ ಕಾಲು"  # quarter more (1.25)
-KN_SADHE = "ಅರ್ಧ ಹಿಂದೆ"  # half more (X.5)
-KN_PAUNE = "ಮುಕ್ಕಾಲು ಭಾಗ"  # quarter less (0.75)
+KN_ONDUVARE = "ಒಂದೂವರೆ"  # 1.5
+KN_ERADUVARE = "ಎರಡೂವರೆ"  # 2.5
+KN_KALLU = "ಒಂದು ಕಾಲು"  # quarter more (1.25)
+KN_UVARE = "ಊವರೆ"  # half more (X.5)
+KN_KALU_KADIME = "ಕಾಲು ಕಡಿಮೆ"  # quarter less (0.75)
 
 # Kannada decimal representations
 KN_POINT_FIVE = ".೫"  # .5
