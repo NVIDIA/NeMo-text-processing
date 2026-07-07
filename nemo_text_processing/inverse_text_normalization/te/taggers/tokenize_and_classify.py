@@ -16,6 +16,7 @@ from nemo_text_processing.inverse_text_normalization.te.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.inverse_text_normalization.te.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.word import WordFst
 
 
 class ClassifyFst(GraphFst):
@@ -45,8 +46,12 @@ class ClassifyFst(GraphFst):
 
             cardinal = CardinalFst()
             cardinal_graph = cardinal.fst
+            word_graph = WordFst().fst
 
-            classify = pynutil.add_weight(cardinal_graph, 1.1)
+            classify = (
+                pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(word_graph, 100)
+            )
 
             token = (
                 pynutil.insert("tokens { ")
