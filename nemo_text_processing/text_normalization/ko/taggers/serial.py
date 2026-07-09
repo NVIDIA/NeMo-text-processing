@@ -58,31 +58,23 @@ class SerialFst(GraphFst):
         # This covers common serial-like numbers such as reservation numbers,
         # verification numbers, account numbers, and context-based phone-number strings.
         # Very short numbers such as "번호는 12" are left to the existing cardinal path.
-        min_three_digits = (
-            digit_ko
-            + pynini.closure(sep, 0, 1)
-            + digit_ko
-            + pynini.closure(sep, 0, 1)
-            + digit_ko
-        )
+        min_three_digits = digit_ko + pynini.closure(sep, 0, 1) + digit_ko + pynini.closure(sep, 0, 1) + digit_ko
 
-        serial_body = (
-            min_three_digits
-            + pynini.closure(pynini.closure(sep, 0, 1) + digit_ko)
-        ).optimize()
+        serial_body = (min_three_digits + pynini.closure(pynini.closure(sep, 0, 1) + digit_ko)).optimize()
 
         # Minimal context signals.
         # "번호는" covers 휴대폰 번호는, 전화 번호는, 계좌 번호는, 예약 번호는, etc.,
         # because the preceding noun can stay outside the serial token.
-        signal = pynini.string_map([
-            ("번호는", "번호는"),
-            ("번호가", "번호가"),
-            ("번호를", "번호를"),
-
-            ("연락처는", "연락처는"),
-            ("연락처가", "연락처가"),
-            ("연락처를", "연락처를"),
-        ]).optimize()
+        signal = pynini.string_map(
+            [
+                ("번호는", "번호는"),
+                ("번호가", "번호가"),
+                ("번호를", "번호를"),
+                ("연락처는", "연락처는"),
+                ("연락처가", "연락처가"),
+                ("연락처를", "연락처를"),
+            ]
+        ).optimize()
 
         graph = (
             pynutil.insert('name: "')

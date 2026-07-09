@@ -85,7 +85,7 @@ class DateFst(GraphFst):
         signs = pynutil.delete("/") | pynutil.delete(".") | pynutil.delete("-")
 
         date_sep = signs + pynini.closure(delete_space, 0, 1) + insert_space
-        
+
         # Strict digit ranges for M/D/Y and Y/M/D
         _d = pynini.union(*[pynini.accep(str(i)) for i in range(10)])
         _1to9 = pynini.union(*[pynini.accep(str(i)) for i in range(1, 10)])
@@ -205,7 +205,7 @@ class DateFst(GraphFst):
             + insert_space
             + week_component
         ).optimize()
-        
+
         # American: MM/DD/YYYY
         graph_american_date = (
             month_component_md
@@ -318,6 +318,6 @@ class DateFst(GraphFst):
             | graph_individual_component_combined
             | era_nendai
         ).optimize()
-        
+
         final_graph = self.add_tokens(graph_all_date)
         self.fst = final_graph.optimize()

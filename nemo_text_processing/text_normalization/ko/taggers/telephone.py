@@ -90,12 +90,9 @@ class TelephoneFst(GraphFst):
             + insert_space
             + four_digits
         )
-        
-        number_part_core = (
-            area_part + mid + delete_sep + insert_block_space + last4
-            | intl_mobile_local
-        ).optimize()
-        
+
+        number_part_core = (area_part + mid + delete_sep + insert_block_space + last4 | intl_mobile_local).optimize()
+
         number_part = pynutil.insert('number_part: "') + number_part_core + pynutil.insert('"')
 
         # final graph: with or without country code
