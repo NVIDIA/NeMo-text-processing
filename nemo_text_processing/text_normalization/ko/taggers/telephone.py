@@ -47,6 +47,7 @@ class TelephoneFst(GraphFst):
         zero_map = pynini.cross("0", "영")
         digit_ko = (digit | zero_map).optimize()
 
+        two_digits = digit_ko**2
         three_digits = digit_ko**3
         four_digits = digit_ko**4
 
@@ -80,7 +81,21 @@ class TelephoneFst(GraphFst):
         last4 = four_digits
 
         # consume '-' or '.' between middle and last blocks
-        number_part_core = area_part + mid + delete_sep + insert_block_space + last4
+        intl_mobile_local = (
+            two_digits
+            + pynini.closure(pynutil.delete(" ") | delete_sep, 0, 1)
+            + insert_space
+            + four_digits
+            + delete_sep
+            + insert_space
+            + four_digits
+        )
+        
+        number_part_core = (
+            area_part + mid + delete_sep + insert_block_space + last4
+            | intl_mobile_local
+        ).optimize()
+        
         number_part = pynutil.insert('number_part: "') + number_part_core + pynutil.insert('"')
 
         # final graph: with or without country code

@@ -36,6 +36,7 @@ from nemo_text_processing.text_normalization.ko.taggers.telephone import Telepho
 from nemo_text_processing.text_normalization.ko.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ko.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ko.taggers.word import WordFst
+from nemo_text_processing.text_normalization.ko.taggers.serial import SerialFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -85,6 +86,7 @@ class ClassifyFst(GraphFst):
             telephone = TelephoneFst(deterministic=deterministic)
             measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
             electronic = ElectronicFst(cardinal=cardinal, deterministic=deterministic)
+            serial = SerialFst(deterministic=deterministic)
 
             classify = pynini.union(
                 pynutil.add_weight(cardinal.fst, 1.1),
@@ -100,6 +102,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist.fst, 1.1),
                 pynutil.add_weight(telephone.fst, 1.1),
                 pynutil.add_weight(electronic.fst, 1.11),
+                pynutil.add_weight(serial.fst, 1.05),
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
