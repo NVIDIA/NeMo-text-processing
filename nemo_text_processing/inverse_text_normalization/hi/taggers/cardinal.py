@@ -64,6 +64,7 @@ class CardinalFst(GraphFst):
             graph_hundred_component_at_least_one_none_zero_digit
         )
 
+        # Transducer for eleven hundred -> 1100 or twenty one hundred eleven -> 2111
         graph_hundred_as_thousand = pynini.union(
             graph_teens_and_ties + delete_space + graph_hundred, pynutil.insert("०")
         )

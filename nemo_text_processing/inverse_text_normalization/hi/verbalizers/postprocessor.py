@@ -25,28 +25,35 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
 
 
 class PostProcessor(GraphFst):
-    """
-    Post-processing applied to the fully verbalized sentence, following the
-    PostProcessingFst pattern used by other grammars (en TN, ja ITN): it removes
-    the space the tokenizer leaves before a punctuation mark and after an opening
-    bracket, e.g. "TBXQF4138W ." -> "TBXQF4138W." and "( AVIC )" -> "(AVIC)".
-    """
+    '''
+    Postprocessing of ITN, now contains:
+        1. removal of the space before a punctuation mark, e.g. "TBXQF4138W ." -> "TBXQF4138W."
+        2. removal of the space after an opening bracket, e.g. "( AVIC" -> "(AVIC"
+    '''
 
-    def __init__(self):
-        super().__init__(name="post_process", kind="verbalize")
+    def __init__(
+        self,
+        remove_space_before_punct: bool = False,
+        remove_space_after_bracket: bool = False,
+    ):
+        super().__init__(name="PostProcessor", kind="processor")
 
-        punct = NEMO_PUNCT | pynini.union("।", "॥")
-        allow_space_before = pynini.union("(", "{", "<", pynini.escape("["), "-", "&", '"', "'", "`")
-        no_space_before = pynini.difference(punct, allow_space_before).optimize()
-        brackets = pynini.union("(", "{", "<", pynini.escape("["))
         delete_space = pynutil.delete(" ")
+        graph = pynini.cdrewrite('', '', '', NEMO_SIGMA)
 
-        non_punct = pynini.difference(NEMO_CHAR, no_space_before).optimize()
-        graph = pynini.closure(
-            pynini.closure(non_punct)
-            + pynini.closure(no_space_before | pynutil.add_weight(delete_space + no_space_before, MIN_NEG_WEIGHT))
-            + pynini.closure(non_punct)
-        ).optimize()
+        if remove_space_before_punct:
+            punct = NEMO_PUNCT | pynini.union("।", "॥")
+            allow_space_before = pynini.union("(", "{", "<", pynini.escape("["), "-", "&", '"', "'", "`", "+")
+            no_space_before = pynini.difference(punct, allow_space_before).optimize()
+            non_punct = pynini.difference(NEMO_CHAR, no_space_before).optimize()
+            graph @= pynini.closure(
+                pynini.closure(non_punct)
+                + pynini.closure(no_space_before | pynutil.add_weight(delete_space + no_space_before, MIN_NEG_WEIGHT))
+                + pynini.closure(non_punct)
+            ).optimize()
 
-        no_space_after = pynini.cdrewrite(delete_space, brackets, NEMO_SIGMA, NEMO_SIGMA).optimize()
-        self.fst = pynini.compose(graph, no_space_after).optimize()
+        if remove_space_after_bracket:
+            brackets = pynini.union("(", "{", "<", pynini.escape("["))
+            graph @= pynini.cdrewrite(delete_space, brackets, NEMO_SIGMA, NEMO_SIGMA).optimize()
+
+        self.fst = graph.optimize()

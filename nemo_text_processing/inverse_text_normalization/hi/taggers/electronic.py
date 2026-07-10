@@ -16,14 +16,15 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
-    DEVANAGARI_DIGIT,
+    DIGIT_GLYPH_TO_ASCII,
+    DIGIT_WORD_TO_DEVANAGARI,
     GraphFst,
     delete_space,
     delete_zero_or_one_space,
     load_symbols,
 )
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import TO_LOWER, TO_UPPER
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, TO_LOWER, TO_UPPER
 
 
 class ElectronicFst(GraphFst):
@@ -57,17 +58,11 @@ class ElectronicFst(GraphFst):
     def __init__(self):
         super().__init__(name="electronic", kind="classify")
 
-        digit_glyphs = pynini.union(
-            *[pynini.cross(glyph, str(value)) for value, glyph in enumerate(DEVANAGARI_DIGIT)]
-        ).optimize()
-        cardinal_digit_words = (
-            pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
-            | pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
-        )
-        digit_words = (cardinal_digit_words @ digit_glyphs).optimize()
-        single_digit = pynutil.add_weight(digit_glyphs, 0.8) | pynutil.add_weight(digit_words, 0.50)
-        digit_seq = pynutil.add_weight(digit_glyphs + pynini.closure(digit_glyphs, 0), 0.8) | pynutil.add_weight(
-            digit_words + pynini.closure(delete_space + digit_words, 0), 0.9
+        digit_glyphs = DIGIT_GLYPH_TO_ASCII
+        digit_words = (DIGIT_WORD_TO_DEVANAGARI @ digit_glyphs).optimize()
+        single_digit = digit_glyphs | digit_words
+        digit_seq = (digit_glyphs + pynini.closure(digit_glyphs)) | (
+            digit_words + pynini.closure(delete_space + digit_words)
         )
 
         letter_map_lower = pynini.string_file(get_abs_path("data/electronic/letters.tsv")).invert()
@@ -78,103 +73,87 @@ class ElectronicFst(GraphFst):
         sym = load_symbols(get_abs_path("data/electronic/symbols.tsv"))
 
         letter_map_upper = (letter_map_lower @ TO_UPPER).optimize()
-        letter_map = letter_map_lower | letter_map_upper
 
         to_lower = pynini.closure(TO_LOWER | pynini.project(TO_LOWER, "output"))
         common_map_lower = (common_map @ to_lower).optimize()
 
-        latin_run = pynini.closure(
-            pynini.union(*[pynini.accep(chr(c)) for c in range(ord('A'), ord('Z') + 1)])
-            | pynini.union(*[pynini.accep(chr(c)) for c in range(ord('a'), ord('z') + 1)]),
-            1,
-        )
+        latin_run = pynini.closure(NEMO_ALPHA, 1)
         latin_run_lower = (latin_run @ to_lower).optimize()
 
         drive_letter = letter_map_upper
 
-        seg_backslash = delete_space + sym["backslash"] + delete_space
-        trail_backslash = delete_space + sym["backslash"]
-        lead_backslash = sym["backslash"] + delete_space
+        # One set of spacing rules applied to every spoken symbol, instead of
+        # repeating the delete_space patterns individually per symbol.
+        def sym_between(name):  # optional spaces on both sides
+            return delete_space + sym[name] + delete_space
 
-        unix_seg_slash = delete_space + sym["forwardslash"] + delete_space
-        unix_lead_slash = sym["forwardslash"] + delete_space
-        unix_trail_slash = delete_space + sym["forwardslash"]
+        def sym_before(name):  # symbol ends a segment (space before it)
+            return delete_space + sym[name]
 
-        url_slash = delete_space + sym["forwardslash"]
+        def sym_after(name):  # symbol starts a segment (space after it)
+            return sym[name] + delete_space
 
-        lit_slash_seg = pynini.cross(" / ", "/")
-        lit_hyphen_seg = pynini.cross(" - ", "-")
+        def sym_soft_end(name):  # symbol with an optional single trailing space
+            return delete_space + sym[name] + delete_zero_or_one_space
 
-        dot = delete_space + sym["dot"] + delete_space
-        dot_end_safe = delete_space + sym["dot"] + delete_zero_or_one_space
-        hyphen = delete_space + sym["hyphen"] + delete_space
-        underscore = delete_space + sym["underscore"]
-        at_sign = delete_space + sym["at"] + delete_space
-        x_sep = delete_space + sym["x"]
-        literal_space = delete_space + sym["space"]
-        open_bracket = delete_space + sym["openbracket"] + delete_zero_or_one_space
-        close_bracket = delete_space + sym["closebracket"] + delete_zero_or_one_space
-        dollar_sign = delete_space + sym["dollar"]
+        seg_backslash = sym_between("backslash")
+        trail_backslash = sym_before("backslash")
+        lead_backslash = sym_after("backslash")
 
-        lit_open_paren = delete_space + pynutil.delete("(") + pynutil.insert("(") + delete_zero_or_one_space
-        lit_close_paren = delete_space + pynutil.delete(")") + pynutil.insert(")")
-        or_word = sym["or"]
+        unix_seg_slash = sym_between("forwardslash")
+        unix_lead_slash = sym_after("forwardslash")
+        unix_trail_slash = sym_before("forwardslash")
+
+        url_slash = sym_before("forwardslash")
+
+        lit_slash_seg = delete_space + pynini.accep("/") + delete_space
+        lit_hyphen_seg = delete_space + pynini.accep("-") + delete_space
+
+        dot = sym_between("dot")
+        dot_end_safe = sym_soft_end("dot")
+        hyphen = sym_between("hyphen")
+        underscore = sym_before("underscore")
+        at_sign = sym_between("at")
+        x_sep = sym_before("x")
+        literal_space = sym_before("space")
+        open_bracket = sym_soft_end("openbracket")
+        close_bracket = sym_soft_end("closebracket")
+        dollar_sign = sym_before("dollar")
+
         and_as_letters = sym["and"]
         www_token = sym["www"]
         v_prefix = sym["v"]
-        hp_token = sym["hp"]
         tilde_delete = sym["tilde"]
 
-        single_token = pynutil.add_weight(server_map | common_map, 0.90) | pynutil.add_weight(letter_map_lower, 1.00)
-        token_seq = single_token + pynini.closure(delete_space + single_token, 0)
+        single_token = server_map | common_map | letter_map_lower
+        token_seq = single_token + pynini.closure(delete_space + single_token)
 
-        path_atom = pynutil.add_weight(
-            hp_token | www_token | or_word | and_as_letters | common_map | server_map, 0.90
-        ) | pynutil.add_weight(digit_words | digit_glyphs | latin_run | letter_map, 1.00)
-        path_atom_lower = pynutil.add_weight(common_map_lower | server_map, 0.90) | pynutil.add_weight(
-            digit_words | digit_glyphs | latin_run_lower | letter_map_lower, 1.00
+        # spelled-out letters render uppercase in Windows path segments (e.g. एच पी -> HP);
+        # dictionary words keep their written form (e.g. यूज़र्स -> Users)
+        path_atom = common_map | server_map | digit_words | digit_glyphs | latin_run | letter_map_upper
+        path_atom_lower = (
+            common_map_lower | server_map | digit_words | digit_glyphs | latin_run_lower | letter_map_lower
         )
-        unix_path_atom = (
-            pynutil.add_weight(www_token | or_word | and_as_letters, 0.84)
-            | pynutil.add_weight(pynini.cross("CI", "c"), 0.86)
-            | path_atom_lower
-        )
+        unix_path_atom = and_as_letters | path_atom_lower
 
         single_ext = (
-            delete_space
-            + sym["dot"]
-            + delete_space
-            + path_atom_lower
-            + pynini.closure(delete_space + path_atom_lower, 0)
+            delete_space + sym["dot"] + delete_space + path_atom_lower + pynini.closure(delete_space + path_atom_lower)
         )
         ext_hyphen = (
             delete_space
             + sym["hyphen"]
             + delete_space
             + path_atom_lower
-            + pynini.closure(delete_space + path_atom_lower, 0)
+            + pynini.closure(delete_space + path_atom_lower)
         )
-        file_ext = single_ext + pynini.closure(single_ext | ext_hyphen, 0)
+        file_ext = single_ext + pynini.closure(single_ext | ext_hyphen)
 
-        win_hyphen = (
-            delete_space + sym["hyphen"] + delete_space + path_atom + pynini.closure(delete_space + path_atom, 0)
-        )
+        win_hyphen = delete_space + sym["hyphen"] + delete_space + path_atom + pynini.closure(delete_space + path_atom)
         win_underscore = delete_space + sym["underscore"]
         path_segment = (
             path_atom
             + pynini.closure(
-                pynutil.add_weight(
-                    (delete_space + path_atom)
-                    | win_hyphen
-                    | win_underscore
-                    | literal_space
-                    | open_bracket
-                    | close_bracket
-                    | lit_open_paren
-                    | lit_close_paren,
-                    1.0,
-                ),
-                0,
+                (delete_space + path_atom) | win_hyphen | win_underscore | literal_space | open_bracket | close_bracket
             )
             + pynini.closure(file_ext, 0, 1)
         )
@@ -184,14 +163,14 @@ class ElectronicFst(GraphFst):
             + sym["hyphen"]
             + delete_space
             + unix_path_atom
-            + pynini.closure(delete_space + unix_path_atom, 0)
+            + pynini.closure(delete_space + unix_path_atom)
         )
         unix_underscore = (
             delete_space
             + sym["underscore"]
             + delete_space
             + unix_path_atom
-            + pynini.closure(delete_space + unix_path_atom, 0)
+            + pynini.closure(delete_space + unix_path_atom)
         )
         version_seg = (
             v_prefix
@@ -201,24 +180,13 @@ class ElectronicFst(GraphFst):
                 + sym["dot"]
                 + delete_space
                 + unix_path_atom
-                + pynini.closure(delete_space + unix_path_atom, 0),
-                0,
+                + pynini.closure(delete_space + unix_path_atom)
             )
         )
-        dollar_var = dollar_sign + delete_space + unix_path_atom + pynini.closure(delete_space + unix_path_atom, 0)
+        dollar_var = dollar_sign + delete_space + unix_path_atom + pynini.closure(delete_space + unix_path_atom)
         unix_segment = (
-            (
-                pynutil.add_weight(version_seg, 0.85)
-                | pynutil.add_weight(dollar_var, 0.87)
-                | pynutil.add_weight(unix_path_atom, 1.00)
-            )
-            + pynini.closure(
-                pynutil.add_weight(
-                    (delete_space + unix_path_atom) | unix_hyphen | unix_underscore,
-                    1.0,
-                ),
-                0,
-            )
+            (version_seg | dollar_var | unix_path_atom)
+            + pynini.closure((delete_space + unix_path_atom) | unix_hyphen | unix_underscore)
             + pynini.closure(file_ext, 0, 1)
         )
 
@@ -229,7 +197,7 @@ class ElectronicFst(GraphFst):
             + sym["colon"]
             + seg_backslash
             + path_segment
-            + pynini.closure(seg_backslash + path_segment, 0)
+            + pynini.closure(seg_backslash + path_segment)
             + pynini.closure(trail_backslash, 0, 1)
             + pynutil.insert("\"")
         )
@@ -237,7 +205,7 @@ class ElectronicFst(GraphFst):
             pynutil.insert("path: \"")
             + lead_backslash
             + path_segment
-            + pynini.closure(seg_backslash + path_segment, 0)
+            + pynini.closure(seg_backslash + path_segment)
             + pynini.closure(trail_backslash, 0, 1)
             + pynutil.insert("\"")
         )
@@ -245,7 +213,7 @@ class ElectronicFst(GraphFst):
             pynutil.insert("path: \"")
             + unix_lead_slash
             + unix_segment
-            + pynini.closure(unix_seg_slash + unix_segment, 0)
+            + pynini.closure(unix_seg_slash + unix_segment)
             + pynini.closure(unix_trail_slash, 0, 1)
             + pynutil.insert("\"")
         )
@@ -254,7 +222,7 @@ class ElectronicFst(GraphFst):
             + unix_segment
             + unix_seg_slash
             + unix_segment
-            + pynini.closure(unix_seg_slash + unix_segment, 0)
+            + pynini.closure(unix_seg_slash + unix_segment)
             + pynini.closure(unix_trail_slash, 0, 1)
             + pynutil.insert("\"")
         )
@@ -263,20 +231,14 @@ class ElectronicFst(GraphFst):
             + tilde_delete
             + unix_seg_slash
             + unix_segment
-            + pynini.closure(unix_seg_slash + unix_segment, 0)
+            + pynini.closure(unix_seg_slash + unix_segment)
             + pynini.closure(unix_trail_slash, 0, 1)
             + pynutil.insert("\"")
         )
 
         lit_seg = (
             unix_path_atom
-            + pynini.closure(
-                pynutil.add_weight(
-                    (delete_space + unix_path_atom) | unix_hyphen | lit_hyphen_seg,
-                    1.0,
-                ),
-                0,
-            )
+            + pynini.closure((delete_space + unix_path_atom) | unix_hyphen | lit_hyphen_seg)
             + pynini.closure(file_ext, 0, 1)
         )
         literal_rel_path_fst = (
@@ -284,44 +246,29 @@ class ElectronicFst(GraphFst):
             + lit_seg
             + lit_slash_seg
             + lit_seg
-            + pynini.closure(lit_slash_seg + lit_seg, 0)
+            + pynini.closure(lit_slash_seg + lit_seg)
             + pynini.closure(pynini.cross(" /", "/"), 0, 1)
             + pynutil.insert("\"")
         )
 
-        domain_single = pynutil.add_weight(server_map | common_map_lower, 0.90) | pynutil.add_weight(
-            letter_map_lower, 1.00
-        )
-        domain_token_seq = domain_single + pynini.closure(delete_space + domain_single, 0)
+        domain_single = server_map | common_map_lower | letter_map_lower
+        domain_token_seq = domain_single + pynini.closure(delete_space + domain_single)
 
-        digit_then_letter = digit_seq + pynini.closure(delete_space + letter_map_lower, 0)
+        digit_then_letter = digit_seq + pynini.closure(delete_space + letter_map_lower)
 
-        first_label = (
-            pynutil.add_weight(digit_seq + delete_space + letter_map_lower, 0.85)
-            | pynutil.add_weight(digit_seq, 0.87)
-            | pynutil.add_weight(domain_token_seq, 1.00)
-        )
-        domain_body = first_label + pynini.closure(
-            hyphen
-            + (pynutil.add_weight(digit_then_letter, 0.85) | pynutil.add_weight(digit_seq | domain_token_seq, 1.0)),
-            0,
-        )
+        first_label = (digit_seq + delete_space + letter_map_lower) | digit_seq | domain_token_seq
+        domain_body = first_label + pynini.closure(hyphen + (digit_then_letter | digit_seq | domain_token_seq))
         compound_tld = domain_map + pynini.closure(dot_end_safe + domain_map, 0, 2)
         full_domain = pynini.closure(domain_body + dot, 0, 4) + domain_body + dot + compound_tld
         full_domain_bare = pynini.closure(domain_body + dot, 0, 4) + domain_body
 
-        uname_atom = (
-            pynutil.add_weight(and_as_letters | letter_map_lower, 0.84)
-            | pynutil.add_weight(digit_words | digit_glyphs, 0.88)
-            | pynutil.add_weight(server_map, 0.90)
-            | pynutil.add_weight(common_map, 0.95)
-        )
+        uname_atom = and_as_letters | letter_map_lower | digit_words | digit_glyphs | server_map | common_map
         uname_sep = (
             (delete_space + sym["dot"] + delete_space)
             | (delete_space + sym["hyphen"] + delete_space)
             | (delete_space + sym["underscore"])
         )
-        username = uname_atom + pynini.closure((uname_sep + uname_atom) | (delete_space + uname_atom), 0)
+        username = uname_atom + pynini.closure((uname_sep + uname_atom) | (delete_space + uname_atom))
         email_fst = (
             pynutil.insert("username: \"")
             + username
@@ -348,12 +295,10 @@ class ElectronicFst(GraphFst):
         )
 
         path_atom_url = (
-            pynutil.add_weight(digit_seq + x_sep + delete_space + digit_seq, 0.75)
-            | pynutil.add_weight(digit_seq + delete_space + letter_map_lower + delete_space + digit_seq, 0.80)
-            | pynutil.add_weight(digit_words, 0.88)
-            | pynutil.add_weight(digit_glyphs, 0.89)
-            | pynutil.add_weight(digit_seq, 0.90)
-            | pynutil.add_weight(token_seq, 1.00)
+            (digit_seq + x_sep + delete_space + digit_seq)
+            | (digit_seq + delete_space + letter_map_lower + delete_space + digit_seq)
+            | digit_seq
+            | token_seq
         )
 
         inline_domain_seg = (
@@ -366,45 +311,41 @@ class ElectronicFst(GraphFst):
 
         path_segment_url = (
             path_atom_url
-            + pynini.closure(hyphen + (digit_seq | token_seq), 0)
-            + pynini.closure(underscore + token_seq, 0)
+            + pynini.closure(hyphen + (digit_seq | token_seq))
+            + pynini.closure(underscore + token_seq)
             + pynini.closure(dot + token_seq, 0, 1)
         )
 
-        slash_with_word = url_slash + (
-            pynutil.add_weight(sym["dot"] + delete_space + token_seq, 0.90)
-            | pynutil.add_weight(inline_domain_seg, 0.95)
-            | pynutil.add_weight(path_segment_url, 1.00)
-        )
+        slash_with_word = url_slash + ((sym["dot"] + delete_space + token_seq) | inline_domain_seg | path_segment_url)
 
-        www_as_path_seg = www_token + dot + full_domain + pynini.closure(slash_with_word, 0)
+        www_as_path_seg = www_token + dot + full_domain + pynini.closure(slash_with_word)
 
         slash_with_word = url_slash + (
-            pynutil.add_weight(delete_space + digit_seq + x_sep + delete_space + digit_seq, 0.20)
-            | pynutil.add_weight(delete_space + digit_seq, 0.30)
-            | pynutil.add_weight(delete_space + sym["dot"] + delete_space + token_seq, 0.90)
-            | pynutil.add_weight(delete_space + inline_domain_seg, 0.95)
-            | pynutil.add_weight(delete_space + www_as_path_seg, 0.97)
-            | pynutil.add_weight(delete_space + path_segment_url, 1.00)
+            (delete_space + digit_seq + x_sep + delete_space + digit_seq)
+            | (delete_space + digit_seq)
+            | (delete_space + sym["dot"] + delete_space + token_seq)
+            | (delete_space + inline_domain_seg)
+            | (delete_space + www_as_path_seg)
+            | (delete_space + path_segment_url)
         )
 
-        hash_frag_body = token_seq + pynini.closure(hyphen + token_seq, 0)
+        hash_frag_body = token_seq + pynini.closure(hyphen + token_seq)
         hash_frag = delete_space + sym["hashtag"] + delete_space + hash_frag_body
 
         domain_and_path = (
             full_domain
-            + pynini.closure(slash_with_word, 0)
+            + pynini.closure(slash_with_word)
             + pynini.closure(url_slash, 0, 1)
             + pynini.closure(hash_frag, 0, 1)
         )
         domain_and_path_bare = (
             full_domain_bare
-            + pynini.closure(slash_with_word, 0)
+            + pynini.closure(slash_with_word)
             + pynini.closure(url_slash, 0, 1)
             + pynini.closure(hash_frag, 0, 1)
         )
 
-        protocol = pynutil.add_weight(sym["https"] | sym["http"], 1.0)
+        protocol = sym["https"] | sym["http"]
 
         url_fst = (
             pynutil.insert("domain: \"")
@@ -427,18 +368,14 @@ class ElectronicFst(GraphFst):
         )
         www_fst_bare = pynutil.insert("domain: \"") + www_token + dot + domain_and_path_bare + pynutil.insert("\"")
 
-        chem_token = pynutil.add_weight(digit_glyphs, 0.90) | pynutil.add_weight(letter_map, 1.00)
+        chem_token = digit_glyphs | letter_map_lower | letter_map_upper
         chem_more = pynini.closure(
-            pynutil.add_weight(
-                (delete_space + chem_token)
-                | open_bracket
-                | close_bracket
-                | (delete_space + sym["chemopen"])
-                | (delete_space + sym["chemclose"])
-                | (delete_space + sym["minus"]),
-                1.0,
-            ),
-            0,
+            (delete_space + chem_token)
+            | open_bracket
+            | close_bracket
+            | (delete_space + sym["chemopen"])
+            | (delete_space + sym["chemclose"])
+            | (delete_space + sym["minus"])
         )
 
         chem_spelled_fst = (
@@ -446,20 +383,20 @@ class ElectronicFst(GraphFst):
         )
 
         graph = (
-            pynutil.add_weight(ip_fst, 1.00)
-            | pynutil.add_weight(email_fst, 1.05)
-            | pynutil.add_weight(windows_path_fst, 1.06)
-            | pynutil.add_weight(unc_path_fst, 1.07)
-            | pynutil.add_weight(url_fst, 0.10)
-            | pynutil.add_weight(www_fst, 0.11)
-            | pynutil.add_weight(url_fst_bare, 0.50)
-            | pynutil.add_weight(www_fst_bare, 0.51)
-            | pynutil.add_weight(unix_abs_path_fst, 15.00)
-            | pynutil.add_weight(tilde_path_fst, 1.12)
-            | pynutil.add_weight(unix_rel_path_fst, 15.00)
-            | pynutil.add_weight(literal_rel_path_fst, 1.15)
-            | pynutil.add_weight(chem_spelled_fst, 1.18)
-            | pynutil.add_weight(plain_fst, 1.30)
+            ip_fst
+            | email_fst
+            | windows_path_fst
+            | unc_path_fst
+            | url_fst
+            | www_fst
+            | url_fst_bare
+            | www_fst_bare
+            | unix_abs_path_fst
+            | tilde_path_fst
+            | unix_rel_path_fst
+            | literal_rel_path_fst
+            | chem_spelled_fst
+            | plain_fst
         )
 
         self.fst = self.add_tokens(graph).optimize()

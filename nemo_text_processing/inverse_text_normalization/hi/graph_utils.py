@@ -34,6 +34,21 @@ graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 DEVANAGARI_DIGIT = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"]
 
+DIGIT_GLYPH_TO_ASCII = pynini.union(
+    *[pynini.cross(glyph, str(value)) for value, glyph in enumerate(DEVANAGARI_DIGIT)]
+).optimize()
+DIGIT_WORD_TO_DEVANAGARI = (
+    pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
+    | pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
+).optimize()
+
+# Devanagari characters (consonants, vowels, matras, signs) excluding the digits
+# (0x0966-0x096F). Shared so classes like serial and electronic can reuse it.
+DEVANAGARI_LETTER = pynini.union(
+    *[chr(c) for c in range(0x0900, 0x0966)],
+    *[chr(c) for c in range(0x0970, 0x0980)],
+).optimize()
+
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_ZWNJ = u"\u200c"
