@@ -36,9 +36,9 @@ NEMO_ALL_NON_ZERO = pynini.union(NEMO_KN_NON_ZERO, "1", "2", "3", "4", "5", "6",
 
 KN_ONDUVARE = "ಒಂದೂವರೆ"  # 1.5
 KN_ERADUVARE = "ಎರಡೂವರೆ"  # 2.5
-KN_KALLU = "ಒಂದು ಕಾಲು"  # quarter more (1.25)
-KN_UVARE = "ಊವರೆ"  # half more (X.5)
-KN_KALU_KADIME = "ಕಾಲು ಕಡಿಮೆ"  # quarter less (0.75)
+KN_KAALU = "ಕಾಲು"  # quarter more (1.25)
+KN_VARE = "ವರೆ"  # half more (X.5)
+KN_MUKKALU = "ಮುಕ್ಕಾಲು"
 
 # Kannada decimal representations
 KN_POINT_FIVE = ".೫"  # .5
