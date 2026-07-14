@@ -31,9 +31,12 @@ class RomanFst(GraphFst):
     class numbering). The conversion is deliberately restricted to these
     predictable contexts; regnal, papal and product names (e.g. भास्कर-II) are a
     documented limitation because the same number is ambiguous between Arabic and
-    Roman form.
+    Roman form. Numbers above MAX_NUMBER have no Roman form, so the whole number
+    falls back to Arabic (Devanagari) digits instead of leaving an in-range prefix
+    dangling.
         e.g. अध्याय तीन -> tokens { roman { key_cardinal: "अध्याय" integer: "III" } }
         e.g. कक्षा दस -> tokens { roman { key_cardinal: "कक्षा" integer: "X" } }
+        e.g. अध्याय चार हजार -> tokens { roman { key_cardinal: "अध्याय" integer: "४०००" } }
 
     Args:
         cardinal: CardinalFst, used to read spoken numbers.
@@ -57,7 +60,18 @@ class RomanFst(GraphFst):
                 for value in range(1, self.MAX_NUMBER + 1)
             ]
         ).optimize()
-        spoken_to_roman = pynini.compose(cardinal.graph_no_exception, devanagari_to_roman).optimize()
+
+        number_to_devanagari = cardinal.graph_no_exception
+        in_range_to_roman = pynini.compose(number_to_devanagari, devanagari_to_roman).optimize()
+
+        roman_range_devanagari = pynini.determinize(
+            pynini.project(devanagari_to_roman, "input").rmepsilon()
+        ).optimize()
+        all_devanagari = pynini.project(number_to_devanagari, "output").optimize()
+        above_range_devanagari = pynini.difference(all_devanagari, roman_range_devanagari).optimize()
+        above_range_to_arabic = pynini.compose(number_to_devanagari, above_range_devanagari).optimize()
+
+        spoken_to_roman = pynini.union(in_range_to_roman, above_range_to_arabic).optimize()
 
         graph = (
             pynutil.insert('key_cardinal: "')
