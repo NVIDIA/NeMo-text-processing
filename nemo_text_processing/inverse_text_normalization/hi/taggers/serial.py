@@ -25,7 +25,7 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     load_symbols,
 )
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import TO_UPPER
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, TO_UPPER
 
 
 class SerialFst(GraphFst):
@@ -56,16 +56,15 @@ class SerialFst(GraphFst):
 
         devanagari_word = pynini.closure(DEVANAGARI_LETTER, 1)
 
-        letter_names = pynini.project(
-            pynini.string_file(get_abs_path("data/electronic/letters.tsv")), "output"
-        ).optimize()
+        letters = pynini.string_file(get_abs_path("data/electronic/letters.tsv"))
+        letter_names = pynini.project(letters, "output").optimize()
         word = pynini.difference(devanagari_word, (number_words | letter_names).optimize()).optimize()
 
         segment = word | number
 
         sym = load_symbols(get_abs_path("data/electronic/symbols.tsv"))
         word_hyphen = delete_space + sym["hyphen"] + delete_space
-        delimiter = pynini.accep("-") | word_hyphen
+        delimiter = sym["lithyphen"] | word_hyphen
         serial_core = segment + pynini.closure(delimiter + segment, 1)
 
         power_special = pynini.string_file(get_abs_path("data/serial/power_special.tsv"))
@@ -75,9 +74,7 @@ class SerialFst(GraphFst):
         power_graph = number + power_suffix
 
         digit_words = (DIGIT_WORD_TO_DEVANAGARI @ DIGIT_GLYPH_TO_ASCII).optimize()
-        letter_map_upper = (
-            pynini.string_file(get_abs_path("data/electronic/letters.tsv")).invert() @ TO_UPPER
-        ).optimize()
+        letter_map_upper = (letters.invert() @ TO_UPPER).optimize()
 
         alnum_token = DIGIT_GLYPH_TO_ASCII | digit_words | letter_map_upper
         alnum_run = alnum_token + pynini.closure(delete_space + alnum_token, 1)
@@ -92,15 +89,8 @@ class SerialFst(GraphFst):
             alnum_hyphen_ext | alnum_point_ext
         )
 
-        # restrict to serials mixing letters and digits, so digit-only and
-        # letter-only inputs stay with the cardinal/telephone/word classes
-        ascii_alpha = pynini.union(
-            *[chr(c) for c in range(ord("A"), ord("Z") + 1)],
-            *[chr(c) for c in range(ord("a"), ord("z") + 1)],
-        )
-        ascii_digit = pynini.union(*[str(d) for d in range(10)])
-        contains_alpha = NEMO_SIGMA + ascii_alpha + NEMO_SIGMA
-        contains_digit = NEMO_SIGMA + ascii_digit + NEMO_SIGMA
+        contains_alpha = NEMO_SIGMA + NEMO_ALPHA + NEMO_SIGMA
+        contains_digit = NEMO_SIGMA + NEMO_DIGIT + NEMO_SIGMA
         alnum_mix = pynini.intersect(contains_alpha, contains_digit).optimize()
         alnum_body = (alnum_body @ alnum_mix).optimize()
 

@@ -16,10 +16,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
+    DIGIT_GLYPH_TO_ASCII,
     NEMO_CHAR,
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_space,
+    load_symbols,
 )
 from nemo_text_processing.inverse_text_normalization.hi.utils import get_abs_path
 
@@ -37,19 +39,7 @@ digit = digit_without_shunya | shunya
 def get_context(keywords: list):
     keywords = pynini.union(*keywords)
 
-    # Load Hindi digits from TSV files
-    hindi_digits = (
-        pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        | pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-    ).project("output")
-
-    # Load English digits from TSV files
-    english_digits = (
-        pynini.string_file(get_abs_path("data/telephone/eng_digit.tsv"))
-        | pynini.string_file(get_abs_path("data/telephone/eng_zero.tsv"))
-    ).project("output")
-
-    all_digits = hindi_digits | english_digits
+    all_digits = pynini.project(digit, "input")
 
     non_digit_char = pynini.difference(NEMO_CHAR, pynini.union(all_digits, NEMO_WHITE_SPACE))
     word = pynini.closure(non_digit_char, 1) + NEMO_WHITE_SPACE
@@ -124,6 +114,8 @@ class TelephoneFst(GraphFst):
     """
     Finite state transducer for classifying telephone numbers, e.g.
     e.g. प्लस इक्यानवे नौ आठ सात छह पांच चार तीन दो एक शून्य => tokens { name: "+९१ ९८७६५ ४३२१०" }
+    This class also supports IP addresses, e.g.
+    e.g. एक नौ दो डॉट एक छह आठ डॉट एक डॉट एक => tokens { telephone { number_part: "192.168.1.1" } }
     Args:
         Cardinal: CardinalFst
     """
@@ -134,26 +126,26 @@ class TelephoneFst(GraphFst):
         # Load context cues from TSV file
         context_cues = pynini.string_file(get_abs_path("data/telephone/context_cues.tsv"))
 
-        # Extract keywords for each category
-        mobile_keywords = pynini.compose(pynutil.delete("mobile"), context_cues).project("output").optimize()
+        def keywords(category):
+            return pynini.compose(pynutil.delete(category), context_cues).project("output").optimize()
 
-        landline_keywords = pynini.compose(pynutil.delete("landline"), context_cues).project("output").optimize()
+        mobile = generate_mobile([keywords("mobile")])
+        landline = generate_telephone([keywords("landline")])
+        pincode = generate_pincode([keywords("pincode")])
+        credit = generate_credit([keywords("credit")])
 
-        pincode_keywords = pynini.compose(pynutil.delete("pincode"), context_cues).project("output").optimize()
-
-        credit_keywords = pynini.compose(pynutil.delete("credit"), context_cues).project("output").optimize()
-
-        # Convert FSTs to keyword lists for generate_* functions
-        mobile = generate_mobile([mobile_keywords])
-        landline = generate_telephone([landline_keywords])
-        pincode = generate_pincode([pincode_keywords])
-        credit = generate_credit([credit_keywords])
+        sym = load_symbols(get_abs_path("data/electronic/symbols.tsv"))
+        ip_dot = delete_space + sym["dot"] + delete_space
+        ip_digit = pynini.compose(digit, DIGIT_GLYPH_TO_ASCII) | DIGIT_GLYPH_TO_ASCII
+        ip_octet = ip_digit + pynini.closure(delete_space + ip_digit, 0, 2)
+        ip_graph = pynutil.insert("number_part: \"") + ip_octet + (ip_dot + ip_octet) ** 3 + pynutil.insert("\" ")
 
         graph = (
             pynutil.add_weight(mobile, 0.7)
             | pynutil.add_weight(landline, 0.8)
             | pynutil.add_weight(credit, 0.9)
             | pynutil.add_weight(pincode, 1)
+            | pynutil.add_weight(ip_graph, 0.7)
         )
 
         self.final = graph.optimize()
