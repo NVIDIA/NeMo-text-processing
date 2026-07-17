@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,8 +27,12 @@ class MoneyFst(GraphFst):
         100円 -> money { integer_part: "百" currency_maj: "円" preserve_order: true }
         ¥3万 -> money { integer_part: "三" quantity: "万" currency_maj: "円" preserve_order: true }
         1.5万円 -> money { integer_part: "一点五" quantity: "万" currency_maj: "円" preserve_order: true }
-        5ドル25セント -> money { integer_part: "五" currency_maj: "ドル" fractional_part: "二十五" currency_min: "セント" preserve_order: true }
-        $12.50 -> money { integer_part: "十二" currency_maj: "ドル" fractional_part: "五十" currency_min: "セント" preserve_order: true }
+        5ドル25セント
+        -> money { integer_part: "五" currency_maj: "ドル" fractional_part: "二十五"
+           currency_min: "セント" preserve_order: true }
+        $12.50
+        -> money { integer_part: "十二" currency_maj: "ドル" fractional_part: "五十"
+           currency_min: "セント" preserve_order: true }
 
     Args:
         cardinal: CardinalFst
@@ -44,11 +48,12 @@ class MoneyFst(GraphFst):
 
         integer_input = (NEMO_DIGIT + pynini.closure(NEMO_DIGIT | pynutil.delete(","))) @ graph_cardinal
         fractional_digits = pynini.closure(graph_digit | graph_zero, 1)
-        decimal_input = integer_input + pynutil.delete(".") + pynutil.insert("点") + fractional_digits
-        sign_input = (pynini.cross("-", "マイナス") | pynini.accep("マイナス")) + delete_space
+        decimal_input = (
+            integer_input + pynini.string_file(get_abs_path("data/numbers/decimal_point.tsv")) + fractional_digits
+        )
+        sign_input = pynini.string_file(get_abs_path("data/numbers/sign.tsv")) + delete_space
 
         integer_component = pynutil.insert('integer_part: "') + integer_input + pynutil.insert('"')
-        decimal_component = pynutil.insert('integer_part: "') + decimal_input + pynutil.insert('"')
         signed_integer_component = (
             pynutil.insert('integer_part: "') + pynini.closure(sign_input, 0, 1) + integer_input + pynutil.insert('"')
         )

@@ -20,7 +20,6 @@ nvidia.ai~nvidia ドット ai
 http://www.nvidia.com~http コロン スラッシュ スラッシュ www ドット nvidia ドット com
 https://www.nvidia.com~https コロン スラッシュ スラッシュ www ドット nvidia ドット com
 https://developer.nvidia.com/drive-cuda/early-access~https コロン スラッシュ スラッシュ developer ドット nvidia ドット com スラッシュ drive ハイフン cuda スラッシュ early ハイフン access
-email abc@abc.com です~email abc アット abc ドット com です
 abc@abc.com.~abc アット abc ドット com.
 1234-5678-9012-3456~一二三四 五六七八 九〇一二 三四五六
 2345-2222-3333-4444~二三四五 二二二二 三三三三 四四四四

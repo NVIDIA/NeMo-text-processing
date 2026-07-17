@@ -41,7 +41,7 @@ class DecimalFst(GraphFst):
         graph_integer = (
             pynutil.insert('integer_part: \"')
             + (
-                pynini.cross("0", "零")
+                zero_decimal
                 | (pynini.difference(NEMO_DIGIT, "0") @ cardinal_before_decimal)
                 | (pynini.closure(NEMO_DIGIT, 2) @ cardinal_before_decimal)
             )

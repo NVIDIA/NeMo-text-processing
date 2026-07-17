@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,15 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_NOT_SPACE,
-    NEMO_SIGMA,
-    GraphFst,
-    delete_space,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_ALPHA, NEMO_DIGIT, NEMO_NOT_SPACE, GraphFst
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
 
@@ -32,108 +24,106 @@ class ElectronicFst(GraphFst):
     Finite state transducer for classifying Japanese electronic expressions.
 
     Examples:
-        abc@abc.com -> name: "abc アット abc ドット com"
-        https://www.nvidia.com -> name: "https コロン スラッシュ スラッシュ www ドット nvidia ドット com"
-        1234-5678-9012-3456 -> name: "一二三四 五六七八 九〇一二 三四五六"
+        abc@abc.com -> electronic { username: "abc" domain: "abc.com" preserve_order: true }
+        https://www.nvidia.com
+        -> electronic { protocol: "https" domain: "www.nvidia.com" preserve_order: true }
+        1234-5678-9012-3456
+        -> electronic { domain: "1234 5678 9012 3456" preserve_order: true }
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="electronic", kind="classify", deterministic=deterministic)
 
-        digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        digit_zero_maru = digit | pynini.cross("0", "〇")
-        digit_zero_user = digit | pynini.cross("0", "ゼロ")
+        alnum = NEMO_ALPHA | NEMO_DIGIT
+        hyphen = pynini.accep("-")
+        dot = pynini.accep(".")
+        slash = pynini.accep("/")
+        at = pynini.accep("@")
 
-        special_digit_run = pynutil.add_weight(
-            pynini.string_file(get_abs_path("data/electronic/special_digit_runs.tsv")),
-            -0.1,
+        label = pynini.closure(alnum | hyphen, 1)
+        tld = pynini.closure(NEMO_ALPHA, 2)
+        domain_core = label + pynini.closure(dot + label) + dot + tld
+        domain_field = pynutil.insert('domain: "') + domain_core + pynutil.insert('"')
+
+        username_symbol = dot | hyphen
+        username_core = alnum + pynini.closure(alnum | username_symbol)
+        username_field = (
+            pynutil.insert('username: "')
+            + username_core
+            + pynutil.insert('"')
+            + pynutil.delete("@")
+            + pynutil.insert(" ")
         )
-        symbol = pynini.string_file(get_abs_path("data/electronic/symbol.tsv"))
-        at = symbol @ pynini.cross("アット", " アット ")
-        dot = symbol @ pynini.cross("ドット", " ドット ")
-        hyphen = symbol @ pynini.cross("ハイフン", " ハイフン ")
-        slash = symbol @ pynini.cross("スラッシュ", " スラッシュ ")
-        colon = symbol @ pynini.cross("コロン", " コロン ")
+        email = username_field + domain_field
 
-        raw_label = pynini.closure(NEMO_ALPHA | NEMO_DIGIT, 1)
-        alpha_label = pynini.closure(NEMO_ALPHA, 1)
-        digit_label = pynini.closure(NEMO_DIGIT, 1)
-        raw_label_with_hyphen = raw_label + pynini.closure(
-            pynutil.delete("-") + pynutil.insert(" ハイフン ") + raw_label
+        protocol = pynini.string_file(get_abs_path("data/electronic/protocol.tsv"))
+        protocol_field = pynutil.insert('protocol: "') + protocol + pynutil.insert('"')
+        path_segment = pynini.closure(alnum | hyphen, 1)
+        path_core = slash + path_segment + pynini.closure(slash + path_segment)
+        path_field = pynutil.insert(' path: "') + path_core + pynutil.insert('"')
+        url = (
+            protocol_field
+            + pynutil.delete("://")
+            + pynutil.insert(" ")
+            + domain_field
+            + pynini.closure(path_field, 0, 1)
         )
 
-        insert_alpha_digit_space = pynini.cdrewrite(pynutil.insert(" "), NEMO_ALPHA, NEMO_DIGIT, NEMO_SIGMA)
-        insert_digit_alpha_space = pynini.cdrewrite(pynutil.insert(" "), NEMO_DIGIT, NEMO_ALPHA, NEMO_SIGMA)
-        alnum_spacing = insert_alpha_digit_space @ insert_digit_alpha_space
-        username_reader = pynini.closure(NEMO_ALPHA | special_digit_run | digit_zero_user | pynini.accep(" "), 1)
-
-        raw_alnum = pynini.closure(NEMO_ALPHA | NEMO_DIGIT, 1)
-        raw_mixed_alnum = (
-            pynini.closure(NEMO_ALPHA | NEMO_DIGIT)
-            + NEMO_ALPHA
-            + pynini.closure(NEMO_ALPHA | NEMO_DIGIT)
-            + NEMO_DIGIT
-            + pynini.closure(NEMO_ALPHA | NEMO_DIGIT)
-        ) | (
-            pynini.closure(NEMO_ALPHA | NEMO_DIGIT)
-            + NEMO_DIGIT
-            + pynini.closure(NEMO_ALPHA | NEMO_DIGIT)
-            + NEMO_ALPHA
-            + pynini.closure(NEMO_ALPHA | NEMO_DIGIT)
+        four_digits = NEMO_DIGIT**4
+        card_separator = pynutil.delete("-") | pynutil.delete(" ")
+        grouped_card_number = (
+            four_digits
+            + card_separator
+            + pynutil.insert(" ")
+            + four_digits
+            + card_separator
+            + pynutil.insert(" ")
+            + four_digits
+            + card_separator
+            + pynutil.insert(" ")
+            + four_digits
         )
-        username_alnum = (raw_mixed_alnum @ alnum_spacing @ username_reader).optimize()
-        username_segment = pynutil.add_weight(username_alnum, -0.1) | alpha_label | digit_label
-        username = username_segment + pynini.closure((dot | hyphen) + username_segment)
-
-        domain = raw_label + pynini.closure(dot + raw_label) + dot + alpha_label
-        email = username + at + domain
-
-        protocol = (pynini.accep("https") | pynini.accep("http")) + colon + slash + slash
-        path = slash + raw_label_with_hyphen + pynini.closure(slash + raw_label_with_hyphen)
-        url = protocol + domain + pynini.closure(path, 0, 1)
-
-        four_digits = NEMO_DIGIT**4 @ (digit_zero_maru**4)
-        card_separator = (pynutil.delete("-") | pynutil.delete(" ")) + insert_space
-        credit_card = (
-            four_digits + card_separator + four_digits + card_separator + four_digits + card_separator + four_digits
-        )
+        card_number_field = pynutil.insert('domain: "') + grouped_card_number + pynutil.insert('"')
+        short_card_number_field = pynutil.insert('domain: "') + four_digits + pynutil.insert('"')
 
         card_cue = pynini.string_file(get_abs_path("data/electronic/card_cues.tsv"))
-        card_with_cue = card_cue + credit_card
-        card_tail_with_cue = card_cue + four_digits
+        card_cue_field = pynutil.insert('protocol: "') + card_cue + pynutil.insert('" ')
+        credit_card = card_number_field
+        card_with_cue = card_cue_field + card_number_field
+        card_tail_with_cue = card_cue_field + short_card_number_field
+
+        digit_count_prefix = pynini.string_file(get_abs_path("data/electronic/card_digit_count_prefix.tsv"))
+        digit_count_suffix = pynini.string_file(get_abs_path("data/electronic/card_digit_count_suffix.tsv"))
+        digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         card_tail = (
-            pynini.accep("カード下")
-            + (NEMO_DIGIT @ cardinal.just_cardinals)
-            + pynini.accep("桁")
-            + (NEMO_DIGIT**4 @ (digit_zero_maru**4))
+            pynutil.insert('protocol: "')
+            + digit_count_prefix
+            + digit
+            + digit_count_suffix
+            + pynutil.insert('" ')
+            + short_card_number_field
         )
 
-        extension = pynini.string_file(get_abs_path("data/electronic/file_extensions.tsv"))
+        extension = pynini.project(
+            pynini.string_file(get_abs_path("data/electronic/file_extensions.tsv")),
+            "input",
+        )
         filename_stem = pynini.closure(
-            pynini.difference(NEMO_NOT_SPACE, pynini.union(".", "/", "@")),
+            pynini.difference(NEMO_NOT_SPACE, pynini.union(dot, slash, at)),
             1,
         )
-        filename = filename_stem + insert_space + extension
-        email_with_context = (
-            pynini.accep("email")
-            + delete_space
-            + insert_space
-            + email
-            + delete_space
-            + insert_space
-            + pynini.accep("です")
-        )
+        filename = pynutil.insert('domain: "') + filename_stem + extension + pynutil.insert('"')
 
         graph = (
             pynutil.add_weight(credit_card, -0.1)
             | pynutil.add_weight(card_with_cue, -0.1)
             | pynutil.add_weight(card_tail_with_cue, -0.1)
             | card_tail
-            | email_with_context
             | email
             | url
-            | domain
+            | domain_field
             | filename
         )
+        graph += pynutil.insert(" preserve_order: true")
 
-        self.fst = (pynutil.insert('name: "') + graph.optimize() + pynutil.insert('"')).optimize()
+        self.fst = self.add_tokens(graph.optimize()).optimize()

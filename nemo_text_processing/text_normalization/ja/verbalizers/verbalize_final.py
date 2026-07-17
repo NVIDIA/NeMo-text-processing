@@ -18,11 +18,10 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space, generator_main
 from nemo_text_processing.text_normalization.ja.verbalizers.postprocessor import PostProcessor
 from nemo_text_processing.text_normalization.ja.verbalizers.verbalize import VerbalizeFst
-
-# from nemo.utils import logging
+from nemo_text_processing.utils.logging import logger
 
 
 class VerbalizeFinalFst(GraphFst):
@@ -36,6 +35,7 @@ class VerbalizeFinalFst(GraphFst):
             far_file = os.path.join(cache_dir, f"ja_tn_{deterministic}_deterministic_verbalizer.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
+            logger.info(f"VerbalizeFinalFst graph was restored from {far_file}.")
         else:
             token_graph = VerbalizeFst(deterministic=deterministic)
 
@@ -52,3 +52,5 @@ class VerbalizeFinalFst(GraphFst):
             )
 
             self.fst = (verbalizer @ postprocessor.fst).optimize()
+            if far_file:
+                generator_main(far_file, {"verbalize": self.fst})

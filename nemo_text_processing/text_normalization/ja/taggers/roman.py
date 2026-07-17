@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ class RomanFst(GraphFst):
     Examples:
         第III章 -> name: "第三章"
         Chapter IV -> name: "Chapter 四"
-        Henry VIII -> name: "Henry 八世"
+        Century XXI -> name: "Century 二十一"
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
@@ -44,21 +44,16 @@ class RomanFst(GraphFst):
         roman_to_number = pynini.string_map(valid_roman_pairs).optimize()
         roman_to_cardinal = roman_to_number @ cardinal.just_cardinals
 
-        japanese_suffix = pynini.union("章", "条", "巻", "回")
-        japanese_context = pynini.accep("第") + roman_to_cardinal + japanese_suffix
+        japanese_prefix = pynini.string_file(get_abs_path("data/roman/japanese_prefix.tsv"))
+        japanese_suffix = pynini.string_file(get_abs_path("data/roman/japanese_suffix.tsv"))
+        japanese_context = japanese_prefix + roman_to_cardinal + japanese_suffix
 
         key_cardinal = pynini.union(
             *[pynini.accep(x[0]) for x in load_labels(get_abs_path("data/roman/key_cardinal.tsv"))]
         )
-        key_ordinal = pynini.union(
-            *[pynini.accep(x[0]) for x in load_labels(get_abs_path("data/roman/key_ordinal.tsv"))]
-        )
-
         cardinal_context = key_cardinal + pynutil.delete(" ") + insert_space + roman_to_cardinal
-        ordinal_context = key_ordinal + pynutil.delete(" ") + insert_space + roman_to_cardinal + pynutil.insert("世")
-        preserve = pynini.string_file(get_abs_path("data/roman/preserve.tsv"))
 
-        graph = japanese_context | cardinal_context | ordinal_context | preserve
+        graph = japanese_context | cardinal_context
         self.fst = (pynutil.insert('name: "') + graph.optimize() + pynutil.insert('"')).optimize()
 
     @staticmethod

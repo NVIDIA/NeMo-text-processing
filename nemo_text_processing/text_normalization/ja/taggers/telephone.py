@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,6 +43,10 @@ class TelephoneFst(GraphFst):
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         digit = graph_digit | graph_zero
+        extension_cue = pynini.project(
+            pynini.string_file(get_abs_path("data/telephone/extension.tsv")),
+            "input",
+        )
 
         sep_char = pynini.union("-", "－", "ー", ".", "．")
         delete_sep = pynutil.delete(sep_char)
@@ -104,7 +108,7 @@ class TelephoneFst(GraphFst):
 
         extension = (
             delete_space
-            + (pynutil.delete("内線番号") | pynutil.delete("内線"))
+            + pynutil.delete(extension_cue)
             + delete_space
             + pynutil.insert(' extension: "')
             + pynini.closure(digit, 1, 4)

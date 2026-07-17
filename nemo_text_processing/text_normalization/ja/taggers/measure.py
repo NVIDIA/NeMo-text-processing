@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ class MeasureFst(GraphFst):
     Examples:
         5kg -> measure { cardinal { integer: "五" } units: "キロ" preserve_order: true }
         0kg -> measure { cardinal { integer: "ゼロ" } units: "キロ" preserve_order: true }
-        0.05m -> measure { decimal { integer_part: "零" fractional_part: "零五" } units: "メートル" preserve_order: true }
+        0.05m
+        -> measure { decimal { integer_part: "零" fractional_part: "零五" } units: "メートル" preserve_order: true }
         60km/h -> measure { cardinal { integer: "時速六十" } units: "キロ" preserve_order: true }
         50m/s -> measure { cardinal { integer: "秒速五十" } units: "メートル" preserve_order: true }
 
@@ -50,58 +51,34 @@ class MeasureFst(GraphFst):
         per_unit_path = get_abs_path("data/measure/per_unit.tsv")
         rate_numerator_path = get_abs_path("data/measure/rate_numerator.tsv")
         unit = pynini.string_file(unit_path)
-        per_unit = pynini.string_file(per_unit_path)
-        rate_numerator = pynini.string_file(rate_numerator_path)
+        rate_numerator_labels = load_labels(rate_numerator_path)
+        per_unit_labels = load_labels(per_unit_path)
+        speed_configs = {
+            (unit_spoken, per_spoken): prefix
+            for unit_spoken, per_spoken, prefix in load_labels(get_abs_path("data/measure/speed.tsv"))
+        }
+        per_marker = load_labels(get_abs_path("data/measure/per_marker.tsv"))[0][0]
 
         slash = pynutil.delete("/") | pynutil.delete("／")
-        kilometer_rate_unit = rate_numerator @ pynini.cross("キロ", "")
-        meter_rate_unit = rate_numerator @ pynini.cross("メートル", "")
-        hour_per_unit = per_unit @ pynini.cross("時", "")
-        second_per_unit = per_unit @ pynini.cross("秒", "")
 
-        speed_kmh_inputs = {written for written, spoken in load_labels(rate_numerator_path) if spoken == "キロ"}
-        speed_ms_inputs = {written for written, spoken in load_labels(rate_numerator_path) if spoken == "メートル"}
         general_per_unit = pynini.Fst()
         for unit_written, unit_spoken in load_labels(unit_path):
-            for per_written, per_spoken in load_labels(per_unit_path):
-                if (unit_written in speed_kmh_inputs and per_spoken == "時") or (
-                    unit_written in speed_ms_inputs and per_spoken == "秒"
-                ):
-                    continue
+            for per_written, per_spoken in per_unit_labels:
                 general_per_unit |= (
                     pynini.cross(unit_written, unit_spoken)
                     + delete_space
                     + slash
                     + delete_space
-                    + pynutil.insert("毎")
+                    + pynutil.insert(per_marker)
                     + pynini.cross(per_written, per_spoken)
                 )
         unit_graph = unit | general_per_unit
-
-        speed_kmh_unit = (
-            delete_space
-            + kilometer_rate_unit
-            + delete_space
-            + slash
-            + delete_space
-            + hour_per_unit
-            + pynutil.insert(' units: "キロ"')
-        )
-        speed_ms_unit = (
-            delete_space
-            + meter_rate_unit
-            + delete_space
-            + slash
-            + delete_space
-            + second_per_unit
-            + pynutil.insert(' units: "メートル"')
-        )
 
         unit_component = delete_space + pynutil.insert(' units: "') + unit_graph + pynutil.insert('"')
 
         optional_sign = (
             pynutil.insert('negative: "')
-            + (pynini.cross("-", "マイナス") | pynini.accep("マイナス"))
+            + pynini.string_file(get_abs_path("data/numbers/sign.tsv"))
             + pynutil.insert('" ')
             + delete_space
         )
@@ -123,27 +100,34 @@ class MeasureFst(GraphFst):
             pynutil.insert("fraction { ") + pynini.closure(optional_sign, 0, 1) + fraction.graph + pynutil.insert(" }")
         )
 
-        speed_kmh_number = (
-            pynutil.insert("cardinal { ")
-            + pynini.closure(optional_sign, 0, 1)
-            + pynutil.insert('integer: "時速')
-            + cardinal.just_cardinals
-            + pynutil.insert('" }')
-        )
-        speed_ms_number = (
-            pynutil.insert("cardinal { ")
-            + pynini.closure(optional_sign, 0, 1)
-            + pynutil.insert('integer: "秒速')
-            + cardinal.just_cardinals
-            + pynutil.insert('" }')
-        )
-
         number = cardinal_graph | decimal_graph | fraction_graph
 
-        speed_kmh_graph = speed_kmh_number + speed_kmh_unit + pynutil.insert(" preserve_order: true")
-        speed_ms_graph = speed_ms_number + speed_ms_unit + pynutil.insert(" preserve_order: true")
+        speed_graph = pynini.Fst()
+        for unit_written, unit_spoken in rate_numerator_labels:
+            for per_written, per_spoken in per_unit_labels:
+                prefix = speed_configs.get((unit_spoken, per_spoken))
+                if prefix is None:
+                    continue
+                speed_number = (
+                    pynutil.insert("cardinal { ")
+                    + pynini.closure(optional_sign, 0, 1)
+                    + pynutil.insert(f'integer: "{prefix}')
+                    + cardinal.just_cardinals
+                    + pynutil.insert('" }')
+                )
+                speed_unit = (
+                    delete_space
+                    + pynutil.delete(unit_written)
+                    + delete_space
+                    + slash
+                    + delete_space
+                    + pynutil.delete(per_written)
+                    + pynutil.insert(f' units: "{unit_spoken}"')
+                )
+                speed_graph |= speed_number + speed_unit + pynutil.insert(" preserve_order: true")
+
         general_graph = number + unit_component + pynutil.insert(" preserve_order: true")
 
-        graph = speed_kmh_graph | speed_ms_graph | general_graph
+        graph = pynutil.add_weight(speed_graph, -0.1) | general_graph
 
         self.fst = self.add_tokens(graph.optimize()).optimize()

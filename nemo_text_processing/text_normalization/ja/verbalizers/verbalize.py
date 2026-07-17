@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, del
 from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.ja.verbalizers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.ja.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.ja.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.ja.verbalizers.money import MoneyFst
@@ -53,6 +54,7 @@ class VerbalizeFst(GraphFst):
         telephone = TelephoneFst(deterministic=deterministic)
         time = TimeFst(deterministic=deterministic)
         whitelist = WhiteListFst(deterministic=deterministic)
+        electronic = ElectronicFst(deterministic=deterministic)
 
         graph = pynini.union(
             date.fst,
@@ -66,6 +68,7 @@ class VerbalizeFst(GraphFst):
             word.fst,
             time.fst,
             whitelist.fst,
+            electronic.fst,
         )
         graph = pynini.closure(delete_space) + graph + pynini.closure(delete_space)
 

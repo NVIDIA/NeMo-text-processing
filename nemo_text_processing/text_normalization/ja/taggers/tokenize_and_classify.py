@@ -34,12 +34,20 @@ from nemo_text_processing.text_normalization.ja.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.ja.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ja.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ja.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.ja.taggers.range import RangeFst
 from nemo_text_processing.text_normalization.ja.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.ja.taggers.serial import SerialFst
 from nemo_text_processing.text_normalization.ja.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.taggers.word import WordFst
+from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst as CardinalVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst as DateVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst as DecimalVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.fraction import FractionFst as FractionVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.measure import MeasureFst as MeasureVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.money import MoneyFst as MoneyVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst as TimeVerbalizer
 
 
 class ClassifyFst(GraphFst):
@@ -88,6 +96,30 @@ class ClassifyFst(GraphFst):
             electronic = ElectronicFst(cardinal=cardinal, deterministic=deterministic)
             roman = RomanFst(cardinal=cardinal, deterministic=deterministic)
             serial = SerialFst(cardinal=cardinal, deterministic=deterministic)
+
+            cardinal_verbalizer = CardinalVerbalizer(deterministic=deterministic)
+            decimal_verbalizer = DecimalVerbalizer(deterministic=deterministic)
+            fraction_verbalizer = FractionVerbalizer(deterministic=deterministic)
+            date_final = date.fst @ DateVerbalizer(deterministic=deterministic).fst
+            time_final = time.fst @ TimeVerbalizer(deterministic=deterministic).fst
+            money_final = money.fst @ MoneyVerbalizer(decimal=decimal_verbalizer, deterministic=deterministic).fst
+            measure_final = (
+                measure.fst
+                @ MeasureVerbalizer(
+                    cardinal=cardinal_verbalizer,
+                    decimal=decimal_verbalizer,
+                    fraction=fraction_verbalizer,
+                    deterministic=deterministic,
+                ).fst
+            )
+            range_graph = RangeFst(
+                cardinal=cardinal.fst @ cardinal_verbalizer.fst,
+                date=date_final,
+                time=time_final,
+                money=money_final,
+                measure=measure_final,
+                deterministic=deterministic,
+            )
             whitelist = WhiteListFst(deterministic=deterministic)
             word = WordFst(deterministic=deterministic)
             punctuation = PunctuationFst(deterministic=deterministic)
@@ -97,6 +129,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(address.fst, 1.1),
                 pynutil.add_weight(roman.fst, 1.1),
                 pynutil.add_weight(serial.fst, 1.1),
+                pynutil.add_weight(range_graph.fst, 1.1),
                 pynutil.add_weight(date.fst, 1.1),
                 pynutil.add_weight(fraction.fst, 1.1),
                 pynutil.add_weight(money.fst, 1.1),

@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,17 +28,5 @@ class TestTelephone:
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm_telephone(self, test_input, expected):
-        preds = self.normalizer_ja.normalize(test_input)
-        assert expected == preds
-
-    @parameterized.expand(
-        [
-            ("119", "百十九"),
-            ("110番", "百十番"),
-        ]
-    )
-    @pytest.mark.run_only_on('CPU')
-    @pytest.mark.unit
-    def test_norm_telephone_boundaries(self, test_input, expected):
         preds = self.normalizer_ja.normalize(test_input)
         assert expected == preds

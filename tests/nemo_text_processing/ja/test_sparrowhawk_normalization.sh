@@ -66,10 +66,10 @@ testTNSerialText() {
   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_serial.txt
   runtest $input
 }
-# testTNRangeText() {
-#   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_range.txt
-#   runtest $input
-# }
+testTNRangeText() {
+  input=$PROJECT_DIR/ja/data_text_normalization/test_cases_range.txt
+  runtest $input
+}
 testTNAddressText() {
   input=$PROJECT_DIR/ja/data_text_normalization/test_cases_address.txt
   runtest $input

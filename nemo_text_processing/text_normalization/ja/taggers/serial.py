@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,14 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, insert_space
+from nemo_text_processing.text_normalization.ja.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    NEMO_UPPER,
+    TO_UPPER,
+    GraphFst,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
 
@@ -25,19 +32,19 @@ class SerialFst(GraphFst):
 
     Examples:
         B2A23C -> name: "ビー 二 エー 二三 シー"
-        MIG-25/235212-asdg -> name: "エムアイジー ハイフン 二五 スラッシュ 二三五二一二 ハイフン エーエスディージー"
-        Room 301 -> name: "Room 三〇一"
+        MIG-25/235212-asdg
+        -> name: "エムアイジー ハイフン 二五 スラッシュ 二三五二一二 ハイフン エーエスディージー"
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="serial", kind="classify", deterministic=deterministic)
 
-        letters = pynini.string_file(get_abs_path("data/latin/letters.tsv"))
+        uppercase_letters = pynini.string_file(get_abs_path("data/latin/letters.tsv"))
+        letters = (NEMO_UPPER | TO_UPPER) @ uppercase_letters
         letter_input = pynini.project(letters, "input")
-        digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")) | pynini.cross("0", "〇")
-        digit_group = pynini.closure(digit, 1)
-        letter_group = pynini.closure(letters, 1)
-
+        digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")) | pynini.string_file(
+            get_abs_path("data/numbers/zero_maru.tsv")
+        )
         insert_letter_digit_space = pynini.cdrewrite(pynutil.insert(" "), letter_input, NEMO_DIGIT, NEMO_SIGMA)
         insert_digit_letter_space = pynini.cdrewrite(pynutil.insert(" "), NEMO_DIGIT, letter_input, NEMO_SIGMA)
         alnum_spacing = insert_letter_digit_space @ insert_digit_letter_space
@@ -58,7 +65,7 @@ class SerialFst(GraphFst):
         alnum_reader = pynini.closure(letters | digit | pynini.accep(" "), 1)
         alnum = (raw_mixed_alnum @ alnum_spacing @ alnum_reader).optimize()
 
-        delimiter = pynini.cross("-", " ハイフン ") | pynini.cross("/", " スラッシュ ")
+        delimiter = insert_space + pynini.string_file(get_abs_path("data/serial/delimiter.tsv")) + insert_space
         unit_input = pynini.project(pynini.string_file(get_abs_path("data/measure/unit.tsv")), "input")
         numeric_measure_segment = pynini.closure(NEMO_DIGIT, 1) + unit_input
         raw_alnum_segment = pynini.difference(raw_alnum, numeric_measure_segment)
@@ -75,8 +82,8 @@ class SerialFst(GraphFst):
         special_word = pynini.string_file(get_abs_path("data/serial/words.tsv"))
         covid_style = special_word + pynutil.delete("-") + insert_space + (NEMO_DIGIT**2 @ cardinal.just_cardinals)
 
-        model_number = pynini.accep("型番") + insert_space + delimited
-        room_number = pynini.accep("Room") + pynutil.delete(" ") + insert_space + digit_group
+        model_cue = pynini.string_file(get_abs_path("data/serial/model_cues.tsv"))
+        model_number = model_cue + insert_space + delimited
 
-        graph = pynutil.add_weight(covid_style, -0.1) | model_number | room_number | delimited | alnum
+        graph = pynutil.add_weight(covid_style, -0.1) | model_number | delimited | alnum
         self.fst = (pynutil.insert('name: "') + graph.optimize() + pynutil.insert('"')).optimize()

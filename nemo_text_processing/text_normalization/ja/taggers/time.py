@@ -39,9 +39,10 @@ class TimeFst(GraphFst):
         minute_clock = pynini.string_file(get_abs_path("data/time/minute.tsv"))
         second_clock = pynini.string_file(get_abs_path("data/time/second.tsv"))
         division = pynini.string_file(get_abs_path("data/time/division.tsv"))
+        zero_decimal = pynini.string_file(get_abs_path("data/numbers/zero_decimal.tsv"))
 
         division_component = pynutil.insert("suffix: \"") + division + pynutil.insert("\"")
-        hour_number = pynutil.add_weight(pynini.cross("0", "零"), -0.1) | graph_cardinal
+        hour_number = pynutil.add_weight(zero_decimal, -0.1) | graph_cardinal
         hour_component = (
             pynutil.insert("hours: \"")
             + (hour_number | (graph_cardinal + pynini.cross(".", "点") + graph_cardinal))
@@ -97,7 +98,7 @@ class TimeFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        graph_clock = (
+        graph_clock_with_seconds = (
             hour_clock_component
             + pynutil.insert(" ")
             + colon
@@ -105,7 +106,10 @@ class TimeFst(GraphFst):
             + pynutil.insert(" ")
             + colon
             + second_clock_component
-        ) | (hour_clock_component + pynutil.insert(" ") + colon + minute_clock_component)
+        )
+        graph_clock_with_minutes = hour_clock_component + pynutil.insert(" ") + colon + minute_clock_component
+        graph_clock_without_minutes = hour_clock_component + colon + pynutil.delete("00")
+        graph_clock = graph_clock_with_seconds | graph_clock_with_minutes | graph_clock_without_minutes
 
         graph = graph_individual_time | graph_clock
 

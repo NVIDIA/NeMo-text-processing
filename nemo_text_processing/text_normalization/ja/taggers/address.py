@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,36 +34,31 @@ class AddressFst(GraphFst):
 
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        zero_maru = pynini.cross("0", "〇")
+        zero_maru = pynini.string_file(get_abs_path("data/numbers/zero_maru.tsv"))
 
         address_number = cardinal.just_cardinals
         digit_for_room = digit | zero_maru
         digit_for_postal = digit | zero
+        separator = pynini.string_file(get_abs_path("data/address/separator.tsv"))
+        separator_input = pynini.project(separator, "input")
+        postal = pynini.string_file(get_abs_path("data/address/postal.tsv"))
+        room_suffix = pynini.string_file(get_abs_path("data/address/room_suffix.tsv"))
 
         hyphen_to_no = (
-            pynini.closure(pynutil.delete(" "), 0, 1)
-            + (pynutil.delete("-") | pynutil.delete("－") | pynutil.delete("ー"))
-            + pynini.closure(pynutil.delete(" "), 0, 1)
-            + pynutil.insert("の")
+            pynini.closure(pynutil.delete(" "), 0, 1) + separator + pynini.closure(pynutil.delete(" "), 0, 1)
         )
 
         address_chain = address_number + hyphen_to_no + address_number + hyphen_to_no + address_number
 
         address_prefix_char = pynini.difference(
             NEMO_NOT_SPACE,
-            NEMO_DIGIT | pynini.union("-", "－", "ー"),
+            NEMO_DIGIT | separator_input,
         )
         address_with_prefix = pynini.closure(address_prefix_char, 1) + address_chain
 
-        postal_code = (
-            pynutil.delete("〒")
-            + pynutil.insert("郵便番号")
-            + digit_for_postal**3
-            + hyphen_to_no
-            + digit_for_postal**4
-        )
+        postal_code = postal + digit_for_postal**3 + hyphen_to_no + digit_for_postal**4
 
-        room = (NEMO_DIGIT**3 @ (digit_for_room**3)) + pynini.accep("号室")
+        room = (NEMO_DIGIT**3 @ (digit_for_room**3)) + room_suffix
 
         graph = address_with_prefix | postal_code | room
         self.fst = (pynutil.insert('name: "') + graph + pynutil.insert('"')).optimize()
