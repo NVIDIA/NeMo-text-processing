@@ -17,7 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_SPACE, GraphFst
-from nemo_text_processing.text_normalization.ja.utils import get_abs_path
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
 
 
 class FractionFst(GraphFst):
@@ -40,37 +40,39 @@ class FractionFst(GraphFst):
         cardinal = cardinal.just_cardinals
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        markers = dict(load_labels(get_abs_path("data/fraction/marker.tsv")))
+        decimal_point = pynini.string_file(get_abs_path("data/numbers/decimal_point.tsv"))
+        sign = pynini.string_file(get_abs_path("data/numbers/sign.tsv"))
 
-        slash = pynutil.delete('/')
-        morphemes = pynini.accep('分の')
-        root = pynini.accep('√')
+        slash = pynutil.delete("/")
+        morphemes = pynini.accep(markers["fraction"])
+        root = pynini.accep(markers["root_written"])
+        mixed = pynini.accep(markers["mixed"])
 
         decimal_number = (
-            cardinal
-            + pynini.cross(".", "点")
-            + pynini.closure(pynini.closure(graph_digit) | pynini.closure(graph_zero))
+            cardinal + decimal_point + pynini.closure(pynini.closure(graph_digit) | pynini.closure(graph_zero))
         )
 
         integer_component = (
-            pynutil.insert('integer_part: \"')
+            pynutil.insert('integer_part: "')
             + (cardinal | (root + cardinal) | decimal_number | (root + decimal_number))
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
         )
         integer_component_with_char = (
-            pynutil.insert('integer_part: \"')
-            + ((cardinal | (root + cardinal) | decimal_number | (root + decimal_number)) + pynini.accep("と"))
-            + pynutil.insert("\"")
+            pynutil.insert('integer_part: "')
+            + ((cardinal | (root + cardinal) | decimal_number | (root + decimal_number)) + mixed)
+            + pynutil.insert('"')
             + pynutil.insert(NEMO_SPACE)
         )
         denominator_component = (
-            pynutil.insert("denominator: \"")
+            pynutil.insert('denominator: "')
             + (cardinal | (root + cardinal) | decimal_number | (root + decimal_number))
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
         )
         numerator_component = (
-            pynutil.insert("numerator: \"")
+            pynutil.insert('numerator: "')
             + (cardinal | (root + cardinal) | decimal_number | (root + decimal_number))
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
         )
 
         # 3/4, 1 3/4, 1と3/4, -3/4, -1 3/4, 1と3/4, √1と3/4 and any combination of root number, cardinal number and decimal number
@@ -99,18 +101,14 @@ class FractionFst(GraphFst):
             )
             + denominator_component
             + pynutil.insert(NEMO_SPACE)
-            + pynutil.insert("morphosyntactic_features: \"")
+            + pynutil.insert('morphosyntactic_features: "')
             + morphemes
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
             + pynutil.insert(NEMO_SPACE)
             + numerator_component
         )
 
-        optional_sign = (
-            pynutil.insert("negative: \"")
-            + (pynini.accep("マイナス") | pynini.cross("-", "マイナス"))
-            + pynutil.insert("\"")
-        )
+        optional_sign = pynutil.insert('negative: "') + sign + pynutil.insert('"')
 
         self.graph = (graph_fraction_slash | graph_fraction_word).optimize()
         graph_fraction_slash_sigh = pynini.closure(optional_sign + pynutil.insert(NEMO_SPACE), 0, 1) + self.graph
