@@ -71,31 +71,7 @@ MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
-MINUS = pynini.union(" ಋಣಾತ್ಮಕ ", " ಋಣಾತ್ಮಕ ").optimize()
-
-
-def capitalized_input_graph(
-    graph: 'pynini.FstLike', original_graph_weight: float = None, capitalized_graph_weight: float = None
-) -> 'pynini.FstLike':
-    """
-    Allow graph input to be capitalized, e.g. for ITN)
-
-    Args:
-        graph: FstGraph
-        original_graph_weight: weight to add to the original `graph`
-        capitalized_graph_weight: weight to add to the capitalized graph
-    """
-    capitalized_graph = pynini.compose(TO_LOWER + NEMO_SIGMA, graph).optimize()
-
-    if original_graph_weight is not None:
-        graph = pynutil.add_weight(graph, weight=original_graph_weight)
-
-    if capitalized_graph_weight is not None:
-        capitalized_graph = pynutil.add_weight(capitalized_graph, weight=capitalized_graph_weight)
-
-    graph |= capitalized_graph
-    return graph
-
+MINUS = " ಋಣಾತ್ಮಕ "
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     """

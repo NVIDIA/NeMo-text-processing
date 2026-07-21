@@ -727,6 +727,7 @@ class CardinalFst(GraphFst):
         graph_no_commas = graph_without_leading_zeros | cardinal_with_leading_zeros
 
         # COMMA-SEPARATED NUMBERS (strict validation)
+        
         delete_comma = pynutil.delete(",")
 
         def exactly_n_digits(n):
