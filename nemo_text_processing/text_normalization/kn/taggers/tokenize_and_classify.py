@@ -27,19 +27,7 @@ from nemo_text_processing.text_normalization.kn.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.kn.taggers.cardinal import CardinalFst
-
-# from nemo_text_processing.text_normalization.hi.taggers.date import DateFst
-# from nemo_text_processing.text_normalization.hi.taggers.decimal import DecimalFst
-# from nemo_text_processing.text_normalization.hi.taggers.electronic import ElectronicFst
-# from nemo_text_processing.text_normalization.hi.taggers.fraction import FractionFst
-# from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFst
-# from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
-# from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.kn.taggers.punctuation import PunctuationFst
-
-# from nemo_text_processing.text_normalization.hi.taggers.telephone import TelephoneFst
-# from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
-# from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.kn.taggers.word import WordFst
 
 
@@ -69,68 +57,31 @@ class ClassifyFst(GraphFst):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
         far_file = None
+        
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
                 cache_dir,
-                f"hi_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
+                f"kn_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
             )
+        
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logging.info(f"Creating ClassifyFst grammars.")
-
+        
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
-
-            # decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
-            # decimal_graph = decimal.fst
-
-            # fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
-            # fraction_graph = fraction.fst
-
-            # date = DateFst(cardinal=cardinal)
-            # date_graph = date.fst
-
-            # timefst = TimeFst(cardinal=cardinal)
-            # time_graph = timefst.fst
-
-            # ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
-            # ordinal_graph = ordinal.fst
-
-            # measure = MeasureFst(cardinal=cardinal, decimal=decimal, ordinal=ordinal, input_case=input_case)
-            # measure_graph = measure.fst
-
-            # money = MoneyFst(cardinal=cardinal)
-            # money_graph = money.fst
-
-            # whitelist_graph = WhiteListFst(
-            #     input_case=input_case, deterministic=deterministic, input_file=whitelist
-            # ).fst
 
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
 
-            # telephone = TelephoneFst()
-            # telephone_graph = telephone.fst
-
-            # electronic = ElectronicFst(deterministic=deterministic)
-            # electronic_graph = electronic.fst
-
             classify = (
-                # pynutil.add_weight(whitelist_graph, 1.01)|
+                
                 pynutil.add_weight(cardinal_graph, 1.1)
-                # | pynutil.add_weight(decimal_graph, 1.1)
-                # | pynutil.add_weight(fraction_graph, 1.1)
-                # | pynutil.add_weight(date_graph, 1.1)
-                # | pynutil.add_weight(time_graph, 1.1)
-                # | pynutil.add_weight(measure_graph, 1.1)
-                # | pynutil.add_weight(money_graph, 1.1)
-                # | pynutil.add_weight(telephone_graph, 1.1)
-                # | pynutil.add_weight(ordinal_graph, 1.1)
-                # | pynutil.add_weight(electronic_graph, 1.1)
+                
             )
 
             word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst

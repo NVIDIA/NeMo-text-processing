@@ -34,35 +34,6 @@ NEMO_ALL_DIGIT = pynini.union(NEMO_KN_DIGIT, NEMO_DIGIT).optimize()
 NEMO_ALL_ZERO = pynini.union("೦", "0").optimize()
 NEMO_ALL_NON_ZERO = pynini.union(NEMO_KN_NON_ZERO, "1", "2", "3", "4", "5", "6", "7", "8", "9").optimize()
 
-KN_ONDUVARE = "ಒಂದೂವರೆ"  # 1.5
-KN_ERADUVARE = "ಎರಡೂವರೆ"  # 2.5
-KN_KAALU = "ಕಾಲು"  # quarter more (1.25)
-KN_VARE = "ವರೆ"  # half more (X.5)
-KN_MUKKALU = "ಮುಕ್ಕಾಲು"
-
-# Kannada decimal representations
-KN_POINT_FIVE = ".೫"  # .5
-KN_ONE_POINT_FIVE = "೧.೫"  # 1.5
-KN_TWO_POINT_FIVE = "೨.೫"  # 2.5
-KN_DECIMAL_25 = ".೨೫"  # .25
-KN_DECIMAL_75 = ".೭೫"  # .75
-
-# Arabic/English decimal representations
-EN_POINT_FIVE = ".5"
-EN_ONE_POINT_FIVE = "1.5"
-EN_TWO_POINT_FIVE = "2.5"
-EN_DECIMAL_25 = ".25"
-EN_DECIMAL_75 = ".75"
-
-# Combined Kannada and English decimal patterns
-POINT_FIVE = pynini.union(KN_POINT_FIVE, EN_POINT_FIVE).optimize()
-ONE_POINT_FIVE = pynini.union(KN_ONE_POINT_FIVE, EN_ONE_POINT_FIVE).optimize()
-TWO_POINT_FIVE = pynini.union(KN_TWO_POINT_FIVE, EN_TWO_POINT_FIVE).optimize()
-DECIMAL_25 = pynini.union(KN_DECIMAL_25, EN_DECIMAL_25).optimize()
-DECIMAL_75 = pynini.union(KN_DECIMAL_75, EN_DECIMAL_75).optimize()
-
-# Symbol constants
-KN_BY = "ಬಾಯಿ"
 LOWERCASE_X = "x"
 UPPERCASE_X = "X"
 ASTERISK = "*"

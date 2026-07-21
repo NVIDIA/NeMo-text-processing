@@ -26,7 +26,7 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
-        self.optional_sign = pynini.cross("negative: \"true\"", "minus ")
+        self.optional_sign = pynini.cross("negative: \"true\"", "ಋಣಾತ್ಮಕ ")
         if not deterministic:
             self.optional_sign |= pynini.cross("negative: \"true\"", "negative ")
             self.optional_sign |= pynini.cross("negative: \"true\"", "dash ")

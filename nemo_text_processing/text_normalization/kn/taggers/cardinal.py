@@ -69,10 +69,8 @@ class CardinalFst(GraphFst):
         # Helper for deleting zeros
         delete_zero = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
 
-        # ============================================================
         # HUNDREDS (100-999)
         # Using contracted forms: ನೂರ/ನೂರು, ಐನೂರ/ಐನೂರು, ಒಂಬೈನೂರ/ಒಂಬೈನೂರು
-        # ============================================================
         hundreds = pynini.string_file(get_abs_path("data/numbers/hundreds.tsv"))
         self.hundreds = hundreds
         suffix_u = pynutil.insert("ು")
@@ -88,10 +86,8 @@ class CardinalFst(GraphFst):
         graph_hundreds.optimize()
         self.graph_hundreds = graph_hundreds
 
-        # ============================================================
         # THOUSANDS (1000-99999) - ಸಾವಿರ/ಸಾವಿರದ
         # Standalone: ಸಾವಿರ | With remainder: ಸಾವಿರದ
-        # ============================================================
         suffix_thousand_standalone = pynutil.insert(" ಸಾವಿರ")
         suffix_thousand_genitive = pynutil.insert(" ಸಾವಿರದ")
 
@@ -131,9 +127,7 @@ class CardinalFst(GraphFst):
         graph_ten_thousands.optimize()
         self.graph_ten_thousands = graph_ten_thousands
 
-        # ============================================================
         # LAKHS (100000-9999999) - ಲಕ್ಷ/ಲಕ್ಷದ
-        # ============================================================
         suffix_lakh_standalone = pynutil.insert(" ಲಕ್ಷ")
         suffix_lakh_genitive = pynutil.insert(" ಲಕ್ಷದ")
 
@@ -182,10 +176,8 @@ class CardinalFst(GraphFst):
         graph_ten_lakhs.optimize()
         self.graph_ten_lakhs = graph_ten_lakhs
 
-        # ============================================================
         # CRORES (10000000-999999999) - ಕೋಟಿ/ಕೋಟಿಯ
         # Note: ಕೋಟಿ ends in vowel, so genitive is ಕೋಟಿಯ (not ಕೋಟಿದ)
-        # ============================================================
         suffix_crore_standalone = pynutil.insert(" ಕೋಟಿ")
         suffix_crore_genitive = pynutil.insert(" ಕೋಟಿಯ")
 
@@ -246,11 +238,9 @@ class CardinalFst(GraphFst):
         graph_ten_crores.optimize()
         self.graph_ten_crores = graph_ten_crores
 
-        # ============================================================
         # HUNDRED CRORES and above (10^9+)
         # Instead of ಅರಬ್/ಖರಬ್, use natural Kannada: ನೂರು ಕೋಟಿ, ಸಾವಿರ ಕೋಟಿ
-        # ============================================================
-
+        
         # Combined graph for any crore remainder (1 to 99,99,99,999)
         graph_crore_remainder = (
             digit
@@ -707,9 +697,7 @@ class CardinalFst(GraphFst):
         )
         graph_ten_lakh_crores.optimize()
 
-        # ============================================================
         # FINAL GRAPH COMPOSITION
-        # ============================================================
         graph_without_leading_zeros = (
             digit
             | zero
@@ -738,9 +726,7 @@ class CardinalFst(GraphFst):
         # Full graph including leading zeros (without commas)
         graph_no_commas = graph_without_leading_zeros | cardinal_with_leading_zeros
 
-        # ============================================================
         # COMMA-SEPARATED NUMBERS (strict validation)
-        # ============================================================
         delete_comma = pynutil.delete(",")
 
         def exactly_n_digits(n):

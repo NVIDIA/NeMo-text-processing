@@ -15,18 +15,6 @@
 from nemo_text_processing.text_normalization.kn.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.kn.verbalizers.cardinal import CardinalFst
 
-# from nemo_text_processing.text_normalization.hi.verbalizers.date import DateFst
-# from nemo_text_processing.text_normalization.hi.verbalizers.decimal import DecimalFst
-# from nemo_text_processing.text_normalization.hi.verbalizers.electronic import ElectronicFst
-# from nemo_text_processing.text_normalization.hi.verbalizers.fraction import FractionFst
-# from nemo_text_processing.text_normalization.hi.verbalizers.measure import MeasureFst
-# from nemo_text_processing.text_normalization.hi.verbalizers.money import MoneyFst
-# from nemo_text_processing.text_normalization.hi.verbalizers.ordinal import OrdinalFst
-# from nemo_text_processing.text_normalization.hi.verbalizers.telephone import TelephoneFst
-# from nemo_text_processing.text_normalization.hi.verbalizers.time import TimeFst
-# from nemo_text_processing.text_normalization.kn.verbalizers.whitelist import WhiteListFst
-
-
 class VerbalizeFst(GraphFst):
     """
     Composes other verbalizer grammars.
@@ -46,16 +34,6 @@ class VerbalizeFst(GraphFst):
 
         graph = (
             cardinal_graph
-            # | decimal_graph
-            # | fraction_graph
-            # | date_graph
-            # | time_graph
-            # | measure_graph
-            # | money_graph
-            # | ordinal_graph
-            # | whitelist_graph
-            # | telephone_graph
-            # | electronic_graph
         )
 
         self.fst = graph
