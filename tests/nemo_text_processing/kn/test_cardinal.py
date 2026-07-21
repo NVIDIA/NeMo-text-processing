@@ -25,7 +25,7 @@ class TestCardinal:
     normalizer = Normalizer(
         input_case='cased', lang='kn', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=False
     )
-   
+
     @parameterized.expand(parse_test_case_file('kn/data_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit

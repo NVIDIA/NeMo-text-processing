@@ -240,7 +240,7 @@ class CardinalFst(GraphFst):
 
         # HUNDRED CRORES and above (10^9+)
         # Instead of ಅರಬ್/ಖರಬ್, use natural Kannada: ನೂರು ಕೋಟಿ, ಸಾವಿರ ಕೋಟಿ
-        
+
         # Combined graph for any crore remainder (1 to 99,99,99,999)
         graph_crore_remainder = (
             digit

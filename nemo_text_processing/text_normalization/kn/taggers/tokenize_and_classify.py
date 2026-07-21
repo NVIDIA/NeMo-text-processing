@@ -57,7 +57,7 @@ class ClassifyFst(GraphFst):
         super().__init__(name="tokenize_and_classify", kind="classify", deterministic=deterministic)
 
         far_file = None
-        
+
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
@@ -65,24 +65,20 @@ class ClassifyFst(GraphFst):
                 cache_dir,
                 f"kn_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
             )
-        
+
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logging.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logging.info(f"Creating ClassifyFst grammars.")
-        
+
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
 
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
 
-            classify = (
-                
-                pynutil.add_weight(cardinal_graph, 1.1)
-                
-            )
+            classify = pynutil.add_weight(cardinal_graph, 1.1)
 
             word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
 
