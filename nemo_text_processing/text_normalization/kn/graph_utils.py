@@ -14,7 +14,6 @@
 
 import logging
 import os
-import string
 from pathlib import Path
 from typing import Dict
 
@@ -27,51 +26,24 @@ NEMO_CHAR = utf8.VALID_UTF8_CHAR
 NEMO_DIGIT = byte.DIGIT
 
 NEMO_KN_DIGIT = pynini.union("೦", "೧", "೨", "೩", "೪", "೫", "೬", "೭", "೮", "೯").optimize()
-NEMO_KN_NON_ZERO = pynini.union("೧", "೨", "೩", "೪", "೫", "೬", "೭", "೮", "೯").optimize()
-NEMO_KN_ZERO = "೦"
+
 # Combined Kannada and Arabic digits for graphs that need to accept both
 NEMO_ALL_DIGIT = pynini.union(NEMO_KN_DIGIT, NEMO_DIGIT).optimize()
 NEMO_ALL_ZERO = pynini.union("೦", "0").optimize()
-NEMO_ALL_NON_ZERO = pynini.union(NEMO_KN_NON_ZERO, "1", "2", "3", "4", "5", "6", "7", "8", "9").optimize()
 
-LOWERCASE_X = "x"
-UPPERCASE_X = "X"
-ASTERISK = "*"
-HYPHEN = "-"
-SLASH = "/"
-COMMA = ","
-PERIOD = "."
-HI_PERIOD = "।"
-
-NEMO_LOWER = pynini.union(*string.ascii_lowercase).optimize()
-NEMO_UPPER = pynini.union(*string.ascii_uppercase).optimize()
-NEMO_ALPHA = pynini.union(NEMO_LOWER, NEMO_UPPER).optimize()
-NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_SPACE = " "
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00a0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
-TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(string.ascii_uppercase, string.ascii_lowercase)])
-TO_UPPER = pynini.invert(TO_LOWER)
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
-delete_zero_or_one_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 0, 1))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
-delete_preserve_order = pynini.closure(
-    pynutil.delete(" preserve_order: true")
-    | (pynutil.delete(" field_order: \"") + NEMO_NOT_QUOTE + pynutil.delete("\""))
-)
-
 
 MIN_NEG_WEIGHT = -0.0001
-MIN_POS_WEIGHT = 0.0001
-INPUT_CASED = "cased"
-INPUT_LOWER_CASED = "lower_cased"
-MINUS = " ಋಣಾತ್ಮಕ "
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     """
