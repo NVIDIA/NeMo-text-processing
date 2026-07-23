@@ -142,8 +142,8 @@ class MeasureFst(GraphFst):
             | pynini.string_file(get_abs_path("data/address/special_characters.tsv"))
             | pynini.string_file(get_abs_path("data/telephone/number.tsv"))
         ).optimize()
-        # Letter to transliterated word mapping (A -> ए, B -> बी, ...)
         letter_to_word = pynini.string_file(get_abs_path("data/address/letters.tsv"))
+        letter_to_word = capitalized_input_graph(letter_to_word)
         address_keywords_hi = pynini.string_file(get_abs_path("data/address/context.tsv"))
 
         # English address keywords with Hindi translation (case-insensitive)
