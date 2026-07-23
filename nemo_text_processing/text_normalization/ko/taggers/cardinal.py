@@ -273,7 +273,7 @@ class CardinalFst(GraphFst):
             graph_1_to_99,
             graph_zero,
         ).optimize()
-        
+
         # ----------------------------
         # Context-based digit-by-digit reading
         # e.g., 번호는 0987654321 -> 번호는 영구팔칠육오사삼이일
@@ -285,9 +285,7 @@ class CardinalFst(GraphFst):
 
         # Exclude 0 from graph_digit and force 0 -> 영.
         # This avoids ambiguity if digit.tsv has another mapping for 0.
-        graph_digit_one_to_nine = (
-            pynini.difference(NEMO_DIGIT, "0") @ graph_digit
-        ).optimize()
+        graph_digit_one_to_nine = (pynini.difference(NEMO_DIGIT, "0") @ graph_digit).optimize()
 
         serial_digit = pynini.union(
             pynini.cross("0", "영"),
@@ -308,9 +306,7 @@ class CardinalFst(GraphFst):
             + serial_digit
             + pynini.closure(serial_separator, 0, 1)
             + serial_digit
-            + pynini.closure(
-                pynini.closure(serial_separator, 0, 1) + serial_digit
-            )
+            + pynini.closure(pynini.closure(serial_separator, 0, 1) + serial_digit)
         ).optimize()
 
         serial_signal = pynini.string_map(
@@ -325,13 +321,9 @@ class CardinalFst(GraphFst):
         ).optimize()
 
         serial_case = (
-            pynutil.insert('integer: "')
-            + serial_signal
-            + serial_space
-            + serial_body
-            + pynutil.insert('"')
+            pynutil.insert('integer: "') + serial_signal + serial_space + serial_body + pynutil.insert('"')
         ).optimize()
-        
+
         # ----------------------------
         # Native counting + counters
         # e.g., 3개, 2명, 10살
