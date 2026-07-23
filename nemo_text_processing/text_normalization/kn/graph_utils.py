@@ -73,7 +73,6 @@ def convert_space(fst) -> 'pynini.FstLike':
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
 
-
 class GraphFst:
     """
     Base class for all grammar fsts.

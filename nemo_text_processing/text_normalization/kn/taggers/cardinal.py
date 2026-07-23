@@ -37,7 +37,7 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
-        # ---------- base tables ----------
+        #   base tables  
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         teens_ties = pynini.union(
@@ -58,7 +58,7 @@ class CardinalFst(GraphFst):
         delete_zero = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
         EMPTY = pynini.accep("")  # epsilon, used when no zeros are deleted
 
-        # ---------- suffixes (each defined once) ----------
+        #   suffixes (each defined once)  
         suf_thousand = pynutil.insert(" ಸಾವಿರ")
         suf_thousand_gen = pynutil.insert(" ಸಾವಿರದ")
         suf_lakh = pynutil.insert(" ಲಕ್ಷ")
@@ -70,7 +70,7 @@ class CardinalFst(GraphFst):
         suf_lakh_crore = pynutil.insert(" ಲಕ್ಷ ಕೋಟಿ")
         suf_lakh_crore_gen = pynutil.insert(" ಲಕ್ಷ ಕೋಟಿಯ")
 
-        # ---------- generic scale builder ----------
+        # generic scale builder 
         # remainders: list of (graph, width) smallest -> largest, width = #digits it spans.
         # Returns (standalone_branch, remainder_union) so callers can reuse either piece.
         def scale_parts(coeff, num_zeros, suf_standalone, suf_gen, remainders):
@@ -87,7 +87,7 @@ class CardinalFst(GraphFst):
             standalone, with_rem = scale_parts(coeff, num_zeros, suf_standalone, suf_gen, remainders)
             return (standalone | with_rem).optimize()
 
-        # ---------- hundreds (special: standalone appends ು, no scale word) ----------
+        #  hundreds (special: standalone appends ು, no scale word) 
         graph_hundreds = (
             hundreds + (delete_zero ** 2) + pynutil.insert("ು")   # 500 -> ಐನೂರು
             | hundreds + delete_zero + insert_space + digit         # 501 -> ಐನೂರ ಒಂದು
@@ -98,7 +98,7 @@ class CardinalFst(GraphFst):
         # remainder lists (each extends the previous one)
         rem_thousand = [(digit, 1), (teens_ties, 2), (graph_hundreds, 3)]
 
-        # ---------- thousands / ten-thousands ----------
+        # thousands / ten-thousands 
         th_standalone, th_rem = scale_parts(digit, 3, suf_thousand, suf_thousand_gen, rem_thousand)
         tth_standalone, tth_rem = scale_parts(teens_and_ties, 3, suf_thousand, suf_thousand_gen, rem_thousand)
         graph_thousands = (th_standalone | th_rem).optimize()
@@ -108,7 +108,7 @@ class CardinalFst(GraphFst):
 
         rem_lakh = rem_thousand + [(graph_thousands, 4), (graph_ten_thousands, 5)]
 
-        # ---------- lakhs / ten-lakhs ----------
+        #   lakhs / ten-lakhs  
         l_standalone, l_rem = scale_parts(digit, 5, suf_lakh, suf_lakh_gen, rem_lakh)
         tl_standalone, tl_rem = scale_parts(teens_and_ties, 5, suf_lakh, suf_lakh_gen, rem_lakh)
         graph_lakhs = (l_standalone | l_rem).optimize()
@@ -129,14 +129,14 @@ class CardinalFst(GraphFst):
             | graph_ten_lakhs
         ).optimize()
 
-        # ---------- crores / ten-crores / hundred-crores ----------
+        #   crores / ten-crores / hundred-crores  
         graph_crores = scale(digit, 7, suf_crore, suf_crore_gen, rem_crore)
         graph_ten_crores = scale(teens_and_ties, 7, suf_crore, suf_crore_gen, rem_crore)
         graph_hundred_crores = scale(graph_hundreds, 7, suf_crore, suf_crore_gen, rem_crore)
         self.graph_crores = graph_crores
         self.graph_ten_crores = graph_ten_crores
 
-        # ---------- big crore scales (10^10 .. 10^13) ----------
+        #   big crore scales (10^10 .. 10^13)  
         # part (b): reuse the remainder-variant coefficient graphs, then append ಕೋಟಿ.
         # `with_sub_rem` adds a full sub-crore remainder branch (1..99,99,999) after ಕೋಟಿಯ.
         def append_crore(coeff_remainder, with_sub_rem):
@@ -161,7 +161,7 @@ class CardinalFst(GraphFst):
         part_a = scale(teens_and_ties, 12, suf_lakh_crore, suf_lakh_crore_gen, rem_crore)
         graph_ten_lakh_crores = (part_a | append_crore(tl_rem, with_sub_rem=True)).optimize()
 
-        # ---------- final composition (unchanged) ----------
+        #   final composition (unchanged)  
         graph_without_leading_zeros = pynini.union(
             digit, zero, teens_and_ties,
             graph_hundreds, graph_thousands, graph_ten_thousands,

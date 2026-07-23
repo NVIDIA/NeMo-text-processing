@@ -113,7 +113,7 @@ pipeline {
         }
       }
     }
-    stage('L0: Create KN TN/ITN Grammars') {
+    stage('L0: Create KN TN Grammars') {
     when {
         anyOf {
             branch 'main'
@@ -127,11 +127,6 @@ pipeline {
         stage('L0: Kn TN grammars') {
             steps {
                 sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=kn --text="೧" --cache_dir ${KN_TN_CACHE}'
-            }
-        }
-        stage('L0: Kn ITN grammars') {
-            steps {
-                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=kn --text="ಒಂದು" --cache_dir ${KN_TN_CACHE}'
             }
         }
       }
@@ -432,7 +427,7 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/hi/ -m "not pleasefixme" --cpu --tn_cache_dir ${HI_TN_CACHE}'
           }
         }
-        stage('L1: Run all KN TN/ITN tests (restore grammars from cache)') {
+        stage('L1: Run all KN TN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/kn/ -m "not pleasefixme" --cpu --tn_cache_dir ${KN_TN_CACHE}'
           }

@@ -15,7 +15,6 @@ import os
 import csv
 import pynini
 
-
 def get_abs_path(rel_path):
     """
     Get absolute path
