@@ -45,6 +45,7 @@ delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
 
 MIN_NEG_WEIGHT = -0.0001
 
+
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     """
     Exports graph as OpenFst finite state archive (FAR) file with given file name and rule name.
@@ -72,6 +73,7 @@ def convert_space(fst) -> 'pynini.FstLike':
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
+
 
 class GraphFst:
     """

@@ -361,9 +361,7 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.kn.verbalizers.post_processing import (
             PostProcessingFst as TNPostProcessingFst,
         )
-        from nemo_text_processing.text_normalization.kn.verbalizers.verbalize import (
-            VerbalizeFst as TNVerbalizeFst
-        )        
+        from nemo_text_processing.text_normalization.kn.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     else:
         raise KeyError(f"Language {args.language} is not defined for export.")
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")
