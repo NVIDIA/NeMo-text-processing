@@ -37,8 +37,13 @@ class TelephoneFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
-        # Separator between digit blocks (e.g., "-" or ".")
-        delete_sep = pynutil.delete("-") | pynutil.delete(".")
+        # Separator between number blocks.
+        delete_sep = pynini.union(
+            pynutil.delete("-"),
+            pynutil.delete("."),
+            pynutil.delete(" "),
+        ).optimize()
+        
         # Optional space inserted between blocks
         insert_block_space = insert_space
 
@@ -63,36 +68,70 @@ class TelephoneFst(GraphFst):
             + delete_space
         )
 
-        # area part: "123-" | "123." | "(123)" [space?] or "(123)-"
-        area_core = three_digits
-        area_part = (
-            (area_core + delete_sep)
-            | (
-                pynutil.delete("(")
-                + area_core
-                + pynutil.delete(")")
-                + pynini.closure(pynutil.delete(" "), 0, 1)
-                + pynini.closure(delete_sep, 0, 1)
-            )
-        ) + insert_block_space
+        # First block may contain 2 or 3 digits.
+        # Examples: 02, 031, 043, 010
+        first_block = pynini.union(
+            two_digits,
+            three_digits,
+        ).optimize()
 
-        # 2) allow 3 **or 4** digits in the middle block (to support 010-3713-7050)
-        mid = pynini.union(three_digits, four_digits)
-        last4 = four_digits
+        # Middle block may contain 3 or 4 digits.
+        # Examples: 123, 1234
+        middle_block = pynini.union(
+            three_digits,
+            four_digits,
+        ).optimize()
 
-        # consume '-' or '.' between middle and last blocks
-        intl_mobile_local = (
-            two_digits
-            + pynini.closure(pynutil.delete(" ") | delete_sep, 0, 1)
-            + insert_space
-            + four_digits
+        # Plain telephone form:
+        #   02-1234-5678
+        plain_first_part = (
+            first_block
             + delete_sep
+<<<<<<< HEAD
             + insert_space
             + four_digits
         )
 
         number_part_core = (area_part + mid + delete_sep + insert_block_space + last4 | intl_mobile_local).optimize()
 
+=======
+            + insert_block_space
+        ).optimize()
+
+        # Parenthesized telephone form:
+        #   (010)1234-5678
+        parenthesized_first_part = (
+            pynutil.delete("(")
+            + first_block
+            + pynutil.delete(")")
+            + pynini.closure(
+                pynutil.delete(" ")
+                | pynutil.delete("-")
+                | pynutil.delete("."),
+                0,
+                1,
+            )
+            + insert_block_space
+        ).optimize()
+
+        first_part = pynini.union(
+            plain_first_part,
+            parenthesized_first_part,
+        ).optimize()
+
+        # Standard telephone layout:
+        #   2 or 3 digits
+        #   followed by 3 or 4 digits
+        #   followed by 4 digits
+        number_part_core = (
+            first_part
+            + middle_block
+            + delete_sep
+            + insert_block_space
+            + four_digits
+        ).optimize()
+        
+>>>>>>> 613cdac9 (Address Korean TN review feedback)
         number_part = pynutil.insert('number_part: "') + number_part_core + pynutil.insert('"')
 
         # final graph: with or without country code

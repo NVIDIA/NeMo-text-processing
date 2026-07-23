@@ -86,7 +86,6 @@ class ClassifyFst(GraphFst):
             telephone = TelephoneFst(deterministic=deterministic)
             measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
             electronic = ElectronicFst(cardinal=cardinal, deterministic=deterministic)
-            serial = SerialFst(deterministic=deterministic)
 
             classify = pynini.union(
                 pynutil.add_weight(cardinal.fst, 1.1),
@@ -102,7 +101,6 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist.fst, 1.1),
                 pynutil.add_weight(telephone.fst, 1.1),
                 pynutil.add_weight(electronic.fst, 1.11),
-                pynutil.add_weight(serial.fst, 1.05),
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
