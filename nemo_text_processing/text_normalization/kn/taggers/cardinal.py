@@ -74,11 +74,11 @@ class CardinalFst(GraphFst):
         # remainders: list of (graph, width) smallest -> largest, width = #digits it spans.
         # Returns (standalone_branch, remainder_union) so callers can reuse either piece.
         def scale_parts(coeff, num_zeros, suf_standalone, suf_gen, remainders):
-            standalone = coeff + (delete_zero ** num_zeros) + suf_standalone
+            standalone = coeff + (delete_zero**num_zeros) + suf_standalone
             with_rem = None
             for rem_graph, width in remainders:
                 zeros = num_zeros - width
-                middle = (delete_zero ** zeros) if zeros > 0 else EMPTY
+                middle = (delete_zero**zeros) if zeros > 0 else EMPTY
                 branch = coeff + middle + suf_gen + insert_space + rem_graph
                 with_rem = branch if with_rem is None else with_rem | branch
             return standalone, with_rem
@@ -89,9 +89,9 @@ class CardinalFst(GraphFst):
 
         # hundreds (special: standalone appends ು, no scale word)
         graph_hundreds = (
-            hundreds + (delete_zero ** 2) + pynutil.insert("ು")   # 500 -> ಐನೂರು
-            | hundreds + delete_zero + insert_space + digit         # 501 -> ಐನೂರ ಒಂದು
-            | hundreds + insert_space + teens_ties                  # 523 -> ಐನೂರ ...
+            hundreds + (delete_zero**2) + pynutil.insert("ು")  # 500 -> ಐನೂರು
+            | hundreds + delete_zero + insert_space + digit  # 501 -> ಐನೂರ ಒಂದು
+            | hundreds + insert_space + teens_ties  # 523 -> ಐನೂರ ...
         ).optimize()
         self.graph_hundreds = graph_hundreds
 
@@ -120,11 +120,11 @@ class CardinalFst(GraphFst):
 
         # any sub-crore remainder 1..99,99,999, read as a 7-digit field (handles leading zeros)
         sub_crore_rem = (
-            (delete_zero ** 6) + digit
-            | (delete_zero ** 5) + teens_and_ties
-            | (delete_zero ** 4) + graph_hundreds
-            | (delete_zero ** 3) + graph_thousands
-            | (delete_zero ** 2) + graph_ten_thousands
+            (delete_zero**6) + digit
+            | (delete_zero**5) + teens_and_ties
+            | (delete_zero**4) + graph_hundreds
+            | (delete_zero**3) + graph_thousands
+            | (delete_zero**2) + graph_ten_thousands
             | delete_zero + graph_lakhs
             | graph_ten_lakhs
         ).optimize()
@@ -140,7 +140,7 @@ class CardinalFst(GraphFst):
         # part (b): reuse the remainder-variant coefficient graphs, then append ಕೋಟಿ.
         # `with_sub_rem` adds a full sub-crore remainder branch (1..99,99,999) after ಕೋಟಿಯ.
         def append_crore(coeff_remainder, with_sub_rem):
-            g = coeff_remainder + (delete_zero ** 7) + suf_crore
+            g = coeff_remainder + (delete_zero**7) + suf_crore
             if with_sub_rem:
                 g |= coeff_remainder + suf_crore_gen + insert_space + sub_crore_rem
             return g
@@ -202,9 +202,7 @@ class CardinalFst(GraphFst):
             + exactly_n_digits(3)
         )
         comma_number = western_format | indian_format
-        cardinal_with_commas = pynutil.add_weight(
-            pynini.compose(comma_number, graph_without_leading_zeros), 0.1
-        )
+        cardinal_with_commas = pynutil.add_weight(pynini.compose(comma_number, graph_without_leading_zeros), 0.1)
 
         final_graph = graph_no_commas | cardinal_with_commas
         self.final_graph = final_graph.optimize()
