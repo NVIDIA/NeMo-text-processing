@@ -87,14 +87,6 @@ class TelephoneFst(GraphFst):
         plain_first_part = (
             first_block
             + delete_sep
-<<<<<<< HEAD
-            + insert_space
-            + four_digits
-        )
-
-        number_part_core = (area_part + mid + delete_sep + insert_block_space + last4 | intl_mobile_local).optimize()
-
-=======
             + insert_block_space
         ).optimize()
 
@@ -131,7 +123,6 @@ class TelephoneFst(GraphFst):
             + four_digits
         ).optimize()
         
->>>>>>> 613cdac9 (Address Korean TN review feedback)
         number_part = pynutil.insert('number_part: "') + number_part_core + pynutil.insert('"')
 
         # final graph: with or without country code
