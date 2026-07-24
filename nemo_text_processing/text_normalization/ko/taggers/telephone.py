@@ -43,7 +43,7 @@ class TelephoneFst(GraphFst):
             pynutil.delete("."),
             pynutil.delete(" "),
         ).optimize()
-        
+
         # Optional space inserted between blocks
         insert_block_space = insert_space
 
@@ -84,11 +84,7 @@ class TelephoneFst(GraphFst):
 
         # Plain telephone form:
         #   02-1234-5678
-        plain_first_part = (
-            first_block
-            + delete_sep
-            + insert_block_space
-        ).optimize()
+        plain_first_part = (first_block + delete_sep + insert_block_space).optimize()
 
         # Parenthesized telephone form:
         #   (010)1234-5678
@@ -97,9 +93,7 @@ class TelephoneFst(GraphFst):
             + first_block
             + pynutil.delete(")")
             + pynini.closure(
-                pynutil.delete(" ")
-                | pynutil.delete("-")
-                | pynutil.delete("."),
+                pynutil.delete(" ") | pynutil.delete("-") | pynutil.delete("."),
                 0,
                 1,
             )
@@ -115,14 +109,8 @@ class TelephoneFst(GraphFst):
         #   2 or 3 digits
         #   followed by 3 or 4 digits
         #   followed by 4 digits
-        number_part_core = (
-            first_part
-            + middle_block
-            + delete_sep
-            + insert_block_space
-            + four_digits
-        ).optimize()
-        
+        number_part_core = (first_part + middle_block + delete_sep + insert_block_space + four_digits).optimize()
+
         number_part = pynutil.insert('number_part: "') + number_part_core + pynutil.insert('"')
 
         # final graph: with or without country code
