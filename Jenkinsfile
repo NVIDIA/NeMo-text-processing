@@ -30,6 +30,7 @@ pipeline {
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
     HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-5'
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-25-6'
+    TA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-21-26-0'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
