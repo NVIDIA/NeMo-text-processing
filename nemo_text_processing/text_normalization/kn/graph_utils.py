@@ -38,13 +38,11 @@ NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 
-
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
 
 MIN_NEG_WEIGHT = -0.0001
-
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     """
@@ -60,7 +58,6 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     exporter.close()
     logging.info(f'Created {file_name}')
 
-
 def convert_space(fst) -> 'pynini.FstLike':
     """
     Converts space to nonbreaking space.
@@ -73,7 +70,6 @@ def convert_space(fst) -> 'pynini.FstLike':
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
-
 
 class GraphFst:
     """

@@ -13,9 +13,7 @@
 # limitations under the License.
 import csv
 import os
-
 import pynini
-
 
 def get_abs_path(rel_path):
     """
