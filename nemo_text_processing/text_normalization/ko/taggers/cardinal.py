@@ -301,14 +301,11 @@ class CardinalFst(GraphFst):
 
         # Require at least three digits.
         serial_body = (
-            serial_digit
-            + pynini.closure(serial_separator, 0, 1)
-            + serial_digit
-            + pynini.closure(serial_separator, 0, 1)
+            (serial_digit + pynini.closure(serial_separator, 0, 1)) ** 2
             + serial_digit
             + pynini.closure(pynini.closure(serial_separator, 0, 1) + serial_digit)
         ).optimize()
-
+        
         serial_signal = pynini.string_map(
             [
                 ("번호는", "번호는 "),
@@ -320,7 +317,7 @@ class CardinalFst(GraphFst):
             ]
         ).optimize()
 
-        serial_case = (
+        self.serial = (
             pynutil.insert('integer: "') + serial_signal + serial_space + serial_body + pynutil.insert('"')
         ).optimize()
 
@@ -369,7 +366,7 @@ class CardinalFst(GraphFst):
         signed_integer = (minus_prefix | plus_prefix).ques + integer_token
 
         # Prefer accounting-form first, then signed form
-        final_graph = serial_case | paren_negative | signed_integer | counter_case
+        final_graph = self.serial | paren_negative | signed_integer | counter_case
 
         # Wrap with class tokens and finalize
         final_graph = self.add_tokens(final_graph)
