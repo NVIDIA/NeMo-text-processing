@@ -52,13 +52,5 @@ class VerbalizeFst(GraphFst):
         date = DateFst(deterministic=deterministic)
         date_graph = date.fst
 
-        graph = (
-            cardinal_graph
-            | decimal_graph
-            | fraction_graph
-            | money_graph
-            | measure_graph
-            | time_graph
-            | date_graph
-        )
+        graph = cardinal_graph | decimal_graph | fraction_graph | money_graph | measure_graph | time_graph | date_graph
         self.fst = graph

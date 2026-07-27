@@ -13,13 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.ar.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_NOT_QUOTE,
-    GraphFst,
-    delete_space,
-)
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.ar.graph_utils import NEMO_DIGIT, NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class TimeFst(GraphFst):
@@ -47,9 +43,7 @@ class TimeFst(GraphFst):
             delete_space
             + pynutil.insert(":")
             + (minute @ add_leading_zero_to_double_digit)
-            + pynini.closure(
-                delete_space + pynutil.insert(":") + (second @ add_leading_zero_to_double_digit), 0, 1
-            )
+            + pynini.closure(delete_space + pynutil.insert(":") + (second @ add_leading_zero_to_double_digit), 0, 1)
         )
         graph_h = hour
         graph_hms = hour @ add_leading_zero_to_double_digit + graph_minutes_seconds

@@ -14,6 +14,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
@@ -22,7 +24,6 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -50,7 +51,9 @@ class TimeFst(GraphFst):
         labels_minute_single = [str(x) for x in range(1, 10)]
         labels_minute_double = [str(x) for x in range(10, 60)]
 
-        delete_leading_zero_to_double_digit = (pynini.closure(pynutil.delete("0"), 0, 1) | (NEMO_DIGIT - "0")) + NEMO_DIGIT
+        delete_leading_zero_to_double_digit = (
+            pynini.closure(pynutil.delete("0"), 0, 1) | (NEMO_DIGIT - "0")
+        ) + NEMO_DIGIT
 
         graph_hour = pynini.union(*labels_hour)
 

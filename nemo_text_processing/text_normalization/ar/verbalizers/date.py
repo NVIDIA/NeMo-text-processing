@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
@@ -20,7 +22,6 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     delete_preserve_order,
 )
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 class DateFst(GraphFst):

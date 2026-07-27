@@ -112,9 +112,7 @@ class CardinalFst(GraphFst):
         # ---- reusable building blocks (values 1-999) ----
         # a full 3-digit period (001-999) with internal leading zeros removed
         period_nonzero = (
-            pynutil.delete("00") + graph_digit
-            | pynutil.delete("0") + graph_two_digits
-            | graph_all_hundreds
+            pynutil.delete("00") + graph_digit | pynutil.delete("0") + graph_two_digits | graph_all_hundreds
         )
         # trailing 3-digit remainder: either all zeros (nothing) or " و<words>"
         units_remainder = pynutil.delete("000") | (insert_space + insert_and + period_nonzero)
@@ -158,20 +156,11 @@ class CardinalFst(GraphFst):
             | pynutil.add_weight(hundreds_count_singular + pynutil.insert(" ألف"), 0.02)
         )
         # 6-digit remainder after the millions group (000001 .. 999999)
-        block6_nonzero = (
-            pynutil.delete("000") + period_nonzero
-            | thousand_group_padded + units_remainder
-        )
+        block6_nonzero = pynutil.delete("000") + period_nonzero | thousand_group_padded + units_remainder
         million_remainder = pynutil.delete("000000") | (insert_space + insert_and + block6_nonzero)
         graph_millions = million_group + million_remainder
 
-        self.graph = (
-            graph_zero
-            | graph_all
-            | graph_all_hundreds
-            | graph_thousands
-            | graph_millions
-        )
+        self.graph = graph_zero | graph_all | graph_all_hundreds | graph_thousands | graph_millions
 
         #  remove leading zeros
         leading_zeros = pynini.closure(pynini.cross("0", ""))

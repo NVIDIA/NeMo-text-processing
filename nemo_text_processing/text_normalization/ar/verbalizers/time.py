@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -21,7 +23,6 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     delete_preserve_order,
 )
 from nemo_text_processing.text_normalization.ar.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -56,14 +57,16 @@ class TimeFst(GraphFst):
         mas_3_10 = pynini.string_file(get_abs_path("data/number/3_10mas.tsv"))
         graph_13_19 = pynini.string_file(get_abs_path("data/number/13_19.tsv"))
         time_zone_graph = pynini.invert(
-            convert_space(
-                pynini.union(*[x[1] for x in load_labels(get_abs_path("data/time/time_zone.tsv"))])
-            )
+            convert_space(pynini.union(*[x[1] for x in load_labels(get_abs_path("data/time/time_zone.tsv"))]))
         )
         number_verbalization = cardinal_tagger.graph
 
         # hour -> feminine ordinal; midnight hour "0" reads as الثانية عشرة
-        hour = pynutil.delete('hours: "') + (pynini.cross("0", "12") | pynini.closure(NEMO_DIGIT, 1)) + pynutil.delete('"')
+        hour = (
+            pynutil.delete('hours: "')
+            + (pynini.cross("0", "12") | pynini.closure(NEMO_DIGIT, 1))
+            + pynutil.delete('"')
+        )
         hour_verbalized = pynutil.add_weight(hour @ ordinals, weight=0.001)
 
         # minutes: 3-10 -> plural دقائق, 12-19 -> teens + دقيقة, else -> cardinal + دقيقة
@@ -123,7 +126,9 @@ class TimeFst(GraphFst):
         )
 
         minute_verbalized = (
-            (minute_plural | minute_13_19 | pynutil.add_weight(minute_singular, 0.001)) @ feminize_unit @ nominative_tens
+            (minute_plural | minute_13_19 | pynutil.add_weight(minute_singular, 0.001))
+            @ feminize_unit
+            @ nominative_tens
         )
 
         # constrain suffix to the known suffix.tsv values (not an open NEMO_NOT_QUOTE
@@ -156,7 +161,9 @@ class TimeFst(GraphFst):
             + pynutil.delete('"')
         )
         second_verbalized = (
-            (second_plural | second_13_19 | pynutil.add_weight(second_singular, 0.001)) @ feminize_unit @ nominative_tens
+            (second_plural | second_13_19 | pynutil.add_weight(second_singular, 0.001))
+            @ feminize_unit
+            @ nominative_tens
         )
 
         # agreement fixes for 1/2 minute and second

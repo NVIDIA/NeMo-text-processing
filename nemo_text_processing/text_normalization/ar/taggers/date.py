@@ -13,14 +13,10 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.ar.graph_utils import (
-    NEMO_CHAR,
-    NEMO_DIGIT,
-    GraphFst,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.ar.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.ar.graph_utils import NEMO_CHAR, NEMO_DIGIT, GraphFst, insert_space
+from nemo_text_processing.text_normalization.ar.utils import get_abs_path, load_labels
 
 delete_leading_zero = (pynutil.delete("0") | (NEMO_DIGIT - "0")) + NEMO_DIGIT
 
@@ -111,13 +107,15 @@ class DateFst(GraphFst):
             new_graph = day + pynini.cross(sep, " ") + month_number + year_optional
             self.year_hijri = year + pynini.accep(" ") + hijri_suffixes
             graph_year_hijri = pynutil.insert("year: \"") + self.year_hijri + pynutil.insert("\"")
-            graph_dmy_hijri = day + pynini.cross(sep, " ") + month_number_hijri + pynini.cross(sep, " ") + graph_year_hijri
+            graph_dmy_hijri = (
+                day + pynini.cross(sep, " ") + month_number_hijri + pynini.cross(sep, " ") + graph_year_hijri
+            )
             graph_dmy |= new_graph
             graph_dmy |= graph_dmy_hijri
 
         # full day.month.year with a dot separator; the year is required so that
         # two-component decimals (e.g. "1.5") are not misread as a date
-        year_only_4digit = pynutil.insert("year: \"") + ((NEMO_DIGIT ** 4) @ year) + pynutil.insert("\"")
+        year_only_4digit = pynutil.insert("year: \"") + ((NEMO_DIGIT**4) @ year) + pynutil.insert("\"")
         graph_dmy |= day + pynini.cross(".", " ") + month_number + pynini.cross(".", " ") + year_only
 
         # month + year, spelled ("نوفمبر 2010") and numeric ("12-2019");
