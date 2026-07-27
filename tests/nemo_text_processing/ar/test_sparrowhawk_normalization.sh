@@ -64,6 +64,16 @@ testTNMoney() {
   runtest $input
 }
 
+testTNTime() {
+  input=$TEST_DIR/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
+
+testTNDate() {
+  input=$TEST_DIR/data_text_normalization/test_cases_date.txt
+  runtest $input
+}
+
 # Remove all command-line arguments
 shift $#
 
