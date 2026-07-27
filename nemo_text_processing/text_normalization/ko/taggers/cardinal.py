@@ -305,7 +305,7 @@ class CardinalFst(GraphFst):
             + serial_digit
             + pynini.closure(pynini.closure(serial_separator, 0, 1) + serial_digit)
         ).optimize()
-        
+
         serial_signal = pynini.string_map(
             [
                 ("번호는", "번호는 "),

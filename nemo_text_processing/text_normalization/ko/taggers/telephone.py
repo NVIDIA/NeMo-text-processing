@@ -39,7 +39,7 @@ class TelephoneFst(GraphFst):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
         # Separator between number blocks.
         delete_sep = pynutil.delete(pynini.union("-", ".", " ")).optimize()
-        
+
         # Optional space inserted between blocks
         insert_block_space = insert_space
 
