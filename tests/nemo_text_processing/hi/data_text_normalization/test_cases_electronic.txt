@@ -1,50 +1,50 @@
-gmail.com~जीमेल डॉट कॉम
-yahoo.com~याहू डॉट कॉम
-hotmail.com~हॉटमेल डॉट कॉम
-google.com~गूगल डॉट कॉम
-kumaar.org~के यू एम ए ए आर डॉट ऑर्ग
-kumaar.info~के यू एम ए ए आर डॉट इन्फो
-kumar@gmail.com~के यू एम ए आर एट जीमेल डॉट कॉम
-robin@hotmail.com~रॉबिन एट हॉटमेल डॉट कॉम
-kapil@live.com~के ए पी आई एल एट लाइव डॉट कॉम
-sneha@live.com~एस एन ई एच ए एट लाइव डॉट कॉम
-mayank@google.com~एम ए वाई ए एन के एट गूगल डॉट कॉम
-charu@yahoo.com~सी एच ए आर यू एट याहू डॉट कॉम
-john20@yahoo.com~जे ओ एच एन दो शून्य एट याहू डॉट कॉम
-vivaan62@gmail.com~वी आई वी ए ए एन छह दो एट जीमेल डॉट कॉम
-viaan15@kumaar.com~वी आई ए ए एन एक पाँच एट के यू एम ए ए आर डॉट कॉम
-ltaa12@gmail.com~एल टी ए ए एक दो एट जीमेल डॉट कॉम
-kristen11@hotmail.com~के आर आई एस टी ई एन एक एक एट हॉटमेल डॉट कॉम
-dsmith@yahoo.com~डी एस एम आई टी एच एट याहू डॉट कॉम
-hgarza@gmail.com~एच जी ए आर ज़ेड ए एट जीमेल डॉट कॉम
-qhill@yahoo.com~क्यू एच आई एल एल एट याहू डॉट कॉम
-green-turner.org~ग्रीन हाइफ़न टी यू आर एन ई आर डॉट ऑर्ग
-sharma-badami.com~एस एच ए आर एम ए हाइफ़न बी ए डी ए एम आई डॉट कॉम
-osborne-gross.com~ओ एस बी ओ आर एन ई हाइफ़न जी आर ओ एस एस डॉट कॉम
-lucero-stevenson.net~एल यू सी ई आर ओ हाइफ़न एस टी ई वी ई एन एस ओ एन डॉट नेट
-https://google.com/~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश गूगल डॉट कॉम फॉरवर्ड स्लैश
-https://github.com/~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश गिटहब डॉट कॉम फॉरवर्ड स्लैश
-https://wikipedia.org/~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश विकिपीडिया डॉट ऑर्ग फॉरवर्ड स्लैश
-https://amazon.com/~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश अमेज़ोन डॉट कॉम फॉरवर्ड स्लैश
-www.google.com~डब्ल्यू डब्ल्यू डब्ल्यू डॉट गूगल डॉट कॉम
-https://www.ndtv.com~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश डब्ल्यू डब्ल्यू डब्ल्यू डॉट एन डी टी वी डॉट कॉम
-https://www.rbi.org.in/~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश डब्ल्यू डब्ल्यू डब्ल्यू डॉट आर बी आई डॉट ऑर्ग डॉट इन फॉरवर्ड स्लैश
-https://www.amity.edu~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश डब्ल्यू डब्ल्यू डब्ल्यू डॉट एमिटी डॉट ई डी यू
-https://example.com/blog/~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश ई एक्स ए एम पी एल ई डॉट कॉम फॉरवर्ड स्लैश ब्लॉग फॉरवर्ड स्लैश
-https://example.com/about.html~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश ई एक्स ए एम पी एल ई डॉट कॉम फॉरवर्ड स्लैश अबाउट डॉट एच टी एम एल
-https://example.com/search.php~एच टी टी पी एस कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश ई एक्स ए एम पी एल ई डॉट कॉम फॉरवर्ड स्लैश सर्च डॉट पी एच पी
-http://ati.edu~एच टी टी पी कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश ए टी आई डॉट ई डी यू
-http://gcu.edu~एच टी टी पी कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश जी सी यू डॉट ई डी यू
-http://pima.edu~एच टी टी पी कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश पी आई एम ए डॉट ई डी यू
-bamu.nic.in/~बी ए एम यू डॉट एन आई सी डॉट इन फॉरवर्ड स्लैश
-bieap.gov.in/~बी आई ई ए पी डॉट जी ओ वी डॉट इन फॉरवर्ड स्लैश
-www.sharda.ac.in~डब्ल्यू डब्ल्यू डब्ल्यू डॉट शारदा डॉट ए सी डॉट इन
-C:\Users\HP\Desktop\~सी कोलन बैकवर्ड स्लैश यूज़र्स बैकवर्ड स्लैश एच पी बैकवर्ड स्लैश डेस्कटॉप बैकवर्ड स्लैश
-C:\Users\HP\Downloads\~सी कोलन बैकवर्ड स्लैश यूज़र्स बैकवर्ड स्लैश एच पी बैकवर्ड स्लैश डाउनलोड्स बैकवर्ड स्लैश
-C:\Users\HP\Documents\Zoom~सी कोलन बैकवर्ड स्लैश यूज़र्स बैकवर्ड स्लैश एच पी बैकवर्ड स्लैश डॉक्युमेंट्स बैकवर्ड स्लैश ज़ेड ओ ओ एम
-/home/desktop~फॉरवर्ड स्लैश होम फॉरवर्ड स्लैश डेस्कटॉप
-/etc/apache~फॉरवर्ड स्लैश ई टी सी फॉरवर्ड स्लैश अपाची
-/var/www~फॉरवर्ड स्लैश वार फॉरवर्ड स्लैश डब्ल्यू डब्ल्यू डब्ल्यू
+gmail.com~gmail डॉट com
+yahoo.com~yahoo डॉट com
+hotmail.com~hotmail डॉट com
+google.com~google डॉट com
+kumaar.org~kumaar डॉट org
+kumaar.info~kumaar डॉट info
+kumar@gmail.com~kumar एट gmail डॉट com
+robin@hotmail.com~robin एट hotmail डॉट com
+kapil@live.com~kapil एट live डॉट com
+sneha@live.com~sneha एट live डॉट com
+mayank@google.com~mayank एट google डॉट com
+charu@yahoo.com~charu एट yahoo डॉट com
+john20@yahoo.com~john दो शून्य एट yahoo डॉट com
+vivaan62@gmail.com~vivaan छह दो एट gmail डॉट com
+viaan15@kumaar.com~viaan एक पाँच एट kumaar डॉट com
+ltaa12@gmail.com~ltaa एक दो एट gmail डॉट com
+kristen11@hotmail.com~kristen एक एक एट hotmail डॉट com
+dsmith@yahoo.com~dsmith एट yahoo डॉट com
+hgarza@gmail.com~hgarza एट gmail डॉट com
+qhill@yahoo.com~qhill एट yahoo डॉट com
+green-turner.org~green हाइफ़न turner डॉट org
+sharma-badami.com~sharma हाइफ़न badami डॉट com
+osborne-gross.com~osborne हाइफ़न gross डॉट com
+lucero-stevenson.net~lucero हाइफ़न stevenson डॉट net
+https://google.com/~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश google डॉट com फॉरवर्ड स्लैश
+https://github.com/~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश github डॉट com फॉरवर्ड स्लैश
+https://wikipedia.org/~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश wikipedia डॉट org फॉरवर्ड स्लैश
+https://amazon.com/~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश amazon डॉट com फॉरवर्ड स्लैश
+www.google.com~www डॉट google डॉट com
+https://www.ndtv.com~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश www डॉट ndtv डॉट com
+https://www.rbi.org.in/~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश www डॉट rbi डॉट org डॉट in फॉरवर्ड स्लैश
+https://www.amity.edu~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश www डॉट amity डॉट edu
+https://example.com/blog/~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश example डॉट com फॉरवर्ड स्लैश blog फॉरवर्ड स्लैश
+https://example.com/about.html~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश example डॉट com फॉरवर्ड स्लैश about डॉट html
+https://example.com/search.php~https कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश example डॉट com फॉरवर्ड स्लैश search डॉट php
+http://ati.edu~http कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश ati डॉट edu
+http://gcu.edu~http कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश gcu डॉट edu
+http://pima.edu~http कोलन फॉरवर्ड स्लैश फॉरवर्ड स्लैश pima डॉट edu
+bamu.nic.in/~bamu डॉट nic डॉट in फॉरवर्ड स्लैश
+bieap.gov.in/~bieap डॉट gov डॉट in फॉरवर्ड स्लैश
+www.sharda.ac.in~www डॉट sharda डॉट ac डॉट in
+C:\Users\HP\Desktop~C कोलन बैकवर्ड स्लैश Users बैकवर्ड स्लैश HP बैकवर्ड स्लैश Desktop
+C:\Users\HP\Downloads~C कोलन बैकवर्ड स्लैश Users बैकवर्ड स्लैश HP बैकवर्ड स्लैश Downloads
+C:\Users\HP\Documents\Zoom~C कोलन बैकवर्ड स्लैश Users बैकवर्ड स्लैश HP बैकवर्ड स्लैश Documents बैकवर्ड स्लैश Zoom
+/home/desktop~फॉरवर्ड स्लैश home फॉरवर्ड स्लैश desktop
+/etc/apache~फॉरवर्ड स्लैश etc फॉरवर्ड स्लैश apache
+/var/www~फॉरवर्ड स्लैश var फॉरवर्ड स्लैश www
 192.168.1.1~एक नौ दो डॉट एक छह आठ डॉट एक डॉट एक
 10.0.0.1~एक शून्य डॉट शून्य डॉट शून्य डॉट एक
 83.54.245.61~आठ तीन डॉट पाँच चार डॉट दो चार पाँच डॉट छह एक
@@ -53,8 +53,13 @@ C:\Users\HP\Documents\Zoom~सी कोलन बैकवर्ड स्ल�
 255.255.255.0~दो पाँच पाँच डॉट दो पाँच पाँच डॉट दो पाँच पाँच डॉट शून्य
 आईपी पता है 192.168.1.1~आईपी पता है एक नौ दो डॉट एक छह आठ डॉट एक डॉट एक
 आईपी एड्रेस 10.0.0.1~आईपी एड्रेस एक शून्य डॉट शून्य डॉट शून्य डॉट एक
-ip address 192.168.1.1~आई पी एड्रेस एक नौ दो डॉट एक छह आठ डॉट एक डॉट एक
-ip address 10.0.0.1~आई पी एड्रेस एक शून्य डॉट शून्य डॉट शून्य डॉट एक
-report.pdf~आर ई पी ओ आर टी डॉट पी डी एफ
-photo.jpg~पी एच ओ टी ओ डॉट जे पी जी
-data.csv~डेटा डॉट सी एस वी
+ip address 192.168.1.1~ip address एक नौ दो डॉट एक छह आठ डॉट एक डॉट एक
+ip address 10.0.0.1~ip address एक शून्य डॉट शून्य डॉट शून्य डॉट एक
+report.pdf~report डॉट pdf
+photo.jpg~photo डॉट jpg
+data.csv~data डॉट csv
+robinson.org~robinson डॉट org
+anand@gmail.com~anand एट gmail डॉट com
+Al₂(SO₄)₃~ए एल दो ओपन ब्रेकेट एस ओ चार क्लोज़ ब्रेकेट तीन
+C₂H₄~सी दो एच चार
+home/desktop~home फॉरवर्ड स्लैश desktop

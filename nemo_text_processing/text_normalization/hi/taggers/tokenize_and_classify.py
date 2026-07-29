@@ -35,6 +35,8 @@ from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.hi.taggers.roman import RomanFst
+from nemo_text_processing.text_normalization.hi.taggers.serial import SerialFst
 from nemo_text_processing.text_normalization.hi.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
@@ -98,7 +100,12 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
             ordinal_graph = ordinal.fst
 
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal, ordinal=ordinal, input_case=input_case)
+            serial = SerialFst(cardinal=cardinal, deterministic=deterministic)
+            serial_graph = serial.fst
+
+            measure = MeasureFst(
+                cardinal=cardinal, decimal=decimal, ordinal=ordinal, serial=serial, input_case=input_case
+            )
             measure_graph = measure.fst
 
             money = MoneyFst(cardinal=cardinal)
@@ -111,6 +118,12 @@ class ClassifyFst(GraphFst):
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
 
+            word = WordFst(punctuation=punctuation, deterministic=deterministic)
+            word_graph = word.fst
+
+            roman = RomanFst(deterministic=deterministic)
+            roman_graph = roman.fst
+
             telephone = TelephoneFst()
             telephone_graph = telephone.fst
 
@@ -121,7 +134,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(fraction_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.05)
                 | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
@@ -129,9 +142,9 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(electronic_graph, 1.1)
+                | pynutil.add_weight(serial_graph, 1.11)
+                | pynutil.add_weight(roman_graph, 1.1)
             )
-
-            word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             punct = pynini.closure(
