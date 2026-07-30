@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,24 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pynini
 import pytest
 from parameterized import parameterized
 
-from nemo_text_processing.inverse_text_normalization.te.taggers.tokenize_and_classify import ClassifyFst
-from nemo_text_processing.inverse_text_normalization.te.verbalizers.verbalize_final import VerbalizeFinalFst
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 
-from ..utils import parse_test_case_file
+from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestCardinal:
-    tagger = ClassifyFst(overwrite_cache=True).fst
-    verbalizer = VerbalizeFinalFst().fst
+    inverse_normalizer = InverseNormalizer(lang='te', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     @parameterized.expand(parse_test_case_file('te/data_inverse_text_normalization/test_cases_cardinal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
-        tagged = pynini.shortestpath(test_input @ self.tagger).string()
-        pred = pynini.shortestpath(tagged @ self.verbalizer).string()
+        pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
