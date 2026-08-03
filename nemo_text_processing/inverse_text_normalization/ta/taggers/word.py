@@ -20,10 +20,6 @@ from nemo_text_processing.inverse_text_normalization.ta.graph_utils import NEMO_
 
 
 class WordFst(GraphFst):
-    """
-    Finite state transducer for classifying plain tokens, that do not belong to any special class. This can be considered as the default class.
-        e.g. नींद -> tokens { name: "नींद" }
-    """
 
     def __init__(self):
         super().__init__(name="word", kind="classify")

@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.import pynini
+
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ta.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.ta.graph_utils import GraphFst, graph_digit
 
 
 class CardinalFst(GraphFst):
@@ -22,13 +23,6 @@ class CardinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="cardinal", kind="verbalize")
 
-        graph = (
-            pynutil.delete('integer: "')
-            + pynini.closure(
-                pynini.union("௦", "௧", "௨", "௩", "௪", "௫", "௬", "௭", "௮", "௯", " ", "இ", "ன்", "ல்"),
-                1,
-            )
-            + pynutil.delete('"')
-        )
+        graph = pynutil.delete('integer: "') + pynini.closure(graph_digit | pynini.accep(" "), 1) + pynutil.delete('"')
 
         self.fst = self.delete_tokens(graph).optimize()

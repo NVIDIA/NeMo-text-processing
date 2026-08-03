@@ -157,6 +157,7 @@ class InverseNormalizer(Normalizer):
         self.tagger = ClassifyFst(
             cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case
         )
+
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
         self.lang = lang
