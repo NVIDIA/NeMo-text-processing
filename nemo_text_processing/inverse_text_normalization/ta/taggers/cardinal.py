@@ -69,13 +69,9 @@ class CardinalFst(GraphFst):
             nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/lakhs_join.tsv")
         ).invert()
 
-        graph_lakhs_10_99 = pynini.string_file(
-            nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/lakhs_10_99.tsv")
-        ).invert()
+        graph_lakhs_10_99 = graph_teens_and_ties + (pynini.cross(" லட்சம்", "") | pynini.cross(" இலட்சம்", ""))
 
-        graph_lakhs_10_99_join = pynini.string_file(
-            nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/lakhs_10_99_join.tsv")
-        ).invert()
+        graph_lakhs_10_99_join = graph_teens_and_ties + (pynini.cross(" லட்சத்து", "") | pynini.cross(" இலட்சத்து", ""))
 
         graph_crores = pynini.string_file(
             nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/crores.tsv")
@@ -85,13 +81,10 @@ class CardinalFst(GraphFst):
             nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/crores_join.tsv")
         ).invert()
 
-        graph_crores_10_99 = pynini.string_file(
-            nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/crores_10_99.tsv")
-        ).invert()
-
-        graph_crores_10_99_join = pynini.string_file(
-            nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/crores_10_99_join.tsv")
-        ).invert()
+        graph_crore_suffix = pynini.cross(" கோடி", "")
+        graph_crore_join_suffix = pynini.cross(" கோடியே", "")
+        graph_crores_10_99 = graph_teens_and_ties + graph_crore_suffix
+        graph_crores_10_99_join = graph_teens_and_ties + graph_crore_join_suffix
 
         case_graph = pynini.string_file(
             nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/case_suffix.tsv")
@@ -111,40 +104,30 @@ class CardinalFst(GraphFst):
             | pynini.cross("ஒன்பது", "௦௯")
         )
 
-        # 10-99
         self.graph_two_digit = graph_teens_and_ties
 
-        # 100, 200, ... 900
         self.graph_exact_hundreds = graph_hundreds + pynutil.insert("௦௦")
 
-        # 101-109
         graph_hundred_digit = graph_hundreds_join + delete_space + graph_digit_with_zero
 
-        # 110-199, 120-199, ...
         graph_hundred_two_digit = graph_hundreds_join + delete_space + graph_teens_and_ties
 
         self.graph_hundred_with_remainder = graph_hundred_digit | graph_hundred_two_digit
 
-        # 1000, 2000 ... 9000
         self.graph_exact_thousands = graph_thousands + pynutil.insert("௦௦௦")
 
         graph_thousand_digit = graph_thousands_join + pynutil.insert("௦௦") + delete_space + self.graph_single_digit
 
-        # 1010-1099
         graph_thousand_two_digit = graph_thousands_join + pynutil.insert("௦") + delete_space + self.graph_two_digit
 
-        # 1100, 1200 ... 1900
         graph_thousand_hundred = graph_thousands_join + delete_space + self.graph_exact_hundreds
 
-        # 1101-1999 ... 9901-9999
         graph_thousand_hundred_remainder = graph_thousands_join + delete_space + self.graph_hundred_with_remainder
 
         self.graph_thousand_with_remainder = (
             graph_thousand_digit | graph_thousand_two_digit | graph_thousand_hundred | graph_thousand_hundred_remainder
         )
 
-        # 10000 - 99000
-        # =========================
         graph_exact_large_thousands = graph_thousands_10_99 + pynutil.insert("௦௦௦")
 
         graph_large_thousand_digit = (
@@ -169,10 +152,8 @@ class CardinalFst(GraphFst):
             | graph_large_thousand_hundred_remainder
         )
 
-        # 1,00,000 - 9,00,000
         graph_exact_lakhs = graph_lakhs + pynutil.insert("௦௦௦௦௦")
 
-        # 10,00,000 - 99,00,000
         graph_exact_lakhs_10_99 = graph_lakhs_10_99 + pynutil.insert("௦௦௦௦௦")
 
         graph_lakh_digit = graph_lakhs_join + pynutil.insert("௦௦௦௦") + delete_space + self.graph_single_digit
@@ -244,9 +225,6 @@ class CardinalFst(GraphFst):
             graph_exact_lakhs | graph_lakh_remainder | graph_exact_lakhs_10_99 | graph_lakh_10_99_remainder
         )
 
-        # =====================================================
-        # CRORES (1-9)
-
         graph_exact_crores = graph_crores + pynutil.insert("௦௦௦௦௦௦௦")
 
         graph_crore_digit = graph_crores_join + pynutil.insert("௦௦௦௦௦௦") + delete_space + self.graph_single_digit
@@ -296,9 +274,6 @@ class CardinalFst(GraphFst):
             | graph_crore_lakh_10_99_remainder
         )
 
-        # =====================================================
-        # CRORES (10-99)
-
         graph_exact_crores_10_99 = graph_crores_10_99 + pynutil.insert("௦௦௦௦௦௦௦")
 
         graph_crore_10_99_remainder = (
@@ -324,18 +299,15 @@ class CardinalFst(GraphFst):
             graph_exact_crores | graph_crore_remainder | graph_exact_crores_10_99 | graph_crore_10_99_remainder
         )
 
-        # CRORE MULTIPLIERS (>99 CRORES)
-        # =====================================================
-
-        graph_crore_multiplier_base = (
-            self.graph_exact_hundreds
-            | self.graph_hundred_with_remainder
-            | self.graph_exact_thousands
-            | self.graph_thousand_with_remainder
-            | graph_exact_large_thousands
-            | self.graph_large_thousands
-            | self.graph_lakh_numbers
-        )
+        graph_crore_multiplier_base = pynini.union(
+            self.graph_lakh_numbers,
+            self.graph_large_thousands,
+            graph_exact_large_thousands,
+            self.graph_thousand_with_remainder,
+            self.graph_exact_thousands,
+            self.graph_hundred_with_remainder,
+            self.graph_exact_hundreds,
+        ).optimize()
 
         graph_exact_crore_multiplier = (
             graph_crore_multiplier_base + delete_space + pynini.cross("கோடி", "") + pynutil.insert("௦௦௦௦௦௦௦")
@@ -458,19 +430,19 @@ class CardinalFst(GraphFst):
 
         self.graph_large_crore_numbers = graph_exact_crore_multiplier | graph_crore_multiplier_remainder
 
-        graph = (
-            graph_zero
-            | self.graph_single_digit
-            | self.graph_two_digit
-            | self.graph_exact_hundreds
-            | self.graph_hundred_with_remainder
-            | self.graph_exact_thousands
-            | self.graph_thousand_with_remainder
-            | self.graph_large_thousands
-            | self.graph_lakh_numbers
-            | self.graph_crore_numbers
-            | self.graph_large_crore_numbers
-        )
+        graph = pynini.union(
+            self.graph_large_crore_numbers,
+            self.graph_crore_numbers,
+            self.graph_lakh_numbers,
+            self.graph_large_thousands,
+            self.graph_thousand_with_remainder,
+            self.graph_exact_thousands,
+            self.graph_hundred_with_remainder,
+            self.graph_exact_hundreds,
+            self.graph_two_digit,
+            self.graph_single_digit,
+            graph_zero,
+        ).optimize()
 
         self.graph_no_exception = graph.optimize()
 
@@ -480,7 +452,7 @@ class CardinalFst(GraphFst):
                 ("பத்தின்", "௧௦ இன்"),
                 ("பத்தில்", "௧௦ இல்"),
                 ("நூற்றில்", "௧௦௦ இல்"),
-                ("பத்தொன்பதில்", "௧௯ இல்"),
+                ("பத்தொன்பதில்", "௯ இல்"),
             ]
         )
 
@@ -492,4 +464,5 @@ class CardinalFst(GraphFst):
 
         final_graph = self.add_tokens(final_graph)
 
+        self.fst = final_graph.optimize()
         self.fst = final_graph.optimize()

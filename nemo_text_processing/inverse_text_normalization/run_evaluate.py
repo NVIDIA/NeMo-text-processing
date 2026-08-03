@@ -78,7 +78,6 @@ if __name__ == "__main__":
     if args.lang == 'en':
         from nemo_text_processing.inverse_text_normalization.en.clean_eval_data import filter_loaded_data
     file_path = args.input
-    print("Before creating InverseNormalizer")
 
     inverse_normalizer = InverseNormalizer(
         lang=args.lang,
@@ -86,9 +85,6 @@ if __name__ == "__main__":
         overwrite_cache=True,
     )
 
-    print("After creating InverseNormalizer")
-
-    print("Loading training data: " + file_path)
     if args.output_case == "lower_cased":
         to_lower = True
     elif args.output_case == "cased":
@@ -116,42 +112,15 @@ if __name__ == "__main__":
 
     print("Token level evaluation...")
     tokens_per_type = training_data_to_tokens(training_data, category=args.category)
+
     token_accuracy = {}
 
     for token_type in tokens_per_type:
         print("- Token type: " + token_type)
         tokens_un_normalized, tokens_normalized = tokens_per_type[token_type]
-        for i, (inp, out) in enumerate(zip(tokens_normalized, tokens_un_normalized)):
-            if "முப்பத்தி" in inp:
-                print("=" * 80)
-                print("Normalized :", repr(inp))
-                print("Expected   :", repr(out))
-                print("Prediction :", repr(inverse_normalizer.inverse_normalize(inp, verbose=False)))
-                break
         print("  - Data: " + str(len(tokens_normalized)) + " tokens")
 
         tokens_prediction = inverse_normalizer.inverse_normalize_list(tokens_normalized)
-        for inp, pred, label in zip(tokens_normalized, tokens_prediction, tokens_un_normalized):
-            if inp == "இருநூற்று முப்பத்தி நான்காவது":
-                print("=" * 80)
-                print("Normalized :", repr(inp))
-                print("Expected   :", repr(label))
-                print("Prediction :", repr(pred))
-                break
-
-        # Print all failed predictions
-        print("  - Failed cases:")
-        failed = 0
-        for inp, pred, label in zip(tokens_normalized, tokens_prediction, tokens_un_normalized):
-            if pred != label:
-                failed += 1
-                print("=" * 80)
-                print(f"Input     : {inp}")
-                print(f"Expected  : {label}")
-                print(f"Predicted : {pred}")
-
-        if failed == 0:
-            print("  None")
 
         print("  - Denormalized. Evaluating...")
         token_accuracy[token_type] = evaluate(
@@ -161,9 +130,6 @@ if __name__ == "__main__":
         )
         print("  - Accuracy: " + str(token_accuracy[token_type]))
 
-    # =====================================================
-    # FIX: Add these back - they were accidentally removed
-    # =====================================================
     token_count_per_type = {token_type: len(tokens_per_type[token_type][0]) for token_type in tokens_per_type}
 
     token_weighted_accuracy = [
