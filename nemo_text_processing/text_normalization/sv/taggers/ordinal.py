@@ -208,9 +208,7 @@ class OrdinalFst(GraphFst):
             ]
             for filename, article, demonstrative in reference_groups:
                 for written, definite, indefinite in load_labels(get_abs_path(f"data/reference/{filename}")):
-                    optional_dot = (
-                        pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
-                    )
+                    optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
                     unit = pynutil.delete(written) + optional_dot
                     reference = cleaned_graph + delete_space + unit
                     reference_graph |= reference + pynutil.insert(f" {definite}")
