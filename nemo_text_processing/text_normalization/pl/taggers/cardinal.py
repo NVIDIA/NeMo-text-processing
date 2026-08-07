@@ -15,11 +15,11 @@
 from typing import Dict, Iterable
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, delete_space
 from nemo_text_processing.text_normalization.pl.graph_utils import PL_ALPHA
 from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
-from pynini.lib import pynutil
-
 
 CASES = ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]
 DEFAULT_SLOT = "mi_sg_nom"
@@ -212,12 +212,8 @@ class CardinalFst(GraphFst):
         self.graph_dict = self.graphs
         compound_boundary = pynutil.delete("-")
         if not deterministic:
-            compound_boundary += pynini.union(
-                pynutil.insert(""), pynutil.add_weight(pynutil.insert(" "), 0.001)
-            )
-        self.compound = (
-            self.graphs["compound"] + compound_boundary + pynini.closure(PL_ALPHA, 1)
-        ).optimize()
+            compound_boundary += pynini.union(pynutil.insert(""), pynutil.add_weight(pynutil.insert(" "), 0.001))
+        self.compound = (self.graphs["compound"] + compound_boundary + pynini.closure(PL_ALPHA, 1)).optimize()
 
         self.graph = filter_punctuation(self.graphs[DEFAULT_SLOT] | self.zero_all["sg_nom"]).optimize() | self.compound
         if not deterministic:
@@ -279,9 +275,11 @@ class CardinalFst(GraphFst):
         case = _case_for_slot(slot)
         if case == "compound":
             short_input = pynini.closure(NEMO_DIGIT, 1, 3)
-            pad = short_input @ pynini.cdrewrite(
-                pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA
-            ) @ NEMO_DIGIT**3
+            pad = (
+                short_input
+                @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
+                @ NEMO_DIGIT**3
+            )
             return (pad @ group).optimize()
 
         scale_slot = {
@@ -318,9 +316,7 @@ class CardinalFst(GraphFst):
                     | non_one_group + pynutil.insert(" " + forms[f"pl_{case}"] + " ")
                 )
             if not deterministic:
-                factor |= pynutil.add_weight(
-                    pynini.cross("001", "jeden " + forms[f"sg_{case}"] + " "), 0.001
-                )
+                factor |= pynutil.add_weight(pynini.cross("001", "jeden " + forms[f"sg_{case}"] + " "), 0.001)
             factors.append(factor)
 
         padded = (

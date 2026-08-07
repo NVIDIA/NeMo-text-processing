@@ -13,10 +13,11 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 from nemo_text_processing.text_normalization.pl.inflection import inflect_noun
 from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 def _case(slot: str) -> str:

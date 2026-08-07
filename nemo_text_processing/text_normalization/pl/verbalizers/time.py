@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class TimeFst(GraphFst):
@@ -23,20 +24,12 @@ class TimeFst(GraphFst):
         value = pynini.closure(NEMO_NOT_QUOTE, 1)
         hours = pynutil.delete('hours: "') + value + pynutil.delete('"')
         minutes = pynini.closure(
-            delete_space
-            + pynutil.insert(" ")
-            + pynutil.delete('minutes: "')
-            + value
-            + pynutil.delete('"'),
+            delete_space + pynutil.insert(" ") + pynutil.delete('minutes: "') + value + pynutil.delete('"'),
             0,
             1,
         )
         seconds = pynini.closure(
-            delete_space
-            + pynutil.insert(" ")
-            + pynutil.delete('seconds: "')
-            + value
-            + pynutil.delete('"'),
+            delete_space + pynutil.insert(" ") + pynutil.delete('seconds: "') + value + pynutil.delete('"'),
             0,
             1,
         )

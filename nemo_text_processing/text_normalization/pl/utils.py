@@ -22,7 +22,7 @@ def get_abs_path(rel_path):
 
     Args:
         rel_path: relative path to this file
-        
+
     Returns absolute path
     """
     return os.path.dirname(os.path.abspath(__file__)) + '/' + rel_path
@@ -47,6 +47,7 @@ def adjective_inflection(word: str, compound: str = "") -> dict:
     inflect adjectives based on their endings.
     This includes things like ordinals and 'jeden' (1) which inflect like adjectives.
     """
+
     def fill_bare_template(stem, mi_sg, mp_pl, vowel, stem_b="", compound=""):
         if stem_b == "":
             stem_b = stem
@@ -66,6 +67,7 @@ def adjective_inflection(word: str, compound: str = "") -> dict:
             "pl_loc": stem + vowel + "ch",
             "compound": compound,
         }
+
     stem_b = ""
     if word.endswith("en"):
         stem = word[:-2] + "n"

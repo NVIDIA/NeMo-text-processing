@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
 from nemo_text_processing.text_normalization.pl.inflection import (
     load_adjective_abbreviations,
@@ -20,7 +22,6 @@ from nemo_text_processing.text_normalization.pl.inflection import (
     load_inflected_abbreviations,
 )
 from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 def _get_whitelist_graph(input_case: str, filepath: str) -> 'pynini.FstLike':
@@ -33,9 +34,7 @@ def _get_whitelist_graph(input_case: str, filepath: str) -> 'pynini.FstLike':
 class WhiteListFst(GraphFst):
     """Classifies fixed and productively inflected Polish abbreviations."""
 
-    def __init__(
-        self, input_case: str, deterministic: bool = True, input_file: str = None
-    ):
+    def __init__(self, input_case: str, deterministic: bool = True, input_file: str = None):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
 
         graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist.tsv"))
@@ -47,16 +46,10 @@ class WhiteListFst(GraphFst):
         self.inflected_graphs = load_inflected_abbreviations("data/abbreviations.tsv")
         graph |= pynini.union(*self.inflected_graphs.values())
 
-        self.nondeterministic_graphs = load_ambiguous_abbreviations(
-            "data/abbreviations_nondet.tsv"
-        )
-        self.adjective_graphs = load_adjective_abbreviations(
-            "data/abbreviations_adjective_nondet.tsv"
-        )
+        self.nondeterministic_graphs = load_ambiguous_abbreviations("data/abbreviations_nondet.tsv")
+        self.adjective_graphs = load_adjective_abbreviations("data/abbreviations_adjective_nondet.tsv")
         if not deterministic:
-            graph |= pynini.union(
-                *self.nondeterministic_graphs.values(), *self.adjective_graphs.values()
-            )
+            graph |= pynini.union(*self.nondeterministic_graphs.values(), *self.adjective_graphs.values())
 
         if input_file:
             provided = _get_whitelist_graph(input_case, input_file)

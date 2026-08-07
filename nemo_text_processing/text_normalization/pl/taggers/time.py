@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
 
 
 class TimeFst(GraphFst):
@@ -24,13 +25,9 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
 
         hour_numbers = pynini.union(*(str(hour) for hour in range(1, 24)))
-        hours = hour_numbers | pynutil.delete("0") + pynini.union(
-            *(str(hour) for hour in range(1, 10))
-        )
+        hours = hour_numbers | pynutil.delete("0") + pynini.union(*(str(hour) for hour in range(1, 10)))
         minutes = pynini.union(*(f"{minute:02d}" for minute in range(1, 60)))
-        minute_words = (
-            pynutil.delete("0") + cardinal.graphs["mi_sg_nom"]
-        ) | cardinal.graphs["mi_sg_nom"]
+        minute_words = (pynutil.delete("0") + cardinal.graphs["mi_sg_nom"]) | cardinal.graphs["mi_sg_nom"]
 
         def time_graph(hour_slot: str, prefix: 'pynini.FstLike') -> 'pynini.FstLike':
             hour = hours @ ordinal.graphs[hour_slot]

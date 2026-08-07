@@ -25,9 +25,7 @@ from ..utils import parse_test_case_file
 
 class TestWhitelist:
     normalizer = Normalizer(input_case="cased", lang="pl", cache_dir=None, post_process=False)
-    audio_normalizer = NormalizerWithAudio(
-        input_case="cased", lang="pl", cache_dir=None, post_process=False
-    )
+    audio_normalizer = NormalizerWithAudio(input_case="cased", lang="pl", cache_dir=None, post_process=False)
 
     @parameterized.expand(parse_test_case_file("pl/data_text_normalization/test_cases_whitelist.txt"))
     @pytest.mark.run_only_on("CPU")

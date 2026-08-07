@@ -16,6 +16,8 @@ import os
 from typing import Optional
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
@@ -42,7 +44,6 @@ from nemo_text_processing.text_normalization.pl.verbalizers.measure import Measu
 from nemo_text_processing.text_normalization.pl.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.roman import RomanFst as vRomanFst
 from nemo_text_processing.text_normalization.pl.verbalizers.time import TimeFst as vTimeFst
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
@@ -71,9 +72,7 @@ class ClassifyFst(GraphFst):
             date = DateFst(cardinal, ordinal, deterministic=deterministic)
             measure = MeasureFst(cardinal, deterministic=deterministic)
             time = TimeFst(cardinal, ordinal, deterministic=deterministic)
-            whitelist_graph = WhiteListFst(
-                input_case=input_case, deterministic=deterministic, input_file=whitelist
-            )
+            whitelist_graph = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             v_cardinal = vCardinalFst(deterministic=deterministic)
             v_ordinal = vOrdinalFst(deterministic=deterministic)
             v_roman = vRomanFst(deterministic=deterministic)

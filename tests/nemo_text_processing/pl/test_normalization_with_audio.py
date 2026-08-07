@@ -22,9 +22,7 @@ from ..utils import get_test_cases_multiple
 class TestNormalizeWithAudio:
     normalizer = NormalizerWithAudio(input_case="cased", lang="pl", cache_dir=None, post_process=False)
 
-    @parameterized.expand(
-        get_test_cases_multiple("pl/data_text_normalization/test_cases_normalize_with_audio.txt")
-    )
+    @parameterized.expand(get_test_cases_multiple("pl/data_text_normalization/test_cases_normalize_with_audio.txt"))
     @pytest.mark.run_only_on("CPU")
     @pytest.mark.unit
     def test_normalization_with_audio(self, test_input, expected):

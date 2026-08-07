@@ -15,8 +15,9 @@
 from typing import Dict
 
 import pynini
-from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
 
 
 def _load_endings(grammar_file: str) -> Dict[str, str]:
@@ -54,9 +55,7 @@ def inflect_abbreviation(abbreviation: str, word: str, grammar_file: str) -> Dic
     endings = _load_endings(grammar_file)
     lemma_ending = endings["sg_nom"]
     if not abbreviation.endswith(lemma_ending) or not word.endswith(lemma_ending):
-        raise ValueError(
-            f"{abbreviation!r} and {word!r} must share the {lemma_ending!r} ending from {grammar_file}"
-        )
+        raise ValueError(f"{abbreviation!r} and {word!r} must share the {lemma_ending!r} ending from {grammar_file}")
     abbreviation_stem = abbreviation[: -len(lemma_ending)] if lemma_ending else abbreviation
     word_stem = word[: -len(lemma_ending)] if lemma_ending else word
     return {
