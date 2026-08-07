@@ -1,0 +1,87 @@
+
+#! /bin/sh
+
+GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+PROJECT_DIR=${2:-"/workspace/tests"}
+
+runtest () {
+  input=$1
+  echo "INPUT is $input"
+  cd ${GRAMMARS_DIR}
+
+  # read test file
+  while read testcase; do
+    IFS='~' read written spoken <<< $testcase
+    norm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1)
+
+    # trim white space
+    spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    norm_pred="$(echo -e "${norm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+    # input expected actual
+    assertEquals "$written" "$spoken" "$norm_pred"
+  done < "$input"
+}
+
+testTNCardinal() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_cardinal.txt
+  runtest $input
+}
+
+testTNDate() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_date.txt
+  runtest $input
+}
+
+testTNDecimal() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_decimal.txt
+  runtest $input
+}
+
+testTNOrdinal() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
+
+testTNFraction() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
+
+testTNRoman() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_roman.txt
+  runtest $input
+}
+
+testTNTime() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_time.txt
+  runtest $input
+}
+
+testTNMeasure() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_measure.txt
+  runtest $input
+}
+
+testTNMoney() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_money.txt
+  runtest $input
+}
+
+testTNRange() {
+  input=$PROJECT_DIR/vi/data_text_normalization/test_cases_range.txt
+  runtest $input
+}
+
+# testTNTelephone() {
+#   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_telephone.txt
+#   runtest $input
+# }
+
+# testTNElectronic() {
+#   input=$PROJECT_DIR/vi/data_text_normalization/test_cases_electronic.txt
+#   runtest $input
+# }
+
+# Load shUnit2
+. /workspace/shunit2/shunit2 

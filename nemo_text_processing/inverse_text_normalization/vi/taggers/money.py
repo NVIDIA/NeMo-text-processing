@@ -49,13 +49,13 @@ class MoneyFst(GraphFst):
 
         graph_unit_singular = pynutil.insert('currency: "') + convert_space(unit_singular) + pynutil.insert('"')
 
-        add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
+        add_leading_zero_to_double_digit = pynini.union((NEMO_DIGIT + NEMO_DIGIT), (pynutil.insert("0") + NEMO_DIGIT))
 
         # twelve dollars fifty, only after integer
         optional_cents_suffix = pynini.closure(
             delete_extra_space
             + pynutil.insert('fractional_part: "')
-            + (pynutil.add_weight(cardinal_graph @ add_leading_zero_to_double_digit, -0.7) | graph_half)
+            + pynini.union(pynutil.add_weight(cardinal_graph @ add_leading_zero_to_double_digit, -0.7), graph_half)
             + pynutil.insert('"'),
             0,
             1,
@@ -71,6 +71,6 @@ class MoneyFst(GraphFst):
         )
 
         graph_decimal = graph_decimal_final + delete_extra_space + graph_unit_singular + optional_cents_suffix
-        final_graph = graph_integer | graph_decimal
+        final_graph = pynini.union(graph_integer, graph_decimal)
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

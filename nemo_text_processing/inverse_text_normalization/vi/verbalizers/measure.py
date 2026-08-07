@@ -17,10 +17,11 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
-    NEMO_CHAR,
     NEMO_NOT_QUOTE,
+    NEMO_NOT_SPACE,
     GraphFst,
     delete_space,
+    insert_space,
 )
 
 
@@ -37,11 +38,23 @@ class MeasureFst(GraphFst):
     def __init__(self, decimal: GraphFst, cardinal: GraphFst):
         super().__init__(name="measure", kind="verbalize")
         optional_sign = pynini.closure(pynini.cross('negative: "true"', "-"), 0, 1)
-        unit = (
+        # Units that don't need space (time units)
+        no_space_units = pynini.union("s", "ms", "ns", "μs", "h", "min", "%")
+
+        unit_no_space = (
             pynutil.delete("units:")
             + delete_space
             + pynutil.delete('"')
-            + pynini.closure(NEMO_CHAR - " ", 1)
+            + no_space_units
+            + pynutil.delete('"')
+            + delete_space
+        )
+
+        unit_with_space = (
+            pynutil.delete("units:")
+            + delete_space
+            + pynutil.delete('"')
+            + (pynini.closure(NEMO_NOT_SPACE, 1) - no_space_units)
             + pynutil.delete('"')
             + delete_space
         )
@@ -72,13 +85,25 @@ class MeasureFst(GraphFst):
             + pynutil.delete('"')
         )
         optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
-        graph = (
-            (graph_cardinal | graph_decimal)
+        # Graph with no space for time units
+        graph_no_space = (
+            pynini.union(graph_cardinal, graph_decimal)
             + delete_space
             + optional_fractional
-            + pynutil.insert(" ")
-            + unit
+            + unit_no_space
             + delete_space
         )
+
+        # Graph with space for other units
+        graph_with_space = (
+            pynini.union(graph_cardinal, graph_decimal)
+            + delete_space
+            + optional_fractional
+            + insert_space
+            + unit_with_space
+            + delete_space
+        )
+
+        graph = pynini.union(graph_no_space, graph_with_space)
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

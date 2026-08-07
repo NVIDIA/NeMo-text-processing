@@ -15,18 +15,24 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    NEMO_ALL_DIGIT,
+    NEMO_ALL_ZERO,
+    NEMO_DIGIT,
+    GraphFst,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
 
 class CardinalFst(GraphFst):
     """
-      Finite state transducer for classifying cardinals, e.g.
-          -२३ -> cardinal { negative: "true"  integer: "तेइस" } }
-    s
-      Args:
-          deterministic: if True will provide a single transduction option,
-              for False multiple transduction are generated (used for audio-based normalization)
+    Finite state transducer for classifying cardinals, e.g.
+        -२३ -> cardinal { negative: "true"  integer: "तेइस" }
+
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True, lm: bool = False):
@@ -34,11 +40,23 @@ class CardinalFst(GraphFst):
 
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        teens_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+        # Load both Hindi (Devanagari) and English (Arabic) number mappings
+        teens_ties_hi = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+        teens_ties_en = pynini.string_file(get_abs_path("data/numbers/teens_and_ties_en.tsv"))
+        teens_ties = pynini.union(teens_ties_hi, teens_ties_en)
         teens_and_ties = pynutil.add_weight(teens_ties, -0.1)
 
+        self.digit = digit
+        self.zero = zero
+        self.teens_and_ties = teens_and_ties
+
+        # Single digit graph for digit-by-digit reading
+        # e.g., "०७३" -> "शून्य सात तीन"
+        single_digit_graph = digit | zero
+        self.single_digits_graph = single_digit_graph + pynini.closure(insert_space + single_digit_graph)
+
         def create_graph_suffix(digit_graph, suffix, zeros_counts):
-            zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
+            zero = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
             if zeros_counts == 0:
                 return digit_graph + suffix
 
@@ -46,7 +64,7 @@ class CardinalFst(GraphFst):
 
         def create_larger_number_graph(digit_graph, suffix, zeros_counts, sub_graph):
             insert_space = pynutil.insert(" ")
-            zero = pynutil.add_weight(pynutil.delete("०"), -0.1)
+            zero = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
             if zeros_counts == 0:
                 return digit_graph + suffix + insert_space + sub_graph
 
@@ -294,7 +312,13 @@ class CardinalFst(GraphFst):
         graph_ten_shankhs |= create_larger_number_graph(teens_and_ties, suffix_shankhs, 0, graph_ten_padmas)
         graph_ten_shankhs.optimize()
 
-        final_graph = (
+        # Only match exactly 2 digits to avoid interfering with telephone numbers, decimals, etc.
+        # e.g., "०५" -> "शून्य पाँच"
+        single_digit = digit | zero
+        graph_leading_zero = zero + insert_space + single_digit
+        graph_leading_zero = pynutil.add_weight(graph_leading_zero, 0.5)
+
+        graph_without_leading_zeros = (
             digit
             | zero
             | teens_and_ties
@@ -316,8 +340,54 @@ class CardinalFst(GraphFst):
             | graph_shankhs
             | graph_ten_shankhs
         )
+        self.graph_without_leading_zeros = graph_without_leading_zeros.optimize()
+
+        # Handle numbers with leading zeros by reading digit-by-digit
+        # e.g., English/arabic "073" -> "शून्य सात तीन", Hindi/devnagri "००५" -> "शून्य शून्य पाँच"
+        cardinal_with_leading_zeros = pynini.compose(
+            NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph
+        )
+        cardinal_with_leading_zeros = pynutil.add_weight(cardinal_with_leading_zeros, 0.5)
+
+        # Handle large numbers written with digit-group separators.
+        delete_separator = pynutil.delete(",")
+        two_digits = NEMO_ALL_DIGIT + NEMO_ALL_DIGIT
+        three_digits = NEMO_ALL_DIGIT + NEMO_ALL_DIGIT + NEMO_ALL_DIGIT
+        # Indian grouping: 1-2 leading digits, groups of 2, final group of 3.
+        indian_grouping = (
+            pynini.closure(NEMO_ALL_DIGIT, 1, 2)
+            + pynini.closure(delete_separator + two_digits)
+            + delete_separator
+            + three_digits
+        )
+        # International grouping: 1-3 leading digits, one or more groups of 3.
+        western_grouping = pynini.closure(NEMO_ALL_DIGIT, 1, 3) + pynini.closure(delete_separator + three_digits, 1)
+        strip_separators = (indian_grouping | western_grouping).optimize()
+        cardinal_with_separators = pynini.compose(strip_separators, graph_without_leading_zeros).optimize()
+
+        # Full graph including leading zeros - for standalone cardinal matching
+        final_graph = graph_without_leading_zeros | cardinal_with_leading_zeros | cardinal_with_separators
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
+
+        # --- Centralized logic for Address & Serial classes ---
+        # 1-3 digit groups read as cardinals, 4+ digits read digit-by-digit
+        limited_cardinal_graph = (self.digit | self.zero | self.teens_and_ties | self.graph_hundreds).optimize()
+
+        any_digit = pynini.union(
+            NEMO_DIGIT,
+            pynini.project(
+                pynini.union(
+                    pynini.string_file(get_abs_path("data/numbers/digit.tsv")),
+                    pynini.string_file(get_abs_path("data/numbers/zero.tsv")),
+                ),
+                "input",
+            ),
+        ).optimize()
+
+        digitwise_4plus = pynini.compose(any_digit**4 + pynini.closure(any_digit), self.single_digits_graph).optimize()
+
+        self.code_num_graph = (limited_cardinal_graph | digitwise_4plus).optimize()
 
         self.final_graph = final_graph.optimize()
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.final_graph + pynutil.insert("\"")

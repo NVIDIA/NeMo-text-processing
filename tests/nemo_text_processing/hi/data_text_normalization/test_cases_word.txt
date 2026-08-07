@@ -14,3 +14,7 @@
 ~
 झ~झ
 संगीत~संगीत
+This is a sentence.~This is a sentence.
+google~google
+mera email hai~mera email hai
+user@~user@

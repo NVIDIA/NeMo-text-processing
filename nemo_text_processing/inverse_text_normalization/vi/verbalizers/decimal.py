@@ -15,7 +15,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.vi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.vi.graph_utils import (
+    NEMO_NOT_QUOTE,
+    NEMO_SPACE,
+    GraphFst,
+    delete_space,
+)
 
 
 class DecimalFst(GraphFst):
@@ -51,7 +56,7 @@ class DecimalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
         )
-        optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
+        optional_quantity = pynini.closure(pynutil.insert(NEMO_SPACE) + quantity + delete_space, 0, 1)
         graph = optional_integer + optional_fractional + optional_quantity
         self.numbers = graph
         graph = optionl_sign + graph

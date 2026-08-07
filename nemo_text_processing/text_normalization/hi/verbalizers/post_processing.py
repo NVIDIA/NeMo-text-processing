@@ -16,13 +16,15 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_SPACE,
+from nemo_text_processing.text_normalization.hi.graph_utils import (
+    MIN_NEG_WEIGHT,
+    NEMO_CHAR,
     NEMO_SIGMA,
-    delete_space,
     generator_main,
 )
+from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.utils.logging import logger
 
 
@@ -46,68 +48,49 @@ class PostProcessingFst:
             self.fst = pynini.Far(far_file, mode="r")["post_process_graph"]
             logger.info(f'Post processing graph was restored from {far_file}.')
         else:
-            self.set_punct_dict()
             self.fst = self.get_punct_postprocess_graph()
 
             if far_file:
                 generator_main(far_file, {"post_process_graph": self.fst})
 
-    def set_punct_dict(self):
-        self.punct_marks = {
-            "'": [
-                "'",
-                '´',
-                'ʹ',
-                'ʻ',
-                'ʼ',
-                'ʽ',
-                'ʾ',
-                'ˈ',
-                'ˊ',
-                'ˋ',
-                '˴',
-                'ʹ',
-                '΄',
-                '՚',
-                '՝',
-                'י',
-                '׳',
-                'ߴ',
-                'ߵ',
-                'ᑊ',
-                'ᛌ',
-                '᾽',
-                '᾿',
-                '`',
-                '´',
-                '῾',
-                '‘',
-                '’',
-                '‛',
-                '′',
-                '‵',
-                'ꞌ',
-                '＇',
-                '｀',
-                '𖽑',
-                '𖽒',
-            ],
-        }
-
     def get_punct_postprocess_graph(self):
         """
         Returns graph to post process punctuation marks.
 
-        {``} quotes are converted to {"}. Note, if there are spaces around single quote {'}, they will be kept.
-        By default, a space is added after a punctuation mark, and spaces are removed before punctuation marks.
+        By default, spaces are removed before punctuation marks like comma, period, etc.
         """
+        punct_marks_all = PunctuationFst().punct_marks
 
-        remove_space_around_single_quote = pynini.cdrewrite(
-            delete_space, NEMO_NOT_SPACE, NEMO_NOT_SPACE, pynini.closure(NEMO_SIGMA)
+        # Punctuation marks that should NOT have space before them
+        # (most punctuation except quotes, dashes, and opening brackets)
+        quotes = ["'", "\"", "«"]
+        dashes = ["-", "—"]
+        brackets = ["<", "{", "(", r"\["]
+        allow_space_before_punct = quotes + dashes + brackets
+
+        no_space_before_punct = [m for m in punct_marks_all if m not in allow_space_before_punct]
+        # Add Hindi-specific punctuation
+        no_space_before_punct.extend(["।", ",", ".", ";", ":", "!", "?"])
+        # Remove duplicates
+        no_space_before_punct = list(set(no_space_before_punct))
+        no_space_before_punct = pynini.union(*no_space_before_punct)
+
+        delete_space = pynutil.delete(" ")
+
+        # Delete space before no_space_before_punct marks
+        non_punct = pynini.difference(NEMO_CHAR, no_space_before_punct).optimize()
+        graph = (
+            pynini.closure(non_punct)
+            + pynini.closure(
+                no_space_before_punct | pynutil.add_weight(delete_space + no_space_before_punct, MIN_NEG_WEIGHT)
+            )
+            + pynini.closure(non_punct)
         )
-        # this works if spaces in between (good)
-        # delete space between 2 NEMO_NOT_SPACE（left and right to the space) that are with in a content of NEMO_SIGMA
+        graph = pynini.closure(graph).optimize()
 
-        graph = remove_space_around_single_quote.optimize()
+        # Remove space after opening brackets
+        no_space_after_punct = pynini.union(*brackets)
+        no_space_after_punct = pynini.cdrewrite(delete_space, no_space_after_punct, NEMO_SIGMA, NEMO_SIGMA).optimize()
+        graph = pynini.compose(graph, no_space_after_punct).optimize()
 
         return graph

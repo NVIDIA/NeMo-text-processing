@@ -19,96 +19,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.vi.graph_utils import GraphFst, delete_extra_space, delete_space
 from nemo_text_processing.inverse_text_normalization.vi.utils import get_abs_path
 
-graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv")).optimize()
-graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()
-graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).optimize()
-ties_graph = pynini.string_file(get_abs_path("data/numbers/ties.tsv")).optimize()
-
-
-def _get_month_graph():
-    """
-    Transducer for month, e.g. march -> march
-    """
-    month_graph = pynini.string_file(get_abs_path("data/months.tsv")).optimize()
-    return month_graph
-
-
-def _get_ties_graph():
-    """
-    Transducer for 20-99 e.g
-    hai ba -> 23
-    """
-    graph_one = pynini.cross("mốt", "1")
-    graph_four = pynini.cross("tư", "4")
-    graph_five = pynini.cross("lăm", "5")
-    graph_ten = pynini.cross("mươi", "")
-    optional_ten = pynini.closure(delete_space + graph_ten, 0, 1)
-
-    graph = pynini.union(
-        ties_graph + optional_ten + delete_space + (graph_digit | graph_one | graph_four | graph_five),
-        ties_graph + delete_space + graph_ten + pynutil.insert("0"),
-    )
-    return graph
-
-
-def _get_year_graph():
-    """
-    Transducer for year, e.g. hai không hai mươi -> 2020
-    """
-
-    def _get_digits_graph():
-        zero = pynini.cross((pynini.union("linh", "lẻ")), "0")
-        four = pynini.cross("tư", "4")
-        graph = pynini.union(
-            zero + delete_space + (graph_digit | four),
-            graph_zero + delete_space + graph_digit,
-        )
-        graph.optimize()
-        return graph
-
-    def _get_hundreds_graph(graph_ties, graph_digits):
-        graph = (
-            graph_digit
-            + delete_space
-            + pynutil.delete("trăm")
-            + delete_space
-            + (graph_teen | graph_ties | graph_digits)
-        )
-        return graph
-
-    def _get_thousands_graph(graph_ties, graph_digits):
-        graph_hundred_component = (
-            (graph_digit | graph_zero) + delete_space + pynutil.delete("trăm")
-        ) | pynutil.insert("0")
-        graph = (
-            graph_digit
-            + delete_space
-            + pynutil.delete(pynini.union("nghìn", "ngàn"))
-            + delete_space
-            + graph_hundred_component
-            + delete_space
-            + (graph_teen | graph_ties | graph_digits)
-        )
-        return graph
-
-    graph_ties = _get_ties_graph()
-    graph_digits = _get_digits_graph()
-    graph_hundreds = _get_hundreds_graph(graph_ties, graph_digits)
-    graph_thousands = _get_thousands_graph(graph_ties, graph_digits)
-    year_graph = (
-        # 20 19, 40 12, 2012, 2 0 0 5, 2 0 17, 938 - assuming no limit on the year
-        graph_digit
-        + delete_space
-        + (graph_digit | graph_zero)
-        + delete_space
-        + (graph_teen | graph_ties | graph_digits)
-        | graph_thousands
-        | graph_hundreds
-        | (graph_digit + pynutil.insert("0") + delete_space + (graph_ties | graph_digits | graph_teen))
-    )
-    year_graph.optimize()
-    return year_graph
-
 
 class DateFst(GraphFst):
     """
@@ -125,37 +35,140 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
-        year_graph = _get_year_graph()
-        YEAR_WEIGHT = 0.001
-        year_graph = pynutil.add_weight(year_graph, YEAR_WEIGHT)
-        month_graph = _get_month_graph()
 
-        month_graph = pynutil.insert('month: "') + month_graph + pynutil.insert('"')
+        graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv")).optimize()
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()
+        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).optimize()
+        ties_graph = pynini.string_file(get_abs_path("data/numbers/ties.tsv")).optimize()
+
+        # Special digit mappings for Vietnamese
+        graph_one = pynini.cross("mốt", "1")
+        graph_four = pynini.cross("tư", "4")
+        graph_five = pynini.cross("lăm", "5")
+        graph_ten = pynini.cross("mươi", "")
+        optional_ten = pynini.closure(delete_space + graph_ten, 0, 1)
+
+        # Ties graph for 20-99 (e.g., "hai ba" -> "23")
+        graph_ties = pynini.union(
+            ties_graph + optional_ten + delete_space + pynini.union(graph_digit, graph_one, graph_four, graph_five),
+            ties_graph + delete_space + graph_ten + pynutil.insert("0", weight=0.01),
+        )
+
+        # Zero prefix patterns (e.g., "linh năm" -> "05")
+        zero = pynini.cross((pynini.union("linh", "lẻ")), "0")
+        graph_digits = pynini.union(
+            zero + delete_space + pynini.union(graph_digit, graph_four),
+            graph_zero + delete_space + graph_digit,
+        ).optimize()
+
+        # Year components
+        # Hundreds pattern (e.g., "hai trăm mười hai" -> "212")
+        year_hundreds = (
+            graph_digit
+            + delete_space
+            + pynutil.delete("trăm")
+            + delete_space
+            + pynini.union(graph_teen, graph_ties, graph_digits)
+        )
+
+        # Thousands pattern with optional hundreds (e.g., "hai nghìn không ba" -> "2003")
+        year_hundred_component = pynini.union(
+            pynini.union(graph_digit, graph_zero) + delete_space + pynutil.delete("trăm"),
+            pynutil.insert("0", weight=0.01),
+        )
+        year_thousands = (
+            graph_digit
+            + delete_space
+            + pynutil.delete(pynini.union("nghìn", "ngàn"))
+            + delete_space
+            + year_hundred_component
+            + delete_space
+            + pynini.union(graph_teen, graph_ties, graph_digits)
+        )
+
+        # Standard XYYZ pattern (e.g., "hai không một chín" -> "2019")
+        year_standard = (
+            graph_digit
+            + delete_space
+            + pynini.union(graph_digit, graph_zero)
+            + delete_space
+            + pynini.union(graph_teen, graph_ties, graph_digits)
+        )
+
+        # XYZ pattern with implied 0 (e.g., "hai không hai mốt" -> "2021")
+        year_implied_zero = (
+            graph_digit
+            + pynutil.insert("0", weight=0.01)
+            + delete_space
+            + pynini.union(graph_ties, graph_digits, graph_teen)
+        )
+
+        # Digit-by-digit pattern (e.g., "hai không một chín" -> "2019")
+        year_digit_by_digit = (
+            pynini.union(graph_digit, graph_zero)
+            + delete_space
+            + pynini.union(graph_digit, graph_zero)
+            + delete_space
+            + pynini.union(graph_digit, graph_zero)
+            + delete_space
+            + pynini.union(graph_digit, graph_zero)
+        )
+
+        year_graph = pynini.union(
+            year_standard,
+            year_thousands,
+            year_hundreds,
+            year_implied_zero,
+            year_digit_by_digit,
+        ).optimize()
+
+        # Month graph with special handling for "năm" (means "5" in months but "year" in other contexts)
+        month_graph = (
+            pynutil.insert('month: "')
+            + pynini.string_file(get_abs_path("data/months.tsv")).optimize()
+            + pynutil.insert('"')
+        )
         month_exception = pynini.project(pynini.cross("năm", "5"), "input")
         month_graph_exception = (pynini.project(month_graph, "input") - month_exception.arcsort()) @ month_graph
 
         day_graph = pynutil.insert('day: "') + cardinal_graph + pynutil.insert('"')
-        # day_suffix = pynini.union("ngày", "mùng")
-        # optional_day = pynini.closure(day_suffix + delete_space, 0, 1)
-
         graph_month = pynutil.delete("tháng") + delete_space + month_graph_exception
-        graph_year = (
+
+        graph_year = pynutil.add_weight(
             delete_extra_space
             + pynutil.delete("năm")
             + delete_extra_space
             + pynutil.insert('year: "')
-            + pynutil.add_weight(year_graph, -YEAR_WEIGHT)
-            + pynutil.insert('"')
-        )
-        optional_graph_year = pynini.closure(graph_year, 0, 1)
-        graph_my = pynutil.delete("tháng") + delete_space + month_graph + graph_year
-        graph_dmy = (
-            day_graph + delete_space + pynutil.delete("tháng") + delete_extra_space + month_graph + optional_graph_year
-        )
-        graph_year = (
-            pynutil.delete("năm") + delete_extra_space + pynutil.insert('year: "') + year_graph + pynutil.insert('"')
+            + year_graph
+            + pynutil.insert('"'),
+            -0.1,
         )
 
-        final_graph = (graph_dmy | graph_my | graph_month | graph_year) + pynutil.insert(" preserve_order: true")
-        final_graph = self.add_tokens(final_graph)
-        self.fst = final_graph.optimize()
+        # Date pattern combinations
+        # Pattern 1: Day-Month-Year (e.g., "ngày 15 tháng 1 năm 2024")
+        graph_dmy = (
+            day_graph
+            + delete_space
+            + pynutil.delete("tháng")
+            + delete_extra_space
+            + month_graph
+            + pynini.closure(graph_year, 0, 1)
+        )
+
+        # Pattern 2: Month-Year (e.g., "tháng 1 năm 2024")
+        graph_my = pynutil.delete("tháng") + delete_space + month_graph + graph_year
+
+        # Pattern 3: Standalone year (e.g., "năm 2024")
+        graph_year_standalone = pynutil.add_weight(
+            pynutil.delete("năm") + delete_extra_space + pynutil.insert('year: "') + year_graph + pynutil.insert('"'),
+            -0.1,
+        )
+
+        final_graph = pynini.union(
+            graph_dmy,  # Day-Month-Year
+            graph_my,  # Month-Year
+            graph_month,  # Month only
+            graph_year_standalone,  # Year only
+        ) + pynutil.insert(" preserve_order: true")
+
+        self.fst = self.add_tokens(final_graph).optimize()

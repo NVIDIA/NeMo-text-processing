@@ -40,6 +40,7 @@ class OrdinalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-
+        self.numbers = graph
+        graph = graph.optimize()
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
