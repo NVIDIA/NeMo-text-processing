@@ -42,12 +42,8 @@ class TestDate:
         date = DateFst(cardinal, ordinal, deterministic=True)
         assert "mi_sg_nom" in date.graphs
         assert "mi_sg_gen" in date.graphs
-        assert rewrite.one_top_rewrite("10 lutego", date.graphs["mi_sg_nom"]) == (
-            'day: "dziesiąty" month: "lutego"'
-        )
-        assert rewrite.one_top_rewrite("10 lutego", date.graphs["mi_sg_gen"]) == (
-            'day: "dziesiątego" month: "lutego"'
-        )
+        assert rewrite.one_top_rewrite("10 lutego", date.graphs["mi_sg_nom"]) == ('day: "dziesiąty" month: "lutego"')
+        assert rewrite.one_top_rewrite("10 lutego", date.graphs["mi_sg_gen"]) == ('day: "dziesiątego" month: "lutego"')
 
     @pytest.mark.run_only_on("CPU")
     @pytest.mark.unit

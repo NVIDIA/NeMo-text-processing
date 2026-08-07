@@ -14,10 +14,11 @@
 from typing import Dict
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, insert_space
 from nemo_text_processing.text_normalization.pl.graph_utils import all_to_graph
 from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 def complete_paradigm(partial: Dict[str, str], complete: bool = False):
@@ -101,9 +102,11 @@ class OrdinalFst(GraphFst):
                 | cardinal_hundreds + joiner + two_digit
             ).optimize()
             short_input = pynini.closure(NEMO_DIGIT, 1, 3)
-            pad = short_input @ pynini.cdrewrite(
-                pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA
-            ) @ NEMO_DIGIT**3
+            pad = (
+                short_input
+                @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
+                @ NEMO_DIGIT**3
+            )
             self.graphs[slot] = (pad @ three_digit).optimize()
 
         self.graph_dict = self.graphs

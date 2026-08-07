@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space, insert_space
 from nemo_text_processing.text_normalization.pl.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class DateFst(GraphFst):
@@ -33,15 +34,11 @@ class DateFst(GraphFst):
         month_abbr = pynini.string_file(get_abs_path("data/dates/month_abbr.tsv"))
         month_roman = pynini.string_file(get_abs_path("data/dates/months_roman.tsv"))
 
-        year_prefix = (
-            (NEMO_DIGIT - "0") + pynutil.insert("000")
-        ) @ cardinal.graphs["mi_sg_nom"]
+        year_prefix = ((NEMO_DIGIT - "0") + pynutil.insert("000")) @ cardinal.graphs["mi_sg_nom"]
 
         month_numeric_field = pynutil.insert(' month: "') + month_number + pynutil.insert('"')
         month_roman_field = pynutil.insert(' month: "') + month_roman + pynutil.insert('"')
-        month_word_field = (
-            pynutil.insert(' month: "') + (month_words | month_abbr) + pynutil.insert('"')
-        )
+        month_word_field = pynutil.insert(' month: "') + (month_words | month_abbr) + pynutil.insert('"')
 
         self.graphs = {}
         self.year_graphs = {}
@@ -68,25 +65,15 @@ class DateFst(GraphFst):
                     for separator in (".", "-", "/")
                 )
             )
-            numeric |= (
-                numeric_day_field
-                + pynutil.delete(".")
-                + month_roman_field
-                + pynutil.delete(".")
-                + year_field
-            )
+            numeric |= numeric_day_field + pynutil.delete(".") + month_roman_field + pynutil.delete(".") + year_field
             written = day_field + delete_space + month_word_field
             written += pynini.closure(delete_space + year_field, 0, 1)
             self.graphs[slot] = (numeric | written).optimize()
-            self.year_graphs[slot] = (
-                pynutil.insert('year: "') + year + pynutil.insert('"')
-            ).optimize()
+            self.year_graphs[slot] = (pynutil.insert('year: "') + year + pynutil.insert('"')).optimize()
 
         self.graph_dict = self.graphs
         if deterministic:
             self.final_graph = self.graphs["mi_sg_gen"]
         else:
-            self.final_graph = pynini.union(
-                *self.graphs.values(), *self.year_graphs.values()
-            ).optimize()
+            self.final_graph = pynini.union(*self.graphs.values(), *self.year_graphs.values()).optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()

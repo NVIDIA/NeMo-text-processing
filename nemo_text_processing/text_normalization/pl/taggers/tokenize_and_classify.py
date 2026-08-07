@@ -14,6 +14,8 @@
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -31,7 +33,6 @@ from nemo_text_processing.text_normalization.pl.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.pl.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.pl.taggers.word import WordFst
 from nemo_text_processing.utils.logging import logger
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
@@ -58,9 +59,7 @@ class ClassifyFst(GraphFst):
         self.date = DateFst(self.cardinal, self.ordinal, deterministic=deterministic)
         self.measure = MeasureFst(self.cardinal, deterministic=deterministic)
         self.time = TimeFst(self.cardinal, self.ordinal, deterministic=deterministic)
-        self.whitelist = WhiteListFst(
-            input_case=input_case, deterministic=deterministic, input_file=whitelist
-        )
+        self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
         word = WordFst(deterministic=deterministic).fst
         punctuation = PunctuationFst(deterministic=deterministic).fst
         classify = (
@@ -75,9 +74,7 @@ class ClassifyFst(GraphFst):
             | pynutil.add_weight(word, 100)
         )
         if not deterministic:
-            classify |= pynutil.add_weight(
-                AbbreviationFst(whitelist=self.whitelist, deterministic=False).fst, 100
-            )
+            classify |= pynutil.add_weight(AbbreviationFst(whitelist=self.whitelist, deterministic=False).fst, 100)
         token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
         graph = delete_space + token + pynini.closure(delete_extra_space + token) + delete_space
         self.fst = graph.optimize()
