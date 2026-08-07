@@ -21,6 +21,7 @@ cu mi	kubikmil
 cwt	centner
 da	atommassenhet
 db	decibel
+dl	deciliter
 dm2	kvadratdecimeter
 dm²	kvadratdecimeter
 dm3	kubikdecimeter
@@ -112,6 +113,7 @@ ms	millisekund
 Mv	megavolt
 mv	millivolt
 mw	megawatt
+mwh	megawattimme
 nm	nanometer
 ns	nanosekund
 ºc	celsiusgrad
@@ -134,6 +136,8 @@ TB	terabyte
 tim	timme
 tj	terajoule
 tl	teraliter
+tsk	tesked
+twh	terawattimme
 "	tum
 v	volt
 YB	yottabyte
@@ -145,3 +149,32 @@ zj	zettajoule
 μs	mikrosekund
 ω	ohm
 msk	matsked
+cal	kalori
+cl	centiliter
+hpa	hektopascal
+hPa	hektopascal
+kbit	kilobit
+kHz	kilohertz
+kJ	kilojoule
+kV	kilovolt
+kWh	kilowattimme
+kcal/dag	kilokalori per dag
+kcal/gram	kilokalori per gram
+l	liter
+lx	lux
+mbyte	megabyte
+mm vp	millimeter vattenpelare
+mmhg	millimeter kvicksilver
+mmHg	millimeter kvicksilver
+mmol	millimol
+mwel	megawatt el
+nmol	nanomol
+personkm	personkilometer
+pmol	pikomol
+twhel	terawattimme el
+twhkyla	terawattimme kyla
+twhvärme	terawattimme värme
+µm	mikrometer
+kvm	kvadratmeter
+m.ö.h	meter över havet
+mö.h	meter över havet

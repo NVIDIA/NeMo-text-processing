@@ -22,3 +22,9 @@ nionde kapitlet
 ~2 st.
 stycke två
 andra stycket
+~kl. 3
+klockan tre
+klass tre
+~3 kl.
+klass tre
+tredje klassen

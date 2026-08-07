@@ -49,7 +49,6 @@ bokförl	bokförlag
 brottsbal	brottsbalken
 bränsleförbr	bränsleförbrukning
 budgetprop	budgetproposition
-cg	centigram
 civ ek	civilekonom
 civ ing	civilingenjör
 civ. ek	civilekonom
@@ -149,7 +148,6 @@ jfr	jämför
 jmf	jämför
 jmfr	jämför
 jourtfn	jourtelefon
-km/tim	kilometer per timme
 kommunfullm	kommunfullmäktige
 kompetensutv	kompetensutveckling
 kongl	kongelige
@@ -158,7 +156,6 @@ kr/st	kronor styck
 krm	kryddmått
 kulturdep	kulturdepartementet
 kundtelnr	kundtelefonnummer
-kvm	kvadratmeter
 köksutr	köksutrustning
 licensnr	licensnummer
 lärarutb	lärarutbildning
@@ -174,12 +171,9 @@ m.a.o	med andra ord
 m.e.m	mer eller mindre
 m.fl	med flera
 m.v.h	med vänlig hälsning
-m.ö.h	meter över havet
 medförf	medförfattare
 medl	medlem
 mfl	med flera
-mg	milligram
-mikrog	mikrogram
 mkr	miljoner kronor
 mkt	mycket
 mnkr	miljoner kronor
@@ -188,7 +182,6 @@ msek	miljoner svenska kronor
 mvh	med vänlig hälsning
 målgr	målgrupp
 målnr	målnummer
-mö.h	meter över havet
 möjl	möjligen
 ngt	något
 nuv	nuvarande
@@ -229,7 +222,6 @@ p.gr.a	på grund av
 pat avg	patientavgift
 pat. avg	patientavgift
 pediatr	pediatrik
-personkm	personkilometer
 personnr	personnummer
 pga	på grund av
 pkt	paket

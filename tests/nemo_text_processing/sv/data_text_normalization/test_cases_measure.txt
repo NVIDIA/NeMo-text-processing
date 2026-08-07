@@ -7,3 +7,27 @@
 α+1=3~alfa plus ett är tre
 1 +/- 0~ett plus minus noll
 1 ± 0~ett plus minus noll
+1 dg~ett decigram
+2 dg~två decigram
+1 dl~en deciliter
+2 dl~två deciliter
+1 MWh~en megawattimme
+2 MWh~två megawattimmar
+1 TWh~en terawattimme
+2 TWh~två terawattimmar
+1 tsk~en tesked
+2 tsk~två teskedar
+1 cg~ett centigram
+2 cg~två centigram
+1 cal.~en kalori
+2 cal~två kalorier
+1 hPa~en hektopascal
+2 MWel~två megawatt el
+1 TWhel~en terawattimme el
+2 TWhel~två terawattimmar el
+1 µm~en mikrometer
+1 mmol~en millimol
+1 mbyte~en megabyte
+1 mmHg~en millimeter kvicksilver
+100 m.ö.h~hundra meter över havet
+1 kvm~en kvadratmeter

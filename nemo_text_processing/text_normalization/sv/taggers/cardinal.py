@@ -361,7 +361,10 @@ class CardinalFst(GraphFst):
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
         reference_graph = pynini.Fst()
-        for written, spoken in load_labels(get_abs_path("data/reference/cardinal.tsv")):
+        reference_labels = load_labels(get_abs_path("data/reference/cardinal.tsv"))
+        if not deterministic:
+            reference_labels += load_labels(get_abs_path("data/reference/cardinal_nondeterministic.tsv"))
+        for written, spoken in reference_labels:
             optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
             unit = pynutil.delete(written) + optional_dot
             unit_first = pynutil.insert(f"{spoken} ") + unit + delete_space + self.graph
