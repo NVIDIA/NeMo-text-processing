@@ -1,0 +1,12 @@
+n.p.m.~nad poziomem morza
+tj.~to jest
+np.~na przykład
+itd.~i tak dalej
+m.in.~między innymi
+im.~imienia
+s-ka~spółka
+s-ki~spółki
+s-ce~spółce
+ur.~urodzony
+ang.~angielski
+tzw.~tak zwany
