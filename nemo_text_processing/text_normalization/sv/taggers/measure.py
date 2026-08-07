@@ -215,13 +215,14 @@ class MeasureFst(GraphFst):
 
         math_operations = pynini.string_file(get_abs_path("data/math_operations.tsv"))
         delimiter = pynini.accep(" ") | pynutil.insert(" ")
+        math_operand = cardinal_graph_ett | SV_ALPHA | greek
 
         equals = pynini.cross("=", "är")
         if not deterministic:
             equals |= pynini.cross("=", "är lika med")
 
         math = (
-            (cardinal_graph_ett | SV_ALPHA | greek)
+            math_operand
             + delimiter
             + math_operations
             + (delimiter | SV_ALPHA)
@@ -229,11 +230,11 @@ class MeasureFst(GraphFst):
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph_ett | SV_ALPHA | greek)
+            + math_operand
         )
 
         math |= (
-            (cardinal_graph_ett | SV_ALPHA | greek)
+            math_operand
             + delimiter
             + equals
             + delimiter
@@ -243,6 +244,8 @@ class MeasureFst(GraphFst):
             + delimiter
             + cardinal_graph_ett
         )
+
+        math |= math_operand + delimiter + math_operations + delimiter + math_operand
 
         math = (
             pynutil.insert("units: \"math\" cardinal { integer: \"")
