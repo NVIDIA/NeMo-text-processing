@@ -203,9 +203,7 @@ class OrdinalFst(GraphFst):
         reference_graph = pynini.Fst()
         if not deterministic:
             for written, spoken in load_labels(get_abs_path("data/reference/ordinal.tsv")):
-                optional_dot = (
-                    pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
-                )
+                optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
                 unit = pynutil.delete(written) + optional_dot
                 reference_graph |= cleaned_graph + delete_space + unit + pynutil.insert(f" {spoken}")
 

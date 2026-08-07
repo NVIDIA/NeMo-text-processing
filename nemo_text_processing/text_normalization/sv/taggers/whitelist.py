@@ -59,20 +59,14 @@ class WhiteListFst(GraphFst):
 
         graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist.tsv"))
         graph |= _get_whitelist_graph(input_case, get_abs_path("data/abbreviations/case_sensitive.tsv"))
-        graph |= _get_optional_dot_graph(
-            input_case, get_abs_path("data/abbreviations/case_sensitive_opt_dot.tsv")
-        )
-        graph |= _get_case_insensitive_graph(
-            input_case, get_abs_path("data/abbreviations/case_insensitive.tsv")
-        )
+        graph |= _get_optional_dot_graph(input_case, get_abs_path("data/abbreviations/case_sensitive_opt_dot.tsv"))
+        graph |= _get_case_insensitive_graph(input_case, get_abs_path("data/abbreviations/case_insensitive.tsv"))
         graph |= _get_case_insensitive_optional_dot_graph(
             input_case, get_abs_path("data/abbreviations/case_insensitive_opt_dot.tsv")
         )
         if not deterministic and input_case != "lower_cased":
             lower_cased_graph = _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv"))
-            graph |= pynutil.add_weight(
-                lower_cased_graph, weight=0.0001
-            )
+            graph |= pynutil.add_weight(lower_cased_graph, weight=0.0001)
 
         if input_file:
             whitelist_provided = _get_whitelist_graph(input_case, input_file)
