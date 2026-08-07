@@ -1,0 +1,27 @@
+~Mam 22 koty
+Mam dwadzieścia dwa koty
+Mam dwadzieścia dwie koty
+Mam dwudziestu dwóch koty
+~To był 21. test
+To był dwudziesty pierwszy test
+To był dwudziesta pierwsza test
+To był dwudziestego pierwszego test
+~tzw.
+tak zwany
+tak zwanego
+tak zwana
+tak zwaną
+~ur.
+urodzony
+urodzona
+urodzonego
+urodzeni
+~ang.
+angielski
+angielska
+angielskiego
+angielscy
+~z ang.
+z angielskiego
+~do 35 cm
+do trzydziestu pięciu centymetrów
