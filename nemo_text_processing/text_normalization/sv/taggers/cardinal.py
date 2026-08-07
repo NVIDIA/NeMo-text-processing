@@ -25,7 +25,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 
 
 def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: bool = True) -> 'pynini.FstLike':
@@ -360,6 +360,14 @@ class CardinalFst(GraphFst):
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        reference_graph = pynini.Fst()
+        for written, spoken in load_labels(get_abs_path("data/reference/cardinal.tsv")):
+            optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
+            unit = pynutil.delete(written) + optional_dot
+            unit_first = pynutil.insert(f"{spoken} ") + unit + delete_space + self.graph
+            number_first = pynutil.insert(f"{spoken} ") + self.graph + delete_space + unit
+            reference_graph |= unit_first | number_first
+        final_graph |= pynutil.insert("integer: \"") + reference_graph + pynutil.insert("\"")
         if not deterministic:
             final_graph |= pynutil.add_weight(
                 optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\""), -0.001

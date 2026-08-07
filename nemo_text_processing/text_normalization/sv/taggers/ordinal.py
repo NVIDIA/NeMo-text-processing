@@ -26,7 +26,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 
 
 class OrdinalFst(GraphFst):
@@ -200,12 +200,18 @@ class OrdinalFst(GraphFst):
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
         self.bare_ordinals = cleaned_graph
-        kapitlet_word = pynini.union("kapitlet", pynini.cross("kap", "kapitlet"))
-        kapitlet = cleaned_graph + NEMO_SPACE + kapitlet_word
+        reference_graph = pynini.Fst()
+        if not deterministic:
+            for written, spoken in load_labels(get_abs_path("data/reference/ordinal.tsv")):
+                optional_dot = (
+                    pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
+                )
+                unit = pynutil.delete(written) + optional_dot
+                reference_graph |= cleaned_graph + delete_space + unit + pynutil.insert(f" {spoken}")
 
         tok_graph = (
             pynutil.insert("integer: \"")
-            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | kapitlet)
+            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | reference_graph)
             + pynutil.insert("\"")
         )
 
