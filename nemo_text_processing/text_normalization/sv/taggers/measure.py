@@ -49,6 +49,8 @@ class MeasureFst(GraphFst):
         cardinal_graph_en = cardinal.graph_en
 
         graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
+        graph_unit_optional_dot = pynini.string_file(get_abs_path("data/measure/unit_optional_dot.tsv"))
+        graph_unit |= graph_unit_optional_dot + pynini.closure(pynutil.delete("."), 0, 1)
         graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
         greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
