@@ -58,10 +58,7 @@ class WhiteListFst(GraphFst):
                 slot = f"{gender}_{number}_{case}"
                 saint = saint_forms[slot]
                 contextual = (
-                    pynini.cross("św.", saint)
-                    + delete_space
-                    + pynutil.insert(" ")
-                    + pynini.accep(surface_name)
+                    pynini.cross("św.", saint) + delete_space + pynutil.insert(" ") + pynini.accep(surface_name)
                 )
                 contextual |= (
                     pynini.cross("Św.", saint[0].upper() + saint[1:])
