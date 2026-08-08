@@ -25,3 +25,25 @@ angielscy
 z angielskiego
 ~do 35 cm
 do trzydziestu pięciu centymetrów
+~z 5 m
+z pięcioma metrami
+~w 2 s
+w dwóch sekundach
+~2 s
+dwie sekundy
+dwiema sekundami
+dwom sekundom
+dwoma sekundami
+dwu sekund
+dwu sekundach
+dwu sekundami
+dwu sekundom
+dwóch sekund
+dwóch sekundach
+dwóm sekundom
+~5 kg
+pięcioma kilogramami
+pięciu kilogramach
+pięciu kilogramom
+pięciu kilogramów
+pięć kilogramów

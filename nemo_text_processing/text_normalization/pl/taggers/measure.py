@@ -34,10 +34,13 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
 
         unit_graphs = {}
-        for symbol, lemma, grammar_file in load_labels(get_abs_path("data/measures/units.tsv")):
+        unit_genders = set()
+        for symbol, lemma, gender, grammar_file in load_labels(get_abs_path("data/measures/units.tsv")):
+            unit_genders.add(gender)
             for slot, form in inflect_noun(lemma, grammar_file).items():
                 graph = pynini.cross(symbol, form)
-                unit_graphs[slot] = graph if slot not in unit_graphs else unit_graphs[slot] | graph
+                key = (gender, slot)
+                unit_graphs[key] = graph if key not in unit_graphs else unit_graphs[key] | graph
         unit_graphs = {slot: graph.optimize() for slot, graph in unit_graphs.items()}
 
         positive = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
@@ -47,27 +50,30 @@ class MeasureFst(GraphFst):
         many = pynini.union("0", pynini.difference(pynini.difference(positive, one), few)).optimize()
         optional_space = pynini.closure(delete_space, 0, 1)
 
-        def graph_for(number_input, number_graph, unit_slot):
+        def graph_for(number_input, number_graph, gender, unit_slot):
             return (
                 pynutil.insert('cardinal { integer: "')
                 + (number_input @ number_graph)
                 + pynutil.insert('" } units: "')
                 + optional_space
-                + unit_graphs[unit_slot]
+                + unit_graphs[(gender, unit_slot)]
                 + pynutil.insert('"')
             )
 
         self.graphs = {}
-        for slot, number_graph in cardinal.graphs.items():
-            if slot == "compound":
-                continue
-            case = _case(slot)
-            graph = graph_for(one, number_graph, f"sg_{case}")
-            graph |= graph_for(few, number_graph, f"pl_{case}")
-            graph |= graph_for(many, number_graph, "pl_gen")
-            self.graphs[slot] = graph.optimize()
+        for gender in unit_genders:
+            for case in ("nom", "gen", "dat", "acc", "ins", "loc", "voc"):
+                slot = f"{gender}_sg_{case}"
+                one_graph = cardinal.graphs[slot]
+                plural_graph = cardinal.graphs[f"{gender}_pl_{case}"]
+                governed_slot = "pl_gen" if case in {"nom", "acc", "voc"} else f"pl_{case}"
+                graph = graph_for(one, one_graph, gender, f"sg_{case}")
+                graph |= graph_for(few, plural_graph, gender, f"pl_{case}")
+                graph |= graph_for(many, plural_graph, gender, governed_slot)
+                self.graphs[slot] = graph.optimize()
 
         self.graph_dict = self.graphs
-        graph = self.graphs["mi_sg_nom"] if deterministic else pynini.union(*self.graphs.values())
+        nominative = pynini.union(*(self.graphs[f"{gender}_sg_nom"] for gender in unit_genders))
+        graph = nominative if deterministic else pynini.union(*self.graphs.values())
         self.final_graph = graph.optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()

@@ -235,6 +235,8 @@ class CardinalFst(GraphFst):
             "pl_ins": ["mi_pl_ins", "pl_ins"],
         }.get(slot, [slot])
         case = _case_for_slot(slot)
+        if case == "loc":
+            choices += ["pl_gen"]
         if case in {"acc", "voc"}:
             choices += [slot.rsplit("_", 1)[0] + "_nom", "mi_pl_nom"]
         choices += [f"pl_{case}", "mi_pl_nom"]
@@ -248,12 +250,16 @@ class CardinalFst(GraphFst):
         else:
             choices = [slot]
         case = _case_for_slot(slot)
+        if case == "loc":
+            choices += ["pl_gen"]
         choices += [f"pl_{case}", "mi_pl_nom"]
         return pynini.union(*(_select(forms, choices) for forms in graphs.values())).optimize()
 
     def _teen_for_slot(self, graphs, slot):
         case = _case_for_slot(slot)
         choices = [slot, f"pl_{case}"]
+        if case == "loc":
+            choices += ["pl_gen"]
         if case in {"acc", "voc"}:
             choices += ["mp_pl_nom" if slot.startswith("mp_") else "mi_pl_nom"]
         choices += ["mi_pl_nom"]

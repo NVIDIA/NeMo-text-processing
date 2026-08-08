@@ -1,5 +1,27 @@
-Hz	herc	noun_mi_c.tsv
-kHz	kiloherc	noun_mi_c.tsv
-m	metr	noun_mi_tr.tsv
-cm	centymetr	noun_mi_tr.tsv
-mm	milimetr	noun_mi_tr.tsv
+Hz	herc	mi	noun_mi_c.tsv
+kHz	kiloherc	mi	noun_mi_c.tsv
+MHz	megaherc	mi	noun_mi_c.tsv
+GHz	gigaherc	mi	noun_mi_c.tsv
+m	metr	mi	noun_mi_tr.tsv
+km	kilometr	mi	noun_mi_tr.tsv
+cm	centymetr	mi	noun_mi_tr.tsv
+mm	milimetr	mi	noun_mi_tr.tsv
+l	litr	mi	noun_mi_tr.tsv
+ml	mililitr	mi	noun_mi_tr.tsv
+g	gram	mi	noun_mi_m.tsv
+kg	kilogram	mi	noun_mi_m.tsv
+mg	miligram	mi	noun_mi_m.tsv
+W	wat	mi	noun_mi_t.tsv
+kW	kilowat	mi	noun_mi_t.tsv
+MW	megawat	mi	noun_mi_t.tsv
+V	wolt	mi	noun_mi_t.tsv
+kV	kilowolt	mi	noun_mi_t.tsv
+A	amper	mi	noun_mi_r.tsv
+mA	miliamper	mi	noun_mi_r.tsv
+N	niuton	mi	noun_mi_n.tsv
+kN	kiloniuton	mi	noun_mi_n.tsv
+s	sekunda	f	noun_f_da.tsv
+ms	milisekunda	f	noun_f_da.tsv
+min	minuta	f	noun_f_ta.tsv
+godz	godzina	f	noun_f_na.tsv
+t	tona	f	noun_f_na.tsv
