@@ -31,5 +31,19 @@ class MeasureFst(GraphFst):
             + delete_space
             + pynutil.delete("}")
         )
+        decimal = (
+            pynutil.delete("decimal {")
+            + delete_space
+            + pynutil.delete('integer_part: "')
+            + value
+            + pynutil.delete('"')
+            + delete_space
+            + pynutil.insert(" przecinek ")
+            + pynutil.delete('fractional_part: "')
+            + value
+            + pynutil.delete('"')
+            + delete_space
+            + pynutil.delete("}")
+        )
         units = pynutil.delete('units: "') + value + pynutil.delete('"')
-        self.fst = self.delete_tokens(cardinal + delete_space + pynutil.insert(" ") + units).optimize()
+        self.fst = self.delete_tokens((cardinal | decimal) + delete_space + pynutil.insert(" ") + units).optimize()

@@ -57,7 +57,7 @@ class ClassifyFst(GraphFst):
         self.ordinal = OrdinalFst(deterministic=deterministic)
         self.roman = RomanFst(self.ordinal, deterministic=deterministic)
         self.date = DateFst(self.cardinal, self.ordinal, deterministic=deterministic)
-        self.measure = MeasureFst(self.cardinal, deterministic=deterministic)
+        self.measure = MeasureFst(self.cardinal, self.ordinal, deterministic=deterministic)
         self.time = TimeFst(self.cardinal, self.ordinal, deterministic=deterministic)
         self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
         word = WordFst(deterministic=deterministic).fst

@@ -70,7 +70,7 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(deterministic=deterministic)
             roman = RomanFst(ordinal, deterministic=deterministic)
             date = DateFst(cardinal, ordinal, deterministic=deterministic)
-            measure = MeasureFst(cardinal, deterministic=deterministic)
+            measure = MeasureFst(cardinal, ordinal, deterministic=deterministic)
             time = TimeFst(cardinal, ordinal, deterministic=deterministic)
             whitelist_graph = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             v_cardinal = vCardinalFst(deterministic=deterministic)
