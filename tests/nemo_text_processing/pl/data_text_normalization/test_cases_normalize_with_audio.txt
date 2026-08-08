@@ -74,3 +74,12 @@ zerze przecinek zero dwa milimetra
 świętego Ludwika
 ~o św. Ludwiku
 o świętym Ludwiku
+~4:30
+czwarta trzydzieści
+wpół do piątej
+~4:25
+czwarta dwadzieścia pięć
+za pięć wpół do piątej
+~4:35
+czwarta trzydzieści pięć
+pięć po wpół do piątej
