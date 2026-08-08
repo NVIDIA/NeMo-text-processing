@@ -1,5 +1,3 @@
-king	Ludwik	noun_mp_k.tsv
-king	Henryk	noun_mp_k.tsv
 king	Karol	noun_mp_rz.tsv
 king	Filip	noun_mp_p.tsv
 king	Jan	noun_mp_p.tsv
@@ -7,6 +5,25 @@ king	Ferdynand	noun_mp_d.tsv
 king	Napoleon	noun_mp_p.tsv
 king	Jerzy	noun_mp_y.tsv
 king	Franciszek Józef	noun_mp_ek.tsv,noun_mp_p.tsv
-queen	Katarzyna	noun_f_na.tsv
 pope	Klemens	noun_mp_p.tsv
 pope	Jan Paweł	noun_mp_p.tsv,noun_mp_el.tsv
+queen	Anna	noun_f_na.tsv
+queen	Maria	noun_f_ia.tsv
+queen	Elżbieta	noun_f_ta.tsv
+queen	Anna	noun_f_na.tsv
+queen	Wiktoria	noun_f_ia.tsv
+queen	Jadwiga	noun_f_ga.tsv
+queen	Izabela	noun_f_la.tsv
+queen	Joanna	noun_f_na.tsv
+queen	Andregota	noun_f_ta.tsv
+queen	Katarzyna	noun_f_na.tsv
+king	August	noun_mp_st.tsv
+king	Ernest	noun_mp_st.tsv
+king	Dytryk	noun_mp_k.tsv
+king	Emeryk	noun_mp_k.tsv
+king	Franciszek	noun_mp_ek.tsv
+king	Fryderyk	noun_mp_k.tsv
+king	Henryk	noun_mp_k.tsv
+king	Leszek	noun_mp_ek.tsv
+king	Ludwik	noun_mp_k.tsv
+king	Świętopełk	noun_mp_k.tsv
