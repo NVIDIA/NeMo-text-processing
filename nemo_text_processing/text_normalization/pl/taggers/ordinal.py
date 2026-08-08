@@ -22,35 +22,8 @@ from nemo_text_processing.text_normalization.pl.utils import adjective_inflectio
 
 
 def complete_paradigm(partial: Dict[str, str], complete: bool = False):
-    partial["mi_sg_acc"] = partial["mi_sg_nom"]
-    partial["mi_sg_loc"] = partial["mi_sg_ins"]
-    partial["mi_sg_voc"] = partial["mi_sg_nom"]
-    partial["ma_sg_nom"] = partial["mi_sg_nom"]
-    partial["ma_sg_gen"] = partial["mi_sg_gen"]
-    partial["ma_sg_dat"] = partial["mi_sg_dat"]
-    partial["ma_sg_acc"] = partial["mi_sg_gen"]
-    partial["ma_sg_ins"] = partial["mi_sg_ins"]
-    partial["ma_sg_loc"] = partial["mi_sg_loc"]
-    partial["ma_sg_voc"] = partial["mi_sg_voc"]
-    for case in ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]:
-        partial[f"mp_sg_{case}"] = partial[f"ma_sg_{case}"]
-    partial["nt_sg_gen"] = partial["mi_sg_gen"]
-    partial["nt_sg_dat"] = partial["mi_sg_dat"]
-    partial["nt_sg_acc"] = partial["nt_sg_nom"]
-    partial["nt_sg_ins"] = partial["mi_sg_ins"]
-    partial["nt_sg_loc"] = partial["mi_sg_loc"]
-    partial["nt_sg_voc"] = partial["nt_sg_nom"]
-    partial["f_sg_dat"] = partial["f_sg_gen"]
-    partial["f_sg_acc"] = partial["f_sg_ins"]
-    partial["f_sg_loc"] = partial["f_sg_gen"]
-    partial["f_sg_voc"] = partial["f_sg_nom"]
-    partial["mp_pl_acc"] = partial["pl_loc"]
-    partial["mp_pl_voc"] = partial["mp_pl_nom"]
-    partial["pl_nom"] = partial["nt_sg_nom"]
-    partial["pl_gen"] = partial["pl_loc"]
-    partial["pl_dat"] = partial["mi_sg_ins"]
-    partial["pl_acc"] = partial["pl_nom"]
-    partial["pl_voc"] = partial["pl_nom"]
+    for target, source in load_labels(get_abs_path("data/ordinal/equivalences.tsv")):
+        partial[target] = partial[source]
     if complete:
         for gender in ["mi", "ma", "mp", "nt", "f"]:
             for case in ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]:
