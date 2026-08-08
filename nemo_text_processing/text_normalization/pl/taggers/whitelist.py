@@ -15,13 +15,15 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space, delete_space
 from nemo_text_processing.text_normalization.pl.inflection import (
     load_adjective_abbreviations,
     load_ambiguous_abbreviations,
     load_inflected_abbreviations,
 )
-from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
+from nemo_text_processing.text_normalization.pl.taggers.roman import _name_forms
+from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
 
 
 def _get_whitelist_graph(input_case: str, filepath: str) -> 'pynini.FstLike':
@@ -45,6 +47,33 @@ class WhiteListFst(GraphFst):
 
         self.inflected_graphs = load_inflected_abbreviations("data/abbreviations.tsv")
         graph |= pynini.union(*self.inflected_graphs.values())
+
+        saint_forms = adjective_inflection("święty")
+        complete_paradigm(saint_forms, complete=True)
+        self.saint_graphs = {}
+        for category, name, grammar_files in load_labels(get_abs_path("data/roman/names.tsv")):
+            gender = "f" if category == "queen" else "mp"
+            for noun_slot, surface_name in _name_forms(name, grammar_files).items():
+                number, case = noun_slot.split("_", 1)
+                slot = f"{gender}_{number}_{case}"
+                saint = saint_forms[slot]
+                contextual = (
+                    pynini.cross("św.", saint)
+                    + delete_space
+                    + pynutil.insert(" ")
+                    + pynini.accep(surface_name)
+                )
+                contextual |= (
+                    pynini.cross("Św.", saint[0].upper() + saint[1:])
+                    + delete_space
+                    + pynutil.insert(" ")
+                    + pynini.accep(surface_name)
+                )
+                self.saint_graphs[slot] = (
+                    contextual if slot not in self.saint_graphs else self.saint_graphs[slot] | contextual
+                )
+        self.saint_graphs = {slot: contextual.optimize() for slot, contextual in self.saint_graphs.items()}
+        graph |= pynini.union(*self.saint_graphs.values())
 
         self.nondeterministic_graphs = load_ambiguous_abbreviations("data/abbreviations_nondet.tsv")
         self.adjective_graphs = load_adjective_abbreviations("data/abbreviations_adjective_nondet.tsv")
