@@ -140,19 +140,11 @@ class MeasureFst(GraphFst):
                     denominator_few = pynutil.insert(denominator) @ ordinal.graphs[f"f_pl_{case}"]
                     denominator_plural = pynutil.insert(denominator) @ ordinal.graphs[f"f_pl_{governed_case}"]
                 fraction = (
-                    (fraction_one @ cardinal.graphs[f"f_sg_{case}"])
-                    + pynutil.insert(" ")
-                    + denominator_singular
+                    (fraction_one @ cardinal.graphs[f"f_sg_{case}"]) + pynutil.insert(" ") + denominator_singular
                 )
+                fraction |= (fraction_few @ cardinal.graphs[f"f_pl_{case}"]) + pynutil.insert(" ") + denominator_few
                 fraction |= (
-                    (fraction_few @ cardinal.graphs[f"f_pl_{case}"])
-                    + pynutil.insert(" ")
-                    + denominator_few
-                )
-                fraction |= (
-                    (fraction_many @ cardinal.graphs[f"f_pl_{case}"])
-                    + pynutil.insert(" ")
-                    + denominator_plural
+                    (fraction_many @ cardinal.graphs[f"f_pl_{case}"]) + pynutil.insert(" ") + denominator_plural
                 )
                 case_graphs.append(
                     pynutil.insert('cardinal { integer: "')
