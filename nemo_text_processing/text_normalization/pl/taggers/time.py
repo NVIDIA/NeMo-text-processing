@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import pynini
-from pynini.lib import rewrite
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 
 class TimeFst(GraphFst):
@@ -68,33 +68,16 @@ class TimeFst(GraphFst):
         self.alternative_graph = pynini.Fst()
         if not deterministic:
             alternatives = []
-            for hour in range(24):
-                following_hour = hour % 12 + 1
-                following = rewrite.one_top_rewrite(str(following_hour), ordinal.graphs["f_sg_gen"])
-                for minute in range(16, 45):
-                    if minute < 30:
-                        distance = 30 - minute
-                        if distance == 1:
-                            spoken = f"za minutę wpół do {following}"
-                        else:
-                            distance_word = rewrite.one_top_rewrite(
-                                str(distance), cardinal.graphs["f_pl_acc"]
-                            )
-                            spoken = f"za {distance_word} wpół do {following}"
-                    elif minute == 30:
-                        spoken = f"wpół do {following}"
-                    else:
-                        distance = minute - 30
-                        if distance == 1:
-                            spoken = f"minutę po wpół do {following}"
-                        else:
-                            distance_word = rewrite.one_top_rewrite(
-                                str(distance), cardinal.graphs["f_pl_acc"]
-                            )
-                            spoken = f"{distance_word} po wpół do {following}"
+            hour_to = load_labels(get_abs_path("data/time/hour_to.tsv"))
+            minute_to_half = load_labels(get_abs_path("data/time/minute_to_half.tsv"))
+            minute_from_half = load_labels(get_abs_path("data/time/minute_from_half.tsv"))
+            minute_phrases = minute_to_half + [["30", "wpół do"]] + minute_from_half
+            for hour, following in hour_to:
+                for minute, phrase in minute_phrases:
+                    spoken = f"{phrase} {following}"
                     for separator in (":", "."):
-                        alternatives.append((f"{hour}{separator}{minute:02d}", spoken))
-                        alternatives.append((f"{hour:02d}{separator}{minute:02d}", spoken))
+                        alternatives.append((f"{hour}{separator}{minute}", spoken))
+                        alternatives.append((f"{int(hour):02d}{separator}{minute}", spoken))
             self.alternative_graph = (
                 pynutil.insert('hours: "') + pynini.string_map(alternatives) + pynutil.insert('"')
             ).optimize()
