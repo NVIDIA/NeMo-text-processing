@@ -15,6 +15,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.pl.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.date import DateFst
+from nemo_text_processing.text_normalization.pl.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.pl.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.roman import RomanFst
@@ -29,6 +30,7 @@ class VerbalizeFst(GraphFst):
             | OrdinalFst(deterministic=deterministic).fst
             | RomanFst(deterministic=deterministic).fst
             | DateFst(deterministic=deterministic).fst
+            | DecimalFst(deterministic=deterministic).fst
             | MeasureFst(deterministic=deterministic).fst
             | TimeFst(deterministic=deterministic).fst
             | AbbreviationFst(deterministic=deterministic).fst

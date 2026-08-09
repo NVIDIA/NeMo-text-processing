@@ -33,6 +33,7 @@ from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import 
 from nemo_text_processing.text_normalization.pl.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.pl.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.pl.taggers.date import DateFst
+from nemo_text_processing.text_normalization.pl.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.pl.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.pl.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.pl.taggers.roman import RomanFst
@@ -40,6 +41,7 @@ from nemo_text_processing.text_normalization.pl.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.pl.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.pl.verbalizers.cardinal import CardinalFst as vCardinalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.date import DateFst as vDateFst
+from nemo_text_processing.text_normalization.pl.verbalizers.decimal import DecimalFst as vDecimalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.measure import MeasureFst as vMeasureFst
 from nemo_text_processing.text_normalization.pl.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.roman import RomanFst as vRomanFst
@@ -70,6 +72,7 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(deterministic=deterministic)
             roman = RomanFst(ordinal, deterministic=deterministic)
             date = DateFst(cardinal, ordinal, deterministic=deterministic)
+            decimal = DecimalFst(cardinal, deterministic=deterministic)
             measure = MeasureFst(cardinal, ordinal, deterministic=deterministic)
             time = TimeFst(cardinal, ordinal, deterministic=deterministic)
             whitelist_graph = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
@@ -77,6 +80,7 @@ class ClassifyFst(GraphFst):
             v_ordinal = vOrdinalFst(deterministic=deterministic)
             v_roman = vRomanFst(deterministic=deterministic)
             v_date = vDateFst(deterministic=deterministic)
+            v_decimal = vDecimalFst(deterministic=deterministic)
             v_measure = vMeasureFst(deterministic=deterministic)
             v_time = vTimeFst(deterministic=deterministic)
             word = pynini.closure(NEMO_NOT_SPACE, 1)
@@ -89,6 +93,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist_graph.graph, sem_w)
                 | pynutil.add_weight(pynini.compose(roman.fst, v_roman.fst), sem_w)
                 | pynutil.add_weight(pynini.compose(date.fst, v_date.fst), sem_w)
+                | pynutil.add_weight(pynini.compose(decimal.fst, v_decimal.fst), sem_w)
                 | pynutil.add_weight(pynini.compose(measure.fst, v_measure.fst), sem_w)
                 | pynutil.add_weight(pynini.compose(time.fst, v_time.fst), sem_w)
                 | pynutil.add_weight(pynini.compose(cardinal.fst, v_cardinal.fst), sem_w)

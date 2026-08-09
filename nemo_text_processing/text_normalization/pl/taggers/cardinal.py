@@ -17,7 +17,13 @@ from typing import Dict, Iterable
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.pl.graph_utils import PL_ALPHA
 from nemo_text_processing.text_normalization.pl.inflection import load_numeric_nouns
 from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
@@ -143,6 +149,12 @@ class CardinalFst(GraphFst):
         }
         self.zero_all = {slot: pynini.cross("0", form) for slot, form in zero_forms.items()}
         self.zero_sg = {slot[3:]: graph for slot, graph in self.zero_all.items()}
+        single_digit = pynini.union(
+            self.zero_all["sg_nom"],
+            self.jeden_all[DEFAULT_SLOT],
+            *(forms["mi_pl_nom"] for forms in digit_graphs.values()),
+        ).optimize()
+        self.single_digits_graph = (single_digit + pynini.closure(insert_space + single_digit)).optimize()
 
         ordinary_slots = set(self.jeden_all)
         for forms in digit_forms.values():

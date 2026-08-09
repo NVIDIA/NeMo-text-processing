@@ -1,0 +1,4 @@
+0,02~zero i dwie setne
+1,5~jeden i pięć dziesiątych
+1,25~jeden i dwadzieścia pięć setnych
+-2,001~minus dwa i jedna tysięczna

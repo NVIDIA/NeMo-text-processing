@@ -76,6 +76,9 @@ zerze przecinek zero dwa milimetra
 o świętym Ludwiku
 ~2-ka
 dwójka
+~0,02
+zero i dwie setne
+zero przecinek zero dwa
 ~2-ką
 dwójką
 ~11-ce

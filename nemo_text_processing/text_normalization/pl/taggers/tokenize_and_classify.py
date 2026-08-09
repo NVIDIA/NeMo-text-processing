@@ -26,6 +26,7 @@ from nemo_text_processing.text_normalization.en.taggers.punctuation import Punct
 from nemo_text_processing.text_normalization.pl.taggers.abbreviation import AbbreviationFst
 from nemo_text_processing.text_normalization.pl.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.pl.taggers.date import DateFst
+from nemo_text_processing.text_normalization.pl.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.pl.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.pl.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.pl.taggers.roman import RomanFst
@@ -57,6 +58,7 @@ class ClassifyFst(GraphFst):
         self.ordinal = OrdinalFst(deterministic=deterministic)
         self.roman = RomanFst(self.ordinal, deterministic=deterministic)
         self.date = DateFst(self.cardinal, self.ordinal, deterministic=deterministic)
+        self.decimal = DecimalFst(self.cardinal, deterministic=deterministic)
         self.measure = MeasureFst(self.cardinal, self.ordinal, deterministic=deterministic)
         self.time = TimeFst(self.cardinal, self.ordinal, deterministic=deterministic)
         self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
@@ -67,6 +69,7 @@ class ClassifyFst(GraphFst):
             | pynutil.add_weight(self.roman.fst, 1.02)
             | pynutil.add_weight(self.date.fst, 1.05)
             | pynutil.add_weight(self.time.fst, 1.05)
+            | pynutil.add_weight(self.decimal.fst, 1.05)
             | pynutil.add_weight(self.measure.fst, 1.06)
             | pynutil.add_weight(self.ordinal.fst, 1.09)
             | pynutil.add_weight(self.cardinal.fst, 1.1)
