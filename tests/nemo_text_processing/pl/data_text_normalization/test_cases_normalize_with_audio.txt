@@ -79,6 +79,22 @@ dwójka
 ~0,02
 zero i dwie setne
 zero przecinek zero dwa
+~1,5
+jeden i pięć dziesiątych
+jeden przecinek pięć
+półtora
+półtorej
+~1 1/2
+jeden i pół
+jeden i jedna druga
+półtora
+półtorej
+~2 ½
+dwa i pół
+dwa i jedna druga
+~½
+jedna druga
+pół
 ~2-ką
 dwójką
 ~11-ce
