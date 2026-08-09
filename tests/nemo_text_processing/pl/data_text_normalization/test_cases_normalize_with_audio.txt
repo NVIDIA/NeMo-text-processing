@@ -74,6 +74,16 @@ zerze przecinek zero dwa milimetra
 świętego Ludwika
 ~o św. Ludwiku
 o świętym Ludwiku
+~2-ka
+dwójka
+~2-ką
+dwójką
+~11-ce
+jedenastce
+~20-ek
+dwudziestek
+~200-kami
+dwusetkami
 ~4:30
 czwarta trzydzieści
 wpół do piątej

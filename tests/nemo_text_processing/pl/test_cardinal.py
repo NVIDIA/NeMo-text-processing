@@ -55,3 +55,13 @@ class TestCardinal:
         alternatives = rewrite.top_rewrites("22-latka", cardinal.compound, 20)
         assert "dwudziestodwulatka" in alternatives
         assert "dwudziesto dwu latka" in alternatives
+
+    @pytest.mark.run_only_on("CPU")
+    @pytest.mark.unit
+    def test_noun_graphs(self):
+        cardinal = CardinalFst(deterministic=False)
+        assert rewrite.one_top_rewrite("2-ka", cardinal.noun_graphs["sg_nom"]) == "dwójka"
+        assert rewrite.one_top_rewrite("2ką", cardinal.noun_graphs["sg_ins"]) == "dwójką"
+        assert rewrite.one_top_rewrite("11-ce", cardinal.noun_graphs["sg_loc"]) == "jedenastce"
+        assert rewrite.one_top_rewrite("20-ek", cardinal.noun_graphs["pl_gen"]) == "dwudziestek"
+        assert rewrite.one_top_rewrite("200-kami", cardinal.noun_graphs["pl_ins"]) == "dwusetkami"

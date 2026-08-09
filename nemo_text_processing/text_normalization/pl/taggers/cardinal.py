@@ -19,6 +19,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, delete_space
 from nemo_text_processing.text_normalization.pl.graph_utils import PL_ALPHA
+from nemo_text_processing.text_normalization.pl.inflection import load_numeric_nouns
 from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
 
 CASES = ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]
@@ -210,16 +211,33 @@ class CardinalFst(GraphFst):
             self.graphs[slot] = self._make_full_number_graph(hundred, slot, deterministic)
 
         self.graph_dict = self.graphs
+        noun_graph_sets = [
+            load_numeric_nouns("data/numbers/digit_noun.tsv", "noun_f_ka.tsv"),
+            load_numeric_nouns("data/numbers/teen_noun.tsv", "noun_f_ka.tsv"),
+            load_numeric_nouns("data/numbers/tens_noun.tsv", "noun_f_ka.tsv", trailing_zeros=1),
+            load_numeric_nouns("data/numbers/hundreds_noun.tsv", "noun_f_ka.tsv", trailing_zeros=2),
+        ]
+        self.noun_graphs = noun_graph_sets[0]
+        for noun_graph_set in noun_graph_sets[1:]:
+            for slot, graph in noun_graph_set.items():
+                self.noun_graphs[slot] = (self.noun_graphs[slot] | graph).optimize()
+        self.noun_graph = pynini.union(*self.noun_graphs.values()).optimize()
+
         compound_boundary = pynutil.delete("-")
         if not deterministic:
             compound_boundary += pynini.union(pynutil.insert(""), pynutil.add_weight(pynutil.insert(" "), 0.001))
         self.compound = (self.graphs["compound"] + compound_boundary + pynini.closure(PL_ALPHA, 1)).optimize()
 
-        self.graph = filter_punctuation(self.graphs[DEFAULT_SLOT] | self.zero_all["sg_nom"]).optimize() | self.compound
+        self.graph = (
+            filter_punctuation(self.graphs[DEFAULT_SLOT] | self.zero_all["sg_nom"]).optimize()
+            | self.compound
+            | self.noun_graph
+        )
         if not deterministic:
             self.graph = (
                 filter_punctuation(pynini.union(*self.graphs.values(), *self.zero_all.values())).optimize()
                 | self.compound
+                | self.noun_graph
             )
 
         self.graph_unfiltered = self.graph

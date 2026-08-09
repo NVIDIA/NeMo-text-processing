@@ -13,3 +13,8 @@
 1000000~milion
 2000001~dwa miliony jeden
 1832~tysiąc osiemset trzydzieści dwa
+2-ka~dwójka
+2ką~dwójką
+11-ce~jedenastce
+20-ek~dwudziestek
+200-kami~dwusetkami

@@ -38,6 +38,24 @@ def inflect_noun(word: str, grammar_file: str) -> Dict[str, str]:
     return {slot: stem + ending for slot, ending in endings.items()}
 
 
+def load_numeric_nouns(filepath: str, grammar_file: str, trailing_zeros: int = 0) -> Dict[str, 'pynini.FstLike']:
+    """Expands digits followed by noun endings into inflected numeral nouns."""
+
+    endings = _load_endings(grammar_file)
+    lemma_ending = endings["sg_nom"]
+    optional_hyphen = pynini.closure(pynutil.delete("-"), 0, 1)
+    graphs = {}
+    for lemma, number in load_labels(get_abs_path(filepath)):
+        if not lemma.endswith(lemma_ending):
+            raise ValueError(f"{lemma!r} must end in {lemma_ending!r} from {grammar_file}")
+        stem = lemma[: -len(lemma_ending)] if lemma_ending else lemma
+        number += "0" * trailing_zeros
+        for slot, ending in endings.items():
+            graph = pynini.cross(number, stem) + optional_hyphen + pynini.accep(ending)
+            graphs[slot] = graph if slot not in graphs else graphs[slot] | graph
+    return {slot: graph.optimize() for slot, graph in graphs.items()}
+
+
 def case_prepositions() -> Dict[str, 'pynini.FstLike']:
     """Loads prepositions as case-indexed identity graphs."""
 
