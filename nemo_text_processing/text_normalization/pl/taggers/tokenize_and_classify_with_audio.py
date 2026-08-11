@@ -76,7 +76,7 @@ class ClassifyFst(GraphFst):
             date = DateFst(cardinal, ordinal, deterministic=deterministic)
             decimal = DecimalFst(cardinal, deterministic=deterministic)
             fraction = FractionFst(cardinal, ordinal, deterministic=deterministic)
-            measure = MeasureFst(cardinal, ordinal, deterministic=deterministic)
+            measure = MeasureFst(cardinal, decimal, fraction, deterministic=deterministic)
             time = TimeFst(cardinal, ordinal, deterministic=deterministic)
             whitelist_graph = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
             v_cardinal = vCardinalFst(deterministic=deterministic)

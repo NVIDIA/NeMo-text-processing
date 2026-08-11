@@ -61,7 +61,7 @@ class ClassifyFst(GraphFst):
         self.date = DateFst(self.cardinal, self.ordinal, deterministic=deterministic)
         self.decimal = DecimalFst(self.cardinal, deterministic=deterministic)
         self.fraction = FractionFst(self.cardinal, self.ordinal, deterministic=deterministic)
-        self.measure = MeasureFst(self.cardinal, self.ordinal, deterministic=deterministic)
+        self.measure = MeasureFst(self.cardinal, self.decimal, self.fraction, deterministic=deterministic)
         self.time = TimeFst(self.cardinal, self.ordinal, deterministic=deterministic)
         self.whitelist = WhiteListFst(input_case=input_case, deterministic=deterministic, input_file=whitelist)
         word = WordFst(deterministic=deterministic).fst

@@ -17,7 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 from nemo_text_processing.text_normalization.pl.taggers.cardinal import CASES
-from nemo_text_processing.text_normalization.pl.utils import get_abs_path
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 
 class FractionFst(GraphFst):
@@ -75,13 +75,20 @@ class FractionFst(GraphFst):
             mixed = integer + (fraction if not deterministic else non_half)
             self.graphs[case] = (fraction | mixed | mixed_half).optimize()
 
+        self.lexical_graphs = {}
+        for written, spoken, gender in load_labels(
+            get_abs_path("data/numbers/fraction_lexical_nondet.tsv")
+        ):
+            lexical = pynini.cross(written, spoken)
+            self.lexical_graphs[gender] = (
+                lexical if gender not in self.lexical_graphs else self.lexical_graphs[gender] | lexical
+            )
+        self.lexical_graphs = {gender: graph.optimize() for gender, graph in self.lexical_graphs.items()}
+        self.lexical_graph = pynini.union(*self.lexical_graphs.values()).optimize()
+
         graph = self.graphs["nom"]
         if not deterministic:
-            lexical = (
-                pynutil.insert('value: "')
-                + pynini.string_file(get_abs_path("data/numbers/fraction_lexical_nondet.tsv"))
-                + pynutil.insert('"')
-            )
+            lexical = pynutil.insert('value: "') + self.lexical_graph + pynutil.insert('"')
             graph = pynini.union(*self.graphs.values(), lexical).optimize()
         self.final_graph = graph
         self.fst = self.add_tokens(graph).optimize()

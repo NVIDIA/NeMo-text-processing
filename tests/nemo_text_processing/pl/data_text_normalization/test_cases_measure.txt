@@ -4,3 +4,7 @@
 20 kHz~dwadzieścia kiloherców
 35cm~trzydzieści pięć centymetrów
 1000 mm~tysiąc milimetrów
+0,02 mm~zero i dwie setne milimetra
+1/2 kg~jedna druga kilograma
+½ kg~jedna druga kilograma
+2 1/2 kg~dwa i pół kilograma

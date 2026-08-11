@@ -17,8 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 from nemo_text_processing.text_normalization.pl.inflection import inflect_noun
-from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
-from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 
 def _case(slot: str) -> str:
@@ -31,7 +30,9 @@ def _case(slot: str) -> str:
 class MeasureFst(GraphFst):
     """Classifies integer measures with case-inflected masculine units."""
 
-    def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
+    def __init__(
+        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True
+    ):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
 
         unit_graphs = {}
@@ -75,95 +76,50 @@ class MeasureFst(GraphFst):
 
         self.graph_dict = self.graphs
         nominative = pynini.union(*(self.graphs[f"{gender}_sg_nom"] for gender in unit_genders))
-        integer_input = pynini.union("0", positive)
-        digit_graph = pynini.string_map(
-            [
-                ("0", "zero"),
-                ("1", "jeden"),
-                ("2", "dwa"),
-                ("3", "trzy"),
-                ("4", "cztery"),
-                ("5", "pięć"),
-                ("6", "sześć"),
-                ("7", "siedem"),
-                ("8", "osiem"),
-                ("9", "dziewięć"),
-            ]
-        )
-        fractional_digits = digit_graph + pynini.closure(pynutil.insert(" ") + digit_graph)
-        if not deterministic:
-            fractional_digits |= positive @ cardinal.graphs["mi_sg_nom"]
-        decimal_units = pynini.union(*(unit_graphs[(gender, "sg_gen")] for gender in unit_genders))
-        self.decimal_graphs = {}
-        for case in ("nom", "gen", "dat", "acc", "ins", "loc", "voc"):
-            integer_graph = cardinal.zero_all[f"sg_{case}"] | cardinal.graphs[f"mi_sg_{case}"]
-            decimal = (
-                pynutil.insert('decimal { integer_part: "')
-                + (integer_input @ integer_graph)
-                + pynutil.insert('" fractional_part: "')
-                + pynutil.delete(pynini.union(",", "."))
-                + fractional_digits
-                + pynutil.insert('" } units: "')
+        fractional_units = pynini.union(*(unit_graphs[(gender, "sg_gen")] for gender in unit_genders))
+
+        def fractional_measure(graph, name, units=fractional_units):
+            return (
+                pynutil.insert(f"{name} {{ ")
+                + graph
+                + pynutil.insert(' } units: "')
                 + optional_space
-                + decimal_units
+                + units
                 + pynutil.insert('"')
             )
-            self.decimal_graphs[case] = decimal.optimize()
 
-        thousandth = adjective_inflection("tysięczny")
-        complete_paradigm(thousandth, complete=True)
+        self.decimal_graphs = {}
+        for case in ("nom", "gen", "dat", "acc", "ins", "loc", "voc"):
+            decimal_graph = decimal.graphs[case]
+            if not deterministic:
+                decimal_graph |= decimal.digit_graphs[case]
+            self.decimal_graphs[case] = fractional_measure(decimal_graph, "decimal").optimize()
+
         self.fraction_graphs = {}
         for case in ("nom", "gen", "dat", "acc", "ins", "loc", "voc"):
-            governed_case = "gen" if case in {"nom", "acc", "voc"} else case
-            whole = integer_input @ (cardinal.zero_all[f"sg_{case}"] | cardinal.graphs[f"mi_sg_{case}"])
-            case_graphs = []
-            for width, denominator in ((1, "10"), (2, "100"), (3, "1000")):
-                fraction_one = pynini.cross(f"{1:0{width}d}", "1")
-                few_values = [
-                    (f"{number:0{width}d}", str(number))
-                    for number in range(2, 10**width)
-                    if number % 10 in {2, 3, 4} and number % 100 not in {12, 13, 14}
-                ]
-                many_values = [
-                    (f"{number:0{width}d}", str(number))
-                    for number in range(2, 10**width)
-                    if not (number % 10 in {2, 3, 4} and number % 100 not in {12, 13, 14})
-                ]
-                fraction_few = pynini.string_map(few_values)
-                fraction_many = pynini.string_map(many_values)
-                if denominator == "1000":
-                    denominator_singular = pynutil.insert(thousandth[f"f_sg_{case}"])
-                    denominator_few = pynutil.insert(thousandth[f"f_pl_{case}"])
-                    denominator_plural = pynutil.insert(thousandth[f"f_pl_{governed_case}"])
-                else:
-                    denominator_singular = pynutil.insert(denominator) @ ordinal.graphs[f"f_sg_{case}"]
-                    denominator_few = pynutil.insert(denominator) @ ordinal.graphs[f"f_pl_{case}"]
-                    denominator_plural = pynutil.insert(denominator) @ ordinal.graphs[f"f_pl_{governed_case}"]
-                fraction = (
-                    (fraction_one @ cardinal.graphs[f"f_sg_{case}"]) + pynutil.insert(" ") + denominator_singular
-                )
-                fraction |= (fraction_few @ cardinal.graphs[f"f_pl_{case}"]) + pynutil.insert(" ") + denominator_few
-                fraction |= (
-                    (fraction_many @ cardinal.graphs[f"f_pl_{case}"]) + pynutil.insert(" ") + denominator_plural
-                )
-                case_graphs.append(
-                    pynutil.insert('cardinal { integer: "')
-                    + whole
-                    + pynutil.insert(" i ")
-                    + pynutil.delete(pynini.union(",", "."))
-                    + fraction
-                    + pynutil.insert('" } units: "')
-                    + optional_space
-                    + decimal_units
-                    + pynutil.insert('"')
-                )
-            self.fraction_graphs[case] = pynini.union(*case_graphs).optimize()
+            self.fraction_graphs[case] = fractional_measure(fraction.graphs[case], "fraction").optimize()
 
         self.fraction_graph = pynini.union(*self.fraction_graphs.values()).optimize()
+        lexical_fraction_graph = pynini.Fst()
+        if not deterministic:
+            for gender in unit_genders:
+                lexical = fraction.lexical_graphs.get(gender, pynini.Fst())
+                if "all" in fraction.lexical_graphs:
+                    lexical |= fraction.lexical_graphs["all"]
+                lexical = pynutil.insert('value: "') + lexical + pynutil.insert('"')
+                lexical_fraction_graph |= fractional_measure(
+                    lexical, "fraction", unit_graphs[(gender, "sg_gen")]
+                )
+            lexical_fraction_graph = lexical_fraction_graph.optimize()
         graph = (
-            nominative | self.fraction_graphs["nom"]
+            nominative | self.decimal_graphs["nom"] | self.fraction_graphs["nom"]
             if deterministic
-            else pynini.union(*self.graphs.values(), *self.decimal_graphs.values(), self.fraction_graph)
+            else pynini.union(
+                *self.graphs.values(),
+                *self.decimal_graphs.values(),
+                self.fraction_graph,
+                lexical_fraction_graph,
+            )
         )
         self.final_graph = graph.optimize()
         self.fst = self.add_tokens(self.final_graph).optimize()

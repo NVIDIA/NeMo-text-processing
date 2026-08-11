@@ -16,6 +16,8 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.pl.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.pl.verbalizers.fraction import FractionFst
 
 
 class MeasureFst(GraphFst):
@@ -31,19 +33,9 @@ class MeasureFst(GraphFst):
             + delete_space
             + pynutil.delete("}")
         )
-        decimal = (
-            pynutil.delete("decimal {")
-            + delete_space
-            + pynutil.delete('integer_part: "')
-            + value
-            + pynutil.delete('"')
-            + delete_space
-            + pynutil.insert(" przecinek ")
-            + pynutil.delete('fractional_part: "')
-            + value
-            + pynutil.delete('"')
-            + delete_space
-            + pynutil.delete("}")
-        )
+        decimal = DecimalFst(deterministic=deterministic).fst
+        fraction = FractionFst(deterministic=deterministic).fst
         units = pynutil.delete('units: "') + value + pynutil.delete('"')
-        self.fst = self.delete_tokens((cardinal | decimal) + delete_space + pynutil.insert(" ") + units).optimize()
+        self.fst = self.delete_tokens(
+            (cardinal | decimal | fraction) + delete_space + pynutil.insert(" ") + units
+        ).optimize()

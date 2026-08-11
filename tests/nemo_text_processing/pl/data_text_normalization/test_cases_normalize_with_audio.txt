@@ -64,6 +64,17 @@ zeru przecinek zero dwa milimetra
 zerze i dwu setnych milimetra
 zerze i dwóch setnych milimetra
 zerze przecinek zero dwa milimetra
+~½ kg
+jedna druga kilograma
+pół kilograma
+~1,5 kg
+jeden i pięć dziesiątych kilograma
+jeden przecinek pięć kilograma
+półtora kilograma
+~1,5 godz
+jeden i pięć dziesiątych godziny
+jeden przecinek pięć godziny
+półtorej godziny
 ~św. Katarzyna
 święta Katarzyna
 ~św. Katarzyny
