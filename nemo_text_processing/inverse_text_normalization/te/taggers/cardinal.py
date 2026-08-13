@@ -34,7 +34,6 @@ class CardinalFst(GraphFst):
         ఇరవై మూడు -> cardinal { integer: "౨౩" }
         మైనస్ ఇరవై మూడు -> cardinal { integer: "౨౩" negative: "-" }
 
-
     Args:
         input_case: accepting either "lower_cased" or "cased" input.
     """
@@ -48,7 +47,6 @@ class CardinalFst(GraphFst):
         graph_ties_prefix = pynini.string_file(get_abs_path("data/numbers/ties_prefix.tsv"))
         graph_people = pynini.string_file(get_abs_path("data/numbers/digit_people.tsv"))
         graph_special = pynini.string_file(get_abs_path("data/numbers/special_numbers.tsv"))
-        graph_case_suffix = pynini.string_file(get_abs_path("data/numbers/case_suffix.tsv"))
         graph_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
         graph_thousand = pynini.string_file(get_abs_path("data/numbers/thousand.tsv"))
         graph_lakh = pynini.string_file(get_abs_path("data/numbers/lakh.tsv"))
@@ -63,13 +61,21 @@ class CardinalFst(GraphFst):
             | (pynutil.insert("౦") + graph_digit)
             | ((graph_people | graph_special) @ two_te_digits)
         )
-        two_digit_or_zeros = graph_two_digit | pynutil.insert("౦౦")
 
-        optional_case = pynini.closure(graph_case_suffix, 0, 1)
+        graph_two_digit_multiplier = (
+            graph_teens_and_ties
+            | (graph_ties_prefix + delete_space + graph_digit)
+            | ((graph_people | graph_special) @ two_te_digits)
+        )
+
+        two_digit_or_zeros = graph_two_digit | pynutil.insert("౦౦")
         optional_one = pynini.closure(pynutil.delete("ఒక") + delete_space, 0, 1)
 
         delete_hundred = graph_hundred @ pynini.accep("")
         one_hundred_value = graph_hundred @ pynini.closure(NEMO_TE_DIGIT, 1)
+
+        graph_hundred_multiplier = graph_two_digit_multiplier + delete_space + delete_hundred + pynutil.insert("౦౦")
+
         delete_thousand = graph_thousand @ pynini.accep("")
         one_thousand_value = graph_thousand @ pynini.closure(NEMO_TE_DIGIT, 1)
         delete_lakh = graph_lakh @ pynini.accep("")
@@ -80,6 +86,7 @@ class CardinalFst(GraphFst):
         hundred_prefix = (
             (graph_digit + delete_space + delete_hundred) | (optional_one + one_hundred_value) | pynutil.insert("౦")
         )
+
         graph_hundreds = hundred_prefix + delete_space + two_digit_or_zeros
 
         thousand_block = (
@@ -103,18 +110,25 @@ class CardinalFst(GraphFst):
         )
 
         graph_full = crore_block + delete_space + graph_below_crore
+
         strip_leading_zeros = (
             pynutil.delete(pynini.closure("౦")) + (NEMO_TE_DIGIT - "౦") + pynini.closure(NEMO_TE_DIGIT)
         )
 
         no_trailing_space = pynini.closure(NEMO_CHAR) + NEMO_NOT_SPACE
-        graph_number = (no_trailing_space @ graph_full) @ strip_leading_zeros
 
-        graph_leading_zeros = graph_zero + pynini.closure(delete_space + (graph_zero | graph_digit), 1)
+        graph_number = ((no_trailing_space @ graph_full) @ strip_leading_zeros) | graph_hundred_multiplier
 
-        graph = (graph_number | graph_zero) + optional_case
+        graph_leading_zeros = graph_zero + pynini.closure(
+            delete_space + (graph_zero | graph_digit),
+            1,
+        )
+
+        graph = graph_number | graph_zero
         graph |= graph_leading_zeros
         graph = graph.optimize()
+
+        self.graph_no_exception = graph
 
         optional_minus_graph = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross(MINUS, "\"-\"") + NEMO_SPACE,
@@ -122,7 +136,7 @@ class CardinalFst(GraphFst):
             1,
         )
 
-        final_graph = optional_minus_graph + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
+        final_graph = optional_minus_graph + pynutil.insert('integer: "') + graph + pynutil.insert('"')
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
