@@ -23,21 +23,13 @@ class FractionFst(GraphFst):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
         value = pynini.closure(NEMO_NOT_QUOTE, 1)
         integer = pynini.closure(
-            pynutil.delete('integer_part: "')
-            + value
-            + pynutil.delete('"')
-            + delete_space
-            + pynutil.insert(" i "),
+            pynutil.delete('integer_part: "') + value + pynutil.delete('"') + delete_space + pynutil.insert(" i "),
             0,
             1,
         )
         numerator = pynutil.delete('numerator: "') + value + pynutil.delete('"')
         denominator = (
-            delete_space
-            + pynutil.insert(" ")
-            + pynutil.delete('denominator: "')
-            + value
-            + pynutil.delete('"')
+            delete_space + pynutil.insert(" ") + pynutil.delete('denominator: "') + value + pynutil.delete('"')
         )
         lexical = pynutil.delete('value: "') + value + pynutil.delete('"')
         mixed_lexical = integer + lexical

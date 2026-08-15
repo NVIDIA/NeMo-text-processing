@@ -30,9 +30,7 @@ def _case(slot: str) -> str:
 class MeasureFst(GraphFst):
     """Classifies integer measures with case-inflected masculine units."""
 
-    def __init__(
-        self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True
-    ):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst, deterministic: bool = True):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
 
         unit_graphs = {}
@@ -107,9 +105,7 @@ class MeasureFst(GraphFst):
                 if "all" in fraction.lexical_graphs:
                     lexical |= fraction.lexical_graphs["all"]
                 lexical = pynutil.insert('value: "') + lexical + pynutil.insert('"')
-                lexical_fraction_graph |= fractional_measure(
-                    lexical, "fraction", unit_graphs[(gender, "sg_gen")]
-                )
+                lexical_fraction_graph |= fractional_measure(lexical, "fraction", unit_graphs[(gender, "sg_gen")])
             lexical_fraction_graph = lexical_fraction_graph.optimize()
         graph = (
             nominative | self.decimal_graphs["nom"] | self.fraction_graphs["nom"]

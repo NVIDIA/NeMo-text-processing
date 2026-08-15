@@ -76,9 +76,7 @@ class FractionFst(GraphFst):
             self.graphs[case] = (fraction | mixed | mixed_half).optimize()
 
         self.lexical_graphs = {}
-        for written, spoken, gender in load_labels(
-            get_abs_path("data/numbers/fraction_lexical_nondet.tsv")
-        ):
+        for written, spoken, gender in load_labels(get_abs_path("data/numbers/fraction_lexical_nondet.tsv")):
             lexical = pynini.cross(written, spoken)
             self.lexical_graphs[gender] = (
                 lexical if gender not in self.lexical_graphs else self.lexical_graphs[gender] | lexical
