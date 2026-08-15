@@ -37,9 +37,7 @@ class DecimalFst(GraphFst):
         positive = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
         integer_input = pynini.union("0", positive)
         point = pynutil.delete(pynini.union(",", "."))
-        optional_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1
-        )
+        optional_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
 
         self.graphs = {}
         self.digit_graphs = {}
@@ -64,17 +62,10 @@ class DecimalFst(GraphFst):
                         if not (number % 10 in {2, 3, 4} and number % 100 not in {12, 13, 14})
                     ]
                 )
-                fraction = (
-                    (one @ cardinal.graphs[f"f_sg_{case}"])
-                    + pynutil.insert(" " + denominator[f"f_sg_{case}"])
-                )
-                fraction |= (
-                    (few @ cardinal.graphs[f"f_pl_{case}"])
-                    + pynutil.insert(" " + denominator[f"f_pl_{case}"])
-                )
-                fraction |= (
-                    (many @ cardinal.graphs[f"f_pl_{case}"])
-                    + pynutil.insert(" " + denominator[f"f_pl_{governed_case}"])
+                fraction = (one @ cardinal.graphs[f"f_sg_{case}"]) + pynutil.insert(" " + denominator[f"f_sg_{case}"])
+                fraction |= (few @ cardinal.graphs[f"f_pl_{case}"]) + pynutil.insert(" " + denominator[f"f_pl_{case}"])
+                fraction |= (many @ cardinal.graphs[f"f_pl_{case}"]) + pynutil.insert(
+                    " " + denominator[f"f_pl_{governed_case}"]
                 )
                 named_fractions.append(fraction)
 

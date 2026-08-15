@@ -24,14 +24,8 @@ class DecimalFst(GraphFst):
         value = pynini.closure(NEMO_NOT_QUOTE, 1)
         negative = pynini.closure(pynini.cross('negative: "true"', "minus ") + delete_space, 0, 1)
         integer = pynutil.delete('integer_part: "') + value + pynutil.delete('"')
-        separator = (
-            delete_space + pynutil.insert(" ") + pynutil.delete('separator: "') + value + pynutil.delete('"')
-        )
+        separator = delete_space + pynutil.insert(" ") + pynutil.delete('separator: "') + value + pynutil.delete('"')
         fractional = (
-            delete_space
-            + pynutil.insert(" ")
-            + pynutil.delete('fractional_part: "')
-            + value
-            + pynutil.delete('"')
+            delete_space + pynutil.insert(" ") + pynutil.delete('fractional_part: "') + value + pynutil.delete('"')
         )
         self.fst = self.delete_tokens(negative + integer + separator + fractional).optimize()
