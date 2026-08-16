@@ -46,7 +46,7 @@ class DateFst(GraphFst):
     def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
 
-        month_abbr_graph = load_labels(get_abs_path("data/dates/months_abbr.tsv"))
+        month_labels = load_labels(get_abs_path("data/dates/months_abbr.tsv"))
         number_to_month = pynini.string_file(get_abs_path("data/dates/numbers.tsv")).optimize()
         if not deterministic:
             number_to_month |= pynini.cross("1", "ođđajagemánnu")
@@ -57,9 +57,8 @@ class DateFst(GraphFst):
         self.months_gen2nom = pynini.invert(self.months_nom2gen)
         self.months_num2gen = (number_to_month @ self.months_nom2gen).optimize()
         month_graph = self.months_gen2nom
-        month_graph |= pynini.string_file(get_abs_path("data/dates/months_gen.tsv"))
 
-        month_abbr_graph = pynini.string_map(month_abbr_graph)
+        month_abbr_graph = pynini.string_map(month_labels)
         month_abbr_graph = (
             pynutil.add_weight(month_abbr_graph, weight=0.0001)
             | ((TO_LOWER + pynini.closure(NEMO_CHAR)) @ month_abbr_graph)
@@ -133,9 +132,7 @@ class DateFst(GraphFst):
         self.final_graph = final_graph.optimize()
 
         month_genitive = pynini.project(self.months_nom2gen, "output")
-        month_genitive |= pynini.project(
-            pynini.string_file(get_abs_path("data/dates/months_gen.tsv")), "input"
-        )
+        month_genitive |= pynini.union(*[source for source, _ in month_labels if source.endswith("mánu")])
         interval_first = (
             optional_leading_zero
             @ pynini.union(*[str(x) for x in range(10, 32)])
