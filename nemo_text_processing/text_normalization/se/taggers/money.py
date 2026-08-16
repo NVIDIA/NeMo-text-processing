@@ -17,7 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_zero_or_one_space
-from nemo_text_processing.text_normalization.se.utils import get_abs_path
+from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 
 
 class MoneyFst(GraphFst):
@@ -28,6 +28,14 @@ class MoneyFst(GraphFst):
 
         currency_nominative = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))
         currency_genitive = pynini.string_file(get_abs_path("data/money/currency_major_gen.tsv"))
+        major_forms = {
+            "nom": dict(load_labels(get_abs_path("data/money/currency_major.tsv"))),
+            "gen": dict(load_labels(get_abs_path("data/money/currency_major_gen.tsv"))),
+        }
+        minor_forms = {
+            "nom": dict(load_labels(get_abs_path("data/money/currency_minor.tsv"))),
+            "gen": dict(load_labels(get_abs_path("data/money/currency_minor_gen.tsv"))),
+        }
         one = pynini.accep("1") @ cardinal.graph
         non_one = pynini.difference(pynini.project(cardinal.graph, "input"), "1") @ cardinal.graph
         separator = delete_zero_or_one_space
@@ -41,15 +49,50 @@ class MoneyFst(GraphFst):
         def currency_token(graph):
             return pynutil.insert('currency_maj: "') + graph + pynutil.insert('"')
 
+        def fractional_token(graph):
+            return pynutil.insert('fractional_part: "') + graph + pynutil.insert('" ')
+
+        def fractional_currency(major_case, tokenized):
+            pairs = []
+            for number in range(1, 100):
+                minor_case = "nom" if number == 1 else "gen"
+                number_input = str(number) if number >= 10 else f"0{number}"
+                number_output = pynini.shortestpath(pynini.accep(str(number)) @ cardinal.graph).string()
+                for symbol in major_forms[major_case].keys() & minor_forms[minor_case].keys():
+                    major_form = major_forms[major_case][symbol]
+                    minor_form = minor_forms[minor_case][symbol]
+                    if tokenized:
+                        output = (
+                            f'currency_maj: "{major_form}" fractional_part: "{number_output}" '
+                            f'currency_min: "{minor_form}" preserve_order: true'
+                        )
+                    else:
+                        output = f" {major_form} {number_output} {minor_form}"
+                    pairs.append((f",{number_input}{symbol}", output))
+                    pairs.append((f",{number_input} {symbol}", output))
+            return pynini.string_map(pairs)
+
         singular = integer_token(one) + optional_zero_fraction + separator + currency_token(currency_nominative)
         governed = integer_token(non_one) + optional_zero_fraction + separator + currency_token(currency_genitive)
+        fractional = integer_token(one) + fractional_currency("nom", tokenized=True)
+        fractional |= integer_token(non_one) + fractional_currency("gen", tokenized=True)
+        minor_singular = fractional_token(one) + separator + pynini.cross(
+            "c", 'currency_min: "sente" preserve_order: true'
+        )
+        minor_governed = fractional_token(non_one) + separator + pynini.cross(
+            "c", 'currency_min: "sentte" preserve_order: true'
+        )
         if not deterministic:
             governed |= (
                 integer_token(non_one) + optional_zero_fraction + separator + currency_token(currency_nominative)
             )
 
-        self.fst = self.add_tokens(singular | governed).optimize()
+        self.fst = self.add_tokens(singular | governed | fractional | minor_singular | minor_governed).optimize()
         self.graph = (
             one + optional_zero_fraction + separator + pynutil.insert(" ") + currency_nominative
             | non_one + optional_zero_fraction + separator + pynutil.insert(" ") + currency_genitive
+            | one + fractional_currency("nom", tokenized=False)
+            | non_one + fractional_currency("gen", tokenized=False)
+            | one + separator + pynutil.insert(" ") + pynini.cross("c", "sente")
+            | non_one + separator + pynutil.insert(" ") + pynini.cross("c", "sentte")
         ).optimize()
