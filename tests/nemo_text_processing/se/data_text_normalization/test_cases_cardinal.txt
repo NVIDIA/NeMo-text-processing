@@ -67,6 +67,8 @@
 0053~nolla nolla vihttalogigolbma
 00753~nolla nolla čieža vihtta golbma
 07253~nolla čieža guokte vihtta golbma
+1900~ovccinuppelotčuođi
+1988~ovccinuppelotčuođigávccilogigávcci
 16:t~guhttanuppelogit
 16:id~guhttanuppelogiid
 16:i~guhttanuppelohkái
