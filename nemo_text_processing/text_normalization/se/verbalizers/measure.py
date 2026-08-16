@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 
 
 class MeasureFst(GraphFst):
@@ -23,7 +24,7 @@ class MeasureFst(GraphFst):
         measure { negative: "true" cardinal { integer: "twelve" } units: "kilograms" } -> minus twelve kilograms
         measure { decimal { integer_part: "twelve" fractional_part: "five" } units: "kilograms" } -> twelve point five kilograms
         tokens { measure { units: "covid" decimal { integer_part: "nineteen"  fractional_part: "five" }  } } -> covid nineteen point five
-    
+
     Args:
         decimal: DecimalFst
         cardinal: CardinalFst

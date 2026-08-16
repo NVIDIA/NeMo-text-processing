@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals. Numbers below ten are not converted. 
+    Finite state transducer for classifying cardinals. Numbers below ten are not converted.
     Allows both compound numeral strings or separated by whitespace.
 
         e.g. minus tjugoen -> cardinal { negative: "-" integer: "21" } }

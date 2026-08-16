@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.de.utils import get_abs_path, load_labels
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
@@ -21,7 +23,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     insert_space,
 )
-from pynini.lib import pynutil
 
 graph_teen = pynini.invert(pynini.string_file(get_abs_path("data/numbers/teen.tsv"))).optimize()
 graph_digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv"))).optimize()
@@ -41,7 +42,7 @@ def get_year_graph(cardinal: GraphFst) -> 'pynini.FstLike':
         cardinal: cardinal GraphFst
     """
 
-    year_gt_2000 = (pynini.union("21", "20") + NEMO_DIGIT ** 2) @ cardinal.graph
+    year_gt_2000 = (pynini.union("21", "20") + NEMO_DIGIT**2) @ cardinal.graph
 
     graph_two_digit = delete_leading_zero @ cardinal.two_digit_non_zero
     hundred = pynutil.insert("hundert")
@@ -63,7 +64,7 @@ def get_year_graph(cardinal: GraphFst) -> 'pynini.FstLike':
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, e.g. 
+    Finite state transducer for classifying date, e.g.
         "01.04.2010" -> date { day: "erster" month: "april" year: "zwei tausend zehn" preserve_order: true }
         "1994" -> date { year: "neunzehn vier und neuzig" }
         "1900" -> date { year: "neunzehn hundert" }

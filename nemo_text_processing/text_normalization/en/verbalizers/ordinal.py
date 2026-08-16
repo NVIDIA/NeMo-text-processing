@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, NEMO_SIGMA, GraphFst, delete_space
 from nemo_text_processing.text_normalization.en.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):
@@ -45,7 +46,10 @@ class OrdinalFst(GraphFst):
         convert_rest = pynutil.insert("th")
 
         suffix = pynini.cdrewrite(
-            graph_digit | graph_teens | pynini.cross("ty", "tieth") | convert_rest, "", "[EOS]", NEMO_SIGMA,
+            graph_digit | graph_teens | pynini.cross("ty", "tieth") | convert_rest,
+            "",
+            "[EOS]",
+            NEMO_SIGMA,
         ).optimize()
         self.graph = pynini.compose(graph, suffix)
         self.suffix = suffix

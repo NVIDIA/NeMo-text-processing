@@ -14,15 +14,16 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying ordinal
-        	"2e" -> ordinal { integer: "deux" morphosyntactic_features: "ième" }
+                "2e" -> ordinal { integer: "deux" morphosyntactic_features: "ième" }
     This grammar covers from single digits to hundreds of billions ("milliardième" in French).
     This FST also records the ending of the ordinal (called "morphosyntactic_features").
     Args:

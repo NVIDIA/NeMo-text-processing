@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 
 
 class OrdinalFst(GraphFst):
@@ -27,8 +28,8 @@ class OrdinalFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="ordinal", kind="verbalize")
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
         graph_cardinal = cardinal.just_cardinals
         morpheme = pynini.accep('第')

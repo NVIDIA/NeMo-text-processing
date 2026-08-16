@@ -15,6 +15,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -26,7 +28,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.se.graph_utils import ensure_space
 from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 QUARTERS = {15: "kvárta badjel", 30: "beal", 45: "kvárta váile"}
 
@@ -133,7 +134,11 @@ class TimeFst(GraphFst):
                 pynutil.insert("seconds: \"") + pynini.cross("00", "nolla nolla") + pynutil.insert("\"")
             )
         final_time_zone = pynutil.insert("zone: \"") + convert_space(time_zone_graph) + pynutil.insert("\"")
-        final_time_zone_optional = pynini.closure(NEMO_SPACE + final_time_zone, 0, 1,)
+        final_time_zone_optional = pynini.closure(
+            NEMO_SPACE + final_time_zone,
+            0,
+            1,
+        )
 
         # 2:30 pm, 02:30, 2:00
         graph_hm_kl = (

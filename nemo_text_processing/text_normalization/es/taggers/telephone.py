@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_SIGMA,
@@ -21,7 +23,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.es.graph_utils import ones
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
-from pynini.lib import pynutil
 
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
@@ -42,8 +43,8 @@ class TelephoneFst(GraphFst):
         (we ignore more complicated cases such as "doscientos y dos" or "tres nueves").
 
     Args:
-		deterministic: if True will provide a single transduction option,
-			for False multiple transduction are generated (used for audio-based normalization)
+                deterministic: if True will provide a single transduction option,
+                        for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True):

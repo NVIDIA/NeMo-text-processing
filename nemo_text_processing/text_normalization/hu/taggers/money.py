@@ -15,6 +15,8 @@
 import re
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -30,7 +32,6 @@ from nemo_text_processing.text_normalization.hu.utils import (
     load_labels,
     naive_inflector,
 )
-from pynini.lib import pynutil
 
 min_singular = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))
 maj_singular = pynini.string_file((get_abs_path("data/money/currency.tsv")))

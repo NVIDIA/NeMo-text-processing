@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -23,12 +24,12 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
 from nemo_text_processing.text_normalization.ru.verbalizers.verbalize import VerbalizeFst
-from pynini.lib import pynutil
+from nemo_text_processing.utils.logging import logger
 
 
 class VerbalizeFinalFst(GraphFst):
     """
-    Finite state transducer that verbalizes an entire sentence, e.g. 
+    Finite state transducer that verbalizes an entire sentence, e.g.
     tokens { name: "its" } tokens { time { hours: "12" minutes: "30" } } tokens { name: "now" } -> its 12:30 now
 
     Args:
@@ -47,7 +48,7 @@ class VerbalizeFinalFst(GraphFst):
             far_file = os.path.join(cache_dir, f"ru_tn_{deterministic}_deterministic_verbalizer.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
-            logging.info(f'VerbalizeFinalFst graph was restored from {far_file}.')
+            logger.info(f'VerbalizeFinalFst graph was restored from {far_file}.')
         else:
 
             verbalize = VerbalizeFst().fst
@@ -67,4 +68,3 @@ class VerbalizeFinalFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"verbalize": self.fst})
-                logging.info(f"VerbalizeFinalFst grammars are saved to {far_file}.")

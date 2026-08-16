@@ -1,0 +1,8 @@
+1 kr~okta ruvdno
+20 kr~guoktelogi ruvnno
+50 NOK~vihttalogi norgga ruvnno
+40 SEK~njealljelogi ruoŧa ruvnno
+25 $~guoktelogivihtta dollára
+14 £~njealljenuppelohkái punda
+40 €~njealljelogi euro
+99,– kr~ovccilogiovcci ruvnno

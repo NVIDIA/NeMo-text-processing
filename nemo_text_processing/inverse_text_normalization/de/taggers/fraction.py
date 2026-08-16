@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     convert_space,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class FractionFst(GraphFst):
@@ -28,7 +29,7 @@ class FractionFst(GraphFst):
         e.g. ein halb -> tokens { name: "1/2" }
         e.g. ein ein halb -> tokens { name: "1 1/2" }
         e.g. drei zwei ein hundertstel -> tokens { name: "3 2/100" }
-    
+
     Args:
         itn_cardinal_tagger: ITN cardinal tagger
         tn_fraction_verbalizer: TN fraction verbalizer

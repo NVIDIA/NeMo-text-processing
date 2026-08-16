@@ -1,0 +1,5 @@
+ABC~A B C
+TV:s~T V:s
+PC:in~P C:in
+EKG:i~E K G:i
+CD:t~C D:t

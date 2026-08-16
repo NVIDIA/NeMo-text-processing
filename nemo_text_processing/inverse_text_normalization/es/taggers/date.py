@@ -13,20 +13,31 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.es.graph_utils import int_to_roman
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_extra_space, delete_space
-from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
+    GraphFst,
+    capitalized_input_graph,
+    delete_extra_space,
+    delete_space,
+)
 
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, 
+    Finite state transducer for classifying date,
         e.g. primero de enero -> date { day: "1" month: "enero" }
         e.g. uno de enero -> date { day: "1" month: "enero" }
+
+    Args:
+        cardinal: CardinalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="date", kind="classify")
 
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
@@ -36,6 +47,10 @@ class DateFst(GraphFst):
 
         graph_month = pynini.string_file(get_abs_path("data/dates/months.tsv"))
         graph_suffix = pynini.string_file(get_abs_path("data/dates/year_suffix.tsv")).invert()
+
+        if input_case == INPUT_CASED:
+            graph_month |= pynini.string_file(get_abs_path("data/dates/months_cased.tsv"))
+            graph_suffix |= pynini.string_file(get_abs_path("data/dates/year_suffix_cased.tsv")).invert()
 
         graph_1_to_100 = pynini.union(
             graph_digit,
@@ -67,5 +82,9 @@ class DateFst(GraphFst):
 
         final_graph = graph_dm | roman_centuries_graph | year_with_suffix_graph
         final_graph += pynutil.insert(" preserve_order: true")
+
+        if input_case == INPUT_CASED:
+            final_graph |= capitalized_input_graph(final_graph)
+
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

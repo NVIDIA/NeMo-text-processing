@@ -13,10 +13,10 @@
 # limitations under the License.
 
 
-MAJOR = 0
-MINOR = 2
+MAJOR = 1
+MINOR = 1
 PATCH = 0
-PRE_RELEASE = 'rc0'
+PRE_RELEASE = ''
 
 # Use the following formatting: (major, minor, patch, pre-release)
 VERSION = (MAJOR, MINOR, PATCH, PRE_RELEASE)

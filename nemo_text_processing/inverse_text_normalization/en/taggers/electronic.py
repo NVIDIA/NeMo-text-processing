@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path, get_various_formats
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -25,7 +27,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.en.utils import load_labels
-from pynini.lib import pynutil
 
 
 class ElectronicFst(GraphFst):
@@ -105,7 +106,13 @@ class ElectronicFst(GraphFst):
             delete_extra_space
             + url_symbols
             + delete_extra_space
-            + (domain | pynini.closure(accepted_username + delete_extra_space,) + accepted_username)
+            + (
+                domain
+                | pynini.closure(
+                    accepted_username + delete_extra_space,
+                )
+                + accepted_username
+            )
         )
 
         protocol_default = (

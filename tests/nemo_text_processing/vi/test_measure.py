@@ -20,6 +20,7 @@ from ..utils import CACHE_DIR, parse_test_case_file
 
 try:
     from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+    from nemo_text_processing.text_normalization.normalize import Normalizer
 
     PYNINI_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
@@ -41,3 +42,18 @@ class TestMeasure:
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
+
+    normalizer = Normalizer(
+        input_case='cased', lang='vi', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
+    )
+
+    @parameterized.expand(parse_test_case_file('vi/data_text_normalization/test_cases_measure.txt'))
+    @pytest.mark.skipif(
+        not PYNINI_AVAILABLE,
+        reason="`pynini` not installed, please install via nemo_text_processing/pynini_install.sh",
+    )
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm(self, test_input, expected):
+        pred = self.normalizer.normalize(test_input, verbose=False, punct_post_process=False)
+        assert pred == expected, f"input: {test_input}"

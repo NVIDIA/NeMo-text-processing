@@ -17,6 +17,8 @@ import os
 import time
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_WHITE_SPACE,
     GraphFst,
@@ -34,11 +36,9 @@ from nemo_text_processing.text_normalization.se.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.se.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.se.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.se.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.se.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.se.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.se.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.se.taggers.word import WordFst
-from pynini.lib import pynutil
 
 
 class ClassifyFst(GraphFst):
@@ -99,10 +99,9 @@ class ClassifyFst(GraphFst):
             # fraction_graph = fraction.fst
             # logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
-            # start_time = time.time()
-            # measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
-            # measure_graph = measure.fst
-            # logging.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
+            start_time = time.time()
+            measure_graph = MeasureFst(cardinal=cardinal, deterministic=deterministic).fst
+            logging.debug(f"measure: {time.time() - start_time: .2f}s -- {measure_graph.num_states()} nodes")
 
             start_time = time.time()
             date_graph = DateFst(cardinal=cardinal, ordinal=ordinal, deterministic=deterministic).fst
@@ -113,16 +112,12 @@ class ClassifyFst(GraphFst):
             logging.debug(f"time: {time.time() - start_time: .2f}s -- {time_graph.num_states()} nodes")
 
             start_time = time.time()
-            telephone_graph = TelephoneFst(deterministic=deterministic).fst
-            logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
-
-            start_time = time.time()
             electonic_graph = ElectronicFst(deterministic=deterministic).fst
             logging.debug(f"electronic: {time.time() - start_time: .2f}s -- {electonic_graph.num_states()} nodes")
 
-            # start_time = time.time()
-            # money_graph = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic).fst
-            # logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
+            start_time = time.time()
+            money_graph = MoneyFst(cardinal=cardinal, deterministic=deterministic).fst
+            logging.debug(f"money: {time.time() - start_time: .2f}s -- {money_graph.num_states()} nodes")
 
             start_time = time.time()
             whitelist_graph = WhiteListFst(
@@ -144,10 +139,10 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.09)
                 # | pynutil.add_weight(decimal_graph, 1.1)
-                # | pynutil.add_weight(measure_graph, 1.1)
+                | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
-                # | pynutil.add_weight(money_graph, 1.1)
+                | pynutil.add_weight(money_graph, 1.1)
                 # | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(electonic_graph, 1.1)
                 # | pynutil.add_weight(fraction_graph, 1.1)

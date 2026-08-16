@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
     INPUT_CASED,
@@ -25,7 +27,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_extra_space,
     delete_space,
 )
-from pynini.lib import pynutil
 
 graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv")).optimize()
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).optimize()
@@ -136,7 +137,7 @@ def _get_year_graph(input_case: str):
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, 
+    Finite state transducer for classifying date,
         e.g. january fifth twenty twelve -> date { month: "january" day: "5" year: "2012" preserve_order: true }
         e.g. the fifth of january twenty twelve -> date { day: "5" month: "january" year: "2012" preserve_order: true }
         e.g. twenty twenty -> date { year: "2012" preserve_order: true }
@@ -164,7 +165,11 @@ class DateFst(GraphFst):
             + pynutil.add_weight(year_graph, -YEAR_WEIGHT)
             + pynutil.insert("\"")
         )
-        optional_graph_year = pynini.closure(graph_year, 0, 1,)
+        optional_graph_year = pynini.closure(
+            graph_year,
+            0,
+            1,
+        )
         graph_mdy = month_graph + (
             (delete_extra_space + day_graph) | graph_year | (delete_extra_space + day_graph + graph_year)
         )

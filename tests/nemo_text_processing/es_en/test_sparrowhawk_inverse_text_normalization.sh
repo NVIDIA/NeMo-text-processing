@@ -13,11 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PROJECT_DIR=/workspace/tests
+GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
+PROJECT_DIR=${2:-"/workspace/tests/en"}
 
 runtest () {
   input=$1
-  cd /workspace/sparrowhawk/documentation/grammars
+  echo "INPUT is $input"
+  cd ${GRAMMARS_DIR}
 
   # read test file
   while read testcase; do

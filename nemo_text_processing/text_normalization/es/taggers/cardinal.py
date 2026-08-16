@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -24,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.es.graph_utils import cardinal_separator
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
-from pynini.lib import pynutil
 
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
 digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
@@ -46,7 +47,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     Returns:
         fst: A pynini.FstLike object
     """
-    exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
+    exactly_three_digits = NEMO_DIGIT**3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
 
     cardinal_string = pynini.closure(
@@ -156,7 +157,7 @@ class CardinalFst(GraphFst):
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
+            @ NEMO_DIGIT**24
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)

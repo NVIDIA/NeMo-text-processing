@@ -14,13 +14,14 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.zh.graph_utils import (
     NEMO_CHAR,
     NEMO_SIGMA,
     GraphFst,
     delete_space,
 )
-from pynini.lib import pynutil
 
 
 class WhiteListFst(GraphFst):
@@ -38,5 +39,5 @@ class WhiteListFst(GraphFst):
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete('"')
         )
-        graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)
+        graph = graph @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)
         self.fst = graph.optimize()

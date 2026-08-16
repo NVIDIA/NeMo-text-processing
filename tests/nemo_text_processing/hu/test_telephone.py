@@ -14,8 +14,9 @@
 
 
 import pytest
-from nemo_text_processing.text_normalization.normalize import Normalizer
 from parameterized import parameterized
+
+from nemo_text_processing.text_normalization.normalize import Normalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 

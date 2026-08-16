@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
@@ -20,7 +22,6 @@ from nemo_text_processing.inverse_text_normalization.fr.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.inverse_text_normalization.fr.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -28,7 +29,7 @@ class TimeFst(GraphFst):
     Finite state transducer for verbalizing time, e.g.
         time { hours: "8" minutes: "30" suffix: "du matin"} -> 8 h 30
         time { hours: "8" minutes: "30" } -> 8 h 30
-        time { hours: "8" minutes: "30" suffix: "du soir"} -> 20 h 30  
+        time { hours: "8" minutes: "30" suffix: "du soir"} -> 20 h 30
     """
 
     def __init__(self):

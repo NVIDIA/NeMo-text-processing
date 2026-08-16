@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.de.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.de.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.de.taggers.decimal import DecimalFst
@@ -46,7 +47,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     generator_main,
 )
-from pynini.lib import pynutil
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):
@@ -78,9 +79,9 @@ class ClassifyFst(GraphFst):
             far_file = os.path.join(cache_dir, f"de_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info(f"Creating ClassifyFst grammars.")
+            logger.info(f"Creating ClassifyFst grammars.")
             tn_cardinal_tagger = TNCardinalTagger(deterministic=False)
             tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False)
             tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
@@ -147,4 +148,3 @@ class ClassifyFst(GraphFst):
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")

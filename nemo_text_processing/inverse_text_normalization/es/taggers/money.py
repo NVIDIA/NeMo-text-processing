@@ -13,17 +13,21 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.es.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_CASED,
+    INPUT_LOWER_CASED,
     NEMO_DIGIT,
     NEMO_SIGMA,
     GraphFst,
+    capitalized_input_graph,
     convert_space,
     delete_extra_space,
     delete_space,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
@@ -34,9 +38,10 @@ class MoneyFst(GraphFst):
     Args:
         cardinal: CardinalFst
         decimal: DecimalFst
+        input_case: accepting either "lower_cased" or "cased" input.
     """
 
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst):
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, input_case: str = INPUT_LOWER_CASED):
         super().__init__(name="money", kind="classify")
         # quantity, integer_part, fractional_part, currency
 
@@ -53,6 +58,22 @@ class MoneyFst(GraphFst):
         unit_minor_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
         unit_minor_plural = pynini.invert(unit_minor_plural)
 
+        if input_case == INPUT_CASED:
+            unit_singular = capitalized_input_graph(unit_singular)
+            unit_singular_capitalized = pynini.string_file(
+                get_abs_path("data/money/currency_major_singular_capitalized.tsv")
+            )
+            unit_singular |= pynini.invert(unit_singular_capitalized).optimize()
+
+            unit_plural = capitalized_input_graph(unit_plural)
+            unit_plural_capitalized = pynini.string_file(
+                get_abs_path("data/money/currency_major_plural_capitalized.tsv")
+            )
+            unit_plural |= pynini.invert(unit_plural_capitalized).optimize()
+
+            unit_minor_singular = capitalized_input_graph(unit_minor_singular).optimize()
+            unit_minor_plural = capitalized_input_graph(unit_minor_plural).optimize()
+
         graph_unit_singular = pynutil.insert("currency: \"") + convert_space(unit_singular) + pynutil.insert("\"")
         graph_unit_plural = pynutil.insert("currency: \"") + convert_space(unit_plural) + pynutil.insert("\"")
 
@@ -65,22 +86,31 @@ class MoneyFst(GraphFst):
 
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
 
+        one_graph = pynini.union("un", "una").optimize()
+        if input_case == INPUT_CASED:
+            one_graph |= pynini.union("Un", "Una").optimize()
+
         # twelve dollars (and) fifty cents, zero cents
         cents_standalone = (
             pynutil.insert("morphosyntactic_features: \",\"")  # always use a comma in the decimal
             + insert_space
             + pynutil.insert("fractional_part: \"")
             + pynini.union(
-                pynutil.add_weight(((NEMO_SIGMA - "un") @ cardinal_graph), -0.7) @ add_leading_zero_to_double_digit
+                pynutil.add_weight(((NEMO_SIGMA - one_graph) @ cardinal_graph), -0.7)
+                @ add_leading_zero_to_double_digit
                 + delete_space,
-                pynini.cross("un", "01") + delete_space,
+                pynini.cross(one_graph, "01") + delete_space,
             )
             + pynutil.insert("\"")
         )
 
+        and_graph = pynini.union("con", "y").optimize()
+        if input_case == INPUT_CASED:
+            and_graph |= pynini.union("Con", "Y").optimize()
+
         optional_cents_standalone = pynini.closure(
             delete_space
-            + pynini.closure((pynutil.delete("con") | pynutil.delete('y')) + delete_space, 0, 1)
+            + pynini.closure(pynutil.delete(and_graph) + delete_space, 0, 1)
             + insert_space
             + cents_standalone
             + pynutil.delete(pynini.union(unit_minor_singular, unit_minor_plural)),
@@ -95,7 +125,7 @@ class MoneyFst(GraphFst):
             + pynutil.insert("morphosyntactic_features: \",\"")  # always use a comma in the decimal
             + insert_space
             + pynutil.insert("fractional_part: \"")
-            + pynini.closure(pynutil.delete("con") + delete_space, 0, 1)
+            + pynini.closure(pynutil.delete(pynini.union("con", "Con")) + delete_space, 0, 1)
             + pynutil.add_weight(cardinal_graph @ add_leading_zero_to_double_digit, -0.7)
             + pynutil.insert("\""),
             0,
@@ -104,7 +134,7 @@ class MoneyFst(GraphFst):
 
         graph_integer = (
             pynutil.insert("integer_part: \"")
-            + ((NEMO_SIGMA - "un" - "una") @ cardinal_graph)
+            + ((NEMO_SIGMA - one_graph) @ cardinal_graph)
             + pynutil.insert("\"")
             + delete_extra_space
             + graph_unit_plural
@@ -112,7 +142,7 @@ class MoneyFst(GraphFst):
         )
         graph_integer |= (
             pynutil.insert("integer_part: \"")
-            + (pynini.cross("un", "1") | pynini.cross("una", "1"))
+            + pynini.cross(one_graph, "1")
             + pynutil.insert("\"")
             + delete_extra_space
             + graph_unit_singular

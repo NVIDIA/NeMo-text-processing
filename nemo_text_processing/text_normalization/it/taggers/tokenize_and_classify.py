@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_CHAR,
+    NEMO_DIGIT,
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_extra_space,
@@ -29,9 +32,10 @@ from nemo_text_processing.text_normalization.it.taggers.decimals import DecimalF
 from nemo_text_processing.text_normalization.it.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.it.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.it.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.it.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.it.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.it.taggers.word import WordFst
-from pynini.lib import pynutil
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):
@@ -62,13 +66,14 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                cache_dir, f"_{input_case}_it_tn_{deterministic}_deterministic{whitelist_file}.far"
+                cache_dir,
+                f"_{input_case}_it_tn_{deterministic}_deterministic{whitelist_file}.far",
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info(f"Creating ClassifyFst grammars. This might take some time...")
+            logger.info(f"Creating ClassifyFst grammars. This might take some time...")
 
             self.cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = self.cardinal.fst
@@ -84,48 +89,50 @@ class ClassifyFst(GraphFst):
             self.electronic = ElectronicFst(deterministic=deterministic)
             electronic_graph = self.electronic.fst
 
-            self.measure = MeasureFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
+            self.measure = MeasureFst(
+                cardinal=self.cardinal,
+                decimal=self.decimal,
+                deterministic=deterministic,
+            )
             measure_graph = self.measure.fst
 
-            self.money = MoneyFst(cardinal=self.cardinal, decimal=self.decimal, deterministic=deterministic)
+            self.money = MoneyFst(
+                cardinal=self.cardinal,
+                decimal=self.decimal,
+                deterministic=deterministic,
+            )
             money_graph = self.money.fst
+
+            self.time = TimeFst(deterministic=deterministic)
+            time_graph = self.time.fst
 
             punct_graph = PunctuationFst(deterministic=deterministic).fst
 
             classify = (
-                pynutil.add_weight(whitelist_graph, 1)
+                pynutil.add_weight(whitelist_graph, 0.0)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(decimal_graph, 1.1)
-                | pynutil.add_weight(electronic_graph, 1.09)
-                | pynutil.add_weight(measure_graph, 1.09)
-                | pynutil.add_weight(money_graph, 1.09)
+                | pynutil.add_weight(electronic_graph, 1.1)
+                | pynutil.add_weight(measure_graph, 1.1)
+                | pynutil.add_weight(money_graph, 1.1)
+                | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
 
-            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
-            punct = pynini.closure(
-                pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                | (pynutil.insert(" ") + punct),
-                1,
-            )
+            punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
+
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             token_plus_punct = (
                 pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
             )
 
-            graph = token_plus_punct + pynini.closure(
-                (
-                    pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                    | (pynutil.insert(" ") + punct + pynutil.insert(" "))
-                )
-                + token_plus_punct
-            )
+            graph = token_plus_punct + pynini.closure((delete_extra_space).ques + token_plus_punct)
 
             graph = delete_space + graph + delete_space
-            graph |= punct
 
             self.fst = graph.optimize()
+            no_digits = pynini.closure(pynini.difference(NEMO_CHAR, NEMO_DIGIT))
+            self.fst_no_digits = pynini.compose(self.fst, no_digits).optimize()
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")

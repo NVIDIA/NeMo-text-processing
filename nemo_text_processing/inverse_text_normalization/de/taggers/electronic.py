@@ -13,15 +13,16 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
 class ElectronicFst(GraphFst):
     """
     Finite state transducer for classifying electronic: email addresses, etc.
         e.g. c d f eins at a b c punkt e d u -> tokens { name: "cdf1.abc.edu" }
-    
+
     Args:
         tn_electronic_tagger: TN eletronic tagger
         tn_electronic_verbalizer: TN eletronic verbalizer

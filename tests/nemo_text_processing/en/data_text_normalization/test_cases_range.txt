@@ -16,3 +16,5 @@ from 2-10~from two - ten
 1960-80~nineteen sixty to eighty
 mid-1980s~mid nineteen eighties
 mid-80s~mid eighties
+$250-$300~two hundred and fifty dollars to three hundred dollars
+$150.25-$250.67~one hundred and fifty dollars twenty five cents to two hundred and fifty dollars sixty seven cents

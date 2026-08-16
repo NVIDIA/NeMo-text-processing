@@ -7,3 +7,5 @@
 12 S 1st st~twelve South first Street
 1990 for the Ata ST~nineteen ninety for the Ata ST
 Main St.~Main St.
+Nancy lived at 1428 Elm St. It was a strange place.~Nancy lived at fourteen twenty eight Elm Street. It was a strange place.
+(incorrect normalization) Nancy lived at 1428 Elm St. 4 doors down lived her best friend.~(incorrect normalization) Nancy lived at fourteen twenty eight Elm Street four doors down lived her best friend.

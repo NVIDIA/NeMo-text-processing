@@ -60,3 +60,11 @@
 1 000 000~miljovdna
 1.000.000~miljovdna
 1 034 068~miljovdnagolbmaloginjealljeduhátguhttalogigávcci
+16:t~guhttanuppelogit
+16:id~guhttanuppelogiid
+16:i~guhttanuppelohkái
+16:ide~guhttanuppelogiide
+16:s~guhttanuppelogis
+16:in~guhttanuppelogiin
+16:iguin~guhttanuppelogiiguin
+16:n~guhttanuppelohkin

@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path
-from pynini.lib import pynutil
 
 fraction_symbols = pynini.string_file(get_abs_path("data/fractions/fraction_symbols.tsv"))
 

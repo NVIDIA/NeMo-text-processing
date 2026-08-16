@@ -16,13 +16,13 @@ from argparse import ArgumentParser
 from typing import List
 
 import regex as re
+
 from nemo_text_processing.text_normalization.data_loader_utils import (
     EOS_TYPE,
     Instance,
     load_files,
     training_data_to_sentences,
 )
-
 
 """
 This file is for evaluation purposes.
@@ -67,7 +67,7 @@ class Filter:
 
         Args:
             processes given instance with process function
-            
+
         Returns: processed instance if instance belongs to expected class type or original instance
         """
         if instance.token_type != self.class_type:

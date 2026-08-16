@@ -14,14 +14,18 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
-from pynini.lib import pynutil
 
 quantities = pynini.string_file(get_abs_path("data/numbers/millions.tsv"))
 
 
-def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_thousand: 'pynini.FstLike',) -> 'pynini.FstLike':
+def get_quantity(
+    decimal: 'pynini.FstLike',
+    cardinal_up_to_thousand: 'pynini.FstLike',
+) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or decimal followed by a quantity into a numeral,
     e.g. 1 miljárda -> integer_part: "okta" quantity: "miljárda"
@@ -31,7 +35,14 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_thousand: 'pynini.Fst
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
-    nom_to_gen_endings = pynini.string_map(("on", "ovnna"), ("ovdna", "ovnna"), ("árda", "árdda",))
+    nom_to_gen_endings = pynini.string_map(
+        ("on", "ovnna"),
+        ("ovdna", "ovnna"),
+        (
+            "árda",
+            "árdda",
+        ),
+    )
     quantities_gen = quantities @ pynini.cdrewrite(nom_to_gen_endings, "", "[EOS]", NEMO_SIGMA)
 
     res = (

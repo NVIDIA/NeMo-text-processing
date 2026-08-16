@@ -75,7 +75,7 @@ eight hundred kilo watt hours~800 kWh
 eight hundred kilowatts~800 kW
 eight hundred megahertz~800 mhz
 eight hundred ninety four c c~894 cc
-eight hundred ninety kilowatts~890 kW`
+eight hundred ninety kilowatts~890 kW
 eight hundred ninety millimeters~890 mm
 eight hundred ninety two square kilometers~892 km²
 eight hundred seventy horsepower~870 hp

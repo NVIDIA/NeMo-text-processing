@@ -23,7 +23,6 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
 )
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
-
 '''
 Runs Evaluation on data in the format of : <semiotic class>\t<unnormalized text>\t<`self` if trivial class or normalized text>
 like the Google text normalization data https://www.kaggle.com/richardwilliamsproat/text-normalization-for-english-russian-and-polish
@@ -36,7 +35,7 @@ def parse_args():
     parser.add_argument(
         "--lang",
         help="language",
-        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh'],
+        choices=['ar', 'de', 'en', 'es', 'fr', 'hu', 'it', 'ru', 'sv', 'zh', 'hy', 'hi', 'ko', 'vi', 'pt'],
         default="en",
         type=str,
     )
@@ -65,7 +64,8 @@ if __name__ == "__main__":
     normalizer = Normalizer(input_case=args.input_case, lang=args.lang)
 
     print("Loading training data: " + file_path)
-    training_data = load_files([file_path])
+    to_lower = args.input_case == "lower_cased"
+    training_data = load_files([file_path], to_lower=to_lower)
 
     if args.filter:
         training_data = filter_loaded_data(training_data)
@@ -75,6 +75,9 @@ if __name__ == "__main__":
         sentences_un_normalized, sentences_normalized, _ = training_data_to_sentences(training_data)
         print("- Data: " + str(len(sentences_normalized)) + " sentences")
         sentences_prediction = normalizer.normalize_list(sentences_un_normalized)
+        with open('result.log', 'w') as ofp:
+            for inp, out in zip(sentences_normalized, sentences_prediction):
+                ofp.write(f'{inp==out}; {inp}\t{out}\n')
         print("- Normalized. Evaluating...")
         sentences_accuracy = evaluate(
             preds=sentences_prediction, labels=sentences_normalized, input=sentences_un_normalized
@@ -99,8 +102,6 @@ if __name__ == "__main__":
         token_count_per_type[token_type] * accuracy for token_type, accuracy in token_accuracy.items()
     ]
     print("- Accuracy: " + str(sum(token_weighted_accuracy) / sum(token_count_per_type.values())))
-    print(" - Total: " + str(sum(token_count_per_type.values())), '\n')
-
     print(" - Total: " + str(sum(token_count_per_type.values())), '\n')
 
     for token_type in token_accuracy:

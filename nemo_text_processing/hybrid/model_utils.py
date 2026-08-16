@@ -17,8 +17,9 @@ import math
 import re
 from typing import List, Union
 
-from nemo_text_processing.hybrid.mlm_scorer import MLMScorer
 from tqdm import tqdm
+
+from nemo_text_processing.hybrid.mlm_scorer import MLMScorer
 
 try:
     import torch
@@ -56,15 +57,15 @@ def get_masked_score(text, model, do_lower=True):
     If multiple tokens are present, multiple variants of the text are created where all but one ambiguous semiotic tokens are masked
     to avoid unwanted reinforcement of neighboring semiotic tokens."""
     text = text.lower() if do_lower else text
-    spans = re.findall("<\s.+?\s>", text)
+    spans = re.findall(r"<\s.+?\s>", text)
     if len(spans) > 0:
         text_with_mask = []
 
-        for match in re.finditer("<\s.+?\s>", text):
+        for match in re.finditer(r"<\s.+?\s>", text):
             new_text = (
                 text[: match.span()[0]] + match.group().replace("< ", "").replace(" >", "") + text[match.span()[1] :]
             )
-            new_text = re.sub("<\s.+?\s>", model.MASK_LABEL, new_text)
+            new_text = re.sub(r"<\s.+?\s>", model.MASK_LABEL, new_text)
             text_with_mask.append(new_text)
         text = text_with_mask
 
@@ -73,11 +74,11 @@ def get_masked_score(text, model, do_lower=True):
 
 def _get_ambiguous_positions(sentences: List[str]):
     """returns None or index list of ambigous semiotic tokens for list of sentences.
-    E.g. if sentences = ["< street > < three > A", "< saint > < three > A"], it returns [1, 0] since only 
+    E.g. if sentences = ["< street > < three > A", "< saint > < three > A"], it returns [1, 0] since only
     the first semiotic span <street>/<saint> is ambiguous."""
-    l_sets = [set([x]) for x in re.findall("<\s.+?\s>", sentences[0])]
+    l_sets = [set([x]) for x in re.findall(r"<\s.+?\s>", sentences[0])]
     for sentence in sentences[1:]:
-        spans = re.findall("<\s.+?\s>", sentence)
+        spans = re.findall(r"<\s.+?\s>", sentence)
         if len(spans) != len(l_sets):
             return None
         for i in range(len(spans)):
@@ -114,7 +115,7 @@ def score_options(sentences: List[str], context_len, model, do_lower=True):
             scores.append(av_score)
         elif isinstance(sent, str):  # in case of full context
             if ambiguous_positions:
-                matches = list(re.finditer("<\s.+?\s>", sent))
+                matches = list(re.finditer(r"<\s.+?\s>", sent))
                 for match, pos in zip(matches[::-1], ambiguous_positions[::-1]):
                     if not pos:
                         sent = (

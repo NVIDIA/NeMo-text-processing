@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, get_abs_path
 
 
 class FractionFst(GraphFst):

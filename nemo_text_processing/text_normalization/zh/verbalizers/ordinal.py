@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
 
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class OrdinalFst(GraphFst):
@@ -24,8 +25,8 @@ class OrdinalFst(GraphFst):
         tokens { ordinal { integer: "第一千万" } } -> 第一千万
     """
 
-    def __init__(self):
-        super().__init__(name="ordinal", kind="verbalize")
+    def __init__(self, deterministic: bool = True, lm: bool = False):
+        super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
         symbol = pynini.union("-", "~", "——", "—")
         dash = pynini.cross(symbol, "到")

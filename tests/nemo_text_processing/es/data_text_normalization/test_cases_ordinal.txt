@@ -114,3 +114,7 @@
 1ra~primera
 maría vii~maría séptima~maría séptimo
 todo mi reconocimiento~todo mi reconocimiento
+V~quinto
+El texto de Li Qin en este libro ahora está disponible en forma de libro electrónico.~El texto de Li Qin en este libro ahora está disponible en forma de libro electrónico.
+Xi Jinping es el actual presidente de China.~Xi Jinping es el actual presidente de China.
+Matías fue el XI apóstol.~Matías fue el undécimo apóstol.

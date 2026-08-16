@@ -13,18 +13,29 @@
 # limitations under the License.
 
 import pytest
-from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from parameterized import parameterized
+
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
 class TestDecimal:
     inverse_normalizer = InverseNormalizer(lang='es_en', cache_dir=CACHE_DIR, overwrite_cache=False)
+    inverse_normalizer_cased = InverseNormalizer(
+        lang='es_en', cache_dir=CACHE_DIR, overwrite_cache=False, input_case="cased"
+    )
 
     @parameterized.expand(parse_test_case_file('es_en/data_inverse_text_normalization/test_cases_decimal.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm_es(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
+        assert pred == expected
+
+    @parameterized.expand(parse_test_case_file('en/data_inverse_text_normalization/test_cases_decimal_cased.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_denorm(self, test_input, expected):
+        pred = self.inverse_normalizer_cased.inverse_normalize(test_input, verbose=False)
         assert pred == expected

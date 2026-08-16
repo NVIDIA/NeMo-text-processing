@@ -1,4 +1,4 @@
-# Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
@@ -40,9 +41,9 @@ class TimeFst(GraphFst):
 
         # gramamr for time, separated by colons 05:03:13
         symbol = pynutil.delete(":") | pynutil.delete("：")
-        hour_component = pynutil.insert("hour: \"") + hour + pynutil.insert('点') + pynutil.insert("\"")
-        minute_component = pynutil.insert("minute: \"") + minute + pynutil.insert('分') + pynutil.insert("\"")
-        second_component = pynutil.insert("second: \"") + second + pynutil.insert('秒') + pynutil.insert("\"")
+        hour_component = pynutil.insert("hours: \"") + hour + pynutil.insert('点') + pynutil.insert("\"")
+        minute_component = pynutil.insert("minutes: \"") + minute + pynutil.insert('分') + pynutil.insert("\"")
+        second_component = pynutil.insert("seconds: \"") + second + pynutil.insert('秒') + pynutil.insert("\"")
         # combining 3 components
         hour_minute_second = (
             hour_component
@@ -74,12 +75,12 @@ class TimeFst(GraphFst):
         minute_duration = pynini.accep("分钟") | pynini.accep('刻') | pynini.accep('刻钟')
         second_duration = pynini.accep("秒钟") | pynini.cross('秒鐘', '秒钟') | pynini.accep('秒')
         # combining two above
-        hour_component = pynutil.insert("hour: \"") + hour + (hour_clock | hour_duration) + pynutil.insert("\"")
+        hour_component = pynutil.insert("hours: \"") + hour + (hour_clock | hour_duration) + pynutil.insert("\"")
         minute_component = (
-            pynutil.insert("minute: \"") + minute + (minute_clock | minute_duration) + pynutil.insert("\"")
+            pynutil.insert("minutes: \"") + minute + (minute_clock | minute_duration) + pynutil.insert("\"")
         )
         second_component = (
-            pynutil.insert("second: \"") + second + (second_clock | second_duration) + pynutil.insert("\"")
+            pynutil.insert("seconds: \"") + second + (second_clock | second_duration) + pynutil.insert("\"")
         )
         hour_minute = hour_component + pynutil.insert(' ') + minute_component
         hour_second = hour_component + pynutil.insert(' ') + second_component
@@ -96,7 +97,7 @@ class TimeFst(GraphFst):
         )
 
         # gramamr for time, back count; 五点差n分n秒
-        backcount = pynutil.insert("verb: \"") + pynini.accep('差') + pynutil.insert("\"")
+        backcount = pynutil.insert("morphosyntactic_features: \"") + pynini.accep('差') + pynutil.insert("\"")
         graph_hour = (
             (
                 pynini.closure(backcount)

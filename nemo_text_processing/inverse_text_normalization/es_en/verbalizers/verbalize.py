@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pynini.lib import pynutil
+
 from nemo_text_processing.inverse_text_normalization.en.verbalizers.cardinal import CardinalFst as EnCardinalFst
 from nemo_text_processing.inverse_text_normalization.en.verbalizers.date import DateFst as EnDateFst
 from nemo_text_processing.inverse_text_normalization.en.verbalizers.decimal import DecimalFst as EnDecimalFst
@@ -34,7 +36,6 @@ from nemo_text_processing.inverse_text_normalization.es.verbalizers.telephone im
 from nemo_text_processing.inverse_text_normalization.es.verbalizers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.es.verbalizers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-from pynini.lib import pynutil
 
 
 class VerbalizeFst(GraphFst):
@@ -74,10 +75,12 @@ class VerbalizeFst(GraphFst):
         en_date_graph = EnDateFst().fst
         en_whitelist_graph = EnWhiteListFst().fst
         en_telephone_graph = EnTelephoneFst().fst
+        en_time_graph = EnTimeFst().fst
         en_electronic_graph = EnElectronicFst().fst
 
         graph = (
-            time_graph
+            en_time_graph
+            | pynutil.add_weight(time_graph, 1.1)
             | date_graph
             | pynutil.add_weight(en_date_graph, 1.1)
             | money_graph

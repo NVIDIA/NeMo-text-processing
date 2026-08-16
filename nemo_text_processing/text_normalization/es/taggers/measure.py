@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_NON_BREAKING_SPACE,
@@ -24,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.es.graph_utils import strip_cardinal_apocope
 from nemo_text_processing.text_normalization.es.utils import get_abs_path
-from pynini.lib import pynutil
 
 unit = pynini.string_file(get_abs_path("data/measures/measurements.tsv"))
 unit_complex = pynini.string_file(get_abs_path("data/measures/measurements_complex.tsv"))
@@ -78,7 +79,9 @@ class MeasureFst(GraphFst):
         )
 
         optional_unit_denominator = pynini.closure(
-            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator, 0, 1,
+            pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit_denominator,
+            0,
+            1,
         )
 
         complex_unit_singular_graph = (

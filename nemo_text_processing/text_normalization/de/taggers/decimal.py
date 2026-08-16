@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.de.utils import get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
-from pynini.lib import pynutil
 
 quantities = pynini.string_file(get_abs_path("data/numbers/quantities.tsv"))
 
@@ -26,7 +27,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
     e.g. 1 million -> integer_part: "eine" quantity: "million"
     e.g. 1.4 million -> integer_part: "eins" fractional_part: "vier" quantity: "million"
 
-    Args: 
+    Args:
         decimal: decimal FST
         cardinal_up_to_hundred: cardinal FST
     """
@@ -47,7 +48,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal, e.g. 
+    Finite state transducer for classifying decimal, e.g.
         -11,4006 billion -> decimal { negative: "true" integer_part: "elf"  fractional_part: "vier null null sechs" quantity: "billion" preserve_order: true }
         1 billion -> decimal { integer_part: "eins" quantity: "billion" preserve_order: true }
     Args:

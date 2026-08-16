@@ -14,6 +14,8 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_ALPHA,
     NEMO_DIGIT,
@@ -24,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.ru.alphabet import RU_ALPHA, TO_CYRILLIC
 from nemo_text_processing.text_normalization.ru.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class ElectronicFst(GraphFst):

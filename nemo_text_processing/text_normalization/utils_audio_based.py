@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 from typing import Dict
 
 from cdifflib import CSequenceMatcher
+
+from nemo_text_processing.utils.logging import logger
 
 MATCH = "match"
 NONMATCH = "non-match"
@@ -181,9 +182,9 @@ def adjust_boundaries(norm_raw_diffs: Dict, norm_pred_diffs: Dict, raw: str, nor
         cur_semiotic = " ".join(raw_list[item[1][0] : item[1][1]])
         cur_pred_text = " ".join(pred_text_list[item[2][0] : item[2][1]])
         cur_norm_span = " ".join(norm_list[item[0][0] : item[0][1]])
-        logging.debug(f"cur_semiotic: {cur_semiotic}")
-        logging.debug(f"cur_pred_text: {cur_pred_text}")
-        logging.debug(f"cur_norm_span: {cur_norm_span}")
+        logger.debug(f"cur_semiotic: {cur_semiotic}")
+        logger.debug(f"cur_pred_text: {cur_pred_text}")
+        logger.debug(f"cur_norm_span: {cur_norm_span}")
 
         # if cur_pred_text is an empty string
         if item[2][0] == item[2][1]:

@@ -14,16 +14,17 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ru.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
     """
     Finite state transducer for classifying time, e.g.
         "02:15" -> time { hours: "два часа пятнадцать минут" }
-    
+
     Args:
         number_names: number_names for cardinal and ordinal numbers
         deterministic: if True will provide a single transduction option,

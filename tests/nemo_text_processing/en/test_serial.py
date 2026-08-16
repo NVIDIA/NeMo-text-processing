@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import pytest
+from parameterized import parameterized
+
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
-from parameterized import parameterized
 
 from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
 
@@ -37,6 +38,8 @@ class TestSerial:
 
         if self.normalizer_with_audio_en:
             pred_non_deterministic = self.normalizer_with_audio_en.normalize(
-                test_input, n_tagged=-1, punct_post_process=False,
+                test_input,
+                n_tagged=-1,
+                punct_post_process=False,
             )
             assert expected in pred_non_deterministic, f"input: {test_input}"

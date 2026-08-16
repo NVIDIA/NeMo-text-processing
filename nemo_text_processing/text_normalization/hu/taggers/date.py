@@ -14,10 +14,11 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_DIGIT, NEMO_SPACE, GraphFst
 from nemo_text_processing.text_normalization.hu.graph_utils import TO_LOWER, TO_UPPER
 from nemo_text_processing.text_normalization.hu.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 
 def get_suffixed_days(labels):
@@ -40,7 +41,7 @@ def day_inflector(number, day):
     Args:
         number: the day number
         day: the day name
-    
+
     Returns:
         a list of expanded forms, two per ending.
     """
@@ -70,7 +71,7 @@ def day_adj_endings(number, word, basic=True):
         1-jei -> elsejei
         2-i -> másodiki
         2-ai -> másodikai
-        4-i -> negyediki 
+        4-i -> negyediki
         4-ei -> negyedikei
     This is based on other -i adjectives, because these forms are rare.
     """
@@ -102,7 +103,7 @@ def day_adj_endings(number, word, basic=True):
 
 class DateFst(GraphFst):
     """
-    Finite state transducer for classifying date, e.g. 
+    Finite state transducer for classifying date, e.g.
         "2010. április 1." -> date { year: "kettőezer-tíz" month: "április" day: "elseje" preserve_order: true }
         "2010. ápr. 1." -> date { year: "kettőezer-tíz" month: "április" day: "elseje" preserve_order: true }
         "2010. IV. 1." -> date { year: "kettőezer-tíz" month: "április" day: "elseje" preserve_order: true }

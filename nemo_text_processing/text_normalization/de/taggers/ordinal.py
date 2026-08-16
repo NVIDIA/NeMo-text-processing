@@ -16,13 +16,14 @@
 # Russian minimally supervised number grammar.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
 
 
 class OrdinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals, e.g. 
+    Finite state transducer for classifying cardinals, e.g.
         "2." -> ordinal { integer: "zwei" } }
         "2tes" -> ordinal { integer: "zwei" } }
 

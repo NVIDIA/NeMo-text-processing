@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.inverse_text_normalization.fr.graph_utils import GraphFst
 from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.fr.graph_utils import GraphFst
 
 
 class PunctuationFst(GraphFst):
@@ -27,7 +28,7 @@ class PunctuationFst(GraphFst):
         super().__init__(name="punctuation", kind="classify")
 
         s = "!#$%&\'()*+,-./:;<=>?@^_`{|}~"
-        guillemets = "\u00AB" + "\u00BB"  # quotation marks in French.
+        guillemets = "\u00ab" + "\u00bb"  # quotation marks in French.
         s += guillemets
         punct = pynini.union(*s)
 
