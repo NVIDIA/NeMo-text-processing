@@ -29,9 +29,7 @@ class MoneyFst(GraphFst):
         currency_nominative = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))
         currency_genitive = pynini.string_file(get_abs_path("data/money/currency_major_gen.tsv"))
         minor_standalone = pynini.string_file(get_abs_path("data/money/currency_minor_standalone.tsv"))
-        minor_standalone_genitive = pynini.string_file(
-            get_abs_path("data/money/currency_minor_standalone_gen.tsv")
-        )
+        minor_standalone_genitive = pynini.string_file(get_abs_path("data/money/currency_minor_standalone_gen.tsv"))
         major_forms = {
             "nom": dict(load_labels(get_abs_path("data/money/currency_major.tsv"))),
             "gen": dict(load_labels(get_abs_path("data/money/currency_major_gen.tsv"))),

@@ -463,27 +463,18 @@ class CardinalFst(GraphFst):
         zero = pynini.cross("0", "nolla")
         spoken_space = pynutil.insert(" ")
         non_zero = NEMO_DIGIT - "0"
-        one_leading_zero = zero + spoken_space + (
-            (non_zero + pynini.closure(NEMO_DIGIT, 0, 2)) @ nominative
-        )
+        one_leading_zero = zero + spoken_space + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 2)) @ nominative)
         two_leading_zeroes = (
-            zero
-            + spoken_space
-            + zero
-            + spoken_space
-            + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 1)) @ nominative)
+            zero + spoken_space + zero + spoken_space + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 1)) @ nominative)
         )
         all_zeroes = zero + pynini.closure(spoken_space + zero, 1, 3)
         documented_leading_zero = pynini.union(one_leading_zero, two_leading_zeroes, all_zeroes)
         single_digit = zero | graph_digit
         digit_by_digit = single_digit + pynini.closure(spoken_space + single_digit, 1)
         other_leading_zero = (
-            ("0" + pynini.closure(NEMO_DIGIT, 1))
-            - pynini.project(documented_leading_zero, "input")
+            ("0" + pynini.closure(NEMO_DIGIT, 1)) - pynini.project(documented_leading_zero, "input")
         ) @ digit_by_digit
-        self.graph_with_leading_zero = pynini.union(
-            nominative, documented_leading_zero, other_leading_zero
-        ).optimize()
+        self.graph_with_leading_zero = pynini.union(nominative, documented_leading_zero, other_leading_zero).optimize()
 
         year_domain = "1" + (NEMO_DIGIT - "0") + NEMO_DIGIT**2
         year_prefix = pynutil.delete("1") + digit + pynutil.insert("nuppelotčuođi")

@@ -116,13 +116,7 @@ class DateFst(GraphFst):
         )
         self.ymd = graph_ymd.optimize()
         graph_ymd |= (
-            year_only
-            + pynutil.delete("-")
-            + insert_space
-            + month_number
-            + pynutil.delete("-")
-            + insert_space
-            + day
+            year_only + pynutil.delete("-") + insert_space + month_number + pynutil.delete("-") + insert_space + day
         )
 
         separators = ["/", "-"]
