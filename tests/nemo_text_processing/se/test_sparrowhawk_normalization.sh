@@ -31,6 +31,10 @@ testTNDate() {
   runtest "$PROJECT_DIR/se/data_text_normalization/test_cases_date.txt"
 }
 
+testTNDecimal() {
+  runtest "$PROJECT_DIR/se/data_text_normalization/test_cases_decimal.txt"
+}
+
 testTNElectronic() {
   runtest "$PROJECT_DIR/se/data_text_normalization/test_cases_electronic.txt"
 }

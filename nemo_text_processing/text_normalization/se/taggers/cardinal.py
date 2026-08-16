@@ -418,7 +418,31 @@ class CardinalFst(GraphFst):
         self.graph_higher = (
             graph_trilliard + graph_trillion + graph_billiard + graph_billion + graph_milliard + graph_million
         )
-        graph = self.graph_higher + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
+        graph_under_million = graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000")
+        graph_without_conjunction = self.graph_higher + graph_under_million
+
+        graph = graph_under_million
+        remaining_digits = 6
+        higher_components = [
+            graph_trilliard,
+            graph_trillion,
+            graph_billiard,
+            graph_billion,
+            graph_milliard,
+            graph_million,
+        ]
+        for component in reversed(higher_components):
+            remaining_zeroes = "0" * remaining_digits
+            lower_non_zero = (NEMO_DIGIT**remaining_digits - remaining_zeroes) @ graph
+            component_non_zero = (NEMO_DIGIT**3 - "000") @ component
+            graph = pynini.union(
+                pynutil.delete("000") + graph,
+                component_non_zero + pynutil.delete(remaining_zeroes),
+                component_non_zero + pynutil.insert(" ja ") + lower_non_zero,
+            ).optimize()
+            remaining_digits += 3
+        if not deterministic:
+            graph |= pynutil.add_weight(graph_without_conjunction, 0.1)
 
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
@@ -450,9 +474,17 @@ class CardinalFst(GraphFst):
             + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 1)) @ nominative)
         )
         all_zeroes = zero + pynini.closure(spoken_space + zero, 1, 3)
+        documented_leading_zero = pynini.union(one_leading_zero, two_leading_zeroes, all_zeroes)
+        single_digit = zero | graph_digit
+        digit_by_digit = single_digit + pynini.closure(spoken_space + single_digit, 1)
+        other_leading_zero = (
+            ("0" + pynini.closure(NEMO_DIGIT, 1))
+            - pynini.project(documented_leading_zero, "input")
+        ) @ digit_by_digit
         self.graph_with_leading_zero = pynini.union(
-            nominative, one_leading_zero, two_leading_zeroes, all_zeroes
+            nominative, documented_leading_zero, other_leading_zero
         ).optimize()
+        self.graph = self.graph_with_leading_zero.copy()
 
         compound_digit = pynini.string_file(get_abs_path("data/numbers/compound_digit.tsv"))
         compound_teen = pynutil.delete("1") + digit + pynutil.insert("nuppeloh")

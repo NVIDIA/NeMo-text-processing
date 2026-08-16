@@ -90,10 +90,10 @@ class ClassifyFst(GraphFst):
             ordinal_graph = ordinal.fst
             logging.debug(f"ordinal: {time.time() - start_time: .2f}s -- {ordinal_graph.num_states()} nodes")
 
-            # start_time = time.time()
-            # decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
-            # decimal_graph = decimal.fst
-            # logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
+            start_time = time.time()
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            decimal_graph = decimal.fst
+            logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
             # start_time = time.time()
             # fraction = FractionFst(deterministic=deterministic, ordinal=ordinal, cardinal=cardinal)
@@ -143,7 +143,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(time_graph, 1.1)
                 | pynutil.add_weight(date_graph, 1.09)
-                # | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
