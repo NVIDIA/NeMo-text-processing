@@ -44,7 +44,7 @@ class MoneyFst(GraphFst):
         non_one = pynini.difference(pynini.project(cardinal.graph, "input"), "1") @ cardinal.graph
         separator = delete_zero_or_one_space
         optional_zero_fraction = pynini.closure(
-            pynutil.delete(",") + (pynutil.delete("00") | pynutil.delete("–")), 0, 1
+            pynutil.delete(",") + (pynutil.delete("00") | pynutil.delete("-") | pynutil.delete("–")), 0, 1
         )
 
         def integer_token(graph):
@@ -80,13 +80,53 @@ class MoneyFst(GraphFst):
                     pairs.append((f",{number_input} {symbol}", output))
             return pynini.string_map(pairs)
 
+        def prefix_integer(integer_graph, major_case):
+            alternatives = []
+            for symbol, major_form in major_forms[major_case].items():
+                alternatives.append(
+                    pynutil.delete(symbol)
+                    + separator
+                    + integer_token(integer_graph)
+                    + currency_token(pynutil.insert(major_form))
+                )
+            return pynini.union(*alternatives)
+
+        def prefix_fractional(integer_graph, major_case, conjunction=True):
+            alternatives = []
+            for symbol in major_forms[major_case].keys():
+                pairs = []
+                major_form = major_forms[major_case][symbol]
+                for number in range(1, 100):
+                    minor_case = "nom" if number == 1 else "gen"
+                    if symbol not in minor_forms[minor_case]:
+                        continue
+                    number_input = str(number) if number >= 10 else f"0{number}"
+                    number_output = pynini.shortestpath(pynini.accep(str(number)) @ cardinal.graph).string()
+                    number_phrase = f"ja {number_output}" if conjunction else number_output
+                    output = (
+                        f' currency_maj: "{major_form}" fractional_part: "{number_phrase}" '
+                        f'currency_min: "{minor_forms[minor_case][symbol]}" preserve_order: true'
+                    )
+                    pairs.append((f",{number_input}", output))
+                if pairs:
+                    alternatives.append(
+                        pynutil.delete(symbol) + separator + integer_token(integer_graph) + pynini.string_map(pairs)
+                    )
+            return pynini.union(*alternatives)
+
         singular = integer_token(one) + optional_zero_fraction + separator + currency_token(currency_nominative)
         governed = integer_token(non_one) + optional_zero_fraction + separator + currency_token(currency_genitive)
+        singular |= prefix_integer(one, "nom") + optional_zero_fraction
+        governed |= prefix_integer(non_one, "gen") + optional_zero_fraction
         fractional = integer_token(one) + fractional_currency("nom", tokenized=True)
         fractional |= integer_token(non_one) + fractional_currency("gen", tokenized=True)
+        fractional |= prefix_fractional(one, "nom")
+        fractional |= prefix_fractional(non_one, "gen")
         if not deterministic:
             fractional |= integer_token(one) + fractional_currency("nom", tokenized=True, conjunction=False)
             fractional |= integer_token(non_one) + fractional_currency("gen", tokenized=True, conjunction=False)
+            fractional |= prefix_fractional(one, "nom", conjunction=False)
+            fractional |= prefix_fractional(non_one, "gen", conjunction=False)
         minor_singular = fractional_token(one) + separator + minor_token(minor_standalone)
         minor_governed = fractional_token(non_one) + separator + minor_token(minor_standalone_genitive)
         if not deterministic:
