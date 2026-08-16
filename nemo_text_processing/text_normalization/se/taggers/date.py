@@ -133,9 +133,7 @@ class DateFst(GraphFst):
         self.final_graph = final_graph.optimize()
 
         month_genitive = pynini.project(self.months_nom2gen, "output")
-        month_genitive |= pynini.project(
-            pynini.string_file(get_abs_path("data/dates/months_gen.tsv")), "input"
-        )
+        month_genitive |= pynini.project(pynini.string_file(get_abs_path("data/dates/months_gen.tsv")), "input")
         interval_first = (
             optional_leading_zero @ pynini.union(*[str(x) for x in range(10, 32)]) @ ordinal.graphs["loc_sg"]
         )
