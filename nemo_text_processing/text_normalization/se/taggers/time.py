@@ -217,6 +217,13 @@ class TimeFst(GraphFst):
         final_graph = (graph_hm | graph_h | graph_hms).optimize() @ pynini.cdrewrite(
             delete_extra_space, "", "", NEMO_SIGMA
         )
+        zero_fields = pynini.string_map(
+            [
+                ('minutes: "nolla"', 'minutes: "nolla nolla"'),
+                ('seconds: "nolla"', 'seconds: "nolla nolla"'),
+            ]
+        )
+        final_graph @= pynini.cdrewrite(zero_fields, "", "", NEMO_SIGMA)
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

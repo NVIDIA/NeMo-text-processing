@@ -56,6 +56,7 @@ class DateFst(GraphFst):
         self.months_gen2nom = pynini.invert(self.months_nom2gen)
         self.months_num2gen = (number_to_month @ self.months_nom2gen).optimize()
         month_graph = self.months_gen2nom
+        month_graph |= pynini.string_file(get_abs_path("data/dates/months_gen.tsv"))
 
         month_abbr_graph = pynini.string_map(month_abbr_graph)
         month_abbr_graph = (
@@ -95,13 +96,15 @@ class DateFst(GraphFst):
         graph_mdy = graph_md + pynini.closure(pynini.accep(" ") + year_only, 0, 1) + preserve_order
         self.mdy = graph_mdy.optimize()
 
-        graph_dmy = (
-            day
-            + pynutil.delete("/")
-            + insert_space
-            + month_number
-            + pynini.closure(pynutil.delete("/") + insert_space + year_only, 0, 1)
-        )
+        graph_dmy = pynini.Fst()
+        for separator in ["/", "."]:
+            graph_dmy |= (
+                day
+                + pynutil.delete(separator)
+                + insert_space
+                + month_number
+                + pynini.closure(pynutil.delete(separator) + insert_space + year_only, 0, 1)
+            )
         self.dmy = graph_dmy.optimize()
         graph_ymd = (
             year_only
@@ -111,6 +114,15 @@ class DateFst(GraphFst):
             + pynini.closure(pynutil.delete("/") + insert_space + day, 0, 1)
         )
         self.ymd = graph_ymd.optimize()
+        graph_ymd |= (
+            year_only
+            + pynutil.delete("-")
+            + insert_space
+            + month_number
+            + pynutil.delete("-")
+            + insert_space
+            + day
+        )
 
         separators = ["/", "-"]
         for sep in separators:
