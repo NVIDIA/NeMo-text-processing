@@ -21,6 +21,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
+    convert_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import TO_LOWER
@@ -136,4 +137,39 @@ class DateFst(GraphFst):
         final_graph |= graph_mdy
 
         self.final_graph = final_graph.optimize()
-        self.fst = self.add_tokens(self.final_graph).optimize()
+
+        month_genitive = pynini.project(self.months_nom2gen, "output")
+        month_genitive |= pynini.project(
+            pynini.string_file(get_abs_path("data/dates/months_gen.tsv")), "input"
+        )
+        interval_first = (
+            optional_leading_zero
+            @ pynini.union(*[str(x) for x in range(10, 32)])
+            @ ordinal.graphs["loc_sg"]
+        )
+        interval_last = (
+            optional_leading_zero
+            @ pynini.union(*[str(x) for x in range(10, 32)])
+            @ ordinal.graphs["ill_sg"]
+        )
+        day_interval = (
+            month_genitive
+            + NEMO_SPACE
+            + interval_first
+            + pynini.cross(".-", " beaivvis ")
+            + interval_last
+            + pynutil.delete(".")
+            + pynutil.delete(" ")
+            + pynutil.delete("beaivvit")
+        )
+
+        two_digit_year = (NEMO_DIGIT**2) @ cardinal.graph_with_leading_zero
+        year_range = (
+            pynini.accep("jagit")
+            + NEMO_SPACE
+            + cardinal.year
+            + pynini.cross("-", " gitta ")
+            + (two_digit_year | cardinal.year | cardinal.graph_with_leading_zero)
+        )
+        name_graph = pynutil.insert('name: "') + convert_space(day_interval | year_range) + pynutil.insert('"')
+        self.fst = (self.add_tokens(self.final_graph) | name_graph).optimize()
