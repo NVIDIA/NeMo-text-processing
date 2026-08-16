@@ -38,8 +38,9 @@ class MoneyFst(GraphFst):
             "nom": dict(load_labels(get_abs_path("data/money/currency_minor.tsv"))),
             "gen": dict(load_labels(get_abs_path("data/money/currency_minor_gen.tsv"))),
         }
-        one = pynini.accep("1") @ cardinal.graph
-        non_one = pynini.difference(pynini.project(cardinal.graph, "input"), "1") @ cardinal.graph
+        cardinal_graph = cardinal.graphs["nom_sg"]
+        one = pynini.accep("1") @ cardinal_graph
+        non_one = pynini.difference(pynini.project(cardinal_graph, "input"), "1") @ cardinal_graph
         separator = delete_zero_or_one_space
         optional_zero_fraction = pynini.closure(
             pynutil.delete(",") + (pynutil.delete("00") | pynutil.delete("-") | pynutil.delete("–")), 0, 1
@@ -57,10 +58,10 @@ class MoneyFst(GraphFst):
         def minor_token(graph):
             return pynutil.insert('currency_min: "') + graph + pynutil.insert('" preserve_order: true')
 
-        fractional_one = pynutil.delete(",0") + ("1" @ cardinal.graph)
+        fractional_one = pynutil.delete(",0") + ("1" @ cardinal_graph)
         fractional_non_one = pynutil.delete(",") + (
-            pynutil.delete("0") + ((NEMO_DIGIT - "0" - "1") @ cardinal.graph)
-            | ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ cardinal.graph
+            pynutil.delete("0") + ((NEMO_DIGIT - "0" - "1") @ cardinal_graph)
+            | ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ cardinal_graph
         )
 
         def number_phrase(graph, conjunction):

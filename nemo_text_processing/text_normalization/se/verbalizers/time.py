@@ -29,8 +29,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time, e.g.
-        time { hours: "tolv" minutes: "trettio" suffix: "förmiddag" zone: "e s t" } -> tolv trettio förmiddag e s t
-        time { hours: "tolv" } -> tolv
+        time { hours: "golbmanuppelohkái" minutes: "golbmalogi" zone: "c s t" } ->
+        golbmanuppelohkái golbmalogi c s t
 
     Args:
         deterministic: if True will provide a single transduction option,

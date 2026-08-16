@@ -480,12 +480,9 @@ class CardinalFst(GraphFst):
         year_prefix = pynutil.delete("1") + digit + pynutil.insert("nuppelotčuođi")
         year_remainder = pynutil.delete("00") | ((NEMO_DIGIT**2) @ self.two_digit_non_zero)
         self.year = (year_domain @ (year_prefix + year_remainder)).optimize()
-        ordinary_non_year = (
-            pynini.project(self.graph_with_leading_zero, "input") - year_domain
-        ) @ self.graph_with_leading_zero
-        self.graph = ordinary_non_year | self.year
+        self.graph = self.graph_with_leading_zero
         if not deterministic:
-            self.graph |= pynutil.add_weight(year_domain @ self.graph_with_leading_zero, 0.1)
+            self.graph |= pynutil.add_weight(self.year, 0.1)
         self.graph = self.graph.optimize()
 
         compound_digit = pynini.string_file(get_abs_path("data/numbers/compound_digit.tsv"))
@@ -501,7 +498,7 @@ class CardinalFst(GraphFst):
         ).optimize()
 
         cased = build_cased_number_fsts(deterministic)
-        self.graphs = {"nom_sg": self.graph}
+        self.graphs = {"nom_sg": self.graph.copy()}
         for case in CASE_KEYS:
             case_graph = pynini.union(
                 cased["zero"][case],

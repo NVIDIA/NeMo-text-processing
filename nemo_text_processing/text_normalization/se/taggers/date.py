@@ -69,7 +69,6 @@ class DateFst(GraphFst):
         month_graph |= (TO_LOWER + pynini.closure(NEMO_CHAR)) @ month_graph
         month_graph |= month_abbr_graph
 
-        numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
         # 01, 31, 1
         digit_day = optional_leading_zero @ pynini.union(*[str(x) for x in range(1, 32)]) @ ordinal.graph_bare_ordinals
@@ -81,9 +80,8 @@ class DateFst(GraphFst):
         month_name = (pynutil.insert("month: \"") + month_graph + pynutil.insert("\"")).optimize()
         month_number = (pynutil.insert("month: \"") + graph_number_to_month + pynutil.insert("\"")).optimize()
 
-        # prefer cardinal over year
         year = (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 1, 3)  # 90, 990, 1990
-        year @= numbers
+        year @= cardinal.year | pynutil.add_weight(cardinal.graph, 0.1)
         self.year = year.optimize()
 
         year_only = pynutil.insert("year: \"") + year + pynutil.insert("\"")
