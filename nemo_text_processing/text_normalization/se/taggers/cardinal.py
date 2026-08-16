@@ -435,6 +435,25 @@ class CardinalFst(GraphFst):
 
         self.graph = filter_punctuation(self.graph).optimize()
 
+        nominative = self.graph.copy()
+        zero = pynini.cross("0", "nolla")
+        spoken_space = pynutil.insert(" ")
+        non_zero = NEMO_DIGIT - "0"
+        one_leading_zero = zero + spoken_space + (
+            (non_zero + pynini.closure(NEMO_DIGIT, 0, 2)) @ nominative
+        )
+        two_leading_zeroes = (
+            zero
+            + spoken_space
+            + zero
+            + spoken_space
+            + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 1)) @ nominative)
+        )
+        all_zeroes = zero + pynini.closure(spoken_space + zero, 1, 3)
+        self.graph_with_leading_zero = pynini.union(
+            nominative, one_leading_zero, two_leading_zeroes, all_zeroes
+        ).optimize()
+
         compound_digit = pynini.string_file(get_abs_path("data/numbers/compound_digit.tsv"))
         compound_teen = pynutil.delete("1") + digit + pynutil.insert("nuppeloh")
         if not deterministic:

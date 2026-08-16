@@ -27,23 +27,7 @@ class TelephoneFst(GraphFst):
     def __init__(self, cardinal: CardinalFst, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
 
-        nominative_cardinal = cardinal if deterministic else CardinalFst(deterministic=True)
-        nominative = nominative_cardinal.graphs["nom_sg"]
-        non_zero = NEMO_DIGIT - "0"
-        zero = pynini.cross("0", "nolla")
-        spoken_space = pynutil.insert(" ")
-
-        ordinary_group = pynini.closure(NEMO_DIGIT, 2, 4) @ nominative
-        one_leading_zero = zero + spoken_space + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 2)) @ nominative)
-        two_leading_zeroes = (
-            zero
-            + spoken_space
-            + zero
-            + spoken_space
-            + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 1)) @ nominative)
-        )
-        all_zeroes = zero + pynini.closure(pynutil.insert(" ") + zero, 1, 3)
-        group = pynini.union(ordinary_group, one_leading_zero, two_leading_zeroes, all_zeroes).optimize()
+        group = pynini.closure(NEMO_DIGIT, 2, 4) @ cardinal.graph_with_leading_zero
 
         group_separator = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 1)) + pynutil.insert(" ")
         number = group + pynini.closure(group_separator + group, 1)
