@@ -1,1 +1,6 @@
 tel.~telefonnummár
+abstr.~abstrákta
+dii.~diibmu
+gč.~geahča
+tlf.~telefovdna
+vrd.~veardit

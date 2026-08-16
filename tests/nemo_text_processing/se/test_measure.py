@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, Jim O'Regan.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,21 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pytest
 from parameterized import parameterized
+from pynini.lib.rewrite import top_rewrite
 
-from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.text_normalization.se.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.se.taggers.measure import MeasureFst
 
-from ..utils import CACHE_DIR, parse_test_case_file
+from ..utils import parse_test_case_file
 
 
-class TestOrdinal:
-    normalizer = Normalizer(input_case='cased', lang='se', cache_dir=CACHE_DIR, overwrite_cache=False)
+class TestMeasure:
+    graph = MeasureFst(CardinalFst(deterministic=True), deterministic=True).graph
 
-    @parameterized.expand(parse_test_case_file('se/data_text_normalization/test_cases_ordinal.txt'))
+    @parameterized.expand(parse_test_case_file('se/data_text_normalization/test_cases_measure.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
-        pred = self.normalizer.normalize(test_input, verbose=False)
-        assert pred == expected
+        assert top_rewrite(test_input, self.graph) == expected

@@ -14,9 +14,11 @@
 
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, insert_space
 from nemo_text_processing.text_normalization.se.graph_utils import SE_UPPER
-from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.se.utils import get_abs_path
 
 
 class AbbreviationFst(GraphFst):
@@ -41,12 +43,16 @@ class AbbreviationFst(GraphFst):
         # ABC -> A B C
         graph |= SE_UPPER + pynini.closure(insert_space + SE_UPPER, 1)
 
+        case_suffix = pynini.project(pynini.string_file(get_abs_path("data/inflection/case_suffixes.tsv")), "output")
+        graph += pynini.closure(pynini.accep(":") + case_suffix, 0, 1)
+
         # exclude words that are included in the whitelist
         if whitelist is not None:
             graph = pynini.compose(
                 pynini.difference(pynini.project(graph, "input"), pynini.project(whitelist.graph, "input")), graph
             )
 
-        graph = pynutil.insert("value: \"") + graph.optimize() + pynutil.insert("\"")
+        self.graph = graph.optimize()
+        graph = pynutil.insert("value: \"") + self.graph + pynutil.insert("\"")
         graph = self.add_tokens(graph)
         self.fst = graph.optimize()

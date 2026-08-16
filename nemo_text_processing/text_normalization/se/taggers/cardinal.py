@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -22,8 +24,13 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA, make_spacer
-from nemo_text_processing.text_normalization.se.utils import CASE_KEYS, get_abs_path, load_case_forms, load_labels
-from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.se.utils import (
+    CASE_ALIASES,
+    CASE_KEYS,
+    get_abs_path,
+    load_case_forms,
+    load_labels,
+)
 
 
 def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
@@ -37,7 +44,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     Returns:
         fst: A pynini.FstLike object
     """
-    exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
+    exactly_three_digits = NEMO_DIGIT**3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
 
     cardinal_separator = pynini.union(NEMO_SPACE, ".")
@@ -134,11 +141,13 @@ def build_cased_number_fsts(deterministic=True):
         if k == "nom_sg":
             teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert("nuppelohkái")
         else:
-            teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert(f"nuppe{logi_cased[k]}")
+            teens_cased_fst[k] = (
+                pynutil.delete("1") + digits_cased_fst["nom_sg"] + pynutil.insert(f"nuppe{logi_cased[k]}")
+            )
         if not deterministic:
             if k in ["nom_pl", "gen_pl", "acc_pl", "loc_pl"]:
                 dbc = digits_bare_cased_fst[k]
-                teens_cased_fst[k] = pynutil.delete("1") + dbc + pynutil.insert(f"nuppe{logi_cased[k]}")
+                teens_cased_fst[k] |= pynutil.delete("1") + dbc + pynutil.insert(f"nuppe{logi_cased[k]}")
             if k == "ess":
                 teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["ess"] + nuppelogin
                 teens_cased_fst["ess"] |= pynutil.delete("1") + digits_cased_fst["nom_pl"] + nuppelogin
@@ -246,7 +255,7 @@ def build_cased_number_fsts(deterministic=True):
         bare_thousand = pynini.cross("000", duhat_cased[k])
         prefix_digit = (NEMO_DIGIT - "1") @ digits_prefix_cased_fst[k]
         prefix_digit |= pynutil.delete("1")
-        if not deterministic and k == "sg_gen":
+        if not deterministic and k == "gen_sg":
             bare_thousand |= pynini.cross("000", "duhát")
         bare_thousands_fst[k] = prefix_digit + spacer + bare_thousand
     thousands_fst = {}
@@ -414,7 +423,7 @@ class CardinalFst(GraphFst):
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
+            @ NEMO_DIGIT**24
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
@@ -425,6 +434,50 @@ class CardinalFst(GraphFst):
         self.graph |= graph_zero
 
         self.graph = filter_punctuation(self.graph).optimize()
+
+        compound_digit = pynini.string_file(get_abs_path("data/numbers/compound_digit.tsv"))
+        compound_teen = pynutil.delete("1") + digit + pynutil.insert("nuppeloh")
+        if not deterministic:
+            compound_teen |= pynutil.delete("1") + digit + pynutil.insert("nuppelot")
+        self.compound = pynini.union(
+            compound_digit,
+            pynini.cross("10", "logi"),
+            compound_teen,
+            digits_no_one + pynini.cross("0", "logi"),
+            digits_no_one + pynutil.insert("logi") + compound_digit,
+        ).optimize()
+
+        cased = build_cased_number_fsts(deterministic)
+        self.graphs = {"nom_sg": self.graph}
+        for case in CASE_KEYS:
+            case_graph = pynini.union(
+                cased["zero"][case],
+                cased["digits"][case],
+                cased["two_digit_cased_fsts"][case],
+                cased["three_digit_cased_fsts"][case],
+                cased["bare_hundreds"][case],
+                cased["bare_thousands"][case],
+                cased["thousands"][case],
+            ).optimize()
+            self.graphs[case] = filter_punctuation(case_graph).optimize()
+
+        for alias, case in CASE_ALIASES.items():
+            self.graphs[alias] = self.graphs[case]
+        self.graph_dict = self.graphs
+
+        # Riektačállinrávvagat (Sámediggi, revised 2019), pp. 60–61:
+        # "Go vuođđologuide laktá sojahangehčosiid, de čállá logu maŋŋái
+        # duppalčuoggá ja dan maŋŋái fas kásusgehčosa."
+        case_suffixes = load_labels(get_abs_path("data/inflection/case_suffixes.tsv"))
+        explicit_case_graphs = []
+        for case, suffix in case_suffixes:
+            explicit_case_graphs.append(self.graphs[case] + pynutil.delete(":") + pynutil.delete(suffix))
+        self.graph_suffixed = pynini.union(*explicit_case_graphs).optimize()
+
+        self.graph |= self.graph_suffixed
+        if not deterministic:
+            self.graph |= pynini.union(*self.graphs.values())
+        self.graph = self.graph.optimize()
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
