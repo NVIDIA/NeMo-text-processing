@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, convert_space
 from nemo_text_processing.text_normalization.se.graph_utils import SE_UPPER
 from nemo_text_processing.text_normalization.se.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
@@ -49,4 +49,4 @@ class AlphanumericFst(GraphFst):
             digits + pynini.closure(space + letters + space + digits) + pynini.closure(space + letters, 0, 1),
         )
         graph = pynini.cdrewrite(pynutil.delete("-"), "", "", NEMO_SIGMA) @ graph
-        self.fst = pynutil.insert('name: "') + graph + pynutil.insert('"')
+        self.fst = pynutil.insert('name: "') + convert_space(graph) + pynutil.insert('"')
