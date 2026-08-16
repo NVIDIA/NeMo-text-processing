@@ -163,6 +163,20 @@ class DateFst(GraphFst):
             + pynutil.delete("beaivvit")
         )
 
+        abbreviated_month_genitive = month_abbr_graph @ self.months_nom2gen
+        month_interval = (
+            abbreviated_month_genitive
+            + NEMO_SPACE
+            + interval_first
+            + pynutil.delete(". b. - ")
+            + pynutil.insert(" beaivvis ")
+            + abbreviated_month_genitive
+            + NEMO_SPACE
+            + interval_last
+            + pynutil.delete(". b.")
+            + pynutil.insert(" beaivái")
+        )
+
         two_digit_year = (NEMO_DIGIT**2) @ cardinal.graph_with_leading_zero
         year_range = (
             pynini.accep("jagit")
@@ -171,5 +185,9 @@ class DateFst(GraphFst):
             + pynini.cross("-", " gitta ")
             + (two_digit_year | cardinal.year | cardinal.graph_with_leading_zero)
         )
-        name_graph = pynutil.insert('name: "') + convert_space(day_interval | year_range) + pynutil.insert('"')
+        name_graph = (
+            pynutil.insert('name: "')
+            + convert_space(day_interval | month_interval | year_range)
+            + pynutil.insert('"')
+        )
         self.fst = (self.add_tokens(self.final_graph) | name_graph).optimize()
