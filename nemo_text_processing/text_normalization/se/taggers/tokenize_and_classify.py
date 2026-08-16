@@ -28,7 +28,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.se.taggers.abbreviation import AbbreviationFst
-from nemo_text_processing.text_normalization.se.taggers.alphanumeric import AlphanumericFst
 from nemo_text_processing.text_normalization.se.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.se.taggers.date import DateFst
 from nemo_text_processing.text_normalization.se.taggers.decimal import DecimalFst
@@ -126,10 +125,6 @@ class ClassifyFst(GraphFst):
             logging.debug(f"telephone: {time.time() - start_time: .2f}s -- {telephone_graph.num_states()} nodes")
 
             start_time = time.time()
-            alphanumeric_graph = AlphanumericFst(cardinal=cardinal, deterministic=deterministic).fst
-            logging.debug(f"alphanumeric: {time.time() - start_time: .2f}s -- {alphanumeric_graph.num_states()} nodes")
-
-            start_time = time.time()
             whitelist_graph = WhiteListFst(
                 input_case=input_case, deterministic=deterministic, input_file=whitelist
             ).fst
@@ -141,7 +136,9 @@ class ClassifyFst(GraphFst):
             logging.debug(f"punct: {time.time() - start_time: .2f}s -- {punct_graph.num_states()} nodes")
 
             start_time = time.time()
-            word_graph = WordFst(deterministic=deterministic).fst
+            word = WordFst(cardinal=cardinal, deterministic=deterministic)
+            word_graph = word.fst
+            alphanumeric_graph = word.alphanumeric
             logging.debug(f"word: {time.time() - start_time: .2f}s -- {word_graph.num_states()} nodes")
 
             classify = (
