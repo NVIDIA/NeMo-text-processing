@@ -68,3 +68,12 @@
 16:in~guhttanuppelogiin
 16:iguin~guhttanuppelogiiguin
 16:n~guhttanuppelohkin
+6:a~guđa
+6:i~guhttii
+6:s~guđas
+6:in~guđain
+6:n~guhttan
+6:t~guđat
+6:id~guđaid
+6:ide~guđaide
+6:iguin~guđaiguin

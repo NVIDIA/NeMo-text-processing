@@ -52,7 +52,7 @@ class MoneyFst(GraphFst):
         def fractional_token(graph):
             return pynutil.insert('fractional_part: "') + graph + pynutil.insert('" ')
 
-        def fractional_currency(major_case, tokenized):
+        def fractional_currency(major_case, tokenized, conjunction=True):
             pairs = []
             for number in range(1, 100):
                 minor_case = "nom" if number == 1 else "gen"
@@ -61,13 +61,14 @@ class MoneyFst(GraphFst):
                 for symbol in major_forms[major_case].keys() & minor_forms[minor_case].keys():
                     major_form = major_forms[major_case][symbol]
                     minor_form = minor_forms[minor_case][symbol]
+                    number_phrase = f"ja {number_output}" if conjunction else number_output
                     if tokenized:
                         output = (
-                            f'currency_maj: "{major_form}" fractional_part: "{number_output}" '
+                            f'currency_maj: "{major_form}" fractional_part: "{number_phrase}" '
                             f'currency_min: "{minor_form}" preserve_order: true'
                         )
                     else:
-                        output = f" {major_form} {number_output} {minor_form}"
+                        output = f" {major_form} {number_phrase} {minor_form}"
                     pairs.append((f",{number_input}{symbol}", output))
                     pairs.append((f",{number_input} {symbol}", output))
             return pynini.string_map(pairs)
@@ -76,6 +77,9 @@ class MoneyFst(GraphFst):
         governed = integer_token(non_one) + optional_zero_fraction + separator + currency_token(currency_genitive)
         fractional = integer_token(one) + fractional_currency("nom", tokenized=True)
         fractional |= integer_token(non_one) + fractional_currency("gen", tokenized=True)
+        if not deterministic:
+            fractional |= integer_token(one) + fractional_currency("nom", tokenized=True, conjunction=False)
+            fractional |= integer_token(non_one) + fractional_currency("gen", tokenized=True, conjunction=False)
         minor_singular = fractional_token(one) + separator + pynini.cross(
             "c", 'currency_min: "sente" preserve_order: true'
         )
@@ -96,3 +100,7 @@ class MoneyFst(GraphFst):
             | one + separator + pynutil.insert(" ") + pynini.cross("c", "sente")
             | non_one + separator + pynutil.insert(" ") + pynini.cross("c", "sentte")
         ).optimize()
+        if not deterministic:
+            self.graph |= one + fractional_currency("nom", tokenized=False, conjunction=False)
+            self.graph |= non_one + fractional_currency("gen", tokenized=False, conjunction=False)
+            self.graph = self.graph.optimize()

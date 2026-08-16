@@ -44,6 +44,30 @@ class MeasureFst(GraphFst):
         governed = cardinal_token(non_one) + separator + unit_token(unit_genitive)
         rate = cardinal_token(cardinal.graph) + separator + unit_token(unit_rate)
 
+        delimiter = delete_zero_or_one_space + pynutil.insert(" ")
+        operand = cardinal.graph
+        no_equals_operator = pynini.string_file(get_abs_path("data/math_operations_no_equals.tsv"))
+        equals_operator = pynini.string_file(get_abs_path("data/math_operations.tsv"))
+        prefix = pynini.string_file(get_abs_path("data/math_prefix.tsv")) + pynutil.insert(" ") + operand
+        binary = operand + delimiter + no_equals_operator + delimiter + operand
+        equation = (
+            operand
+            + delimiter
+            + equals_operator
+            + delimiter
+            + operand
+            + delimiter
+            + pynini.cross("=", "lea")
+            + delimiter
+            + operand
+        )
+        math = (prefix | binary | equation).optimize()
+        math_token = (
+            pynutil.insert('measure { units: "math" cardinal { integer: "')
+            + math
+            + pynutil.insert('" } preserve_order: true }')
+        )
+
         # Riektačállinrávvagat (Sámediggi, revised 2019), p. 57:
         # "ovcce- ja guoktenuppelohjahkáččat" corresponds to
         # "9- ja 12-jahkásaččat".
@@ -56,10 +80,11 @@ class MeasureFst(GraphFst):
         if not deterministic:
             governed |= cardinal_token(non_one) + separator + unit_token(unit_nominative)
 
-        self.fst = (self.add_tokens(singular | governed | rate) | age_token).optimize()
+        self.fst = (self.add_tokens(singular | governed | rate) | age_token | math_token).optimize()
         self.graph = (
             one + separator + pynutil.insert(" ") + unit_nominative
             | non_one + separator + pynutil.insert(" ") + unit_genitive
             | cardinal.graph + separator + pynutil.insert(" ") + unit_rate
             | age
+            | math
         ).optimize()

@@ -8,3 +8,14 @@
 12-jahkásaččat~guoktenuppelohjahkáččat
 20-jahkásaš~guoktelogijahkásaš
 22-jahkásaš~guoktelogiguovttejahkásaš
+-12~minus guoktenuppelohkái
++24~plussa guokteloginjeallje
+14-2~njealljenuppelohkái sáhcu guokte
+14-2=12~njealljenuppelohkái minus guokte lea guoktenuppelohkái
+2+3~guokte plussa golbma
+2+3=5~guokte plussa golbma lea vihtta
+2*3~guokte asterisk golbma
+2*3=6~guokte geardde golbma lea guhtta
+2/3~guokte finjusáhcu golbma
+6/2=3~guhtta juohkit guokte lea golbma
+2:3=6~guokte juohkit golbma lea guhtta
