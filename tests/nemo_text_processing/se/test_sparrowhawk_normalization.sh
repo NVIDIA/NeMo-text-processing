@@ -51,6 +51,10 @@ testTNTime() {
   runtest "$PROJECT_DIR/se/data_text_normalization/test_cases_time.txt"
 }
 
+testTNTelephone() {
+  runtest "$PROJECT_DIR/se/data_text_normalization/test_cases_telephone.txt"
+}
+
 testTNWhitelist() {
   runtest "$PROJECT_DIR/se/data_text_normalization/test_cases_whitelist.txt"
 }

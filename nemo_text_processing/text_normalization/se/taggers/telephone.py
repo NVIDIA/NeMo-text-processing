@@ -16,126 +16,41 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_SPACE,
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.se.graph_utils import ensure_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_WHITE_SPACE, GraphFst
 from nemo_text_processing.text_normalization.se.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
 
 
 class TelephoneFst(GraphFst):
-    """
-    tfn. 08-789 52 25
-    Finite state transducer for classifying telephone numbers, e.g.
-        123-123-5678 -> { number_part: "ett två tre ett två tre fyra sex sju åtta" }.
+    """Classifies telephone numbers as groups of nominative cardinals."""
 
-    Swedish numbers are written in the following formats:
-        0X-XXX XXX XX
-        0X-XXX XX XX
-        0X-XX XX XX
-        0XX-XXX XX XX
-        0XX-XX XX XX
-        0XX-XXX XX
-        0XXX-XX XX XX
-        0XXX-XXX XX
-
-    See:
-        https://en.wikipedia.org/wiki/National_conventions_for_writing_telephone_numbers#Sweden
-        https://codegolf.stackexchange.com/questions/195787/format-a-swedish-phone-number
-
-    Args:
-                deterministic: if True will provide a single transduction option,
-                        for False multiple transduction are generated (used for audio-based normalization)
-    """
-
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, cardinal: CardinalFst, deterministic: bool = True):
         super().__init__(name="telephone", kind="classify", deterministic=deterministic)
-        cardinal = CardinalFst(deterministic)
-        add_separator = pynutil.insert(", ")
-        zero_space = cardinal.zero_space
-        digit = cardinal.digit
-        two_digits = cardinal.two_digits_read
-        three_digits = cardinal.three_digits_read
-        two_or_three_digits = (two_digits | three_digits).optimize()
-        one_two_or_three_digits = (digit | two_or_three_digits).optimize()
-        zero_after_country_code = pynini.union(pynini.cross("(0)", "nolla "), zero_space)
-        bracketed = pynutil.delete("(") + one_two_or_three_digits + pynutil.delete(")")
 
+        nominative_cardinal = cardinal if deterministic else CardinalFst(deterministic=True)
+        nominative = nominative_cardinal.graphs["nom_sg"]
+        non_zero = NEMO_DIGIT - "0"
         zero = pynini.cross("0", "nolla")
-        digit |= zero
+        spoken_space = pynutil.insert(" ")
 
-        special_numbers = pynini.string_file(get_abs_path("data/telephone/special_numbers.tsv"))
-
-        telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
-        if not deterministic:
-            telephone_abbr = pynini.string_file(get_abs_path("data/telephone/telephone_abbr_nd.tsv"))
-        telephone_prompt = pynini.string_file(get_abs_path("data/telephone/telephone_prompt.tsv"))
-        prompt = pynutil.insert("prompt: \"") + telephone_prompt + pynutil.insert("\"")
-        prompt |= pynutil.insert("prompt: \"") + telephone_abbr + pynutil.insert("\"")
-        prompt |= pynutil.insert("prompt: \"") + telephone_prompt + NEMO_SPACE + telephone_abbr + pynutil.insert("\"")
-
-        country_code = pynini.closure(pynini.cross("+", "plus "), 0, 1) + one_two_or_three_digits
-        country_code = pynutil.insert("country_code: \"") + country_code + pynutil.insert("\"")
-
-        opt_dash = pynini.closure(pynutil.delete("-"), 0, 1)
-        area_part = zero_after_country_code + one_two_or_three_digits + opt_dash + add_separator
-        area_part |= bracketed + add_separator
-
-        base_number_part = pynini.union(
-            two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
-            three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + three_digits,
-            three_digits + NEMO_SPACE + three_digits + NEMO_SPACE + two_digits,
-            three_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
-            three_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
-            two_digits + NEMO_SPACE + two_digits + NEMO_SPACE + two_digits,
-            two_digits + NEMO_SPACE + two_digits + insert_space + two_digits,
-            three_digits + NEMO_SPACE + two_digits,
+        ordinary_group = pynini.closure(NEMO_DIGIT, 2, 4) @ nominative
+        one_leading_zero = zero + spoken_space + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 2)) @ nominative)
+        two_leading_zeroes = (
+            zero
+            + spoken_space
+            + zero
+            + spoken_space
+            + ((non_zero + pynini.closure(NEMO_DIGIT, 0, 1)) @ nominative)
         )
-        number_part = area_part + delete_space + base_number_part
+        all_zeroes = zero + pynini.closure(pynutil.insert(" ") + zero, 1, 3)
+        group = pynini.union(ordinary_group, one_leading_zero, two_leading_zeroes, all_zeroes).optimize()
 
-        self.number_graph = number_part
-        number_part = pynutil.insert("number_part: \"") + number_part + pynutil.insert("\"")
-        extension = pynutil.insert("extension: \"") + one_two_or_three_digits + pynutil.insert("\"")
-        extension = pynini.closure(insert_space + extension, 0, 1)
-        # FIXME: Swedish
-        extension_sv = pynini.union("ankn", "ankn.", "anknytning")
-        extension_no = pynini.union("utv", "utv.", "utvidelse", "linje", "ext.")
-        extension_fi = pynini.union("alanumero")
-        extensions = extension_sv | extension_no | extension_fi
-        ext_prompt = NEMO_SPACE + pynutil.delete(extensions) + ensure_space
-        passable = pynini.union(":", ": ", " ")
-        prompt_pass = pynutil.delete(passable) + insert_space
+        group_separator = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 1)) + pynutil.insert(" ")
+        number = group + pynini.closure(group_separator + group, 1)
 
-        special_numbers = pynutil.insert("number_part: \"") + special_numbers + pynutil.insert("\"")
-        prompt = prompt + prompt_pass
-        graph = pynini.union(
-            country_code + ensure_space + number_part,
-            country_code + ensure_space + number_part + ext_prompt + extension,
-            number_part + ext_prompt + extension,
-            prompt + number_part,
-            prompt + special_numbers,
-            prompt + country_code + number_part,
-            prompt + country_code + number_part + ext_prompt + extension,
-            prompt + number_part + ext_prompt + extension,
-        )
-        self.tel_graph = graph.optimize()
+        prefix = pynini.string_file(get_abs_path("data/telephone/telephone_abbr.tsv"))
+        prefixed_number = prefix + group_separator + number
+        number |= prefixed_number
 
-        # ip
-        ip_prompts = pynini.string_file(get_abs_path("data/telephone/ip_prompt.tsv"))
-        ip_graph = one_two_or_three_digits + (pynini.cross(".", " čuokkis ") + one_two_or_three_digits) ** 3
-        graph |= (
-            pynini.closure(
-                pynutil.insert("country_code: \"") + ip_prompts + pynutil.insert("\"") + delete_extra_space, 0, 1
-            )
-            + pynutil.insert("number_part: \"")
-            + ip_graph.optimize()
-            + pynutil.insert("\"")
-        )
-
-        final_graph = self.add_tokens(graph)
-        self.fst = final_graph.optimize()
+        number_part = pynutil.insert('number_part: "') + number + pynutil.insert('"')
+        self.fst = self.add_tokens(number_part).optimize()
