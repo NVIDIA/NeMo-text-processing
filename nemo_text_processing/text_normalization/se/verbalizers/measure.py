@@ -65,11 +65,13 @@ class MeasureFst(GraphFst):
             + pynutil.delete("}")
         )
 
-        graph_fraction = (
-            pynutil.delete("fraction {") + delete_space + fraction.graph + delete_space + pynutil.delete("}")
-        )
+        number_graph = graph_cardinal | graph_decimal
+        if fraction is not None:
+            number_graph |= (
+                pynutil.delete("fraction {") + delete_space + fraction.graph + delete_space + pynutil.delete("}")
+            )
 
-        graph = (graph_cardinal | graph_decimal | graph_fraction) + delete_space + insert_space + unit
+        graph = number_graph + delete_space + insert_space + unit
 
         # SH adds "preserve_order: true" by default
         preserve_order = pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space

@@ -96,10 +96,10 @@ class ClassifyFst(GraphFst):
             decimal_graph = decimal.fst
             logging.debug(f"decimal: {time.time() - start_time: .2f}s -- {decimal_graph.num_states()} nodes")
 
-            # start_time = time.time()
-            # fraction = FractionFst(deterministic=deterministic, ordinal=ordinal, cardinal=cardinal)
-            # fraction_graph = fraction.fst
-            # logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
+            start_time = time.time()
+            fraction = FractionFst(deterministic=deterministic, ordinal=ordinal, cardinal=cardinal)
+            fraction_graph = fraction.fst
+            logging.debug(f"fraction: {time.time() - start_time: .2f}s -- {fraction_graph.num_states()} nodes")
 
             start_time = time.time()
             measure_graph = MeasureFst(cardinal=cardinal, deterministic=deterministic).fst
@@ -156,7 +156,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(telephone_graph, 1.1)
                 | pynutil.add_weight(alphanumeric_graph, 1.1)
                 | pynutil.add_weight(electonic_graph, 1.1)
-                # | pynutil.add_weight(fraction_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.1)
             )
 
             if not deterministic:
