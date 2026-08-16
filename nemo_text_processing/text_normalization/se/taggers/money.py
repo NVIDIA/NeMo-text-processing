@@ -80,11 +80,11 @@ class MoneyFst(GraphFst):
         if not deterministic:
             fractional |= integer_token(one) + fractional_currency("nom", tokenized=True, conjunction=False)
             fractional |= integer_token(non_one) + fractional_currency("gen", tokenized=True, conjunction=False)
-        minor_singular = fractional_token(one) + separator + pynini.cross(
-            "c", 'currency_min: "sente" preserve_order: true'
+        minor_singular = (
+            fractional_token(one) + separator + pynini.cross("c", 'currency_min: "sente" preserve_order: true')
         )
-        minor_governed = fractional_token(non_one) + separator + pynini.cross(
-            "c", 'currency_min: "sentte" preserve_order: true'
+        minor_governed = (
+            fractional_token(non_one) + separator + pynini.cross("c", 'currency_min: "sentte" preserve_order: true')
         )
         if not deterministic:
             governed |= (
