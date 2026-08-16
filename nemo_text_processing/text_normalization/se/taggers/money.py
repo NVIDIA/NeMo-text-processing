@@ -124,9 +124,7 @@ class MoneyFst(GraphFst):
                     fields = fractional_fields(
                         major_form, minor_forms["gen"][symbol], fractional_non_one, tokenized, conjunction
                     )
-                    alternatives.append(
-                        prefix + fields
-                    )
+                    alternatives.append(prefix + fields)
             return pynini.union(*alternatives)
 
         singular = integer_token(one) + optional_zero_fraction + separator + currency_token(currency_nominative)

@@ -137,14 +137,10 @@ class DateFst(GraphFst):
             pynini.string_file(get_abs_path("data/dates/months_gen.tsv")), "input"
         )
         interval_first = (
-            optional_leading_zero
-            @ pynini.union(*[str(x) for x in range(10, 32)])
-            @ ordinal.graphs["loc_sg"]
+            optional_leading_zero @ pynini.union(*[str(x) for x in range(10, 32)]) @ ordinal.graphs["loc_sg"]
         )
         interval_last = (
-            optional_leading_zero
-            @ pynini.union(*[str(x) for x in range(10, 32)])
-            @ ordinal.graphs["ill_sg"]
+            optional_leading_zero @ pynini.union(*[str(x) for x in range(10, 32)]) @ ordinal.graphs["ill_sg"]
         )
         day_interval = (
             month_genitive
@@ -180,8 +176,6 @@ class DateFst(GraphFst):
             + (two_digit_year | cardinal.year | cardinal.graph_with_leading_zero)
         )
         name_graph = (
-            pynutil.insert('name: "')
-            + convert_space(day_interval | month_interval | year_range)
-            + pynutil.insert('"')
+            pynutil.insert('name: "') + convert_space(day_interval | month_interval | year_range) + pynutil.insert('"')
         )
         self.fst = (self.add_tokens(self.final_graph) | name_graph).optimize()
