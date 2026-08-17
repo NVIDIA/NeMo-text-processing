@@ -23,7 +23,6 @@ from pynini import Far
 from pynini.export import export
 from pynini.lib import pynutil, utf8
 
-from nemo_text_processing.inverse_text_normalization.te.utils import load_labels
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
@@ -86,44 +85,6 @@ def convert_space(fst) -> 'pynini.FstLike':
     Returns output fst where breaking spaces are converted to non breaking spaces
     """
     return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
-
-
-def string_map_cased(input_file: str, input_case: str = INPUT_LOWER_CASED):
-    labels = load_labels(input_file)
-
-    if input_case == INPUT_CASED:
-        additional_labels = []
-        for written, spoken, *weight in labels:
-            written_capitalized = written[0].upper() + written[1:]
-            additional_labels.extend(
-                [
-                    [written_capitalized, spoken.capitalize()],
-                    [
-                        written_capitalized,
-                        spoken.upper().replace(" AND ", " and "),
-                    ],
-                ]
-            )
-
-            spoken_no_space = spoken.replace(" ", "")
-
-            if len(spoken) == (2 * len(spoken_no_space) - 1):
-                logging.debug(f"This is weight {weight}")
-                if len(weight) == 0:
-                    additional_labels.extend(
-                        [[written, spoken_no_space], [written_capitalized, spoken_no_space.upper()]]
-                    )
-                else:
-                    additional_labels.extend(
-                        [
-                            [written, spoken_no_space, weight[0]],
-                            [written_capitalized, spoken_no_space.upper(), weight[0]],
-                        ]
-                    )
-        labels += additional_labels
-
-    whitelist = pynini.string_map(labels).invert().optimize()
-    return whitelist
 
 
 class GraphFst:
