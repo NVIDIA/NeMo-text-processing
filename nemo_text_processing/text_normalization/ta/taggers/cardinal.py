@@ -144,9 +144,5 @@ class CardinalFst(GraphFst):
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.final_graph + pynutil.insert("\"")
-<<<<<<< HEAD
-        self.fst = self.add_tokens(final_graph)
-=======
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
->>>>>>> fbfaf09 (Updated Cardinal class based on PR reviews)
