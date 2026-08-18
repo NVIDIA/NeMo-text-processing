@@ -194,11 +194,8 @@ class Normalizer:
             from nemo_text_processing.text_normalization.ko.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'ta':
             from nemo_text_processing.text_normalization.ta.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.ta.verbalizers.post_processing import PostProcessingFst
             from nemo_text_processing.text_normalization.ta.verbalizers.verbalize_final import VerbalizeFinalFst
 
-            if post_process:
-                self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
@@ -399,11 +396,7 @@ class Normalizer:
                 return text
         output = SPACE_DUP.sub(' ', output[1:])
 
-        if (
-            self.lang in ["en", "hi", "ta", "vi"]
-            and hasattr(self, 'post_processor')
-            and self.post_processor is not None
-        ):
+        if self.lang in ["en", "hi", "vi"] and hasattr(self, 'post_processor') and self.post_processor is not None:
             output = self.post_process(output)
 
         if punct_post_process:

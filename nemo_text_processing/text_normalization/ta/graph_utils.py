@@ -22,13 +22,16 @@ from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
-NEMO_CHAR = utf8.VALID_UTF8_CHAR
-NEMO_DIGIT = byte.DIGIT
+from nemo_text_processing.text_normalization.ta.utils import get_abs_path
 
-NEMO_TA_DIGIT = pynini.union("௦", "௧", "௨", "௩", "௪", "௫", "௬", "௭", "௮", "௯").optimize()
-# Combined TAMIL and Arabic digits for graphs that need to accept both
-NEMO_ALL_DIGIT = pynini.union(NEMO_TA_DIGIT, NEMO_DIGIT).optimize()
-NEMO_ALL_ZERO = pynini.union("௦", "0").optimize()
+NEMO_CHAR = utf8.VALID_UTF8_CHAR
+
+ta_digit_map = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+ta_zero_map = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+
+ta_digit_only = pynini.project(ta_digit_map, "input").optimize()
+NEMO_ALL_ZERO = pynini.project(ta_zero_map, "input").optimize()
+NEMO_ALL_DIGIT = pynini.union(ta_digit_only, NEMO_ALL_ZERO).optimize()
 
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_SPACE = " "
