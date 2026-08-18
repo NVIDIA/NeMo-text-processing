@@ -13,23 +13,23 @@
 # limitations under the License.
 import pynini
 from pynini.lib import pynutil
- 
+
 from nemo_text_processing.text_normalization.ta.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
- 
- 
+
+
 class WordFst(GraphFst):
     """
     Finite state transducer for verbalizing Tamil words.
         e.g. tokens { name: "சின்ன" } -> சின்ன
- 
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
- 
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="verbalize", deterministic=deterministic)
         chars = pynini.closure(NEMO_CHAR - " ", 1)
         char = pynutil.delete("name:") + delete_space + pynutil.delete("\"") + chars + pynutil.delete("\"")
-        
+
         self.fst = char.optimize()
