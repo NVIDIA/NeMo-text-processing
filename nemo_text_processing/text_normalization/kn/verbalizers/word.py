@@ -31,5 +31,5 @@ class WordFst(GraphFst):
         super().__init__(name="word", kind="verbalize", deterministic=deterministic)
         chars = pynini.closure(NEMO_CHAR - " ", 1)
         char = pynutil.delete("name:") + delete_space + pynutil.delete("\"") + chars + pynutil.delete("\"")
-        
+
         self.fst = char.optimize()

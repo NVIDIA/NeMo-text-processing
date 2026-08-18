@@ -28,7 +28,7 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals, e.g.
        23 -> cardinal { negative: "true"  integer: "ಇಪ್ಪತ್ತಮೂರು" }
- 
+
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
@@ -36,7 +36,6 @@ class CardinalFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
-
 
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
@@ -51,7 +50,7 @@ class CardinalFst(GraphFst):
 
         delete_zero = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
         EMPTY = pynini.accep("")
-        
+
         scale_suffixes = pynini.string_file(get_abs_path("data/numbers/scale_suffixes.tsv"))
 
         def suffix_insert(key, leading_space=True):
@@ -86,10 +85,10 @@ class CardinalFst(GraphFst):
         def scale(coeff, num_zeros, suf_standalone, suf_gen, remainders):
             standalone, with_rem = scale_parts(coeff, num_zeros, suf_standalone, suf_gen, remainders)
             return (standalone | with_rem).optimize()
-       
+
         graph_hundreds = (
-            hundreds + (delete_zero**2) + suf_hundred  
-            | hundreds + delete_zero + insert_space + digit 
+            hundreds + (delete_zero**2) + suf_hundred
+            | hundreds + delete_zero + insert_space + digit
             | hundreds + insert_space + teens_and_ties
         ).optimize()
 
@@ -99,7 +98,7 @@ class CardinalFst(GraphFst):
 
         th_standalone, th_rem = scale_parts(digit, 3, suf_thousand, suf_thousand_gen, rem_thousand)
         tth_standalone, tth_rem = scale_parts(teens_and_ties, 3, suf_thousand, suf_thousand_gen, rem_thousand)
-        
+
         graph_thousands = (th_standalone | th_rem).optimize()
         graph_ten_thousands = (tth_standalone | tth_rem).optimize()
 
@@ -133,7 +132,7 @@ class CardinalFst(GraphFst):
         graph_hundred_crores = scale(graph_hundreds, 7, suf_crore, suf_crore_gen, rem_crore)
         self.graph_crores = graph_crores
         self.graph_ten_crores = graph_ten_crores
-    
+
         def append_crore(coeff_remainder, with_sub_rem):
             g = coeff_remainder + (delete_zero**7) + suf_crore
 
@@ -141,17 +140,17 @@ class CardinalFst(GraphFst):
                 g |= coeff_remainder + suf_crore_gen + insert_space + sub_crore_rem
             return g
 
-        th_crore= scale(digit, 10, suf_thousand_crore, suf_thousand_crore_gen, rem_crore)
-        graph_thousand_crores = (th_crore	 | append_crore(th_rem, with_sub_rem=True)).optimize()
-     
-        th_crore= scale(teens_and_ties, 10, suf_thousand_crore, suf_thousand_crore_gen, rem_crore)
-        graph_ten_thousand_crores = (th_crore| append_crore(tth_rem, with_sub_rem=True)).optimize()
+        th_crore = scale(digit, 10, suf_thousand_crore, suf_thousand_crore_gen, rem_crore)
+        graph_thousand_crores = (th_crore | append_crore(th_rem, with_sub_rem=True)).optimize()
 
-        th_crore= scale(digit, 12, suf_lakh_crore, suf_lakh_crore_gen, rem_crore)
-        graph_lakh_crores = (th_crore| append_crore(l_rem, with_sub_rem=True)).optimize()
+        th_crore = scale(teens_and_ties, 10, suf_thousand_crore, suf_thousand_crore_gen, rem_crore)
+        graph_ten_thousand_crores = (th_crore | append_crore(tth_rem, with_sub_rem=True)).optimize()
 
-        th_crore= scale(teens_and_ties, 12, suf_lakh_crore, suf_lakh_crore_gen, rem_crore)
-        graph_ten_lakh_crores = (th_crore	 | append_crore(tl_rem, with_sub_rem=True)).optimize()
+        th_crore = scale(digit, 12, suf_lakh_crore, suf_lakh_crore_gen, rem_crore)
+        graph_lakh_crores = (th_crore | append_crore(l_rem, with_sub_rem=True)).optimize()
+
+        th_crore = scale(teens_and_ties, 12, suf_lakh_crore, suf_lakh_crore_gen, rem_crore)
+        graph_ten_lakh_crores = (th_crore | append_crore(tl_rem, with_sub_rem=True)).optimize()
 
         graph_without_leading_zeros = pynini.union(
             digit,
@@ -181,14 +180,16 @@ class CardinalFst(GraphFst):
         graph_no_commas = graph_without_leading_zeros | cardinal_with_leading_zeros
         delete_comma = pynutil.delete(",")
 
-        western_format = (
-            pynini.closure(NEMO_ALL_DIGIT, 1, 3)
-            + pynini.closure(delete_comma + pynini.closure(NEMO_ALL_DIGIT, 3, 3), 1))
-        
+        western_format = pynini.closure(NEMO_ALL_DIGIT, 1, 3) + pynini.closure(
+            delete_comma + pynini.closure(NEMO_ALL_DIGIT, 3, 3), 1
+        )
+
         indian_format = (
             pynini.closure(NEMO_ALL_DIGIT, 1, 2)
-            + pynini.closure(
-                delete_comma + pynini.closure(NEMO_ALL_DIGIT, 2, 2))+ delete_comma+ pynini.closure(NEMO_ALL_DIGIT, 3, 3))
+            + pynini.closure(delete_comma + pynini.closure(NEMO_ALL_DIGIT, 2, 2))
+            + delete_comma
+            + pynini.closure(NEMO_ALL_DIGIT, 3, 3)
+        )
 
         comma_number = western_format | indian_format
 

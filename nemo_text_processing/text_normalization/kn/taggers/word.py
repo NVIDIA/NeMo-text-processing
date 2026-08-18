@@ -15,8 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_SPACE, GraphFst
- 
- 
+
+
 class WordFst(GraphFst):
     def __init__(self):
         super().__init__(name="word", kind="classify")

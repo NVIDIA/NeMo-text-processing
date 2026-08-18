@@ -27,11 +27,11 @@ NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
 kn_digit_map = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 kn_zero_map = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
- 
+
 kn_digit_only = pynini.project(kn_digit_map, "input").optimize()
 NEMO_ALL_ZERO = pynini.project(kn_zero_map, "input").optimize()
 NEMO_ALL_DIGIT = pynini.union(kn_digit_only, NEMO_ALL_ZERO).optimize()
- 
+
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_SPACE = " "
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00a0").optimize()
