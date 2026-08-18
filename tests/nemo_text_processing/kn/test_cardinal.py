@@ -15,7 +15,6 @@
 import pytest
 from parameterized import parameterized
 
-from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
@@ -31,4 +30,4 @@ class TestCardinal:
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
-        assert pred.strip() == expected.strip()
+        assert pred == expected

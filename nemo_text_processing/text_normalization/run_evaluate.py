@@ -67,10 +67,6 @@ if __name__ == "__main__":
     to_lower = args.input_case == "lower_cased"
     training_data = load_files([file_path], to_lower=to_lower)
 
-    # print("Loading training data: " + file_path)
-    # to_lower = True if args.input_case == "lower_cased" else False
-    # training_data = load_files([file_path], to_lower=to_lower)
-
     if args.filter:
         training_data = filter_loaded_data(training_data)
 

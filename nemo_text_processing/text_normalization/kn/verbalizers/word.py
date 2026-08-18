@@ -14,7 +14,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
+from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_CHAR, GraphFst, delete_space
 
 
 class WordFst(GraphFst):
@@ -30,14 +30,6 @@ class WordFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="word", kind="verbalize", deterministic=deterministic)
         chars = pynini.closure(NEMO_CHAR - " ", 1)
-        punct = pynini.union("!", "?", ".", ",", "-", ":", ";", "।")  # Add other punctuation marks as needed
         char = pynutil.delete("name:") + delete_space + pynutil.delete("\"") + chars + pynutil.delete("\"")
-
-        # Ensure no spaces around punctuation
-        graph = char + pynini.closure(delete_space + punct, 0, 1)
-
-        # Explicitly remove spaces before punctuation
-        remove_space_before_punct = pynini.cdrewrite(pynini.cross(" ", ""), "", punct, NEMO_SIGMA)
-        graph = graph @ remove_space_before_punct
-
-        self.fst = graph.optimize()
+        
+        self.fst = char.optimize()

@@ -14,48 +14,11 @@
 
 import pynini
 from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.kn.graph_utils import (
-    MIN_NEG_WEIGHT,
-    NEMO_NOT_SPACE,
-    GraphFst,
-    convert_space,
-)
-from nemo_text_processing.text_normalization.kn.taggers.punctuation import PunctuationFst
-
-
+from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_SPACE, GraphFst
+ 
+ 
 class WordFst(GraphFst):
-    """
-    Finite state transducer for classifying Kannada words.
-        e.g. ಚಿನ್ನ -> tokens { name: "ಚಿನ್ನ" }
-
-    Args:
-        punctuation: PunctuationFst
-        deterministic: if True will provide a single transduction option,
-            for False multiple transductions are generated (used for audio-based normalization)
-    """
-
-    def __init__(self, punctuation: PunctuationFst, deterministic: bool = True):
-        super().__init__(name="word", kind="classify", deterministic=deterministic)
-
-        # Define Kannada characters and symbols using pynini.union
-        KANNADA_CHAR = pynini.union(
-            *[chr(i) for i in range(0x0C85, 0x0CB9 + 1)],  # Kannada vowels and consonants
-            *[chr(i) for i in range(0x0CBE, 0x0CCD + 1)],  # More Kannada characters
-            *[chr(i) for i in range(0x0CE6, 0x0CEF + 1)],  # Kannada diacritics
-        ).optimize()
-
-        # Include punctuation in the graph
-        punct = punctuation.graph
-        default_graph = pynini.closure(pynini.difference(NEMO_NOT_SPACE, punct.project("input")), 1)
-        symbols_to_exclude = (pynini.union("$", "€", "₩", "£", "¥", "#", "%") | punct).optimize()
-
-        # Use KANNADA_CHAR in the graph
-        graph = pynini.closure(pynini.difference(KANNADA_CHAR, symbols_to_exclude), 1)
-        graph = pynutil.add_weight(graph, MIN_NEG_WEIGHT) | default_graph
-
-        # Ensure no spaces around punctuation
-        graph = pynini.closure(graph + pynini.closure(punct + graph, 0, 1))
-
-        self.graph = convert_space(graph)
-        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
+    def __init__(self):
+        super().__init__(name="word", kind="classify")
+        word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
+        self.fst = word.optimize()
