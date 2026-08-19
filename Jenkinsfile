@@ -44,7 +44,9 @@ pipeline {
 
     stage('NeMo Installation') {
       steps {
-        sh './reinstall.sh release'
+        sh 'pip install -U uv'
+        sh 'uv build --wheel --out-dir dist'
+        sh 'uv pip install --system "$(ls dist/*.whl)[all]"'
       }
     }
 
