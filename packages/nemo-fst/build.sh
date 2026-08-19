@@ -37,6 +37,8 @@ OPENFST_VERSION="${OPENFST_VERSION:-1.8.3}"
 
 if [ ! -f "$OPENFST_PREFIX/include/fst/matcher-fst.h" ]; then
   echo "build.sh: no OpenFst headers under $OPENFST_PREFIX" >&2
+  echo "  build one with: bash scripts/build_openfst.sh \$HOME/.local/openfst" >&2
+  echo "  then: export OPENFST_PREFIX=\$HOME/.local/openfst" >&2
   exit 1
 fi
 
@@ -57,14 +59,21 @@ else
   echo "  linking OpenFst dynamically (no static archives in $OPENFST_PREFIX/lib)"
 fi
 
-g++ -O3 -std=c++17 -shared -fPIC -fvisibility=hidden -fvisibility-inlines-hidden \
+# Restricting the export table is spelled differently by the two linkers, and
+# the GNU spellings are hard errors under ld64.
+if [ "$(uname -s)" = "Darwin" ]; then
+  HIDE=(-Wl,-exported_symbols_list,src/nemo_fst.exported_symbols -undefined dynamic_lookup)
+else
+  HIDE=(-Wl,--exclude-libs,ALL -Wl,--version-script,src/nemo_fst.map)
+fi
+
+"${CXX:-g++}" -O3 -std=c++17 -shared -fPIC -fvisibility=hidden -fvisibility-inlines-hidden \
     -DNDEBUG "-DNEMO_FST_OPENFST_VERSION=\"$OPENFST_VERSION\"" \
     -I"$PY_INCLUDE" -I"$PYBIND11_DIR" -I"$OPENFST_PREFIX/include" \
     src/nemo_fst.cc \
     -o "$OUT" \
     "${FST_LINK[@]}" \
-    -Wl,--exclude-libs,ALL \
-    -Wl,--version-script,src/nemo_fst.map
+    "${HIDE[@]}"
 
 echo "built $OUT"
 "$PYTHON" -c "

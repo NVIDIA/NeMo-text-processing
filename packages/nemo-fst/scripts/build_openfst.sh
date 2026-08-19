@@ -49,7 +49,7 @@ cd "$BUILD_DIR"
     --with-pic \
     CXXFLAGS="-O2 -fPIC"
 
-make -j"$(nproc 2>/dev/null || echo 4)"
+make -j"$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 make install
 
 test -f "$PREFIX/lib/libfst.a" || { echo "no libfst.a in $PREFIX/lib" >&2; exit 1; }

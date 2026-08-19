@@ -40,14 +40,23 @@ lookahead type is a `ConstFst` with contiguous arc storage.
 
 ## Building
 
-Needs an OpenFst built with `--enable-lookahead-fsts`:
+Needs an OpenFst built with `--enable-lookahead-fsts`. **No distribution ships
+one** -- Homebrew's `openfst` and the usual Linux packages are all built without
+it -- so build it first:
 
 ```bash
-./configure --prefix=$PREFIX --enable-grm --enable-far --enable-lookahead-fsts
-make && make install
+bash scripts/build_openfst.sh $HOME/.local/openfst
+export OPENFST_PREFIX=$HOME/.local/openfst
 
-OPENFST_PREFIX=$PREFIX pip install .
+uv sync            # or: pip install .
 ```
+
+Linux and macOS. The two linkers spell "export nothing but the module init
+symbol" differently, and the GNU spellings are hard errors under ld64, so the
+flags are chosen per platform.
+
+**macOS is untested.** The platform handling is written but no macOS machine was
+available to run it on; treat the first build there as the real test.
 
 `scripts/build_openfst.sh` produces such a prefix, and cibuildwheel runs it once
 per container so every wheel links the same OpenFst. When the prefix has static

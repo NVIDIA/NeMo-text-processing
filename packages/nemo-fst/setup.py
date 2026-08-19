@@ -37,24 +37,41 @@ import os
 import sys
 from pathlib import Path
 
-from pybind11.setup_helpers import Pybind11Extension, build_ext
-from setuptools import setup
-
 PREFIX = Path(os.environ.get("OPENFST_PREFIX", "/usr/local"))
 OPENFST_VERSION = os.environ.get("OPENFST_VERSION", "1.8.3")
+HERE = Path(__file__).parent
 
 if not (PREFIX / "include" / "fst" / "matcher-fst.h").exists():
-    sys.exit(f"setup.py: no OpenFst headers under {PREFIX}; set OPENFST_PREFIX")
+    sys.exit(
+        f"nemo-fst: no OpenFst headers under {PREFIX}\n"
+        f"\n"
+        f"This package needs an OpenFst built with --enable-lookahead-fsts, which\n"
+        f"no distribution packages -- Homebrew's openfst and the usual Linux\n"
+        f"packages are all built without it. Build one:\n"
+        f"\n"
+        f"    bash {HERE / 'scripts' / 'build_openfst.sh'} $HOME/.local/openfst\n"
+        f"    export OPENFST_PREFIX=$HOME/.local/openfst\n"
+        f"\n"
+        f"then retry. Set OPENFST_PREFIX to an existing prefix if you already have\n"
+        f"a lookahead-enabled build.\n"
+    )
+
+from pybind11.setup_helpers import Pybind11Extension, build_ext
+from setuptools import setup
 
 STATIC_LIBS = ["libfstfar.a", "libfst.a"]
 static = all((PREFIX / "lib" / name).exists() for name in STATIC_LIBS)
 
 # Coexistence with pynini, which carries its own OpenFst into the same process:
-# nothing of ours may be visible for it to bind to.
-HIDE = [
-    "-Wl,--exclude-libs,ALL",
-    f"-Wl,--version-script,{Path(__file__).parent / 'src' / 'nemo_fst.map'}",
-]
+# nothing of ours may be visible for it to bind to. The two linkers spell that
+# differently, and the GNU spellings are hard errors under ld64.
+if sys.platform == "darwin":
+    HIDE = [f"-Wl,-exported_symbols_list,{HERE / 'src' / 'nemo_fst.exported_symbols'}"]
+else:
+    HIDE = [
+        "-Wl,--exclude-libs,ALL",
+        f"-Wl,--version-script,{HERE / 'src' / 'nemo_fst.map'}",
+    ]
 
 if static:
     # Archives passed as objects, so nothing is left to resolve at load time.
