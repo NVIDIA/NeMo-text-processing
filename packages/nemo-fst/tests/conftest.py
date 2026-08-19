@@ -54,9 +54,12 @@ def artifact_dir(tmp_path_factory) -> Path:
     return tmp_path_factory.mktemp("nemo_fst_artifacts")
 
 
+TAGGER_FAR = "en_tn_True_deterministic_cased__tokenize.far"
+
+
 @pytest.fixture(scope="session")
 def normalizer(cache_dir):
-    """NeMo's own normalizer, which compiles the FAR if it is not cached yet."""
+    """NeMo's own normalizer, the oracle the differential tests compare against."""
     pytest.importorskip("pynini")
     from nemo_text_processing.text_normalization.normalize import Normalizer
 
@@ -64,8 +67,18 @@ def normalizer(cache_dir):
 
 
 @pytest.fixture(scope="session")
-def far_path(normalizer, cache_dir) -> Path:
-    far = cache_dir / "en_tn_True_deterministic_cased__tokenize.far"
+def far_path(request, cache_dir) -> Path:
+    """A compiled tagger FAR.
+
+    A FAR is a data file, so an existing one is usable with no pynini in the
+    environment -- which is the case in every wheel-test container, since pynini
+    publishes manylinux x86_64 wheels only. pynini is pulled in only when one
+    has to be compiled.
+    """
+    far = cache_dir / TAGGER_FAR
+    if far.exists():
+        return far
+    request.getfixturevalue("normalizer")  # compiles it, and needs pynini
     if not far.exists():
         pytest.skip(f"no tagger FAR at {far}")
     return far

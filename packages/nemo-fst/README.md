@@ -76,11 +76,14 @@ From this directory, with `OPENFST_PREFIX` set:
 uv run pytest --tn_cache_dir=/path/to/grammars
 ```
 
-That builds the extension and runs what can be checked in isolation. Most of the
-suite compares against pynini and so needs `pynini` and `nemo_text_processing`
-too; without them those tests skip, saying so. For a full run, use an
-environment that has both -- the repository's own, with this package built into
-it:
+That runs the 20 tests that need no oracle -- `test_standalone.py` and
+`test_cache.py` -- which is also what verifies a built wheel, since pynini
+publishes manylinux x86_64 wheels only and cannot be installed in most of the
+containers cibuildwheel uses.
+
+The rest compare against pynini and need `pynini` and `nemo_text_processing`
+present; without them they skip, saying so. For the full 37, use an environment
+that has both -- the repository's own, with this package built into it:
 
 ```bash
 OPENFST_PREFIX=$PREFIX ./build.sh          # builds in place
