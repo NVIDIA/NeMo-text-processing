@@ -228,7 +228,7 @@ if __name__ == '__main__':
     elif args.language == 'ta':
         from nemo_text_processing.text_normalization.ta.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
-        )       
+        )
         from nemo_text_processing.text_normalization.ta.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'hu':
         from nemo_text_processing.text_normalization.hu.taggers.tokenize_and_classify import (

@@ -44,6 +44,7 @@ delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
 
+
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
     """
     Exports graph as OpenFst finite state archive (FAR) file with given file name and rule name.
@@ -57,6 +58,7 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
         exporter[rule] = graph.optimize()
     exporter.close()
     logging.info(f'Created {file_name}')
+
 
 class GraphFst:
     """

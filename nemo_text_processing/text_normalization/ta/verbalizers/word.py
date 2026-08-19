@@ -15,6 +15,7 @@ import pynini
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ta.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
 
+
 class WordFst(GraphFst):
     """
     Finite state transducer for verbalizing Tamil words.

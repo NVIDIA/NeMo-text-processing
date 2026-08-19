@@ -15,6 +15,7 @@ import pynini
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ta.graph_utils import NEMO_NOT_SPACE, GraphFst
 
+
 class WordFst(GraphFst):
     """
     Finite state transducer for classifying Tamil words.
@@ -25,6 +26,7 @@ class WordFst(GraphFst):
         for False multiple transductions are generated (used for audio-based normalization)
 
     """
+
     def __init__(self):
         super().__init__(name="word", kind="classify")
         word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
