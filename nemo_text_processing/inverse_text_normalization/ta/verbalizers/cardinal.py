@@ -10,19 +10,45 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.import pynini
+# limitations under the License.
 
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.ta.graph_utils import GraphFst, graph_digit
+from nemo_text_processing.inverse_text_normalization.ta.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class CardinalFst(GraphFst):
+    """
+    Finite state transducer for verbalizing cardinal
+        e.g. cardinal { integer: "௨௩" } -> ௨௩
+    """
 
     def __init__(self):
         super().__init__(name="cardinal", kind="verbalize")
 
-        graph = pynutil.delete('integer: "') + pynini.closure(graph_digit | pynini.accep(" "), 1) + pynutil.delete('"')
+        optional_sign = pynini.closure(
+            pynutil.delete("negative:")
+            + delete_space
+            + pynutil.delete("\"")
+            + NEMO_NOT_QUOTE
+            + pynutil.delete("\"")
+            + delete_space,
+            0,
+            1,
+        )
 
-        self.fst = self.delete_tokens(graph).optimize()
+        graph = (
+            pynutil.delete("integer:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+        )
+
+        self.numbers = graph
+
+        graph = optional_sign + graph
+
+        delete_tokens = self.delete_tokens(graph)
+        self.fst = delete_tokens.optimize()
