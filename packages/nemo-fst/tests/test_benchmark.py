@@ -80,25 +80,39 @@ def test_tagging_speedup(tagger, normalizer):
 
 
 def test_end_to_end_speedup(normalizer, tagger, inputs, monkeypatch):
-    """The whole `normalize()` call, tagging substituted, over the test corpus."""
-    subset = inputs[:200]
+    """The whole `normalize()` call, tagging substituted, across input lengths.
 
-    t0 = time.perf_counter()
-    for text in subset:
-        normalizer.normalize(text)
-    stock = time.perf_counter() - t0
+    Length matters twice over. Tagging is 90.8% of `normalize()` on the corpus's
+    single-token cases but 96.9% on a paragraph, so Amdahl leaves more on the
+    table for short inputs; and a ten-character string has little dead branching
+    for lookahead to skip, so the tagging speedup is itself smaller there. The
+    corpus row is the floor, not the headline.
+    """
+    script = (
+        "On 3/4/2023 we shipped 5 units at $5.50 each to the west coast. "
+        "Call 555-0105 before 5:30 p.m. about the $5,204.50 invoice."
+    )
+    cases = [("corpus, 200 short inputs", inputs[:200])]
+    cases += [(f"one {k}-sentence script", [" ".join([script] * k)]) for k in (4, 16, 32)]
+
+    stock_times = []
+    for _, texts in cases:
+        t0 = time.perf_counter()
+        for text in texts:
+            normalizer.normalize(text)
+        stock_times.append(time.perf_counter() - t0)
 
     use_nemo_fst(monkeypatch, tagger)
-    t0 = time.perf_counter()
-    for text in subset:
-        normalizer.normalize(text)
-    ours = time.perf_counter() - t0
-
-    print(
-        f"\nnormalize() over {len(subset)} inputs: {stock:.2f}s stock, "
-        f"{ours:.2f}s via nemo-fst ({stock / ours:.2f}x)"
-    )
-    assert stock / ours > 1.2, f"only {stock / ours:.2f}x end to end"
+    print(f"\n{'input':28s} {'stock':>8s} {'nemo-fst':>9s} {'speedup':>8s}")
+    speedups = []
+    for (label, texts), stock in zip(cases, stock_times):
+        t0 = time.perf_counter()
+        for text in texts:
+            normalizer.normalize(text)
+        ours = time.perf_counter() - t0
+        speedups.append(stock / ours)
+        print(f"{label:28s} {stock:7.2f}s {ours:8.2f}s {stock / ours:7.2f}x")
+    assert min(speedups) > 1.2, f"slowest case only {min(speedups):.2f}x"
 
 
 def test_concurrency_scaling(tagger):

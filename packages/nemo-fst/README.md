@@ -78,7 +78,7 @@ On one aarch64 machine, against the English test corpus:
 | | |
 | --- | --- |
 | tagging | 4.6–11.2x, falling with semiotic density |
-| `normalize()` end to end | 2.6x |
+| `normalize()` end to end | 2.5x on single-token inputs, 6.5x on a 32-sentence script |
 | 8 threads through one `Tagger` | 8.2x over sequential |
 | preparing an artifact | 0.28 s once, 0.02 s from cache |
 
