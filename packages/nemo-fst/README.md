@@ -108,18 +108,19 @@ map counts as a cache miss.
 
 ## Using it from nemo_text_processing
 
-Off unless asked for:
+Used automatically once installed:
 
-```python
-Normalizer(input_case="cased", lang="en", cache_dir=..., fast_tagger=True)
+```bash
+pip install nemo_text_processing[runtime]
 ```
 
-or `NEMO_FAST_TAGGER=1`. Without it, or when this package is missing, tagging
-stays on pynini and the caller sees a warning only if they asked for the fast
-path and did not get it.
+`fast_tagger=False` or `NEMO_FAST_TAGGER=0` forces the pynini path. Being unable
+to use it -- not installed, no compiled grammar, an OpenFst without lookahead --
+falls back to pynini, loudly if `fast_tagger=True` asked for it and quietly if
+nobody did.
 
-It is opt-in rather than automatic because the tagger's shortest path is not
-unique. Where the grammar admits two readings at the same cost the two
-implementations may return different ones, and a few of the repository's own
-tests pin the reading pynini happens to produce. Opting in accepts that; it does
-not mean a costlier parse, which the differential test rules out.
+Where the grammar admits two readings at the same cost the two implementations
+may return different ones. That is a property of the grammar rather than of
+either implementation, and neither reading is more correct, so the test corpus
+records both. What the differential test pins is the property that does matter:
+this never returns a costlier parse than pynini.

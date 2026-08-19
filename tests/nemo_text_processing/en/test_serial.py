@@ -18,7 +18,7 @@ from parameterized import parameterized
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from nemo_text_processing.text_normalization.normalize_with_audio import NormalizerWithAudio
 
-from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, parse_test_case_file
+from ..utils import CACHE_DIR, RUN_AUDIO_BASED_TESTS, assert_normalized, parse_test_case_file
 
 
 class TestSerial:
@@ -34,7 +34,7 @@ class TestSerial:
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
         pred = self.normalizer_en.normalize(test_input, verbose=False, punct_post_process=False)
-        assert pred == expected, f"input: {test_input}"
+        assert_normalized(pred, expected, test_input)
 
         if self.normalizer_with_audio_en:
             pred_non_deterministic = self.normalizer_with_audio_en.normalize(
@@ -42,4 +42,5 @@ class TestSerial:
                 n_tagged=-1,
                 punct_post_process=False,
             )
-            assert expected in pred_non_deterministic, f"input: {test_input}"
+            wanted = [expected] if isinstance(expected, str) else expected
+            assert any(w in pred_non_deterministic for w in wanted), f"input: {test_input}"

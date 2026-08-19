@@ -641,45 +641,55 @@ class Normalizer:
     def _init_fst_tagger(self, lang, cache_dir, deterministic, input_case, whitelist, requested):
         """Return a nemo-fst tagger, or None to stay on the pynini path.
 
-        Off unless asked for, by `fast_tagger=True` or `NEMO_FAST_TAGGER=1`.
-        It is not on by default because the tagger's shortest path is not
-        unique: where the grammar admits two readings at the same cost, the two
-        implementations may pick different ones, and a few of this repo's own
-        tests pin the reading pynini happens to return. Opting in accepts that;
-        it does not mean a costlier parse, which the package's differential test
-        rules out.
+        Used automatically when nemo-fst is installed and there is a compiled
+        grammar to accelerate; `fast_tagger=False` or `NEMO_FAST_TAGGER=0`
+        forces the pynini path.
 
-        Absence of the package once asked for is logged at warning, since the
-        caller asked for something they did not get.
+        Where the grammar admits two readings at the same cost the two
+        implementations may return different ones. That is a property of the
+        grammar, not of either implementation, and neither reading is more
+        correct; the package's differential test pins the property that does
+        matter, which is that this never returns a costlier parse.
+
+        Being unable to use it is logged at warning when it was asked for
+        explicitly and at debug when it was not, since in the second case
+        nothing the caller wanted has been denied them.
         """
         if requested is None:
-            requested = os.environ.get("NEMO_FAST_TAGGER", "") not in ("", "0", "false", "False")
-        if not requested:
+            env = os.environ.get("NEMO_FAST_TAGGER", "")
+            if env in ("0", "false", "False"):
+                return None
+            asked = False
+        else:
+            if not requested:
+                return None
+            asked = True
+
+        def declined(message):
+            (logger.warning if asked else logger.debug)(message)
             return None
+
         if cache_dir is None or cache_dir == "None":
-            logger.warning("fast tagger needs a cache_dir with a compiled grammar; using pynini")
-            return None
+            return declined("fast tagger needs a cache_dir with a compiled grammar; using pynini")
         try:
             import nemo_fst
         except ImportError:
-            logger.warning(
-                "fast tagger requested but nemo-fst is not installed "
-                "(pip install nemo_text_processing[runtime]); tagging with pynini"
+            return declined(
+                "nemo-fst is not installed (pip install nemo_text_processing[runtime]); "
+                "tagging with pynini"
             )
-            return None
         try:
             if not nemo_fst.has_lookahead():
                 logger.warning(
                     "nemo-fst is installed but its OpenFst has no lookahead support; "
                     "tagging with pynini"
                 )
-                return None
+                return None  # always loud: installed but useless is worth seeing
             far = getattr(self.tagger, "far_path_used", None) or self._tagger_far_path(
                 lang, cache_dir, deterministic, input_case, whitelist
             )
             if far is None or not os.path.exists(far):
-                logger.warning(f"no cached grammar for the fast tagger at {far}; tagging with pynini")
-                return None
+                return declined(f"no cached grammar for the fast tagger at {far}; tagging with pynini")
             return nemo_fst.Tagger.from_far(far, cache_dir=os.path.join(cache_dir, "nemo_fst"))
         except Exception as exc:  # noqa: BLE001 -- never fail construction over an optimisation
             logger.warning(f"nemo-fst could not be used ({exc}); tagging with pynini")

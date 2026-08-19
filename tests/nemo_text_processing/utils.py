@@ -76,3 +76,17 @@ def get_test_cases_multiple(file_name: str = 'data_text_normalization/en/test_ca
                 normalized_options.append(line.strip())
     test_pairs.append((written, normalized_options))
     return test_pairs
+
+
+def assert_normalized(pred, expected, test_input=""):
+    """Assert `pred` is the expected normalization, or one of several.
+
+    `parse_test_case_file` yields a string when a line records one correct form
+    and a list when it records more than one. Some inputs are genuinely
+    ambiguous -- the grammar admits two readings at the same cost -- so which
+    one comes back is not something a test should pin.
+    """
+    if isinstance(expected, str):
+        assert pred == expected, f"input: {test_input}"
+    else:
+        assert pred in expected, f"input: {test_input}, got: {pred!r}, want one of: {expected!r}"

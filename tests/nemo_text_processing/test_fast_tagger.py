@@ -14,9 +14,9 @@
 
 """The optional nemo-fst tagging path, and its fallback.
 
-These run whether or not nemo-fst is installed: the point is that the default
-behaviour is identical either way, and that asking for the fast path when it is
-unavailable degrades with a warning rather than failing.
+These run whether or not nemo-fst is installed. It is used automatically when
+available; the point of the tests is that being unable to use it degrades to
+pynini rather than failing, and that the choice is overridable either way.
 """
 
 import logging
@@ -35,9 +35,23 @@ def normalizer():
 
 @pytest.mark.run_only_on('CPU')
 @pytest.mark.unit
-def test_default_is_the_pynini_path(normalizer):
-    """Off unless asked for, so existing behaviour is untouched."""
-    assert normalizer._fst_tagger is None
+def test_used_automatically_when_available(normalizer):
+    """No flag needed: if the package is importable and there is a FAR, use it."""
+    try:
+        import nemo_fst
+    except ImportError:
+        assert normalizer._fst_tagger is None
+        return
+    assert (normalizer._fst_tagger is not None) == nemo_fst.has_lookahead()
+
+
+@pytest.mark.run_only_on('CPU')
+@pytest.mark.unit
+def test_can_be_turned_off():
+    """`fast_tagger=False` forces the pynini path even when the package is there."""
+    norm = Normalizer(input_case="cased", lang="en", cache_dir=CACHE_DIR, fast_tagger=False)
+    assert norm._fst_tagger is None
+    assert norm.normalize("It costs $25.50.") == "It costs twenty five dollars fifty cents."
 
 
 @pytest.mark.run_only_on('CPU')
@@ -55,6 +69,8 @@ def test_missing_package_degrades_with_a_warning(monkeypatch, caplog):
 
     monkeypatch.setattr(builtins, "__import__", no_nemo_fst)
     with caplog.at_level(logging.WARNING):
+        # fast_tagger=True, so being unable to use it is worth a warning; left
+        # to itself the same situation is only a debug line.
         norm = Normalizer(input_case="cased", lang="en", cache_dir=CACHE_DIR, fast_tagger=True)
 
     assert norm._fst_tagger is None
@@ -83,9 +99,8 @@ def test_fast_path_agrees_with_pynini_where_the_grammar_is_unambiguous(normalize
     -- never a costlier path than pynini's.
     """
     pytest.importorskip("nemo_fst")
-    fast = Normalizer(
-        input_case="cased", lang="en", cache_dir=CACHE_DIR, fast_tagger=True
-    )
+    fast = Normalizer(input_case="cased", lang="en", cache_dir=CACHE_DIR, fast_tagger=True)
+    slow = Normalizer(input_case="cased", lang="en", cache_dir=CACHE_DIR, fast_tagger=False)
     if fast._fst_tagger is None:
         pytest.skip("nemo-fst present but unusable in this environment")
 
@@ -96,4 +111,4 @@ def test_fast_path_agrees_with_pynini_where_the_grammar_is_unambiguous(normalize
         "Résumé costs €25.",
         "Meeting at 10:30 a.m. on January 5th, 2021.",
     ):
-        assert fast.normalize(text) == normalizer.normalize(text), text
+        assert fast.normalize(text) == slow.normalize(text), text
