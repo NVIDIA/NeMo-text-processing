@@ -38,7 +38,7 @@ import sys
 from pathlib import Path
 
 PREFIX = Path(os.environ.get("OPENFST_PREFIX", "/usr/local"))
-OPENFST_VERSION = os.environ.get("OPENFST_VERSION", "1.8.3")
+OPENFST_VERSION = os.environ.get("OPENFST_VERSION", "1.8.4")
 HERE = Path(__file__).parent
 
 if not (PREFIX / "include" / "fst" / "matcher-fst.h").exists():

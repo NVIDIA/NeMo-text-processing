@@ -30,7 +30,7 @@
 
 set -euo pipefail
 
-OPENFST_VERSION="${OPENFST_VERSION:-1.8.3}"
+OPENFST_VERSION="${OPENFST_VERSION:-1.8.4}"
 PREFIX="${1:-${OPENFST_PREFIX:-/usr/local}}"
 URL="https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-${OPENFST_VERSION}.tar.gz"
 BUILD_DIR="$(mktemp -d)"
@@ -39,6 +39,18 @@ trap 'rm -rf "$BUILD_DIR"' EXIT
 echo "building OpenFst ${OPENFST_VERSION} into ${PREFIX}"
 curl -fsSL "$URL" | tar xz -C "$BUILD_DIR" --strip-components=1
 cd "$BUILD_DIR"
+
+# Upstream bug in 1.8.3, fixed in 1.8.4, patched here for anyone pinning the
+# older release: VectorHashBiTable's copy constructor initialises
+# selector_ from `table.s_`, and no such member exists -- it is `selector_`.
+# Nothing instantiates that constructor, so GCC never checks it, but `table`
+# has the type of the current instantiation, so Clang resolves the member at
+# definition time and rejects the header. Fatal on macOS, invisible on Linux.
+if grep -q 'selector_(table\.s_)' src/include/fst/bi-table.h; then
+    echo "patching bi-table.h: table.s_ -> table.selector_"
+    sed -i.bak 's/selector_(table\.s_)/selector_(table.selector_)/' src/include/fst/bi-table.h
+    rm -f src/include/fst/bi-table.h.bak
+fi
 
 ./configure \
     --prefix="$PREFIX" \

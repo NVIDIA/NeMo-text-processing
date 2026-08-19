@@ -55,6 +55,12 @@ Linux and macOS. The two linkers spell "export nothing but the module init
 symbol" differently, and the GNU spellings are hard errors under ld64, so the
 flags are chosen per platform.
 
+OpenFst 1.8.4 by default. 1.8.3 also works -- the FST and FAR formats are
+unchanged between them, and this reads grammars pynini wrote with 1.8.3 -- but
+it needs a one-line patch that `build_openfst.sh` applies: its
+`VectorHashBiTable` copy constructor names a member that does not exist, which
+GCC never checks and Clang rejects outright.
+
 **macOS is untested.** The platform handling is written but no macOS machine was
 available to run it on; treat the first build there as the real test.
 

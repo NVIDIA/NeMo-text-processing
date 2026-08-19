@@ -4,7 +4,7 @@
 #   OPENFST_PREFIX=/path/to/openfst ./build.sh
 #
 # Env:
-#   OPENFST_PREFIX  OpenFst 1.8.3 built with --enable-far (required).
+#   OPENFST_PREFIX  OpenFst built with --enable-far and --enable-lookahead-fsts.
 #                   Lookahead needs no library: the matcher types are templates
 #                   in <fst/matcher-fst.h> and we name the concrete type
 #                   StdOLabelLookAheadFst directly, so neither the dlopen
@@ -33,7 +33,7 @@ cd "$(dirname "$0")"
 OPENFST_PREFIX="${OPENFST_PREFIX:-/usr/local}"
 PYTHON="${PYTHON:-python3}"
 PYBIND11_PYTHON="${PYBIND11_PYTHON:-$PYTHON}"
-OPENFST_VERSION="${OPENFST_VERSION:-1.8.3}"
+OPENFST_VERSION="${OPENFST_VERSION:-1.8.4}"
 
 if [ ! -f "$OPENFST_PREFIX/include/fst/matcher-fst.h" ]; then
   echo "build.sh: no OpenFst headers under $OPENFST_PREFIX" >&2
