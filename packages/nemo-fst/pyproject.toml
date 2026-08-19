@@ -59,3 +59,21 @@ testpaths = [
     "tests/test_cache.py",
     "tests/test_benchmark.py",
 ]
+
+# NOTE: this configuration has not been exercised -- no container runtime was
+# available where it was written. Treat the first CI run as the real test.
+[tool.cibuildwheel]
+build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+skip = "*-musllinux_*"
+archs = ["x86_64", "aarch64"]
+before-all = "bash scripts/build_openfst.sh /usr/local"
+environment = { OPENFST_PREFIX = "/usr/local" }
+test-requires = "pytest"
+# The wheel must actually carry a working lookahead build; a silent fallback to
+# a plain OpenFst would produce a package that imports and does nothing useful.
+test-command = "python -c \"import nemo_fst; assert nemo_fst.has_lookahead()\""
+
+[tool.cibuildwheel.linux]
+# The archives are linked in, so there is no external OpenFst for auditwheel to
+# bundle; it still rewrites tags and checks the symbol surface.
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"

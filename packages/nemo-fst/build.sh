@@ -47,13 +47,22 @@ EXT_SUFFIX="$("$PYTHON" -c 'import sysconfig;print(sysconfig.get_config_var("EXT
 OUT="nemo_fst/_nemo_fst${EXT_SUFFIX}"
 
 echo "building $OUT"
+# Static archives when the prefix has them: the result then carries no external
+# OpenFst dependency and needs no rpath, which is what makes a wheel relocatable.
+if [ -f "$OPENFST_PREFIX/lib/libfst.a" ] && [ -f "$OPENFST_PREFIX/lib/libfstfar.a" ]; then
+  FST_LINK=("$OPENFST_PREFIX/lib/libfstfar.a" "$OPENFST_PREFIX/lib/libfst.a")
+  echo "  linking OpenFst statically"
+else
+  FST_LINK=(-L"$OPENFST_PREFIX/lib" -lfstfar -lfst -Wl,-rpath,"$OPENFST_PREFIX/lib")
+  echo "  linking OpenFst dynamically (no static archives in $OPENFST_PREFIX/lib)"
+fi
+
 g++ -O3 -std=c++17 -shared -fPIC -fvisibility=hidden -fvisibility-inlines-hidden \
     -DNDEBUG "-DNEMO_FST_OPENFST_VERSION=\"$OPENFST_VERSION\"" \
     -I"$PY_INCLUDE" -I"$PYBIND11_DIR" -I"$OPENFST_PREFIX/include" \
     src/nemo_fst.cc \
     -o "$OUT" \
-    -L"$OPENFST_PREFIX/lib" -lfstfar -lfst \
-    -Wl,-rpath,"$OPENFST_PREFIX/lib" \
+    "${FST_LINK[@]}" \
     -Wl,--exclude-libs,ALL \
     -Wl,--version-script,src/nemo_fst.map
 

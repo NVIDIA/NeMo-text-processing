@@ -112,6 +112,7 @@ class Normalizer:
         lm: bool = False,
         post_process: bool = True,
         max_number_of_permutations_per_split: int = 729,
+        fast_tagger: bool = None,
     ):
         assert input_case in ["lower_cased", "cased"]
 
@@ -205,6 +206,9 @@ class Normalizer:
 
         self.verbalizer = VerbalizeFinalFst(
             deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache
+        )
+        self._fst_tagger = self._init_fst_tagger(
+            lang, cache_dir, deterministic, input_case, whitelist, fast_tagger
         )
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
         self.parser = TokenParser()
@@ -363,9 +367,7 @@ class Normalizer:
         if not text:
             logger.debug(text)
             return text
-        text = pynini.escape(text)
-        tagged_lattice = self.find_tags(text)
-        tagged_text = Normalizer.select_tag(tagged_lattice)
+        tagged_text = self.tag(text)
         logger.debug(tagged_text)
 
         self.parser(tagged_text)
@@ -635,6 +637,84 @@ class Normalizer:
                 yield from _helper(prefix + token_option, token_list, idx + 1)
 
         return _helper("", tokens, 0)
+
+    def _init_fst_tagger(self, lang, cache_dir, deterministic, input_case, whitelist, requested):
+        """Return a nemo-fst tagger, or None to stay on the pynini path.
+
+        Off unless asked for, by `fast_tagger=True` or `NEMO_FAST_TAGGER=1`.
+        It is not on by default because the tagger's shortest path is not
+        unique: where the grammar admits two readings at the same cost, the two
+        implementations may pick different ones, and a few of this repo's own
+        tests pin the reading pynini happens to return. Opting in accepts that;
+        it does not mean a costlier parse, which the package's differential test
+        rules out.
+
+        Absence of the package once asked for is logged at warning, since the
+        caller asked for something they did not get.
+        """
+        if requested is None:
+            requested = os.environ.get("NEMO_FAST_TAGGER", "") not in ("", "0", "false", "False")
+        if not requested:
+            return None
+        if cache_dir is None or cache_dir == "None":
+            logger.warning("fast tagger needs a cache_dir with a compiled grammar; using pynini")
+            return None
+        try:
+            import nemo_fst
+        except ImportError:
+            logger.warning(
+                "fast tagger requested but nemo-fst is not installed "
+                "(pip install nemo_text_processing[runtime]); tagging with pynini"
+            )
+            return None
+        try:
+            if not nemo_fst.has_lookahead():
+                logger.warning(
+                    "nemo-fst is installed but its OpenFst has no lookahead support; "
+                    "tagging with pynini"
+                )
+                return None
+            far = getattr(self.tagger, "far_path_used", None) or self._tagger_far_path(
+                lang, cache_dir, deterministic, input_case, whitelist
+            )
+            if far is None or not os.path.exists(far):
+                logger.warning(f"no cached grammar for the fast tagger at {far}; tagging with pynini")
+                return None
+            return nemo_fst.Tagger.from_far(far, cache_dir=os.path.join(cache_dir, "nemo_fst"))
+        except Exception as exc:  # noqa: BLE001 -- never fail construction over an optimisation
+            logger.warning(f"nemo-fst could not be used ({exc}); tagging with pynini")
+            return None
+
+    @staticmethod
+    def _tagger_far_path(lang, cache_dir, deterministic, input_case, whitelist):
+        """Where the tagger FAR for this configuration lives, if anywhere."""
+        whitelist_file = os.path.basename(whitelist) if whitelist else ""
+        names = {
+            "en": f"en_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
+        }
+        name = names.get(lang)
+        return os.path.join(cache_dir, name) if name else None
+
+    def tag(self, text: str) -> str:
+        """Tag `text`, through nemo-fst if it is available and pynini otherwise.
+
+        `find_tags` and `select_tag` remain for callers that want the lattice;
+        nemo-fst produces the tagged string in one step, so the choice is made
+        here rather than inside either of them.
+
+        Escaping belongs to the pynini path only, so it happens here rather than
+        in `normalize()`. A side effect is that a failed normalization now
+        returns the caller's text rather than an escaped copy of it.
+        """
+        # getattr, not self._fst_tagger: subclasses such as InverseNormalizer
+        # define their own __init__ and never call this one, so the attribute
+        # may legitimately not exist. Those stay on the pynini path.
+        tagger = getattr(self, "_fst_tagger", None)
+        if tagger is not None:
+            # No escaping: the acceptor is built from raw bytes, so pynini's
+            # string-compiler escapes would be matched literally.
+            return tagger.tag(text)
+        return Normalizer.select_tag(self.find_tags(pynini.escape(text)))
 
     def find_tags(self, text: str) -> 'pynini.FstLike':
         """

@@ -49,8 +49,11 @@ make && make install
 OPENFST_PREFIX=$PREFIX pip install .
 ```
 
-That prefix is linked dynamically with an rpath. Static linking and a wheel
-matrix are the next step; `build.sh` records what changes.
+`scripts/build_openfst.sh` produces such a prefix, and cibuildwheel runs it once
+per container so every wheel links the same OpenFst. When the prefix has static
+archives they are linked in, leaving the extension with no external OpenFst
+dependency and no rpath — 1.3 MB, and relocatable. A shared-only prefix still
+works for local development, with an rpath pointing back at it.
 
 ## Testing
 
@@ -102,3 +105,21 @@ but `RelabelPairs` returns an *empty* map, which is an identity relabelling,
 which produces output that parses and is garbage. The map is therefore written
 beside the artifact, renamed into place before the FST, and an entry missing its
 map counts as a cache miss.
+
+## Using it from nemo_text_processing
+
+Off unless asked for:
+
+```python
+Normalizer(input_case="cased", lang="en", cache_dir=..., fast_tagger=True)
+```
+
+or `NEMO_FAST_TAGGER=1`. Without it, or when this package is missing, tagging
+stays on pynini and the caller sees a warning only if they asked for the fast
+path and did not get it.
+
+It is opt-in rather than automatic because the tagger's shortest path is not
+unique. Where the grammar admits two readings at the same cost the two
+implementations may return different ones, and a few of the repository's own
+tests pin the reading pynini happens to produce. Opting in accepts that; it does
+not mean a costlier parse, which the differential test rules out.

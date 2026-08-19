@@ -91,6 +91,9 @@ test = [
     "wget",
     "wrapt",
 ]
+# Optional: a compiled tagger that composes with lookahead. Everything works
+# without it, only slower.
+runtime = ["nemo-fst"]
 all = ["nemo_text_processing[test]"]
 
 [dependency-groups]
@@ -98,6 +101,9 @@ dev = ["nemo_text_processing[test]"]
 
 [tool.uv.workspace]
 members = ["packages/*"]
+
+[tool.uv.sources]
+nemo-fst = { workspace = true }
 
 [tool.setuptools]
 include-package-data = true

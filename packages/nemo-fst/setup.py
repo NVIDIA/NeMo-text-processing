@@ -16,14 +16,19 @@
 
     OPENFST_PREFIX=/opt/openfst pip install .
 
-Links the OpenFst at OPENFST_PREFIX dynamically, with an rpath.  A static
-link built in CIBW_BEFORE_ALL is the next step; see build.sh for the two linker
-flags that becomes.
+`scripts/build_openfst.sh` produces such a prefix, and cibuildwheel runs it once
+per container so every wheel links the same OpenFst.
 
-Note what is *not* here: no libfstlookahead, no lookahead plugin directory.  The
-extension names fst::StdOLabelLookAheadFst -- a template in <fst/matcher-fst.h> --
-rather than looking the type up in OpenFst's registry, so the registration
-object that everything else has to force-link is never needed.
+Prefer the static archives when they are there: linking them leaves the wheel
+with no external OpenFst dependency and no rpath, which is what makes it
+relocatable. A prefix with only shared libraries still works for a local build,
+with an rpath pointing back at it.
+
+Note what is *not* here: no libfstlookahead, no lookahead plugin directory. The
+extension names fst::StdOLabelLookAheadFst -- a template in <fst/matcher-fst.h>
+-- rather than looking the type up in OpenFst's registry, so the registration
+object that everything else has to force-link is never needed, and neither is
+--whole-archive.
 """
 
 from __future__ import annotations
@@ -41,14 +46,23 @@ OPENFST_VERSION = os.environ.get("OPENFST_VERSION", "1.8.3")
 if not (PREFIX / "include" / "fst" / "matcher-fst.h").exists():
     sys.exit(f"setup.py: no OpenFst headers under {PREFIX}; set OPENFST_PREFIX")
 
-link_args = [
-    f"-L{PREFIX / 'lib'}",
-    f"-Wl,-rpath,{PREFIX / 'lib'}",
-    # Coexistence with pynini, which carries its own OpenFst into the same
-    # process: nothing of ours may be visible for it to bind to.
+STATIC_LIBS = ["libfstfar.a", "libfst.a"]
+static = all((PREFIX / "lib" / name).exists() for name in STATIC_LIBS)
+
+# Coexistence with pynini, which carries its own OpenFst into the same process:
+# nothing of ours may be visible for it to bind to.
+HIDE = [
     "-Wl,--exclude-libs,ALL",
     f"-Wl,--version-script,{Path(__file__).parent / 'src' / 'nemo_fst.map'}",
 ]
+
+if static:
+    # Archives passed as objects, so nothing is left to resolve at load time.
+    link_args = [str(PREFIX / "lib" / name) for name in STATIC_LIBS] + HIDE
+    libraries: list[str] = []
+else:
+    link_args = [f"-L{PREFIX / 'lib'}", f"-Wl,-rpath,{PREFIX / 'lib'}"] + HIDE
+    libraries = ["fstfar", "fst"]
 
 setup(
     cmdclass={"build_ext": build_ext},
@@ -57,7 +71,7 @@ setup(
             "nemo_fst._nemo_fst",
             ["src/nemo_fst.cc"],
             include_dirs=[str(PREFIX / "include")],
-            libraries=["fstfar", "fst"],
+            libraries=libraries,
             extra_compile_args=["-O3", "-fvisibility=hidden",
                                 "-fvisibility-inlines-hidden"],
             extra_link_args=link_args,
