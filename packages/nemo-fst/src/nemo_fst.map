@@ -1,0 +1,7 @@
+/* Export nothing but the module init symbol.  During migration nemo-fst and
+   pynini are loaded into the same interpreter, each with its own OpenFst;
+   no symbol of ours may be available for the other to bind to. */
+{
+  global: PyInit__nemo_fst;
+  local: *;
+};

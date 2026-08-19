@@ -96,6 +96,9 @@ all = ["nemo_text_processing[test]"]
 [dependency-groups]
 dev = ["nemo_text_processing[test]"]
 
+[tool.uv.workspace]
+members = ["packages/*"]
+
 [tool.setuptools]
 include-package-data = true
 package-dir = { "" = "src" }
@@ -128,6 +131,7 @@ addopts = "--verbose --pyargs --durations=0"
 testpaths = ["tests"]
 norecursedirs = [
     "nemo",
+    "packages",
     "nemo_text_processing",
     "external",
     "examples",

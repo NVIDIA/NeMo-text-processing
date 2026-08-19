@@ -1,0 +1,3 @@
+build/
+*.egg-info/
+nemo_fst/_nemo_fst*.so
