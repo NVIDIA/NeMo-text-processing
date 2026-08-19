@@ -51,15 +51,13 @@ export OPENFST_PREFIX=$HOME/.local/openfst
 uv sync            # or: pip install .
 ```
 
-Linux and macOS. The two linkers spell "export nothing but the module init
-symbol" differently, and the GNU spellings are hard errors under ld64, so the
-flags are chosen per platform.
+Linux and macOS. The linkers spell "export nothing but the module init symbol"
+differently, so the build offers every spelling and keeps the ones the toolchain
+accepts, rather than guessing from the platform.
 
-OpenFst 1.8.4 by default. 1.8.3 also works -- the FST and FAR formats are
-unchanged between them, and this reads grammars pynini wrote with 1.8.3 -- but
-it needs a one-line patch that `build_openfst.sh` applies: its
-`VectorHashBiTable` copy constructor names a member that does not exist, which
-GCC never checks and Clang rejects outright.
+OpenFst 1.8.4. It reads grammars pynini wrote with 1.8.3 -- the formats are
+unchanged, and the tests run against a 1.8.3-written FAR. 1.8.3 itself does not
+compile under Clang, which is why it is not supported here.
 
 **macOS is untested.** The platform handling is written but no macOS machine was
 available to run it on; treat the first build there as the real test.

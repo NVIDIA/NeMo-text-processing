@@ -34,7 +34,10 @@ object that everything else has to force-link is never needed, and neither is
 from __future__ import annotations
 
 import os
+import shlex
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 PREFIX = Path(os.environ.get("OPENFST_PREFIX", "/usr/local"))
@@ -62,16 +65,37 @@ from setuptools import setup
 STATIC_LIBS = ["libfstfar.a", "libfst.a"]
 static = all((PREFIX / "lib" / name).exists() for name in STATIC_LIBS)
 
+def linker_accepts(flag: str) -> bool:
+    """Does this toolchain's linker take `flag`?
+
+    Asked rather than inferred from sys.platform: the flags below are GNU ld
+    spellings that ld64 rejects outright, and a wrong guess is a build failure
+    at link time rather than a graceful degradation. Probing also copes with
+    lld, mold and cross-compilers, none of which sys.platform describes.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        src = Path(tmp) / "probe.cc"
+        src.write_text("int probe() { return 0; }\n")
+        cmd = shlex.split(os.environ.get("CXX", "c++"))
+        cmd += ["-shared", "-fPIC", str(src), "-o", str(Path(tmp) / "probe.so"), flag]
+        try:
+            return subprocess.run(cmd, capture_output=True).returncode == 0
+        except OSError:
+            return False
+
+
 # Coexistence with pynini, which carries its own OpenFst into the same process:
-# nothing of ours may be visible for it to bind to. The two linkers spell that
-# differently, and the GNU spellings are hard errors under ld64.
-if sys.platform == "darwin":
-    HIDE = [f"-Wl,-exported_symbols_list,{HERE / 'src' / 'nemo_fst.exported_symbols'}"]
-else:
-    HIDE = [
-        "-Wl,--exclude-libs,ALL",
-        f"-Wl,--version-script,{HERE / 'src' / 'nemo_fst.map'}",
-    ]
+# nothing of ours may be visible for it to bind to. Every spelling the two
+# linkers use is offered and the ones that take are kept; -fvisibility=hidden
+# already does most of the work, so keeping none of them is survivable.
+CANDIDATE_HIDE = [
+    "-Wl,--exclude-libs,ALL",
+    f"-Wl,--version-script,{HERE / 'src' / 'nemo_fst.map'}",
+    f"-Wl,-exported_symbols_list,{HERE / 'src' / 'nemo_fst.exported_symbols'}",
+]
+HIDE = [flag for flag in CANDIDATE_HIDE if linker_accepts(flag)]
+if not HIDE:
+    print("nemo-fst: no supported symbol-hiding linker flag; relying on -fvisibility=hidden")
 
 if static:
     # Archives passed as objects, so nothing is left to resolve at load time.

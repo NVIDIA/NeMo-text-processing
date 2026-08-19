@@ -59,21 +59,32 @@ else
   echo "  linking OpenFst dynamically (no static archives in $OPENFST_PREFIX/lib)"
 fi
 
-# Restricting the export table is spelled differently by the two linkers, and
-# the GNU spellings are hard errors under ld64.
-if [ "$(uname -s)" = "Darwin" ]; then
-  HIDE=(-Wl,-exported_symbols_list,src/nemo_fst.exported_symbols -undefined dynamic_lookup)
-else
-  HIDE=(-Wl,--exclude-libs,ALL -Wl,--version-script,src/nemo_fst.map)
-fi
+# Restricting the export table: offer every spelling the two linkers use and
+# keep the ones this toolchain takes. Asked rather than inferred from `uname`,
+# because a wrong guess is a link failure rather than a graceful degradation.
+PROBE_DIR="$(mktemp -d)"
+trap 'rm -rf "$PROBE_DIR"' EXIT
 
-"${CXX:-g++}" -O3 -std=c++17 -shared -fPIC -fvisibility=hidden -fvisibility-inlines-hidden \
+linker_accepts() {
+  printf 'int probe(){return 0;}\n' > "$PROBE_DIR/probe.cc"
+  "${CXX:-c++}" -shared -fPIC "$PROBE_DIR/probe.cc" -o "$PROBE_DIR/probe.so" "$1" 2>/dev/null
+}
+
+HIDE=()
+for flag in -Wl,--exclude-libs,ALL \
+            -Wl,--version-script,src/nemo_fst.map \
+            -Wl,-exported_symbols_list,src/nemo_fst.exported_symbols; do
+  if linker_accepts "$flag"; then HIDE+=("$flag"); fi
+done
+echo "  symbol hiding: ${HIDE[*]:-none (relying on -fvisibility=hidden)}"
+
+"${CXX:-c++}" -O3 -std=c++17 -shared -fPIC -fvisibility=hidden -fvisibility-inlines-hidden \
     -DNDEBUG "-DNEMO_FST_OPENFST_VERSION=\"$OPENFST_VERSION\"" \
     -I"$PY_INCLUDE" -I"$PYBIND11_DIR" -I"$OPENFST_PREFIX/include" \
     src/nemo_fst.cc \
     -o "$OUT" \
     "${FST_LINK[@]}" \
-    "${HIDE[@]}"
+    ${HIDE[@]+"${HIDE[@]}"}
 
 echo "built $OUT"
 "$PYTHON" -c "
