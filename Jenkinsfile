@@ -44,7 +44,9 @@ pipeline {
 
     stage('NeMo Installation') {
       steps {
-        sh './reinstall.sh release'
+        sh 'pip install -U uv'
+        sh 'uv build --wheel --out-dir dist'
+        sh 'uv pip install --system "$(ls dist/*.whl)[all]"'
       }
     }
 
@@ -68,17 +70,17 @@ pipeline {
         }
         stage('L0: En TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --text="1" --cache_dir ${EN_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --text="1" --cache_dir ${EN_TN_CACHE}'
           }
         }
         stage('L0: En TN non-deterministic grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize_with_audio.py --text="1" --cache_dir ${EN_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize_with_audio --text="1" --cache_dir ${EN_TN_CACHE}'
           }
         }
         stage('L0: En ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --language en --text="twenty" --cache_dir ${EN_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --language en --text="twenty" --cache_dir ${EN_TN_CACHE}'
           }
         }
 
@@ -97,17 +99,17 @@ pipeline {
     parallel {
         stage('L0: Hi TN grammars') {
             steps {
-                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hi --text="१" --cache_dir ${HI_TN_CACHE}'
+                sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=hi --text="१" --cache_dir ${HI_TN_CACHE}'
             }
         }
         stage('L0: Hi ITN grammars') {
             steps {
-                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
+                sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=hi --text="एक" --cache_dir ${HI_TN_CACHE}'
             }
         }
         stage('L0: Codeswitched HI/EN ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi_en --text="एक" --cache_dir ${HI_EN_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=hi_en --text="एक" --cache_dir ${HI_EN_TN_CACHE}'
           }
         }
       }
@@ -126,27 +128,27 @@ pipeline {
       parallel {
         stage('L0: DE TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=de --text="1" --cache_dir ${DE_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=de --text="1" --cache_dir ${DE_TN_CACHE}'
           }
         }
         stage('L0: DE ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=de --text="ein hundert " --cache_dir ${DE_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=de --text="ein hundert " --cache_dir ${DE_TN_CACHE}'
           }
         }
         stage('L0: ES TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=es --text="1" --cache_dir ${ES_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=es --text="1" --cache_dir ${ES_TN_CACHE}'
           }
         }
         stage('L0: ES ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=es --text="ciento uno " --cache_dir ${ES_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=es --text="ciento uno " --cache_dir ${ES_TN_CACHE}'
           }
         }
         stage('L0: Codeswitched ES/EN ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=es_en --text="ciento uno " --cache_dir ${ES_EN_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=es_en --text="ciento uno " --cache_dir ${ES_EN_TN_CACHE}'
           }
         }
       }
@@ -165,12 +167,12 @@ pipeline {
       parallel {
         stage('L0: AR TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ar --text="2" --cache_dir ${AR_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=ar --text="2" --cache_dir ${AR_TN_CACHE}'
           }
         }
         stage('L0: AR ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ar --text="اثنان " --cache_dir ${AR_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=ar --text="اثنان " --cache_dir ${AR_TN_CACHE}'
           }
         }
       }
@@ -189,32 +191,32 @@ pipeline {
       parallel {
         stage('L0: FR TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=fr --text="2" --cache_dir ${FR_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=fr --text="2" --cache_dir ${FR_TN_CACHE}'
           }
         }
         stage('L0: FR ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=fr --text="cent " --cache_dir ${FR_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=fr --text="cent " --cache_dir ${FR_TN_CACHE}'
           }
         }
         stage('L0: VI ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=vi --text="một ngàn " --cache_dir ${VI_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=vi --text="một ngàn " --cache_dir ${VI_TN_CACHE}'
           }
         }
         stage('L0: VI TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=vi --text="100" --cache_dir ${VI_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=vi --text="100" --cache_dir ${VI_TN_CACHE}'
           }
         }
         stage('L0: HU TN grammars') {
          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hu --text="100" --cache_dir ${HU_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=hu --text="100" --cache_dir ${HU_TN_CACHE}'
           }
         }
         stage('L0: IT TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=it --text="122" --cache_dir ${IT_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=it --text="122" --cache_dir ${IT_TN_CACHE}'
           }
         }
       }
@@ -233,32 +235,32 @@ pipeline {
       parallel {
         stage('L0: RU TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize_with_audio.py --lang=ru --text="03" --cache_dir ${RU_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize_with_audio --lang=ru --text="03" --cache_dir ${RU_TN_CACHE}'
           }
         }
         stage('L0: RU ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ru --text="три " --cache_dir ${RU_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=ru --text="три " --cache_dir ${RU_TN_CACHE}'
           }
         }
         stage('L0: SV TN grammars') {
          steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=sv --text="100" --cache_dir ${SV_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=sv --text="100" --cache_dir ${SV_TN_CACHE}'
           }
         }
         // stage('L0: SV ITN grammars') {
         //   steps {
-        //     sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=sv --text="hundra " --cache_dir ${SV_TN_CACHE}'
+        //     sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=sv --text="hundra " --cache_dir ${SV_TN_CACHE}'
         //   }
         // }
         stage('L0: PT TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=pt --text="2" --cache_dir ${PT_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=pt --text="2" --cache_dir ${PT_TN_CACHE}'
           }
         }
         stage('L0: PT ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=pt --text="dez " --cache_dir ${PT_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=pt --text="dez " --cache_dir ${PT_TN_CACHE}'
           }
         }
       }
@@ -276,7 +278,7 @@ pipeline {
       parallel {
         stage('L0: HE ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=he --text="ת " --cache_dir ${HE_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=he --text="ת " --cache_dir ${HE_TN_CACHE}'
           }
         }
       }
@@ -294,17 +296,17 @@ pipeline {
       parallel {
         stage('L0: MR ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=mr --text="शून्य " --cache_dir ${MR_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=mr --text="शून्य " --cache_dir ${MR_TN_CACHE}'
           }
         }
         stage('L0: HY TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hy --text="6" --cache_dir ${HY_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=hy --text="6" --cache_dir ${HY_TN_CACHE}'
           }
         }
         stage('L0: HY ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hy --text="վեց " --cache_dir ${HY_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=hy --text="վեց " --cache_dir ${HY_TN_CACHE}'
           }
         }
       }
@@ -322,12 +324,12 @@ pipeline {
       parallel {
         stage('L0: ZH ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=zh --text="你" --cache_dir ${ZH_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=zh --text="你" --cache_dir ${ZH_TN_CACHE}'
           }
         }
         stage('L0: ZH TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=zh --text="6" --cache_dir ${ZH_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=zh --text="6" --cache_dir ${ZH_TN_CACHE}'
           }
         }
       }
@@ -345,7 +347,7 @@ pipeline {
       parallel {
         stage('L0: JA ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ja --text="100" --cache_dir ${JA_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=ja --text="100" --cache_dir ${JA_TN_CACHE}'
           }
         }
       }
@@ -363,12 +365,12 @@ pipeline {
       parallel {
         stage('L0: KO ITN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ko --text="백" --cache_dir ${KO_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --lang=ko --text="백" --cache_dir ${KO_TN_CACHE}'
           }
         }
         stage('L0: KO TN grammars') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ko --text="100" --cache_dir ${KO_TN_CACHE}'
+            sh 'CUDA_VISIBLE_DEVICES="" python -m nemo_text_processing.text_normalization.normalize --lang=ko --text="100" --cache_dir ${KO_TN_CACHE}'
           }
         }
       }
@@ -532,7 +534,7 @@ pipeline {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkins/TestData/text_norm/output_${TIME} && \
             cd tools/text_processing_deployment && python pynini_export.py --output=$NORM_OUTPUT_DIR --grammars=tn_grammars --cache_dir ${EN_TN_CACHE} --language=en && ls -R $NORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
             sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkins/TestData/text_norm/output_${TIME} && mkdir $NORM_OUTPUT_DIR && \
-            cd nemo_text_processing/text_normalization/ &&  python normalize.py --input_file=/home/jenkins/TestData/text_norm/ci/test.txt --input_case="lower_cased" --language=en --output_file=$NORM_OUTPUT_DIR/test.pynini.txt --verbose && \
+            python -m nemo_text_processing.text_normalization.normalize --input_file=/home/jenkins/TestData/text_norm/ci/test.txt --input_case="lower_cased" --language=en --output_file=$NORM_OUTPUT_DIR/test.pynini.txt --verbose && \
             cat $NORM_OUTPUT_DIR/test.pynini.txt && \
             cmp --silent $NORM_OUTPUT_DIR/test.pynini.txt /home/jenkins/TestData/text_norm/ci/test_goal_py.txt || exit 1 && \
             rm -rf $NORM_OUTPUT_DIR'
@@ -544,7 +546,7 @@ pipeline {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkins/TestData/text_denorm/output_${TIME} && \
             cd tools/text_processing_deployment && python pynini_export.py --output=$DENORM_OUTPUT_DIR --grammars=itn_grammars --cache_dir ${EN_TN_CACHE} --language=en && ls -R $DENORM_OUTPUT_DIR && echo ".far files created "|| exit 1'
             sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkins/TestData/text_denorm/output_${TIME} && mkdir $DENORM_OUTPUT_DIR && \
-            cd nemo_text_processing/inverse_text_normalization/ &&  python inverse_normalize.py --input_file=/home/jenkins/TestData/text_denorm/ci/test.txt --language=en --output_file=$DENORM_OUTPUT_DIR/test.pynini.txt --verbose && \
+            python -m nemo_text_processing.inverse_text_normalization.inverse_normalize --input_file=/home/jenkins/TestData/text_denorm/ci/test.txt --language=en --output_file=$DENORM_OUTPUT_DIR/test.pynini.txt --verbose && \
             cmp --silent $DENORM_OUTPUT_DIR/test.pynini.txt /home/jenkins/TestData/text_denorm/ci/test_goal_py.txt || exit 1 && \
             rm -rf $DENORM_OUTPUT_DIR'
           }
@@ -554,7 +556,7 @@ pipeline {
         stage('L2: Eng alignment TN') {
           steps {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && NORM_OUTPUT_DIR=/home/jenkins/TestData/text_norm/output_${TIME} && mkdir $NORM_OUTPUT_DIR && \
-            cd nemo_text_processing/fst_alignment && python alignment.py --text="2615 Forest Av, 90501 CA, Santa Clara. 10kg, 12/16/2018" --grammar=tn --rule=tokenize_and_classify --fst=${EN_TN_CACHE}/en_tn_True_deterministic_cased__tokenize.far 2>&1 | tee $NORM_OUTPUT_DIR/pred.txt && \
+            python -m nemo_text_processing.fst_alignment.alignment --text="2615 Forest Av, 90501 CA, Santa Clara. 10kg, 12/16/2018" --grammar=tn --rule=tokenize_and_classify --fst=${EN_TN_CACHE}/en_tn_True_deterministic_cased__tokenize.far 2>&1 | tee $NORM_OUTPUT_DIR/pred.txt && \
             cmp --silent $NORM_OUTPUT_DIR/pred.txt /home/jenkins/TestData/text_norm/ci/alignment_gold.txt || exit 1 && \
             rm -rf $NORM_OUTPUT_DIR'
           }
@@ -563,7 +565,7 @@ pipeline {
         stage('L2: Eng alignment ITN') {
           steps {
             sh 'TIME=`date +"%Y-%m-%d-%T"` && DENORM_OUTPUT_DIR=/home/jenkins/TestData/text_denorm/output_${TIME} && mkdir $DENORM_OUTPUT_DIR && \
-            cd nemo_text_processing/fst_alignment && python alignment.py --text="one million twenty three thousand two hundred eleven ten kilograms one hundred twenty three dollars and twenty five cents" --grammar=itn --rule=tokenize_and_classify --fst=${EN_TN_CACHE}/en_itn_lower_cased.far 2>&1 | tee $DENORM_OUTPUT_DIR/pred.txt && \
+            python -m nemo_text_processing.fst_alignment.alignment --text="one million twenty three thousand two hundred eleven ten kilograms one hundred twenty three dollars and twenty five cents" --grammar=itn --rule=tokenize_and_classify --fst=${EN_TN_CACHE}/en_itn_lower_cased.far 2>&1 | tee $DENORM_OUTPUT_DIR/pred.txt && \
             cmp --silent $DENORM_OUTPUT_DIR/pred.txt /home/jenkins/TestData/text_denorm/ci/alignment_gold.txt || exit 1 && \
             rm -rf $DENORM_OUTPUT_DIR'
           }

@@ -1,0 +1,155 @@
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nemo_text_processing"
+description = "NeMo text processing for ASR and TTS"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [{ name = "NVIDIA", email = "nemo-toolkit@nvidia.com" }]
+maintainers = [{ name = "NVIDIA", email = "nemo-toolkit@nvidia.com" }]
+requires-python = ">=3.9"
+keywords = [
+    "NeMo",
+    "nvidia",
+    "tts",
+    "asr",
+    "text processing",
+    "text normalization",
+    "inverse text normalization",
+    "language",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "cdifflib",
+    "editdistance",
+    "inflect",
+    "joblib",
+    "pandas",
+    "pynini==2.1.6.post1",
+    "regex",
+    "sacremoses>=0.0.43",
+    "setuptools>=65.5.1",
+    "tqdm>=4.41.0",
+    "transformers",
+    "wget",
+    "wrapt",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/"
+Repository = "https://github.com/nvidia/nemo-text-processing"
+Download = "https://github.com/NVIDIA/NeMo-text-processing/releases"
+
+[project.optional-dependencies]
+test = [
+    "black==25.1.0",
+    "click>=8.0.2",
+    "isort>5.1.0,<=6.0.1",
+    "parameterized",
+    "pynini==2.1.6.post1",
+    "pytest",
+    "pytest-runner",
+    "ruamel.yaml",
+    "sphinx",
+    "sphinxcontrib-bibtex",
+    "wandb",
+    "wget",
+    "wrapt",
+]
+all = ["nemo_text_processing[test]"]
+
+[dependency-groups]
+dev = ["nemo_text_processing[test]"]
+
+[tool.setuptools]
+include-package-data = true
+package-dir = { "" = "src" }
+
+[tool.setuptools.dynamic]
+version = { attr = "nemo_text_processing.package_info.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.tsv", "*.far", "*.fst"]
+
+[tool.black]
+skip-string-normalization = true
+line-length = 119
+
+[tool.isort]
+known_localfolder = ["nemo", "tests"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+default_section = "THIRDPARTY"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 119
+
+[tool.pytest.ini_options]
+addopts = "--verbose --pyargs --durations=0"
+testpaths = ["tests"]
+norecursedirs = [
+    "nemo",
+    "nemo_text_processing",
+    "external",
+    "examples",
+    "docs",
+    "scripts",
+    "tools",
+    "tutorials",
+    "*.egg",
+    ".*",
+    "_darcs",
+    "build",
+    "CVS",
+    "dist",
+    "venv",
+    "{arch}",
+]
+markers = [
+    "unit: marks unit test, i.e. testing a single, well isolated functionality (deselect with '-m \"not unit\"')",
+    "integration: marks test checking the elements when integrated into subsystems (deselect with '-m \"not integration\"')",
+    "system: marks test working at the highest integration level (deselect with '-m \"not system\"')",
+    "acceptance: marks test checking whether the developed product/model passes the user defined acceptance criteria (deselect with '-m \"not acceptance\"')",
+    "docs: mark tests related to documentation (deselect with '-m \"not docs\"')",
+    "skipduringci: marks tests that are skipped ci as they are addressed by Jenkins jobs but should be run to test user setups",
+    "pleasefixme: marks tests that are broken and need fixing",
+]

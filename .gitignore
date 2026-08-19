@@ -175,3 +175,6 @@ examples/neural_graphs/*.yml
 .hydra/
 nemo_experiments/
 *.swp
+
+# uv: this is a library, so no lockfile is committed (see pyproject.toml)
+uv.lock
