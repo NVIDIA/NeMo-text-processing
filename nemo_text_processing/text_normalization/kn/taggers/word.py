@@ -18,7 +18,15 @@ from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_SPAC
 
 
 class WordFst(GraphFst):
-    def __init__(self):
-        super().__init__(name="word", kind="classify")
+    """
+    Finite state transducer for classifying Kannada words.
+        e.g. ಚಿನ್ನ -> tokens { name: "ಚಿನ್ನ" }
+ 
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transductions are generated (used for audio-based normalization)
+    """
+    def __init__(self, deterministic: bool = True):
+        super().__init__(name="word", kind="classify", deterministic=deterministic)
         word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
         self.fst = word.optimize()
