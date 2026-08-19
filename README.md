@@ -37,7 +37,7 @@ conda create --name nemo_tn python==3.10
 conda activate nemo_tn
 ```
 
-(Optional) To use [hybrid text normalization](nemo_text_processing/hybrid/README.md) install PyTorch using their [configurator](https://pytorch.org/get-started/locally/). 
+(Optional) To use [hybrid text normalization](src/nemo_text_processing/hybrid/README.md) install PyTorch using their [configurator](https://pytorch.org/get-started/locally/). 
 
 ```
 conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
@@ -84,12 +84,16 @@ test and style tooling. Run things through it with `uv run`:
 
 ```
 uv run pytest --cpu
-uv run python nemo_text_processing/text_normalization/normalize.py --text="1"
+uv run python -m nemo_text_processing.text_normalization.normalize --text="1"
 ```
 
 **_NOTE:_** uv is a convenience, not a requirement — the project is a standard
 PEP 621 package. `pip install -e ".[all]"` from the repository root does the same
 thing.
+
+**_NOTE:_** the package lives under `src/`, so it is only importable once
+installed. Run tests through `uv run pytest` (or install first); a bare `pytest`
+in an environment without the package will not find it.
 
 **_NOTE:_** No `uv.lock` is committed. This is a library rather than an
 application, so the resolution that matters is the consumer's; run `uv lock`

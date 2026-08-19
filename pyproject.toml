@@ -98,12 +98,13 @@ dev = ["nemo_text_processing[test]"]
 
 [tool.setuptools]
 include-package-data = true
+package-dir = { "" = "src" }
 
 [tool.setuptools.dynamic]
 version = { attr = "nemo_text_processing.package_info.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["nemo_text_processing*"]
+where = ["src"]
 
 [tool.setuptools.package-data]
 "*" = ["*.tsv", "*.far", "*.fst"]
