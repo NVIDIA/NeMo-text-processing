@@ -23,9 +23,13 @@ same way the main test suite does:
 
 from __future__ import annotations
 
+import glob
 from pathlib import Path
 
 import pytest
+
+REPO = Path(__file__).resolve().parents[3]
+CORPUS = REPO / "tests" / "nemo_text_processing" / "en" / "data_text_normalization"
 
 
 def pytest_addoption(parser):
@@ -72,3 +76,17 @@ def tagger(far_path, artifact_dir):
     import nemo_fst
 
     return nemo_fst.Tagger.from_far(far_path, cache_dir=artifact_dir)
+
+
+@pytest.fixture(scope="session")
+def inputs() -> list:
+    """Left-hand sides of the English text-normalization test cases."""
+    texts = []
+    for path in sorted(glob.glob(str(CORPUS / "test_cases_*.txt"))):
+        for line in Path(path).read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "~" in line:
+                texts.append(line.split("~", 1)[0])
+    if not texts:
+        pytest.skip(f"no test-case files under {CORPUS}")
+    return texts

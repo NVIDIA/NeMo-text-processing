@@ -16,9 +16,9 @@
 
     OPENFST_PREFIX=/opt/openfst pip install .
 
-C1 links the OpenFst at OPENFST_PREFIX dynamically, with an rpath.  C2 replaces
-this with a static link built in CIBW_BEFORE_ALL; see build.sh for the two
-linker flags that becomes.
+Links the OpenFst at OPENFST_PREFIX dynamically, with an rpath.  A static
+link built in CIBW_BEFORE_ALL is the next step; see build.sh for the two linker
+flags that becomes.
 
 Note what is *not* here: no libfstlookahead, no lookahead plugin directory.  The
 extension names fst::StdOLabelLookAheadFst -- a template in <fst/matcher-fst.h> --

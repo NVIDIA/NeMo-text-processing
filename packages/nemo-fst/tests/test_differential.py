@@ -32,29 +32,7 @@ tagger into `Normalizer`.
 
 from __future__ import annotations
 
-import glob
 import time
-from pathlib import Path
-
-import pytest
-
-REPO = Path(__file__).resolve().parents[3]
-CORPUS = REPO / "tests" / "nemo_text_processing" / "en" / "data_text_normalization"
-
-
-@pytest.fixture(scope="module")
-def inputs() -> list[str]:
-    """Left-hand sides of the English text-normalization test cases."""
-    texts: list[str] = []
-    for path in sorted(glob.glob(str(CORPUS / "test_cases_*.txt"))):
-        for line in Path(path).read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "~" in line:
-                texts.append(line.split("~", 1)[0])
-    if not texts:
-        pytest.skip(f"no test-case files under {CORPUS}")
-    return texts
-
 
 def squash(text: str) -> str:
     return " ".join(text.split())

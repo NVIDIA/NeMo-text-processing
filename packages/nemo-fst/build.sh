@@ -17,7 +17,7 @@
 #   -fvisibility=hidden          nothing but PyInit__nemo_fst is exported
 #   -Wl,--exclude-libs,ALL       no symbol from a linked archive is re-exported
 #
-# STATIC LINKING (C2, not done here): this prefix was configured
+# STATIC LINKING (not done here): this prefix was configured
 # --disable-static, so we link the shared libs with -Wl,-rpath.  A static build
 # must additionally wrap -Wl,--whole-archive around libfstlookahead.a *if* it
 # uses the fst-type registry (fstconvert-style, by name).  This file does not:

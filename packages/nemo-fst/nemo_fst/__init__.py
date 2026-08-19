@@ -14,7 +14,7 @@
 
 """nemo-fst — apply prebuilt OpenFst grammars, fast, without pynini.
 
-C1 scope: the tagger.  Tagging is 96.7% of text-normalization runtime, so this
+Scope is the tagger.  Tagging is 96.7% of text-normalization runtime, so this
 is effectively the whole speedup with the smallest possible native surface.
 
     import nemo_fst

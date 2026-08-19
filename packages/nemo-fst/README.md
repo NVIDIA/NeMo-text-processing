@@ -49,7 +49,7 @@ make && make install
 OPENFST_PREFIX=$PREFIX pip install .
 ```
 
-C1 links that prefix dynamically with an rpath. Static linking and a wheel
+That prefix is linked dynamically with an rpath. Static linking and a wheel
 matrix are the next step; `build.sh` records what changes.
 
 ## Testing
@@ -62,6 +62,25 @@ uv run --package nemo-fst pytest --tn_cache_dir=/path/to/grammars
 The tests run in order of consequence. `test_coexistence.py` is first on
 purpose: this package and pynini each carry their own OpenFst into the same
 interpreter, and if hidden visibility is wrong nothing below it means anything.
+
+`test_integration.py` substitutes the tagging step on `Normalizer` at runtime
+and compares the end of the whole pipeline against the stock one, so the
+package is exercised through the code that will eventually call it.
+
+Benchmarks are deselected by default:
+
+```bash
+uv run --package nemo-fst pytest -m benchmark -s --tn_cache_dir=/path/to/grammars
+```
+
+On one aarch64 machine, against the English test corpus:
+
+| | |
+| --- | --- |
+| tagging | 4.6–11.2x, falling with semiotic density |
+| `normalize()` end to end | 2.6x |
+| 8 threads through one `Tagger` | 8.2x over sequential |
+| preparing an artifact | 0.28 s once, 0.02 s from cache |
 
 ## Two things that will bite anyone editing this
 

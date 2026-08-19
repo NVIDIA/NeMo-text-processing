@@ -14,7 +14,7 @@
 
 // nemo-fst — a minimal OpenFst runtime for applying prebuilt grammars.
 //
-// C1 scope: the tagger path only.  Read an FST out of a FAR, prepare the
+// Scope is the tagger path only.  Read an FST out of a FAR, prepare the
 // lookahead artifact once (Invert, then Convert to `olabel_lookahead`), and
 // apply it per request with the GIL released.
 //

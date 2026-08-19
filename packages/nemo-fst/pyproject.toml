@@ -43,12 +43,19 @@ packages = ["nemo_fst"]
 [tool.pytest.ini_options]
 # A prepared artifact is ~13 MB; keep only what a failure needs.
 tmp_path_retention_policy = "failed"
+# Benchmarks are slow and machine-dependent; run them with `pytest -m benchmark`.
+addopts = "-m 'not benchmark'"
+markers = [
+    "benchmark: performance measurement, deselected unless -m benchmark is given",
+]
 pythonpath = [".", "tests"]
 # Listed rather than globbed so they run in order of consequence: if two OpenFst
 # copies cannot share a process, nothing below it means anything.
 testpaths = [
     "tests/test_coexistence.py",
     "tests/test_differential.py",
+    "tests/test_integration.py",
     "tests/test_bytes.py",
     "tests/test_cache.py",
+    "tests/test_benchmark.py",
 ]
