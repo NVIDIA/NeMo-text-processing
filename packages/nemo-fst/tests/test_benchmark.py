@@ -67,7 +67,7 @@ def test_tagging_speedup(tagger, normalizer):
     print(f"\n{'density':8s} {'copies':>6s} {'chars':>6s} {'pynini':>10s} {'nemo-fst':>10s} {'speedup':>8s}")
     speedups = []
     for name, template in TEMPLATES.items():
-        for copies in (1, 4, 16):
+        for copies in (1, 4, 16, 32):
             text = " ".join([template] * copies)
             t_base = best_of(pynini_tag, text)
             t_ours = best_of(tagger.tag, text)
@@ -80,20 +80,17 @@ def test_tagging_speedup(tagger, normalizer):
 
 
 def test_end_to_end_speedup(normalizer, tagger, inputs, monkeypatch):
-    """The whole `normalize()` call, tagging substituted, across input lengths.
+    """The whole `normalize()` call, tagging substituted, by density and length.
 
-    Length matters twice over. Tagging is 90.8% of `normalize()` on the corpus's
-    single-token cases but 96.9% on a paragraph, so Amdahl leaves more on the
-    table for short inputs; and a ten-character string has little dead branching
-    for lookahead to skip, so the tagging speedup is itself smaller there. The
-    corpus row is the floor, not the headline.
+    Both axes matter. Density, because lookahead removes *dead* hypotheses and
+    dense text keeps more genuinely alive. Length, because the pipeline's
+    non-tagging stages are a fixed cost that a short input cannot amortise --
+    see `test_tagging_share_of_pipeline` for the ceiling that implies.
     """
-    script = (
-        "On 3/4/2023 we shipped 5 units at $5.50 each to the west coast. "
-        "Call 555-0105 before 5:30 p.m. about the $5,204.50 invoice."
-    )
-    cases = [("corpus, 200 short inputs", inputs[:200])]
-    cases += [(f"one {k}-sentence script", [" ".join([script] * k)]) for k in (4, 16, 32)]
+    cases = [("corpus (200 short inputs)", inputs[:200])]
+    for name, template in TEMPLATES.items():
+        for copies in (4, 32):
+            cases.append((f"{name}, {copies} sentences", [" ".join([template] * copies)]))
 
     stock_times = []
     for _, texts in cases:
@@ -112,7 +109,44 @@ def test_end_to_end_speedup(normalizer, tagger, inputs, monkeypatch):
         ours = time.perf_counter() - t0
         speedups.append(stock / ours)
         print(f"{label:28s} {stock:7.2f}s {ours:8.2f}s {stock / ours:7.2f}x")
+    print(f"{'':28s} {'':>8s} {'range':>9s} "
+          f"{min(speedups):.1f}-{max(speedups):.1f}x")
     assert min(speedups) > 1.2, f"slowest case only {min(speedups):.2f}x"
+
+
+def test_tagging_share_of_pipeline(normalizer, inputs):
+    """How much of `normalize()` is tagging -- the ceiling on any tagger change.
+
+    Speeding tagging by `s` when it is fraction `f` of runtime gives at best
+    1 / ((1 - f) + f / s), so this is what bounds every other number here. It is
+    also why short inputs look worse: the non-tagging stages are a fixed cost
+    per call, and a ten-character input cannot amortise them.
+    """
+    import pynini
+
+    def measure(texts):
+        t0 = time.perf_counter()
+        for text in texts:
+            normalizer.normalize(text)
+        total = time.perf_counter() - t0
+        t0 = time.perf_counter()
+        for text in texts:
+            lattice = pynini.escape(text) @ normalizer.tagger.fst
+            pynini.shortestpath(lattice, nshortest=1, unique=True).string()
+        return time.perf_counter() - t0, total
+
+    cases = [("corpus (200 short inputs)", inputs[:200])]
+    cases += [
+        (f"{name}, 32 sentences", [" ".join([TEMPLATES[name]] * 32)])
+        for name in ("plain", "medium", "heavy")
+    ]
+    print(f"\n{'input':28s} {'tagging':>9s} {'total':>8s} {'share':>7s}")
+    shares = []
+    for label, texts in cases:
+        tag, total = measure(texts)
+        shares.append(tag / total)
+        print(f"{label:28s} {tag:8.2f}s {total:7.2f}s {tag / total * 100:6.1f}%")
+    assert max(shares) > 0.9, f"tagging is only {max(shares) * 100:.0f}% of the pipeline"
 
 
 def test_concurrency_scaling(tagger):

@@ -77,10 +77,16 @@ On one aarch64 machine, against the English test corpus:
 
 | | |
 | --- | --- |
-| tagging | 4.6–11.2x, falling with semiotic density |
-| `normalize()` end to end | 2.5x on single-token inputs, 6.5x on a 32-sentence script |
-| 8 threads through one `Tagger` | 8.2x over sequential |
+| tagging | 4.6–11.2x |
+| `normalize()` end to end | 4.1–8.6x on scripts, 2.6x on single-token inputs |
+| 8 threads through one `Tagger` | 8.3x over sequential |
 | preparing an artifact | 0.28 s once, 0.02 s from cache |
+
+Both speedups fall with semiotic density — lookahead removes *dead* hypotheses,
+and dense text keeps more genuinely alive — and rise with length, because
+composition is superlinear and the pipeline's non-tagging stages are a fixed
+cost per call. Tagging is 91% of `normalize()` on a ten-character input and 95%
+on a paragraph, which is what bounds the end-to-end column.
 
 ## Two things that will bite anyone editing this
 
