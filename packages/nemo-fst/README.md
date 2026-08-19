@@ -76,7 +76,16 @@ From this directory, with `OPENFST_PREFIX` set:
 uv run pytest --tn_cache_dir=/path/to/grammars
 ```
 
-or `uv run --package nemo-fst pytest ...` from the repository root.
+That builds the extension and runs what can be checked in isolation. Most of the
+suite compares against pynini and so needs `pynini` and `nemo_text_processing`
+too; without them those tests skip, saying so. For a full run, use an
+environment that has both -- the repository's own, with this package built into
+it:
+
+```bash
+OPENFST_PREFIX=$PREFIX ./build.sh          # builds in place
+python -m pytest --tn_cache_dir=/path/to/grammars
+```
 
 The tests run in order of consequence. `test_coexistence.py` is first on
 purpose: this package and pynini each carry their own OpenFst into the same
