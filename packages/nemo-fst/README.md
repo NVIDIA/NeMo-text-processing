@@ -70,10 +70,13 @@ works for local development, with an rpath pointing back at it.
 
 ## Testing
 
+From this directory, with `OPENFST_PREFIX` set:
+
 ```bash
-OPENFST_PREFIX=$PREFIX uv sync --package nemo-fst
-uv run --package nemo-fst pytest --tn_cache_dir=/path/to/grammars
+uv run pytest --tn_cache_dir=/path/to/grammars
 ```
+
+or `uv run --package nemo-fst pytest ...` from the repository root.
 
 The tests run in order of consequence. `test_coexistence.py` is first on
 purpose: this package and pynini each carry their own OpenFst into the same

@@ -37,6 +37,11 @@ classifiers = [
 [project.optional-dependencies]
 test = ["pytest"]
 
+# Installed by `uv sync` and `uv run`, so a clone gets a working test
+# environment without having to name the extra.
+[dependency-groups]
+dev = ["nemo-fst[test]"]
+
 [tool.setuptools]
 packages = ["nemo_fst"]
 
