@@ -111,13 +111,26 @@ writes a wheel and an sdist to `dist/`. `python -m build` does the same.
 
 ### Grammar cache
 
-Compiling grammars takes about twenty seconds, so they are cached. Unless
-`cache_dir` says otherwise they go to `$XDG_CACHE_HOME/nemo_text_processing`
-(`~/Library/Caches/nemo_text_processing` on macOS, `%LOCALAPPDATA%` on Windows),
-overridable with `NEMO_TEXT_PROCESSING_CACHE_DIR`.
+Grammars are compiled to finite-state archives (`.far`). That takes ten to fifty
+seconds depending on the language, so the result is cached and reused.
 
-The first `Normalizer(...)` compiles and writes; later ones load in well under a
-second. `cache_dir="None"` opts out and recompiles every time, as before.
+| | |
+| --- | --- |
+| default location | `$XDG_CACHE_HOME/nemo_text_processing/<version>`, `~/Library/Caches/...` on macOS, `%LOCALAPPDATA%\...` on Windows |
+| override | `NEMO_TEXT_PROCESSING_CACHE_DIR`, or `cache_dir=` per `Normalizer` |
+| disable | `cache_dir="None"` — recompiles on every construction |
+| rebuild | `overwrite_cache=True` |
+| size | roughly 9 MB per language |
+
+**Lifecycle.** The first `Normalizer(...)` for a given language and
+configuration compiles and writes; later ones load in a fraction of a second.
+Nothing prunes it — it is a cache and can be deleted at any time, and the next
+run rebuilds what it needs.
+
+The default path carries the package version because a compiled grammar records
+no version of its own: without that, upgrading to a release with changed
+grammars would silently keep loading the old ones. A `cache_dir` you pass
+yourself is used exactly as given, so that is your responsibility.
 
 A cached grammar is also what the optional compiled tagger loads, so
 `pip install nemo_text_processing[runtime]` needs no further configuration to

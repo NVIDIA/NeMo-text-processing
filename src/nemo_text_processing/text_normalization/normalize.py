@@ -41,6 +41,7 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
 )
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
+from nemo_text_processing.package_info import __version__
 from nemo_text_processing.utils.logging import logger
 
 # this is to handle long input
@@ -94,10 +95,17 @@ def default_cache_dir() -> str:
     Override with NEMO_TEXT_PROCESSING_CACHE_DIR. Pass cache_dir="None" to opt
     out entirely and recompile every time, which is what the CLI's
     `--cache_dir None` has always meant.
+
+    Roughly 9 MB per language for text normalization. Nothing prunes it; it is
+    a cache and can be deleted at any time.
     """
     override = os.environ.get("NEMO_TEXT_PROCESSING_CACHE_DIR")
     if override:
         return override
+    # Scoped by version: a compiled grammar records no version of its own, so
+    # an upgrade that changes a grammar would otherwise keep loading the old
+    # one from a shared directory, silently. An explicit cache_dir is used as
+    # given -- the caller owns it.
     if sys.platform == "darwin":
         base = os.path.join(os.path.expanduser("~"), "Library", "Caches")
     elif os.name == "nt":
@@ -108,7 +116,7 @@ def default_cache_dir() -> str:
         base = os.environ.get("XDG_CACHE_HOME") or os.path.join(
             os.path.expanduser("~"), ".cache"
         )
-    return os.path.join(base, "nemo_text_processing")
+    return os.path.join(base, "nemo_text_processing", __version__)
 
 
 def _resolve_cache_dir(cache_dir):
@@ -143,7 +151,10 @@ class Normalizer:
         input_case: Input text capitalization, set to 'cased' if text contains capital letters.
             This flag affects normalization rules applied to the text. Note, `lower_cased` won't lower case input.
         lang: language specifying the TN rules, by default: English
-        cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
+        cache_dir: where compiled .far grammars live. Unset means a per-version
+            directory under the platform cache, overridable with
+            NEMO_TEXT_PROCESSING_CACHE_DIR; pass the string "None" to disable
+            caching and recompile on every construction.
         overwrite_cache: set to True to overwrite .far files
         whitelist: path to a file with whitelist replacements
         post_process: WFST-based post processing, e.g. to remove extra spaces added during TN.
@@ -740,25 +751,55 @@ class Normalizer:
                     "tagging with pynini"
                 )
                 return None  # always loud: installed but useless is worth seeing
-            far = getattr(self.tagger, "far_path_used", None) or self._tagger_far_path(
-                lang, cache_dir, deterministic, input_case, whitelist
-            )
-            if far is None or not os.path.exists(far):
+            far, key = self._tagger_far(lang, cache_dir, deterministic, input_case, whitelist)
+            if far is None:
+                return declined(f"no fast tagger mapping for {lang!r}; tagging with pynini")
+            if not os.path.exists(far):
                 return declined(f"no cached grammar for the fast tagger at {far}; tagging with pynini")
-            return nemo_fst.Tagger.from_far(far, cache_dir=os.path.join(cache_dir, "nemo_fst"))
+            return nemo_fst.Tagger.from_far(
+                far, key=key, cache_dir=os.path.join(cache_dir, "nemo_fst")
+            )
         except Exception as exc:  # noqa: BLE001 -- never fail construction over an optimisation
             logger.warning(f"nemo-fst could not be used ({exc}); tagging with pynini")
             return None
 
-    @staticmethod
-    def _tagger_far_path(lang, cache_dir, deterministic, input_case, whitelist):
-        """Where the tagger FAR for this configuration lives, if anywhere."""
-        whitelist_file = os.path.basename(whitelist) if whitelist else ""
-        names = {
-            "en": f"en_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far",
-        }
-        name = names.get(lang)
-        return os.path.join(cache_dir, name) if name else None
+    # Where each language's ClassifyFst caches its tagger, and under which key.
+    # Transcribed from the taggers rather than derived: the spellings do not
+    # share a convention, `ja` reuses the `zh` prefix, and `rw` stores its
+    # graph under a different key.
+    _TAGGER_FARS = {
+        "ar": ("_{input_case}_ar_tn_{deterministic}_deterministic{whitelist}.far", None),
+        "de": ("_{input_case}_de_tn_{deterministic}_deterministic{whitelist}.far", None),
+        "en": ("en_tn_{deterministic}_deterministic_{input_case}_{whitelist}_tokenize.far", None),
+        "es": ("_{input_case}_es_tn_{deterministic}_deterministic{whitelist}.far", None),
+        "fr": ("_{input_case}_fr_tn_{deterministic}_deterministic{whitelist}.far", None),
+        "hi": ("hi_tn_{deterministic}_deterministic_{input_case}_{whitelist}_tokenize.far", None),
+        "hu": ("_{input_case}_hu_tn_{deterministic}_deterministic{whitelist}.far", None),
+        "hy": ("_hy_tn_{input_case}.far", None),
+        "it": ("_{input_case}_it_tn_{deterministic}_deterministic{whitelist}.far", None),
+        "ja": ("zh_tn_{deterministic}_deterministic_{whitelist}_tokenize.far", None),
+        "ko": ("ko_tn_{deterministic}_tokenize.far", None),
+        "pt": ("_{input_case}_pt_tn_{deterministic}_deterministic{whitelist}.far", None),
+        "ru": ("_{input_case}_ru_tn_{deterministic}_deterministic{whitelist}.far", None),
+        "rw": ("rw_tn_tokenize_and_classify.far", "TOKENIZE_AND_CLASSIFY"),
+        "sv": ("sv_tn_{deterministic}_deterministic_{input_case}_{whitelist}_tokenize.far", None),
+        "vi": ("vi_tn_{deterministic}_deterministic_{input_case}_tokenize.far", None),
+        "zh": ("zh_tn_{deterministic}_deterministic_{whitelist}_tokenize.far", None),
+    }
+
+    @classmethod
+    def _tagger_far(cls, lang, cache_dir, deterministic, input_case, whitelist):
+        """Path and FAR key for this configuration's tagger, or (None, None)."""
+        spec = cls._TAGGER_FARS.get(lang)
+        if spec is None:
+            return None, None
+        template, key = spec
+        name = template.format(
+            deterministic=deterministic,
+            input_case=input_case,
+            whitelist=os.path.basename(whitelist) if whitelist else "",
+        )
+        return os.path.join(cache_dir, name), key or "tokenize_and_classify"
 
     def tag(self, text: str) -> str:
         """Tag `text`, through nemo-fst if it is available and pynini otherwise.
