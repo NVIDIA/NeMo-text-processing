@@ -65,17 +65,44 @@ from setuptools import setup
 STATIC_LIBS = ["libfstfar.a", "libfst.a"]
 static = all((PREFIX / "lib" / name).exists() for name in STATIC_LIBS)
 
-def linker_accepts(flag: str) -> bool:
-    """Does this toolchain's linker take `flag`?
+PROBE_SYMBOL = "nemo_fst_probe"
+PROBE_SRC = f'extern "C" int {PROBE_SYMBOL}(void) {{ return 0; }}\n'
 
-    Asked rather than inferred from sys.platform: the flags below are GNU ld
-    spellings that ld64 rejects outright, and a wrong guess is a build failure
-    at link time rather than a graceful degradation. Probing also copes with
-    lld, mold and cross-compilers, none of which sys.platform describes.
+# Each candidate is (flag template, contents of the file it points at, if any).
+# The probe has to name a symbol the probe object actually defines: ld64 fails
+# an export list naming something absent, which would make the probe reject a
+# flag that works perfectly well on the real link.
+HIDE_CANDIDATES = [
+    ("-Wl,--exclude-libs,ALL", None, None),
+    (
+        "-Wl,--version-script,{file}",
+        f"{{ global: {PROBE_SYMBOL}; local: *; }};\n",
+        HERE / "src" / "nemo_fst.map",
+    ),
+    (
+        "-Wl,-exported_symbols_list,{file}",
+        f"_{PROBE_SYMBOL}\n",
+        HERE / "src" / "nemo_fst.exported_symbols",
+    ),
+]
+
+
+def linker_accepts(template: str, probe_file_contents) -> bool:
+    """Does this toolchain's linker take this flag?
+
+    Asked rather than inferred from sys.platform: these are GNU ld spellings
+    that ld64 rejects and vice versa, and a wrong guess means the OpenFst
+    symbols statically linked in here stay visible, which is exactly what must
+    not happen when pynini brings its own OpenFst into the same process.
     """
     with tempfile.TemporaryDirectory() as tmp:
         src = Path(tmp) / "probe.cc"
-        src.write_text("int probe() { return 0; }\n")
+        src.write_text(PROBE_SRC)
+        flag = template
+        if probe_file_contents is not None:
+            probe_file = Path(tmp) / "probe.syms"
+            probe_file.write_text(probe_file_contents)
+            flag = template.format(file=probe_file)
         cmd = shlex.split(os.environ.get("CXX", "c++"))
         cmd += ["-shared", "-fPIC", str(src), "-o", str(Path(tmp) / "probe.so"), flag]
         try:
@@ -84,18 +111,14 @@ def linker_accepts(flag: str) -> bool:
             return False
 
 
-# Coexistence with pynini, which carries its own OpenFst into the same process:
-# nothing of ours may be visible for it to bind to. Every spelling the two
-# linkers use is offered and the ones that take are kept; -fvisibility=hidden
-# already does most of the work, so keeping none of them is survivable.
-CANDIDATE_HIDE = [
-    "-Wl,--exclude-libs,ALL",
-    f"-Wl,--version-script,{HERE / 'src' / 'nemo_fst.map'}",
-    f"-Wl,-exported_symbols_list,{HERE / 'src' / 'nemo_fst.exported_symbols'}",
+HIDE = [
+    template.format(file=real_file) if real_file else template
+    for template, probe_contents, real_file in HIDE_CANDIDATES
+    if linker_accepts(template, probe_contents)
 ]
-HIDE = [flag for flag in CANDIDATE_HIDE if linker_accepts(flag)]
 if not HIDE:
-    print("nemo-fst: no supported symbol-hiding linker flag; relying on -fvisibility=hidden")
+    print("nemo-fst: WARNING no supported symbol-hiding linker flag; OpenFst symbols "
+          "will be visible and may collide with pynini's copy")
 
 if static:
     # Archives passed as objects, so nothing is left to resolve at load time.
@@ -105,8 +128,50 @@ else:
     link_args = [f"-L{PREFIX / 'lib'}", f"-Wl,-rpath,{PREFIX / 'lib'}"] + HIDE
     libraries = ["fstfar", "fst"]
 
+class BuildExtAndVerify(build_ext):
+    """Build, then check that nothing but the module init symbol is exported.
+
+    The flags above are probed, and a probe can be wrong -- one was, and the
+    result was a macOS build with every OpenFst symbol visible. Since the whole
+    coexistence argument rests on those symbols being hidden, a build that
+    fails to hide them should not be packaged.
+    """
+
+    def run(self):
+        super().run()
+        for ext in self.extensions:
+            path = self.get_ext_fullpath(ext.name)
+            leaked = _exported_symbols(path)
+            if leaked is None:
+                print(f"nemo-fst: cannot inspect {path}; skipping export-table check")
+                continue
+            unexpected = leaked - {"PyInit__nemo_fst"}
+            if unexpected:
+                raise SystemExit(
+                    f"nemo-fst: {len(unexpected)} symbols are exported besides the module "
+                    f"init symbol, e.g. {sorted(unexpected)[:5]}.\n"
+                    f"Linked with: {HIDE or 'no symbol-hiding flag'}\n"
+                    f"Those would be visible to pynini's OpenFst in the same process."
+                )
+            print(f"nemo-fst: export table clean ({sorted(leaked)})")
+
+
+def _exported_symbols(path):
+    """Defined, globally visible symbols in `path`, or None if nm cannot say."""
+    cmd = ["nm", "-gU", str(path)] if sys.platform == "darwin" else \
+          ["nm", "-D", "--defined-only", str(path)]
+    try:
+        out = subprocess.run(cmd, capture_output=True, text=True)
+    except OSError:
+        return None
+    if out.returncode != 0:
+        return None
+    # ld64 prefixes with an underscore; GNU ld does not.
+    return {line.split()[-1].lstrip("_") for line in out.stdout.splitlines() if line.strip()}
+
+
 setup(
-    cmdclass={"build_ext": build_ext},
+    cmdclass={"build_ext": BuildExtAndVerify},
     ext_modules=[
         Pybind11Extension(
             "nemo_fst._nemo_fst",

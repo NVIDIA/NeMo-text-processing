@@ -61,22 +61,28 @@ fi
 
 # Restricting the export table: offer every spelling the two linkers use and
 # keep the ones this toolchain takes. Asked rather than inferred from `uname`,
-# because a wrong guess is a link failure rather than a graceful degradation.
+# because a wrong guess leaves OpenFst's symbols visible to pynini's copy.
+#
+# The probe names a symbol the probe object actually defines: ld64 fails an
+# export list naming something absent, so probing with the real list would
+# reject a flag that works on the real link.
 PROBE_DIR="$(mktemp -d)"
 trap 'rm -rf "$PROBE_DIR"' EXIT
+printf 'extern "C" int nemo_fst_probe(void){return 0;}\n' > "$PROBE_DIR/probe.cc"
+printf '{ global: nemo_fst_probe; local: *; };\n' > "$PROBE_DIR/probe.map"
+printf '_nemo_fst_probe\n' > "$PROBE_DIR/probe.syms"
 
 linker_accepts() {
-  printf 'int probe(){return 0;}\n' > "$PROBE_DIR/probe.cc"
   "${CXX:-c++}" -shared -fPIC "$PROBE_DIR/probe.cc" -o "$PROBE_DIR/probe.so" "$1" 2>/dev/null
 }
 
 HIDE=()
-for flag in -Wl,--exclude-libs,ALL \
-            -Wl,--version-script,src/nemo_fst.map \
-            -Wl,-exported_symbols_list,src/nemo_fst.exported_symbols; do
-  if linker_accepts "$flag"; then HIDE+=("$flag"); fi
-done
-echo "  symbol hiding: ${HIDE[*]:-none (relying on -fvisibility=hidden)}"
+linker_accepts "-Wl,--exclude-libs,ALL" && HIDE+=(-Wl,--exclude-libs,ALL)
+linker_accepts "-Wl,--version-script,$PROBE_DIR/probe.map" &&
+  HIDE+=(-Wl,--version-script,src/nemo_fst.map)
+linker_accepts "-Wl,-exported_symbols_list,$PROBE_DIR/probe.syms" &&
+  HIDE+=(-Wl,-exported_symbols_list,src/nemo_fst.exported_symbols)
+echo "  symbol hiding: ${HIDE[*]:-NONE — OpenFst symbols will be visible}"
 
 "${CXX:-c++}" -O3 -std=c++17 -shared -fPIC -fvisibility=hidden -fvisibility-inlines-hidden \
     -DNDEBUG "-DNEMO_FST_OPENFST_VERSION=\"$OPENFST_VERSION\"" \
@@ -87,6 +93,20 @@ echo "  symbol hiding: ${HIDE[*]:-none (relying on -fvisibility=hidden)}"
     ${HIDE[@]+"${HIDE[@]}"}
 
 echo "built $OUT"
+
+# A probe can be wrong; the export table cannot.
+if command -v nm >/dev/null 2>&1; then
+  if [ "$(uname -s)" = "Darwin" ]; then EXPORTED=$(nm -gU "$OUT" 2>/dev/null | awk '{print $NF}' | sed 's/^_//')
+  else EXPORTED=$(nm -D --defined-only "$OUT" 2>/dev/null | awk '{print $NF}'); fi
+  UNEXPECTED=$(printf '%s\n' "$EXPORTED" | grep -v '^PyInit__nemo_fst$' | grep -v '^$' || true)
+  if [ -n "$UNEXPECTED" ]; then
+    echo "build.sh: $(printf '%s\n' "$UNEXPECTED" | wc -l) symbols exported besides the module init symbol," >&2
+    echo "  e.g. $(printf '%s\n' "$UNEXPECTED" | head -3 | tr '\n' ' ')" >&2
+    echo "  those would be visible to pynini's OpenFst in the same process." >&2
+    exit 1
+  fi
+  echo "  export table clean"
+fi
 "$PYTHON" -c "
 import sys; sys.path.insert(0, '.')
 import nemo_fst
