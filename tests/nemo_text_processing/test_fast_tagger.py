@@ -80,12 +80,37 @@ def test_missing_package_degrades_with_a_warning(monkeypatch, caplog):
 
 @pytest.mark.run_only_on('CPU')
 @pytest.mark.unit
-def test_missing_cache_dir_degrades_with_a_warning(caplog):
-    """Without a compiled grammar there is no FAR to accelerate."""
+def test_opting_out_of_the_cache_degrades_with_a_warning(caplog):
+    """cache_dir="None" means recompile every time, so there is no FAR to load."""
     with caplog.at_level(logging.WARNING):
-        norm = Normalizer(input_case="cased", lang="en", cache_dir=None, fast_tagger=True)
+        norm = Normalizer(input_case="cased", lang="en", cache_dir="None", fast_tagger=True)
     assert norm._fst_tagger is None
-    assert any("cache_dir" in r.message for r in caplog.records), caplog.text
+    assert any("grammar cache" in r.message for r in caplog.records), caplog.text
+
+
+@pytest.mark.run_only_on('CPU')
+@pytest.mark.unit
+def test_cache_dir_defaults_to_a_writable_location(tmp_path, monkeypatch):
+    """Unset means the default cache, not "no cache"."""
+    from nemo_text_processing.text_normalization.normalize import default_cache_dir
+
+    monkeypatch.setenv("NEMO_TEXT_PROCESSING_CACHE_DIR", str(tmp_path / "grammars"))
+    assert default_cache_dir() == str(tmp_path / "grammars")
+    norm = Normalizer(input_case="cased", lang="en")
+    assert norm.cache_dir == str(tmp_path / "grammars")
+    assert (tmp_path / "grammars").is_dir()
+
+
+@pytest.mark.run_only_on('CPU')
+@pytest.mark.unit
+def test_unwritable_default_cache_is_not_fatal(monkeypatch, caplog):
+    """A read-only home is a warning and slower grammars, not a failure."""
+    monkeypatch.setenv("NEMO_TEXT_PROCESSING_CACHE_DIR", "/proc/nonexistent/cache")
+    with caplog.at_level(logging.WARNING):
+        norm = Normalizer(input_case="cased", lang="en", cache_dir=None)
+    assert norm.cache_dir is None
+    assert any("default grammar cache" in r.message for r in caplog.records), caplog.text
+    assert norm.normalize("It costs $25.50.") == "It costs twenty five dollars fifty cents."
 
 
 @pytest.mark.run_only_on('CPU')

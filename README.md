@@ -109,6 +109,21 @@ uv build
 writes a wheel and an sdist to `dist/`. `python -m build` does the same.
 
 
+### Grammar cache
+
+Compiling grammars takes about twenty seconds, so they are cached. Unless
+`cache_dir` says otherwise they go to `$XDG_CACHE_HOME/nemo_text_processing`
+(`~/Library/Caches/nemo_text_processing` on macOS, `%LOCALAPPDATA%` on Windows),
+overridable with `NEMO_TEXT_PROCESSING_CACHE_DIR`.
+
+The first `Normalizer(...)` compiles and writes; later ones load in well under a
+second. `cache_dir="None"` opts out and recompiles every time, as before.
+
+A cached grammar is also what the optional compiled tagger loads, so
+`pip install nemo_text_processing[runtime]` needs no further configuration to
+take effect.
+
+
 Contributing
 ------------
 We welcome community contributions! Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

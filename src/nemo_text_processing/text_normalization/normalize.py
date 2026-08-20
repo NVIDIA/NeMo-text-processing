@@ -82,6 +82,58 @@ To integrate Normalizer in your script:
 """
 
 
+def default_cache_dir() -> str:
+    """Where compiled grammars live when the caller does not say.
+
+    Compiling the English tagger takes about twenty seconds, and without a cache
+    that cost is paid on every construction. It is also what the optional
+    nemo-fst tagger accelerates -- it needs a compiled grammar to work from --
+    so a default cache is what makes that speedup reachable without extra
+    configuration.
+
+    Override with NEMO_TEXT_PROCESSING_CACHE_DIR. Pass cache_dir="None" to opt
+    out entirely and recompile every time, which is what the CLI's
+    `--cache_dir None` has always meant.
+    """
+    override = os.environ.get("NEMO_TEXT_PROCESSING_CACHE_DIR")
+    if override:
+        return override
+    if sys.platform == "darwin":
+        base = os.path.join(os.path.expanduser("~"), "Library", "Caches")
+    elif os.name == "nt":
+        base = os.environ.get("LOCALAPPDATA") or os.path.join(
+            os.path.expanduser("~"), "AppData", "Local"
+        )
+    else:
+        base = os.environ.get("XDG_CACHE_HOME") or os.path.join(
+            os.path.expanduser("~"), ".cache"
+        )
+    return os.path.join(base, "nemo_text_processing")
+
+
+def _resolve_cache_dir(cache_dir):
+    """The directory to compile grammars into, or None to keep them in memory.
+
+    An unwritable default is not an error: it means no caching, the behaviour
+    every release so far has had.
+    """
+    if cache_dir == "None":  # the documented opt-out
+        return None
+    if cache_dir is not None:
+        return cache_dir
+    resolved = default_cache_dir()
+    try:
+        os.makedirs(resolved, exist_ok=True)
+    except OSError as exc:
+        logger.warning(
+            f"cannot use the default grammar cache at {resolved} ({exc}); grammars will be "
+            f"recompiled on every construction. Set NEMO_TEXT_PROCESSING_CACHE_DIR to choose "
+            f"somewhere writable."
+        )
+        return None
+    return resolved
+
+
 class Normalizer:
     """
     Normalizer class that converts text from written to spoken form.
@@ -115,6 +167,9 @@ class Normalizer:
         fast_tagger: bool = None,
     ):
         assert input_case in ["lower_cased", "cased"]
+
+        cache_dir = _resolve_cache_dir(cache_dir)
+        self.cache_dir = cache_dir
 
         self.post_processor = None
 
@@ -669,8 +724,8 @@ class Normalizer:
             (logger.warning if asked else logger.debug)(message)
             return None
 
-        if cache_dir is None or cache_dir == "None":
-            return declined("fast tagger needs a cache_dir with a compiled grammar; using pynini")
+        if cache_dir is None:
+            return declined("no grammar cache, so nothing for the fast tagger to load; using pynini")
         try:
             import nemo_fst
         except ImportError:
