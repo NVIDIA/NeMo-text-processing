@@ -31,32 +31,24 @@ import nemo_fst
 import pytest
 
 
-@pytest.fixture(scope="module")
-def verbalizer_far(far_path) -> Path:
-    path = far_path.parent / "en_tn_True_deterministic_verbalizer.far"
-    if not path.exists():
-        pytest.skip(f"second FAR not found at {path}")
-    return path
-
-
-def test_prepare_then_reuse(far_path, tmp_path):
-    first = nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
+def test_prepare_then_reuse(toy_far, tmp_path):
+    first = nemo_fst.Tagger.from_far(toy_far, cache_dir=tmp_path)
     assert first.prepared is True
     artifact = Path(first.artifact_path)
     assert artifact.exists()
     assert artifact.with_suffix(artifact.suffix + ".relabel").exists()
 
-    second = nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
+    second = nemo_fst.Tagger.from_far(toy_far, cache_dir=tmp_path)
     assert second.prepared is False
     assert second.artifact_path == first.artifact_path
     assert second.relabel_pairs == first.relabel_pairs
-    assert second.tag("It costs $25.50.") == first.tag("It costs $25.50.")
+    assert second.tag("alpha 12 beta") == first.tag("alpha 12 beta")
 
 
-def test_touch_does_not_invalidate(far_path, tmp_path):
+def test_touch_does_not_invalidate(toy_far, tmp_path):
     """The key is content, not mtime -- rebuilding an identical FAR is free."""
     grammar = tmp_path / "grammar.far"
-    shutil.copy(far_path, grammar)
+    shutil.copy(toy_far, grammar)
     first = nemo_fst.Tagger.from_far(grammar, cache_dir=tmp_path)
     assert first.prepared is True
 
@@ -66,15 +58,15 @@ def test_touch_does_not_invalidate(far_path, tmp_path):
     assert second.artifact_path == first.artifact_path
 
 
-def test_regenerated_grammar_invalidates(far_path, verbalizer_far, tmp_path):
+def test_regenerated_grammar_invalidates(toy_far, toy_other_far, tmp_path):
     """Same path, different contents: the artifact must be rebuilt, not reused."""
     grammar = tmp_path / "grammar.far"
-    shutil.copy(far_path, grammar)
+    shutil.copy(toy_far, grammar)
     original = nemo_fst.Tagger.from_far(grammar, cache_dir=tmp_path)
     assert original.prepared is True
 
     # Stand-in for a regenerated grammar: a different FST under the same path.
-    shutil.copy(verbalizer_far, grammar)
+    shutil.copy(toy_other_far, grammar)
     regenerated = nemo_fst.Tagger.from_far(grammar, key="verbalize",
                                            cache_dir=tmp_path)
     assert regenerated.prepared is True, "stale artifact was reused"
@@ -82,51 +74,54 @@ def test_regenerated_grammar_invalidates(far_path, verbalizer_far, tmp_path):
     assert regenerated.num_states != original.num_states
 
     # And the old artifact is still there and still valid for the old contents.
-    shutil.copy(far_path, grammar)
+    shutil.copy(toy_far, grammar)
     restored = nemo_fst.Tagger.from_far(grammar, cache_dir=tmp_path)
     assert restored.prepared is False
     assert restored.artifact_path == original.artifact_path
 
 
-def test_key_is_part_of_the_cache_key(far_path, verbalizer_far, tmp_path):
-    a = nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
-    b = nemo_fst.Tagger.from_far(verbalizer_far, key="verbalize",
+def test_key_is_part_of_the_cache_key(toy_far, toy_other_far, tmp_path):
+    a = nemo_fst.Tagger.from_far(toy_far, cache_dir=tmp_path)
+    b = nemo_fst.Tagger.from_far(toy_other_far, key="verbalize",
                                  cache_dir=tmp_path)
     assert a.artifact_path != b.artifact_path
 
 
-def test_truncated_artifact_is_rebuilt(far_path, tmp_path):
-    first = nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
+def test_truncated_artifact_is_rebuilt(toy_far, tmp_path):
+    first = nemo_fst.Tagger.from_far(toy_far, cache_dir=tmp_path)
     artifact = Path(first.artifact_path)
-    artifact.write_bytes(artifact.read_bytes()[: 1 << 16])
-    second = nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
+    # A fraction of the actual size: a fixed offset is a no-op on a small
+    # artifact, which makes the test silently prove nothing.
+    data = artifact.read_bytes()
+    artifact.write_bytes(data[: len(data) // 2])
+    second = nemo_fst.Tagger.from_far(toy_far, cache_dir=tmp_path)
     assert second.prepared is True
-    assert second.tag("It costs $25.50.") == first.tag("It costs $25.50.")
+    assert second.tag("alpha 12 beta") == first.tag("alpha 12 beta")
 
 
-def test_missing_relabel_map_is_rebuilt(far_path, tmp_path):
+def test_missing_relabel_map_is_rebuilt(toy_far, tmp_path):
     """The map does not survive Write/Read inside the FST, so it lives beside it.
 
     Losing it is not a crash: LabelReachableData hands back an empty map, which
     is an identity relabelling, which composes to nothing.  So a cache entry
     without its map has to be treated as a miss.
     """
-    first = nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
+    first = nemo_fst.Tagger.from_far(toy_far, cache_dir=tmp_path)
     Path(first.artifact_path + ".relabel").unlink()
-    second = nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
+    second = nemo_fst.Tagger.from_far(toy_far, cache_dir=tmp_path)
     assert second.prepared is True
     assert second.relabel_pairs == first.relabel_pairs
 
 
-def test_cache_dir_false_never_touches_disk(far_path, tmp_path):
-    tagger = nemo_fst.Tagger.from_far(far_path, cache_dir=False)
+def test_cache_dir_false_never_touches_disk(toy_far, tmp_path):
+    tagger = nemo_fst.Tagger.from_far(toy_far, cache_dir=False)
     assert tagger.prepared is True
     assert tagger.artifact_path == ""
     assert tagger.tag("It costs $25.50.").startswith("tokens {")
 
 
-def test_missing_far_and_missing_key(far_path, tmp_path):
+def test_missing_far_and_missing_key(toy_far, tmp_path):
     with pytest.raises(FileNotFoundError):
         nemo_fst.Tagger.from_far(tmp_path / "nope.far", cache_dir=tmp_path)
     with pytest.raises(RuntimeError, match="not in FAR"):
-        nemo_fst.Tagger.from_far(far_path, key="no_such_key", cache_dir=tmp_path)
+        nemo_fst.Tagger.from_far(toy_far, key="no_such_key", cache_dir=tmp_path)

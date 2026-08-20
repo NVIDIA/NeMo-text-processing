@@ -55,6 +55,8 @@ def artifact_dir(tmp_path_factory) -> Path:
 
 
 TAGGER_FAR = "en_tn_True_deterministic_cased__tokenize.far"
+TOY_FAR = Path(__file__).parent / "data" / "toy_tagger.far"
+TOY_OTHER_FAR = Path(__file__).parent / "data" / "toy_other.far"
 
 
 @pytest.fixture(scope="session")
@@ -103,3 +105,32 @@ def inputs() -> list:
     if not texts:
         pytest.skip(f"no test-case files under {CORPUS}")
     return texts
+
+
+@pytest.fixture(scope="session")
+def toy_far() -> Path:
+    """A tiny checked-in grammar: digits to cardinal, letters to name.
+
+    Anything structural -- caching, determinism, error handling, thread safety --
+    needs an FST but not a particular one. Using this rather than the English
+    tagger means those tests run with no pynini and no compiled grammars, which
+    is the situation in every wheel-test container.
+    """
+    if not TOY_FAR.exists():
+        pytest.skip(f"toy grammar missing at {TOY_FAR}")
+    return TOY_FAR
+
+
+@pytest.fixture(scope="session")
+def toy_tagger(toy_far, artifact_dir):
+    import nemo_fst
+
+    return nemo_fst.Tagger.from_far(toy_far, cache_dir=artifact_dir / "toy")
+
+
+@pytest.fixture(scope="session")
+def toy_other_far() -> Path:
+    """A second toy grammar, under a different key, for cache-keying tests."""
+    if not TOY_OTHER_FAR.exists():
+        pytest.skip(f"second toy grammar missing at {TOY_OTHER_FAR}")
+    return TOY_OTHER_FAR

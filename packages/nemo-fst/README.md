@@ -76,10 +76,11 @@ From this directory, with `OPENFST_PREFIX` set:
 uv run pytest --tn_cache_dir=/path/to/grammars
 ```
 
-That runs the 20 tests that need no oracle -- `test_standalone.py` and
-`test_cache.py` -- which is also what verifies a built wheel, since pynini
-publishes manylinux x86_64 wheels only and cannot be installed in most of the
-containers cibuildwheel uses.
+That runs the 20 tests that need neither pynini nor a compiled grammar --
+`test_standalone.py` and `test_cache.py`, which use the ~10 KB toy grammars in
+`tests/data/`. They are also what verifies a built wheel: pynini publishes
+manylinux x86_64 wheels only, and a wheel-test container has no grammar cache
+either, so anything needing the English tagger would silently skip there.
 
 The rest compare against pynini and need `pynini` and `nemo_text_processing`
 present; without them they skip, saying so. For the full 37, use an environment
