@@ -59,8 +59,10 @@ OpenFst 1.8.4. It reads grammars pynini wrote with 1.8.3 -- the formats are
 unchanged, and the tests run against a 1.8.3-written FAR. 1.8.3 itself does not
 compile under Clang, which is why it is not supported here.
 
-**macOS is untested.** The platform handling is written but no macOS machine was
-available to run it on; treat the first build there as the real test.
+Verified on Linux (aarch64) and macOS (arm64): the extension builds, exports
+nothing but its init symbol, and the 20 tests that need no oracle pass on both.
+The linker flags that restrict the export table differ between the two, so the
+build reads the table back after linking and fails if anything else is in it.
 
 `scripts/build_openfst.sh` produces such a prefix, and cibuildwheel runs it once
 per container so every wheel links the same OpenFst. When the prefix has static
