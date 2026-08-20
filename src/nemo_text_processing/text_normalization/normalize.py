@@ -88,7 +88,7 @@ def default_cache_dir() -> str:
 
     Compiling the English tagger takes about twenty seconds, and without a cache
     that cost is paid on every construction. It is also what the optional
-    nemo-fst tagger accelerates -- it needs a compiled grammar to work from --
+    nemo-text-processing-lightning tagger accelerates -- it needs a compiled grammar to work from --
     so a default cache is what makes that speedup reachable without extra
     configuration.
 
@@ -705,9 +705,9 @@ class Normalizer:
         return _helper("", tokens, 0)
 
     def _init_fst_tagger(self, lang, cache_dir, deterministic, input_case, whitelist, requested):
-        """Return a nemo-fst tagger, or None to stay on the pynini path.
+        """Return a nemo-text-processing-lightning tagger, or None to stay on the pynini path.
 
-        Used automatically when nemo-fst is installed and there is a compiled
+        Used automatically when nemo-text-processing-lightning is installed and there is a compiled
         grammar to accelerate; `fast_tagger=False` or `NEMO_FAST_TAGGER=0`
         forces the pynini path.
 
@@ -738,16 +738,16 @@ class Normalizer:
         if cache_dir is None:
             return declined("no grammar cache, so nothing for the fast tagger to load; using pynini")
         try:
-            import nemo_fst
+            import nemo_text_processing_lightning
         except ImportError:
             return declined(
-                "nemo-fst is not installed (pip install nemo_text_processing[runtime]); "
+                "nemo-text-processing-lightning is not installed (pip install nemo_text_processing[runtime]); "
                 "tagging with pynini"
             )
         try:
-            if not nemo_fst.has_lookahead():
+            if not nemo_text_processing_lightning.has_lookahead():
                 logger.warning(
-                    "nemo-fst is installed but its OpenFst has no lookahead support; "
+                    "nemo-text-processing-lightning is installed but its OpenFst has no lookahead support; "
                     "tagging with pynini"
                 )
                 return None  # always loud: installed but useless is worth seeing
@@ -756,11 +756,11 @@ class Normalizer:
                 return declined(f"no fast tagger mapping for {lang!r}; tagging with pynini")
             if not os.path.exists(far):
                 return declined(f"no cached grammar for the fast tagger at {far}; tagging with pynini")
-            return nemo_fst.Tagger.from_far(
-                far, key=key, cache_dir=os.path.join(cache_dir, "nemo_fst")
+            return nemo_text_processing_lightning.Tagger.from_far(
+                far, key=key, cache_dir=os.path.join(cache_dir, "nemo_text_processing_lightning")
             )
         except Exception as exc:  # noqa: BLE001 -- never fail construction over an optimisation
-            logger.warning(f"nemo-fst could not be used ({exc}); tagging with pynini")
+            logger.warning(f"nemo-text-processing-lightning could not be used ({exc}); tagging with pynini")
             return None
 
     # Where each language's ClassifyFst caches its tagger, and under which key.
@@ -802,10 +802,10 @@ class Normalizer:
         return os.path.join(cache_dir, name), key or "tokenize_and_classify"
 
     def tag(self, text: str) -> str:
-        """Tag `text`, through nemo-fst if it is available and pynini otherwise.
+        """Tag `text`, through nemo-text-processing-lightning if it is available and pynini otherwise.
 
         `find_tags` and `select_tag` remain for callers that want the lattice;
-        nemo-fst produces the tagged string in one step, so the choice is made
+        nemo-text-processing-lightning produces the tagged string in one step, so the choice is made
         here rather than inside either of them.
 
         Escaping belongs to the pynini path only, so it happens here rather than

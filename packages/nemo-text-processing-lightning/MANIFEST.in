@@ -2,8 +2,8 @@
 # scripts are referenced by setup.py, build_openfst.sh is what cibuildwheel
 # runs before anything else, and the toy grammars are what the wheel test
 # command exercises.
-include src/nemo_fst.map
-include src/nemo_fst.exported_symbols
+include src/lightning.map
+include src/lightning.exported_symbols
 include build.sh
 recursive-include scripts *.sh
 recursive-include tests *.py

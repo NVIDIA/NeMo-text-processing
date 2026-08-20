@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the nemo_fst extension from a clean checkout.
+# Build the nemo_text_processing_lightning extension from a clean checkout.
 #
 #   OPENFST_PREFIX=/path/to/openfst ./build.sh
 #
@@ -14,7 +14,7 @@
 #
 # Two linker settings are not optional, both for coexistence with pynini, which
 # carries its own OpenFst into the same process:
-#   -fvisibility=hidden          nothing but PyInit__nemo_fst is exported
+#   -fvisibility=hidden          nothing but PyInit__lightning is exported
 #   -Wl,--exclude-libs,ALL       no symbol from a linked archive is re-exported
 #
 # STATIC LINKING (not done here): this prefix was configured
@@ -46,7 +46,7 @@ PYBIND11_DIR="${PYBIND11_DIR:-$("$PYBIND11_PYTHON" -c 'import pybind11;print(pyb
 PY_INCLUDE="$("$PYTHON" -c 'import sysconfig;print(sysconfig.get_paths()["include"])')"
 EXT_SUFFIX="$("$PYTHON" -c 'import sysconfig;print(sysconfig.get_config_var("EXT_SUFFIX"))')"
 
-OUT="nemo_fst/_nemo_fst${EXT_SUFFIX}"
+OUT="nemo_text_processing_lightning/_lightning${EXT_SUFFIX}"
 
 echo "building $OUT"
 # Static archives when the prefix has them: the result then carries no external
@@ -68,9 +68,9 @@ fi
 # reject a flag that works on the real link.
 PROBE_DIR="$(mktemp -d)"
 trap 'rm -rf "$PROBE_DIR"' EXIT
-printf 'extern "C" int nemo_fst_probe(void){return 0;}\n' > "$PROBE_DIR/probe.cc"
-printf '{ global: nemo_fst_probe; local: *; };\n' > "$PROBE_DIR/probe.map"
-printf '_nemo_fst_probe\n' > "$PROBE_DIR/probe.syms"
+printf 'extern "C" int lightning_probe(void){return 0;}\n' > "$PROBE_DIR/probe.cc"
+printf '{ global: lightning_probe; local: *; };\n' > "$PROBE_DIR/probe.map"
+printf '_lightning_probe\n' > "$PROBE_DIR/probe.syms"
 
 linker_accepts() {
   "${CXX:-c++}" -shared -fPIC "$PROBE_DIR/probe.cc" -o "$PROBE_DIR/probe.so" "$1" 2>/dev/null
@@ -79,15 +79,15 @@ linker_accepts() {
 HIDE=()
 linker_accepts "-Wl,--exclude-libs,ALL" && HIDE+=(-Wl,--exclude-libs,ALL)
 linker_accepts "-Wl,--version-script,$PROBE_DIR/probe.map" &&
-  HIDE+=(-Wl,--version-script,src/nemo_fst.map)
+  HIDE+=(-Wl,--version-script,src/lightning.map)
 linker_accepts "-Wl,-exported_symbols_list,$PROBE_DIR/probe.syms" &&
-  HIDE+=(-Wl,-exported_symbols_list,src/nemo_fst.exported_symbols)
+  HIDE+=(-Wl,-exported_symbols_list,src/lightning.exported_symbols)
 echo "  symbol hiding: ${HIDE[*]:-NONE — OpenFst symbols will be visible}"
 
 "${CXX:-c++}" -O3 -std=c++17 -shared -fPIC -fvisibility=hidden -fvisibility-inlines-hidden \
-    -DNDEBUG "-DNEMO_FST_OPENFST_VERSION=\"$OPENFST_VERSION\"" \
+    -DNDEBUG "-DNEMO_TPL_OPENFST_VERSION=\"$OPENFST_VERSION\"" \
     -I"$PY_INCLUDE" -I"$PYBIND11_DIR" -I"$OPENFST_PREFIX/include" \
-    src/nemo_fst.cc \
+    src/lightning.cc \
     -o "$OUT" \
     "${FST_LINK[@]}" \
     ${HIDE[@]+"${HIDE[@]}"}
@@ -98,7 +98,7 @@ echo "built $OUT"
 if command -v nm >/dev/null 2>&1; then
   if [ "$(uname -s)" = "Darwin" ]; then EXPORTED=$(nm -gU "$OUT" 2>/dev/null | awk '{print $NF}' | sed 's/^_//')
   else EXPORTED=$(nm -D --defined-only "$OUT" 2>/dev/null | awk '{print $NF}'); fi
-  UNEXPECTED=$(printf '%s\n' "$EXPORTED" | grep -v '^PyInit__nemo_fst$' | grep -v '^$' || true)
+  UNEXPECTED=$(printf '%s\n' "$EXPORTED" | grep -v '^PyInit__lightning$' | grep -v '^$' || true)
   if [ -n "$UNEXPECTED" ]; then
     echo "build.sh: $(printf '%s\n' "$UNEXPECTED" | wc -l) symbols exported besides the module init symbol," >&2
     echo "  e.g. $(printf '%s\n' "$UNEXPECTED" | head -3 | tr '\n' ' ')" >&2
@@ -109,7 +109,7 @@ if command -v nm >/dev/null 2>&1; then
 fi
 "$PYTHON" -c "
 import sys; sys.path.insert(0, '.')
-import nemo_fst
-print('has_lookahead:', nemo_fst.has_lookahead(), '| openfst', nemo_fst.__openfst_version__)
-assert nemo_fst.has_lookahead(), 'lookahead types are not usable in this build'
+import nemo_text_processing_lightning
+print('has_lookahead:', nemo_text_processing_lightning.has_lookahead(), '| openfst', nemo_text_processing_lightning.__openfst_version__)
+assert nemo_text_processing_lightning.has_lookahead(), 'lookahead types are not usable in this build'
 "

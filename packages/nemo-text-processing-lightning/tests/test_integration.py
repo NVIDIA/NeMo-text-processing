@@ -14,14 +14,14 @@
 
 """Drive `nemo_text_processing.Normalizer` through this package's tagger.
 
-Nothing in `nemo_text_processing` calls nemo-fst yet. This substitutes the
+Nothing in `nemo_text_processing` calls nemo-text-processing-lightning yet. This substitutes the
 tagging step at runtime, so the whole pipeline -- token parser, permuter,
-verbalizer, post-processor -- runs on nemo-fst's output and the end of it can be
+verbalizer, post-processor -- runs on nemo-text-processing-lightning's output and the end of it can be
 compared against the stock pipeline.
 
 Two methods are replaced together because `normalize()` calls `find_tags` to get
 a lattice and then `Normalizer.select_tag` to take its one-best, whereas
-nemo-fst does both in one call. Passing the tagged string through `find_tags`
+nemo-text-processing-lightning does both in one call. Passing the tagged string through `find_tags`
 and making `select_tag` the identity threads it through untouched.
 """
 
@@ -32,12 +32,12 @@ import pytest
 from test_differential import squash, weight_of
 
 
-def use_nemo_fst(monkeypatch, tagger):
+def use_lightning(monkeypatch, tagger):
     """Substitute the tagging step on the Normalizer class.
 
     Two methods together: `normalize()` calls `find_tags` for a lattice and then
     `Normalizer.select_tag` -- by class, not through self -- to take its
-    one-best, whereas nemo-fst does both in one call. Returning the tagged
+    one-best, whereas nemo-text-processing-lightning does both in one call. Returning the tagged
     string from `find_tags` and making `select_tag` the identity threads it
     through untouched.
     """
@@ -49,7 +49,7 @@ def use_nemo_fst(monkeypatch, tagger):
 
 @pytest.fixture
 def patched_normalizer(normalizer, tagger, monkeypatch):
-    use_nemo_fst(monkeypatch, tagger)
+    use_lightning(monkeypatch, tagger)
     return normalizer
 
 
@@ -57,13 +57,13 @@ def test_normalize_end_to_end_matches_stock_pipeline(normalizer, tagger, inputs,
     """Normalized output must match, except where the tagger had a genuine tie.
 
     The stock outputs are collected *before* the substitution, or both sides
-    would be nemo-fst and the comparison would be vacuous.
+    would be nemo-text-processing-lightning and the comparison would be vacuous.
     """
     import pynini
 
     stock = {text: normalizer.normalize(text) for text in inputs}
 
-    use_nemo_fst(monkeypatch, tagger)
+    use_lightning(monkeypatch, tagger)
     probe = "It costs $25.50."
     assert normalizer.find_tags(probe) == tagger.tag(probe), "substitution is not in the path"
 
@@ -84,9 +84,9 @@ def test_normalize_end_to_end_matches_stock_pipeline(normalizer, tagger, inputs,
         f"{len(differing) - len(untied)} differ from a weight-tied tagging; {len(untied)} unexplained"
     )
     for text in differing[:5]:
-        print(f"  tie  {text!r}\n    stock   : {stock[text][:70]!r}\n    nemo-fst: {ours[text][:70]!r}")
+        print(f"  tie  {text!r}\n    stock   : {stock[text][:70]!r}\n    nemo-text-processing-lightning: {ours[text][:70]!r}")
     for text, a, b, wa, wb in untied[:5]:
-        print(f"  UNEXPLAINED {text!r}: stock {wa} -> {a[:60]!r}, nemo-fst {wb} -> {b[:60]!r}")
+        print(f"  UNEXPLAINED {text!r}: stock {wa} -> {a[:60]!r}, nemo-text-processing-lightning {wb} -> {b[:60]!r}")
     assert not untied, f"{len(untied)} outputs differ without a tie to explain them"
 
 
@@ -98,7 +98,7 @@ def test_patched_pipeline_still_produces_wellformed_output(patched_normalizer):
 
 
 def test_tagged_string_feeds_the_token_parser(tagger, normalizer):
-    """nemo-fst's tagged string must satisfy the parser the pipeline hands it to."""
+    """nemo-text-processing-lightning's tagged string must satisfy the parser the pipeline hands it to."""
     from nemo_text_processing.text_normalization.token_parser import TokenParser
 
     parser = TokenParser()

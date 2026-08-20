@@ -30,7 +30,7 @@ from pathlib import Path
 
 import pytest
 
-from test_integration import use_nemo_fst
+from test_integration import use_lightning
 
 pytestmark = pytest.mark.benchmark
 
@@ -64,7 +64,7 @@ def test_tagging_speedup(tagger, normalizer):
         lattice = pynini.escape(text) @ normalizer.tagger.fst
         return pynini.shortestpath(lattice, nshortest=1, unique=True).string()
 
-    print(f"\n{'density':8s} {'copies':>6s} {'chars':>6s} {'pynini':>10s} {'nemo-fst':>10s} {'speedup':>8s}")
+    print(f"\n{'density':8s} {'copies':>6s} {'chars':>6s} {'pynini':>10s} {'nemo-text-processing-lightning':>10s} {'speedup':>8s}")
     speedups = []
     for name, template in TEMPLATES.items():
         for copies in (1, 4, 16, 32):
@@ -99,8 +99,8 @@ def test_end_to_end_speedup(normalizer, tagger, inputs, monkeypatch):
             normalizer.normalize(text)
         stock_times.append(time.perf_counter() - t0)
 
-    use_nemo_fst(monkeypatch, tagger)
-    print(f"\n{'input':28s} {'stock':>8s} {'nemo-fst':>9s} {'speedup':>8s}")
+    use_lightning(monkeypatch, tagger)
+    print(f"\n{'input':28s} {'stock':>8s} {'nemo-text-processing-lightning':>9s} {'speedup':>8s}")
     speedups = []
     for (label, texts), stock in zip(cases, stock_times):
         t0 = time.perf_counter()
@@ -189,14 +189,14 @@ def test_concurrency_scaling(tagger):
 
 def test_preparation_is_a_one_off(far_path, tmp_path):
     """Cost of preparing the lookahead artifact, and what it buys on load."""
-    import nemo_fst
+    import nemo_text_processing_lightning
 
     t0 = time.perf_counter()
-    tagger = nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
+    tagger = nemo_text_processing_lightning.Tagger.from_far(far_path, cache_dir=tmp_path)
     cold = time.perf_counter() - t0
 
     t0 = time.perf_counter()
-    nemo_fst.Tagger.from_far(far_path, cache_dir=tmp_path)
+    nemo_text_processing_lightning.Tagger.from_far(far_path, cache_dir=tmp_path)
     warm = time.perf_counter() - t0
 
     far_mb = far_path.stat().st_size / 1e6

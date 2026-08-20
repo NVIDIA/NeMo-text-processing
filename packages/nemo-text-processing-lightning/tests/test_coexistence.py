@@ -14,7 +14,7 @@
 
 """Two OpenFst copies in one process.
 
-This is the first test on purpose.  During migration `nemo-fst` and pynini are
+This is the first test on purpose.  During migration `nemo-text-processing-lightning` and pynini are
 both imported by the same interpreter, each carrying its own OpenFst; if hidden
 visibility is wrong, one binds to the other's symbols and the failure is a
 segfault or silent wrong answers, not an ImportError.  Everything downstream is
@@ -39,12 +39,12 @@ BOTH_WAYS = textwrap.dedent(
     import sys
     order = sys.argv[1]
     if order == "nemo_first":
-        import nemo_fst, pynini
+        import nemo_text_processing_lightning, pynini
     else:
-        import pynini, nemo_fst
+        import pynini, nemo_text_processing_lightning
 
     # A composition through each library, after both are loaded.
-    tagger = nemo_fst.Tagger.from_far(sys.argv[2], cache_dir=sys.argv[3])
+    tagger = nemo_text_processing_lightning.Tagger.from_far(sys.argv[2], cache_dir=sys.argv[3])
     tagged = tagger.tag("It costs $25.50.")
     assert tagged.startswith("tokens {"), tagged
 
@@ -54,9 +54,9 @@ BOTH_WAYS = textwrap.dedent(
     assert lattice.num_states() == 4, lattice.num_states()
     assert pynini.shortestpath(lattice).string() == "abc"
 
-    # And back through nemo_fst, to catch state clobbered by pynini's OpenFst.
+    # And back through nemo_text_processing_lightning, to catch state clobbered by pynini's OpenFst.
     assert tagger.tag("It costs $25.50.") == tagged
-    assert nemo_fst.has_lookahead()
+    assert nemo_text_processing_lightning.has_lookahead()
 
     # pynini's own OpenFst has no lookahead plugin; asking it must still fail
     # cleanly rather than picking up ours.
@@ -91,13 +91,13 @@ def test_import_both_and_compose(order, far_path, artifact_dir):
 
 def test_no_openfst_symbols_exported():
     """Nothing from OpenFst may be visible outside the extension."""
-    import nemo_fst
+    import nemo_text_processing_lightning
 
-    so = nemo_fst._nemo_fst.__file__
+    so = nemo_text_processing_lightning._lightning.__file__
     out = subprocess.run(["nm", "-D", "--defined-only", so],
                          capture_output=True, text=True)
     if out.returncode != 0:
         pytest.skip("nm unavailable")
     names = [line.split()[-1] for line in out.stdout.splitlines() if line.strip()]
     # The version script leaves exactly one dynamic symbol: the module init.
-    assert names == ["PyInit__nemo_fst"], names[:20]
+    assert names == ["PyInit__lightning"], names[:20]

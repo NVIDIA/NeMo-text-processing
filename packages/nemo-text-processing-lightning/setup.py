@@ -46,7 +46,7 @@ HERE = Path(__file__).parent
 
 if not (PREFIX / "include" / "fst" / "matcher-fst.h").exists():
     sys.exit(
-        f"nemo-fst: no OpenFst headers under {PREFIX}\n"
+        f"nemo-text-processing-lightning: no OpenFst headers under {PREFIX}\n"
         f"\n"
         f"This package needs an OpenFst built with --enable-lookahead-fsts, which\n"
         f"no distribution packages -- Homebrew's openfst and the usual Linux\n"
@@ -65,7 +65,7 @@ from setuptools import setup
 STATIC_LIBS = ["libfstfar.a", "libfst.a"]
 static = all((PREFIX / "lib" / name).exists() for name in STATIC_LIBS)
 
-PROBE_SYMBOL = "nemo_fst_probe"
+PROBE_SYMBOL = "lightning_probe"
 PROBE_SRC = f'extern "C" int {PROBE_SYMBOL}(void) {{ return 0; }}\n'
 
 # Each candidate is (flag template, contents of the file it points at, if any).
@@ -77,12 +77,12 @@ HIDE_CANDIDATES = [
     (
         "-Wl,--version-script,{file}",
         f"{{ global: {PROBE_SYMBOL}; local: *; }};\n",
-        HERE / "src" / "nemo_fst.map",
+        HERE / "src" / "lightning.map",
     ),
     (
         "-Wl,-exported_symbols_list,{file}",
         f"_{PROBE_SYMBOL}\n",
-        HERE / "src" / "nemo_fst.exported_symbols",
+        HERE / "src" / "lightning.exported_symbols",
     ),
 ]
 
@@ -117,7 +117,7 @@ HIDE = [
     if linker_accepts(template, probe_contents)
 ]
 if not HIDE:
-    print("nemo-fst: WARNING no supported symbol-hiding linker flag; OpenFst symbols "
+    print("nemo-text-processing-lightning: WARNING no supported symbol-hiding linker flag; OpenFst symbols "
           "will be visible and may collide with pynini's copy")
 
 if static:
@@ -143,17 +143,17 @@ class BuildExtAndVerify(build_ext):
             path = self.get_ext_fullpath(ext.name)
             leaked = _exported_symbols(path)
             if leaked is None:
-                print(f"nemo-fst: cannot inspect {path}; skipping export-table check")
+                print(f"nemo-text-processing-lightning: cannot inspect {path}; skipping export-table check")
                 continue
-            unexpected = leaked - {"PyInit__nemo_fst"}
+            unexpected = leaked - {"PyInit__lightning"}
             if unexpected:
                 raise SystemExit(
-                    f"nemo-fst: {len(unexpected)} symbols are exported besides the module "
+                    f"nemo-text-processing-lightning: {len(unexpected)} symbols are exported besides the module "
                     f"init symbol, e.g. {sorted(unexpected)[:5]}.\n"
                     f"Linked with: {HIDE or 'no symbol-hiding flag'}\n"
                     f"Those would be visible to pynini's OpenFst in the same process."
                 )
-            print(f"nemo-fst: export table clean ({sorted(leaked)})")
+            print(f"nemo-text-processing-lightning: export table clean ({sorted(leaked)})")
 
 
 def _exported_symbols(path):
@@ -174,14 +174,14 @@ setup(
     cmdclass={"build_ext": BuildExtAndVerify},
     ext_modules=[
         Pybind11Extension(
-            "nemo_fst._nemo_fst",
-            ["src/nemo_fst.cc"],
+            "nemo_text_processing_lightning._lightning",
+            ["src/lightning.cc"],
             include_dirs=[str(PREFIX / "include")],
             libraries=libraries,
             extra_compile_args=["-O3", "-fvisibility=hidden",
                                 "-fvisibility-inlines-hidden"],
             extra_link_args=link_args,
-            define_macros=[("NEMO_FST_OPENFST_VERSION",
+            define_macros=[("NEMO_TPL_OPENFST_VERSION",
                             f'"{OPENFST_VERSION}"')],
             cxx_std=17,
         )

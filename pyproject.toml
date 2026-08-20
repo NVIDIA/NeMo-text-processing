@@ -93,7 +93,7 @@ test = [
 ]
 # Optional: a compiled tagger that composes with lookahead. Everything works
 # without it, only slower.
-runtime = ["nemo-fst"]
+runtime = ["nemo-text-processing-lightning"]
 all = ["nemo_text_processing[test]"]
 
 [dependency-groups]
@@ -103,7 +103,7 @@ dev = ["nemo_text_processing[test]"]
 members = ["packages/*"]
 
 [tool.uv.sources]
-nemo-fst = { workspace = true }
+nemo-text-processing-lightning = { workspace = true }
 
 [tool.setuptools]
 include-package-data = true

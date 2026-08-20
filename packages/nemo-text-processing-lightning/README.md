@@ -1,4 +1,4 @@
-# nemo-fst
+# nemo-text-processing-lightning
 
 Applies prebuilt OpenFst grammars. It does not compile them — that is pynini's
 job and stays pynini's job.
@@ -21,14 +21,14 @@ effectively the whole speedup with the smallest native surface that gets it.
 The verbalizer, post-processor and the `Normalizer` integration are separate.
 
 ```python
-import nemo_fst
+import nemo_text_processing_lightning
 
-nemo_fst.has_lookahead()                       # -> True
+nemo_text_processing_lightning.has_lookahead()                       # -> True
 
-tagger = nemo_fst.Tagger.from_far(
+tagger = nemo_text_processing_lightning.Tagger.from_far(
     "en_tn_True_deterministic_cased__tokenize.far",
     key="tokenize_and_classify",
-    cache_dir="~/.cache/nemo_fst",
+    cache_dir="~/.cache/nemo_text_processing_lightning",
 )
 tagger.tag("It costs $25.50.")                 # -> 'tokens { money { ... } }'
 ```
@@ -104,7 +104,7 @@ package is exercised through the code that will eventually call it.
 Benchmarks are deselected by default:
 
 ```bash
-uv run --package nemo-fst pytest -m benchmark -s --tn_cache_dir=/path/to/grammars
+uv run --package nemo-text-processing-lightning pytest -m benchmark -s --tn_cache_dir=/path/to/grammars
 ```
 
 On one aarch64 machine, against the English test corpus:

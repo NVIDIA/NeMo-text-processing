@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Fixtures for the nemo-fst tests.
+"""Fixtures for the nemo-text-processing-lightning tests.
 
 Everything here needs a compiled English tagger FAR. Building one from source
 takes ~20 s, so point `--tn_cache_dir` at an existing cache to reuse it, the
@@ -50,8 +50,8 @@ def cache_dir(request, tmp_path_factory) -> Path:
 
 @pytest.fixture(scope="session")
 def artifact_dir(tmp_path_factory) -> Path:
-    """Where nemo-fst writes its prepared lookahead artifacts."""
-    return tmp_path_factory.mktemp("nemo_fst_artifacts")
+    """Where nemo-text-processing-lightning writes its prepared lookahead artifacts."""
+    return tmp_path_factory.mktemp("nemo_text_processing_lightning_artifacts")
 
 
 TAGGER_FAR = "en_tn_True_deterministic_cased__tokenize.far"
@@ -88,9 +88,9 @@ def far_path(request, cache_dir) -> Path:
 
 @pytest.fixture(scope="session")
 def tagger(far_path, artifact_dir):
-    import nemo_fst
+    import nemo_text_processing_lightning
 
-    return nemo_fst.Tagger.from_far(far_path, cache_dir=artifact_dir)
+    return nemo_text_processing_lightning.Tagger.from_far(far_path, cache_dir=artifact_dir)
 
 
 @pytest.fixture(scope="session")
@@ -123,9 +123,9 @@ def toy_far() -> Path:
 
 @pytest.fixture(scope="session")
 def toy_tagger(toy_far, artifact_dir):
-    import nemo_fst
+    import nemo_text_processing_lightning
 
-    return nemo_fst.Tagger.from_far(toy_far, cache_dir=artifact_dir / "toy")
+    return nemo_text_processing_lightning.Tagger.from_far(toy_far, cache_dir=artifact_dir / "toy")
 
 
 @pytest.fixture(scope="session")

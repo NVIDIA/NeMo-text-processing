@@ -17,7 +17,7 @@ requires = ["setuptools>=64", "pybind11>=2.11"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "nemo-fst"
+name = "nemo-text-processing-lightning"
 version = "0.1.0.dev0"
 description = "Apply prebuilt OpenFst grammars with lookahead composition."
 readme = "README.md"
@@ -40,10 +40,10 @@ test = ["pytest"]
 # Installed by `uv sync` and `uv run`, so a clone gets a working test
 # environment without having to name the extra.
 [dependency-groups]
-dev = ["nemo-fst[test]"]
+dev = ["nemo-text-processing-lightning[test]"]
 
 [tool.setuptools]
-packages = ["nemo_fst"]
+packages = ["nemo_text_processing_lightning"]
 
 [tool.pytest.ini_options]
 # A prepared artifact is ~13 MB; keep only what a failure needs.

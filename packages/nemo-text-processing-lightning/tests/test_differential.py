@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""nemo-fst's tagger against the pynini baseline, over the English test corpus.
+"""nemo-text-processing-lightning's tagger against the pynini baseline, over the English test corpus.
 
 The tagger is weighted over the tropical semiring and its shortest path is not
 unique, so "same string as pynini" is the wrong contract: two correct
@@ -75,13 +75,13 @@ def test_tagged_output_is_never_worse_than_pynini(tagger, normalizer, inputs):
     n = len(inputs)
     print(
         f"\n{n - len(tied) - len(worse)}/{n} identical, {len(tied)} tied on weight, "
-        f"{len(worse)} worse; {t_base:.2f}s baseline vs {t_ours:.2f}s nemo-fst "
+        f"{len(worse)} worse; {t_base:.2f}s baseline vs {t_ours:.2f}s nemo-text-processing-lightning "
         f"({t_base / t_ours:.1f}x)"
     )
     for text, a, b, w in tied[:5]:
-        print(f"  tie @ {w:.5f}  {text!r}\n    pynini  : {a[:70]!r}\n    nemo-fst: {b[:70]!r}")
+        print(f"  tie @ {w:.5f}  {text!r}\n    pynini  : {a[:70]!r}\n    nemo-text-processing-lightning: {b[:70]!r}")
     for text, a, b, wa, wb in worse[:5]:
-        print(f"  WORSE {text!r}: pynini {wa} -> {a[:60]!r}, nemo-fst {wb} -> {b[:60]!r}")
+        print(f"  WORSE {text!r}: pynini {wa} -> {a[:60]!r}, nemo-text-processing-lightning {wb} -> {b[:60]!r}")
     assert not worse, f"{len(worse)} of {n} inputs took a costlier path than pynini"
 
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// nemo-fst — a minimal OpenFst runtime for applying prebuilt grammars.
+// nemo-text-processing-lightning — a minimal OpenFst runtime for applying prebuilt grammars.
 //
 // Scope is the tagger path only.  Read an FST out of a FAR, prepare the
 // lookahead artifact once (Invert, then Convert to `olabel_lookahead`), and
@@ -35,8 +35,8 @@
 //     the concrete type StdOLabelLookAheadFst rather than the registry, so no
 //     dlopen plugin and no libfstlookahead is required at all.  See build.sh.
 
-#ifndef NEMO_FST_OPENFST_VERSION
-#define NEMO_FST_OPENFST_VERSION "unknown"
+#ifndef NEMO_TPL_OPENFST_VERSION
+#define NEMO_TPL_OPENFST_VERSION "unknown"
 #endif
 
 #include <pybind11/pybind11.h>
@@ -79,7 +79,7 @@ using Relabeler = fst::LabelLookAheadRelabeler<StdArc>;
 
 // Bumped whenever anything about the prepared artifact changes (the conversion,
 // the arc type, the OpenFst FST binary format).  Part of the cache key, so a
-// stale artifact from an older nemo-fst is never reused.
+// stale artifact from an older nemo-text-processing-lightning is never reused.
 constexpr int kArtifactVersion = 1;
 
 // The FST type registry is a function-local static inside a template, so with
@@ -107,7 +107,7 @@ static fst::FstRegisterer<LaFst> olabel_lookahead_registerer;
 uint64_t HashFile(const std::string &path) {
   FILE *f = std::fopen(path.c_str(), "rb");
   if (f == nullptr) {
-    throw std::runtime_error("nemo_fst: cannot open " + path);
+    throw std::runtime_error("nemo_text_processing_lightning: cannot open " + path);
   }
   uint64_t h = 0xcbf29ce484222325ULL;
   constexpr uint64_t kPrime = 0x100000001b3ULL;
@@ -155,22 +155,22 @@ std::unique_ptr<fst::VectorFst<StdArc>> ReadFarFst(const std::string &far_path,
   std::unique_ptr<fst::FarReader<StdArc>> reader(
       fst::FarReader<StdArc>::Open(far_path));
   if (reader == nullptr) {
-    throw std::runtime_error("nemo_fst: cannot open FAR " + far_path);
+    throw std::runtime_error("nemo_text_processing_lightning: cannot open FAR " + far_path);
   }
   if (!key.empty() && !reader->Find(key)) {
-    throw std::runtime_error("nemo_fst: key '" + key + "' not in FAR " +
+    throw std::runtime_error("nemo_text_processing_lightning: key '" + key + "' not in FAR " +
                              far_path);
   }
   if (reader->Done()) {
-    throw std::runtime_error("nemo_fst: FAR is empty: " + far_path);
+    throw std::runtime_error("nemo_text_processing_lightning: FAR is empty: " + far_path);
   }
   const fst::Fst<StdArc> *fst = reader->GetFst();
   if (fst == nullptr) {
-    throw std::runtime_error("nemo_fst: cannot read FST from " + far_path);
+    throw std::runtime_error("nemo_text_processing_lightning: cannot read FST from " + far_path);
   }
   auto out = std::make_unique<fst::VectorFst<StdArc>>(*fst);
   if (out->Properties(fst::kError, false) & fst::kError) {
-    throw std::runtime_error("nemo_fst: FST in " + far_path + " is in error");
+    throw std::runtime_error("nemo_text_processing_lightning: FST in " + far_path + " is in error");
   }
   return out;
 }
@@ -215,11 +215,11 @@ std::unique_ptr<LaFst> PrepareArtifact(const std::string &far_path,
   // which is where the label renumbering happens.
   auto la = std::make_unique<LaFst>(*plain);
   if (la->Properties(fst::kError, false) & fst::kError) {
-    throw std::runtime_error("nemo_fst: olabel_lookahead conversion failed");
+    throw std::runtime_error("nemo_text_processing_lightning: olabel_lookahead conversion failed");
   }
   *pairs = ExtractRelabelPairs(*la);
   if (pairs->empty()) {
-    throw std::runtime_error("nemo_fst: conversion produced no relabelling map");
+    throw std::runtime_error("nemo_text_processing_lightning: conversion produced no relabelling map");
   }
   if (!out_path.empty()) {
     // Per-process temporaries, so two workers preparing the same grammar at
@@ -228,11 +228,11 @@ std::unique_ptr<LaFst> PrepareArtifact(const std::string &far_path,
     const std::string tmp = out_path + suffix;
     const std::string tmp_map = RelabelPathFor(out_path) + suffix;
     if (!la->Write(tmp)) {
-      throw std::runtime_error("nemo_fst: cannot write " + tmp);
+      throw std::runtime_error("nemo_text_processing_lightning: cannot write " + tmp);
     }
     if (!fst::WriteLabelPairs(tmp_map, *pairs)) {
       std::remove(tmp.c_str());
-      throw std::runtime_error("nemo_fst: cannot write " + tmp_map);
+      throw std::runtime_error("nemo_text_processing_lightning: cannot write " + tmp_map);
     }
     // Map first, then the FST: the FST's presence is what the cache lookup
     // tests, so it must never appear without its map.
@@ -240,7 +240,7 @@ std::unique_ptr<LaFst> PrepareArtifact(const std::string &far_path,
         std::rename(tmp.c_str(), out_path.c_str()) != 0) {
       std::remove(tmp.c_str());
       std::remove(tmp_map.c_str());
-      throw std::runtime_error("nemo_fst: cannot rename into " + out_path);
+      throw std::runtime_error("nemo_text_processing_lightning: cannot rename into " + out_path);
     }
   }
   return la;
@@ -388,13 +388,13 @@ bool HasLookahead() {
 
 }  // namespace
 
-PYBIND11_MODULE(_nemo_fst, m) {
+PYBIND11_MODULE(_lightning, m) {
   // pywrapfst does this too.  Without it an OpenFst error is LOG(FATAL) and
   // takes the interpreter with it instead of raising.
   FST_FLAGS_fst_error_fatal = false;
 
   m.doc() = "Minimal OpenFst runtime: applies prebuilt lookahead grammars.";
-  m.attr("__openfst_version__") = NEMO_FST_OPENFST_VERSION;
+  m.attr("__openfst_version__") = NEMO_TPL_OPENFST_VERSION;
 
   m.def("has_lookahead", &HasLookahead,
         "True if the olabel_lookahead FST type is usable in this process.");

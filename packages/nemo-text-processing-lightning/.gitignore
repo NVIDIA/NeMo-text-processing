@@ -1,0 +1,3 @@
+build/
+*.egg-info/
+nemo_text_processing_lightning/_lightning*.so

@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""nemo-fst — apply prebuilt OpenFst grammars, fast, without pynini.
+"""nemo-text-processing-lightning — apply prebuilt OpenFst grammars, fast, without pynini.
 
 Scope is the tagger.  Tagging is 96.7% of text-normalization runtime, so this
 is effectively the whole speedup with the smallest possible native surface.
 
-    import nemo_fst
+    import nemo_text_processing_lightning
 
-    nemo_fst.has_lookahead()                    # -> True
-    tagger = nemo_fst.Tagger.from_far(
+    nemo_text_processing_lightning.has_lookahead()                    # -> True
+    tagger = nemo_text_processing_lightning.Tagger.from_far(
         "en_tn_True_deterministic_cased__tokenize.far",
         key="tokenize_and_classify",
-        cache_dir="~/.cache/nemo_fst",
+        cache_dir="~/.cache/nemo_text_processing_lightning",
     )
     tagger.tag("It costs $25.50.")               # GIL released for the compose
 
@@ -38,8 +38,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from . import _nemo_fst
-from ._nemo_fst import __openfst_version__, has_lookahead
+from . import _lightning
+from ._lightning import __openfst_version__, has_lookahead
 
 __all__ = ["Tagger", "has_lookahead", "default_cache_dir", "__openfst_version__"]
 
@@ -49,15 +49,15 @@ __version__ = "0.1.0.dev0"
 def default_cache_dir() -> Path:
     """Where prepared artifacts land when the caller does not say.
 
-    `NEMO_FST_CACHE_DIR`, else `$XDG_CACHE_HOME/nemo_fst`, else
-    `~/.cache/nemo_fst`.
+    `NEMO_TPL_CACHE_DIR`, else `$XDG_CACHE_HOME/nemo_text_processing_lightning`, else
+    `~/.cache/nemo_text_processing_lightning`.
     """
-    env = os.environ.get("NEMO_FST_CACHE_DIR")
+    env = os.environ.get("NEMO_TPL_CACHE_DIR")
     if env:
         return Path(env).expanduser()
     xdg = os.environ.get("XDG_CACHE_HOME")
     base = Path(xdg).expanduser() if xdg else Path.home() / ".cache"
-    return base / "nemo_fst"
+    return base / "nemo_text_processing_lightning"
 
 
 class Tagger:
@@ -86,7 +86,7 @@ class Tagger:
                 else default_cache_dir()
             directory.mkdir(parents=True, exist_ok=True)
             resolved = str(directory)
-        return cls(_nemo_fst.Tagger.from_far(str(far_path), key, resolved))
+        return cls(_lightning.Tagger.from_far(str(far_path), key, resolved))
 
     def tag(self, text: str) -> str:
         """Tag `text`, returning the tagged string.
@@ -123,4 +123,4 @@ class Tagger:
         return dict(self._impl.relabel_pairs)
 
     def __repr__(self) -> str:
-        return f"<nemo_fst.Tagger {self.num_states} states>"
+        return f"<nemo_text_processing_lightning.Tagger {self.num_states} states>"

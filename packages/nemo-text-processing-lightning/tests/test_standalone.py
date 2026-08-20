@@ -33,7 +33,7 @@ import time
 
 import pytest
 
-import nemo_fst
+import nemo_text_processing_lightning
 
 
 def test_lookahead_is_actually_compiled_in():
@@ -42,11 +42,11 @@ def test_lookahead_is_actually_compiled_in():
     An OpenFst built without --enable-lookahead-fsts produces a package that
     imports, has an API, and is worth nothing.
     """
-    assert nemo_fst.has_lookahead()
+    assert nemo_text_processing_lightning.has_lookahead()
 
 
 def test_openfst_version_is_reported():
-    assert nemo_fst.__openfst_version__.startswith("1.8.")
+    assert nemo_text_processing_lightning.__openfst_version__.startswith("1.8.")
 
 
 def _run(cmd):
@@ -66,7 +66,7 @@ def test_exports_only_the_module_init_symbol():
     -exported_symbols_list under ld64, so this is the assertion that catches a
     platform where neither took.
     """
-    so = nemo_fst._nemo_fst.__file__
+    so = nemo_text_processing_lightning._lightning.__file__
     if sys.platform == "darwin":
         out = _run(["nm", "-gU", so])           # global, defined
     else:
@@ -75,12 +75,12 @@ def test_exports_only_the_module_init_symbol():
         pytest.skip("nm unavailable")
     # ld64 prefixes symbols with an underscore; GNU ld does not.
     exported = {line.split()[-1].lstrip("_") for line in out.splitlines() if line.strip()}
-    assert exported == {"PyInit__nemo_fst"}, sorted(exported)
+    assert exported == {"PyInit__lightning"}, sorted(exported)
 
 
 def test_no_external_openfst_dependency():
     """A relocatable wheel carries its OpenFst; it does not look for one."""
-    so = nemo_fst._nemo_fst.__file__
+    so = nemo_text_processing_lightning._lightning.__file__
     out = _run(["otool", "-L", so]) if sys.platform == "darwin" else _run(["readelf", "-d", so])
     if out is None:
         pytest.skip("otool/readelf unavailable")
@@ -122,12 +122,12 @@ def test_multibyte_input_round_trips(toy_tagger):
 
 def test_missing_far_raises_cleanly(tmp_path):
     with pytest.raises(Exception):  # noqa: B017 -- any clean failure, not a crash
-        nemo_fst.Tagger.from_far(tmp_path / "does-not-exist.far", cache_dir=tmp_path)
+        nemo_text_processing_lightning.Tagger.from_far(tmp_path / "does-not-exist.far", cache_dir=tmp_path)
 
 
 def test_missing_key_raises_cleanly(toy_far, tmp_path):
     with pytest.raises(RuntimeError, match="not in FAR"):
-        nemo_fst.Tagger.from_far(toy_far, key="no-such-key", cache_dir=tmp_path)
+        nemo_text_processing_lightning.Tagger.from_far(toy_far, key="no-such-key", cache_dir=tmp_path)
 
 
 def test_tag_releases_the_gil(toy_tagger):

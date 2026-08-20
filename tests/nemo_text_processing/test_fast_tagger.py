@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""The optional nemo-fst tagging path, and its fallback.
+"""The optional nemo-text-processing-lightning tagging path, and its fallback.
 
-These run whether or not nemo-fst is installed. It is used automatically when
+These run whether or not nemo-text-processing-lightning is installed. It is used automatically when
 available; the point of the tests is that being unable to use it degrades to
 pynini rather than failing, and that the choice is overridable either way.
 """
@@ -38,11 +38,11 @@ def normalizer():
 def test_used_automatically_when_available(normalizer):
     """No flag needed: if the package is importable and there is a FAR, use it."""
     try:
-        import nemo_fst
+        import nemo_text_processing_lightning
     except ImportError:
         assert normalizer._fst_tagger is None
         return
-    assert (normalizer._fst_tagger is not None) == nemo_fst.has_lookahead()
+    assert (normalizer._fst_tagger is not None) == nemo_text_processing_lightning.has_lookahead()
 
 
 @pytest.mark.run_only_on('CPU')
@@ -62,19 +62,19 @@ def test_missing_package_degrades_with_a_warning(monkeypatch, caplog):
 
     real_import = builtins.__import__
 
-    def no_nemo_fst(name, *args, **kwargs):
-        if name == "nemo_fst":
-            raise ImportError("simulated: nemo-fst not installed")
+    def no_lightning(name, *args, **kwargs):
+        if name == "nemo_text_processing_lightning":
+            raise ImportError("simulated: nemo-text-processing-lightning not installed")
         return real_import(name, *args, **kwargs)
 
-    monkeypatch.setattr(builtins, "__import__", no_nemo_fst)
+    monkeypatch.setattr(builtins, "__import__", no_lightning)
     with caplog.at_level(logging.WARNING):
         # fast_tagger=True, so being unable to use it is worth a warning; left
         # to itself the same situation is only a debug line.
         norm = Normalizer(input_case="cased", lang="en", cache_dir=CACHE_DIR, fast_tagger=True)
 
     assert norm._fst_tagger is None
-    assert any("nemo-fst is not installed" in r.message for r in caplog.records), caplog.text
+    assert any("nemo-text-processing-lightning is not installed" in r.message for r in caplog.records), caplog.text
     assert norm.normalize("It costs $25.50.") == "It costs twenty five dollars fifty cents."
 
 
@@ -120,14 +120,14 @@ def test_fast_path_agrees_with_pynini_where_the_grammar_is_unambiguous(normalize
 
     Inputs whose parse is genuinely tied are excluded: both implementations
     return a lowest-cost reading, but not necessarily the same one. The
-    nemo-fst package's own differential test is what pins the stronger property
+    nemo-text-processing-lightning package's own differential test is what pins the stronger property
     -- never a costlier path than pynini's.
     """
-    pytest.importorskip("nemo_fst")
+    pytest.importorskip("nemo_text_processing_lightning")
     fast = Normalizer(input_case="cased", lang="en", cache_dir=CACHE_DIR, fast_tagger=True)
     slow = Normalizer(input_case="cased", lang="en", cache_dir=CACHE_DIR, fast_tagger=False)
     if fast._fst_tagger is None:
-        pytest.skip("nemo-fst present but unusable in this environment")
+        pytest.skip("nemo-text-processing-lightning present but unusable in this environment")
 
     for text in (
         "It costs $25.50 on 3/4/2023.",
