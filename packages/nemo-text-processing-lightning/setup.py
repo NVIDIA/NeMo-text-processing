@@ -117,8 +117,10 @@ HIDE = [
     if linker_accepts(template, probe_contents)
 ]
 if not HIDE:
-    print("nemo-text-processing-lightning: WARNING no supported symbol-hiding linker flag; OpenFst symbols "
-          "will be visible and may collide with pynini's copy")
+    print(
+        "nemo-text-processing-lightning: WARNING no supported symbol-hiding linker flag; OpenFst symbols "
+        "will be visible and may collide with pynini's copy"
+    )
 
 if static:
     # Archives passed as objects, so nothing is left to resolve at load time.
@@ -127,6 +129,7 @@ if static:
 else:
     link_args = [f"-L{PREFIX / 'lib'}", f"-Wl,-rpath,{PREFIX / 'lib'}"] + HIDE
     libraries = ["fstfar", "fst"]
+
 
 class BuildExtAndVerify(build_ext):
     """Build, then check that nothing but the module init symbol is exported.
@@ -158,8 +161,7 @@ class BuildExtAndVerify(build_ext):
 
 def _exported_symbols(path):
     """Defined, globally visible symbols in `path`, or None if nm cannot say."""
-    cmd = ["nm", "-gU", str(path)] if sys.platform == "darwin" else \
-          ["nm", "-D", "--defined-only", str(path)]
+    cmd = ["nm", "-gU", str(path)] if sys.platform == "darwin" else ["nm", "-D", "--defined-only", str(path)]
     try:
         out = subprocess.run(cmd, capture_output=True, text=True)
     except OSError:
@@ -178,11 +180,9 @@ setup(
             ["src/lightning.cc"],
             include_dirs=[str(PREFIX / "include")],
             libraries=libraries,
-            extra_compile_args=["-O3", "-fvisibility=hidden",
-                                "-fvisibility-inlines-hidden"],
+            extra_compile_args=["-O3", "-fvisibility=hidden", "-fvisibility-inlines-hidden"],
             extra_link_args=link_args,
-            define_macros=[("NEMO_TPL_OPENFST_VERSION",
-                            f'"{OPENFST_VERSION}"')],
+            define_macros=[("NEMO_TPL_OPENFST_VERSION", f'"{OPENFST_VERSION}"')],
             cxx_std=17,
         )
     ],

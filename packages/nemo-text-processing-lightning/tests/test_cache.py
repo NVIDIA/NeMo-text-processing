@@ -67,8 +67,7 @@ def test_regenerated_grammar_invalidates(toy_far, toy_other_far, tmp_path):
 
     # Stand-in for a regenerated grammar: a different FST under the same path.
     shutil.copy(toy_other_far, grammar)
-    regenerated = nemo_text_processing_lightning.Tagger.from_far(grammar, key="verbalize",
-                                           cache_dir=tmp_path)
+    regenerated = nemo_text_processing_lightning.Tagger.from_far(grammar, key="verbalize", cache_dir=tmp_path)
     assert regenerated.prepared is True, "stale artifact was reused"
     assert regenerated.artifact_path != original.artifact_path
     assert regenerated.num_states != original.num_states
@@ -82,8 +81,7 @@ def test_regenerated_grammar_invalidates(toy_far, toy_other_far, tmp_path):
 
 def test_key_is_part_of_the_cache_key(toy_far, toy_other_far, tmp_path):
     a = nemo_text_processing_lightning.Tagger.from_far(toy_far, cache_dir=tmp_path)
-    b = nemo_text_processing_lightning.Tagger.from_far(toy_other_far, key="verbalize",
-                                 cache_dir=tmp_path)
+    b = nemo_text_processing_lightning.Tagger.from_far(toy_other_far, key="verbalize", cache_dir=tmp_path)
     assert a.artifact_path != b.artifact_path
 
 

@@ -77,15 +77,14 @@ def test_import_both_and_compose(order, far_path, artifact_dir):
     # put it on PYTHONPATH explicitly rather than relying on cwd.
     env = dict(os.environ)
     existing = env.get("PYTHONPATH")
-    env["PYTHONPATH"] = (
-        f"{PACKAGE_ROOT}{os.pathsep}{existing}" if existing else str(PACKAGE_ROOT)
-    )
+    env["PYTHONPATH"] = f"{PACKAGE_ROOT}{os.pathsep}{existing}" if existing else str(PACKAGE_ROOT)
     proc = subprocess.run(
         [sys.executable, "-c", BOTH_WAYS, order, str(far_path), str(artifact_dir)],
-        capture_output=True, text=True, env=env,
+        capture_output=True,
+        text=True,
+        env=env,
     )
-    assert proc.returncode == 0, (
-        f"exit {proc.returncode}\nstdout:\n{proc.stdout}\nstderr:\n{proc.stderr}")
+    assert proc.returncode == 0, f"exit {proc.returncode}\nstdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
     assert proc.stdout.startswith("OK"), proc.stdout
 
 
@@ -94,8 +93,7 @@ def test_no_openfst_symbols_exported():
     import nemo_text_processing_lightning
 
     so = nemo_text_processing_lightning._lightning.__file__
-    out = subprocess.run(["nm", "-D", "--defined-only", so],
-                         capture_output=True, text=True)
+    out = subprocess.run(["nm", "-D", "--defined-only", so], capture_output=True, text=True)
     if out.returncode != 0:
         pytest.skip("nm unavailable")
     names = [line.split()[-1] for line in out.stdout.splitlines() if line.strip()]

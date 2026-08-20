@@ -33,6 +33,7 @@ from pynini.lib.rewrite import top_rewrite
 from sacremoses import MosesDetokenizer
 from tqdm import tqdm
 
+from nemo_text_processing.package_info import __version__
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -41,7 +42,6 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
 )
 from nemo_text_processing.text_normalization.preprocessing_utils import additional_split
 from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_KEY, TokenParser
-from nemo_text_processing.package_info import __version__
 from nemo_text_processing.utils.logging import logger
 
 # this is to handle long input
@@ -109,13 +109,9 @@ def default_cache_dir() -> str:
     if sys.platform == "darwin":
         base = os.path.join(os.path.expanduser("~"), "Library", "Caches")
     elif os.name == "nt":
-        base = os.environ.get("LOCALAPPDATA") or os.path.join(
-            os.path.expanduser("~"), "AppData", "Local"
-        )
+        base = os.environ.get("LOCALAPPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Local")
     else:
-        base = os.environ.get("XDG_CACHE_HOME") or os.path.join(
-            os.path.expanduser("~"), ".cache"
-        )
+        base = os.environ.get("XDG_CACHE_HOME") or os.path.join(os.path.expanduser("~"), ".cache")
     return os.path.join(base, "nemo_text_processing", __version__)
 
 
@@ -273,9 +269,7 @@ class Normalizer:
         self.verbalizer = VerbalizeFinalFst(
             deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache
         )
-        self._fst_tagger = self._init_fst_tagger(
-            lang, cache_dir, deterministic, input_case, whitelist, fast_tagger
-        )
+        self._fst_tagger = self._init_fst_tagger(lang, cache_dir, deterministic, input_case, whitelist, fast_tagger)
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
         self.parser = TokenParser()
         self.lang = lang

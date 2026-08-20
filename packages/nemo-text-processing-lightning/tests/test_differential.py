@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import time
 
+
 def squash(text: str) -> str:
     return " ".join(text.split())
 
@@ -95,10 +96,7 @@ def test_tag_releases_the_gil(tagger):
     """
     import threading
 
-    text = (
-        "On January 5th, 2021 the company reported $1,234.56 in revenue, "
-        "up 12.5% from Q3, at 3:45 PM ET. " * 4
-    )
+    text = "On January 5th, 2021 the company reported $1,234.56 in revenue, " "up 12.5% from Q3, at 3:45 PM ET. " * 4
 
     def ticker(stop, out):
         n = 0
@@ -171,9 +169,6 @@ def test_concurrent_tagging_is_consistent_and_scales(tagger):
             tagger.tag(text)
     sequential = time.perf_counter() - t0
 
-    print(
-        f"\n{threads} threads {parallel:.2f}s vs sequential {sequential:.2f}s "
-        f"({sequential / parallel:.2f}x)"
-    )
+    print(f"\n{threads} threads {parallel:.2f}s vs sequential {sequential:.2f}s " f"({sequential / parallel:.2f}x)")
     assert not errors, errors[:3]
     assert sequential / parallel > 1.5, (sequential, parallel)

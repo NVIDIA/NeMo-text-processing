@@ -31,9 +31,8 @@ import sys
 import threading
 import time
 
-import pytest
-
 import nemo_text_processing_lightning
+import pytest
 
 
 def test_lookahead_is_actually_compiled_in():
@@ -68,7 +67,7 @@ def test_exports_only_the_module_init_symbol():
     """
     so = nemo_text_processing_lightning._lightning.__file__
     if sys.platform == "darwin":
-        out = _run(["nm", "-gU", so])           # global, defined
+        out = _run(["nm", "-gU", so])  # global, defined
     else:
         out = _run(["nm", "-D", "--defined-only", so])
     if out is None:

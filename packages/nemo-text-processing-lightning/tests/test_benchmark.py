@@ -64,7 +64,9 @@ def test_tagging_speedup(tagger, normalizer):
         lattice = pynini.escape(text) @ normalizer.tagger.fst
         return pynini.shortestpath(lattice, nshortest=1, unique=True).string()
 
-    print(f"\n{'density':8s} {'copies':>6s} {'chars':>6s} {'pynini':>10s} {'nemo-text-processing-lightning':>10s} {'speedup':>8s}")
+    print(
+        f"\n{'density':8s} {'copies':>6s} {'chars':>6s} {'pynini':>10s} {'nemo-text-processing-lightning':>10s} {'speedup':>8s}"
+    )
     speedups = []
     for name, template in TEMPLATES.items():
         for copies in (1, 4, 16, 32):
@@ -109,8 +111,7 @@ def test_end_to_end_speedup(normalizer, tagger, inputs, monkeypatch):
         ours = time.perf_counter() - t0
         speedups.append(stock / ours)
         print(f"{label:28s} {stock:7.2f}s {ours:8.2f}s {stock / ours:7.2f}x")
-    print(f"{'':28s} {'':>8s} {'range':>9s} "
-          f"{min(speedups):.1f}-{max(speedups):.1f}x")
+    print(f"{'':28s} {'':>8s} {'range':>9s} " f"{min(speedups):.1f}-{max(speedups):.1f}x")
     assert min(speedups) > 1.2, f"slowest case only {min(speedups):.2f}x"
 
 
@@ -136,10 +137,7 @@ def test_tagging_share_of_pipeline(normalizer, inputs):
         return time.perf_counter() - t0, total
 
     cases = [("corpus (200 short inputs)", inputs[:200])]
-    cases += [
-        (f"{name}, 32 sentences", [" ".join([TEMPLATES[name]] * 32)])
-        for name in ("plain", "medium", "heavy")
-    ]
+    cases += [(f"{name}, 32 sentences", [" ".join([TEMPLATES[name]] * 32)]) for name in ("plain", "medium", "heavy")]
     print(f"\n{'input':28s} {'tagging':>9s} {'total':>8s} {'share':>7s}")
     shares = []
     for label, texts in cases:
@@ -201,8 +199,5 @@ def test_preparation_is_a_one_off(far_path, tmp_path):
 
     far_mb = far_path.stat().st_size / 1e6
     art_mb = Path(tagger.artifact_path).stat().st_size / 1e6
-    print(
-        f"\nprepare {cold:.2f}s cold, {warm:.2f}s from cache; "
-        f"FAR {far_mb:.1f} MB -> artifact {art_mb:.1f} MB"
-    )
+    print(f"\nprepare {cold:.2f}s cold, {warm:.2f}s from cache; " f"FAR {far_mb:.1f} MB -> artifact {art_mb:.1f} MB")
     assert warm < cold, (cold, warm)

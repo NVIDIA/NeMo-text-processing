@@ -69,8 +69,7 @@ class Tagger:
         self._impl = impl
 
     @classmethod
-    def from_far(cls, far_path, key: str = "tokenize_and_classify",
-                 cache_dir=None) -> Tagger:
+    def from_far(cls, far_path, key: str = "tokenize_and_classify", cache_dir=None) -> Tagger:
         """Read `key` out of the FAR and prepare (or reuse) its lookahead form.
 
         `cache_dir` is created if missing.  Pass `cache_dir=False` to prepare in
@@ -82,8 +81,7 @@ class Tagger:
         if cache_dir is False:
             resolved = ""
         else:
-            directory = Path(cache_dir).expanduser() if cache_dir is not None \
-                else default_cache_dir()
+            directory = Path(cache_dir).expanduser() if cache_dir is not None else default_cache_dir()
             directory.mkdir(parents=True, exist_ok=True)
             resolved = str(directory)
         return cls(_lightning.Tagger.from_far(str(far_path), key, resolved))

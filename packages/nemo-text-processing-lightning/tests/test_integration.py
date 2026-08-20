@@ -84,7 +84,9 @@ def test_normalize_end_to_end_matches_stock_pipeline(normalizer, tagger, inputs,
         f"{len(differing) - len(untied)} differ from a weight-tied tagging; {len(untied)} unexplained"
     )
     for text in differing[:5]:
-        print(f"  tie  {text!r}\n    stock   : {stock[text][:70]!r}\n    nemo-text-processing-lightning: {ours[text][:70]!r}")
+        print(
+            f"  tie  {text!r}\n    stock   : {stock[text][:70]!r}\n    nemo-text-processing-lightning: {ours[text][:70]!r}"
+        )
     for text, a, b, wa, wb in untied[:5]:
         print(f"  UNEXPLAINED {text!r}: stock {wa} -> {a[:60]!r}, nemo-text-processing-lightning {wb} -> {b[:60]!r}")
     assert not untied, f"{len(untied)} outputs differ without a tie to explain them"

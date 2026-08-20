@@ -29,10 +29,10 @@ from __future__ import annotations
 import pytest
 
 MULTIBYTE = [
-    "Résumé costs €25.",            # 2-byte lead bytes (C3, E2 sequences)
+    "Résumé costs €25.",  # 2-byte lead bytes (C3, E2 sequences)
     "Der Preis beträgt 30 €.",
-    "Naïve café — 5 items.",        # em dash, 3-byte
-    "Emoji \U0001F600 and 7 things.",  # 4-byte lead byte
+    "Naïve café — 5 items.",  # em dash, 3-byte
+    "Emoji \U0001f600 and 7 things.",  # 4-byte lead byte
     "日本語 12 items.",
 ]
 
