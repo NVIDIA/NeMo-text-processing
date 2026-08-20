@@ -49,27 +49,42 @@ def test_openfst_version_is_reported():
     assert nemo_fst.__openfst_version__.startswith("1.8.")
 
 
+def _run(cmd):
+    """Run a toolchain command, or None if it is not usable here."""
+    try:
+        out = subprocess.run(cmd, capture_output=True, text=True)
+    except OSError:
+        return None
+    return out.stdout if out.returncode == 0 else None
+
+
 def test_exports_only_the_module_init_symbol():
-    """Two OpenFst copies in one process are safe only if ours is invisible."""
-    if not sys.platform.startswith("linux"):
-        pytest.skip("nm -D is Linux-specific")
+    """Two OpenFst copies in one process are safe only if ours is invisible.
+
+    Worth checking on every platform, not just the one that was developed on:
+    the export table is restricted by a version script under GNU ld and by
+    -exported_symbols_list under ld64, so this is the assertion that catches a
+    platform where neither took.
+    """
     so = nemo_fst._nemo_fst.__file__
-    out = subprocess.run(["nm", "-D", "--defined-only", so], capture_output=True, text=True)
-    if out.returncode != 0:
+    if sys.platform == "darwin":
+        out = _run(["nm", "-gU", so])           # global, defined
+    else:
+        out = _run(["nm", "-D", "--defined-only", so])
+    if out is None:
         pytest.skip("nm unavailable")
-    exported = [line.split()[-1] for line in out.stdout.splitlines() if line.strip()]
-    assert exported == ["PyInit__nemo_fst"], exported
+    # ld64 prefixes symbols with an underscore; GNU ld does not.
+    exported = {line.split()[-1].lstrip("_") for line in out.splitlines() if line.strip()}
+    assert exported == {"PyInit__nemo_fst"}, sorted(exported)
 
 
 def test_no_external_openfst_dependency():
     """A relocatable wheel carries its OpenFst; it does not look for one."""
-    if not sys.platform.startswith("linux"):
-        pytest.skip("readelf is Linux-specific")
     so = nemo_fst._nemo_fst.__file__
-    out = subprocess.run(["readelf", "-d", so], capture_output=True, text=True)
-    if out.returncode != 0:
-        pytest.skip("readelf unavailable")
-    assert "libfst" not in out.stdout, out.stdout
+    out = _run(["otool", "-L", so]) if sys.platform == "darwin" else _run(["readelf", "-d", so])
+    if out is None:
+        pytest.skip("otool/readelf unavailable")
+    assert "libfst" not in out, out
 
 
 def test_tagged_output_is_wellformed(toy_tagger):
