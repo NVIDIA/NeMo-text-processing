@@ -1,5 +1,5 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
-# Copyright (c) 2022, Jim O'Regan for Språkbanken Tal
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# Copyright (c) 2026, Jim O'Regan for Språkbanken Tal
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,85 +12,48 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
-from nemo_text_processing.text_normalization.se.graph_utils import ensure_space
-from nemo_text_processing.text_normalization.se.utils import get_abs_path
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst, convert_space
+from nemo_text_processing.text_normalization.se.utils import get_abs_path
 
 
 class FractionFst(GraphFst):
-    """
-    Finite state transducer for classifying fraction
-    "23 4/5" ->
-    tokens { fraction { integer: "tjugotre" numerator: "fyra" denominator: "femtedel" } }
-    # en åttondel (1/8)
-
-    Args:
-        cardinal: CardinalFst
-        ordinal: OrdinalFst
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
-    """
+    """Classifies vulgar fractions and mixed-number expressions."""
 
     def __init__(self, cardinal: GraphFst, ordinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="fraction", kind="classify", deterministic=deterministic)
-        cardinal_graph = cardinal.graph
-        ordinal_graph = ordinal.graph
-        numerator_graph = cardinal.graph_en
+        super().__init__(name="name", kind="classify", deterministic=deterministic)
 
-        fractional_endings = pynini.string_map(
-            [
-                ("ljarte", "ljarddel"),
-                ("tionde", "tiondel"),
-                ("tonde", "tondel"),
-                ("ljonte", "ljondel"),
-                ("lliarte", "lliarddel"),
-                ("llionte", "lliondel"),
-                ("tusende", "tusendel"),
-                ("te", "tedel"),
-                ("de", "dedel"),
-                ("je", "jedel"),
-                ("drade", "dradel"),
-                ("a", "adel"),
-            ]
+        denominator_input = pynini.project(ordinal.graph_bare_ordinals, "input")
+        denominator_stem = ordinal.graph_bare_ordinals @ pynini.cdrewrite(
+            pynini.cross("t", "das"), "", "[EOS]", NEMO_SIGMA
         )
-        alt_fractional_endings = pynini.string_map([("tondel", "tondedel"), ("tiondel", "tiondedel")])
-        lexicalised = pynini.string_map([("andradel", "halv"), ("fjärdedel", "kvart")])
-        alt_lexicalised = pynini.string_map([("halv", "andradel"), ("kvart", "fjärdedel"), ("kvart", "kvarts")])
+        denominator_nominative = pynini.cross("2", "bealli") | (
+            pynini.difference(denominator_input, "2") @ denominator_stem
+        )
+        denominator_genitive = pynini.cross("2", "beali") | (
+            pynini.difference(denominator_input, "2")
+            @ denominator_stem
+            @ pynini.cdrewrite(pynutil.insert("a"), "", "[EOS]", NEMO_SIGMA)
+        )
 
-        fractions = (
-            ordinal_graph
-            @ pynini.cdrewrite(fractional_endings, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(lexicalised, "[BOS]", "[EOS]", NEMO_SIGMA)
-        )
-        fractions_alt = (
-            fractions
-            @ pynini.cdrewrite(alt_fractional_endings, "", "[EOS]", NEMO_SIGMA)
-            @ pynini.cdrewrite(alt_lexicalised, "[BOS]", "[EOS]", NEMO_SIGMA)
-        )
+        one_fraction = pynutil.delete("1/") + denominator_nominative
+        other_fraction = cardinal.graph + pynutil.delete("/") + pynutil.insert(" ") + denominator_genitive
+        spoken_fraction = (one_fraction | other_fraction).optimize()
+        symbol_fraction = (
+            pynini.string_file(get_abs_path("data/numbers/fraction_symbols.tsv")) @ spoken_fraction
+        ).optimize()
+
+        integer_input = pynini.project(cardinal.graph, "input")
+        generic_integer = pynini.difference(integer_input, pynini.union("1", "2")) @ cardinal.graph
+        mixed = generic_integer + pynutil.delete(" ") + pynutil.insert(" ja ") + symbol_fraction
+
+        graph = symbol_fraction | mixed | pynini.string_file(get_abs_path("data/numbers/fraction.tsv"))
         if not deterministic:
-            fractions |= fractions_alt
+            graph |= pynini.string_file(get_abs_path("data/numbers/fraction_nd.tsv"))
+            graph |= cardinal.graph + pynutil.delete(" ") + pynutil.insert(" ja ") + symbol_fraction
 
-        self.fractions = fractions
-
-        fractional_pl_endings = pynini.string_map([("kvart", "kvartar"), ("halv", "halva"), ("del", "delar")])
-        fractions_pl = fractions @ pynini.cdrewrite(fractional_pl_endings, "", "[EOS]", NEMO_SIGMA)
-        self.fractional_plural_endings = fractional_pl_endings
-        self.fractions_plural = fractions_pl
-
-        integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        numerator = (
-            pynutil.insert("numerator: \"") + numerator_graph + (pynini.cross("/", "\" ") | pynini.cross(" / ", "\" "))
-        )
-
-        denominator = pynutil.insert("denominator: \"") + fractions + pynutil.insert("\"")
-
-        graph = pynini.closure(integer + pynini.accep(" "), 0, 1) + (numerator + denominator)
-        graph |= pynini.closure(integer + ensure_space, 0, 1) + pynini.compose(
-            pynini.string_file(get_abs_path("data/numbers/fraction.tsv")), (numerator + denominator)
-        )
-
-        self.graph = graph
-        final_graph = self.add_tokens(self.graph)
-        self.fst = final_graph.optimize()
+        self.graph = graph.optimize()
+        self.fst = pynutil.insert('name: "') + convert_space(self.graph) + pynutil.insert('"')

@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_ALPHA, NEMO_DIGIT, GraphFst, insert_space
 from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
-from pynini.lib import pynutil
 
 common_domains = [x[0] for x in load_labels(get_abs_path("data/electronic/domain.tsv"))]
 symbols = [x[0] for x in load_labels(get_abs_path("data/electronic/symbols.tsv"))]
@@ -60,7 +61,7 @@ class ElectronicFst(GraphFst):
 
         # url
         protocol_start = pynini.accep("https://") | pynini.accep("http://")
-        protocol_end = pynini.cross("www.", "v v v")
+        protocol_end = pynini.accep("www.")
         protocol = protocol_start | protocol_end | (protocol_start + protocol_end)
         protocol = pynutil.insert("protocol: \"") + protocol + pynutil.insert("\"")
         graph |= protocol + insert_space + (domain_graph | domain_common_graph)

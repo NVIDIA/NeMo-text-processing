@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@ import logging
 import os
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_extra_space,
@@ -24,7 +26,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
 )
 from nemo_text_processing.text_normalization.en.verbalizers.word import WordFst
 from nemo_text_processing.text_normalization.se.verbalizers.verbalize import VerbalizeFst
-from pynini.lib import pynutil
 
 
 class VerbalizeFinalFst(GraphFst):
@@ -44,7 +45,7 @@ class VerbalizeFinalFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"sv_tn_{deterministic}_deterministic_verbalizer.far")
+            far_file = os.path.join(cache_dir, f"se_tn_{deterministic}_deterministic_verbalizer.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["verbalize"]
             logging.info(f'VerbalizeFinalFst graph was restored from {far_file}.')

@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
@@ -20,7 +22,6 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
-from pynini.lib import pynutil
 
 
 class ElectronicFst(GraphFst):

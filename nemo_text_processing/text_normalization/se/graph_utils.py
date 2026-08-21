@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # Copyright (c) 2023, Jim O'Regan for Språkbanken Tal
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,11 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import delete_space
 from pynini.lib import byte, pynutil
 
-_ALPHA_UPPER = "АÁBCČDĐEFGHIJKLMNŊOPRSŠTŦUVZŽÆØÅÄÖ"
-_ALPHA_LOWER = "аábcčdđefghijklmnŋoprsštŧuvzžæøåäö"
+from nemo_text_processing.text_normalization.en.graph_utils import delete_space
+
+_ALPHA_UPPER = "AÁBCČDĐEFGHIJKLMNŊOPQRSŠTŦUVWXYZŽÆØÅÄÖ"
+_ALPHA_LOWER = "aábcčdđefghijklmnŋopqrsštŧuvwxyzžæøåäö"
 
 TO_LOWER = pynini.union(*[pynini.cross(x, y) for x, y in zip(_ALPHA_UPPER, _ALPHA_LOWER)])
 TO_UPPER = pynini.invert(TO_LOWER)

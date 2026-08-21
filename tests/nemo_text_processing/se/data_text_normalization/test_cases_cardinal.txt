@@ -59,4 +59,30 @@
 100.000~čuođiduhát
 1 000 000~miljovdna
 1.000.000~miljovdna
-1 034 068~miljovdnagolbmaloginjealljeduhátguhttalogigávcci
+1 034 068~miljovdna ja golbmaloginjealljeduhátguhttalogigávcci
+2090350~guoktemiljovnna ja ovccilogiduhátgolbmačuođivihttalogi
+1000000001~miljárda ja okta
+0753~nolla čiežačuođivihttalogigolbma
+020~nolla guoktelogi
+0053~nolla nolla vihttalogigolbma
+00753~nolla nolla čieža vihtta golbma
+07253~nolla čieža guokte vihtta golbma
+1900~duhátovccičuođi
+1988~duhátovccičuođigávccilogigávcci
+16:t~guhttanuppelogit
+16:id~guhttanuppelogiid
+16:i~guhttanuppelohkái
+16:ide~guhttanuppelogiide
+16:s~guhttanuppelogis
+16:in~guhttanuppelogiin
+16:iguin~guhttanuppelogiiguin
+16:n~guhttanuppelohkin
+6:a~guđa
+6:i~guhttii
+6:s~guđas
+6:in~guđain
+6:n~guhttan
+6:t~guđat
+6:id~guđaid
+6:ide~guđaide
+6:iguin~guđaiguin

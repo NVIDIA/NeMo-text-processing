@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # Copyright (c) 2023, Jim O'Regan for Språkbanken Tal
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
@@ -23,8 +25,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA
-from nemo_text_processing.text_normalization.se.utils import get_abs_path
-from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 
 zero = pynini.invert(pynini.string_file(get_abs_path("data/numbers/zero.tsv")))
 digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
@@ -42,7 +43,7 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     Returns:
         fst: A pynini.FstLike object
     """
-    exactly_three_digits = NEMO_DIGIT ** 3  # for blocks of three
+    exactly_three_digits = NEMO_DIGIT**3  # for blocks of three
     up_to_three_digits = pynini.closure(NEMO_DIGIT, 1, 3)  # for start of string
 
     cardinal_separator = pynini.union(NEMO_SPACE, ".")
@@ -172,7 +173,7 @@ class OrdinalFst(GraphFst):
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
             @ pynini.cdrewrite(pynini.closure(pynutil.insert("0")), "[BOS]", "", NEMO_SIGMA)
-            @ NEMO_DIGIT ** 24
+            @ NEMO_DIGIT**24
             @ graph
             @ pynini.cdrewrite(delete_space, "[BOS]", "", NEMO_SIGMA)
             @ pynini.cdrewrite(delete_space, "", "[EOS]", NEMO_SIGMA)
@@ -185,6 +186,28 @@ class OrdinalFst(GraphFst):
 
         self.graph_bare_ordinals = filter_punctuation(self.graph).optimize()
         self.graph = (self.graph_bare_ordinals + pynutil.delete(".")).optimize()
+
+        # Riektačállinrávvagat (Sámediggi, revised 2019), p. 61:
+        # "Ortnetloguide (ortnetadjektiivvaide) maid loahppaoassin lea -logát
+        # gustojit čuovvovaš rávvagat."
+        logat = pynini.closure(NEMO_SIGMA) + pynini.accep("logát")
+        logat_ordinal = (self.graph_bare_ordinals @ logat).optimize()
+        logad_stem = logat_ordinal @ pynini.cdrewrite(pynutil.delete("t"), "", "[EOS]", NEMO_SIGMA)
+
+        self.graphs = {"nom_sg": self.graph_bare_ordinals}
+        ordinal_case_suffixes = load_labels(get_abs_path("data/inflection/ordinal_case_suffixes.tsv"))
+        explicit_case_graphs = []
+        for case, suffix in ordinal_case_suffixes:
+            case_graph = (logad_stem + pynutil.insert(suffix)).optimize()
+            self.graphs[case] = case_graph
+            explicit_case_graphs.append(case_graph + pynutil.delete(":") + pynutil.delete(suffix))
+        self.graph_dict = self.graphs
+        self.graph_suffixed = pynini.union(*explicit_case_graphs).optimize()
+
+        self.graph |= self.graph_suffixed
+        if not deterministic:
+            self.graph |= pynini.union(*self.graphs.values())
+        self.graph = self.graph.optimize()
 
         final_graph = pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
 

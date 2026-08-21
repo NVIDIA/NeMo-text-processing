@@ -1,4 +1,4 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ from nemo_text_processing.text_normalization.se.verbalizers.cardinal import Card
 from nemo_text_processing.text_normalization.se.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.se.verbalizers.decimals import DecimalFst
 from nemo_text_processing.text_normalization.se.verbalizers.electronic import ElectronicFst
-from nemo_text_processing.text_normalization.se.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.se.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.se.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.se.verbalizers.ordinal import OrdinalFst
@@ -44,11 +43,9 @@ class VerbalizeFst(GraphFst):
         ordinal_graph = ordinal.fst
         decimal = DecimalFst(deterministic=deterministic)
         decimal_graph = decimal.fst
-        fraction = FractionFst(deterministic=deterministic)
-        fraction_graph = fraction.fst
         date = DateFst(deterministic=deterministic)
         date_graph = date.fst
-        measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+        measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=None, deterministic=deterministic)
         measure_graph = measure.fst
         electronic = ElectronicFst(deterministic=deterministic)
         electronic_graph = electronic.fst
@@ -65,7 +62,6 @@ class VerbalizeFst(GraphFst):
             | date_graph
             | electronic_graph
             | money_graph
-            | fraction_graph
             | whitelist_graph
             | telephone_graph
             | time_graph

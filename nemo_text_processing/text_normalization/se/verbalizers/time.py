@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     NEMO_SIGMA,
@@ -22,14 +24,13 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from pynini.lib import pynutil
 
 
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time, e.g.
-        time { hours: "tolv" minutes: "trettio" suffix: "förmiddag" zone: "e s t" } -> tolv trettio förmiddag e s t
-        time { hours: "tolv" } -> tolv
+        time { hours: "golbmanuppelohkái" minutes: "golbmalogi" zone: "c s t" } ->
+        golbmanuppelohkái golbmalogi c s t
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -39,24 +40,10 @@ class TimeFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)
         ANY_NOT_QUOTE = pynini.closure(NEMO_NOT_QUOTE, 1)
-        NOT_NOLL = pynini.difference(ANY_NOT_QUOTE, "nolla")
         hour = pynutil.delete("hours:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
-        minute = pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + NOT_NOLL + pynutil.delete("\"")
-        minute |= (
-            pynutil.delete("minutes:")
-            + delete_space
-            + pynutil.delete("\"")
-            + pynutil.delete("nolla")
-            + pynutil.delete("\"")
+        minute = (
+            pynutil.delete("minutes:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         )
-        if not deterministic:
-            minute |= (
-                pynutil.delete("minutes:")
-                + delete_space
-                + pynutil.delete("\"")
-                + pynini.cross("nolla", "nolla nolla")
-                + pynutil.delete("\"")
-            )
         suffix = pynutil.delete("suffix:") + delete_space + pynutil.delete("\"") + ANY_NOT_QUOTE + pynutil.delete("\"")
         optional_suffix = pynini.closure(delete_space + insert_space + suffix, 0, 1)
         zone = (

@@ -1,5 +1,5 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-# Copyright (c) 2023, Jim O'Regan for Språkbanken Tal
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# Copyright (c) 2023, 2026, Jim O'Regan for Språkbanken Tal
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,219 +14,156 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_DIGIT,
-    NEMO_SIGMA,
-    GraphFst,
-    convert_space,
-    delete_space,
-    insert_space,
-)
-from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA, ensure_space
-from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 from pynini.lib import pynutil
 
-min_singular = pynini.string_file(get_abs_path("data/money/currency_minor_singular.tsv"))
-min_plural = pynini.string_file(get_abs_path("data/money/currency_minor_plural.tsv"))
-maj_singular = pynini.string_file((get_abs_path("data/money/currency_major.tsv")))
-maj_singular_nt = pynini.string_file((get_abs_path("data/money/currency_major_nt.tsv")))
-maj_plural = pynini.string_file((get_abs_path("data/money/currency_plurals.tsv")))
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_zero_or_one_space
+from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 
 
 class MoneyFst(GraphFst):
-    """
-    Finite state transducer for classifying money, suppletive aware, e.g.
-        $12,05 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
-        $12,0500 -> money { integer_part: "tolv" currency_maj: "dollar" fractional_part: "fem" currency_min: "cent" preserve_order: true }
-        $1 -> money { currency_maj: "dollar" integer_part: "en" }
-        $1,00 -> money { currency_maj: "dollar" integer_part: "en" }
-        $0,05 -> money { fractional_part: "fem"  currency_min: "cent" preserve_order: true }
-        $1 miljon -> money { currency_maj: "dollar" integer_part: "en" quantity: "miljon" }
-        $1,2 miljon -> money { currency_maj: "dollar" integer_part: "en"  fractional_part: "två" quantity: "miljon" }
-        $1,2320 -> money { currency_maj: "dollar" integer_part: "en"  fractional_part: "two three two" }
+    """Classifies documented Northern Sámi integer currency expressions."""
 
-    Args:
-        cardinal: CardinalFst
-        decimal: DecimalFst
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
-    """
-
-    def __init__(self, cardinal: GraphFst, decimal: GraphFst, deterministic: bool = True):
+    def __init__(self, cardinal: GraphFst, decimal=None, deterministic: bool = True):
         super().__init__(name="money", kind="classify", deterministic=deterministic)
-        cardinal_graph = cardinal.graph_no_one_en
-        cardinal_graph_ett = cardinal.graph_no_one
-        graph_decimal_final = decimal.final_graph_wo_negative_w_abbr_en
-        graph_decimal_final_ett = decimal.final_graph_wo_negative_w_abbr
 
-        maj_singular_labels = load_labels(get_abs_path("data/money/currency_major.tsv"))
-        maj_singular_labels_nt = load_labels(get_abs_path("data/money/currency_major_nt.tsv"))
-        maj_unit_plural = convert_space(maj_singular @ maj_plural)
-        maj_unit_plural_nt = convert_space(maj_singular_nt @ maj_plural)
-        maj_unit_singular = convert_space(maj_singular)
-        maj_unit_singular_nt = convert_space(maj_singular_nt)
-
-        self.maj_unit_plural = maj_unit_plural
-        self.maj_unit_plural_nt = maj_unit_plural_nt
-        self.maj_unit_singular = maj_unit_singular
-        self.maj_unit_singular_nt = maj_unit_singular_nt
-
-        graph_maj_singular = pynutil.insert("currency_maj: \"") + maj_unit_singular + pynutil.insert("\"")
-        graph_maj_plural = pynutil.insert("currency_maj: \"") + maj_unit_plural + pynutil.insert("\"")
-        graph_maj_singular_nt = pynutil.insert("currency_maj: \"") + maj_unit_singular_nt + pynutil.insert("\"")
-        graph_maj_plural_nt = pynutil.insert("currency_maj: \"") + maj_unit_plural_nt + pynutil.insert("\"")
-
-        optional_delete_fractional_zeros = pynini.closure(
-            pynutil.delete(",") + pynini.closure(pynutil.delete("0"), 1), 0, 1
+        currency_nominative = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))
+        currency_genitive = pynini.string_file(get_abs_path("data/money/currency_major_gen.tsv"))
+        minor_standalone = pynini.string_file(get_abs_path("data/money/currency_minor_standalone.tsv"))
+        minor_standalone_genitive = pynini.string_file(get_abs_path("data/money/currency_minor_standalone_gen.tsv"))
+        major_forms = {
+            "nom": dict(load_labels(get_abs_path("data/money/currency_major.tsv"))),
+            "gen": dict(load_labels(get_abs_path("data/money/currency_major_gen.tsv"))),
+        }
+        minor_forms = {
+            "nom": dict(load_labels(get_abs_path("data/money/currency_minor.tsv"))),
+            "gen": dict(load_labels(get_abs_path("data/money/currency_minor_gen.tsv"))),
+        }
+        cardinal_graph = cardinal.graphs["nom_sg"]
+        one = pynini.accep("1") @ cardinal_graph
+        non_one = pynini.difference(pynini.project(cardinal_graph, "input"), "1") @ cardinal_graph
+        separator = delete_zero_or_one_space
+        optional_zero_fraction = pynini.closure(
+            pynutil.delete(",") + (pynutil.delete("00") | pynutil.delete("-") | pynutil.delete("–")), 0, 1
         )
 
-        graph_integer_sg_en = pynutil.insert("integer_part: \"") + pynini.cross("1", "en") + pynutil.insert("\"")
-        graph_integer_sg_ett = pynutil.insert("integer_part: \"") + pynini.cross("1", "ett") + pynutil.insert("\"")
-        # only for decimals where third decimal after comma is non-zero or with quantity
-        decimal_delete_last_zeros = (
-            pynini.closure(NEMO_DIGIT | pynutil.delete(" "))
-            + pynini.accep(",")
-            + pynini.closure(NEMO_DIGIT, 2)
-            + (NEMO_DIGIT - "0")
-            + pynini.closure(pynutil.delete("0"))
-        )
-        decimal_with_quantity = NEMO_SIGMA + SE_ALPHA
+        def integer_token(graph):
+            return pynutil.insert('integer_part: "') + graph + pynutil.insert('" ')
 
-        decimal_part = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
-        decimal_part_ett = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final_ett
-        graph_decimal = pynini.union(
-            graph_maj_plural + ensure_space + decimal_part,
-            graph_maj_plural_nt + ensure_space + decimal_part_ett,
-            decimal_part_ett + ensure_space + graph_maj_plural_nt,
-            decimal_part + ensure_space + graph_maj_plural,
+        def currency_token(graph):
+            return pynutil.insert('currency_maj: "') + graph + pynutil.insert('"')
+
+        def fractional_token(graph):
+            return pynutil.insert('fractional_part: "') + graph + pynutil.insert('" ')
+
+        def minor_token(graph):
+            return pynutil.insert('currency_min: "') + graph + pynutil.insert('" preserve_order: true')
+
+        fractional_one = pynutil.delete(",0") + ("1" @ cardinal_graph)
+        fractional_non_one = pynutil.delete(",") + (
+            pynutil.delete("0") + ((NEMO_DIGIT - "0" - "1") @ cardinal_graph)
+            | ((NEMO_DIGIT - "0") + NEMO_DIGIT) @ cardinal_graph
         )
 
-        graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-        graph_integer_ett = pynutil.insert("integer_part: \"") + cardinal_graph_ett + pynutil.insert("\"")
+        def number_phrase(graph, conjunction):
+            return (pynutil.insert("ja ") + graph) if conjunction else graph
 
-        graph_integer_only = graph_maj_singular + ensure_space + graph_integer_sg_en
-        graph_integer_only |= graph_maj_singular_nt + ensure_space + graph_integer_sg_ett
-        graph_integer_only |= graph_maj_plural + ensure_space + graph_integer
-        graph_integer_only |= graph_maj_plural_nt + ensure_space + graph_integer_ett
-        graph_integer_only |= graph_integer_sg_en + ensure_space + graph_maj_singular
-        graph_integer_only |= graph_integer_sg_ett + ensure_space + graph_maj_singular_nt
-        graph_integer_only |= graph_integer + ensure_space + graph_maj_plural
-        graph_integer_only |= graph_integer_ett + ensure_space + graph_maj_plural_nt
-
-        final_graph = (graph_integer_only + optional_delete_fractional_zeros) | graph_decimal
-
-        # remove trailing zeros of non zero number in the first 2 digits and fill up to 2 digits
-        # e.g. 2000 -> 20, 0200->02, 01 -> 01, 10 -> 10
-        # not accepted: 002, 00, 0,
-        two_digits_fractional_part = (
-            pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(pynutil.delete("0"))
-        ) @ (
-            (pynutil.delete("0") + (NEMO_DIGIT - "0"))
-            | ((NEMO_DIGIT - "0") + pynutil.insert("0"))
-            | ((NEMO_DIGIT - "0") + NEMO_DIGIT)
-        )
-
-        graph_min_singular = pynutil.insert(" currency_min: \"") + min_singular + pynutil.insert("\"")
-        graph_min_plural = pynutil.insert(" currency_min: \"") + min_plural + pynutil.insert("\"")
-
-        maj_singular_labels_all = [(x[0], "okta") for x in maj_singular_labels]
-        # format ** dollars ** cent
-        decimal_graph_with_minor = None
-        integer_graph_reordered = None
-        decimal_default_reordered = None
-        for curr_symbol, one_form in maj_singular_labels_all:
-            preserve_order = pynutil.insert(" preserve_order: true")
-            if one_form == "en":
-                integer_plus_maj = graph_integer + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_plural)
-                integer_plus_maj |= (
-                    graph_integer_sg_en + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_singular)
+        def fractional_fields(major_form, minor_form, number_graph, tokenized, conjunction):
+            phrase = number_phrase(number_graph, conjunction)
+            if tokenized:
+                return (
+                    currency_token(pynutil.insert(major_form))
+                    + pynutil.insert(" ")
+                    + fractional_token(phrase)
+                    + minor_token(pynutil.insert(minor_form))
                 )
-            else:
-                integer_plus_maj = (
-                    graph_integer_ett + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_plural_nt)
-                )
-                integer_plus_maj |= (
-                    graph_integer_sg_ett + insert_space + (pynutil.insert(curr_symbol) @ graph_maj_singular_nt)
-                )
-
-            integer_plus_maj_with_comma = pynini.compose(
-                NEMO_DIGIT - "0" + pynini.closure(NEMO_DIGIT | delete_space), integer_plus_maj
-            )
-            integer_plus_maj = pynini.compose(pynini.closure(NEMO_DIGIT) - "0", integer_plus_maj)
-            integer_plus_maj |= integer_plus_maj_with_comma
-
-            # all of the minor currency units are "en"
-            graph_fractional_one = two_digits_fractional_part @ pynini.cross("1", "en")
-            graph_fractional_one = pynutil.insert("fractional_part: \"") + graph_fractional_one + pynutil.insert("\"")
-            graph_fractional = (
-                two_digits_fractional_part
-                @ (pynini.closure(NEMO_DIGIT, 1, 2) - "1")
-                @ cardinal.graph_hundreds_component_at_least_one_non_zero_digit_en
-            )
-            graph_fractional = pynutil.insert("fractional_part: \"") + graph_fractional + pynutil.insert("\"")
-
-            fractional_plus_min = graph_fractional + ensure_space + (pynutil.insert(curr_symbol) @ graph_min_plural)
-            fractional_plus_min |= (
-                graph_fractional_one + ensure_space + (pynutil.insert(curr_symbol) @ graph_min_singular)
+            return (
+                pynutil.insert(" ")
+                + pynutil.insert(major_form)
+                + pynutil.insert(" ")
+                + phrase
+                + pynutil.insert(" ")
+                + pynutil.insert(minor_form)
             )
 
-            decimal_graph_with_minor_curr = integer_plus_maj + pynini.cross(",", " ") + fractional_plus_min
+        def suffix_fractional(integer_graph, major_case, tokenized=True, conjunction=True):
+            alternatives = []
+            for symbol, major_form in major_forms[major_case].items():
+                if symbol in minor_forms["nom"]:
+                    fields = fractional_fields(
+                        major_form, minor_forms["nom"][symbol], fractional_one, tokenized, conjunction
+                    )
+                    alternatives.append(integer_graph + fields + separator + pynutil.delete(symbol))
+                if symbol in minor_forms["gen"]:
+                    fields = fractional_fields(
+                        major_form, minor_forms["gen"][symbol], fractional_non_one, tokenized, conjunction
+                    )
+                    alternatives.append(integer_graph + fields + separator + pynutil.delete(symbol))
+            return pynini.union(*alternatives)
 
-            if not deterministic:
-                decimal_graph_with_minor_curr |= pynutil.add_weight(
-                    integer_plus_maj
-                    + pynini.cross(",", " ")
-                    + pynutil.insert("fractional_part: \"")
-                    + two_digits_fractional_part @ cardinal.graph_hundreds_component_at_least_one_non_zero_digit_en
-                    + pynutil.insert("\""),
-                    weight=0.0001,
-                )
-                default_fraction_graph = (decimal_delete_last_zeros | decimal_with_quantity) @ graph_decimal_final
+        def prefix_integer(integer_graph, major_case, tokenized=True):
+            alternatives = []
+            for symbol, major_form in major_forms[major_case].items():
+                prefix = pynutil.delete(symbol) + separator
+                if tokenized:
+                    output = integer_token(integer_graph) + currency_token(pynutil.insert(major_form))
+                else:
+                    output = integer_graph + pynutil.insert(" ") + pynutil.insert(major_form)
+                alternatives.append(prefix + output)
+            return pynini.union(*alternatives)
 
-            decimal_graph_with_minor_curr |= (
-                pynini.closure(pynutil.delete("0"), 0, 1) + pynutil.delete(",") + fractional_plus_min
-            )
-            decimal_graph_with_minor_curr = (
-                pynutil.delete(curr_symbol) + decimal_graph_with_minor_curr + preserve_order
-            )
+        def prefix_fractional(integer_graph, major_case, tokenized=True, conjunction=True):
+            alternatives = []
+            for symbol, major_form in major_forms[major_case].items():
+                integer = integer_token(integer_graph) if tokenized else integer_graph
+                prefix = pynutil.delete(symbol) + separator + integer
+                if symbol in minor_forms["nom"]:
+                    fields = fractional_fields(
+                        major_form, minor_forms["nom"][symbol], fractional_one, tokenized, conjunction
+                    )
+                    alternatives.append(prefix + fields)
+                if symbol in minor_forms["gen"]:
+                    fields = fractional_fields(
+                        major_form, minor_forms["gen"][symbol], fractional_non_one, tokenized, conjunction
+                    )
+                    alternatives.append(prefix + fields)
+            return pynini.union(*alternatives)
 
-            decimal_graph_with_minor = (
-                decimal_graph_with_minor_curr
-                if decimal_graph_with_minor is None
-                else pynini.union(decimal_graph_with_minor, decimal_graph_with_minor_curr).optimize()
-            )
-
-            if not deterministic:
-                integer_graph_reordered_curr = (
-                    pynutil.delete(curr_symbol) + integer_plus_maj + preserve_order
-                ).optimize()
-
-                integer_graph_reordered = (
-                    integer_graph_reordered_curr
-                    if integer_graph_reordered is None
-                    else pynini.union(integer_graph_reordered, integer_graph_reordered_curr).optimize()
-                )
-                decimal_default_reordered_curr = (
-                    pynutil.delete(curr_symbol)
-                    + default_fraction_graph
-                    + ensure_space
-                    + pynutil.insert(curr_symbol) @ graph_maj_plural
-                )
-
-                decimal_default_reordered = (
-                    decimal_default_reordered_curr
-                    if decimal_default_reordered is None
-                    else pynini.union(decimal_default_reordered, decimal_default_reordered_curr)
-                ).optimize()
-
-        # weight for SH
-        final_graph |= pynutil.add_weight(decimal_graph_with_minor, -0.0001)
-
+        singular = integer_token(one) + optional_zero_fraction + separator + currency_token(currency_nominative)
+        governed = integer_token(non_one) + optional_zero_fraction + separator + currency_token(currency_genitive)
+        singular |= prefix_integer(one, "nom") + optional_zero_fraction
+        governed |= prefix_integer(non_one, "gen") + optional_zero_fraction
+        fractional = suffix_fractional(integer_token(one), "nom")
+        fractional |= suffix_fractional(integer_token(non_one), "gen")
+        fractional |= prefix_fractional(one, "nom")
+        fractional |= prefix_fractional(non_one, "gen")
         if not deterministic:
-            final_graph |= integer_graph_reordered | decimal_default_reordered
-            # to handle "$2.00" cases
-            final_graph |= pynini.compose(
-                NEMO_SIGMA + pynutil.delete(",") + pynini.closure(pynutil.delete("0"), 1), integer_graph_reordered
+            fractional |= suffix_fractional(integer_token(one), "nom", conjunction=False)
+            fractional |= suffix_fractional(integer_token(non_one), "gen", conjunction=False)
+            fractional |= prefix_fractional(one, "nom", conjunction=False)
+            fractional |= prefix_fractional(non_one, "gen", conjunction=False)
+        minor_singular = fractional_token(one) + separator + minor_token(minor_standalone)
+        minor_governed = fractional_token(non_one) + separator + minor_token(minor_standalone_genitive)
+        if not deterministic:
+            governed |= (
+                integer_token(non_one) + optional_zero_fraction + separator + currency_token(currency_nominative)
             )
-        final_graph = self.add_tokens(final_graph.optimize())
-        self.fst = final_graph.optimize()
+
+        self.fst = self.add_tokens(singular | governed | fractional | minor_singular | minor_governed).optimize()
+        self.graph = (
+            one + optional_zero_fraction + separator + pynutil.insert(" ") + currency_nominative
+            | non_one + optional_zero_fraction + separator + pynutil.insert(" ") + currency_genitive
+            | suffix_fractional(one, "nom", tokenized=False)
+            | suffix_fractional(non_one, "gen", tokenized=False)
+            | prefix_fractional(one, "nom", tokenized=False)
+            | prefix_fractional(non_one, "gen", tokenized=False)
+            | prefix_integer(one, "nom", tokenized=False) + optional_zero_fraction
+            | prefix_integer(non_one, "gen", tokenized=False) + optional_zero_fraction
+            | one + separator + pynutil.insert(" ") + minor_standalone
+            | non_one + separator + pynutil.insert(" ") + minor_standalone_genitive
+        ).optimize()
+        if not deterministic:
+            self.graph |= suffix_fractional(one, "nom", tokenized=False, conjunction=False)
+            self.graph |= suffix_fractional(non_one, "gen", tokenized=False, conjunction=False)
+            self.graph |= prefix_fractional(one, "nom", tokenized=False, conjunction=False)
+            self.graph |= prefix_fractional(non_one, "gen", tokenized=False, conjunction=False)
+            self.graph = self.graph.optimize()

@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pytest
-from nemo_text_processing.text_normalization.normalize import Normalizer
 from parameterized import parameterized
+
+from nemo_text_processing.text_normalization.normalize import Normalizer
 
 from ..utils import CACHE_DIR, parse_test_case_file
 

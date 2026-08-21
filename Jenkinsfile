@@ -29,6 +29,7 @@ pipeline {
     HY_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-1'
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
+    KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-25-6'
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-29-26-1'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
   }
@@ -499,7 +500,7 @@ pipeline {
       }
     }
 
-     stage('L2: EN Sparrowhawk Tests') {
+    stage('L2: EN Sparrowhawk Tests') {
       when {
         anyOf {
           branch 'main' 
@@ -531,6 +532,21 @@ pipeline {
           }
         }
 
+      }
+    }
+
+    stage('L2: SE Sparrowhawk Tests') {
+      when {
+        anyOf {
+          branch 'main'
+          branch 'staging/**'
+          branch 'staging_*'
+          changeRequest target: 'main'
+        }
+      }
+      steps {
+        sh 'CUDA_VISIBLE_DEVICES="" cp -r /workspace/sparrowhawk/documentation/grammars /workspace/sparrowhawk/documentation/grammars_se_tn_grammars_cased && cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_tn_grammars" --INPUT_CASE="cased" --OVERWRITE_CACHE=False --FAR_PATH=${SE_TN_CACHE}/SH_TN --GRAMMARS="tn_grammars" --LANGUAGE="se"'
+        sh 'CUDA_VISIBLE_DEVICES="" cd tests/nemo_text_processing/se && bash test_sparrowhawk_normalization.sh /workspace/sparrowhawk/documentation/grammars_se_tn_grammars_cased `pwd`/..'
       }
     }
     

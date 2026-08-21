@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_extra_space,
     delete_preserve_order,
 )
-from pynini.lib import pynutil
 
 
 class MoneyFst(GraphFst):
@@ -52,9 +53,6 @@ class MoneyFst(GraphFst):
         fractional = fractional_part + delete_extra_space + min
 
         # if not deterministic:
-        #     fractional |= pynutil.insert("och ") + fractional
-        #     fractional |= pynutil.insert("komma ") + fractional
-
         graph_integer_with_minor = integer_part + keep_space + maj + keep_space + fractional + delete_preserve_order
 
         # *** point *** currency_maj

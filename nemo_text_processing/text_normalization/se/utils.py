@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # Copyright (c) 2023, Jim O'Regan for Språkbanken Tal
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,28 @@ import os
 CASE_KEYS = ["ess", "com_pl", "com_sg", "gen_sg", "gen_pl", "ill_pl", "ill_sg", "loc_sg", "nom_pl"]
 CASE_KEYS_EXT = CASE_KEYS + ["nom_sg"]
 
+CASE_ALIASES = {
+    "acc_sg": "nom_sg",
+    "acc_pl": "gen_pl",
+    "loc_pl": "com_sg",
+}
+
+CARDINAL_CASE_KEYS = [
+    "nom_sg",
+    "nom_pl",
+    "acc_sg",
+    "acc_pl",
+    "gen_sg",
+    "gen_pl",
+    "ill_sg",
+    "ill_pl",
+    "loc_sg",
+    "loc_pl",
+    "com_sg",
+    "com_pl",
+    "ess",
+]
+
 
 def get_abs_path(rel_path):
     """
@@ -27,7 +49,7 @@ def get_abs_path(rel_path):
 
     Args:
         rel_path: relative path to this file
-        
+
     Returns absolute path
     """
     abs_path = os.path.dirname(os.path.abspath(__file__)) + os.sep + rel_path

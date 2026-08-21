@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 
 
 class MeasureFst(GraphFst):
@@ -23,7 +24,7 @@ class MeasureFst(GraphFst):
         measure { negative: "true" cardinal { integer: "twelve" } units: "kilograms" } -> minus twelve kilograms
         measure { decimal { integer_part: "twelve" fractional_part: "five" } units: "kilograms" } -> twelve point five kilograms
         tokens { measure { units: "covid" decimal { integer_part: "nineteen"  fractional_part: "five" }  } } -> covid nineteen point five
-    
+
     Args:
         decimal: DecimalFst
         cardinal: CardinalFst
@@ -64,11 +65,13 @@ class MeasureFst(GraphFst):
             + pynutil.delete("}")
         )
 
-        graph_fraction = (
-            pynutil.delete("fraction {") + delete_space + fraction.graph + delete_space + pynutil.delete("}")
-        )
+        number_graph = graph_cardinal | graph_decimal
+        if fraction is not None:
+            number_graph |= (
+                pynutil.delete("fraction {") + delete_space + fraction.graph + delete_space + pynutil.delete("}")
+            )
 
-        graph = (graph_cardinal | graph_decimal | graph_fraction) + delete_space + insert_space + unit
+        graph = number_graph + delete_space + insert_space + unit
 
         # SH adds "preserve_order: true" by default
         preserve_order = pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space

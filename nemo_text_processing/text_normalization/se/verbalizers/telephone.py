@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,61 +13,16 @@
 # limitations under the License.
 
 import pynini
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_NOT_QUOTE,
-    NEMO_SPACE,
-    GraphFst,
-    delete_space,
-    insert_space,
-)
 from pynini.lib import pynutil
+
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
 
 
 class TelephoneFst(GraphFst):
-    """
-    Finite state transducer for verbalizing telephone numbers, e.g.
-        telephone { country_code: "one" number_part: "one two three, one two three, five six seven eight" extension: "one"  }
-        -> one, one two three, one two three, five six seven eight, one
-
-    Args:
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
-    """
+    """Verbalizes a classified Northern Sámi telephone number."""
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="telephone", kind="verbalize", deterministic=deterministic)
 
-        country_code = pynutil.delete("country_code: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-
-        optional_country_code = pynini.closure(country_code + delete_space + insert_space, 0, 1,)
-
-        prompt_part = (
-            pynutil.delete("prompt: \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynini.closure(pynutil.add_weight(pynutil.delete(" "), -0.0001), 0, 1)
-            + pynutil.delete("\"")
-        ) + NEMO_SPACE
-
-        number_part = (
-            pynutil.delete("number_part: \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynini.closure(pynutil.add_weight(pynutil.delete(" "), -0.0001), 0, 1)
-            + pynutil.delete("\"")
-        )
-
-        optional_extension = pynini.closure(
-            delete_space
-            + insert_space
-            + pynini.cross("extension: \"", "anknytning ")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\""),
-            0,
-            1,
-        )
-
-        graph = pynini.union(
-            prompt_part + optional_country_code + number_part + optional_extension,
-            optional_country_code + number_part + optional_extension,
-        )
-        delete_tokens = self.delete_tokens(graph)
-        self.fst = delete_tokens.optimize()
+        number_part = pynutil.delete('number_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        self.fst = self.delete_tokens(number_part).optimize()
