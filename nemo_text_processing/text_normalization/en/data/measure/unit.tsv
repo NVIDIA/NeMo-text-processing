@@ -128,6 +128,9 @@ zb	ZB
 sec	second
 min	minute
 hr	hour
+mins	minute
+hrs	hour
+secs	second
 d	day
 wk	week
 mo	month
