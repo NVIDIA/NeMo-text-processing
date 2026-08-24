@@ -121,7 +121,7 @@ class ClassifyFst(GraphFst):
             word = WordFst(punctuation=punctuation, deterministic=deterministic)
             word_graph = word.fst
 
-            roman = RomanFst(deterministic=deterministic)
+            roman = RomanFst(cardinal=cardinal, deterministic=deterministic)
             roman_graph = roman.fst
 
             telephone = TelephoneFst()
