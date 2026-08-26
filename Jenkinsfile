@@ -49,6 +49,11 @@ pipeline {
       }
     }
 
+    stage('L0: Create KN TN Grammars') {
+      steps {
+        sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=kn --text="೧" --cache_dir ${KN_TN_CACHE}'
+      }
+    }
 
     stage('L0: Create EN TN/ITN Grammars') {
       when {
@@ -110,24 +115,6 @@ pipeline {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi_en --text="एक" --cache_dir ${HI_EN_TN_CACHE}'
           }
-        }
-      }
-    }
-    stage('L0: Create KN TN Grammars') {
-    when {
-        anyOf {
-            branch 'main'
-            branch 'staging/**'
-            branch 'staging_*'
-            changeRequest target: 'main'
-        }
-    }
-    failFast true
-    parallel {
-        stage('L0: Kn TN grammars') {
-            steps {
-                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=kn --text="೧" --cache_dir ${KN_TN_CACHE}'
-            }
         }
       }
     }
