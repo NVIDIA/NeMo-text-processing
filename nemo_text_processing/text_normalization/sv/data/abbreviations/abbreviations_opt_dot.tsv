@@ -1,16 +1,54 @@
-Drottningg	Drottninggatan
-Engl	England
-Frankf	Frankfurt
-Friedr	Friderich
-Hantverkarg	Hantverkargatan
-Hornsg	Hornsgatan
-LL-förl	LL-förlaget
-Läkartidn	Läkartidningen
-Pirat-förl	piratförlaget
-Sveav	Sveavägen
-Söderk	Söderköping
-TPB-nr	TPB-nummer
-Tunnbindareg	Tunnbindaregatan
+ca	cirka
+f. d	föredetta
+fd	föredetta
+sc.st.l	scandinavian studies in law
+d. y	den yngre
+d. ä	den äldre
+d.y	den yngre
+d.ä	den äldre
+e. l	eller liknande
+e. o	extra ordinarie
+e. u	enligt uppgift
+e.c	e contrario
+e.l	eller liknande
+e.o	extra ordinarie
+e.u	enligt uppgift
+f. n	för närvarande
+f. ö	för övrigt
+f.n	för närvarande
+f.ö	för övrigt
+ff	och följande sidor
+fg	föregående
+interp	interpellation
+o. a	och andra
+o.a	och andra
+rskr	riksdagsskrivelse
+u. a	utan anmärkning
+u. o	utan ort
+u. å	utan årtal
+u.a	utan anmärkning
+u.o	utan ort
+u.å	utan årtal
+ua	utan anmärkning
+uo	utan ort
+uå	utan årtal
+ö. g	över gården
+ö. h	över havet
+ö.g	över gården
+ö.h	över havet
+drottningg	drottninggatan
+engl	england
+frankf	frankfurt
+friedr	friderich
+hantverkarg	hantverkargatan
+hornsg	hornsgatan
+ll-förl	ll-förlaget
+läkartidn	läkartidningen
+pirat-förl	piratförlaget
+sveav	sveavägen
+söderk	söderköping
+tpb-nr	tpb-nummer
+tunnbindareg	tunnbindaregatan
 a. st	anfört ställe
 a.st	anfört ställe
 adj	adjunkt
@@ -67,11 +105,11 @@ div	diverse
 dnr	diarienummer
 dopgtj	dopgudstjänst
 dvs	det vill säga
-e Kr	efter Kristus
+e kr	efter kristus
 e dyl	eller dylikt
-e. Kr	efter Kristus
+e. kr	efter kristus
 e. dyl	eller dylikt
-e.Kr	efter Kristus
+e.kr	efter kristus
 e.dyl	eller dylikt
 eftr	efterträdare
 ekonomprogr	ekonomiprogram
@@ -87,10 +125,10 @@ ex. vis	exempelvis
 exkl	exklusive
 exv	exempelvis
 exvis	exempelvis
-f Kr	före Kristus
-f. Kr	före Kristus
+f kr	före kristus
+f. kr	före kristus
 f. v. b	för vidare befordran
-f.Kr	före Kristus
+f.kr	före kristus
 f.v.b	för vidare befordran
 fil cand	filosofie kandidat
 fil dr	filosofie doktor
@@ -232,7 +270,7 @@ prof	professor
 prog	program
 progr	program
 prop	proposition
-psalt	Psaltaren
+psalt	psaltaren
 pseud	pseudonym
 publ	publikation
 påfölj	påföljande

@@ -42,10 +42,6 @@ class WhiteListFst(GraphFst):
             graph = pynini.string_map(whitelist)
             return graph
 
-        def _get_optional_dot_graph(input_case, file):
-            graph = _get_whitelist_graph(input_case, file)
-            return graph + pynini.closure(pynutil.delete("."), 0, 1)
-
         def _get_case_insensitive_graph(input_case, file):
             graph = _get_whitelist_graph("lower_cased", file)
             if input_case == "lower_cased":
@@ -58,11 +54,9 @@ class WhiteListFst(GraphFst):
             return graph + pynini.closure(pynutil.delete("."), 0, 1)
 
         graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist.tsv"))
-        graph |= _get_whitelist_graph(input_case, get_abs_path("data/abbreviations/case_sensitive.tsv"))
-        graph |= _get_optional_dot_graph(input_case, get_abs_path("data/abbreviations/case_sensitive_opt_dot.tsv"))
-        graph |= _get_case_insensitive_graph(input_case, get_abs_path("data/abbreviations/case_insensitive.tsv"))
+        graph |= _get_case_insensitive_graph(input_case, get_abs_path("data/abbreviations/abbreviations.tsv"))
         graph |= _get_case_insensitive_optional_dot_graph(
-            input_case, get_abs_path("data/abbreviations/case_insensitive_opt_dot.tsv")
+            input_case, get_abs_path("data/abbreviations/abbreviations_opt_dot.tsv")
         )
         if not deterministic and input_case != "lower_cased":
             lower_cased_graph = _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv"))
@@ -82,10 +76,7 @@ class WhiteListFst(GraphFst):
                 input_case, file=get_abs_path("data/abbreviations/nondeterministic.tsv")
             )
             units_graph |= _get_case_insensitive_graph(
-                input_case, get_abs_path("data/abbreviations/case_insensitive_alternatives.tsv")
-            )
-            units_graph |= _get_whitelist_graph(
-                input_case, get_abs_path("data/abbreviations/case_sensitive_alternatives.tsv")
+                input_case, get_abs_path("data/abbreviations/abbreviations_alternatives.tsv")
             )
             graph |= units_graph
 
