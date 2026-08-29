@@ -21,6 +21,7 @@ cu mi	kubikmil
 cwt	centner
 da	atommassenhet
 db	decibel
+dba	decibel
 dl	deciliter
 dm2	kvadratdecimeter
 dm²	kvadratdecimeter
@@ -68,6 +69,7 @@ km²	kvadratkilometer
 km3	kubikkilometer
 km³	kubikkilometer
 km	kilometer
+km:s	kilometers
 kn	kilonewton
 kpa	kilopascal
 kp	kilopond
@@ -102,6 +104,7 @@ ml	milliliter
 mm2	kvadratmillimeter
 mm²	kvadratmillimeter
 m	meter
+mbar	millibar
 Mm	megameter
 mm	millimeter
 mol	mol
@@ -177,3 +180,13 @@ twhvärme	terawattimme värme
 kvm	kvadratmeter
 m.ö.h	meter över havet
 mö.h	meter över havet
+inv/km2	invånare per kvadratkilometer
+kr/kg	kronor per kilo
+kr/m2	kronor per kvadratmeter
+kr/månad	kronor per månad
+kr/styck	kronor styck
+kr/år	kronor per år
+krm	kryddmått
+kton	kiloton
+nr/år	nummer per år
+tkr/månad	tusen kronor per månad

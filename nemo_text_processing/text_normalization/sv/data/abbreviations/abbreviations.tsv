@@ -108,7 +108,6 @@ ridd.o	riddarhusordningen
 romf	romfördraget
 rtjl	räddningstjänstlagen
 räntel	räntelagen
-sek	svenska kronor
 sambol	lagen om sambors gemensamma hem
 samägarl	lagen om samäganderätt
 sekrf	sekretessförordningen
@@ -161,7 +160,6 @@ verksf:s	verksförordningens
 vxl	växellagen
 a.d.	anno domini
 c:a	cirka
-dba	decibel
 e l.	eller liknande
 eg.	egentligen
 eo.	extra ordinarie
@@ -231,7 +229,6 @@ rättsprl	rättsprövningslagen
 sbetl	skattebetalningslagen
 skoll	skollagen
 tulll	tullagen
-us$	us-dollar
 vitesl	viteslagen
 vägl	väglagen
 vägmf	vägmärkesförordningen
@@ -285,7 +282,6 @@ förf:nas	författarnas
 förf:s	författarens
 hovr.	hovrätt
 i sht.	i synnerhet
-inv/km2	invånare per kvadratkilometer
 isht	i synnerhet
 jmftal	jämförelsetal
 jr	junior
@@ -293,28 +289,15 @@ jur.	juris
 jur.utr.	juris utriusque
 k:a	kyrka
 kand.	kandidat
-km:s	kilometers
 kostn.	kostnad
-kr/kg	kronor per kilo
-kr/m2	kronor per kvadratmeter
-kr/månad	kronor per månad
-kr/styck	kronor styck
-kr/år	kronor per år
-kton	kiloton
 leg.	legitimerad
 lic.	licentiat
 lig.	ligament
 mag.	magister
 maj:t	majestät
 maj:ts	majestäts
-mbar	millibar
-mdkr	miljarder kronor
 min övers.	min översättning
-ml/l	milliliter per liter
-mm³	kubikmillimeter
-mnkr	miljoner kronor
 mom.	moment
-nr/år	nummer per år
 omm	om och endast om
 op.	opus
 ord pris	ordinarie pris
@@ -338,7 +321,5 @@ tel.	telefon
 tel:	telefon
 temp.	temperatur
 teol.	teologie
-tkr/månad	tusen kronor per månad
-tkronor	tusen kronor
 vs.	versus
 överkl.nämnd	överklagarnämnd

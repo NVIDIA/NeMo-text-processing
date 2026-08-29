@@ -63,3 +63,10 @@ $1 925,21~tusen niohundratjugofem dollar tjugoen cent
 $1 234,123~tusen tvåhundratrettiofyra komma hundratjugotre dollar
 US $76,3 biljoner~US sjuttiosex komma tre biljoner dollar
 USD$76,3 biljoner~sjuttiosex komma tre biljoner amerikanska dollar
+2 mdkr~två miljarder kronor
+2 mkr.~två miljoner kronor
+2 mnkr~två miljoner kronor
+2 msek~två miljoner kronor
+2 tkr~två tusen kronor
+2 tkronor~två tusen kronor
+US$2~två amerikanska dollar

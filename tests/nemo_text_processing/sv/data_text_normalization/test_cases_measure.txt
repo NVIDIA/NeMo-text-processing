@@ -31,3 +31,19 @@
 1 mmHg~en millimeter kvicksilver
 100 m.ö.h~hundra meter över havet
 1 kvm~en kvadratmeter
+2 dBA~två decibel
+2 inv/km2~två invånare per kvadratkilometer
+2 km:s~två kilometers
+2 kr/kg~två kronor per kilo
+2 kr/m2~två kronor per kvadratmeter
+2 kr/månad~två kronor per månad
+2 kr/styck~två kronor styck
+2 kr/st.~två kronor styck
+2 kr/år~två kronor per år
+2 krm~två kryddmått
+2 kton~två kiloton
+2 mbar~två millibar
+2 ml/l~två milliliter per liter
+2 mm³~två kubikmillimeter
+2 nr/år~två nummer per år
+2 tkr/månad~två tusen kronor per månad
