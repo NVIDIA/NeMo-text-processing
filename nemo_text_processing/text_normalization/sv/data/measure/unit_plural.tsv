@@ -9,6 +9,8 @@ celsiusgrad	celsiusgrader
 centimeter
 centner
 decibel
+decigram
+deciliter
 decimeter
 decisekund	decisekunder
 elektronvolt
@@ -76,6 +78,7 @@ megasekund	megasekunder
 megasiemens
 megavolt
 megawatt
+megawattimme	megawattimmar
 meter
 mikrogram
 mikrometer
@@ -106,6 +109,8 @@ radian	radianer
 sekund	sekunder
 sievert
 terabyte
+terawattimme	terawattimmar
+tesked	teskedar
 terajoule
 teraliter
 timme	timmar
@@ -119,3 +124,36 @@ yottajoule
 zettabyte
 zettajoule
 matsked	matskedar
+centigram
+centiliter
+hektopascal
+kilobit per sekund
+kalori	kalorier
+kilokalori per dag	kilokalorier per dag
+kilokalori per gram	kilokalorier per gram
+liter
+lux
+megawatt el
+megabyte
+meter över havet
+invånare per kvadratkilometer
+kilometers
+kiloton
+kronor per kilo
+kronor per kvadratmeter
+kronor per månad
+kronor per år
+kronor styck
+kryddmått
+millibar
+nummer per år
+tusen kronor per månad
+millimeter kvicksilver
+millimeter vattenpelare
+millimol
+nanomol
+personkilometer
+pikomol
+terawattimme el	terawattimmar el
+terawattimme kyla	terawattimmar kyla
+terawattimme värme	terawattimmar värme
