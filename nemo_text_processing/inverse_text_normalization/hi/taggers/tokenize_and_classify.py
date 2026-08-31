@@ -28,12 +28,14 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
 from nemo_text_processing.inverse_text_normalization.hi.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.electronic import ElectronicFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.roman import RomanFst
+from nemo_text_processing.inverse_text_normalization.hi.taggers.serial import SerialFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.hi.taggers.whitelist import WhiteListFst
@@ -90,6 +92,10 @@ class ClassifyFst(GraphFst):
             money_graph = money.fst
             telephone = TelephoneFst(cardinal)
             telephone_graph = telephone.fst
+            electronic = ElectronicFst()
+            electronic_graph = electronic.fst
+            serial = SerialFst(cardinal)
+            serial_graph = serial.fst
             roman = RomanFst(cardinal)
             roman_graph = roman.fst
             punct_graph = PunctuationFst().fst
@@ -106,6 +112,8 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(measure_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(telephone_graph, 1.1)
+                | pynutil.add_weight(electronic_graph, 1.1)
+                | pynutil.add_weight(serial_graph, 1.1)
                 | pynutil.add_weight(roman_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
                 | pynutil.add_weight(whitelist_graph, 1.01)
