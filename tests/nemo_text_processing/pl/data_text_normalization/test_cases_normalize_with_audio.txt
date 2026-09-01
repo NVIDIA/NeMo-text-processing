@@ -1,0 +1,131 @@
+~Mam 22 koty
+Mam dwadzieścia dwa koty
+Mam dwadzieścia dwie koty
+Mam dwudziestu dwóch koty
+~To był 21. test
+To był dwudziesty pierwszy test
+To był dwudziesta pierwsza test
+To był dwudziestego pierwszego test
+~tzw.
+tak zwany
+tak zwanego
+tak zwana
+tak zwaną
+~ur.
+urodzony
+urodzona
+urodzonego
+urodzeni
+~ang.
+angielski
+angielska
+angielskiego
+angielscy
+~z ang.
+z angielskiego
+~do 35 cm
+do trzydziestu pięciu centymetrów
+~z 5 m
+z pięcioma metrami
+~w 2 s
+w dwóch sekundach
+~2 s
+dwie sekundy
+dwiema sekundami
+dwom sekundom
+dwoma sekundami
+dwu sekund
+dwu sekundach
+dwu sekundami
+dwu sekundom
+dwóch sekund
+dwóch sekundach
+dwóm sekundom
+~5 kg
+pięcioma kilogramami
+pięciu kilogramach
+pięciu kilogramom
+pięciu kilogramów
+pięć kilogramów
+~0,02 mm
+zera i dwu setnych milimetra
+zera i dwóch setnych milimetra
+zera przecinek zero dwa milimetra
+zerem i dwiema setnymi milimetra
+zerem i dwoma setnymi milimetra
+zerem i dwu setnymi milimetra
+zerem przecinek zero dwa milimetra
+zero i dwie setne milimetra
+zero przecinek zero dwa milimetra
+zeru i dwom setnym milimetra
+zeru i dwu setnym milimetra
+zeru i dwóm setnym milimetra
+zeru przecinek zero dwa milimetra
+zerze i dwu setnych milimetra
+zerze i dwóch setnych milimetra
+zerze przecinek zero dwa milimetra
+~½ kg
+jedna druga kilograma
+pół kilograma
+~1,5 kg
+jeden i pięć dziesiątych kilograma
+jeden przecinek pięć kilograma
+półtora kilograma
+~1,5 godz
+jeden i pięć dziesiątych godziny
+jeden przecinek pięć godziny
+półtorej godziny
+~św. Katarzyna
+święta Katarzyna
+~św. Katarzyny
+świętej Katarzyny
+~św. Ludwik
+święty Ludwik
+~św. Ludwika
+świętego Ludwika
+~o św. Ludwiku
+o świętym Ludwiku
+~2-ka
+dwójka
+~0,02
+zero i dwie setne
+zero przecinek zero dwa
+~0,000002
+zero i dwie milionowe
+zero przecinek zero zero zero zero zero dwa
+~0,000000000000000000000002
+zero i dwie kwadrylionowe
+zero przecinek zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero dwa
+~1,5
+jeden i pięć dziesiątych
+jeden przecinek pięć
+półtora
+półtorej
+~1 1/2
+jeden i pół
+jeden i jedna druga
+półtora
+półtorej
+~2 ½
+dwa i pół
+dwa i jedna druga
+~½
+jedna druga
+pół
+~2-ką
+dwójką
+~11-ce
+jedenastce
+~20-ek
+dwudziestek
+~200-kami
+dwusetkami
+~4:30
+czwarta trzydzieści
+wpół do piątej
+~4:25
+czwarta dwadzieścia pięć
+za pięć wpół do piątej
+~4:35
+czwarta trzydzieści pięć
+pięć po wpół do piątej

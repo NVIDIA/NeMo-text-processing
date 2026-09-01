@@ -1,0 +1,39 @@
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import AbbreviationFst
+from nemo_text_processing.text_normalization.pl.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.pl.verbalizers.date import DateFst
+from nemo_text_processing.text_normalization.pl.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.pl.verbalizers.fraction import FractionFst
+from nemo_text_processing.text_normalization.pl.verbalizers.measure import MeasureFst
+from nemo_text_processing.text_normalization.pl.verbalizers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.pl.verbalizers.roman import RomanFst
+from nemo_text_processing.text_normalization.pl.verbalizers.time import TimeFst
+
+
+class VerbalizeFst(GraphFst):
+    def __init__(self, deterministic: bool = True):
+        super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
+        self.fst = (
+            CardinalFst(deterministic=deterministic).fst
+            | OrdinalFst(deterministic=deterministic).fst
+            | RomanFst(deterministic=deterministic).fst
+            | DateFst(deterministic=deterministic).fst
+            | DecimalFst(deterministic=deterministic).fst
+            | FractionFst(deterministic=deterministic).fst
+            | MeasureFst(deterministic=deterministic).fst
+            | TimeFst(deterministic=deterministic).fst
+            | AbbreviationFst(deterministic=deterministic).fst
+        )
