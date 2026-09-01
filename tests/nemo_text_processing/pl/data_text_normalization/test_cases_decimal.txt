@@ -2,3 +2,7 @@
 1,5~jeden i pięć dziesiątych
 1,25~jeden i dwadzieścia pięć setnych
 -2,001~minus dwa i jedna tysięczna
+0,000002~zero i dwie milionowe
+1,000001~jeden i jedna milionowa
+0,000000000000000000000002~zero i dwie kwadrylionowe
+1,000000000000000000000001~jeden i jedna kwadrylionowa

@@ -90,6 +90,12 @@ dwójka
 ~0,02
 zero i dwie setne
 zero przecinek zero dwa
+~0,000002
+zero i dwie milionowe
+zero przecinek zero zero zero zero zero dwa
+~0,000000000000000000000002
+zero i dwie kwadrylionowe
+zero przecinek zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero zero dwa
 ~1,5
 jeden i pięć dziesiątych
 jeden przecinek pięć

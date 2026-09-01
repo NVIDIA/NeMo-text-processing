@@ -48,20 +48,17 @@ class DecimalFst(GraphFst):
             governed_case = "gen" if case in {"nom", "acc", "voc"} else case
             for width, denominator in denominators.items():
                 one = pynini.cross(f"{1:0{width}d}", "1")
-                few = pynini.string_map(
-                    [
-                        (f"{number:0{width}d}", str(number))
-                        for number in range(2, 10**width)
-                        if number % 10 in {2, 3, 4} and number % 100 not in {12, 13, 14}
-                    ]
+                fixed_width = NEMO_DIGIT**width
+                nonzero = fixed_width - ("0" * width)
+                strip_leading_zeros = fixed_width @ (
+                    pynini.closure(pynutil.delete("0")) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
                 )
-                many = pynini.string_map(
-                    [
-                        (f"{number:0{width}d}", str(number))
-                        for number in range(2, 10**width)
-                        if not (number % 10 in {2, 3, 4} and number % 100 not in {12, 13, 14})
-                    ]
-                )
+                few_input = NEMO_DIGIT ** (width - 1) + pynini.union("2", "3", "4")
+                if width > 1:
+                    few_input -= NEMO_DIGIT ** (width - 2) + pynini.union("12", "13", "14")
+                few = (few_input @ strip_leading_zeros).optimize()
+                many_input = nonzero - f"{1:0{width}d}" - few_input
+                many = (many_input @ strip_leading_zeros).optimize()
                 fraction = (one @ cardinal.graphs[f"f_sg_{case}"]) + pynutil.insert(" " + denominator[f"f_sg_{case}"])
                 fraction |= (few @ cardinal.graphs[f"f_pl_{case}"]) + pynutil.insert(" " + denominator[f"f_pl_{case}"])
                 fraction |= (many @ cardinal.graphs[f"f_pl_{case}"]) + pynutil.insert(
