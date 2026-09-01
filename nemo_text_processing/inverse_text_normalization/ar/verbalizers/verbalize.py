@@ -18,6 +18,7 @@ from nemo_text_processing.inverse_text_normalization.ar.verbalizers.decimal impo
 from nemo_text_processing.inverse_text_normalization.ar.verbalizers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.ar.verbalizers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.ar.verbalizers.money import MoneyFst
+from nemo_text_processing.inverse_text_normalization.ar.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.ar.graph_utils import GraphFst
 
 
@@ -40,5 +41,7 @@ class VerbalizeFst(GraphFst):
         money_graph = money.fst
         measure = MeasureFst(decimal=decimal, cardinal=cardinal, deterministic=True)
         measure_graph = measure.fst
-        graph = cardinal_graph | decimal_graph | fraction_graph | money_graph | measure_graph
+        time = TimeFst()
+        time_graph = time.fst
+        graph = cardinal_graph | decimal_graph | fraction_graph | money_graph | measure_graph | time_graph
         self.fst = graph

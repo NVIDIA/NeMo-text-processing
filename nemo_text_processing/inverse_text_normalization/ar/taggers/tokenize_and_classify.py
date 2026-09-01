@@ -18,11 +18,13 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.ar.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.ar.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.punctuation import PunctuationFst
+from nemo_text_processing.inverse_text_normalization.ar.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.ar.taggers.word import WordFst
 from nemo_text_processing.text_normalization.ar.graph_utils import (
     GraphFst,
@@ -30,7 +32,10 @@ from nemo_text_processing.text_normalization.ar.graph_utils import (
     delete_space,
     generator_main,
 )
+from nemo_text_processing.text_normalization.ar.taggers.date import DateFst as TNDateTagger
 from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import ClassifyFst as TNClassifyFst
+from nemo_text_processing.text_normalization.ar.verbalizers.date import DateFst as TNDateVerbalizer
+from nemo_text_processing.text_normalization.ar.verbalizers.time import TimeFst as TNTimeVerbalizer
 from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED
 from nemo_text_processing.utils.logging import logger
 
@@ -85,6 +90,17 @@ class ClassifyFst(GraphFst):
                 deterministic=True,
             )
             measure_graph = measure.fst
+            tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_classify.cardinal, deterministic=True)
+            time = TimeFst(tn_time_verbalizer=tn_time_verbalizer)
+            time_graph = time.fst
+            tn_date_tagger = TNDateTagger(cardinal=tn_classify.cardinal, deterministic=True)
+            tn_date_verbalizer = TNDateVerbalizer(deterministic=True)
+            date = DateFst(
+                itn_cardinal_tagger=cardinal,
+                tn_date_tagger=tn_date_tagger,
+                tn_date_verbalizer=tn_date_verbalizer,
+            )
+            date_graph = date.fst
             word_graph = WordFst().fst
             punct_graph = PunctuationFst().fst
 
@@ -94,6 +110,8 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(money_graph, 1.1)
                 | pynutil.add_weight(measure_graph, 1.1)
+                | pynutil.add_weight(time_graph, 1.1)
+                | pynutil.add_weight(date_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
 
