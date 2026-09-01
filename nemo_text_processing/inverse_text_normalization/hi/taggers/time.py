@@ -39,8 +39,9 @@ class TimeFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="time", kind="classify")
 
-        hour_graph = cardinal.graph_digit | cardinal.graph_teens_and_ties
-        time_hours = pynini.union(*[integer_to_devanagari(i) for i in range(1, 25)]).optimize()
+        zero_graph = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
+        hour_graph = cardinal.graph_digit | cardinal.graph_teens_and_ties | zero_graph
+        time_hours = pynini.union(*[integer_to_devanagari(i) for i in range(0, 25)]).optimize()
         hour_graph = hour_graph @ time_hours
 
         cardinal_graph = cardinal.graph_single_digit_with_zero | cardinal.graph_teens_and_ties
