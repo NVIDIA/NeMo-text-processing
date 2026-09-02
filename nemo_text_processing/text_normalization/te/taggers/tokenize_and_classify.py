@@ -78,7 +78,7 @@ class ClassifyFst(GraphFst):
 
             classify = pynutil.add_weight(cardinal_graph, 1.1)
 
-            word_graph = WordFst(punctuation=punctuation, deterministic=deterministic).fst
+            word_graph = WordFst(deterministic=deterministic).fst
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
             punct = pynini.closure(
