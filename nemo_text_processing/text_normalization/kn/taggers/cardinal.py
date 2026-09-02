@@ -48,7 +48,7 @@ class CardinalFst(GraphFst):
         single_digit = digit | zero
         self.single_digits_graph = single_digit + pynini.closure(insert_space + single_digit)
 
-        delete_zero = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
+        delete_zero = pynutil.delete(NEMO_ALL_ZERO)
         EMPTY = pynini.accep("")
 
         scale_suffixes = pynini.string_file(get_abs_path("data/numbers/scale_suffixes.tsv"))
@@ -172,10 +172,7 @@ class CardinalFst(GraphFst):
 
         self.graph_without_leading_zeros = graph_without_leading_zeros.optimize()
 
-        cardinal_with_leading_zeros = pynutil.add_weight(
-            pynini.compose(NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph),
-            0.5,
-        )
+        cardinal_with_leading_zeros = pynini.compose(NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph)
 
         graph_no_commas = graph_without_leading_zeros | cardinal_with_leading_zeros
         delete_comma = pynutil.delete(",")
@@ -193,7 +190,7 @@ class CardinalFst(GraphFst):
 
         comma_number = western_format | indian_format
 
-        cardinal_with_commas = pynutil.add_weight(pynini.compose(comma_number, graph_without_leading_zeros), 0.1)
+        cardinal_with_commas = pynini.compose(comma_number, graph_without_leading_zeros)
 
         final_graph = graph_no_commas | cardinal_with_commas
         self.final_graph = final_graph.optimize()

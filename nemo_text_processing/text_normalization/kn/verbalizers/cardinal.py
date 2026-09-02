@@ -20,25 +20,22 @@ from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_QUOT
 
 class CardinalFst(GraphFst):
     """
-    Verbalizes cardinals, e.g.  cardinal { integer: "5" }  ->  ಐದು
+    Finite state transducer for verbalizing cardinals, e.g.
+        cardinal { integer: "ಐದು" } -> ಐದು
+        cardinal { negative: "true" integer: "ಇಪ್ಪತ್ತ್ಮೂರು" } -> ಮೈನಸ್ ಇಪ್ಪತ್ತ್ಮೂರು
+
+    Args:
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
-        self.optional_sign = pynini.cross("negative: \"true\"", "ಋಣಾತ್ಮಕ ")
-        if not deterministic:
-            self.optional_sign |= pynini.cross("negative: \"true\"", "negative ")
-            self.optional_sign |= pynini.cross("negative: \"true\"", "dash ")
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", "ಮೈನಸ್ "), 0, 1)
+        
+        integer = pynini.closure(NEMO_NOT_QUOTE, 1)
+        integer = pynutil.delete("integer:") + pynutil.delete(" \"") + integer + pynutil.delete("\"")
 
-        self.optional_sign = pynini.closure(self.optional_sign + delete_space, 0, 1)
-
-        integer = pynini.closure(NEMO_NOT_QUOTE)
-
-        self.integer = delete_space + pynutil.delete("\"") + integer + pynutil.delete("\"")
-        integer = pynutil.delete("integer:") + self.integer
-
-        self.numbers = self.optional_sign + integer
-        delete_tokens = self.delete_tokens(self.numbers)
-
-        self.fst = delete_tokens.optimize()
+        graph = optional_sign + integer
+        self.fst = self.delete_tokens(graph).optimize()
