@@ -23,19 +23,20 @@ from pynini import Far
 from pynini.export import export
 from pynini.lib import byte, pynutil, utf8
 
+from nemo_text_processing.text_normalization.te.utils import get_abs_path
+
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
 NEMO_DIGIT = byte.DIGIT
 
-# Telugu native digits (౦, ౧, ౨, ౩, ౪, ౫, ౬, ౭, ౮, ౯)
-NEMO_TE_DIGIT = pynini.union("౦", "౧", "౨", "౩", "౪", "౫", "౬", "౭", "౮", "౯").optimize()
-
-# Combined Telugu and Arabic digits for graphs that need to accept both
-NEMO_ALL_DIGIT = pynini.union(NEMO_TE_DIGIT, NEMO_DIGIT).optimize()
-NEMO_ALL_ZERO = pynini.union("౦", "0").optimize()
+NEMO_ALL_ZERO = pynini.project(pynini.string_file(get_abs_path("data/numbers/zero.tsv")), "input").optimize()
+NEMO_ALL_DIGIT = pynini.union(
+    pynini.project(pynini.string_file(get_abs_path("data/numbers/digit.tsv")), "input"),
+    NEMO_ALL_ZERO,
+).optimize()
 
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_SPACE = " "
-NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00a0").optimize()
+NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", NEMO_NON_BREAKING_SPACE).optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
@@ -43,8 +44,6 @@ NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")
 delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
-
-MIN_NEG_WEIGHT = -0.0001
 
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
@@ -60,20 +59,6 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
         exporter[rule] = graph.optimize()
     exporter.close()
     logging.info(f'Created {file_name}')
-
-
-def convert_space(fst) -> 'pynini.FstLike':
-    """
-    Converts space to nonbreaking space.
-    Used only in tagger grammars for transducing token values within quotes, e.g. name: "hello kitty"
-    This is making transducer significantly slower, so only use when there could be potential spaces within quotes, otherwise leave it.
-
-    Args:
-        fst: input fst
-
-    Returns output fst where breaking spaces are converted to non breaking spaces
-    """
-    return fst @ pynini.cdrewrite(pynini.cross(NEMO_SPACE, NEMO_NON_BREAKING_SPACE), "", "", NEMO_SIGMA)
 
 
 class GraphFst:
@@ -142,4 +127,4 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
-        return res @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)
+        return res @ pynini.cdrewrite(pynini.cross(NEMO_NON_BREAKING_SPACE, " "), "", "", NEMO_SIGMA)
