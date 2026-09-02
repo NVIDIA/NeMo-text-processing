@@ -33,7 +33,7 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
         optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", "ಮೈನಸ್ "), 0, 1)
-        
+
         integer = pynini.closure(NEMO_NOT_QUOTE, 1)
         integer = pynutil.delete("integer:") + pynutil.delete(" \"") + integer + pynutil.delete("\"")
 

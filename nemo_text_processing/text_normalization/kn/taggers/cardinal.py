@@ -172,7 +172,9 @@ class CardinalFst(GraphFst):
 
         self.graph_without_leading_zeros = graph_without_leading_zeros.optimize()
 
-        cardinal_with_leading_zeros = pynini.compose(NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph)
+        cardinal_with_leading_zeros = pynini.compose(
+            NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph
+        )
 
         graph_no_commas = graph_without_leading_zeros | cardinal_with_leading_zeros
         delete_comma = pynutil.delete(",")
