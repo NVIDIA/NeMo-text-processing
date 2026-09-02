@@ -166,6 +166,7 @@ class Normalizer:
 
             if post_process:
                 self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
+
         elif lang == 'it':
             from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.it.verbalizers.verbalize_final import VerbalizeFinalFst
@@ -191,6 +192,9 @@ class Normalizer:
         elif lang == 'ko':
             from nemo_text_processing.text_normalization.ko.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.text_normalization.ko.verbalizers.verbalize_final import VerbalizeFinalFst
+        elif lang == 'te':
+            from nemo_text_processing.text_normalization.te.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.te.verbalizers.verbalize_final import VerbalizeFinalFst
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
@@ -737,7 +741,7 @@ def parse_args():
     parser.add_argument(
         "--language",
         help="language",
-        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it", "hy", "ja", "hi", "ko", "vi", "pt"],
+        choices=["en", "de", "es", "fr", "hu", "sv", "zh", "ar", "it", "hy", "ja", "hi", "te", "ko", "vi", "pt"],
         default="en",
         type=str,
     )
