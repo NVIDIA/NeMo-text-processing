@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.ta.graph_utils import NEMO_NOT_QUOT
 class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal, e.g.
-        cardinal { negative: "true" integer: "23" } -> minus twenty three
+        cardinal { negative: "true" integer: "-23" } -> கழித்தல் இருபத்தேழு
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -31,10 +31,10 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
-        self.optional_sign = pynini.cross("negative: \"true\"", "minus ")
+        self.optional_sign = pynini.cross("negative: \"true\"", "கழித்தல் ")
         if not deterministic:
-            self.optional_sign |= pynini.cross("negative: \"true\"", "negative ")
-            self.optional_sign |= pynini.cross("negative: \"true\"", "dash ")
+            self.optional_sign |= pynini.cross("negative: \"true\"", "எதிர்மறை ")
+            self.optional_sign |= pynini.cross("negative: \"true\"", "கோடுகுறி ")
 
         self.optional_sign = pynini.closure(self.optional_sign + delete_space, 0, 1)
 

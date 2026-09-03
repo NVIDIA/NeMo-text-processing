@@ -38,68 +38,86 @@ class CardinalFst(GraphFst):
 
         digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        teens_ties = pynini.union(
-            pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")),
-            pynini.string_file(get_abs_path("data/numbers/teens_and_ties_en.tsv")),
-        )
-        teens_and_ties = teens_ties
 
-        # digit_oru
-        one_oru = pynini.cross("1", "ஒரு") | pynini.cross("௧", "ஒரு")
-        digit_oru = (
-            one_oru | pynini.compose(pynini.difference(NEMO_ALL_DIGIT, pynini.union("1", "௧")), digit)
-        ).optimize()
+        def _extract_word(fst, name):
+            return next(iter(pynini.compose(pynini.accep(name), fst).paths().ostrings()))
 
-        hundred = pynini.string_file(get_abs_path("data/numbers/hundred_ta.tsv"))
-        hundred_ta = pynini.compose(NEMO_ALL_DIGIT**3, hundred).optimize()
-        hundred_prefix = pynini.compose(NEMO_ALL_DIGIT, hundred).optimize()
+        scale = pynini.string_file(get_abs_path("data/numbers/scale.tsv"))
+
+        #TEENS_AND_TIES (10-99)
+        teens_and_ties_literal = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+        tens_connector_stem = pynini.string_file(get_abs_path("data/numbers/tens_stem.tsv"))
+        digit_3_to_9 = pynini.string_file(get_abs_path("data/numbers/digit_3_to_9.tsv"))
+        teens_and_ties_compositional = tens_connector_stem + digit_3_to_9
+
+        teens_and_ties = pynini.union(teens_and_ties_literal, teens_and_ties_compositional).optimize()
+
+        one_oru = pynini.string_file(get_abs_path("data/numbers/one_oru.tsv"))
+        one_oru_input = pynini.project(one_oru, "input")
+        digit_oru = (one_oru | pynini.compose(pynini.difference(NEMO_ALL_DIGIT, one_oru_input), digit)).optimize()
+
+        # HUNDREDS:
+        hundred_stem = pynini.string_file(get_abs_path("data/numbers/hundred_stem.tsv"))
+        hundred_suf_e = _extract_word(scale, "hundred_suf_e")
+        hundred_suf_p = _extract_word(scale, "hundred_suf_p")
+        hundred_exact = hundred_stem + pynutil.delete(NEMO_ALL_ZERO) ** 2 + pynutil.insert(hundred_suf_e)
+        hundred_prefix = (hundred_stem + pynutil.insert(hundred_suf_p)).optimize()
 
         # ஆயிரம் (exact) and ஆயிரத்து (combining) share the same stem
         thousand_stem = pynini.string_file(get_abs_path("data/numbers/thousand.tsv"))
-        thousand_exact = thousand_stem + pynutil.insert("ம்")
-        thousand_prefix = thousand_stem + pynutil.insert("த்து")
-
-        self.digit = digit
-        self.zero = zero
-        self.hundred_ta = hundred_ta
-        self.teens_and_ties = teens_and_ties
+        thousand_suf_e = _extract_word(scale, "thousand_suf_e")
+        thousand_suf_p = _extract_word(scale, "thousand_suf_p")
+        thousand_exact = thousand_stem + pynutil.insert(thousand_suf_e)
+        thousand_prefix = thousand_stem + pynutil.insert(thousand_suf_p)
 
         single_digit = digit | zero
         self.single_digits_graph = single_digit + pynini.closure(insert_space + single_digit)
-        zero_del = pynutil.add_weight(pynutil.delete(NEMO_ALL_ZERO), -0.1)
+        zero_del = pynutil.delete(NEMO_ALL_ZERO)
 
         def zdel(k):
             return zero_del**k if k > 0 else pynini.accep("")
 
-        def scale(head_exact, head_tail, n, tails):
+        def scale_fn(head_exact, head_tail, n, tails):
             graph = head_exact
             for i, sub in enumerate(tails):
                 graph |= head_tail + zdel(n - 1 - i) + insert_space + sub
             return graph.optimize()
 
         def band(base, exact_word, tail_word, n, tails):
-            return scale(base + pynutil.insert(exact_word) + zdel(n), base + pynutil.insert(tail_word), n, tails)
+            return scale_fn(base + pynutil.insert(exact_word) + zdel(n), base + pynutil.insert(tail_word), n, tails)
 
-        # HUNDREDS (100-999): நூறு / நூற்று forms
-        graph_hundreds = scale(pynutil.add_weight(hundred_ta, -1.0), hundred_prefix, 2, [single_digit, teens_ties])
+        # HUNDREDS (100-999): நூறு / நூற்று forms.
+        graph_hundreds = scale_fn(hundred_exact, hundred_prefix, 2, [digit, teens_and_ties])
         self.graph_hundreds = graph_hundreds
 
         # THOUSANDS (1000-9999): ஆயிரம் / ஆயிரத்து forms
-        graph_thousands = scale(
-            thousand_exact + zdel(3), thousand_prefix, 3, [single_digit, teens_ties, graph_hundreds]
+        graph_thousands = scale_fn(
+            thousand_exact + zdel(3), thousand_prefix, 3, [digit, teens_and_ties, graph_hundreds]
         )
         self.graph_thousands = graph_thousands
-        tails = [single_digit, teens_ties, graph_hundreds, graph_thousands]
+        tails = [digit, teens_and_ties, graph_hundreds, graph_thousands]
+
+        thousand_word = _extract_word(scale, "thousand_word_e")
+        thousand_prefix_word = _extract_word(scale, "thousand_word_p")
+        lakh_word = " " + _extract_word(scale, "lakh_word_e")
+        lakh_prefix_word = " " + _extract_word(scale, "lakh_word_p")
+        crore_word = " " + _extract_word(scale, "crore_word_e")
+        crore_prefix_word = " " + _extract_word(scale, "crore_word_p")
+
+        def add_scale(base, exact_word, prefix_word, n, tail_slice):
+            """band() + append-to-tails for the common single-branch case."""
+            g = band(base, exact_word, prefix_word, n, tails[:tail_slice])
+            tails.append(g)
+            return g
 
         # TEN-THOUSANDS (10^4): stem + ஆயிரம்
-        graph_ten_thousands = band(teens_and_ties, "ஆயிரம்", "ஆயிரத்து", 3, tails[:3])
+        graph_ten_thousands = add_scale(teens_and_ties, thousand_word, thousand_prefix_word, 3, 3)
         self.graph_ten_thousands = graph_ten_thousands
-        tails.append(graph_ten_thousands)
 
         # LAKHS / TEN-LAKHS (10^5, 10^6): stem + லட்சம்
-        graph_lakhs = band(digit_oru, " லட்சம்", " லட்சத்து", 5, tails[:5])
+        graph_lakhs = band(digit_oru, lakh_word, lakh_prefix_word, 5, tails[:5])
         self.graph_lakhs = graph_lakhs
-        graph_ten_lakhs = band(teens_and_ties, " லட்சம்", " லட்சத்து", 5, tails[:5])
+        graph_ten_lakhs = band(teens_and_ties, lakh_word, lakh_prefix_word, 5, tails[:5])
         self.graph_ten_lakhs = graph_ten_lakhs
         tails += [graph_lakhs, graph_ten_lakhs]
 
@@ -113,10 +131,6 @@ class CardinalFst(GraphFst):
             graph_lakhs,  # lakhs of crores
             graph_ten_lakhs,  # ten-lakhs of crores
         ]
-        with open(get_abs_path("data/numbers/crore.tsv"), encoding="utf-8") as f:
-            crore_exact_raw, crore_prefix_raw = [line.strip() for line in f if line.strip()]
-        crore_word = " " + crore_exact_raw
-        crore_prefix_word = " " + crore_prefix_raw
         crore_graphs = [band(b, crore_word, crore_prefix_word, 7, tails) for b in crore_bases]
         graph_crores, graph_ten_crores = crore_graphs[0], crore_graphs[1]
         crore_graphs += [
@@ -138,8 +152,8 @@ class CardinalFst(GraphFst):
         )
         self.graph_without_leading_zeros = graph_without_leading_zeros.optimize()
 
-        cardinal_with_leading_zeros = pynutil.add_weight(
-            pynini.compose(NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph), 0.5
+        cardinal_with_leading_zeros = pynini.compose(
+            NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph
         )
         self.final_graph = (self.graph_without_leading_zeros | cardinal_with_leading_zeros).optimize()
 
