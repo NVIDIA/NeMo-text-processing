@@ -31,6 +31,7 @@ from nemo_text_processing.text_normalization.kn.verbalizers.word import WordFst
 class VerbalizeFinalFst(GraphFst):
     """
     Finite state transducer that verbalizes an entire sentence
+        tokens { cardinal { integer: "ಎರಡು" } } tokens { name: "ಷಟ್ಕಗಳು" } tokens { cardinal { integer: "ಹನ್ನೆರಡು" } } tokens { name: "ಓಟಗಳು" } -> ಎರಡು ಷಟ್ಕಗಳು ಹನ್ನೆರಡು ಓಟಗಳು
 
     Args:
         deterministic: if True will provide a single transduction option,

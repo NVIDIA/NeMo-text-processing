@@ -25,7 +25,7 @@ from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_SPAC
 class PunctuationFst(GraphFst):
     """
     Finite state transducer for classifying punctuation
-        e.g. a, -> tokens { name: "a" } tokens { name: "," }
+        e.g. , -> tokens { name: "," }
 
     Args:
         deterministic: if True will provide a single transduction option,
