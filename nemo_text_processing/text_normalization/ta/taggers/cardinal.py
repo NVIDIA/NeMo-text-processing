@@ -44,7 +44,7 @@ class CardinalFst(GraphFst):
 
         scale = pynini.string_file(get_abs_path("data/numbers/scale.tsv"))
 
-        #TEENS_AND_TIES (10-99)
+        # TEENS_AND_TIES (10-99)
         teens_and_ties_literal = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
         tens_connector_stem = pynini.string_file(get_abs_path("data/numbers/tens_stem.tsv"))
         digit_3_to_9 = pynini.string_file(get_abs_path("data/numbers/digit_3_to_9.tsv"))
