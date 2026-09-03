@@ -63,7 +63,7 @@ class CardinalFst(GraphFst):
         hundred_exact = hundred_stem + pynutil.delete(NEMO_ALL_ZERO) ** 2 + pynutil.insert(hundred_suf_e)
         hundred_prefix = (hundred_stem + pynutil.insert(hundred_suf_p)).optimize()
 
-        # ஆயிரம் (exact) and ஆயிரத்து (combining) share the same stem
+        # ஆயிரம் (exact) and ஆயிரத்து (combining)
         thousand_stem = pynini.string_file(get_abs_path("data/numbers/thousand.tsv"))
         thousand_suf_e = _extract_word(scale, "thousand_suf_e")
         thousand_suf_p = _extract_word(scale, "thousand_suf_p")
@@ -86,11 +86,11 @@ class CardinalFst(GraphFst):
         def band(base, exact_word, tail_word, n, tails):
             return scale_fn(base + pynutil.insert(exact_word) + zdel(n), base + pynutil.insert(tail_word), n, tails)
 
-        # HUNDREDS (100-999): நூறு / நூற்று forms.
+        # HUNDREDS (100-999): நூறு / நூற்று
         graph_hundreds = scale_fn(hundred_exact, hundred_prefix, 2, [digit, teens_and_ties])
         self.graph_hundreds = graph_hundreds
 
-        # THOUSANDS (1000-9999): ஆயிரம் / ஆயிரத்து forms
+        # THOUSANDS (1000-9999): ஆயிரம் / ஆயிரத்து
         graph_thousands = scale_fn(
             thousand_exact + zdel(3), thousand_prefix, 3, [digit, teens_and_ties, graph_hundreds]
         )
@@ -155,7 +155,19 @@ class CardinalFst(GraphFst):
         cardinal_with_leading_zeros = pynini.compose(
             NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph
         )
-        self.final_graph = (self.graph_without_leading_zeros | cardinal_with_leading_zeros).optimize()
+        delete_comma = pynutil.delete(",")
+        digit3, digit2 = NEMO_ALL_DIGIT**3, NEMO_ALL_DIGIT**2
+
+        western_format = pynini.closure(NEMO_ALL_DIGIT, 1, 3) + pynini.closure(delete_comma + digit3, 1)
+        indian_format = (
+            pynini.closure(NEMO_ALL_DIGIT, 1, 2) + pynini.closure(delete_comma + digit2) + delete_comma + digit3
+        )
+        comma_number = western_format | indian_format
+        cardinal_with_commas = pynini.compose(comma_number, graph_without_leading_zeros)
+
+        self.final_graph = (
+            graph_without_leading_zeros | cardinal_with_leading_zeros | cardinal_with_commas
+        ).optimize()
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.final_graph + pynutil.insert("\"")
