@@ -1,4 +1,4 @@
-# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ def parse_args():
             "es_en",
             "fr",
             "hi",
-            "hi_en",
             "hy",
             "ko",
+            "ta",
             "mr",
             "pt",
             "ru",
@@ -78,9 +78,13 @@ if __name__ == "__main__":
     if args.lang == 'en':
         from nemo_text_processing.inverse_text_normalization.en.clean_eval_data import filter_loaded_data
     file_path = args.input
-    inverse_normalizer = InverseNormalizer(lang=args.lang, input_case=args.input_case)
 
-    print("Loading training data: " + file_path)
+    inverse_normalizer = InverseNormalizer(
+        lang=args.lang,
+        input_case=args.input_case,
+        overwrite_cache=True,
+    )
+
     if args.output_case == "lower_cased":
         to_lower = True
     elif args.output_case == "cased":
@@ -96,9 +100,9 @@ if __name__ == "__main__":
         sentences_un_normalized, sentences_normalized, _ = training_data_to_sentences(training_data)
         print("- Data: " + str(len(sentences_normalized)) + " sentences")
         sentences_prediction = inverse_normalizer.inverse_normalize_list(sentences_normalized)
-        with open('result.log', 'w') as ofp:
+        with open("result.log", "w", encoding="utf-8") as ofp:
             for inp, out in zip(sentences_un_normalized, sentences_prediction):
-                ofp.write(f'{inp==out}; {inp}\t{out}\n')
+                ofp.write(f"{inp == out}; {inp}\t{out}\n")
 
         print("- Denormalized. Evaluating...")
         sentences_accuracy = evaluate(
@@ -108,21 +112,31 @@ if __name__ == "__main__":
 
     print("Token level evaluation...")
     tokens_per_type = training_data_to_tokens(training_data, category=args.category)
+
     token_accuracy = {}
+
     for token_type in tokens_per_type:
         print("- Token type: " + token_type)
         tokens_un_normalized, tokens_normalized = tokens_per_type[token_type]
         print("  - Data: " + str(len(tokens_normalized)) + " tokens")
+
         tokens_prediction = inverse_normalizer.inverse_normalize_list(tokens_normalized)
+
         print("  - Denormalized. Evaluating...")
-        token_accuracy[token_type] = evaluate(tokens_prediction, tokens_un_normalized, input=tokens_normalized)
+        token_accuracy[token_type] = evaluate(
+            tokens_prediction,
+            tokens_un_normalized,
+            input=tokens_normalized,
+        )
         print("  - Accuracy: " + str(token_accuracy[token_type]))
+
     token_count_per_type = {token_type: len(tokens_per_type[token_type][0]) for token_type in tokens_per_type}
+
     token_weighted_accuracy = [
         token_count_per_type[token_type] * accuracy for token_type, accuracy in token_accuracy.items()
     ]
-    print("- Accuracy: " + str(sum(token_weighted_accuracy) / sum(token_count_per_type.values())))
 
+    print("- Accuracy: " + str(sum(token_weighted_accuracy) / sum(token_count_per_type.values())))
     print(" - Total: " + str(sum(token_count_per_type.values())), '\n')
 
     for token_type in token_accuracy:

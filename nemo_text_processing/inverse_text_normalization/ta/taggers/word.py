@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright 2024 and onwards Google, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,3 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import pynini
+from pynini.lib import pynutil
+
+from nemo_text_processing.inverse_text_normalization.ta.graph_utils import NEMO_NOT_SPACE, GraphFst
+
+
+class WordFst(GraphFst):
+
+    def __init__(self):
+        super().__init__(name="word", kind="classify")
+        word = pynutil.insert("name: \"") + pynini.closure(NEMO_NOT_SPACE, 1) + pynutil.insert("\"")
+        self.fst = word.optimize()
