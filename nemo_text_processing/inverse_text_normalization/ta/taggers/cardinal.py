@@ -89,20 +89,11 @@ class CardinalFst(GraphFst):
 
         self.graph_single_digit = graph_digit
 
-        graph_numeric_digit = pynini.union(*list("௦௧௨௩௪௫௬௭௮௯"))
+        graph_numeric_digit = (graph_zero_raw.project("input") | graph_digit_raw.project("input")).optimize()
+
         graph_numeric_two_digit = graph_numeric_digit + graph_numeric_digit
 
-        graph_join_digit = pynini.union(
-            "௧",
-            "௨",
-            "௩",
-            "௪",
-            "௫",
-            "௬",
-            "௭",
-            "௮",
-            "௯",
-        )
+        graph_join_digit = graph_digit_raw.project("input").optimize()
 
         graph_ties_join = graph_teens_and_ties @ graph_join_digit
         graph_two_digit_composed = graph_ties_join + delete_space + graph_digit

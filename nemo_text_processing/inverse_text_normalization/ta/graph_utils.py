@@ -31,9 +31,6 @@ NEMO_CHAR = utf8.VALID_UTF8_CHAR
 
 graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 
-NEMO_TA_DIGIT = pynini.union("௦", "௧", "௨", "௩", "௪", "௫", "௬", "௭", "௮", "௯").optimize()
-TAMIL_DIGIT = ["௦", "௧", "௨", "௩", "௪", "௫", "௬", "௭", "௮", "௯"]
-
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_ZWNJ = u"\u200c"
@@ -62,10 +59,6 @@ MIN_POS_WEIGHT = 0.0001
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
 MINUS = pynini.union("மைனஸ்", "எதிர்மறை").optimize()
-
-
-def integer_to_tamil(n: int) -> str:
-    return ''.join(TAMIL_DIGIT[int(d)] for d in str(n))
 
 
 def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
