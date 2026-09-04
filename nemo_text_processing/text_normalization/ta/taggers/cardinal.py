@@ -44,17 +44,19 @@ class CardinalFst(GraphFst):
 
         scale = pynini.string_file(get_abs_path("data/numbers/scale.tsv"))
 
+        special_units = pynini.string_file(get_abs_path("data/numbers/special_units.tsv"))
+        special_units_input = pynini.project(special_units, "input")
+        digit_oru = (
+            special_units | pynini.compose(pynini.difference(NEMO_ALL_DIGIT, special_units_input), digit)
+        ).optimize()
+
         # TEENS_AND_TIES (10-99)
         teens_and_ties_literal = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
         tens_connector_stem = pynini.string_file(get_abs_path("data/numbers/tens_stem.tsv"))
-        digit_3_to_9 = pynini.string_file(get_abs_path("data/numbers/digit_3_to_9.tsv"))
+        digit_3_to_9 = pynini.compose(pynini.difference(NEMO_ALL_DIGIT, special_units_input), digit).optimize()
         teens_and_ties_compositional = tens_connector_stem + digit_3_to_9
 
         teens_and_ties = pynini.union(teens_and_ties_literal, teens_and_ties_compositional).optimize()
-
-        one_oru = pynini.string_file(get_abs_path("data/numbers/one_oru.tsv"))
-        one_oru_input = pynini.project(one_oru, "input")
-        digit_oru = (one_oru | pynini.compose(pynini.difference(NEMO_ALL_DIGIT, one_oru_input), digit)).optimize()
 
         # HUNDREDS:
         hundred_stem = pynini.string_file(get_abs_path("data/numbers/hundred_stem.tsv"))
@@ -63,7 +65,7 @@ class CardinalFst(GraphFst):
         hundred_exact = hundred_stem + pynutil.delete(NEMO_ALL_ZERO) ** 2 + pynutil.insert(hundred_suf_e)
         hundred_prefix = (hundred_stem + pynutil.insert(hundred_suf_p)).optimize()
 
-        # ஆயிரம் (exact) and ஆயிரத்து (combining)
+        # ஆயிரம் (exact) and ஆயிரத்து (combining) share the same stem
         thousand_stem = pynini.string_file(get_abs_path("data/numbers/thousand.tsv"))
         thousand_suf_e = _extract_word(scale, "thousand_suf_e")
         thousand_suf_p = _extract_word(scale, "thousand_suf_p")
@@ -86,11 +88,11 @@ class CardinalFst(GraphFst):
         def band(base, exact_word, tail_word, n, tails):
             return scale_fn(base + pynutil.insert(exact_word) + zdel(n), base + pynutil.insert(tail_word), n, tails)
 
-        # HUNDREDS (100-999): நூறு / நூற்று
+        # HUNDREDS (100-999): நூறு / நூற்று forms.
         graph_hundreds = scale_fn(hundred_exact, hundred_prefix, 2, [digit, teens_and_ties])
         self.graph_hundreds = graph_hundreds
 
-        # THOUSANDS (1000-9999): ஆயிரம் / ஆயிரத்து
+        # THOUSANDS (1000-9999): ஆயிரம் / ஆயிரத்து forms
         graph_thousands = scale_fn(
             thousand_exact + zdel(3), thousand_prefix, 3, [digit, teens_and_ties, graph_hundreds]
         )
@@ -155,6 +157,7 @@ class CardinalFst(GraphFst):
         cardinal_with_leading_zeros = pynini.compose(
             NEMO_ALL_ZERO + pynini.closure(NEMO_ALL_DIGIT), self.single_digits_graph
         )
+
         delete_comma = pynutil.delete(",")
         digit3, digit2 = NEMO_ALL_DIGIT**3, NEMO_ALL_DIGIT**2
 
