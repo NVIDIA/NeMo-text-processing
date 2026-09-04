@@ -44,7 +44,16 @@ class MoneyFst(GraphFst):
             pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         )
 
+        decimal_tsv = pynini.string_file(get_abs_path("data/money/decimal.tsv"))
+        decimal_word = pynini.project(decimal_tsv, "output")
+
         currency_minor = pynutil.delete('currency_min: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+
+        quantity = pynutil.delete('quantity: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+
+        drop_preserve_order = pynini.closure(
+            pynutil.delete("preserve_order:") + sp + pynutil.delete("true") + sp, 0, 1
+        )
 
         graph_major_only = integer_part + sp + currency_major
 
@@ -90,13 +99,58 @@ class MoneyFst(GraphFst):
                 + sp
                 + integer_part
                 + sp
-                + pynutil.insert(" दशमलव ")
+                + pynutil.insert(" ")
+                + pynutil.insert(decimal_word)
+                + pynutil.insert(" ")
                 + fractional_part
                 + pynutil.insert(NEMO_SPACE)
                 + pynutil.insert(major)
             )
         graph_decimal_money = pynini.union(*decimal_graphs)
 
-        graph = graph_major_only | graph_major_minor | pynutil.add_weight(graph_minor_only, -0.1) | graph_decimal_money
+        scaled_decimal_graphs = []
+        scaled_major_graphs = []
+
+        for major in all_major_names:
+            graph_major_slot = pynutil.delete('currency_maj: "') + pynutil.delete(major) + pynutil.delete('"')
+
+            scaled_decimal_graphs.append(
+                drop_preserve_order
+                + graph_major_slot
+                + sp
+                + integer_part
+                + sp
+                + pynutil.insert(" ")
+                + pynutil.insert(decimal_word)
+                + pynutil.insert(" ")
+                + fractional_part
+                + sp
+                + quantity
+                + pynutil.insert(NEMO_SPACE)
+                + pynutil.insert(major)
+            )
+
+            scaled_major_graphs.append(
+                drop_preserve_order
+                + graph_major_slot
+                + sp
+                + integer_part
+                + sp
+                + quantity
+                + pynutil.insert(NEMO_SPACE)
+                + pynutil.insert(major)
+            )
+
+        graph_scaled_decimal = pynini.union(*scaled_decimal_graphs)
+        graph_scaled_major = pynini.union(*scaled_major_graphs)
+
+        graph = (
+            graph_major_only
+            | graph_major_minor
+            | pynutil.add_weight(graph_minor_only, -0.1)
+            | graph_decimal_money
+            | graph_scaled_decimal
+            | graph_scaled_major
+        )
 
         self.fst = self.delete_tokens(graph).optimize()
