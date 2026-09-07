@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_
 class WhiteListFst(GraphFst):
     """
     Finite state transducer for classifying whitelist, e.g.
-        "s:t" -> tokens { name: "sankt" }
+        "dáb." -> tokens { name: "dábálaš" }
     This class has highest priority among all classifier grammars. Whitelisted tokens are defined and loaded from "data/whitelist.tsv".
 
     Args:
@@ -53,12 +53,6 @@ class WhiteListFst(GraphFst):
                 graph |= whitelist_provided
             else:
                 graph = whitelist_provided
-
-        # if not deterministic:
-        #     units_graph = _get_whitelist_graph(input_case, file=get_abs_path("data/measure/unit.tsv"))
-        #     units_graph |= _get_whitelist_graph(input_case, file=get_abs_path("data/measure/unit_neuter.tsv"))
-        #     units_graph |= _get_whitelist_graph(input_case, file=get_abs_path("data/abbreviations_nondet.tsv"))
-        #     graph |= units_graph
 
         self.graph = graph
         self.final_graph = convert_space(self.graph).optimize()
