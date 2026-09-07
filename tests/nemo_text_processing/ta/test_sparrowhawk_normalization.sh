@@ -23,11 +23,6 @@ runtest () {
   done < "$input"
 }
 
-#testTNSpecialText() {
-#  input=$PROJECT_DIR/ta/data_text_normalization/test_cases_special_text.txt
-#  runtest $input
-#}
-
 testTNCardinal() {
   input=$PROJECT_DIR/ta/data_text_normalization/test_cases_cardinal.txt
   runtest $input
