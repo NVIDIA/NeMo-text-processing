@@ -228,9 +228,21 @@ class MeasureFst(GraphFst):
         year_informal = pynini.string_map([("yr", "साल")])
         year_formal = pynini.string_file(get_abs_path("data/measure/unit_year_formal.tsv"))
 
-        # All units EXCEPT year
-        unit_inputs_except_yr = pynini.difference(pynini.project(unit_graph, "input"), pynini.accep("yr"))
-        unit_graph_no_year = pynini.compose(unit_inputs_except_yr, unit_graph)
+        # All units EXCEPT year and percent
+        unit_inputs_regular = pynini.difference(
+            pynini.project(unit_graph, "input"), pynini.union(pynini.accep("yr"), pynini.accep("%"))
+        )
+        unit_graph_no_year = pynini.compose(unit_inputs_regular, unit_graph)
+
+        percent_graph = pynini.compose(pynini.accep("%"), unit_graph)
+
+        percent_unit = (
+            pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("units: \"")
+            + percent_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
 
         # Load quarterly units from separate files: map (FST) and list (FSA)
         quarterly_units_map = pynini.string_file(get_abs_path("data/measure/quarterly_units_map.tsv"))
@@ -454,14 +466,37 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
+        graph_cardinal_percent = (
+            pynutil.insert("cardinal { ")
+            + optional_graph_negative
+            + pynutil.insert("integer: \"")
+            + cardinal_graph
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
+            + pynini.closure(delete_space, 0, 1)
+            + percent_unit
+        )
+
+        graph_decimal_percent = (
+            pynutil.insert("decimal { ")
+            + optional_graph_negative
+            + decimal_graph
+            + pynutil.insert(" }")
+            + pynini.closure(delete_space, 0, 1)
+            + percent_unit
+        )
+
         address_graph = self.get_address_graph(cardinal, ordinal, serial, input_case)
         structured_address_graph = self.get_structured_address_graph(cardinal, ordinal, input_case)
 
         graph = (
             pynutil.add_weight(graph_decimal, 0.1)
             | pynutil.add_weight(graph_decimal_year_formal, 0.1)
+            | pynutil.add_weight(graph_decimal_percent, 0.1)
             | pynutil.add_weight(graph_cardinal, 0.1)
             | pynutil.add_weight(graph_cardinal_year_formal, 0.1)
+            | pynutil.add_weight(graph_cardinal_percent, 0.1)
             | pynutil.add_weight(graph_cardinal_year_informal, -0.1)  # Higher priority for small numbers
             | pynutil.add_weight(graph_exceptions, 0.1)
             | pynutil.add_weight(graph_dedh_dhai, -0.2)

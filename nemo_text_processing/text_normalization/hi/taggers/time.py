@@ -55,9 +55,10 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify")
 
         delete_colon = pynutil.delete(":")
-        cardinal_graph = cardinal.digit | cardinal.teens_and_ties
+        delete_leading_zero = pynini.closure(pynutil.delete("0") | pynutil.delete("०"), 0, 1)
+        cardinal_graph = delete_leading_zero + (cardinal.digit | cardinal.teens_and_ties)
 
-        self.hours = pynutil.insert("hours: \"") + hours_graph + pynutil.insert("\" ")
+        self.hours = pynutil.insert("hours: \"") + delete_leading_zero + hours_graph + pynutil.insert("\" ")
         self.minutes = pynutil.insert("minutes: \"") + minutes_graph + pynutil.insert("\" ")
         self.seconds = pynutil.insert("seconds: \"") + seconds_graph + pynutil.insert("\" ")
 
@@ -73,7 +74,7 @@ class TimeFst(GraphFst):
         graph_h = self.hours + delete_colon + pynutil.delete(HI_DOUBLE_ZERO)
 
         # Support all combinations of Devanagari and Arabic digits for dedh/dhai patterns
-        dedh_dhai_graph = pynini.string_map(
+        dedh_dhai_graph = delete_leading_zero + pynini.string_map(
             [
                 ("१:३०", HI_DEDH),
                 ("१:30", HI_DEDH),
@@ -92,7 +93,7 @@ class TimeFst(GraphFst):
         sadhe_numbers = cardinal_graph + pynini.cross(HI_TIME_THIRTY, "")
         sadhe_graph = pynutil.insert(HI_SADHE) + pynutil.insert(NEMO_SPACE) + sadhe_numbers
 
-        paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
+        paune = delete_leading_zero + pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
         paune_numbers = paune + pynini.cross(HI_TIME_FORTYFIVE, "")
         paune_graph = pynutil.insert(HI_PAUNE) + pynutil.insert(NEMO_SPACE) + paune_numbers
 
