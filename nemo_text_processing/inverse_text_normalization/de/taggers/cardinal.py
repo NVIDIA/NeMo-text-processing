@@ -30,7 +30,6 @@ def _forms(lexicon, lemma):
     return pynini.project(lexicon @ pynini.accep(lemma), "input").optimize()
 
 
-
 def _token(table, name):
     """Output string from format.tsv."""
     return pynini.project(pynini.accep(name) @ table, "output").optimize()
