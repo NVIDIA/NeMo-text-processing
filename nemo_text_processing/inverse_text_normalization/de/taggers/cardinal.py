@@ -86,7 +86,6 @@ class CardinalFst(GraphFst):
         fmt = pynini.string_file(get_abs_path("data/cardinal/format.tsv"))
         lead = _token(fmt, "lead")
         dot = _token(fmt, "dot")
-        n000dot = _token(fmt, "n000dot")
         delete_space = pynutil.delete(NEMO_SPACE)
         delete_und = pynutil.delete(und)
 
@@ -145,7 +144,7 @@ class CardinalFst(GraphFst):
             (
                 (pynini.cross(tausend, lead) + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(tausend, dot) + delete_und.ques)
-                | pynutil.insert(n000dot)
+                | pynutil.insert("000.")
             )
             + delete_space.ques
             + digit_cluster
@@ -155,7 +154,7 @@ class CardinalFst(GraphFst):
             (
                 (pynini.cross(tausend, lead) + delete_space.ques + delete_und.ques)
                 | (non_zero_digit_cluster + delete_space.ques + pynini.cross(tausend, dot) + delete_und.ques)
-                # | pynutil.insert(n000dot)
+                # | pynutil.insert("000.")
             )
             + delete_space.ques
             + digit_cluster
@@ -166,7 +165,7 @@ class CardinalFst(GraphFst):
             (
                 (pynini.cross(million, lead) + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(million, dot) + delete_und.ques)
-                | pynutil.insert(n000dot)
+                | pynutil.insert("000.")
             )
             + delete_space.ques
             + thousands
@@ -178,7 +177,7 @@ class CardinalFst(GraphFst):
             (
                 (pynini.cross(milliarde, lead) + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(billion, dot) + delete_und.ques)
-                | pynutil.insert(n000dot)
+                | pynutil.insert("000.")
             )
             + delete_space.ques
             + millions
@@ -190,7 +189,7 @@ class CardinalFst(GraphFst):
             (
                 (pynini.cross(billion_de, lead) + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(trillion, dot) + delete_und.ques)
-                | pynutil.insert(n000dot)
+                | pynutil.insert("000.")
             )
             + delete_space.ques
             + billions
@@ -202,7 +201,7 @@ class CardinalFst(GraphFst):
             (
                 (pynini.cross(quadrillion, lead) + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(quadrillion, dot) + delete_und.ques)
-                | pynutil.insert(n000dot)
+                | pynutil.insert("000.")
             )
             + delete_space.ques
             + trillions
@@ -214,7 +213,7 @@ class CardinalFst(GraphFst):
             (
                 (pynini.cross(trillion_de, lead) + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(quintillion, dot) + delete_und.ques)
-                | pynutil.insert(n000dot)
+                | pynutil.insert("000.")
             )
             + delete_space.ques
             + quadrillions
@@ -226,7 +225,7 @@ class CardinalFst(GraphFst):
             (
                 (pynini.cross(sextillion, lead) + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(sextillion, dot) + delete_und.ques)
-                | pynutil.insert(n000dot)
+                | pynutil.insert("000.")
             )
             + delete_space.ques
             + quintillions
