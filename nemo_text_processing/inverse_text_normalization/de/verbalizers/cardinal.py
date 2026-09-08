@@ -28,10 +28,7 @@ class CardinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="cardinal", kind="verbalize")
         optional_sign = pynini.closure(
-            pynutil.delete("negative:")
-            + delete_space
-            + pynini.cross('"true"', "-")
-            + delete_space,
+            pynutil.delete("negative:") + delete_space + pynini.cross('"true"', "-") + delete_space,
             0,
             1,
         )
