@@ -92,7 +92,10 @@ class CardinalFst(GraphFst):
         graph_single_and_double_digits = digits | graph_10_99
         self.graph_single_and_double_digits = graph_single_and_double_digits.optimize()
 
-        hundreds = (pynini.cross(hundert, "100")) | (
+        hundred = pynini.string_file(get_abs_path("data/cardinal/hundred.tsv"))
+        hundred_0 = pynini.string_file(get_abs_path("data/cardinal/hundred_0.tsv"))
+        hundred_00 = pynini.string_file(get_abs_path("data/cardinal/hundred_00.tsv"))
+        hundreds = (hundred) | (
             (
                 (digits | pynutil.insert("1"))
                 + delete_space.ques
@@ -105,13 +108,13 @@ class CardinalFst(GraphFst):
             | (
                 (digits | pynutil.insert("1"))
                 + delete_space.ques
-                + pynini.cross(hundert, "0")
+                + hundred_0
                 + delete_space.ques
                 + delete_und.ques
                 + delete_space.ques
                 + digits
             )
-            | ((digits | pynutil.insert("1")) + delete_space.ques + pynini.cross(hundert, "00"))
+            | ((digits | pynutil.insert("1")) + delete_space.ques + hundred_00)
         )
 
         # Digits are grouped in clusters of three: {hundreds}{tens}{ones}.
