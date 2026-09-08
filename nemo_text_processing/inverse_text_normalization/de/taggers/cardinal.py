@@ -77,6 +77,7 @@ class CardinalFst(GraphFst):
         billiarde = _forms(lexicon, "billiarde")
         trillion_de = _forms(lexicon, "trillion")
         trilliarde = _forms(lexicon, "trilliarde")
+        mag = pynini.string_file(get_abs_path("data/cardinal/magnitude.tsv"))
         delete_space = pynutil.delete(NEMO_SPACE)
         delete_und = pynutil.delete(und)
 
@@ -92,9 +93,10 @@ class CardinalFst(GraphFst):
         graph_single_and_double_digits = digits | graph_10_99
         self.graph_single_and_double_digits = graph_single_and_double_digits.optimize()
 
-        hundred = pynini.string_file(get_abs_path("data/cardinal/hundred.tsv"))
-        hundred_0 = pynini.string_file(get_abs_path("data/cardinal/hundred_0.tsv"))
-        hundred_00 = pynini.string_file(get_abs_path("data/cardinal/hundred_00.tsv"))
+        h = pynini.string_file(get_abs_path("data/cardinal/hundred.tsv"))
+        hundred = h @ pynini.accep("100")
+        hundred_0 = h @ pynini.accep("0")
+        hundred_00 = h @ pynini.accep("00")
         hundreds = (hundred) | (
             (
                 (digits | pynutil.insert("1"))
@@ -130,7 +132,7 @@ class CardinalFst(GraphFst):
         non_zero_digit_cluster = (hundreds) | (pynutil.insert("0") + graph_10_99) | (pynutil.insert("00") + digits)
 
         # WFST grammar for thousands
-        thousands = (pynini.cross(tausend, "1.000")) | (
+        thousands = (tausend @ mag) | (
             (
                 (pynini.cross(tausend, "1.") + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(tausend, ".") + delete_und.ques)
@@ -140,7 +142,7 @@ class CardinalFst(GraphFst):
             + digit_cluster
         )
 
-        non_zero_thousands = (pynini.cross(tausend, "1.000")) | (
+        non_zero_thousands = (tausend @ mag) | (
             (
                 (pynini.cross(tausend, "1.") + delete_space.ques + delete_und.ques)
                 | (non_zero_digit_cluster + delete_space.ques + pynini.cross(tausend, ".") + delete_und.ques)
@@ -151,7 +153,7 @@ class CardinalFst(GraphFst):
         )
 
         # WFST grammar for millions
-        millions = (pynini.cross(million, "1.000.000")) | (
+        millions = (million @ mag) | (
             (
                 (pynini.cross(million, "1.") + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(million, ".") + delete_und.ques)
@@ -163,7 +165,7 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for billions
         billion = milliarde
-        billions = (pynini.cross(milliarde, "1.000.000.000")) | (
+        billions = (milliarde @ mag) | (
             (
                 (pynini.cross(milliarde, "1.") + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(billion, ".") + delete_und.ques)
@@ -175,7 +177,7 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for trillions
         trillion = billion_de
-        trillions = (pynini.cross(billion_de, "1.000.000.000.000")) | (
+        trillions = (billion_de @ mag) | (
             (
                 (pynini.cross(billion_de, "1.") + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(trillion, ".") + delete_und.ques)
@@ -187,7 +189,7 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for quadrillions
         quadrillion = billiarde
-        quadrillions = (pynini.cross(billiarde, "1.000.000.000.000.000")) | (
+        quadrillions = (billiarde @ mag) | (
             (
                 (pynini.cross(quadrillion, "1.") + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(quadrillion, ".") + delete_und.ques)
@@ -199,7 +201,7 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for quintillions
         quintillion = trillion_de
-        quintillions = (pynini.cross(trillion_de, "1.000.000.000.000.000.000")) | (
+        quintillions = (trillion_de @ mag) | (
             (
                 (pynini.cross(trillion_de, "1.") + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(quintillion, ".") + delete_und.ques)
@@ -211,7 +213,7 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for sextillions
         sextillion = trilliarde
-        sextillions = (pynini.cross(trilliarde, "1.000.000.000.000.000.000.000")) | (
+        sextillions = (trilliarde @ mag) | (
             (
                 (pynini.cross(sextillion, "1.") + delete_space.ques + delete_und.ques)
                 | (digit_cluster + delete_space.ques + pynini.cross(sextillion, ".") + delete_und.ques)
