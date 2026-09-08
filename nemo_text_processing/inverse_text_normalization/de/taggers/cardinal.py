@@ -36,15 +36,15 @@ class CardinalFst(GraphFst):
     Allows both compound numeral strings or separated by whitespace.
     "und" (en: "and") can be inserted between "hundert" and following number or "tausend" and following single or double digit number.
 
-        e.g. minus drei und zwanzig -> cardinal { negative: "-" integer: "23" }
-        e.g. minus dreiundzwanzig -> cardinal { negative: "-" integer: "23" }
+        e.g. minus drei und zwanzig -> cardinal { negative: "true" integer: "23" }
+        e.g. minus dreiundzwanzig -> cardinal { negative: "true" integer: "23" }
         e.g. dreizehn -> cardinal { integer: "13" }
         e.g. ein hundert -> cardinal { integer: "100" }
         e.g. einhundert -> cardinal { integer: "100" }
         e.g. ein tausend -> cardinal { integer: "1.000" }
         e.g. eintausend -> cardinal { integer: "1.000" }
         e.g. ein tausend zwanzig -> cardinal { integer: "1.020" }
-        e.g. minus eine billion fünfundsechzig milliarden vier millionen sechs -> cardinal { negative: "-" integer: "1.065.004.000.006" }
+        e.g. minus eine billion fünfundsechzig milliarden vier millionen sechs -> cardinal { negative: "true" integer: "1.065.004.000.006" }
     """
 
     def __init__(self):
@@ -284,7 +284,7 @@ class CardinalFst(GraphFst):
         self.graph = graph.optimize()
 
         self.optional_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(minus + pynini.accep(" "), '"-"') + pynutil.insert(" "),
+            pynutil.insert("negative: ") + pynini.cross(minus + pynini.accep(" "), '"true"') + pynutil.insert(" "),
             0,
             1,
         )

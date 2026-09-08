@@ -21,7 +21,7 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_
 class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal
-        e.g. cardinal { integer: "23" negative: "-" } -> -23
+        e.g. cardinal { negative: "true" integer: "23" } -> -23
         e.g. cardinal { integer: "1.000" } -> 1.000
     """
 
@@ -30,9 +30,7 @@ class CardinalFst(GraphFst):
         optional_sign = pynini.closure(
             pynutil.delete("negative:")
             + delete_space
-            + pynutil.delete('"')
-            + NEMO_NOT_QUOTE
-            + pynutil.delete('"')
+            + pynini.cross('"true"', "-")
             + delete_space,
             0,
             1,
