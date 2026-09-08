@@ -83,6 +83,9 @@ class CardinalFst(GraphFst):
         trillion_de = _forms(lexicon, "trillion")
         trilliarde = _forms(lexicon, "trilliarde")
         mag = pynini.string_file(get_abs_path("data/cardinal/magnitude.tsv"))
+        fmt = pynini.string_file(get_abs_path("data/cardinal/format.tsv"))
+        lead = _token(fmt, "lead")
+        dot = _token(fmt, "dot")
         delete_space = pynutil.delete(NEMO_SPACE)
         delete_und = pynutil.delete(und)
 
@@ -139,8 +142,8 @@ class CardinalFst(GraphFst):
         # WFST grammar for thousands
         thousands = (tausend @ mag) | (
             (
-                (pynini.cross(tausend, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(tausend, ".") + delete_und.ques)
+                (pynini.cross(tausend, lead) + delete_space.ques + delete_und.ques)
+                | (digit_cluster + delete_space.ques + pynini.cross(tausend, dot) + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space.ques
@@ -149,8 +152,8 @@ class CardinalFst(GraphFst):
 
         non_zero_thousands = (tausend @ mag) | (
             (
-                (pynini.cross(tausend, "1.") + delete_space.ques + delete_und.ques)
-                | (non_zero_digit_cluster + delete_space.ques + pynini.cross(tausend, ".") + delete_und.ques)
+                (pynini.cross(tausend, lead) + delete_space.ques + delete_und.ques)
+                | (non_zero_digit_cluster + delete_space.ques + pynini.cross(tausend, dot) + delete_und.ques)
                 # | pynutil.insert("000.")
             )
             + delete_space.ques
@@ -160,8 +163,8 @@ class CardinalFst(GraphFst):
         # WFST grammar for millions
         millions = (million @ mag) | (
             (
-                (pynini.cross(million, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(million, ".") + delete_und.ques)
+                (pynini.cross(million, lead) + delete_space.ques + delete_und.ques)
+                | (digit_cluster + delete_space.ques + pynini.cross(million, dot) + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space.ques
@@ -172,8 +175,8 @@ class CardinalFst(GraphFst):
         billion = milliarde
         billions = (milliarde @ mag) | (
             (
-                (pynini.cross(milliarde, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(billion, ".") + delete_und.ques)
+                (pynini.cross(milliarde, lead) + delete_space.ques + delete_und.ques)
+                | (digit_cluster + delete_space.ques + pynini.cross(billion, dot) + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space.ques
@@ -184,8 +187,8 @@ class CardinalFst(GraphFst):
         trillion = billion_de
         trillions = (billion_de @ mag) | (
             (
-                (pynini.cross(billion_de, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(trillion, ".") + delete_und.ques)
+                (pynini.cross(billion_de, lead) + delete_space.ques + delete_und.ques)
+                | (digit_cluster + delete_space.ques + pynini.cross(trillion, dot) + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space.ques
@@ -196,8 +199,8 @@ class CardinalFst(GraphFst):
         quadrillion = billiarde
         quadrillions = (billiarde @ mag) | (
             (
-                (pynini.cross(quadrillion, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(quadrillion, ".") + delete_und.ques)
+                (pynini.cross(quadrillion, lead) + delete_space.ques + delete_und.ques)
+                | (digit_cluster + delete_space.ques + pynini.cross(quadrillion, dot) + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space.ques
@@ -208,8 +211,8 @@ class CardinalFst(GraphFst):
         quintillion = trillion_de
         quintillions = (trillion_de @ mag) | (
             (
-                (pynini.cross(trillion_de, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(quintillion, ".") + delete_und.ques)
+                (pynini.cross(trillion_de, lead) + delete_space.ques + delete_und.ques)
+                | (digit_cluster + delete_space.ques + pynini.cross(quintillion, dot) + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space.ques
@@ -220,8 +223,8 @@ class CardinalFst(GraphFst):
         sextillion = trilliarde
         sextillions = (trilliarde @ mag) | (
             (
-                (pynini.cross(sextillion, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(sextillion, ".") + delete_und.ques)
+                (pynini.cross(sextillion, lead) + delete_space.ques + delete_und.ques)
+                | (digit_cluster + delete_space.ques + pynini.cross(sextillion, dot) + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space.ques
