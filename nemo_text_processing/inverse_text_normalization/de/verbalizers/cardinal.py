@@ -15,81 +15,36 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
-    NEMO_ALPHA,
-    NEMO_DIGIT,
-    NEMO_SPACE,
-    GraphFst,
-    delete_space,
-)
-from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for verbalizing cardinal numbers.  Note that the verbalizer retains period-separated formatting.
-        e.g. 'cardinal { negative: "-" integer: "1.234.512.102" }' -> -1.234.512.102
+    Finite state transducer for verbalizing cardinal
+        e.g. cardinal { integer: "23" negative: "-" } -> -23
+        e.g. cardinal { integer: "1.000" } -> 1.000
     """
 
     def __init__(self):
         super().__init__(name="cardinal", kind="verbalize")
-
-        DE_chars = pynini.union(*"äöüÄÖÜß").optimize()
-
-        # removes the 'negative:' label and leaves the optional '-' sign in place
-        optional_minus = pynini.closure(
+        optional_sign = pynini.closure(
             pynutil.delete("negative:")
-            + pynutil.delete(NEMO_SPACE)
+            + delete_space
             + pynutil.delete('"')
-            + pynini.accep("-")
+            + NEMO_NOT_QUOTE
             + pynutil.delete('"')
-            + pynutil.delete(NEMO_SPACE),
+            + delete_space,
             0,
             1,
         )
-
-        # handles all elements of a cardinal integer
-        integer_chars = NEMO_DIGIT | pynini.accep(".")
-        cardinal_components = NEMO_DIGIT | NEMO_ALPHA | DE_chars | pynini.accep(".")
-
-        # removes the 'integer:' label
-        just_integers = (
+        graph = (
             pynutil.delete("integer:")
             + delete_space
             + pynutil.delete('"')
-            + pynini.closure(integer_chars, 1)
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
-            + delete_space
         )
-
-        # handles the canonical representation with the first dozen normalized
-        first_dozen_verbalized = (
-            pynutil.delete("integer:")
-            + delete_space
-            + pynutil.delete('"')
-            + pynini.closure(cardinal_components, 1)
-            + pynutil.delete('"')
-            + delete_space
-        )
-
-        # Handles noun + number combinations, where the noun forces full denormalization
-        # The nouns are implemented as a .tsv list
-        nouns_forcing_denormalization = pynini.string_file(
-            get_abs_path("data/measure/nouns_forcing_denormalization.tsv")
-        )
-        graph_forced_denormalization = (
-            pynutil.delete("morphosyntactic_features: ")
-            + pynutil.delete('"')
-            + nouns_forcing_denormalization
-            + pynutil.delete('"')
-            + pynini.accep(NEMO_SPACE)
-            + just_integers
-        )
-
-        graph = optional_minus + just_integers
-        self.numbers = graph.optimize()
-        first_dozen = (optional_minus + first_dozen_verbalized).optimize()
-        self.first_dozen = first_dozen
-        updated_cardinals = (first_dozen | graph_forced_denormalization).optimize()
-        delete_tokens = self.delete_tokens(updated_cardinals)
+        self.numbers = graph
+        graph = optional_sign + graph
+        delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
