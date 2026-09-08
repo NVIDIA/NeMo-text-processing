@@ -25,9 +25,9 @@ def _digit_tie_flips():
     return pynini.string_map([(f"{ones}{tens}", f"{tens}{ones}") for tens in range(2, 10) for ones in range(1, 10)])
 
 
-def _forms(lexicon, lemma):
-    """Spoken forms for one lemma (e.g. million / millionen)."""
-    return pynini.project(lexicon @ pynini.accep(lemma), "input").optimize()
+def _spoken(table, written):
+    """Spoken forms in a two-column tsv that write this output (e.g. 1.000 -> tausend)."""
+    return pynini.project(table @ pynini.accep(written), "input").optimize()
 
 
 def _token(table, name):
@@ -41,15 +41,15 @@ class CardinalFst(GraphFst):
     Allows both compound numeral strings or separated by whitespace.
     "und" (en: "and") can be inserted between "hundert" and following number or "tausend" and following single or double digit number.
 
-        e.g. minus drei und zwanzig -> cardinal { negative: "true" integer: "23" }
-        e.g. minus dreiundzwanzig -> cardinal { negative: "true" integer: "23" }
+        e.g. minus drei und zwanzig -> cardinal { negative: "-" integer: "23" }
+        e.g. minus dreiundzwanzig -> cardinal { negative: "-" integer: "23" }
         e.g. dreizehn -> cardinal { integer: "13" }
         e.g. ein hundert -> cardinal { integer: "100" }
         e.g. einhundert -> cardinal { integer: "100" }
         e.g. ein tausend -> cardinal { integer: "1.000" }
         e.g. eintausend -> cardinal { integer: "1.000" }
         e.g. ein tausend zwanzig -> cardinal { integer: "1.020" }
-        e.g. minus eine billion fünfundsechzig milliarden vier millionen sechs -> cardinal { negative: "true" integer: "1.065.004.000.006" }
+        e.g. minus eine billion fünfundsechzig milliarden vier millionen sechs -> cardinal { negative: "-" integer: "1.065.004.000.006" }
     """
 
     def __init__(self):
@@ -71,18 +71,16 @@ class CardinalFst(GraphFst):
         ties = tens + pynutil.insert("0")
         # German flips ones and tens in two-digit numbers (ein + zwanzig -> 21).
         flips = _digit_tie_flips()
-        lexicon = pynini.string_file(get_abs_path("data/cardinal/lexicon.tsv"))
-        und = _forms(lexicon, "und")
-        minus = _forms(lexicon, "minus")
-        hundert = _forms(lexicon, "hundert")
-        tausend = _forms(lexicon, "tausend")
-        million = _forms(lexicon, "million")
-        milliarde = _forms(lexicon, "milliarde")
-        billion_de = _forms(lexicon, "billion")
-        billiarde = _forms(lexicon, "billiarde")
-        trillion_de = _forms(lexicon, "trillion")
-        trilliarde = _forms(lexicon, "trilliarde")
+        und = pynini.string_file(get_abs_path("data/cardinal/und.tsv"))
+        minus = pynini.string_file(get_abs_path("data/cardinal/minus.tsv"))
         mag = pynini.string_file(get_abs_path("data/cardinal/magnitude.tsv"))
+        tausend = _spoken(mag, "1.000")
+        million = _spoken(mag, "1.000.000")
+        milliarde = _spoken(mag, "1.000.000.000")
+        billion_de = _spoken(mag, "1.000.000.000.000")
+        billiarde = _spoken(mag, "1.000.000.000.000.000")
+        trillion_de = _spoken(mag, "1.000.000.000.000.000.000")
+        trilliarde = _spoken(mag, "1.000.000.000.000.000.000.000")
         fmt = pynini.string_file(get_abs_path("data/cardinal/format.tsv"))
         lead = _token(fmt, "lead")
         dot = _token(fmt, "dot")
@@ -102,6 +100,7 @@ class CardinalFst(GraphFst):
         self.graph_single_and_double_digits = graph_single_and_double_digits.optimize()
 
         h = pynini.string_file(get_abs_path("data/cardinal/hundred.tsv"))
+        hundert = pynini.project(h, "input").optimize()
         hundred = h @ pynini.accep("100")
         hundred_0 = h @ pynini.accep("0")
         hundred_00 = h @ pynini.accep("00")
@@ -297,7 +296,7 @@ class CardinalFst(GraphFst):
         self.graph = graph.optimize()
 
         self.optional_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(minus + pynini.accep(" "), '"true"') + pynutil.insert(" "),
+            pynutil.insert('negative: "') + minus + pynutil.delete(" ") + pynutil.insert('" '),
             0,
             1,
         )
