@@ -17,6 +17,7 @@ from parameterized import parameterized
 from nemo_text_processing.text_normalization.normalize import Normalizer
 from ..utils import CACHE_DIR, parse_test_case_file
 
+
 class TestWord:
     normalizer = Normalizer(
         input_case='cased', lang='ta', cache_dir=CACHE_DIR, overwrite_cache=False, post_process=True
