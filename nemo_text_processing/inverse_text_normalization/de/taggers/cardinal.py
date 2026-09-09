@@ -12,27 +12,75 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import defaultdict
 
 import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, GraphFst
-from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path, load_labels
+
+HUNDRED = "hundert"
+THOUSAND = "tausend"
+MILLION = "million"
+BILLION = "milliarde"
+TRILLION = "billion"
+QUADRILLION = "billiarde"
+QUINTILLION = "trillion"
+SEXTILLION = "trilliarde"
 
 
-def _digit_tie_flips():
-    """Map concatenated ones+tens (12 for einundzwanzig) to the written number (21)."""
-    return pynini.string_map([(f"{ones}{tens}", f"{tens}{ones}") for tens in range(2, 10) for ones in range(1, 10)])
+def get_ties_digit(digit_path: str, tie_path: str, and_word: str) -> 'pynini.FstLike':
+    """
+    getting all denormalizations for numbers between 21 - 100
+
+    Args:
+        digit_path: file to digit tsv
+        tie_path: file to tie tsv, e.g. 20, 30, etc.
+        and_word: connector between the digit and the tie, e.g. "und"
+    Returns:
+        res: fst that converts the verbalization of a number to that number
+    """
+
+    digits = defaultdict(list)
+    ties = defaultdict(list)
+    for k, v in load_labels(digit_path):
+        digits[v].append(k)
+    digits["1"] = ["ein"]
+
+    for k, v in load_labels(tie_path):
+        ties[v].append(k)
+
+    d = []
+    for i in range(21, 100):
+        s = str(i)
+        if s[1] == "0":
+            continue
+
+        for di in digits[s[1]]:
+            for ti in ties[s[0]]:
+                # both the compound spelling and the spaced one are attested, e.g. "einundzwanzig", "ein und zwanzig"
+                for before in ("", " "):
+                    for after in ("", " "):
+                        word = di + before + and_word + after + ti
+                        d.append((word, s))
+
+    res = pynini.string_map(d)
+    return res
 
 
-def _spoken(table, written):
-    """Spoken forms in a two-column tsv that write this output (e.g. 1.000 -> tausend)."""
-    return pynini.project(table @ pynini.accep(written), "input").optimize()
+def get_quantity(word: str, plural: str) -> 'pynini.FstLike':
+    """
+    getting the singular and the plural spoken form of a quantity
 
+    Args:
+        word: singular form of the quantity, e.g. "million"
+        plural: plural suffix of the quantity, e.g. "en"
+    Returns:
+        res: acceptor for both spoken forms, e.g. "million", "millionen"
+    """
 
-def _token(table, name):
-    """Output string from format.tsv."""
-    return pynini.project(pynini.accep(name) @ table, "output").optimize()
+    return pynini.accep(word) + pynini.accep(plural).ques
 
 
 class CardinalFst(GraphFst):
@@ -56,41 +104,30 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="classify")
 
         # WFST mappings for numbers 0-99
-        zero = pynini.string_file(get_abs_path("data/cardinal/zero.tsv"))
-        digits = pynini.string_file(get_abs_path("data/cardinal/digits.tsv"))
+        zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        graph_digit_no_one = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        graph_one = pynini.string_file(get_abs_path("data/numbers/ones.tsv"))
+        digits = graph_digit_no_one | graph_one
         # Isolates single digit cardinals to pass to other graphs
         self.digits = digits.optimize()
-        irregular_teens = pynini.string_file(get_abs_path("data/cardinal/irregular_teens.tsv"))
+        teens = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
+        # Numerals up to twelve are spelled out, so they are kept apart from the rest of the teens
+        irregular_teens = teens @ pynini.union("10", "11", "12")
         # 0-12 stay as words: zero + digits (1-9) + irregular teens (10-12)
         to_denormalize = zero | digits | irregular_teens
         # Isolates the first dozen
         self.dozen = to_denormalize.optimize()
-        teens = pynini.string_file(get_abs_path("data/cardinal/teens.tsv"))
-        tens = pynini.string_file(get_abs_path("data/cardinal/tens.tsv"))
+        tens = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
         # Standalone decades: tens digit (2) + 0 -> 20
         ties = tens + pynutil.insert("0")
-        # German flips ones and tens in two-digit numbers (ein + zwanzig -> 21).
-        flips = _digit_tie_flips()
-        und = pynini.string_file(get_abs_path("data/cardinal/und.tsv"))
-        minus = pynini.string_file(get_abs_path("data/cardinal/minus.tsv"))
-        mag = pynini.string_file(get_abs_path("data/cardinal/magnitude.tsv"))
-        tausend = _spoken(mag, "1.000")
-        million = _spoken(mag, "1.000.000")
-        milliarde = _spoken(mag, "1.000.000.000")
-        billion_de = _spoken(mag, "1.000.000.000.000")
-        billiarde = _spoken(mag, "1.000.000.000.000.000")
-        trillion_de = _spoken(mag, "1.000.000.000.000.000.000")
-        trilliarde = _spoken(mag, "1.000.000.000.000.000.000.000")
-        fmt = pynini.string_file(get_abs_path("data/cardinal/format.tsv"))
-        lead = _token(fmt, "lead")
-        dot = _token(fmt, "dot")
+        and_word = load_labels(get_abs_path("data/numbers/und.tsv"))[0][0]
+        minus = pynini.string_file(get_abs_path("data/numbers/minus.tsv"))
+        # German flips ones and tens in two-digit numbers, e.g. "ein und zwanzig" -> 21
+        ties_digit = get_ties_digit(
+            get_abs_path("data/numbers/digit.tsv"), get_abs_path("data/numbers/ties.tsv"), and_word
+        )
         delete_space = pynutil.delete(NEMO_SPACE)
-        delete_und = pynutil.delete(und)
-
-        # Accepts normalized digits+ties (ein+und+zwanzig)
-        digit_ties = digits + delete_space.ques + delete_und + delete_space.ques + tens
-        # Flips ties and digits for denormalization
-        ties_digit = digit_ties @ flips
+        delete_und = pynutil.delete(and_word)
 
         # WFST grammar for hundreds
         graph_10_99 = teens | ties | ties_digit
@@ -99,31 +136,21 @@ class CardinalFst(GraphFst):
         graph_single_and_double_digits = digits | graph_10_99
         self.graph_single_and_double_digits = graph_single_and_double_digits.optimize()
 
-        h = pynini.string_file(get_abs_path("data/cardinal/hundred.tsv"))
-        hundert = pynini.project(h, "input").optimize()
-        hundred = h @ pynini.accep("100")
-        hundred_0 = h @ pynini.accep("0")
-        hundred_00 = h @ pynini.accep("00")
-        hundreds = (hundred) | (
-            (
-                (digits | pynutil.insert("1"))
-                + delete_space.ques
-                + pynutil.delete(hundert)
-                + delete_space.ques
-                + delete_und.ques
-                + delete_space.ques
-                + graph_10_99
-            )
+        # "hundert" is preceded by an optional multiplier and followed by the two digits it leaves empty
+        hundert = pynutil.delete(HUNDRED)
+        multiplier = (digits | pynutil.insert("1")) + delete_space.ques
+        hundreds = (
+            (multiplier + hundert + delete_space.ques + delete_und.ques + delete_space.ques + graph_10_99)
             | (
-                (digits | pynutil.insert("1"))
-                + delete_space.ques
-                + hundred_0
+                multiplier
+                + hundert
+                + pynutil.insert("0")
                 + delete_space.ques
                 + delete_und.ques
                 + delete_space.ques
                 + digits
             )
-            | ((digits | pynutil.insert("1")) + delete_space.ques + hundred_00)
+            | (multiplier + hundert + pynutil.insert("00"))
         )
 
         # Digits are grouped in clusters of three: {hundreds}{tens}{ones}.
@@ -138,97 +165,36 @@ class CardinalFst(GraphFst):
         # It is mainly utilized by the "years" subgraph in the DATE class.
         non_zero_digit_cluster = (hundreds) | (pynutil.insert("0") + graph_10_99) | (pynutil.insert("00") + digits)
 
-        # WFST grammar for thousands
-        thousands = (tausend @ mag) | (
-            (
-                (pynini.cross(tausend, lead) + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(tausend, dot) + delete_und.ques)
-                | pynutil.insert("000.")
-            )
-            + delete_space.ques
-            + digit_cluster
-        )
+        def magnitude(quantity, groups, lower_magnitudes, leading_cluster=digit_cluster, empty_multiplier=True):
+            """
+            WFST grammar for one order of magnitude, e.g. "million"
 
-        non_zero_thousands = (tausend @ mag) | (
-            (
-                (pynini.cross(tausend, lead) + delete_space.ques + delete_und.ques)
-                | (non_zero_digit_cluster + delete_space.ques + pynini.cross(tausend, dot) + delete_und.ques)
-                # | pynutil.insert("000.")
+            Args:
+                quantity: acceptor for the spoken forms of the quantity, e.g. "million", "millionen"
+                groups: number of three-digit clusters below this magnitude, e.g. 2 for "million"
+                lower_magnitudes: WFST grammar for the next magnitude down, e.g. "thousands"
+                leading_cluster: WFST grammar for the cluster multiplying the quantity
+                empty_multiplier: whether the magnitude may be skipped, e.g. "eine million drei"
+            """
+            multiplied = pynutil.delete(quantity) + pynutil.insert("1.") + delete_space.ques + delete_und.ques | (
+                leading_cluster + delete_space.ques + pynutil.delete(quantity) + pynutil.insert(".") + delete_und.ques
             )
-            + delete_space.ques
-            + digit_cluster
-        )
+            if empty_multiplier:
+                multiplied |= pynutil.insert("000.")
+            # The quantity on its own, e.g. "million" -> 1.000.000
+            standalone = pynutil.delete(quantity) + pynutil.insert("1" + ".000" * groups)
+            return standalone | (multiplied + delete_space.ques + lower_magnitudes)
 
-        # WFST grammar for millions
-        millions = (million @ mag) | (
-            (
-                (pynini.cross(million, lead) + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(million, dot) + delete_und.ques)
-                | pynutil.insert("000.")
-            )
-            + delete_space.ques
-            + thousands
+        thousands = magnitude(THOUSAND, 1, digit_cluster)
+        non_zero_thousands = magnitude(
+            THOUSAND, 1, digit_cluster, leading_cluster=non_zero_digit_cluster, empty_multiplier=False
         )
-
-        # WFST grammar for billions
-        billion = milliarde
-        billions = (milliarde @ mag) | (
-            (
-                (pynini.cross(milliarde, lead) + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(billion, dot) + delete_und.ques)
-                | pynutil.insert("000.")
-            )
-            + delete_space.ques
-            + millions
-        )
-
-        # WFST grammar for trillions
-        trillion = billion_de
-        trillions = (billion_de @ mag) | (
-            (
-                (pynini.cross(billion_de, lead) + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(trillion, dot) + delete_und.ques)
-                | pynutil.insert("000.")
-            )
-            + delete_space.ques
-            + billions
-        )
-
-        # WFST grammar for quadrillions
-        quadrillion = billiarde
-        quadrillions = (billiarde @ mag) | (
-            (
-                (pynini.cross(quadrillion, lead) + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(quadrillion, dot) + delete_und.ques)
-                | pynutil.insert("000.")
-            )
-            + delete_space.ques
-            + trillions
-        )
-
-        # WFST grammar for quintillions
-        quintillion = trillion_de
-        quintillions = (trillion_de @ mag) | (
-            (
-                (pynini.cross(trillion_de, lead) + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(quintillion, dot) + delete_und.ques)
-                | pynutil.insert("000.")
-            )
-            + delete_space.ques
-            + quadrillions
-        )
-
-        # WFST grammar for sextillions
-        sextillion = trilliarde
-        sextillions = (trilliarde @ mag) | (
-            (
-                (pynini.cross(sextillion, lead) + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(sextillion, dot) + delete_und.ques)
-                | pynutil.insert("000.")
-            )
-            + delete_space.ques
-            + quintillions
-        )
+        millions = magnitude(get_quantity(MILLION, "en"), 2, thousands)
+        billions = magnitude(get_quantity(BILLION, "n"), 3, millions)
+        trillions = magnitude(get_quantity(TRILLION, "en"), 4, billions)
+        quadrillions = magnitude(get_quantity(QUADRILLION, "n"), 5, trillions)
+        quintillions = magnitude(get_quantity(QUINTILLION, "en"), 6, quadrillions)
+        sextillions = magnitude(get_quantity(SEXTILLION, "n"), 7, quintillions)
 
         # Remove the leading zeros
         non_zero_digits = pynini.difference(NEMO_DIGIT, "0")
@@ -272,7 +238,7 @@ class CardinalFst(GraphFst):
         years_exceptions = (
             graph_11_99
             + pynutil.delete(NEMO_SPACE).ques
-            + pynutil.delete(hundert).ques
+            + pynutil.delete(HUNDRED).ques
             + pynutil.delete(NEMO_SPACE).ques
             + (graph_10_99 | pynutil.insert("00"))
         )
