@@ -161,14 +161,14 @@ class CardinalFst(GraphFst):
         # and a year over 2.020
         graph = pynutil.add_weight(graph, weight=0.001)
 
-        # the period separators are part of how the cardinal class renders a standalone number,
-        # the classes built on top of this one embed the plain digit string
-        graph_separated = graph.optimize()
-        graph = (graph @ remove_period_separators).optimize()
+        # only a standalone cardinal is rendered with period separators; every class built on top of
+        # this one embeds the plain digit string, so the two readings are kept apart by name
+        graph_with_separators = graph.optimize()
+        graph_without_separators = (graph @ remove_period_separators).optimize()
 
-        self.graph_no_exception = graph
+        self.graph_no_exception = graph_without_separators
         # alias under the name the standalone German grammars use
-        self.graph_all_cardinals = graph_separated
+        self.graph_all_cardinals = graph_without_separators
 
         # years 0 - 9999, including the colloquial readings, e.g. "zwanzigvierundzwanzig" -> 2024
         first_millenium = graph_cluster_non_zero
@@ -206,7 +206,10 @@ class CardinalFst(GraphFst):
         spelled_out = pynini.project(spelled_out, "input")
         single_digits = pynini.project(single_digits, "input")
 
-        self.graph = ((pynini.project(graph, "input") - single_digits.arcsort()) @ graph).optimize()
+        self.graph = (
+            (pynini.project(graph_without_separators, "input") - single_digits.arcsort())
+            @ graph_without_separators
+        ).optimize()
 
         self.optional_minus_graph = pynini.closure(
             pynutil.insert('negative: "') + graph_minus + pynutil.delete(NEMO_SPACE) + pynutil.insert('" '), 0, 1
@@ -214,16 +217,18 @@ class CardinalFst(GraphFst):
         # alias under the name the standalone German grammars use
         self.optional_negative = self.optional_minus_graph
 
-        # fully denormalized reading, used where the context rules out spelling numbers out
-        self.all_cardinals_graph = (
-            self.optional_minus_graph + pynutil.insert('integer: "') + graph_separated + pynutil.insert('"')
+        # standalone readings, the only place the period separators are emitted
+
+        # fully denormalized, used where the context rules out spelling numbers out
+        self.forced_integer_graph_with_separators = (
+            self.optional_minus_graph + pynutil.insert('integer: "') + graph_with_separators + pynutil.insert('"')
         ).optimize()
 
-        # canonical reading, leaving the first dozen spelled out
+        # canonical, leaving the first dozen spelled out
         canonical_graph = spelled_out | (
-            (pynini.project(graph_separated, "input") - spelled_out.arcsort()) @ graph_separated
+            (pynini.project(graph_with_separators, "input") - spelled_out.arcsort()) @ graph_with_separators
         )
-        self.canonical_cardinals_graph = (
+        self.canonical_integer_graph_with_separators = (
             self.optional_minus_graph + pynutil.insert('integer: "') + canonical_graph + pynutil.insert('"')
         ).optimize()
 
@@ -241,10 +246,12 @@ class CardinalFst(GraphFst):
             + nouns_forcing_denormalization
             + pynutil.insert('"')
             + pynini.accep(NEMO_SPACE)
-            + self.all_cardinals_graph
+            + self.forced_integer_graph_with_separators
         )
 
-        final_graph = self.add_tokens(self.canonical_cardinals_graph | graph_forced_denormalization)
+        final_graph = self.add_tokens(
+            self.canonical_integer_graph_with_separators | graph_forced_denormalization
+        )
         self.fst = final_graph.optimize()
 
     def delete_word(self, word: 'pynini.FstLike') -> 'pynini.FstLike':
