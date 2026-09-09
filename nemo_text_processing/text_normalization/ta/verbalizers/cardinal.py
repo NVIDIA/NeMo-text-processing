@@ -20,12 +20,13 @@ from nemo_text_processing.text_normalization.ta.graph_utils import NEMO_NOT_QUOT
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for verbalizing cardinal, e.g.
-        cardinal { negative: "true" integer: "-23" } -> கழித்தல் இருபத்தேழு
+    Finite state transducer for verbalizing cardinals, e.g.
+        cardinal { integer: "ஐந்து" } -> ஐந்து
+        cardinal { negative: "true" integer: "இருபத்துமூன்று" } -> கழித்தல் இருபத்துமூன்று
 
     Args:
         deterministic: if True will provide a single transduction option,
-            for False multiple options (used for audio-based normalization)
+            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, deterministic: bool = True):

@@ -27,12 +27,18 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
         e.g. 23 -> cardinal { integer: "இருபத்திமூன்று" }
+        "9999999999999999" -> cardinal { integer: "தொண்ணூற்றிஒன்பது கோடியே தொண்ணூற்றிஒன்பது லட்சத்து 
+        தொண்ணூற்றிஒன்பதுஆயிரத்து ஒன்பதுநூற்று தொண்ணூற்றிஒன்பது கோடியே தொண்ணூற்றிஒன்பது லட்சத்து 
+        தொண்ணூற்றிஒன்பதுஆயிரத்து ஒன்பதுநூற்று தொண்ணூற்றிஒன்பது" }
+
+    Covers up to 16 digits (max 9999999999999999, just under 10^16),
+    via composed கோடி (crore) groups.
 
     Args:
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
-
+    
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="cardinal", kind="classify", deterministic=deterministic)
 
