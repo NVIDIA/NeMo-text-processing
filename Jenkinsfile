@@ -113,9 +113,22 @@ pipeline {
         }
       }
     }
-    stage('L0: TE TN grammars') {
-      steps {
-        sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=te --text="౧" --cache_dir ${TE_TN_CACHE}'
+    stage('L0: Create TE TN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          branch 'staging/**'
+          branch 'staging_*'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: TE TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=te --text="౧" --cache_dir ${TE_TN_CACHE}'
+          }
+        }
       }
     }
 
