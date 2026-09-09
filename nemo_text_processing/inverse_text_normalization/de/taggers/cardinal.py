@@ -207,8 +207,7 @@ class CardinalFst(GraphFst):
         single_digits = pynini.project(single_digits, "input")
 
         self.graph = (
-            (pynini.project(graph_without_separators, "input") - single_digits.arcsort())
-            @ graph_without_separators
+            (pynini.project(graph_without_separators, "input") - single_digits.arcsort()) @ graph_without_separators
         ).optimize()
 
         self.optional_minus_graph = pynini.closure(
@@ -249,9 +248,7 @@ class CardinalFst(GraphFst):
             + self.forced_integer_graph_with_separators
         )
 
-        final_graph = self.add_tokens(
-            self.canonical_integer_graph_with_separators | graph_forced_denormalization
-        )
+        final_graph = self.add_tokens(self.canonical_integer_graph_with_separators | graph_forced_denormalization)
         self.fst = final_graph.optimize()
 
     def delete_word(self, word: 'pynini.FstLike') -> 'pynini.FstLike':
