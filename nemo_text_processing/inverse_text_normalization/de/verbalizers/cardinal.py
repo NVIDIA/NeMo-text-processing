@@ -23,10 +23,22 @@ class CardinalFst(GraphFst):
     Finite state transducer for verbalizing cardinal
         e.g. cardinal { integer: "23" negative: "-" } -> -23
         e.g. cardinal { integer: "1.000" } -> 1.000
+        e.g. cardinal { morphosyntactic_features: "kapitel" integer: "3" } -> kapitel 3
     """
 
     def __init__(self):
         super().__init__(name="cardinal", kind="verbalize")
+        optional_noun = pynini.closure(
+            pynutil.delete("morphosyntactic_features:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
+            + delete_space
+            + pynutil.insert(" "),
+            0,
+            1,
+        )
         optional_sign = pynini.closure(
             pynutil.delete("negative:")
             + delete_space
@@ -45,6 +57,6 @@ class CardinalFst(GraphFst):
             + pynutil.delete('"')
         )
         self.numbers = graph
-        graph = optional_sign + graph
+        graph = optional_noun + optional_sign + graph
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

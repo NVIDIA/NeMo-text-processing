@@ -93,7 +93,7 @@ class ClassifyFst(GraphFst):
             tn_electronic_verbalizer = TNElectronicVerbalizer(deterministic=False)
             tn_whitelist_tagger = TNWhitelistTagger(input_case="cased", deterministic=False, input_file=whitelist)
 
-            cardinal = CardinalFst()
+            cardinal = CardinalFst(input_case=input_case)
             cardinal_graph = cardinal.fst
 
             ordinal = OrdinalFst(itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer)

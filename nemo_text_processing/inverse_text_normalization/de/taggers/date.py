@@ -60,7 +60,12 @@ class DateFst(GraphFst):
         month_as_number = pynutil.delete("month: \"") + itn_cardinal_tagger.graph_no_exception + pynutil.delete("\"")
         month_as_string = pynutil.delete("month: \"") + tn_date_tagger.month_abbr.invert() + pynutil.delete("\"")
 
-        convert_year = (tn_date_tagger.year @ optional_delete_space).invert().optimize()
+        convert_year = (tn_date_tagger.year @ optional_delete_space).invert()
+        # year readings the inverted TN graph cannot reach, e.g. the leading zero of
+        # "neunzehnhundertnullfünf"; restricted to four digits so that short numerals in the year
+        # position stay cardinals
+        convert_year |= pynutil.add_weight(itn_cardinal_tagger.graph_years @ (NEMO_DIGIT**4), weight=0.01)
+        convert_year = convert_year.optimize()
         delete_year_marker = (
             pynutil.delete("year: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         ) @ convert_year

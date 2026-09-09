@@ -19,4 +19,4 @@ neunzehn hundert vierundneunzig~1994
 neunzehn hundert vier und neunzig~1994
 neunzehn vierundneunzig~1994
 zwei tausend drei~2003
-ein tausend acht~1008
+ein tausend acht~1.008
