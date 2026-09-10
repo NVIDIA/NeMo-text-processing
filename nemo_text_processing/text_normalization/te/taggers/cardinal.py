@@ -147,9 +147,15 @@ class CardinalFst(GraphFst):
             pieces = []
             for zeros, rem in remainders:
                 body = zero_pow[zeros] + insert_space + rem
-                pieces.append(one_prefix + singular_ins + body)
-                for pref in (digit_except_one, teens_ties_thousand, teens_ties_except_one):
-                    pieces.append(pref + before_ins + body)
+                digit_pref = pynini.union(
+                    one_prefix + singular_ins + body,
+                    digit_except_one + before_ins + body,
+                )
+                ties_pref = pynini.union(
+                    teens_ties_thousand + before_ins + body,
+                    teens_ties_except_one + before_ins + body,
+                )
+                pieces.append(prefer(digit_pref, ties_pref))
             return pynini.union(*pieces).optimize()
 
         def crore_graph(oka_prefix, other_prefix, ladder=None, other_head=None):
@@ -235,7 +241,6 @@ class CardinalFst(GraphFst):
             | digit_except_one + pynutil.delete(NEMO_ALL_ZERO) + hundreds_before_one
         ).optimize()
 
-        # digit_except_one on the units rung so …01 cannot become ఒకటి కోట్లు.
         thousand_crore_ladder = [(2, digit_except_one), (1, teens_ties), (0, hundred_crore_prefix)]
         thousand_one_crore_prefix = oka_count_prefix(
             ins_thousand, ins_thousands_before, [(2, one_as_oka), (0, hundred_one_crore_prefix)]
@@ -309,13 +314,13 @@ class CardinalFst(GraphFst):
             (1, graph_lakhs),
             (0, ten_lakh_crore_lakh_remainder),
         ]
-        ten_lakh_crore_count_prefix = (
-            graph_crores
-            | graph_ten_crores
-            | create_larger_number_graph(one_prefix, ins_crore, 0, ten_lakh_crore_lakh_remainder)
+
+        ten_lakh_crore_count_prefix = prefer(
+            create_larger_number_graph(one_prefix, ins_crore, 0, ten_lakh_crore_lakh_remainder)
             | create_larger_number_graph(digit_except_one, ins_crores_before, 0, ten_lakh_crore_lakh_remainder)
             | create_larger_number_graph(teens_ties_thousand, ins_crore_spaced, 0, ten_lakh_crore_lakh_remainder)
-            | create_larger_number_graph(teens_ties_except_one, ins_crores_before, 0, ten_lakh_crore_lakh_remainder)
+            | create_larger_number_graph(teens_ties_except_one, ins_crores_before, 0, ten_lakh_crore_lakh_remainder),
+            graph_crores | graph_ten_crores,
         ).optimize()
         graph_ten_lakh_crores = build_group(
             ten_lakh_crore_count_prefix, ins_crores_before, crore_ladder, head_suffix=ins_crores_plural, head_zeros=7
