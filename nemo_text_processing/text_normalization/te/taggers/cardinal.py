@@ -71,7 +71,11 @@ class CardinalFst(GraphFst):
         i_thou, i_thou_sp = ins("thousand", False), ins("thousand")
         i_thous, i_thous_pl = ins("thousands_before"), ins("thousands_plural")
         i_lakh, i_lakh_sp = ins("lakh", False), ins("lakh")
-        i_lakha, i_lakhs, i_lakhs_pl = pynutil.insert(mag["lakh_before_digit"]), ins("lakhs_before"), ins("lakhs_plural")
+        i_lakha, i_lakhs, i_lakhs_pl = (
+            pynutil.insert(mag["lakh_before_digit"]),
+            ins("lakhs_before"),
+            ins("lakhs_plural"),
+        )
         i_koti, i_koti_sp = ins("crore", False), ins("crore")
         i_kotlu, i_kotlu_pl = ins("crores_before"), ins("crores_plural")
         i_vandalu, i_vandalu_pl = ins("hundreds_before"), ins("hundreds_plural")
@@ -228,9 +232,7 @@ class CardinalFst(GraphFst):
         thousand_crore, ten_thousand_crore = band(
             exact_n(4), i_thou, i_thous, i_thous, i_thou_sp, 3, thou_crore_ladder
         )
-        graph_hundred_crores = U(
-            crore_of(hundred_one, hundred_crore), rung(hundred_crore, i_kotlu, 0, graph_crores)
-        )
+        graph_hundred_crores = U(crore_of(hundred_one, hundred_crore), rung(hundred_crore, i_kotlu, 0, graph_crores))
         graph_thousand_crores = crore_of(thousand_one, U(thousand_crore, ten_thousand_crore))
         graph_ten_thousand_crores = crore_of(thousand_one, ten_thousand_crore)
 
@@ -246,9 +248,7 @@ class CardinalFst(GraphFst):
             i_lakhs,
             [(4, one_as_oka), (2, hundred_one), (1, exact_n(4, thousand_one)), (0, exact_n(5, thousand_one))],
         )
-        lakh_crore, ten_lakh_crore = band(
-            exact_n(6), i_lakh, i_lakhs, i_lakhs, i_lakh_sp, 5, lakh_crore_ladder
-        )
+        lakh_crore, ten_lakh_crore = band(exact_n(6), i_lakh, i_lakhs, i_lakhs, i_lakh_sp, 5, lakh_crore_ladder)
         graph_lakh_crores = crore_of(lakh_one, U(lakh_crore, ten_lakh_crore))
 
         ten_lakh_rem = ties_group(i_lakhs, i_lakhs, lakh_ladder, i_lakhs, i_lakhs, 5)
@@ -275,9 +275,7 @@ class CardinalFst(GraphFst):
             rung(digit_x1, i_vandalu, 1, digit_x1),
         )
         thousand_amt = U(*band(exact_n(4), i_thou, i_thous, i_thous, i_thou_sp, 3, except_one_ladder))
-        ten_thousand_amt = ties_group(
-            i_thous, i_thous, except_one_ladder + [(0, hundred_amt)], i_thou_sp, i_thous, 3
-        )
+        ten_thousand_amt = ties_group(i_thous, i_thous, except_one_ladder + [(0, hundred_amt)], i_thou_sp, i_thous, 3)
         crore_one_10 = rung(hundred_amt, i_kotlu, 6, one_as_oka).optimize()
         crore_one_11 = rung(thousand_amt, i_kotlu, 6, one_as_oka).optimize()
         crore_one_12 = rung(ten_thousand_amt, i_kotlu, 6, one_as_oka).optimize()
