@@ -155,9 +155,7 @@ class CardinalFst(GraphFst):
         def crore_graph(oka_prefix, other_prefix, ladder=None, other_head=None):
             ladder = crore_ladder if ladder is None else ladder
             other_head = ins_crores_plural if other_head is None else other_head
-            oka = build_group(
-                oka_prefix, ins_crore_spaced, ladder, head_suffix=ins_crore_spaced, head_zeros=7
-            )
+            oka = build_group(oka_prefix, ins_crore_spaced, ladder, head_suffix=ins_crore_spaced, head_zeros=7)
             other = build_group(other_prefix, ins_crores_before, ladder, head_suffix=other_head, head_zeros=7)
             return prefer(oka, other).optimize()
 
@@ -365,7 +363,11 @@ class CardinalFst(GraphFst):
                 thousand_one_crore_prefix, ins_crore_spaced, koti_ladder, head_suffix=ins_crore_spaced, head_zeros=7
             )
             | build_group(
-                hundred_crore_crore_oka_count_prefix, ins_crore_spaced, koti_ladder, head_suffix=ins_crore_spaced, head_zeros=7
+                hundred_crore_crore_oka_count_prefix,
+                ins_crore_spaced,
+                koti_ladder,
+                head_suffix=ins_crore_spaced,
+                head_zeros=7,
             ),
             build_group(
                 hundred_crore_crore_other_count_prefix,
@@ -376,7 +378,11 @@ class CardinalFst(GraphFst):
             ),
         ).optimize()
         graph_hundred_crore_crores = build_group(
-            hundred_crore_crore_count_prefix, ins_crores_before, crore_ladder, head_suffix=ins_crores_plural, head_zeros=7
+            hundred_crore_crore_count_prefix,
+            ins_crores_before,
+            crore_ladder,
+            head_suffix=ins_crores_plural,
+            head_zeros=7,
         ).optimize()
 
         def exact_digits(n, graph):
