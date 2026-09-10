@@ -20,7 +20,7 @@ from typing import Dict
 import pynini
 from pynini import Far
 from pynini.export import export
-from pynini.lib import byte, pynutil, utf8
+from pynini.lib import pynutil, utf8
 
 from nemo_text_processing.text_normalization.ta.utils import get_abs_path
 

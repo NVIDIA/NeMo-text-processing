@@ -33,5 +33,12 @@ class TestPunctuation:
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm(self, test_input, expected):
-        pred = self.normalizer.normalize(test_input, verbose=False)
-        assert pred == expected
+        pred = self.normalizer.normalize(test_input, verbose=False, punct_post_process=False)
+        assert pred == expected, f"input: {test_input} != {expected}"
+
+    @parameterized.expand(parse_test_case_file('ta/data_text_normalization/test_cases_punctuation_match_input.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_python_punct_post_process(self, test_input, expected):
+        pred = self.normalizer.normalize(test_input, verbose=False, punct_post_process=True)
+        assert pred == expected, f"for input |{test_input}|: pred: |{pred}| != expected: |{expected}|"

@@ -22,7 +22,7 @@ class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinals, e.g.
         cardinal { integer: "ஐந்து" } -> ஐந்து
-        cardinal { negative: "true" integer: "இருபத்துமூன்று" } -> கழித்தல் இருபத்துமூன்று
+        cardinal { negative: "true" integer: "இருபத்திமூன்று" } -> கழித்தல் இருபத்திமூன்று
 
     Args:
         deterministic: if True will provide a single transduction option,
