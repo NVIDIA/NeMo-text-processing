@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     DIGIT_GLYPH_TO_ASCII,
     NEMO_CHAR,
+    NEMO_HI_DIGIT,
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_space,
@@ -35,6 +36,27 @@ digit_without_shunya = (
 )
 digit = digit_without_shunya | shunya
 
+# Phone numbers are often spoken in two digit groups, e.g. "इक्यासी" for "८१",
+# so a single spoken word can contribute two digits to the number.
+digit_pair = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")).invert()
+digit_unit = digit | digit_pair
+
+
+def digit_sequence(length, first=None):
+    """
+    Sequence of spoken number words producing exactly `length` digits.
+
+    A word may contribute one digit ("नौ" -> "९") or two ("इक्यासी" -> "८१"), so the
+    length is constrained on the output side rather than by counting spoken words.
+    `first` optionally restricts the leading digit, e.g. non zero for mobile numbers.
+    """
+    sequence = pynini.closure(digit_unit + delete_space) + digit_unit
+    if first is None:
+        output = pynini.closure(NEMO_HI_DIGIT, length, length)
+    else:
+        output = first + pynini.closure(NEMO_HI_DIGIT, length - 1, length - 1)
+    return pynini.compose(sequence, output).optimize()
+
 
 def get_context(keywords: list):
     keywords = pynini.union(*keywords)
@@ -50,9 +72,23 @@ def get_context(keywords: list):
     return before, after
 
 
+def get_optional_extension():
+    """
+    Optional telephone extension, e.g. "एक्सटेंशन एक दो तीन" -> " ext. १२३".
+
+    Only reachable after a complete phone number, so place names such as
+    "ग्रीन पार्क एक्सटेंशन" cannot trigger it.
+    """
+    ext_phrase = pynini.string_file(get_abs_path("data/telephone/extension.tsv"))
+    ext_digits = digit + pynini.closure(delete_space + digit, 0, 4)
+    return pynini.closure(
+        delete_space + pynutil.insert(" ") + ext_phrase + pynutil.insert(" ") + delete_space + ext_digits, 0, 1
+    )
+
+
 def generate_context_graph(context_keywords, length):
     context_before, context_after = get_context(context_keywords)
-    digits = pynini.closure(digit + delete_space, length - 1, length - 1) + digit
+    digits = digit_sequence(length)
 
     graph_after_context = digits + NEMO_WHITE_SPACE + context_after
     graph_before_context = context_before + NEMO_WHITE_SPACE + digits
@@ -76,7 +112,7 @@ def generate_credit(context_keywords):
 def generate_mobile(context_keywords):
     context_before, context_after = get_context(context_keywords)
 
-    country_code = pynini.cross("प्लस", "+") + pynini.closure(delete_space + digit, 2, 2) + NEMO_WHITE_SPACE
+    country_code = pynini.cross("प्लस", "+") + delete_space + digit_sequence(2) + NEMO_WHITE_SPACE
     graph_country_code = (
         pynutil.insert("country_code: \"")
         + (context_before + NEMO_WHITE_SPACE) ** (0, 1)
@@ -84,10 +120,11 @@ def generate_mobile(context_keywords):
         + pynutil.insert("\" ")
     )
 
-    number_part = digit_without_shunya + delete_space + pynini.closure(digit + delete_space, 8, 8) + digit
+    number_part = digit_sequence(10, first=pynini.difference(NEMO_HI_DIGIT, pynini.accep("०")))
     graph_number = (
         pynutil.insert("number_part: \"")
         + number_part
+        + get_optional_extension()
         + pynini.closure(NEMO_WHITE_SPACE + context_after, 0, 1)
         + pynutil.insert("\" ")
     )
@@ -99,13 +136,14 @@ def generate_mobile(context_keywords):
 def generate_telephone(context_keywords):
     context_before, context_after = get_context(context_keywords)
 
-    landline = shunya + delete_space + pynini.closure(digit + delete_space, 9, 9) + digit
+    landline = digit_sequence(11, first=pynini.accep("०"))
     landline_with_context_before = context_before + NEMO_WHITE_SPACE + landline
     landline_with_context_after = landline + NEMO_WHITE_SPACE + context_after
 
     return (
         pynutil.insert("number_part: \"")
         + (landline | landline_with_context_before | landline_with_context_after)
+        + get_optional_extension()
         + pynutil.insert("\" ")
     )
 

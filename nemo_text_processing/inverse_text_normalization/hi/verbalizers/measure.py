@@ -15,6 +15,7 @@
 
 import pynini
 from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space
 
 
@@ -39,7 +40,9 @@ class MeasureFst(GraphFst):
             pynutil.delete("units:")
             + delete_space
             + pynutil.delete("\"")
-            + pynini.difference(pynini.closure(NEMO_CHAR - " ", 1), pynini.accep("address"))
+            + pynini.difference(
+                pynini.closure(NEMO_CHAR - " ", 1), pynini.union(pynini.accep("address"), pynini.accep("math"))
+            )
             + pynutil.delete("\"")
             + delete_space
         )
@@ -79,6 +82,18 @@ class MeasureFst(GraphFst):
             + pynini.closure(preserve_order)
         )
         graph |= address_graph
+
+        # Math verbalizer: units: "math" cardinal { integer: "२ + २ = ४" } preserve_order: true
+        math_graph = (
+            pynutil.delete("units:")
+            + delete_space
+            + pynutil.delete("\"math\"")
+            + delete_space
+            + graph_cardinal
+            + delete_space
+            + pynini.closure(preserve_order)
+        )
+        graph |= math_graph
 
         delete_tokens = self.delete_tokens(graph)
         self.decimal = graph_decimal
