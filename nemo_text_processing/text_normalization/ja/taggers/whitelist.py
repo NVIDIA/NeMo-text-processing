@@ -17,7 +17,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, delete_space
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
 
@@ -35,6 +35,8 @@ class WhiteListFst(GraphFst):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
 
         whitelist = pynini.string_file(get_abs_path("data/whitelist.tsv"))
-        graph = (pynutil.insert('name: "')) + (whitelist) + pynutil.insert('"')
+        title = pynini.string_file(get_abs_path("data/whitelist_title.tsv"))
+        title_with_space = title + delete_space + pynutil.insert(" ")
+        graph = (pynutil.insert('name: "')) + (title_with_space | whitelist) + pynutil.insert('"')
 
         self.fst = graph.optimize()
