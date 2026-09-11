@@ -30,6 +30,7 @@ pipeline {
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
     HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-5'
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-25-6'
+    KN_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-21-26-0'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -47,7 +48,6 @@ pipeline {
         sh './reinstall.sh release'
       }
     }
-
 
     stage('L0: Create EN TN/ITN Grammars') {
       when {
@@ -112,6 +112,26 @@ pipeline {
         }
       }
     }
+
+    stage('L0: Create KN TN Grammars') {
+    when {
+        anyOf {
+            branch 'main'
+            branch 'staging/**'
+            branch 'staging_*'
+            changeRequest target: 'main'
+        }
+    }
+    failFast true
+    parallel {
+        stage('L0: KN TN grammars') {
+          steps{
+              sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=kn --text="೧" --cache_dir ${KN_TN_CACHE}'
+          }
+        }
+      }
+    }
+ 
 
     stage('L0: Create DE/ES TN/ITN Grammars') {
       when {
@@ -406,6 +426,11 @@ pipeline {
         stage('L1: Run all HI TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/hi/ -m "not pleasefixme" --cpu --tn_cache_dir ${HI_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all KN TN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/kn/ -m "not pleasefixme" --cpu --tn_cache_dir ${KN_TN_CACHE}'
           }
         }
         stage('L1: Run all Codeswitched ES/EN TN/ITN tests (restore grammars from cache)') {
