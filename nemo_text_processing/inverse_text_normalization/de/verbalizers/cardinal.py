@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,22 +15,32 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for verbalizing cardinal
-        e.g. cardinal { integer: "23" negative: "-" } -> -23
-
-    Args:
-        tn_cardinal_verbalizer: TN cardinal verbalizer
+    Finite state transducer for verbalizing cardinal numbers.  Note that the verbalizer retains period-separated formatting.
+        e.g. 'cardinal { negative: "true" integer: "1.234.512.102" }' -> -1.234.512.102
     """
 
-    def __init__(self, tn_cardinal_verbalizer: GraphFst, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
-        self.numbers = tn_cardinal_verbalizer.numbers
-        optional_sign = pynini.closure(pynutil.delete("negative: \"") + NEMO_NOT_QUOTE + pynutil.delete("\" "), 0, 1)
-        graph = optional_sign + self.numbers
+    def __init__(self):
+        super().__init__(name="cardinal", kind="verbalize")
+
+        # removes the 'negative:' label and leaves the optional '-' sign in place
+        optional_minus = pynini.closure(pynini.cross('negative: "true"', "-") + delete_space, 0, 1)
+
+        # removes the 'integer:' label
+        just_integers = (
+            pynutil.delete("integer:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
+            + delete_space
+        )
+
+        graph = optional_minus + just_integers
+        self.numbers = graph.optimize()
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
