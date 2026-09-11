@@ -24,9 +24,9 @@ class RomanFst(GraphFst):
     Finite state transducer for classifying Roman numerals in supported contexts.
 
     Examples:
-        第III章 -> name: "第三章"
-        Chapter IV -> name: "Chapter 四"
-        Century XXI -> name: "Century 二十一"
+        第III章 -> tokens { name: "第三章" }
+        Chapter IV -> tokens { name: "Chapter 四" }
+        Century XXI -> tokens { name: "Century 二十一" }
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):

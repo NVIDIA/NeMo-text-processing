@@ -24,9 +24,9 @@ class RangeFst(GraphFst):
     Finite state transducer for classifying Japanese ranges.
 
     Examples:
-        2-5 -> name: "二から五"
-        10:00-11:00 -> name: "十時から十一時"
-        3kg-6kg -> name: "三キロから六キロ"
+        2-5 -> tokens { name: "二から五" }
+        10:00-11:00 -> tokens { name: "十時から十一時" }
+        3kg-6kg -> tokens { name: "三キロから六キロ" }
 
     Args:
         cardinal: composed cardinal tagger and verbalizer
