@@ -27,12 +27,8 @@ pipeline {
     HE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-24-25-0'
     HY_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-1'
-<<<<<<< HEAD
-    JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
-=======
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-17-26-0'
     HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-5'
->>>>>>> 076fe5bb (Japanese TN fix and improvement (#444))
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-25-6'
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-29-26-1'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
