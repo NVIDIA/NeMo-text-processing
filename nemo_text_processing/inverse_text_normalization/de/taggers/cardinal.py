@@ -16,7 +16,12 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, GraphFst
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_SIGMA,
+    GraphFst,
+    delete_space,
+)
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
 
 
@@ -33,11 +38,18 @@ def swap_tens_and_ones(digits: 'pynini.FstLike', tens: 'pynini.FstLike') -> 'pyn
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for classifying cardinals
+    Finite state transducer for classifying cardinals. Numbers below thirteen are not converted.
+    Allows both compound numeral strings or separated by whitespace.
+    "und" (en: "and") can be inserted between "hundert" and following number or "tausend" and following single or double digit number.
+
+        e.g. minus drei und zwanzig -> cardinal { negative: "true" integer: "23" }
         e.g. minus dreiundzwanzig -> cardinal { negative: "true" integer: "23" }
+        e.g. dreizehn -> cardinal { integer: "13" }
+        e.g. ein hundert -> cardinal { integer: "100" }
+        e.g. einhundert -> cardinal { integer: "100" }
+        e.g. ein tausend -> cardinal { integer: "1.000" }
         e.g. eintausend -> cardinal { integer: "1.000" }
-    Numbers below thirteen are not converted.
-    The transducer implements a period separator every three digits by default.
+        e.g. ein tausend zwanzig -> cardinal { integer: "1.020" }
     """
 
     def __init__(self):
@@ -53,20 +65,20 @@ class CardinalFst(GraphFst):
 
         # Isolates the first dozen
         self.dozen = to_denormalize.optimize()
-        teens = pynini.string_file(get_abs_path("data/cardinal/teens.tsv"))
+        regular_teens = pynini.string_file(get_abs_path("data/cardinal/regular_teens.tsv"))
+        teens = irregular_teens | regular_teens
         tens = pynini.string_file(get_abs_path("data/cardinal/tens.tsv"))
         ties = tens + pynutil.insert("0")
         # German flips ones and tens in two-digit numbers. The WFST below handles these flips.
-        delete_space = pynutil.delete(NEMO_SPACE)
         delete_und = pynutil.delete("und")
 
         # Accepts normalized digits+ties (ein+und+zwanzig)
-        digit_ties = digits + delete_space.ques + delete_und + delete_space.ques + tens
+        digit_ties = digits + delete_space + delete_und + delete_space + tens
         # Flips ties and digits for denormalization
         ties_digit = digit_ties @ swap_tens_and_ones(digits, tens)
 
         # WFST grammar for hundreds
-        graph_10_99 = irregular_teens | teens | ties | ties_digit
+        graph_10_99 = teens | ties | ties_digit
         self.graph_double_digits = graph_10_99
         # Isolates single and double-digit cardinals to pass to other graphs
         graph_single_and_double_digits = digits | graph_10_99
@@ -76,23 +88,23 @@ class CardinalFst(GraphFst):
         hundreds = (pynini.cross(hundert, "100")) | (
             (
                 (digits | pynutil.insert("1"))
-                + delete_space.ques
+                + delete_space
                 + pynutil.delete("hundert")
-                + delete_space.ques
+                + delete_space
                 + delete_und.ques
-                + delete_space.ques
+                + delete_space
                 + graph_10_99
             )
             | (
                 (digits | pynutil.insert("1"))
-                + delete_space.ques
+                + delete_space
                 + pynini.cross("hundert", "0")
-                + delete_space.ques
+                + delete_space
                 + delete_und.ques
-                + delete_space.ques
+                + delete_space
                 + digits
             )
-            | ((digits | pynutil.insert("1")) + delete_space.ques + pynini.cross("hundert", "00"))
+            | ((digits | pynutil.insert("1")) + delete_space + pynini.cross("hundert", "00"))
         )
 
         # Digits are grouped in clusters of three: {hundreds}{tens}{ones}.
@@ -103,11 +115,11 @@ class CardinalFst(GraphFst):
         # WFST grammar for thousands
         thousands = (pynini.cross("tausend", "1.000")) | (
             (
-                (pynini.cross("tausend", "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross("tausend", ".") + delete_und.ques)
+                (pynini.cross("tausend", "1.") + delete_space + delete_und.ques)
+                | (digit_cluster + delete_space + pynini.cross("tausend", ".") + delete_und.ques)
                 | pynutil.insert("000.")
             )
-            + delete_space.ques
+            + delete_space
             + digit_cluster
         )
 
@@ -115,11 +127,11 @@ class CardinalFst(GraphFst):
         million = pynini.accep("million") | pynini.accep("millionen")
         millions = (pynini.cross("million", "1.000.000")) | (
             (
-                (pynini.cross("million", "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(million, ".") + delete_und.ques)
+                (pynini.cross("million", "1.") + delete_space + delete_und.ques)
+                | (digit_cluster + delete_space + pynini.cross(million, ".") + delete_und.ques)
                 | pynutil.insert("000.")
             )
-            + delete_space.ques
+            + delete_space
             + thousands
         )
 
@@ -135,13 +147,13 @@ class CardinalFst(GraphFst):
             (
                 (
                     pynini.cross((pynini.accep("milliarde") | pynini.accep("milliard")), "1.")
-                    + delete_space.ques
+                    + delete_space
                     + delete_und.ques
                 )
-                | (digit_cluster + delete_space.ques + pynini.cross(billion, ".") + delete_und.ques)
+                | (digit_cluster + delete_space + pynini.cross(billion, ".") + delete_und.ques)
                 | pynutil.insert("000.")
             )
-            + delete_space.ques
+            + delete_space
             + millions
         )
 
@@ -149,11 +161,11 @@ class CardinalFst(GraphFst):
         trillion = pynini.accep("billion") | pynini.accep("billionen")
         trillions = (pynini.cross("billion", "1.000.000.000.000")) | (
             (
-                (pynini.cross("billion", "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(trillion, ".") + delete_und.ques)
+                (pynini.cross("billion", "1.") + delete_space + delete_und.ques)
+                | (digit_cluster + delete_space + pynini.cross(trillion, ".") + delete_und.ques)
                 | pynutil.insert("000.")
             )
-            + delete_space.ques
+            + delete_space
             + billions
         )
 
@@ -167,11 +179,11 @@ class CardinalFst(GraphFst):
         )
         quadrillions = (pynini.cross("billiarde", "1.000.000.000.000.000")) | (
             (
-                (pynini.cross(quadrillion, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(quadrillion, ".") + delete_und.ques)
+                (pynini.cross(quadrillion, "1.") + delete_space + delete_und.ques)
+                | (digit_cluster + delete_space + pynini.cross(quadrillion, ".") + delete_und.ques)
                 | pynutil.insert("000.")
             )
-            + delete_space.ques
+            + delete_space
             + trillions
         )
 
@@ -179,11 +191,11 @@ class CardinalFst(GraphFst):
         quintillion = pynini.accep("trillion") | pynini.accep("trillionen")
         quintillions = (pynini.cross("trillion", "1.000.000.000.000.000.000")) | (
             (
-                (pynini.cross("trillion", "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(quintillion, ".") + delete_und.ques)
+                (pynini.cross("trillion", "1.") + delete_space + delete_und.ques)
+                | (digit_cluster + delete_space + pynini.cross(quintillion, ".") + delete_und.ques)
                 | pynutil.insert("000.")
             )
-            + delete_space.ques
+            + delete_space
             + quadrillions
         )
 
@@ -197,11 +209,11 @@ class CardinalFst(GraphFst):
         )
         sextillions = (pynini.cross("billiarde", "1.000.000.000.000.000.000.000")) | (
             (
-                (pynini.cross(sextillion, "1.") + delete_space.ques + delete_und.ques)
-                | (digit_cluster + delete_space.ques + pynini.cross(sextillion, ".") + delete_und.ques)
+                (pynini.cross(sextillion, "1.") + delete_space + delete_und.ques)
+                | (digit_cluster + delete_space + pynini.cross(sextillion, ".") + delete_und.ques)
                 | pynutil.insert("000.")
             )
-            + delete_space.ques
+            + delete_space
             + quintillions
         )
 

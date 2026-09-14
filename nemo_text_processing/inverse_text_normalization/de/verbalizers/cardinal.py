@@ -1,4 +1,4 @@
-# Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for verbalizing cardinal numbers.  Note that the verbalizer retains period-separated formatting.
-        e.g. 'cardinal { negative: "true" integer: "1.234.512.102" }' -> -1.234.512.102
+    Finite state transducer for verbalizing cardinal  Note that the verbalizer retains period-separated formatting.
+        e.g. cardinal { negative: "true" integer: "23" } -> -23
     """
 
     def __init__(self):
