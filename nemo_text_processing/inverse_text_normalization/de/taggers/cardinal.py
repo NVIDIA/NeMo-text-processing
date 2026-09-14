@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import defaultdict
 
 import pynini
 from pynini.lib import pynutil
@@ -19,21 +20,49 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
+    NEMO_WHITE_SPACE,
     GraphFst,
     delete_space,
 )
-from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path, load_labels
 
 
-def swap_tens_and_ones(digits: 'pynini.FstLike', tens: 'pynini.FstLike') -> 'pynini.FstLike':
+AND = "und"
+
+
+def get_tens_digit(digit_path: str, tens_path: str) -> 'pynini.FstLike':
     """
-    German says the ones digit before the tens digit (ein-und-zwanzig = 21), so digits
-    arrive reversed. An FST cannot reorder without enumerating, so this enumerates every
-    ones/tens pair present in the digit and tens tables.
+    getting all denormalizations for numbers between 21 - 99. German says the ones digit
+    before the tens digit (ein-und-zwanzig = 21), so the words cannot be read left to right
+
+    Args:
+        digit_path: file to digits tsv
+        tens_path: file to tens tsv, e.g. zwanzig -> 2
+    Returns:
+        res: fst that converts the verbalization of a number to its digits
     """
-    ones_digits = sorted({output for _, output, _ in digits.paths().items()})
-    tens_digits = sorted({output for _, output, _ in tens.paths().items()})
-    return pynini.string_map([(one + ten, ten + one) for one in ones_digits for ten in tens_digits])
+
+    digits = defaultdict(list)
+    ties = defaultdict(list)
+    for k, v in load_labels(digit_path):
+        digits[v].append(k)
+
+    for k, v in load_labels(tens_path):
+        ties[v].append(k)
+
+    d = []
+    for i in range(21, 100):
+        s = str(i)
+        if s[1] == "0":
+            continue
+
+        for di in digits[s[1]]:
+            for ti in ties[s[0]]:
+                word = di + AND + ti
+                d.append((word, s))
+
+    res = pynini.string_map(d)
+    return res
 
 
 class CardinalFst(GraphFst):
@@ -70,12 +99,13 @@ class CardinalFst(GraphFst):
         tens = pynini.string_file(get_abs_path("data/cardinal/tens.tsv"))
         ties = tens + pynutil.insert("0")
         # German flips ones and tens in two-digit numbers. The WFST below handles these flips.
-        delete_und = pynutil.delete("und")
+        delete_und = pynutil.delete(AND)
 
-        # Accepts normalized digits+ties (ein+und+zwanzig)
-        digit_ties = digits + delete_space + delete_und + delete_space + tens
-        # Flips ties and digits for denormalization
-        ties_digit = digit_ties @ swap_tens_and_ones(digits, tens)
+        # the map is keyed on the compound spelling, so whitespace is stripped before lookup
+        delete_all_spaces = pynini.cdrewrite(pynutil.delete(NEMO_WHITE_SPACE), "", "", NEMO_SIGMA)
+        ties_digit = delete_all_spaces @ get_tens_digit(
+            get_abs_path("data/cardinal/digits.tsv"), get_abs_path("data/cardinal/tens.tsv")
+        )
 
         # WFST grammar for hundreds
         graph_10_99 = teens | ties | ties_digit
