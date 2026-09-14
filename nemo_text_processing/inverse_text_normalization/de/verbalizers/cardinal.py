@@ -20,7 +20,7 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_
 
 class CardinalFst(GraphFst):
     """
-    Finite state transducer for verbalizing cardinal  Note that the verbalizer retains period-separated formatting.
+    Finite state transducer for verbalizing cardinal
         e.g. cardinal { negative: "true" integer: "23" } -> -23
     """
 
