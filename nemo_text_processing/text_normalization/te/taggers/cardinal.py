@@ -55,134 +55,121 @@ class CardinalFst(GraphFst):
 
         te_digit = pynini.difference(NEMO_ALL_DIGIT, NEMO_DIGIT).optimize()
         one_digit = pynini.union("1", "౧")
-        one_prefix = pynutil.delete(one_digit)
+        del_one = pynutil.delete(one_digit)
         one_as_oka = (one_digit @ ties_one_suffix).optimize()
-        digit_x1 = (pynini.difference(NEMO_ALL_DIGIT, NEMO_ALL_ZERO | one_digit) @ digit).optimize()
+        digit_nx01 = (pynini.difference(NEMO_ALL_DIGIT, NEMO_ALL_ZERO | one_digit) @ digit).optimize()
 
-        def U(*parts):
+        def union(*parts):
             return pynini.union(*parts).optimize()
 
         def exact_n(n, graph=exact_power):
             return pynini.compose(NEMO_ALL_DIGIT**n, graph).optimize()
 
-        def ins(key, space=True):
+        def mag_ins(key, space=True):
             return pynutil.insert((" " if space else "") + mag[key])
 
-        i_thou, i_thou_sp = ins("thousand", False), ins("thousand")
-        i_thous, i_thous_pl = ins("thousands_before"), ins("thousands_plural")
-        i_lakh, i_lakh_sp = ins("lakh", False), ins("lakh")
-        i_lakha, i_lakhs, i_lakhs_pl = (
-            pynutil.insert(mag["lakh_before_digit"]),
-            ins("lakhs_before"),
-            ins("lakhs_plural"),
-        )
-        i_koti, i_koti_sp = ins("crore", False), ins("crore")
-        i_kotlu, i_kotlu_pl = ins("crores_before"), ins("crores_plural")
-        i_vandalu, i_vandalu_pl = ins("hundreds_before"), ins("hundreds_plural")
+        ins_thou = mag_ins("thousand", False)
+        ins_thous, ins_thous_pl = mag_ins("thousands_before"), mag_ins("thousands_plural")
+        ins_lakh = mag_ins("lakh", False)
+        ins_lakhs, ins_lakhs_pl = mag_ins("lakhs_before"), mag_ins("lakhs_plural")
+        ins_koti, ins_koti_sp = mag_ins("crore", False), mag_ins("crore")
+        ins_kotlu, ins_kotlu_pl = mag_ins("crores_before"), mag_ins("crores_plural")
+        ins_hund, ins_hund_pl = mag_ins("hundreds_before"), mag_ins("hundreds_plural")
 
-        hp_ten = U(
+        hprefix_2d = union(
             pynini.compose(NEMO_DIGIT + NEMO_DIGIT, hundred_prefix),
             pynini.compose(te_digit + te_digit, hundred_prefix),
         )
-        hp_one = U(pynini.compose(NEMO_DIGIT, hundred_prefix), pynini.compose(te_digit, hundred_prefix))
+        hprefix_1d = union(pynini.compose(NEMO_DIGIT, hundred_prefix), pynini.compose(te_digit, hundred_prefix))
 
-        def teens_ties_of(d_cls, zero_ch, dig_map):
+        def make_teens(d_cls, zero_ch, dig_map):
             t = pynini.compose(d_cls + d_cls, teens)
             ti = (d_cls @ ties).optimize()
             return t | (ti + pynutil.delete(zero_ch)) | (ti + insert_space + dig_map)
 
-        dig_en, dig_te = (NEMO_DIGIT @ digit).optimize(), (te_digit @ digit).optimize()
-        dig_x1_en = (pynini.difference(NEMO_DIGIT, pynini.union("0", "1")) @ digit).optimize()
-        dig_x1_te = (pynini.difference(te_digit, pynini.union("౦", "౧")) @ digit).optimize()
-        teens_ties = U(teens_ties_of(NEMO_DIGIT, "0", dig_en), teens_ties_of(te_digit, "౦", dig_te))
-        teens_ties_x1 = U(teens_ties_of(NEMO_DIGIT, "0", dig_x1_en), teens_ties_of(te_digit, "౦", dig_x1_te))
-        teens_ties_oka = U(
+        dig_ascii, dig_te = (NEMO_DIGIT @ digit).optimize(), (te_digit @ digit).optimize()
+        dig_nx01_en = (pynini.difference(NEMO_DIGIT, pynini.union("0", "1")) @ digit).optimize()
+        dig_nx01_te = (pynini.difference(te_digit, pynini.union("౦", "౧")) @ digit).optimize()
+        teens_ties = union(make_teens(NEMO_DIGIT, "0", dig_ascii), make_teens(te_digit, "౦", dig_te))
+        teens_x1 = union(make_teens(NEMO_DIGIT, "0", dig_nx01_en), make_teens(te_digit, "౦", dig_nx01_te))
+        teens_oka = union(
             (NEMO_DIGIT @ ties) + insert_space + (NEMO_DIGIT @ ties_one_suffix),
             (te_digit @ ties) + insert_space + (te_digit @ ties_one_suffix),
         )
-
+        teens_before = union(teens_oka, teens_x1)
         self.single_digits_graph = (digit | zero) + pynini.closure(insert_space + (digit | zero))
-
         delete_zero = pynutil.delete(NEMO_ALL_ZERO)
-        z = {0: pynini.accep("")}
+        zdel = {0: pynini.accep("")}
+
         for n in range(1, 8):
-            z[n] = (z[n - 1] + delete_zero).optimize()
+            zdel[n] = (zdel[n - 1] + delete_zero).optimize()
 
-        def suffix(prefix, suf, zeros):
-            return prefix + suf if zeros == 0 else prefix + z[zeros] + suf
+        def with_unit(prefix, suf, zeros):
+            return prefix + suf if zeros == 0 else prefix + zdel[zeros] + suf
 
-        def rung(prefix, suf, zeros, sub):
-            return prefix + (suf if zeros == 0 else suf + z[zeros]) + insert_space + sub
+        def with_rem(prefix, suf, zeros, sub):
+            return prefix + (suf if zeros == 0 else suf + zdel[zeros]) + insert_space + sub
 
-        def group(prefix, suf, ladder, head=None, head_z=None):
-            g = suffix(prefix, head, head_z) if head is not None else None
+        def mag_forms(prefix, suf, ladder, head=None, head_z=None):
+            g = with_unit(prefix, head, head_z) if head is not None else None
             for zeros, sub in ladder:
-                g = rung(prefix, suf, zeros, sub) if g is None else g | rung(prefix, suf, zeros, sub)
+                g = with_rem(prefix, suf, zeros, sub) if g is None else g | with_rem(prefix, suf, zeros, sub)
             return g
 
-        def prefer(a, b):
+        def prio(a, b):
             return plurals._priority_union(a, b, NEMO_SIGMA)
 
-        def ties_group(oka_suf, other_suf, ladder, head_oka, head_other, head_z):
-            return U(
-                group(teens_ties_oka, oka_suf, ladder, head_oka, head_z),
-                group(teens_ties_x1, other_suf, ladder, head_other, head_z),
+        def ties_scale(oka_suf, other_suf, ladder, head_oka, head_other, head_z):
+            return union(
+                mag_forms(teens_oka, oka_suf, ladder, head_oka, head_z),
+                mag_forms(teens_x1, other_suf, ladder, head_other, head_z),
             )
 
-        def band(exact, sg, before, head, spaced, zeros, ladder, one_ladder=None, extra=None, ten_oka=None):
-            """Digit magnitude (+ optional teens ties). head is plural (standalone) or before (crore count)."""
+        def scale(exact, sg, before, head, spaced, zeros, ladder, one_ladder=None, extra=None, ten_oka=None):
             one_ladder = ladder if one_ladder is None else one_ladder
-            g = exact | group(one_prefix, sg, one_ladder)
+            g = exact | mag_forms(del_one, sg, one_ladder)
             if extra is not None:
                 g = g | extra
-            g = U(g, group(digit_x1, before, ladder, head, zeros))
-            ten = ties_group(ten_oka or before, before, ladder, spaced, head, zeros)
+            g = union(g, mag_forms(digit_nx01, before, ladder, head, zeros))
+            ten = ties_scale(ten_oka or before, before, ladder, spaced, head, zeros)
             return g, ten
 
-        def oka_count(sg, before, remainders):
-            """…01 multipliers: 1+sg / N+before / ties+before + zeros + rem→ఒక."""
-
+        def oka_mult(sg, before, remainders):
             def side(use_digit):
                 parts = []
                 for zeros, rem in remainders:
-                    body = z[zeros] + insert_space + rem
+                    body = zdel[zeros] + insert_space + rem
                     if use_digit:
-                        parts += [one_prefix + sg + body, digit_x1 + before + body]
+                        parts += [del_one + sg + body, digit_nx01 + before + body]
                     else:
-                        parts += [teens_ties_oka + before + body, teens_ties_x1 + before + body]
-                return U(*parts)
+                        parts += [teens_oka + before + body, teens_x1 + before + body]
+                return union(*parts)
+            return prio(side(True), side(False)).optimize()
 
-            return prefer(side(True), side(False)).optimize()
-
-        def crore_of(oka, other, other_head=None):
-            """10–14: …01 → కోటి; else → కోట్లు."""
-            return prefer(
-                group(oka, i_koti_sp, crore_ladder, i_koti_sp, 7),
-                group(other, i_kotlu, crore_ladder, other_head or i_kotlu_pl, 7),
+        def crore_unit(oka, other, other_head=None, nested=False):
+            if nested:
+                oka_suf, oka_head = ins_koti_sp, ins_koti_sp
+            else:
+                oka_suf, oka_head = ins_kotlu, ins_kotlu_pl
+            return prio(
+                mag_forms(oka, oka_suf, crore_ladder, oka_head, 7),
+                mag_forms(other, ins_kotlu, crore_ladder, other_head or ins_kotlu_pl, 7),
             ).optimize()
 
-        def kotlu(count):
-            """15–19 outer unit: always కోట్లు."""
-            return group(count, i_kotlu, crore_ladder, i_kotlu_pl, 7).optimize()
+        def outer_crores(count):
+            return mag_forms(count, ins_kotlu, crore_ladder, ins_kotlu_pl, 7).optimize()
 
-        def oka_koti(*prefs, bare=(), pad=()):
-            """ఒక → ఒక కోటి (+ koti_ladder / bare / padded zeros)."""
-            parts = [group(p, i_koti_sp, koti_ladder, i_koti_sp, 7) for p in prefs]
-            parts += [p + i_koti_sp for p in bare]
-            parts += [suffix(p, i_koti_sp, n) for p, n in pad]
-            return U(*parts)
-
-        graph_hundreds = U(
+        graph_hundreds = union(
             exact_n(3),
-            hp_ten + digit,
-            hp_one + teens_ties,
-            suffix(digit_x1, i_vandalu_pl, 2),
-            rung(digit_x1, i_vandalu, 1, digit),
-            rung(digit_x1, i_vandalu, 0, teens_ties),
+            hprefix_2d + digit,
+            hprefix_1d + teens_ties,
+            with_unit(digit_nx01, ins_hund_pl, 2),
+            with_rem(digit_nx01, ins_hund, 1, digit),
+            with_rem(digit_nx01, ins_hund, 0, teens_ties),
         )
         thousand_ladder = [(2, digit), (1, teens_ties), (0, graph_hundreds)]
-        graph_thousands, graph_ten_thousands = band(
-            exact_n(4), i_thou, i_thous, i_thous_pl, i_thou_sp, 3, thousand_ladder
+        graph_thousands, graph_ten_thousands = scale(
+            exact_n(4), ins_thou, ins_thous, ins_thous_pl, ins_thous_pl, 3, thousand_ladder
         )
         lakh_ladder = [
             (4, digit),
@@ -191,16 +178,16 @@ class CardinalFst(GraphFst):
             (1, graph_thousands),
             (0, graph_ten_thousands),
         ]
-        graph_lakhs, graph_ten_lakhs = band(
+        graph_lakhs, graph_ten_lakhs = scale(
             exact_n(6),
-            i_lakh,
-            i_lakhs,
-            i_lakhs_pl,
-            i_lakh_sp,
+            ins_lakh,
+            ins_lakhs,
+            ins_lakhs_pl,
+            ins_lakhs_pl,
             5,
             lakh_ladder,
             one_ladder=lakh_ladder[1:],
-            extra=rung(one_prefix, i_lakha, 4, digit),
+            extra=with_rem(del_one, ins_lakh, 4, digit),
         )
         crore_ladder = [
             (6, digit),
@@ -211,116 +198,157 @@ class CardinalFst(GraphFst):
             (1, graph_lakhs),
             (0, graph_ten_lakhs),
         ]
-        graph_crores, graph_ten_crores = band(
-            exact_n(8), i_koti, i_kotlu, i_kotlu_pl, i_koti_sp, 7, crore_ladder, ten_oka=i_koti_sp
+        graph_crores, graph_ten_crores = scale(
+            exact_n(8), ins_koti, ins_kotlu, ins_kotlu_pl, ins_kotlu_pl, 7, crore_ladder
         )
-
-        hundred_crore = U(
+        hundred_one = union(
+            hprefix_1d + pynutil.delete(NEMO_ALL_ZERO) + one_as_oka,
+            digit_nx01 + pynutil.delete(NEMO_ALL_ZERO) + hundreds_before_one,
+        )
+        hundred_crore = union(
             exact_n(3),
-            hp_ten + digit_x1,
-            hp_one + teens_ties,
-            suffix(digit_x1, i_vandalu, 2),
-            rung(digit_x1, i_vandalu, 1, digit_x1),
-            rung(digit_x1, i_vandalu, 0, teens_ties),
+            hundred_one,
+            hprefix_2d + one_as_oka,
+            hprefix_2d + digit_nx01,
+            hprefix_1d + teens_before,
+            with_unit(digit_nx01, ins_hund, 2),
+            with_rem(digit_nx01, ins_hund, 1, digit_nx01),
+            with_rem(digit_nx01, ins_hund, 0, teens_before),
         )
-        hundred_one = U(
-            hp_one + pynutil.delete(NEMO_ALL_ZERO) + one_as_oka,
-            digit_x1 + pynutil.delete(NEMO_ALL_ZERO) + hundreds_before_one,
+        thou_crore_ladder = [(2, digit_nx01), (1, teens_before), (0, hundred_crore)]
+        thousand_one = oka_mult(ins_thou, ins_thous, [(2, one_as_oka), (0, hundred_one)])
+        thousand_crore, ten_thousand_crore = scale(
+            exact_n(4), ins_thou, ins_thous, ins_thous, ins_thous, 3, thou_crore_ladder
         )
-        thou_crore_ladder = [(2, digit_x1), (1, teens_ties), (0, hundred_crore)]
-        thousand_one = oka_count(i_thou, i_thous, [(2, one_as_oka), (0, hundred_one)])
-        thousand_crore, ten_thousand_crore = band(
-            exact_n(4), i_thou, i_thous, i_thous, i_thou_sp, 3, thou_crore_ladder
+        graph_hundred_crores = union(
+            crore_unit(hundred_one, hundred_crore), with_rem(hundred_crore, ins_kotlu, 0, graph_crores)
         )
-        graph_hundred_crores = U(crore_of(hundred_one, hundred_crore), rung(hundred_crore, i_kotlu, 0, graph_crores))
-        graph_thousand_crores = crore_of(thousand_one, U(thousand_crore, ten_thousand_crore))
-        graph_ten_thousand_crores = crore_of(thousand_one, ten_thousand_crore)
-
+        graph_thousand_crores = crore_unit(thousand_one, union(thousand_crore, ten_thousand_crore))
+        graph_ten_thousand_crores = crore_unit(thousand_one, ten_thousand_crore)
         lakh_crore_ladder = [
-            (4, digit_x1),
-            (3, teens_ties),
+            (4, digit_nx01),
+            (3, teens_before),
             (2, hundred_crore),
-            (1, graph_thousands),
+            (1, thousand_crore),
             (0, ten_thousand_crore),
         ]
-        lakh_one = oka_count(
-            i_lakh,
-            i_lakhs,
+        lakh_one = oka_mult(
+            ins_lakh,
+            ins_lakhs,
             [(4, one_as_oka), (2, hundred_one), (1, exact_n(4, thousand_one)), (0, exact_n(5, thousand_one))],
         )
-        lakh_crore, ten_lakh_crore = band(exact_n(6), i_lakh, i_lakhs, i_lakhs, i_lakh_sp, 5, lakh_crore_ladder)
-        graph_lakh_crores = crore_of(lakh_one, U(lakh_crore, ten_lakh_crore))
-
-        ten_lakh_rem = ties_group(i_lakhs, i_lakhs, lakh_ladder, i_lakhs, i_lakhs, 5)
+        lakh_crore, ten_lakh_crore = scale(
+            exact_n(6), ins_lakh, ins_lakhs, ins_lakhs, ins_lakhs, 5, lakh_crore_ladder
+        )
+        graph_lakh_crores = crore_unit(lakh_one, union(lakh_crore, ten_lakh_crore))
+        ten_lakh_rem = ties_scale(
+            ins_lakhs,
+            ins_lakhs,
+            [
+                (4, digit),
+                (3, teens_before),
+                (2, hundred_crore),
+                (1, thousand_crore),
+                (0, ten_thousand_crore),
+            ],
+            ins_lakhs,
+            ins_lakhs,
+            5,
+        )
         koti_ladder = [
             (6, digit),
-            (5, teens_ties),
-            (4, graph_hundreds),
-            (3, graph_thousands),
-            (2, graph_ten_thousands),
-            (1, graph_lakhs),
+            (5, teens_before),
+            (4, hundred_crore),
+            (3, thousand_crore),
+            (2, ten_thousand_crore),
+            (1, lakh_crore),
             (0, ten_lakh_rem),
         ]
-        crore_one = oka_count(
-            i_koti,
-            i_kotlu,
+        crore_one = oka_mult(
+            ins_koti,
+            ins_kotlu,
             [(6, one_as_oka), (4, hundred_one), (1, exact_n(6, lakh_one)), (0, exact_n(7, lakh_one))],
         )
-        except_one_ladder = [(2, digit_x1), (1, teens_ties_x1)]
-        hundred_amt = U(
+        except_one_ladder = [(2, digit_nx01), (1, teens_x1)]
+        hundred_amt = union(
             exact_n(3),
-            hp_ten + digit_x1,
-            hp_one + teens_ties_x1,
-            suffix(digit_x1, i_vandalu, 2),
-            rung(digit_x1, i_vandalu, 1, digit_x1),
+            hprefix_2d + digit_nx01,
+            hprefix_1d + teens_x1,
+            with_unit(digit_nx01, ins_hund, 2),
+            with_rem(digit_nx01, ins_hund, 1, digit_nx01),
         )
-        thousand_amt = U(*band(exact_n(4), i_thou, i_thous, i_thous, i_thou_sp, 3, except_one_ladder))
-        ten_thousand_amt = ties_group(i_thous, i_thous, except_one_ladder + [(0, hundred_amt)], i_thou_sp, i_thous, 3)
-        crore_one_10 = rung(hundred_amt, i_kotlu, 6, one_as_oka).optimize()
-        crore_one_11 = rung(thousand_amt, i_kotlu, 6, one_as_oka).optimize()
-        crore_one_12 = rung(ten_thousand_amt, i_kotlu, 6, one_as_oka).optimize()
+        thousand_amt = union(*scale(exact_n(4), ins_thou, ins_thous, ins_thous, ins_thous, 3, except_one_ladder))
+        ten_thousand_amt = ties_scale(
+            ins_thous, ins_thous, except_one_ladder + [(0, hundred_amt)], ins_thous, ins_thous, 3
+        )
+        crore_one_10 = with_rem(hundred_amt, ins_kotlu, 6, one_as_oka).optimize()
+        crore_one_11 = with_rem(thousand_amt, ins_kotlu, 6, one_as_oka).optimize()
+        crore_one_12 = with_rem(ten_thousand_amt, ins_kotlu, 6, one_as_oka).optimize()
+        crore_one_10 = union(crore_one_10, with_rem(hundred_crore, ins_kotlu, 0, exact_n(7, lakh_one))).optimize()
+        crore_one_11 = union(crore_one_11, with_rem(thousand_crore, ins_kotlu, 0, exact_n(7, lakh_one))).optimize()
+        crore_one_12 = union(
+            crore_one_12, with_rem(ten_thousand_crore, ins_kotlu, 0, exact_n(7, lakh_one))
+        ).optimize()
 
-        ten_lakh_crore_count = prefer(
-            U(
-                rung(one_prefix, i_koti, 0, ten_lakh_rem),
-                rung(digit_x1, i_kotlu, 0, ten_lakh_rem),
-                rung(teens_ties_oka, i_koti_sp, 0, ten_lakh_rem),
-                rung(teens_ties_x1, i_kotlu, 0, ten_lakh_rem),
+        crore_before, ten_crore_before = scale(
+            exact_n(8), ins_koti, ins_kotlu, ins_kotlu, ins_kotlu, 7, koti_ladder
+        )
+        ten_lakh_crore_count = prio(
+            union(
+                with_rem(del_one, ins_koti, 0, ten_lakh_rem),
+                with_rem(digit_nx01, ins_kotlu, 0, ten_lakh_rem),
+                with_rem(teens_oka, ins_kotlu, 0, ten_lakh_rem),
+                with_rem(teens_x1, ins_kotlu, 0, ten_lakh_rem),
             ),
-            U(graph_crores, graph_ten_crores),
+            union(crore_before, ten_crore_before),
         ).optimize()
-        graph_ten_lakh_crores = prefer(
-            kotlu(exact_n(8, crore_one) + i_koti_sp), kotlu(ten_lakh_crore_count)
+        graph_ten_lakh_crores = crore_unit(exact_n(8, crore_one), ten_lakh_crore_count, nested=True)
+        other_nine = mag_forms(teens_x1, ins_kotlu, koti_ladder, ins_kotlu, 7)
+
+        graph_crore_crores = prio(
+            union(
+                mag_forms(exact_n(9, crore_one), ins_koti_sp, crore_ladder, ins_koti_sp, 7),
+                outer_crores(with_unit(teens_oka, ins_kotlu, 7)),
+            ),
+            outer_crores(
+                union(
+                    mag_forms(teens_oka, ins_kotlu, koti_ladder, ins_kotlu_pl, 7),
+                    other_nine,
+                )
+            ),
         ).optimize()
-        graph_crore_crores = prefer(
-            kotlu(exact_n(9, crore_one) + i_koti_sp),
-            kotlu(ties_group(i_koti_sp, i_kotlu, koti_ladder, i_koti_sp, i_kotlu, 7)),
+        graph_ten_crore_crores = prio(
+            union(
+                mag_forms(crore_one_10, ins_koti_sp, crore_ladder, ins_koti_sp, 7),
+                outer_crores(with_unit(hundred_one, ins_kotlu, 7)),
+            ),
+            outer_crores(
+                union(
+                    mag_forms(hundred_one, ins_kotlu, koti_ladder, ins_kotlu_pl, 7),
+                    mag_forms(hundred_crore, ins_kotlu, koti_ladder, ins_kotlu, 7),
+                )
+            ),
+        ).optimize()
+        hcc_oka = mag_forms(teens_oka, ins_thous, thou_crore_ladder, ins_thous, 3)
+        hcc_x1 = union(thousand_crore, mag_forms(teens_x1, ins_thous, thou_crore_ladder, ins_thous, 3))
+        graph_hundred_crore_crores = prio(
+            union(
+                mag_forms(crore_one_12, ins_koti_sp, crore_ladder, ins_koti_sp, 7),
+                mag_forms(crore_one_11, ins_koti_sp, crore_ladder, ins_koti_sp, 7),
+                mag_forms(crore_one_10 + zdel[1], ins_koti_sp, crore_ladder, ins_koti_sp, 7),
+                outer_crores(with_unit(thousand_one, ins_kotlu, 7)),
+                outer_crores(with_unit(hcc_oka, ins_kotlu, 7)),
+            ),
+            outer_crores(
+                union(
+                    mag_forms(thousand_one, ins_kotlu, koti_ladder, ins_kotlu_pl, 7),
+                    mag_forms(hcc_oka, ins_kotlu, koti_ladder, ins_kotlu_pl, 7),
+                    mag_forms(hcc_x1, ins_kotlu, koti_ladder, ins_kotlu, 7),
+                )
+            ),
         ).optimize()
 
-        graph_ten_crore_crores = kotlu(
-            prefer(
-                oka_koti(hundred_one, crore_one_10, bare=(crore_one_10,)),
-                group(hundred_crore, i_kotlu, koti_ladder, i_kotlu, 7),
-            ).optimize()
-        )
-        hcc_oka = group(teens_ties_oka, i_thous, thou_crore_ladder, i_thou_sp, 3)
-        hcc_other = U(thousand_crore, group(teens_ties_x1, i_thous, thou_crore_ladder, i_thous, 3))
-        graph_hundred_crore_crores = kotlu(
-            prefer(
-                oka_koti(
-                    thousand_one,
-                    hcc_oka,
-                    crore_one_12,
-                    crore_one_11,
-                    crore_one_10,
-                    bare=(crore_one_12, crore_one_11),
-                    pad=((crore_one_10, 1),),
-                ),
-                group(hcc_other, i_kotlu, koti_ladder, i_kotlu, 7),
-            ).optimize()
-        )
-
-        graph = U(
+        graph = union(
             digit,
             zero,
             teens_ties,
@@ -351,14 +379,13 @@ class CardinalFst(GraphFst):
         )
         sep, two, three = pynutil.delete(","), NEMO_ALL_DIGIT**2, NEMO_ALL_DIGIT**3
         grouped = pynini.compose(
-            U(
+            union(
                 pynini.closure(NEMO_ALL_DIGIT, 1, 2) + pynini.closure(sep + two) + sep + three,
                 pynini.closure(NEMO_ALL_DIGIT, 1, 3) + pynini.closure(sep + three, 1),
             ),
             graph,
         ).optimize()
-
-        final = U(graph, leading_zeros, grouped)
+        final = union(graph, leading_zeros, grouped)
         minus = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
         self.final_graph = final.optimize()
         self.fst = self.add_tokens(minus + pynutil.insert('integer: "') + self.final_graph + pynutil.insert('"'))
