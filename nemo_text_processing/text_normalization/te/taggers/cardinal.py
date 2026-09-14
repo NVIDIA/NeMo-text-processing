@@ -144,6 +144,7 @@ class CardinalFst(GraphFst):
                     else:
                         parts += [teens_oka + before + body, teens_x1 + before + body]
                 return union(*parts)
+
             return prio(side(True), side(False)).optimize()
 
         def crore_unit(oka, other, other_head=None, nested=False):
@@ -237,9 +238,7 @@ class CardinalFst(GraphFst):
             ins_lakhs,
             [(4, one_as_oka), (2, hundred_one), (1, exact_n(4, thousand_one)), (0, exact_n(5, thousand_one))],
         )
-        lakh_crore, ten_lakh_crore = scale(
-            exact_n(6), ins_lakh, ins_lakhs, ins_lakhs, ins_lakhs, 5, lakh_crore_ladder
-        )
+        lakh_crore, ten_lakh_crore = scale(exact_n(6), ins_lakh, ins_lakhs, ins_lakhs, ins_lakhs, 5, lakh_crore_ladder)
         graph_lakh_crores = crore_unit(lakh_one, union(lakh_crore, ten_lakh_crore))
         ten_lakh_rem = ties_scale(
             ins_lakhs,
@@ -286,13 +285,9 @@ class CardinalFst(GraphFst):
         crore_one_12 = with_rem(ten_thousand_amt, ins_kotlu, 6, one_as_oka).optimize()
         crore_one_10 = union(crore_one_10, with_rem(hundred_crore, ins_kotlu, 0, exact_n(7, lakh_one))).optimize()
         crore_one_11 = union(crore_one_11, with_rem(thousand_crore, ins_kotlu, 0, exact_n(7, lakh_one))).optimize()
-        crore_one_12 = union(
-            crore_one_12, with_rem(ten_thousand_crore, ins_kotlu, 0, exact_n(7, lakh_one))
-        ).optimize()
+        crore_one_12 = union(crore_one_12, with_rem(ten_thousand_crore, ins_kotlu, 0, exact_n(7, lakh_one))).optimize()
 
-        crore_before, ten_crore_before = scale(
-            exact_n(8), ins_koti, ins_kotlu, ins_kotlu, ins_kotlu, 7, koti_ladder
-        )
+        crore_before, ten_crore_before = scale(exact_n(8), ins_koti, ins_kotlu, ins_kotlu, ins_kotlu, 7, koti_ladder)
         ten_lakh_crore_count = prio(
             union(
                 with_rem(del_one, ins_koti, 0, ten_lakh_rem),
