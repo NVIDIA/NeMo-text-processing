@@ -23,6 +23,7 @@ from nemo_text_processing.text_normalization.ta.graph_utils import (
 )
 from nemo_text_processing.text_normalization.ta.utils import get_abs_path
 
+
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
