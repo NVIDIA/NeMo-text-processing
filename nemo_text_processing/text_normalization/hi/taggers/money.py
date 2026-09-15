@@ -45,6 +45,9 @@ class MoneyFst(GraphFst):
         _deva_to_ascii = pynini.invert(_en_to_hi_digit)
         deva_to_ascii = pynini.closure(_deva_to_ascii | pynini.union(*"0123456789"), 1)
 
+        decimal_tsv = pynini.string_file(get_abs_path("data/money/decimal.tsv"))
+        decimal_separator = pynini.project(decimal_tsv, "input")
+
         _ascii_digit = pynini.union(*"0123456789")
         _ascii_nonzero = pynini.union(*"123456789")
         _deva_nonzero = pynini.union(*"१२३४५६७८९")
@@ -77,7 +80,7 @@ class MoneyFst(GraphFst):
         )
 
         optional_delete_fractional_zeros = pynini.closure(
-            pynutil.delete(".") + pynini.closure(pynutil.delete("0") | pynutil.delete("०"), 1),
+            pynutil.delete(decimal_separator) + pynini.closure(pynutil.delete("0") | pynutil.delete("०"), 1),
             0,
             1,
         )
@@ -92,6 +95,40 @@ class MoneyFst(GraphFst):
         )
         guarded_decimal_digits = has_3plus_sig_digits @ decimal_digits
 
+        # Load scale words dynamically from TSV
+        quantity_graph = (
+            pynutil.insert('quantity: "')
+            + pynini.string_file(get_abs_path("data/money/quantities.tsv")).optimize()
+            + pynutil.insert('"')
+        )
+
+        # Allow an optional space between the number and the quantity word
+        delete_space_opt = pynini.closure(pynutil.delete(" "), 0, 1)
+
+        # Path for scaled money with decimals (e.g. ₹२.५ करोड़)
+        graph_scaled_decimal = (
+            optional_graph_negative
+            + currency_major
+            + insert_space
+            + integer
+            + pynini.cross(decimal_separator, " ")
+            + decimal_digits
+            + delete_space_opt
+            + insert_space
+            + quantity_graph
+        ).optimize()
+
+        # Path for scaled money without decimals (e.g. ₹५ करोड़)
+        graph_scaled_major = (
+            optional_graph_negative
+            + currency_major
+            + insert_space
+            + integer
+            + delete_space_opt
+            + insert_space
+            + quantity_graph
+        ).optimize()
+
         graph_decimal_path = (
             optional_graph_negative
             + currency_major
@@ -99,7 +136,7 @@ class MoneyFst(GraphFst):
             + pynutil.insert('integer_part: "')
             + cardinal_graph
             + pynutil.insert('"')
-            + pynini.cross(".", " ")
+            + pynini.cross(decimal_separator, " ")
             + guarded_decimal_digits
         ).optimize()
 
@@ -134,7 +171,7 @@ class MoneyFst(GraphFst):
                     + curr_maj
                     + insert_space
                     + int_graph
-                    + pynini.cross(".", " ")
+                    + pynini.cross(decimal_separator, " ")
                     + fraction
                     + insert_space
                     + curr_min
@@ -150,6 +187,8 @@ class MoneyFst(GraphFst):
         graph_currencies = (
             pynutil.add_weight(graph_major_only_singular | graph_major_and_minor_singular, -0.001)
             | pynutil.add_weight(graph_decimal_path, -0.0005)
+            | pynutil.add_weight(graph_scaled_decimal, -0.0002)
+            | pynutil.add_weight(graph_scaled_major, -0.0002)
             | graph_major_only
             | graph_major_and_minor
         )
