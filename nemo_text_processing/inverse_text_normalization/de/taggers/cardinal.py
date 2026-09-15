@@ -27,10 +27,7 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path, load_labels
 
 
-AND = "und"
-
-
-def get_tens_digit(digit_path: str, tens_path: str) -> 'pynini.FstLike':
+def get_tens_digit(digit_path: str, tens_path: str, conjunction_path: str) -> 'pynini.FstLike':
     """
     getting all denormalizations for numbers between 21 - 99. German says the ones digit
     before the tens digit (ein-und-zwanzig = 21), so the words cannot be read left to right
@@ -38,10 +35,12 @@ def get_tens_digit(digit_path: str, tens_path: str) -> 'pynini.FstLike':
     Args:
         digit_path: file to digits tsv
         tens_path: file to tens tsv, e.g. zwanzig -> 2
+        conjunction_path: file to the conjunction tsv, e.g. und
     Returns:
         res: fst that converts the verbalization of a number to its digits
     """
 
+    conjunction = load_labels(conjunction_path)[0][0]
     digits = defaultdict(list)
     ties = defaultdict(list)
     for k, v in load_labels(digit_path):
@@ -58,7 +57,7 @@ def get_tens_digit(digit_path: str, tens_path: str) -> 'pynini.FstLike':
 
         for di in digits[s[1]]:
             for ti in ties[s[0]]:
-                word = di + AND + ti
+                word = di + conjunction + ti
                 d.append((word, s))
 
     res = pynini.string_map(d)
@@ -95,12 +94,15 @@ class CardinalFst(GraphFst):
         tens = pynini.string_file(get_abs_path("data/cardinal/tens.tsv"))
         ties = tens + pynutil.insert("0")
         # German flips ones and tens in two-digit numbers. The WFST below handles these flips.
-        delete_und = pynutil.delete(AND)
+        conjunction = load_labels(get_abs_path("data/cardinal/conjunction.tsv"))[0][0]
+        delete_und = pynutil.delete(conjunction)
 
         # the map is keyed on the compound spelling, so whitespace is stripped before lookup
         delete_all_spaces = pynini.cdrewrite(pynutil.delete(NEMO_WHITE_SPACE), "", "", NEMO_SIGMA)
         ties_digit = delete_all_spaces @ get_tens_digit(
-            get_abs_path("data/cardinal/digits.tsv"), get_abs_path("data/cardinal/tens.tsv")
+            get_abs_path("data/cardinal/digits.tsv"),
+            get_abs_path("data/cardinal/tens.tsv"),
+            get_abs_path("data/cardinal/conjunction.tsv"),
         )
 
         # WFST grammar for hundreds
