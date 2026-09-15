@@ -87,13 +87,9 @@ class CardinalFst(GraphFst):
         # WFST mappings for numbers 0-99
         zero = pynini.string_file(get_abs_path("data/cardinal/zero.tsv"))
         digits = pynini.string_file(get_abs_path("data/cardinal/digits.tsv"))
-        # Isolates single digit cardinals to pass to other graphs
-        self.digits = digits.optimize()
         irregular_teens = pynini.string_file(get_abs_path("data/cardinal/irregular_teens.tsv"))
         to_denormalize = zero | digits | irregular_teens
 
-        # Isolates the first dozen
-        self.dozen = to_denormalize.optimize()
         regular_teens = pynini.string_file(get_abs_path("data/cardinal/regular_teens.tsv"))
         teens = irregular_teens | regular_teens
         tens = pynini.string_file(get_abs_path("data/cardinal/tens.tsv"))
@@ -109,13 +105,8 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for hundreds
         graph_10_99 = teens | ties | ties_digit
-        self.graph_double_digits = graph_10_99
-        # Isolates single and double-digit cardinals to pass to other graphs
-        graph_single_and_double_digits = digits | graph_10_99
-        self.graph_single_and_double_digits = graph_single_and_double_digits.optimize()
 
-        hundert = pynini.accep("hundert") | pynini.accep("ein hundert")
-        hundreds = (pynini.cross(hundert, "100")) | (
+        hundreds = (
             (
                 (digits | pynutil.insert("1"))
                 + delete_space
@@ -141,12 +132,13 @@ class CardinalFst(GraphFst):
         # Clusters of three are separated by periods, applied right to left.
         non_zero_digit_cluster = (hundreds) | (pynutil.insert("0") + graph_10_99) | (pynutil.insert("00") + digits)
         digit_cluster = non_zero_digit_cluster | pynutil.insert("000")
+        # a magnitude word with no multiplier in front of it means "one" of that magnitude
+        leading_cluster = non_zero_digit_cluster | pynutil.insert("001")
 
         # WFST grammar for thousands
-        thousands = (pynini.cross("tausend", "1.000")) | (
+        thousands = (
             (
-                (pynini.cross("tausend", "1.") + delete_space + delete_und.ques)
-                | (digit_cluster + delete_space + pynini.cross("tausend", ".") + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross("tausend", ".") + delete_space + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -155,10 +147,9 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for millions
         million = pynini.accep("million") | pynini.accep("millionen")
-        millions = (pynini.cross("million", "1.000.000")) | (
+        millions = (
             (
-                (pynini.cross("million", "1.") + delete_space + delete_und.ques)
-                | (digit_cluster + delete_space + pynini.cross(million, ".") + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(million, ".") + delete_space + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -166,21 +157,10 @@ class CardinalFst(GraphFst):
         )
 
         # WFST grammar for billions
-        billion = (
-            pynini.accep("milliarde")
-            | pynini.accep("milliarden")
-            # include the consonant-final stem for ordinal declensions e.g "milliardste"
-            # "e" -> "" / _[ordinal morpheme]
-            | pynini.accep("milliard")
-        )
-        billions = (pynini.cross("milliarde", "1.000.000.000")) | (
+        billion = pynini.accep("milliarde") | pynini.accep("milliarden")
+        billions = (
             (
-                (
-                    pynini.cross((pynini.accep("milliarde") | pynini.accep("milliard")), "1.")
-                    + delete_space
-                    + delete_und.ques
-                )
-                | (digit_cluster + delete_space + pynini.cross(billion, ".") + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(billion, ".") + delete_space + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -189,10 +169,9 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for trillions
         trillion = pynini.accep("billion") | pynini.accep("billionen")
-        trillions = (pynini.cross("billion", "1.000.000.000.000")) | (
+        trillions = (
             (
-                (pynini.cross("billion", "1.") + delete_space + delete_und.ques)
-                | (digit_cluster + delete_space + pynini.cross(trillion, ".") + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(trillion, ".") + delete_space + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -200,17 +179,10 @@ class CardinalFst(GraphFst):
         )
 
         # WFST grammar for quadrillions
-        quadrillion = (
-            pynini.accep("billiarde")
-            | pynini.accep("billiarden")
-            # include the consonant-final stem for ordinal declensions e.g "billiardste"
-            # "e" -> "" / _[ordinal morpheme]
-            | pynini.accep("billiard")
-        )
-        quadrillions = (pynini.cross("billiarde", "1.000.000.000.000.000")) | (
+        quadrillion = pynini.accep("billiarde") | pynini.accep("billiarden")
+        quadrillions = (
             (
-                (pynini.cross(quadrillion, "1.") + delete_space + delete_und.ques)
-                | (digit_cluster + delete_space + pynini.cross(quadrillion, ".") + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(quadrillion, ".") + delete_space + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -219,10 +191,9 @@ class CardinalFst(GraphFst):
 
         # WFST grammar for quintillions
         quintillion = pynini.accep("trillion") | pynini.accep("trillionen")
-        quintillions = (pynini.cross("trillion", "1.000.000.000.000.000.000")) | (
+        quintillions = (
             (
-                (pynini.cross("trillion", "1.") + delete_space + delete_und.ques)
-                | (digit_cluster + delete_space + pynini.cross(quintillion, ".") + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(quintillion, ".") + delete_space + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -230,17 +201,10 @@ class CardinalFst(GraphFst):
         )
 
         # WFST grammar for sextillions
-        sextillion = (
-            pynini.accep("trilliarde")
-            | pynini.accep("trilliarden")
-            # include the consonant-final stem for ordinal declensions e.g "trilliardste"
-            # "e" -> "" / _[ordinal morpheme]
-            | pynini.accep("trilliard")
-        )
-        sextillions = (pynini.cross("billiarde", "1.000.000.000.000.000.000.000")) | (
+        sextillion = pynini.accep("trilliarde") | pynini.accep("trilliarden")
+        sextillions = (
             (
-                (pynini.cross(sextillion, "1.") + delete_space + delete_und.ques)
-                | (digit_cluster + delete_space + pynini.cross(sextillion, ".") + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(sextillion, ".") + delete_space + delete_und.ques)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -270,12 +234,8 @@ class CardinalFst(GraphFst):
         for grammar in grammars:
             graph_cardinals |= grammar
 
-        # Generates a graph accepting all digits to be passed to other semiotic classes
-        graph_everything = graph_cardinals @ remove_leading_zeros
-        self.graph_all_cardinals = graph_everything.optimize()
-
-        # the name the other German semiotic classes use for the graph without the first-dozen exception
-        self.graph_no_exception = self.graph_all_cardinals
+        # the graph the other German semiotic classes consume, without the first-dozen exception
+        self.graph_no_exception = (graph_cardinals @ remove_leading_zeros).optimize()
 
         # 1-999 without leading zeros, consumed by the decimal tagger's get_quantity
         self.graph_hundred_component_at_least_one_none_zero_digit = (
@@ -285,38 +245,30 @@ class CardinalFst(GraphFst):
         # The block below leaves numerals 1 - 12 canonically normalized
         accept_denormalized_first_dozen = pynini.project(to_denormalize, "input")  # acceptor for null - zwölf
         accept_denormalized_everything = pynini.project(
-            self.graph_all_cardinals, "input"
+            self.graph_no_exception, "input"
         )  # acceptor for all verbalized cardinals
         accept_without_first_dozen = (
             accept_denormalized_everything - accept_denormalized_first_dozen
         )  # acceptor for all verbalized cardinals greater than 12
         transduce_without_first_dozen = (
-            accept_without_first_dozen @ self.graph_all_cardinals
+            accept_without_first_dozen @ self.graph_no_exception
         )  # transducer for all verbalized cardinals greater than 12
         graph = accept_denormalized_first_dozen | transduce_without_first_dozen
         self.graph = graph.optimize()
 
-        self.optional_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("minus ", '"true"') + pynutil.insert(" "),
-            0,
-            1,
+        # the cardinal verbalizer turns the "true" flag back into a minus sign
+        optional_negative = pynini.closure(
+            pynutil.insert("negative: ") + pynini.cross("minus ", '"true"') + pynutil.insert(" "), 0, 1
         )
 
         # the decimal verbalizer reads a single character out of the negative field, so the graph
         # handed to the other classes keeps the minus sign rather than the "true" flag
         self.optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("minus ", '"true"') + pynutil.insert(" "), 0, 1
+            pynutil.insert("negative: ") + pynini.cross("minus ", '"-"') + pynutil.insert(" "), 0, 1
         )
-
-        all_cardinals_graph = (
-            self.optional_negative + pynutil.insert('integer: "') + self.graph_all_cardinals + pynutil.insert('"')
-        )
-        self.all_cardinals_graph = all_cardinals_graph.optimize()
 
         # The final graph for this semiotic class leaves the first dozen normalized
-        final_graph = self.optional_negative + pynutil.insert('integer: "') + self.graph + pynutil.insert('"')
-        # Canonical representation with the first dozen normalized
-        self.canonical_cardinals_graph = final_graph.optimize()
+        final_graph = optional_negative + pynutil.insert('integer: "') + self.graph + pynutil.insert('"')
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
