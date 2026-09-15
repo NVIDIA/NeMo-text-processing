@@ -35,7 +35,7 @@ NEMO_ALL_DIGIT = pynini.union(ta_digit_only, NEMO_ALL_ZERO).optimize()
 
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_SPACE = " "
-NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00a0").optimize()
+NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", NEMO_NON_BREAKING_SPACE).optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
@@ -126,4 +126,4 @@ class GraphFst:
             + delete_space
             + pynutil.delete("}")
         )
-        return res @ pynini.cdrewrite(pynini.cross(u"\u00a0", " "), "", "", NEMO_SIGMA)
+        return res @ pynini.cdrewrite(pynini.cross(NEMO_NON_BREAKING_SPACE, " "), "", "", NEMO_SIGMA)
