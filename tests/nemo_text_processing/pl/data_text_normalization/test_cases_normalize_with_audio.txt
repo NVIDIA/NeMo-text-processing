@@ -62,6 +62,7 @@ jeden i pięć dziesiątych kilograma
 jeden przecinek pięć kilograma
 półtora kilograma
 ~1,5 godz
+jeden przecinek pięć dziesiątych godziny
 jeden i pięć dziesiątych godziny
 jeden przecinek pięć godziny
 półtorej godziny
