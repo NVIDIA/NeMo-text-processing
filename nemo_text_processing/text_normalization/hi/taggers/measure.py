@@ -454,6 +454,33 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
+        # Math Graph
+        math_operations = pynini.string_file(get_abs_path("data/measure/math_operation.tsv"))
+        delimiter = pynini.accep(" ") | pynutil.insert(" ")
+        math_alpha = capitalized_input_graph(letters_map)
+        equals = pynini.cross("=", "बराबर")
+
+        digit_or_zero = digit | zero
+        fractional_bare = digit_or_zero + pynini.closure(insert_space + digit_or_zero)
+
+        flat_decimal = (
+            cardinal_graph + pynutil.insert(" ") + pynini.cross(".", "दशमलव") + pynutil.insert(" ") + fractional_bare
+        )
+
+        operand = cardinal_graph | flat_decimal | math_alpha
+
+        math_expr = operand + pynini.closure(delimiter + math_operations + delimiter + operand)
+
+        math_expr_with_op = operand + pynini.closure(delimiter + math_operations + delimiter + operand, 1)
+
+        math = (math_expr_with_op + delimiter + equals + delimiter + math_expr) | (
+            math_expr + delimiter + equals + delimiter + math_expr_with_op
+        )
+
+        graph_math = (
+            pynutil.insert('units: "math" cardinal { integer: "') + math + pynutil.insert('" } preserve_order: true')
+        )
+
         address_graph = self.get_address_graph(cardinal, ordinal, serial, input_case)
         structured_address_graph = self.get_structured_address_graph(cardinal, ordinal, input_case)
 
@@ -468,6 +495,7 @@ class MeasureFst(GraphFst):
             | pynutil.add_weight(graph_savva, -0.1)
             | pynutil.add_weight(graph_sadhe, -0.1)
             | pynutil.add_weight(graph_paune, -0.5)
+            | pynutil.add_weight(graph_math, 0.1)
             | address_graph
             | structured_address_graph
         )
