@@ -57,10 +57,14 @@ class MeasureFst(GraphFst):
         math_symbols = pynini.string_file(get_abs_path("data/measure/math_symbols.tsv"))
         equal_symbol = pynini.string_file(get_abs_path("data/measure/equal_symbols.tsv"))
 
-        math_long_side = cardinal_graph + pynini.closure(
-            delete_space + math_symbols + delete_space + cardinal_graph, 1
+        # An operand may be a decimal; without this the math path matches a span
+        # starting mid decimal and leaks "दशमलव" through as a literal word.
+        math_number = cardinal_graph + pynini.closure(
+            delete_space + pynini.cross("दशमलव", ".") + delete_space + decimal.graph, 0, 1
         )
-        math_short_side = cardinal_graph
+        math_operator = delete_space + math_symbols + delete_space + math_number
+        math_long_side = math_number + pynini.closure(math_operator, 1)
+        math_short_side = math_number + pynini.closure(math_operator)
         math_operation = math_long_side + delete_space + equal_symbol + delete_space + math_short_side
         math_operation |= math_short_side + delete_space + equal_symbol + delete_space + math_long_side
         math_graph = (
