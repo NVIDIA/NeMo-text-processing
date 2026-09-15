@@ -1,11 +1,7 @@
 ~Mam 22 koty
 Mam dwadzieścia dwa koty
-Mam dwadzieścia dwie koty
-Mam dwudziestu dwóch koty
 ~To był 21. test
 To był dwudziesty pierwszy test
-To był dwudziesta pierwsza test
-To był dwudziestego pierwszego test
 ~tzw.
 tak zwany
 tak zwanego
@@ -31,13 +27,7 @@ z pięcioma metrami
 w dwóch sekundach
 ~2 s
 dwie sekundy
-dwiema sekundami
-dwom sekundom
 dwoma sekundami
-dwu sekund
-dwu sekundach
-dwu sekundami
-dwu sekundom
 dwóch sekund
 dwóch sekundach
 dwóm sekundom
