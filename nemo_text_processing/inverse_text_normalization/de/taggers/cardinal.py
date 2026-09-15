@@ -95,7 +95,7 @@ class CardinalFst(GraphFst):
         ties = tens + pynutil.insert("0")
         # German flips ones and tens in two-digit numbers. The WFST below handles these flips.
         conjunction = load_labels(get_abs_path("data/cardinal/conjunction.tsv"))[0][0]
-        delete_und = pynutil.delete(conjunction)
+        optional_delete_und = pynini.closure(pynutil.delete(conjunction), 0, 1)
 
         # the map is keyed on the compound spelling, so whitespace is stripped before lookup
         delete_all_spaces = pynini.cdrewrite(pynutil.delete(NEMO_WHITE_SPACE), "", "", NEMO_SIGMA)
@@ -114,7 +114,7 @@ class CardinalFst(GraphFst):
                 + delete_space
                 + pynutil.delete("hundert")
                 + delete_space
-                + delete_und.ques
+                + optional_delete_und
                 + delete_space
                 + graph_10_99
             )
@@ -123,7 +123,7 @@ class CardinalFst(GraphFst):
                 + delete_space
                 + pynini.cross("hundert", "0")
                 + delete_space
-                + delete_und.ques
+                + optional_delete_und
                 + delete_space
                 + digits
             )
@@ -140,7 +140,7 @@ class CardinalFst(GraphFst):
         # WFST grammar for thousands
         thousands = (
             (
-                (leading_cluster + delete_space + pynini.cross("tausend", ".") + delete_space + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross("tausend", ".") + delete_space + optional_delete_und)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -151,7 +151,7 @@ class CardinalFst(GraphFst):
         million = pynini.accep("million") | pynini.accep("millionen")
         millions = (
             (
-                (leading_cluster + delete_space + pynini.cross(million, ".") + delete_space + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(million, ".") + delete_space + optional_delete_und)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -162,7 +162,7 @@ class CardinalFst(GraphFst):
         billion = pynini.accep("milliarde") | pynini.accep("milliarden")
         billions = (
             (
-                (leading_cluster + delete_space + pynini.cross(billion, ".") + delete_space + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(billion, ".") + delete_space + optional_delete_und)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -173,7 +173,7 @@ class CardinalFst(GraphFst):
         trillion = pynini.accep("billion") | pynini.accep("billionen")
         trillions = (
             (
-                (leading_cluster + delete_space + pynini.cross(trillion, ".") + delete_space + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(trillion, ".") + delete_space + optional_delete_und)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -184,7 +184,7 @@ class CardinalFst(GraphFst):
         quadrillion = pynini.accep("billiarde") | pynini.accep("billiarden")
         quadrillions = (
             (
-                (leading_cluster + delete_space + pynini.cross(quadrillion, ".") + delete_space + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(quadrillion, ".") + delete_space + optional_delete_und)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -195,7 +195,7 @@ class CardinalFst(GraphFst):
         quintillion = pynini.accep("trillion") | pynini.accep("trillionen")
         quintillions = (
             (
-                (leading_cluster + delete_space + pynini.cross(quintillion, ".") + delete_space + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(quintillion, ".") + delete_space + optional_delete_und)
                 | pynutil.insert("000.")
             )
             + delete_space
@@ -206,7 +206,7 @@ class CardinalFst(GraphFst):
         sextillion = pynini.accep("trilliarde") | pynini.accep("trilliarden")
         sextillions = (
             (
-                (leading_cluster + delete_space + pynini.cross(sextillion, ".") + delete_space + delete_und.ques)
+                (leading_cluster + delete_space + pynini.cross(sextillion, ".") + delete_space + optional_delete_und)
                 | pynutil.insert("000.")
             )
             + delete_space
