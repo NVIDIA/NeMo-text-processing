@@ -190,6 +190,10 @@ class Normalizer:
             from nemo_text_processing.text_normalization.pt.verbalizers.verbalize_final import VerbalizeFinalFst
         elif lang == 'ko':
             from nemo_text_processing.text_normalization.ko.taggers.tokenize_and_classify import ClassifyFst
+        elif lang == 'kn':
+            from nemo_text_processing.text_normalization.ko.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.text_normalization.vi.verbalizers.post_processing import PostProcessingFst
+            from nemo_text_processing.text_normalization.vi.verbalizers.verbalize_final import VerbalizeFinalFst
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
