@@ -1,8 +1,51 @@
 +	plus
 -	minus
-/	divided
-÷	divided
-:	divided
+−	minus
+/	divided by
+∕	divided by
+÷	divided by
+:	divided by
 ×	times
 *	times
 ·	times
+∗	times
+∙	times
+⋅	times
+±	plus or minus
+∓	minus or plus
+<	less than
+>	greater than
+∈	element of
+∉	not an element of
+∋	contains as member
+∝	proportional to
+∣	divides
+∥	parallel to
+∧	logical and
+∩	intersection
+∪	union
+≃	asymptotically equal to
+≅	approximately equal to
+≈	approximately equal to
+≠	not equal to
+≡	identical to
+≤	less than or equal to
+≥	greater than or equal to
+≦	less than or equal to
+≧	greater than or equal to
+≪	much less than
+≫	much greater than
+≮	not less than
+≯	not greater than
+≺	precedes
+≻	succeeds
+⊂	subset of
+⊃	superset of
+⊆	subset of or equal to
+⊇	superset of or equal to
+⊕	circled plus
+⊖	circled minus
+⊗	circled times
+⊘	circled division slash
+⋆	star operator
+⋈	natural join
