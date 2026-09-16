@@ -86,7 +86,6 @@ class CardinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
 
-        # WFST mappings for numbers 0-99
         zero = pynini.string_file(get_abs_path("data/cardinal/zero.tsv"))
         digits = pynini.string_file(get_abs_path("data/cardinal/digits.tsv"))
         irregular_teens = pynini.string_file(get_abs_path("data/cardinal/irregular_teens.tsv"))
@@ -96,7 +95,6 @@ class CardinalFst(GraphFst):
         teens = irregular_teens | regular_teens
         tens = pynini.string_file(get_abs_path("data/cardinal/tens.tsv"))
         ties = tens + pynutil.insert("0")
-        # German flips ones and tens in two-digit numbers. The WFST below handles these flips.
         conjunction = load_labels(get_abs_path("data/cardinal/conjunction.tsv"))[0][0]
 
         # the map is keyed on the compound spelling, so whitespace is stripped before lookup
@@ -107,7 +105,6 @@ class CardinalFst(GraphFst):
             get_abs_path("data/cardinal/conjunction.tsv"),
         )
 
-        # WFST grammar for hundreds
         graph_10_99 = teens | ties | ties_digit
 
         hundreds = (
@@ -117,20 +114,17 @@ class CardinalFst(GraphFst):
         )
 
         # Digits are grouped in clusters of three: {hundreds}{tens}{ones}.
-        # Clusters of three are separated by periods, applied right to left.
         non_zero_digit_cluster = (hundreds) | (pynutil.insert("0") + graph_10_99) | (pynutil.insert("00") + digits)
         digit_cluster = non_zero_digit_cluster | pynutil.insert("000")
         # a magnitude word with no multiplier in front of it means "one" of that magnitude
         leading_cluster = non_zero_digit_cluster | pynutil.insert("001")
 
-        # WFST grammar for thousands
         thousands = (
             ((leading_cluster + delete_space + pynini.cross("tausend", ".")) | pynutil.insert("000."))
             + delete_space
             + digit_cluster
         )
 
-        # WFST grammar for millions
         million = pynini.accep("million") | pynini.accep("millionen")
         millions = (
             ((leading_cluster + delete_space + pynini.cross(million, ".")) | pynutil.insert("000."))
@@ -138,7 +132,6 @@ class CardinalFst(GraphFst):
             + thousands
         )
 
-        # WFST grammar for billions
         billion = pynini.accep("milliarde") | pynini.accep("milliarden")
         billions = (
             ((leading_cluster + delete_space + pynini.cross(billion, ".")) | pynutil.insert("000."))
@@ -146,7 +139,6 @@ class CardinalFst(GraphFst):
             + millions
         )
 
-        # WFST grammar for trillions
         trillion = pynini.accep("billion") | pynini.accep("billionen")
         trillions = (
             ((leading_cluster + delete_space + pynini.cross(trillion, ".")) | pynutil.insert("000."))
@@ -154,7 +146,6 @@ class CardinalFst(GraphFst):
             + billions
         )
 
-        # WFST grammar for quadrillions
         quadrillion = pynini.accep("billiarde") | pynini.accep("billiarden")
         quadrillions = (
             ((leading_cluster + delete_space + pynini.cross(quadrillion, ".")) | pynutil.insert("000."))
@@ -162,7 +153,6 @@ class CardinalFst(GraphFst):
             + trillions
         )
 
-        # WFST grammar for quintillions
         quintillion = pynini.accep("trillion") | pynini.accep("trillionen")
         quintillions = (
             ((leading_cluster + delete_space + pynini.cross(quintillion, ".")) | pynutil.insert("000."))
@@ -170,7 +160,6 @@ class CardinalFst(GraphFst):
             + quadrillions
         )
 
-        # WFST grammar for sextillions
         sextillion = pynini.accep("trilliarde") | pynini.accep("trilliarden")
         sextillions = (
             ((leading_cluster + delete_space + pynini.cross(sextillion, ".")) | pynutil.insert("000."))
@@ -178,13 +167,11 @@ class CardinalFst(GraphFst):
             + quintillions
         )
 
-        # Remove the leading zeros
         non_zero_digits = pynini.difference(NEMO_DIGIT, "0")
         chars_to_remove = pynini.accep("0") | pynini.accep(".")
         remove_chars = pynutil.delete(pynini.closure(chars_to_remove))
         remove_leading_zeros = pynini.cdrewrite(remove_chars, "[BOS]", non_zero_digits, NEMO_SIGMA)
 
-        # All together now
         grammars = [
             sextillions,
             quintillions,
@@ -209,23 +196,14 @@ class CardinalFst(GraphFst):
             non_zero_digit_cluster @ remove_leading_zeros
         ).optimize()
 
-        # The block below leaves numerals 1 - 12 canonically normalized
-        accept_denormalized_first_dozen = pynini.project(to_denormalize, "input")  # acceptor for null - zwölf
-        accept_denormalized_everything = pynini.project(
-            self.graph_no_exception, "input"
-        )  # acceptor for all verbalized cardinals
-        accept_without_first_dozen = (
-            accept_denormalized_everything - accept_denormalized_first_dozen
-        )  # acceptor for all verbalized cardinals greater than 12
-        transduce_without_first_dozen = (
-            accept_without_first_dozen @ self.graph_no_exception
-        )  # transducer for all verbalized cardinals greater than 12
+        # the block below leaves numerals 1 - 12 spelled out
+        accept_denormalized_first_dozen = pynini.project(to_denormalize, "input")
+        accept_denormalized_everything = pynini.project(self.graph_no_exception, "input")
+        accept_without_first_dozen = accept_denormalized_everything - accept_denormalized_first_dozen
+        transduce_without_first_dozen = accept_without_first_dozen @ self.graph_no_exception
         graph = accept_denormalized_first_dozen | transduce_without_first_dozen
         self.graph = graph.optimize()
 
-        # "und" after "hundert" or a magnitude word is a conjunction, never part of the number, so
-        # the phrase stays one token with both sides written out and the spacing normalized:
-        # "eintausendundzwanzig" and "ein tausend und zwanzig" both give 1.000 und 20
         magnitude_word = pynini.union(
             "hundert", "tausend", million, billion, trillion, quadrillion, quintillion, sextillion
         )
@@ -240,13 +218,8 @@ class CardinalFst(GraphFst):
             + self.graph_hundred_component_at_least_one_none_zero_digit
         )
 
-        # every verbalizer reads a single character out of the negative field, so the tagger
-        # writes the minus sign itself instead of a boolean flag
         negative = pynutil.insert("negative: ") + pynini.cross("minus ", '"-"') + pynutil.insert(" ")
         self.optional_minus_graph = pynini.closure(negative, 0, 1)
-
-        # On its own the first dozen stays verbalized, but a signed number is always written
-        # in digits: "drei" -> "drei" while "minus drei" -> "-3"
         integer = pynutil.insert('integer: "') + (self.graph | graph_magnitude_und) + pynutil.insert('"')
         # a sign in front of zero carries no meaning, so "minus null" is not a cardinal
         accept_zero = pynini.project(zero, "input")
