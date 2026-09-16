@@ -30,6 +30,7 @@ pipeline {
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-25-6'
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-29-26-1'
+    TA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-16-26-0'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -109,6 +110,30 @@ pipeline {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=hi_en --text="एक" --cache_dir ${HI_EN_TN_CACHE}'
           }
+        }
+      }
+    }
+
+    stage('L0: Create TA TN/ITN Grammars') {
+    when {
+        anyOf {
+            branch 'main'
+            branch 'staging/**'
+            branch 'staging_*'
+            changeRequest target: 'main'
+        }
+    }
+    failFast true
+    parallel {
+        stage('L0: Ta TN grammars') {
+            steps {
+                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ta --text="௧" --cache_dir ${TA_TN_CACHE}'
+            }
+        }
+        stage('L0: Ta ITN grammars') {
+            steps {
+                sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ta --text="ஒன்று" --cache_dir ${TA_TN_CACHE}'
+            }
         }
       }
     }
@@ -406,6 +431,11 @@ pipeline {
         stage('L1: Run all HI TN/ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/hi/ -m "not pleasefixme" --cpu --tn_cache_dir ${HI_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all TA TN/ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ta/ -m "not pleasefixme" --cpu --tn_cache_dir ${TA_TN_CACHE}'
           }
         }
         stage('L1: Run all Codeswitched ES/EN TN/ITN tests (restore grammars from cache)') {
