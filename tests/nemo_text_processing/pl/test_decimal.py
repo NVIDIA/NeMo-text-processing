@@ -14,8 +14,11 @@
 
 import pytest
 from parameterized import parameterized
+from pynini.lib import rewrite
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.text_normalization.pl.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.pl.taggers.decimal import DecimalFst
 
 from ..utils import parse_test_case_file
 
@@ -29,3 +32,12 @@ class TestDecimal:
     def test_norm(self, test_input, expected):
         prediction = self.normalizer.normalize(test_input, punct_post_process=False)
         assert prediction == expected
+
+    @pytest.mark.run_only_on("CPU")
+    @pytest.mark.unit
+    def test_nondeterministic_fractional_readings(self):
+        cardinal = CardinalFst(deterministic=False)
+        decimal = DecimalFst(cardinal, deterministic=False)
+        alternatives = rewrite.top_rewrites("1,5", decimal.graphs["nom"], 10)
+        assert 'integer_part: "jeden" separator: "i" fractional_part: "pięć dziesiątych"' in alternatives
+        assert 'integer_part: "jeden" separator: "i" fractional_part: "pół"' in alternatives

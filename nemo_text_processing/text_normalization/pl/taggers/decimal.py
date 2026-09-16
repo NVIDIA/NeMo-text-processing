@@ -28,6 +28,10 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
         separators = dict(load_labels(get_abs_path("data/decimal/separators.tsv")))
+        fractional_readings = dict(
+            (int(fraction), reading)
+            for fraction, reading in load_labels(get_abs_path("data/decimal/fractional_readings.tsv"))
+        )
         denominators = {}
         for width, lemma in load_labels(get_abs_path("data/decimal/denominators.tsv")):
             forms = adjective_inflection(lemma)
@@ -82,6 +86,24 @@ class DecimalFst(GraphFst):
                 + cardinal.single_digits_graph
                 + pynutil.insert('"')
             )
+            preferred = []
+            for fraction, reading in fractional_readings.items():
+                preferred.append(
+                    optional_negative
+                    + integer_field
+                    + pynutil.insert(f'separator: "{separators["named"]}" fractional_part: "')
+                    + point
+                    + pynutil.delete(str(fraction))
+                    + pynutil.insert(reading)
+                    + pynutil.insert('"')
+                )
+            if deterministic:
+                named = (
+                    pynutil.add_weight(pynini.union(*preferred), -0.001)
+                    | pynutil.add_weight(named, 0.001)
+                )
+            else:
+                named |= pynutil.add_weight(pynini.union(*preferred), 0.001)
             self.graphs[case] = named.optimize()
             self.digit_graphs[case] = digits.optimize()
 
