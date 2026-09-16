@@ -21,14 +21,16 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_
 class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal
-        e.g. cardinal { negative: "true" integer: "23" } -> -23
+        e.g. cardinal { negative: "-" integer: "23" } -> -23
     """
 
     def __init__(self):
         super().__init__(name="cardinal", kind="verbalize")
 
-        # removes the 'negative:' label and leaves the optional '-' sign in place
-        optional_minus = pynini.closure(pynini.cross('negative: "true"', "-") + delete_space, 0, 1)
+        # the tagger writes the sign itself, so the verbalizer just reads it out of the field
+        optional_minus = pynini.closure(
+            pynutil.delete('negative: "') + NEMO_NOT_QUOTE + pynutil.delete('"') + delete_space, 0, 1
+        )
 
         # removes the 'integer:' label
         just_integers = (

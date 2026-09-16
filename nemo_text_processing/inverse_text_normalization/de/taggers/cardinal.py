@@ -73,8 +73,8 @@ class CardinalFst(GraphFst):
     number, it joins two numbers, whether written glued or spaced: both "einhundertundzwei" and
     "ein hundert und zwei" -> 100 und 2. German writes 102 as "ein hundert zwei".
 
-        e.g. minus drei und zwanzig -> cardinal { negative: "true" integer: "23" }
-        e.g. minus dreiundzwanzig -> cardinal { negative: "true" integer: "23" }
+        e.g. minus drei und zwanzig -> cardinal { negative: "-" integer: "23" }
+        e.g. minus dreiundzwanzig -> cardinal { negative: "-" integer: "23" }
         e.g. dreizehn -> cardinal { integer: "13" }
         e.g. ein hundert -> cardinal { integer: "100" }
         e.g. einhundert -> cardinal { integer: "100" }
@@ -240,14 +240,10 @@ class CardinalFst(GraphFst):
             + self.graph_hundred_component_at_least_one_none_zero_digit
         )
 
-        # the cardinal verbalizer turns the "true" flag back into a minus sign
-        negative = pynutil.insert("negative: ") + pynini.cross("minus ", '"true"') + pynutil.insert(" ")
-
-        # the decimal verbalizer reads a single character out of the negative field, so the graph
-        # handed to the other classes keeps the minus sign rather than the "true" flag
-        self.optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("minus ", '"-"') + pynutil.insert(" "), 0, 1
-        )
+        # every verbalizer reads a single character out of the negative field, so the tagger
+        # writes the minus sign itself instead of a boolean flag
+        negative = pynutil.insert("negative: ") + pynini.cross("minus ", '"-"') + pynutil.insert(" ")
+        self.optional_minus_graph = pynini.closure(negative, 0, 1)
 
         # On its own the first dozen stays verbalized, but a signed number is always written
         # in digits: "drei" -> "drei" while "minus drei" -> "-3"
