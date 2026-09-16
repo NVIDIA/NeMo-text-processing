@@ -1,9 +1,11 @@
 ein hundert~100
 einhundert~100
-ein hundert und zwei~102
 einhundertzwei~102
-ein hundert und zwanzig~120
-ein hundert und elf~111
+ein hundert zwei~102
+ein hundert und zwei~100 und 2
+ein hundert und zwanzig~100 und 20
+ein hundert und elf~100 und 11
+einhundertundelf~100 und 11
 ein tausend~1.000
 eintausend~1.000
 ein hundert zwölf~112
@@ -15,7 +17,6 @@ neun billionen sieben hundert neun und achtzig milliarden drei hundert zwei und 
 zwei hundert vier und fünfzig~254
 zwo hundert~200
 zwoundzwanzig~22
-zwöundzwanzig~22
 ein hundert sieben und vierzig tausend vier hundert ein und fünfzig~147.451
 eine million ein hundert sechs und fünfzig tausend ein hundert drei und siebzig~1.156.173
 eine milliarde fünf hundert drei und neunzig millionen zwei und siebzig tausend neun hundert ein und sechzig~1.593.072.961
@@ -36,15 +37,8 @@ ein~ein
 eine~eine
 einer~einer
 zwei~zwei
-zwö~zwö
 zwo~zwo
 drei~drei
-vier~vier
-fünf~fünf
-sechs~sechs
-sieben~sieben
-acht~acht
-neun~neun
 zehn~zehn
 elf~elf
 zwölf~zwölf
@@ -64,7 +58,7 @@ siebzig~70
 achtzig~80
 neunzig~90
 hundert~100
-eine million tausend~1.001.000
+eine million ein tausend~1.001.000
 zwei millionen drei~2.000.003
 tausend~1.000
 tausend zwanzig~1.020
@@ -81,11 +75,20 @@ zwei millionen ein tausend acht~2.001.008
 achtzehn tausend acht hundert achtzig~18.880
 einhunderteins~101
 ein tausend einhundert sechsundzwanzig~1.126
-ein tausend und zwanzig~1.020
+ein tausend und zwanzig~1.000 und 20
+eintausendundzwanzig~1.000 und 20
+zwei tausend und vier hundert zwei und zwanzig~2.000 und 422
 tausend ein hundert~1.100
+eine milliarde ein tausend~1.000.001.000
 eine milliarde tausend~1.000.001.000
+zwei millionen ein tausend drei~2.001.003
 zwei millionen tausend drei~2.001.003
-minus drei~-drei
+eine million tausend~1.001.000
+minus drei~-3
+minus ein tausend und zwanzig~-1.000 und 20
 trillion~1.000.000.000.000.000.000
-eine million und zwanzig~1.000.020
+eine million und zwanzig~1.000.000 und 20
+eine million und drei und zwanzig~1.000.000 und 23
 eine trilliarde zwei trillionen eine billion vier~1.002.000.001.000.000.000.004
+eine milliarde und vierzehn~1.000.000.000 und 14
+eine billion und fünf und siebzig~1.000.000.000.000 und 75
