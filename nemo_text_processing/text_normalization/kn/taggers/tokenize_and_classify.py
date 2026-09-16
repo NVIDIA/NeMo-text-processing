@@ -29,6 +29,7 @@ from nemo_text_processing.text_normalization.kn.graph_utils import (
 from nemo_text_processing.text_normalization.kn.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.kn.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.kn.taggers.word import WordFst
+from nemo_text_processing.text_normalization.kn.taggers.ordinal import OrdinalFst
 
 
 class ClassifyFst(GraphFst):
@@ -75,10 +76,13 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst(deterministic=deterministic)
             cardinal_graph = cardinal.fst
 
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            ordinal_graph = ordinal.fst
+
             punctuation = PunctuationFst(deterministic=deterministic)
             punct_graph = punctuation.fst
 
-            classify = pynutil.add_weight(cardinal_graph, 1.1)
+            classify = pynutil.add_weight(cardinal_graph, 1.1) | pynutil.add_weight(ordinal_graph, 1.1)
 
             word_graph = WordFst().fst
 
