@@ -98,10 +98,7 @@ class DecimalFst(GraphFst):
                     + pynutil.insert('"')
                 )
             if deterministic:
-                named = (
-                    pynutil.add_weight(pynini.union(*preferred), -0.001)
-                    | pynutil.add_weight(named, 0.001)
-                )
+                named = pynutil.add_weight(pynini.union(*preferred), -0.001) | pynutil.add_weight(named, 0.001)
             else:
                 named |= pynutil.add_weight(pynini.union(*preferred), 0.001)
             self.graphs[case] = named.optimize()
