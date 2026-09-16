@@ -53,6 +53,7 @@ def parse_args():
             "vi",
             "zh",
             'ja',
+            "ta",
         ],
         default="en",
         type=str,

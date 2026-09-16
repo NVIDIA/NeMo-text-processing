@@ -109,6 +109,7 @@ def parse_args():
             'ja',
             'rw',
             'ko',
+            'ta',
         ],
         type=str,
         default='en',
@@ -352,6 +353,17 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.ko.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+    elif args.language == 'ta':
+        from nemo_text_processing.inverse_text_normalization.ta.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.ta.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
+        from nemo_text_processing.text_normalization.ta.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.ta.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     else:
         raise KeyError(f"Language {args.language} is not defined for export.")
     output_dir = os.path.join(args.output_dir, f"{args.language}_{args.grammars}_{args.input_case}")

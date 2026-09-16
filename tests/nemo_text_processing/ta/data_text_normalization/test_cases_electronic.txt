@@ -1,0 +1,29 @@
+kumar@gmail.com~kumar எட் gmail டாட் காம்
+info@example.co.in~info எட் example டாட் கோ டாட் ஐ என்
+support@example.com~support எட் example டாட் காம்
+user@example.net~user எட் example டாட் நெட்
+admin@example.edu~admin எட் example டாட் எடு
+test@example.gov~test எட் example டாட் கவ்
+a-b@example.org~ஏ டாஷ் பி எட் example டாட் ஆர்க்
+x@example.in~எக்ஸ் எட் example டாட் ஐ என்
+https://google.com~google டாட் காம்
+http://example.com/page2~example டாட் காம் வெட்டுக்கோடு page இரண்டு
+https://www.example.com/path/to/page~டபிள்யூ டபிள்யூ டபிள்யூ டாட் example டாட் காம் வெட்டுக்கோடு path வெட்டுக்கோடு to வெட்டுக்கோடு page
+www.example.com~டபிள்யூ டபிள்யூ டபிள்யூ டாட் example டாட் காம்
+www.google.co.in~டபிள்யூ டபிள்யூ டபிள்யூ டாட் google டாட் கோ டாட் ஐ என்
+www.example.co~டபிள்யூ டபிள்யூ டபிள்யூ டாட் example டாட் கோ
+example.com~example டாட் காம்
+example.org~example டாட் ஆர்க்
+example.net/a/b~example டாட் நெட் வெட்டுக்கோடு ஏ வெட்டுக்கோடு பி
+example.com/page2~example டாட் காம் வெட்டுக்கோடு page இரண்டு
+192.168.1.1~ஒன்று ஒன்பது இரண்டு டாட் ஒன்று ஆறு எட்டு டாட் ஒன்று டாட் ஒன்று
+10.0.0.1~ஒன்று பூஜ்யம் டாட் பூஜ்யம் டாட் பூஜ்யம் டாட் ஒன்று
+255.255.255.0~இரண்டு ஐந்து ஐந்து டாட் இரண்டு ஐந்து ஐந்து டாட் இரண்டு ஐந்து ஐந்து டாட் பூஜ்யம்
+@handle~எட் handle
+@user_name~எட் user அடிக்கோடு name
+@a_b~எட் ஏ அடிக்கோடு பி
+user_name~user_name
+a_b~a_b
+3.14~மூன்று புள்ளி ஒன்று நான்கு
+5@6~ஐந்து எட் ஆறு
+விவரங்களுக்கு info@example.com பார்க்கவும்.~விவரங்களுக்கு info எட் example டாட் காம் பார்க்கவும் .
