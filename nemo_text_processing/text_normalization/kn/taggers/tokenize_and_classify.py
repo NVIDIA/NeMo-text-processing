@@ -27,9 +27,9 @@ from nemo_text_processing.text_normalization.kn.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.text_normalization.kn.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.kn.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.kn.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.kn.taggers.word import WordFst
-from nemo_text_processing.text_normalization.kn.taggers.ordinal import OrdinalFst
 
 
 class ClassifyFst(GraphFst):

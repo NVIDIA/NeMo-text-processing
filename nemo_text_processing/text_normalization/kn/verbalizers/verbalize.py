@@ -39,5 +39,4 @@ class VerbalizeFst(GraphFst):
 
         graph = cardinal_graph | ordinal_graph
 
-
         self.fst = graph
