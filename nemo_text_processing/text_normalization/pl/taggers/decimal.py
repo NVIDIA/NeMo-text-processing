@@ -28,10 +28,8 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
         separators = dict(load_labels(get_abs_path("data/decimal/separators.tsv")))
-        fractional_readings = dict(
-            (int(fraction), reading)
-            for fraction, reading in load_labels(get_abs_path("data/decimal/fractional_readings.tsv"))
-        )
+        preferred_fraction = pynini.string_file(get_abs_path("data/decimal/fractional_readings.tsv")).optimize()
+        preferred_fraction_inputs = pynini.project(preferred_fraction, "input").optimize()
         denominators = {}
         for width, lemma in load_labels(get_abs_path("data/decimal/denominators.tsv")):
             forms = adjective_inflection(lemma)
@@ -70,14 +68,13 @@ class DecimalFst(GraphFst):
                 )
                 named_fractions.append(fraction)
 
-            named = (
+            named_prefix = (
                 optional_negative
                 + integer_field
                 + pynutil.insert(f'separator: "{separators["named"]}" fractional_part: "')
                 + point
-                + pynini.union(*named_fractions)
-                + pynutil.insert('"')
             )
+            named = named_prefix + pynini.union(*named_fractions) + pynutil.insert('"')
             digits = (
                 optional_negative
                 + integer_field
@@ -86,21 +83,41 @@ class DecimalFst(GraphFst):
                 + cardinal.single_digits_graph
                 + pynutil.insert('"')
             )
-            preferred = []
-            for fraction, reading in fractional_readings.items():
-                preferred.append(
-                    optional_negative
-                    + integer_field
-                    + pynutil.insert(f'separator: "{separators["named"]}" fractional_part: "')
-                    + point
-                    + pynutil.delete(str(fraction))
-                    + pynutil.insert(reading)
-                    + pynutil.insert('"')
-                )
+            preferred = named_prefix + preferred_fraction + pynutil.insert('"')
             if deterministic:
-                named = pynutil.add_weight(pynini.union(*preferred), -0.001) | pynutil.add_weight(named, 0.001)
+                named_inputs = pynini.rmepsilon(
+                    pynini.arcmap(
+                    pynini.determinize(
+                            pynini.rmepsilon(pynini.arcmap(pynini.project(named, "input"), map_type="rmweight")),
+                            det_type="nonfunctional",
+                        ),
+                        map_type="rmweight",
+                    )
+                ).optimize()
+                preferred_inputs = pynini.rmepsilon(
+                    pynini.arcmap(
+                        pynini.determinize(
+                            pynini.rmepsilon(
+                                pynini.arcmap(
+                                    pynini.project(
+                                        pynini.closure(pynini.cross("-", ""), 0, 1)
+                                        + integer_input
+                                        + pynini.union(",", ".")
+                                        + preferred_fraction_inputs,
+                                        "input",
+                                    ),
+                                    map_type="rmweight",
+                                )
+                            ),
+                            det_type="nonfunctional",
+                        ),
+                        map_type="rmweight",
+                    )
+                ).optimize()
+                named_inputs = pynini.difference(named_inputs, preferred_inputs).optimize()
+                named = (named_inputs @ named) | preferred
             else:
-                named |= pynutil.add_weight(pynini.union(*preferred), 0.001)
+                named |= preferred
             self.graphs[case] = named.optimize()
             self.digit_graphs[case] = digits.optimize()
 
