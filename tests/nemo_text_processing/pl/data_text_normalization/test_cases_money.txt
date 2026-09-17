@@ -2,6 +2,9 @@ $5~pięć dolarów
 5$~pięć dolarów
 USD 2~dwa dolary amerykańskie
 2 USD~dwa dolary amerykańskie
+5 CAD~pięć dolarów kanadyjskich
+5 AUD~pięć dolarów australijskich
+5 NZD~pięć dolarów nowozelandzkich
 $5,02~pięć dolarów i dwa centy
 £2~dwa funty
 GBP 5~pięć funtów brytyjskich
