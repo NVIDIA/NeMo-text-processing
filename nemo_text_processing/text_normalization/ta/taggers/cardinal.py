@@ -27,10 +27,15 @@ from nemo_text_processing.text_normalization.ta.utils import get_abs_path
 class CardinalFst(GraphFst):
     """
     Finite state transducer for classifying cardinals
-        e.g. 23 -> cardinal { integer: "இருபத்தி மூன்று" }
-        "9999999999999999" -> cardinal { integer: "தொண்ணூற்று ஒன்பது கோடியே தொண்ணூற்று
-        ஒன்பது லட்சத்து தொண்ணூற்று ஒன்பது ஆயிரத்து தொள்ளாயிரத்து தொண்ணூற்று ஒன்பது கோடியே தொண்ணூற்று
-        ஒன்பது லட்சத்து தொண்ணூற்று ஒன்பது ஆயிரத்து தொள்ளாயிரத்து தொண்ணூற்று ஒன்பது" }
+        e.g. 23 -> cardinal { integer: "இருபத்திமூன்று" }
+        "9999999999999999" -> cardinal { integer: "தொண்ணூற்றொன்பது கோடியே தொண்ணூற்றொன்பது லட்சத்து 
+        தொண்ணூற்றொன்பது ஆயிரத்து தொள்ளாயிரத்து தொண்ணூற்றொன்பது கோடியே தொண்ணூற்றொன்பது 
+        லட்சத்து தொண்ணூற்றொன்பது ஆயிரத்து தொள்ளாயிரத்து தொண்ணூற்றொன்பது" }
+
+    Compound tens (21-99) are generated compositionally: a tens stem + digit 
+    passed through a sandhi rewrite, mirroring the suffix-rewrite technique 
+    used for hundreds. Teens (10-19) stay as hardcoded literals since their 
+    forms are irregular.
 
     Covers up to 16 digits (max 9999999999999999, just under 10^16),
     via composed கோடி (crore) groups.
@@ -65,9 +70,9 @@ class CardinalFst(GraphFst):
         # TEENS_AND_TIES (10-99)
         teens_and_ties_literal = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
         tens_connector_stem = pynini.string_file(get_abs_path("data/numbers/tens_stem.tsv"))
-
-        teens_and_ties_compositional = tens_connector_stem + insert_space + digit
-
+        tens_sandhi_rule = pynini.string_file(get_abs_path("data/numbers/tens_sandhi.tsv"))
+        tens_sandhi_rewrite = pynini.cdrewrite(tens_sandhi_rule, "", "", NEMO_SIGMA)
+        teens_and_ties_compositional = pynini.compose(tens_connector_stem + digit, tens_sandhi_rewrite).optimize()
         teens_and_ties = pynini.union(teens_and_ties_literal, teens_and_ties_compositional).optimize()
 
         # HUNDREDS
