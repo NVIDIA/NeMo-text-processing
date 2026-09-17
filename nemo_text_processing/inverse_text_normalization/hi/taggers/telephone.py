@@ -42,15 +42,17 @@ digit_pair = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
 digit_unit = digit | digit_pair
 
 
-def digit_sequence(length, first=None):
+def digit_sequence(length, first=None, allow_pairs=True):
     """
     Sequence of spoken number words producing exactly `length` digits.
 
     A word may contribute one digit ("नौ" -> "९") or two ("इक्यासी" -> "८१"), so the
     length is constrained on the output side rather than by counting spoken words.
     `first` optionally restricts the leading digit, e.g. non zero for mobile numbers.
+    `allow_pairs` may be cleared to accept only single digit words.
     """
-    sequence = pynini.closure(digit_unit + delete_space) + digit_unit
+    unit = digit_unit if allow_pairs else digit
+    sequence = pynini.closure(unit + delete_space) + unit
     if first is None:
         output = pynini.closure(NEMO_HI_DIGIT, length, length)
     else:
@@ -92,7 +94,7 @@ def generate_context_graph(context_keywords, length):
 
     graph_after_context = digits + NEMO_WHITE_SPACE + context_after
     graph_before_context = context_before + NEMO_WHITE_SPACE + digits
-    graph_without_context = digits
+    graph_without_context = digit_sequence(length, allow_pairs=False)
 
     return (
         pynutil.insert("number_part: \"")
