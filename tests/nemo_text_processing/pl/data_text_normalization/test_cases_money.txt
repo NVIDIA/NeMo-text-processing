@@ -1,0 +1,13 @@
+$5~pięć dolarów
+5$~pięć dolarów
+USD 2~dwa dolary amerykańskie
+2 USD~dwa dolary amerykańskie
+$5,02~pięć dolarów i dwa centy
+£2~dwa funty
+GBP 5~pięć funtów brytyjskich
+5 zł~pięć złotych
+5 zl~pięć złotych
+PLN 2~dwa złote
+PLN 5,02~pięć złotych i dwa grosze
+5 mln zł~pięć milionów złotych
+5 mln USD~pięć milionów dolarów amerykańskich

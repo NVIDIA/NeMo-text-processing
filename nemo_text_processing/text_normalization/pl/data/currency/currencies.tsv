@@ -1,0 +1,7 @@
+$	dolar	ma	noun_ma_r.tsv	cent	ma	noun_ma_t.tsv
+USD	dolar amerykański	ma	noun_ma_r.tsv	cent	ma	noun_ma_t.tsv
+£	funt	ma	noun_ma_t.tsv	pens	ma	noun_ma_s.tsv
+GBP	funt brytyjski	ma	noun_ma_t.tsv	pens	ma	noun_ma_s.tsv
+zł	złoty	ma	noun_ma_y.tsv	grosz	mi	noun_mi_sz.tsv
+zl	złoty	ma	noun_ma_y.tsv	grosz	mi	noun_mi_sz.tsv
+PLN	złoty	ma	noun_ma_y.tsv	grosz	mi	noun_mi_sz.tsv

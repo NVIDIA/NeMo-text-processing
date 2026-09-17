@@ -18,6 +18,7 @@ from nemo_text_processing.text_normalization.pl.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.pl.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.pl.verbalizers.measure import MeasureFst
+from nemo_text_processing.text_normalization.pl.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.pl.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.roman import RomanFst
 from nemo_text_processing.text_normalization.pl.verbalizers.time import TimeFst
@@ -34,6 +35,7 @@ class VerbalizeFst(GraphFst):
             | DecimalFst(deterministic=deterministic).fst
             | FractionFst(deterministic=deterministic).fst
             | MeasureFst(deterministic=deterministic).fst
+            | MoneyFst(deterministic=deterministic).fst
             | TimeFst(deterministic=deterministic).fst
             | AbbreviationFst(deterministic=deterministic).fst
         )
