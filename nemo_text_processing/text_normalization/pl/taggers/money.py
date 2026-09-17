@@ -95,9 +95,7 @@ class MoneyFst(GraphFst):
             integer = marker_graph + optional_space + amount_graph
             integer |= amount_graph + optional_space + marker_graph
             if minor_forms is not None:
-                minor_values = pynini.union(
-                    *(pynini.cross(f"{value:02}", str(value)) for value in range(1, 100))
-                )
+                minor_values = pynini.union(*(pynini.cross(f"{value:02}", str(value)) for value in range(1, 100)))
                 minor_singular_slot = (
                     f"{minor_gender}_sg_nom" if f"{minor_gender}_sg_nom" in cardinal.graphs else "mi_sg_nom"
                 )
@@ -167,11 +165,7 @@ class MoneyFst(GraphFst):
                     + pynutil.insert('"')
                 )
                 quantity_graphs.append(
-                    quantity_spoken
-                    + pynutil.delete(" ")
-                    + pynutil.delete(quantity)
-                    + optional_space
-                    + marker_graph
+                    quantity_spoken + pynutil.delete(" ") + pynutil.delete(quantity) + optional_space + marker_graph
                 )
 
             return (
