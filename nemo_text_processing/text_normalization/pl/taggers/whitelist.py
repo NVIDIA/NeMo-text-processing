@@ -20,6 +20,7 @@ from nemo_text_processing.text_normalization.pl.inflection import (
     load_adjective_abbreviations,
     load_ambiguous_abbreviations,
     load_inflected_abbreviations,
+    load_inflected_phrase_abbreviations,
 )
 from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
 from nemo_text_processing.text_normalization.pl.taggers.roman import _name_forms
@@ -47,6 +48,7 @@ class WhiteListFst(GraphFst):
 
         self.inflected_graphs = load_inflected_abbreviations("data/abbreviations.tsv")
         graph |= pynini.union(*self.inflected_graphs.values())
+        graph |= load_inflected_phrase_abbreviations("data/abbreviations_inflected.tsv")
 
         saint_forms = adjective_inflection("święty")
         complete_paradigm(saint_forms, complete=True)

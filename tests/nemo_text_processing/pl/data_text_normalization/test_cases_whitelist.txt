@@ -10,3 +10,5 @@ s-ce~spółce
 ur.~urodzony
 ang.~angielski
 tzw.~tak zwany
+dz. u.~dziennik ustaw
+dz. urz.~dziennik urzędowy

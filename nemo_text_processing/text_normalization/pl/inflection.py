@@ -101,10 +101,31 @@ def load_inflected_abbreviations(filepath: str) -> Dict[str, 'pynini.FstLike']:
     """Loads abbreviation, lemma, and grammar triples into slot-indexed graphs."""
 
     graphs = {}
-    for abbreviation, word, grammar_file in load_labels(get_abs_path(filepath)):
-        for slot, graph in inflect_abbreviation(abbreviation, word, grammar_file).items():
+    for fields in load_labels(get_abs_path(filepath)):
+        abbreviation, word, grammar_file = fields
+        if grammar_file.endswith(".tsv"):
+            inflected = inflect_abbreviation(abbreviation, word, grammar_file)
+        else:
+            if len(word.split()) != len(grammar_file.split()):
+                raise ValueError(f"Abbreviation and grammar fields must have matching word counts: {fields}")
+            inflected = {"base": pynini.cross(abbreviation, word)}
+        for slot, graph in inflected.items():
             graphs[slot] = graph if slot not in graphs else graphs[slot] | graph
     return {slot: graph.optimize() for slot, graph in graphs.items()}
+
+
+def load_inflected_phrase_abbreviations(filepath: str) -> 'pynini.FstLike':
+    """Loads word-aligned abbreviation expansions with a noun paradigm."""
+
+    graphs = []
+    for fields in load_labels(get_abs_path(filepath)):
+        abbreviation, phrase, grammars, noun_grammar = fields
+        if len(phrase.split()) != len(grammars.split()):
+            raise ValueError(f"Abbreviation and grammar fields must have matching word counts: {fields}")
+        if noun_grammar.endswith(".tsv"):
+            _load_endings(noun_grammar)
+        graphs.append(pynini.cross(abbreviation, phrase))
+    return pynini.union(*graphs).optimize()
 
 
 def load_ambiguous_abbreviations(filepath: str) -> Dict[str, 'pynini.FstLike']:

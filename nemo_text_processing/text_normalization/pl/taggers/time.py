@@ -31,16 +31,27 @@ class TimeFst(GraphFst):
         minutes = pynini.union(*(f"{minute:02d}" for minute in range(1, 60)))
         minute_words = (pynutil.delete("0") + cardinal.graphs["mi_sg_nom"]) | cardinal.graphs["mi_sg_nom"]
         time_zone = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
+        time_zone_suffix = (
+            delete_space + pynutil.insert(' zone: "') + time_zone + pynutil.insert('"')
+        )
         optional_time_zone = pynini.closure(
-            delete_space + pynutil.insert(' zone: "') + time_zone + pynutil.insert('"'), 0, 1
+            time_zone_suffix, 0, 1
         )
 
         def time_graph(hour_slot: str, prefix: 'pynini.FstLike') -> 'pynini.FstLike':
             hour = hours @ ordinal.graphs[hour_slot]
-            hour_field = pynutil.insert('hours: "') + prefix + hour + pynutil.insert('"')
+            hour_value = prefix + hour
+            hour_field = pynutil.insert('hours: "') + hour_value + pynutil.insert('"')
+            hour_with_noun_field = pynutil.insert('hours: "') + hour_value + pynutil.insert(' godzina"')
             minute_field = pynutil.insert(' minutes: "') + (minutes @ minute_words) + pynutil.insert('"')
             separator = pynutil.delete(pynini.union(":", "."))
-            return hour_field + separator + (pynutil.delete("00") | minute_field) + optional_time_zone
+            minute_value = pynutil.delete("00") | minute_field
+            graph = (
+                hour_field + separator + minute_value + optional_time_zone
+            )
+            if not deterministic:
+                graph |= hour_with_noun_field + separator + minute_value + optional_time_zone
+            return graph
 
         plain = time_graph("f_sg_nom", pynini.accep(""))
         governed = time_graph("f_sg_loc", pynini.accep("o") + delete_space + pynutil.insert(" "))
