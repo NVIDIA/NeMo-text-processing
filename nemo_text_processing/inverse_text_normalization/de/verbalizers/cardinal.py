@@ -15,22 +15,34 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal
-        e.g. cardinal { integer: "23" negative: "-" } -> -23
-
-    Args:
-        tn_cardinal_verbalizer: TN cardinal verbalizer
+        e.g. cardinal { negative: "-" integer: "23" } -> -23
     """
 
-    def __init__(self, tn_cardinal_verbalizer: GraphFst, deterministic: bool = True):
-        super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
-        self.numbers = tn_cardinal_verbalizer.numbers
-        optional_sign = pynini.closure(pynutil.delete("negative: \"") + NEMO_NOT_QUOTE + pynutil.delete("\" "), 0, 1)
-        graph = optional_sign + self.numbers
+    def __init__(self):
+        super().__init__(name="cardinal", kind="verbalize")
+
+        # the tagger writes the sign itself, so the verbalizer just reads it out of the field
+        optional_minus = pynini.closure(
+            pynutil.delete('negative: "') + NEMO_NOT_QUOTE + pynutil.delete('"') + delete_space, 0, 1
+        )
+
+        # removes the 'integer:' label
+        just_integers = (
+            pynutil.delete("integer:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete('"')
+            + delete_space
+        )
+
+        graph = optional_minus + just_integers
+        self.numbers = graph.optimize()
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

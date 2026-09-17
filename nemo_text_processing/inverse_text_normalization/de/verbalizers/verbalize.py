@@ -34,7 +34,7 @@ class VerbalizeFst(GraphFst):
         tn_cardinal_verbalizer = TNCardinalVerbalizer(deterministic=False)
         tn_decimal_verbalizer = TNDecimalVerbalizer(deterministic=False)
 
-        cardinal = CardinalFst(tn_cardinal_verbalizer=tn_cardinal_verbalizer)
+        cardinal = CardinalFst()
         cardinal_graph = cardinal.fst
         decimal = DecimalFst(tn_decimal_verbalizer=tn_decimal_verbalizer)
         decimal_graph = decimal.fst
