@@ -266,26 +266,29 @@ class CardinalFst(GraphFst):
         crore_one = oka_mult(
             ins_koti,
             ins_kotlu,
-            [(6, one_as_oka), (4, hundred_one), (1, exact_n(6, lakh_one)), (0, exact_n(7, lakh_one))],
+            [
+                (6, one_as_oka),
+                (4, hundred_one),
+                (3, exact_n(4, thousand_one)),
+                (2, exact_n(5, thousand_one)),
+                (1, exact_n(6, lakh_one)),
+                (0, exact_n(7, lakh_one)),
+            ],
         )
-        except_one_ladder = [(2, digit_nx01), (1, teens_x1)]
-        hundred_amt = union(
-            exact_n(3),
-            hprefix_2d + digit_nx01,
-            hprefix_1d + teens_x1,
-            with_unit(digit_nx01, ins_hund, 2),
-            with_rem(digit_nx01, ins_hund, 1, digit_nx01),
-        )
-        thousand_amt = union(*scale(exact_n(4), ins_thou, ins_thous, ins_thous, ins_thous, 3, except_one_ladder))
-        ten_thousand_amt = ties_scale(
-            ins_thous, ins_thous, except_one_ladder + [(0, hundred_amt)], ins_thous, ins_thous, 3
-        )
-        crore_one_10 = with_rem(hundred_amt, ins_kotlu, 6, one_as_oka).optimize()
-        crore_one_11 = with_rem(thousand_amt, ins_kotlu, 6, one_as_oka).optimize()
-        crore_one_12 = with_rem(ten_thousand_amt, ins_kotlu, 6, one_as_oka).optimize()
-        crore_one_10 = union(crore_one_10, with_rem(hundred_crore, ins_kotlu, 0, exact_n(7, lakh_one))).optimize()
-        crore_one_11 = union(crore_one_11, with_rem(thousand_crore, ins_kotlu, 0, exact_n(7, lakh_one))).optimize()
-        crore_one_12 = union(crore_one_12, with_rem(ten_thousand_crore, ins_kotlu, 0, exact_n(7, lakh_one))).optimize()
+
+        def nest_one(count):
+            return union(
+                with_rem(count, ins_kotlu, 6, one_as_oka),
+                with_rem(count, ins_kotlu, 4, exact_n(3, hundred_one)),
+                with_rem(count, ins_kotlu, 3, exact_n(4, thousand_one)),
+                with_rem(count, ins_kotlu, 2, exact_n(5, thousand_one)),
+                with_rem(count, ins_kotlu, 1, exact_n(6, lakh_one)),
+                with_rem(count, ins_kotlu, 0, exact_n(7, lakh_one)),
+            ).optimize()
+
+        crore_one_10 = nest_one(hundred_crore)
+        crore_one_11 = nest_one(union(thousand_one, thousand_crore))
+        crore_one_12 = nest_one(union(exact_n(5, thousand_one), ten_thousand_crore))
 
         crore_before, ten_crore_before = scale(exact_n(8), ins_koti, ins_kotlu, ins_kotlu, ins_kotlu, 7, koti_ladder)
         ten_lakh_crore_count = prio(
@@ -330,7 +333,6 @@ class CardinalFst(GraphFst):
             union(
                 mag_forms(crore_one_12, ins_koti_sp, crore_ladder, ins_koti_sp, 7),
                 mag_forms(crore_one_11, ins_koti_sp, crore_ladder, ins_koti_sp, 7),
-                mag_forms(crore_one_10 + zdel[1], ins_koti_sp, crore_ladder, ins_koti_sp, 7),
                 outer_crores(with_unit(thousand_one, ins_kotlu, 7)),
                 outer_crores(with_unit(hcc_oka, ins_kotlu, 7)),
             ),
