@@ -54,6 +54,26 @@ class MeasureFst(GraphFst):
         measurements_graph = pynini.string_file(get_abs_path("data/measure/measurements.tsv")).invert()
         paune_graph = pynini.string_file(get_abs_path("data/numbers/paune.tsv")).invert()
 
+        math_symbols = pynini.string_file(get_abs_path("data/measure/math_symbols.tsv"))
+        equal_symbol = pynini.string_file(get_abs_path("data/measure/equal_symbols.tsv"))
+
+        # An operand may be a decimal; without this the math path matches a span
+        # starting mid decimal and leaks "दशमलव" through as a literal word.
+        math_number = cardinal_graph + pynini.closure(
+            delete_space + pynini.cross("दशमलव", ".") + delete_space + decimal.graph, 0, 1
+        )
+        math_operator = delete_space + math_symbols + delete_space + math_number
+        math_long_side = math_number + pynini.closure(math_operator, 1)
+        math_short_side = math_number + pynini.closure(math_operator)
+        math_operation = math_long_side + delete_space + equal_symbol + delete_space + math_short_side
+        math_operation |= math_short_side + delete_space + equal_symbol + delete_space + math_long_side
+        math_graph = (
+            pynutil.insert('units: "math" cardinal { integer: "')
+            + math_operation
+            + pynutil.insert('" } preserve_order: true')
+        )
+        math_graph = pynutil.add_weight(math_graph, 1.05).optimize()
+
         self.measurements = pynutil.insert("units: \"") + measurements_graph + pynutil.insert("\" ")
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         graph_integer_paune = pynutil.insert("integer_part: \"") + paune_graph + pynutil.insert("\"")
@@ -247,6 +267,7 @@ class MeasureFst(GraphFst):
             | graph_exception_bai
             | address_graph
             | structured_address_graph
+            | math_graph
         )
         self.graph = graph.optimize()
 
