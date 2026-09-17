@@ -229,11 +229,11 @@ class MeasureFst(GraphFst):
         year_formal = pynini.string_file(get_abs_path("data/measure/unit_year_formal.tsv"))
 
         special_units_fst = pynini.string_file(get_abs_path("data/measure/special_units.tsv"))
-        
+
         unit_inputs_regular = pynini.difference(
             pynini.project(unit_graph, "input"), pynini.project(special_units_fst, "input")
         )
-        
+
         unit_graph_no_year = pynini.compose(unit_inputs_regular, unit_graph)
 
         percent_graph = pynini.compose(pynini.accep("%"), unit_graph)

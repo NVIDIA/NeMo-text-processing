@@ -21,10 +21,10 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     HI_PAUNE,
     HI_SADHE,
     HI_SAVVA,
-    NEMO_SPACE,
     MIN_NEG_WEIGHT,
     NEMO_DIGIT,
     NEMO_HI_DIGIT,
+    NEMO_SPACE,
     GraphFst,
     insert_space,
 )
@@ -95,11 +95,11 @@ class TimeFst(GraphFst):
 
         # Restrict 'sadhe' from accepting 1 or 2 so it doesn't conflict with dedh/dhai
         exclude_dedh_dhai = pynini.union("1", "१", "01", "०१", "2", "२", "02", "०२").optimize()
-        
+
         # Project cardinal_graph to an acceptor, subtract exceptions, then compose (@) back to the transducer
         valid_sadhe_inputs = pynini.difference(pynini.project(cardinal_graph, "input"), exclude_dedh_dhai)
         sadhe_cardinal = valid_sadhe_inputs @ cardinal_graph
-        
+
         sadhe_numbers = sadhe_cardinal + pynini.cross(HI_TIME_THIRTY, "")
         sadhe_graph = pynutil.insert(HI_SADHE) + pynutil.insert(NEMO_SPACE) + sadhe_numbers
 
@@ -137,7 +137,9 @@ class TimeFst(GraphFst):
 
         arabic_1_2 = pynini.closure(NEMO_DIGIT, 1, 2)
         arabic_2 = pynini.closure(NEMO_DIGIT, 2, 2)
-        arabic_valid_time = arabic_1_2 + pynini.accep(":") + arabic_2 + pynini.closure(pynini.accep(":") + arabic_2, 0, 1)
+        arabic_valid_time = (
+            arabic_1_2 + pynini.accep(":") + arabic_2 + pynini.closure(pynini.accep(":") + arabic_2, 0, 1)
+        )
 
         deva_1_2 = pynini.closure(NEMO_HI_DIGIT, 1, 2)
         deva_2 = pynini.closure(NEMO_HI_DIGIT, 2, 2)
