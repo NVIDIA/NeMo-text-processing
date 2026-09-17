@@ -1,5 +1,8 @@
 o 4.25~o czwartej dwadzieścia pięć
 o godz. 21:14~o godzinie dwudziestej pierwszej czternaście
 4:25~czwarta dwadzieścia pięć
-04:25:07~czwarta dwadzieścia pięć siedem
-00:00:00~zero zero zero
+04:25:07~cztery godziny dwadzieścia pięć minut i siedem sekund
+00:00:07~siedem sekund
+00:00~północ
+00:00:00~północ
+01:22:33~jedna godzina dwadzieścia dwie minuty i trzydzieści trzy sekundy

@@ -14,8 +14,12 @@
 
 import pytest
 from parameterized import parameterized
+from pynini.lib import rewrite
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.text_normalization.pl.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.pl.taggers.ordinal import OrdinalFst
+from nemo_text_processing.text_normalization.pl.taggers.time import TimeFst
 
 from ..utils import parse_test_case_file
 
@@ -29,3 +33,25 @@ class TestTime:
     def test_norm(self, test_input, expected):
         prediction = self.normalizer.normalize(test_input, punct_post_process=False)
         assert prediction == expected
+
+    @pytest.mark.run_only_on("CPU")
+    @pytest.mark.unit
+    def test_nondeterministic_duration_reading(self):
+        cardinal = CardinalFst(deterministic=False)
+        ordinal = OrdinalFst(deterministic=False)
+        time = TimeFst(cardinal, ordinal, deterministic=False)
+        alternatives = rewrite.top_rewrites("01:22:33", time.final_graph, 20)
+        assert 'hours: "pierwsza" minutes: "dwadzieścia dwa" seconds: "trzydzieści trzy sekundy"' in alternatives
+        assert (
+            'duration: "true" hours: "jedna godzina" minutes: "dwadzieścia dwie minuty" '
+            'seconds: "trzydzieści trzy sekundy"'
+        ) in alternatives
+
+    @pytest.mark.run_only_on("CPU")
+    @pytest.mark.unit
+    def test_nondeterministic_literal_three_component_time(self):
+        cardinal = CardinalFst(deterministic=False)
+        ordinal = OrdinalFst(deterministic=False)
+        time = TimeFst(cardinal, ordinal, deterministic=False)
+        alternatives = rewrite.top_rewrites("00:00:07", time.final_graph, 20)
+        assert 'legacy: "true" hours: "zero" minutes: "zero" seconds: "siedem"' in alternatives

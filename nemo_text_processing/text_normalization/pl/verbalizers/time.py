@@ -29,8 +29,27 @@ class TimeFst(GraphFst):
             1,
         )
         seconds = pynini.closure(
+            delete_space + pynutil.insert(" i ") + pynutil.delete('seconds: "') + value + pynutil.delete('"'),
+            0,
+            1,
+        )
+        legacy = pynutil.delete('legacy: "true"') + delete_space
+        legacy_seconds = pynini.closure(
             delete_space + pynutil.insert(" ") + pynutil.delete('seconds: "') + value + pynutil.delete('"'),
             0,
             1,
         )
-        self.fst = self.delete_tokens(hours + minutes + seconds).optimize()
+        legacy_fst = legacy + hours + minutes + legacy_seconds
+        duration = pynutil.delete('duration: "true"') + delete_space
+        duration_hours = pynini.closure(hours + delete_space, 0, 1)
+        duration_minutes = pynini.closure(
+            delete_space + pynutil.insert(" ") + pynutil.delete('minutes: "') + value + pynutil.delete('"'), 0, 1
+        )
+        duration_seconds = pynini.closure(
+            delete_space + pynutil.insert(" i ") + pynutil.delete('seconds: "') + value + pynutil.delete('"'), 0, 1
+        )
+        duration_seconds_only = (
+            duration + delete_space + pynutil.delete('seconds: "') + value + pynutil.delete('"')
+        )
+        duration_fst = duration + duration_hours + duration_minutes + duration_seconds | duration_seconds_only
+        self.fst = self.delete_tokens(hours + minutes + seconds | legacy_fst | duration_fst).optimize()
