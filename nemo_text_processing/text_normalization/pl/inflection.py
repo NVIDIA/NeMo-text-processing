@@ -114,18 +114,52 @@ def load_inflected_abbreviations(filepath: str) -> Dict[str, 'pynini.FstLike']:
     return {slot: graph.optimize() for slot, graph in graphs.items()}
 
 
-def load_inflected_phrase_abbreviations(filepath: str) -> 'pynini.FstLike':
-    """Loads word-aligned abbreviation expansions with a noun paradigm."""
+def load_inflected_phrase_abbreviations(filepath: str, deterministic: bool = True) -> Dict[str, 'pynini.FstLike']:
+    """Loads word-aligned abbreviation expansions with noun and adjective paradigms."""
 
-    graphs = []
+    graphs = {}
     for fields in load_labels(get_abs_path(filepath)):
         abbreviation, phrase, grammars, noun_grammar = fields
-        if len(phrase.split()) != len(grammars.split()):
+        words = phrase.split()
+        word_grammars = grammars.split()
+        if len(words) != len(word_grammars):
             raise ValueError(f"Abbreviation and grammar fields must have matching word counts: {fields}")
-        if noun_grammar.endswith(".tsv"):
-            _load_endings(noun_grammar)
-        graphs.append(pynini.cross(abbreviation, phrase))
-    return pynini.union(*graphs).optimize()
+        noun_indices = [index for index, grammar in enumerate(word_grammars) if grammar in {"ma", "mi", "mp", "nt", "f"}]
+        if len(noun_indices) != 1:
+            raise ValueError(f"Expected one noun gender in abbreviation grammar: {fields}")
+        noun_index = noun_indices[0]
+        noun_gender = word_grammars[noun_index]
+        noun_forms = inflect_noun(words[noun_index], noun_grammar)
+        adjective_forms = []
+        for word, grammar in zip(words, word_grammars):
+            if grammar in {"ma", "mi", "mp", "nt", "f"}:
+                adjective_forms.append(None)
+            elif grammar == "i":
+                adjective_forms.append(None)
+            elif grammar == "adj":
+                forms = adjective_inflection(word)
+                from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
+
+                complete_paradigm(forms, complete=True)
+                adjective_forms.append(forms)
+            else:
+                raise ValueError(f"Unknown abbreviation word grammar {grammar!r}: {fields}")
+        if deterministic:
+            graphs.setdefault("base", []).append(pynini.cross(abbreviation, phrase))
+            continue
+        for slot, noun in noun_forms.items():
+            inflected_words = []
+            for index, (word, forms) in enumerate(zip(words, adjective_forms)):
+                if index == noun_index:
+                    inflected_words.append(noun)
+                elif forms is None:
+                    inflected_words.append(word)
+                else:
+                    adjective_slot = f"{noun_gender}_{slot}" if slot.startswith("sg_") else slot
+                    inflected_words.append(forms[adjective_slot])
+            graph = pynini.cross(abbreviation, " ".join(inflected_words))
+            graphs.setdefault(slot, []).append(graph)
+    return {slot: pynini.union(*slot_graphs).optimize() for slot, slot_graphs in graphs.items()}
 
 
 def load_ambiguous_abbreviations(filepath: str) -> Dict[str, 'pynini.FstLike']:

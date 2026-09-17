@@ -57,3 +57,12 @@ class TestWhitelist:
         }
         for slot, spoken in expected.items():
             assert rewrite.one_top_rewrite("r.", whitelist.nondeterministic_graphs[slot]) == spoken
+
+    @pytest.mark.run_only_on("CPU")
+    @pytest.mark.unit
+    def test_inflected_phrase_abbreviation(self):
+        whitelist = WhiteListFst(input_case="cased", deterministic=False)
+        assert (
+            rewrite.one_top_rewrite("▲", whitelist.inflected_phrase_graphs["sg_gen"])
+            == "wypełnionego trójkąta skierowanego w górę"
+        )

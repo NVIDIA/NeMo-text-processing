@@ -48,7 +48,10 @@ class WhiteListFst(GraphFst):
 
         self.inflected_graphs = load_inflected_abbreviations("data/abbreviations.tsv")
         graph |= pynini.union(*self.inflected_graphs.values())
-        graph |= load_inflected_phrase_abbreviations("data/abbreviations_inflected.tsv")
+        self.inflected_phrase_graphs = load_inflected_phrase_abbreviations(
+            "data/abbreviations_inflected.tsv", deterministic=deterministic
+        )
+        graph |= pynini.union(*self.inflected_phrase_graphs.values())
 
         saint_forms = adjective_inflection("święty")
         complete_paradigm(saint_forms, complete=True)
