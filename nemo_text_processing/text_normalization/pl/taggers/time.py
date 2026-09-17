@@ -118,6 +118,18 @@ class TimeFst(GraphFst):
             + pynutil.delete(":")
             + (pynutil.delete("00") | pynutil.insert(' seconds: "') + duration_seconds + pynutil.insert('"'))
         )
+        until_half = []
+        hour_to_nom = load_labels(get_abs_path("data/time/hour_to_nom.tsv"))
+        for hour, following in hour_to_nom:
+            for minute in range(31, 60):
+                remaining = 60 - minute
+                remaining_graph = pynini.cross(f"{minute:02d}", str(remaining)) @ cardinal.graphs["mi_sg_nom"]
+                hour_graph = pynini.cross(hour, "za ") + pynutil.delete(":") + remaining_graph
+                if int(hour) < 10:
+                    hour_graph |= pynini.cross(f"{int(hour):02d}", "za ") + pynutil.delete(":") + remaining_graph
+                until_half.append(hour_graph + pynutil.insert(" " + following))
+        until_half_graph = pynutil.insert('hours: "') + pynini.union(*until_half) + pynutil.insert('"')
+        locale_time |= until_half_graph
         legacy_second = pynini.cross("00", "zero") | (minutes @ minute_words)
         legacy_time = (
             pynutil.insert('legacy: "true" hours: "')
@@ -132,7 +144,11 @@ class TimeFst(GraphFst):
         )
         special = pynini.string_file(get_abs_path("data/time/special.tsv"))
         if deterministic:
-            locale_time = pynutil.add_weight(special, -0.001) | pynutil.add_weight(duration_time, 0.001)
+            locale_time = (
+                pynutil.add_weight(special, -0.002)
+                | pynutil.add_weight(until_half_graph, -0.001)
+                | pynutil.add_weight(duration_time, 0.001)
+            )
         else:
             locale_time |= special | duration_time | legacy_time
         self.alternative_graph = pynini.Fst()

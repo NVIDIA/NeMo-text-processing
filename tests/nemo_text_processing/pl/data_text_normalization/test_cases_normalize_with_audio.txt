@@ -58,14 +58,22 @@ zerze przecinek zero dwa milimetra
 jedna druga kilograma
 pół kilograma
 ~1,5 kg
+jeden i pół kilograma
 jeden i pięć dziesiątych kilograma
 jeden przecinek pięć kilograma
 półtora kilograma
 ~1,5 godz
+jeden i pół godziny
 jeden przecinek pięć dziesiątych godziny
 jeden i pięć dziesiątych godziny
 jeden przecinek pięć godziny
 półtorej godziny
+~04:25:07
+czwarta dwadzieścia pięć i siedem sekund
+cztery godziny dwadzieścia pięć minut i siedem sekund
+~9:35
+za dwadzieścia pięć dziesiąta
+pięć po wpół do dziesiątej
 ~św. Katarzyna
 święta Katarzyna
 ~św. Katarzyny
