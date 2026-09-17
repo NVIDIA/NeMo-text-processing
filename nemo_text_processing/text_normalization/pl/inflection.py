@@ -124,7 +124,9 @@ def load_inflected_phrase_abbreviations(filepath: str, deterministic: bool = Tru
         word_grammars = grammars.split()
         if len(words) != len(word_grammars):
             raise ValueError(f"Abbreviation and grammar fields must have matching word counts: {fields}")
-        noun_indices = [index for index, grammar in enumerate(word_grammars) if grammar in {"ma", "mi", "mp", "nt", "f"}]
+        noun_indices = [
+            index for index, grammar in enumerate(word_grammars) if grammar in {"ma", "mi", "mp", "nt", "f"}
+        ]
         if len(noun_indices) != 1:
             raise ValueError(f"Expected one noun gender in abbreviation grammar: {fields}")
         noun_index = noun_indices[0]
