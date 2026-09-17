@@ -59,12 +59,14 @@ class TimeFst(GraphFst):
         second_one = pynini.cross("01", "1") @ cardinal.graphs[f"{second_gender}_sg_nom"]
         few_seconds = [second for second in range(1, 60) if second % 10 in {2, 3, 4} and second not in {12, 13, 14}]
         many_seconds = [second for second in range(1, 60) if second != 1 and second not in few_seconds]
-        second_few = pynini.union(
-            *(pynini.cross(f"{second:02d}", str(second)) for second in few_seconds)
-        ) @ cardinal.graphs[f"{second_gender}_pl_nom"]
-        second_many = pynini.union(
-            *(pynini.cross(f"{second:02d}", str(second)) for second in many_seconds)
-        ) @ cardinal.graphs[f"{second_gender}_pl_nom"]
+        second_few = (
+            pynini.union(*(pynini.cross(f"{second:02d}", str(second)) for second in few_seconds))
+            @ cardinal.graphs[f"{second_gender}_pl_nom"]
+        )
+        second_many = (
+            pynini.union(*(pynini.cross(f"{second:02d}", str(second)) for second in many_seconds))
+            @ cardinal.graphs[f"{second_gender}_pl_nom"]
+        )
         second_values = (
             second_one + pynutil.insert(" " + second_forms["sg_nom"])
             | second_few + pynutil.insert(" " + second_forms["pl_nom"])
@@ -91,12 +93,14 @@ class TimeFst(GraphFst):
             few_numbers = [number for number in numbers if number % 10 in {2, 3, 4} and number not in {12, 13, 14}]
             many_numbers = [number for number in numbers if number != 1 and number not in few_numbers]
             one = pynini.cross("01", "1") @ cardinal.graphs[f"{gender}_sg_nom"]
-            few = pynini.union(
-                *(pynini.cross(f"{number:02d}", str(number)) for number in few_numbers)
-            ) @ cardinal.graphs[f"{gender}_pl_nom"]
-            many = pynini.union(
-                *(pynini.cross(f"{number:02d}", str(number)) for number in many_numbers)
-            ) @ cardinal.graphs[f"{gender}_pl_nom"]
+            few = (
+                pynini.union(*(pynini.cross(f"{number:02d}", str(number)) for number in few_numbers))
+                @ cardinal.graphs[f"{gender}_pl_nom"]
+            )
+            many = (
+                pynini.union(*(pynini.cross(f"{number:02d}", str(number)) for number in many_numbers))
+                @ cardinal.graphs[f"{gender}_pl_nom"]
+            )
             return (
                 one + pynutil.insert(" " + forms["sg_nom"])
                 | few + pynutil.insert(" " + forms["pl_nom"])

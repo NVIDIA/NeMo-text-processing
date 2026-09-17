@@ -48,8 +48,6 @@ class TimeFst(GraphFst):
         duration_seconds = pynini.closure(
             delete_space + pynutil.insert(" i ") + pynutil.delete('seconds: "') + value + pynutil.delete('"'), 0, 1
         )
-        duration_seconds_only = (
-            duration + delete_space + pynutil.delete('seconds: "') + value + pynutil.delete('"')
-        )
+        duration_seconds_only = duration + delete_space + pynutil.delete('seconds: "') + value + pynutil.delete('"')
         duration_fst = duration + duration_hours + duration_minutes + duration_seconds | duration_seconds_only
         self.fst = self.delete_tokens(hours + minutes + seconds | legacy_fst | duration_fst).optimize()
