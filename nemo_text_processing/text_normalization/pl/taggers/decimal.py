@@ -87,7 +87,7 @@ class DecimalFst(GraphFst):
             if deterministic:
                 named_inputs = pynini.rmepsilon(
                     pynini.arcmap(
-                    pynini.determinize(
+                        pynini.determinize(
                             pynini.rmepsilon(pynini.arcmap(pynini.project(named, "input"), map_type="rmweight")),
                             det_type="nonfunctional",
                         ),
