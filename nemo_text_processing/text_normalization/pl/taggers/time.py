@@ -30,13 +30,17 @@ class TimeFst(GraphFst):
         hours = hour_numbers | pynutil.delete("0") + pynini.union(*(str(hour) for hour in range(1, 10)))
         minutes = pynini.union(*(f"{minute:02d}" for minute in range(1, 60)))
         minute_words = (pynutil.delete("0") + cardinal.graphs["mi_sg_nom"]) | cardinal.graphs["mi_sg_nom"]
+        time_zone = pynini.string_file(get_abs_path("data/time/time_zone.tsv"))
+        optional_time_zone = pynini.closure(
+            delete_space + pynutil.insert(' zone: "') + time_zone + pynutil.insert('"'), 0, 1
+        )
 
         def time_graph(hour_slot: str, prefix: 'pynini.FstLike') -> 'pynini.FstLike':
             hour = hours @ ordinal.graphs[hour_slot]
             hour_field = pynutil.insert('hours: "') + prefix + hour + pynutil.insert('"')
             minute_field = pynutil.insert(' minutes: "') + (minutes @ minute_words) + pynutil.insert('"')
             separator = pynutil.delete(pynini.union(":", "."))
-            return hour_field + separator + (pynutil.delete("00") | minute_field)
+            return hour_field + separator + (pynutil.delete("00") | minute_field) + optional_time_zone
 
         plain = time_graph("f_sg_nom", pynini.accep(""))
         governed = time_graph("f_sg_loc", pynini.accep("o") + delete_space + pynutil.insert(" "))
@@ -81,6 +85,7 @@ class TimeFst(GraphFst):
             + (pynutil.delete("00") | pynutil.insert(' minutes: "') + locale_minute + pynutil.insert('"'))
             + pynutil.delete(":")
             + (pynutil.delete("00") | pynutil.insert(' seconds: "') + locale_second + pynutil.insert('"'))
+            + optional_time_zone
         )
         duration_units = {
             fields[0]: (fields[1], fields[2], inflect_noun(fields[1], fields[3]))
@@ -128,7 +133,9 @@ class TimeFst(GraphFst):
                 if int(hour) < 10:
                     hour_graph |= pynini.cross(f"{int(hour):02d}", "za ") + pynutil.delete(":") + remaining_graph
                 until_half.append(hour_graph + pynutil.insert(" " + following))
-        until_half_graph = pynutil.insert('hours: "') + pynini.union(*until_half) + pynutil.insert('"')
+        until_half_graph = (
+            pynutil.insert('hours: "') + pynini.union(*until_half) + pynutil.insert('"') + optional_time_zone
+        )
         locale_time |= until_half_graph
         legacy_second = pynini.cross("00", "zero") | (minutes @ minute_words)
         legacy_time = (

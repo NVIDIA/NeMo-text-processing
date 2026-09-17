@@ -1,5 +1,8 @@
 o 4.25~o czwartej dwadzieścia pięć
 o godz. 21:14~o godzinie dwudziestej pierwszej czternaście
+03:00 UTC~trzecia u t c
+03:00 CET~trzecia c e t
+03:00 CEST~trzecia c e s t
 4:25~czwarta dwadzieścia pięć
 04:25:07~cztery godziny dwadzieścia pięć minut i siedem sekund
 9:35~za dwadzieścia pięć dziesiąta
