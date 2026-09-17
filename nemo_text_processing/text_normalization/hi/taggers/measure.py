@@ -228,10 +228,12 @@ class MeasureFst(GraphFst):
         year_informal = pynini.string_map([("yr", "साल")])
         year_formal = pynini.string_file(get_abs_path("data/measure/unit_year_formal.tsv"))
 
-        # All units EXCEPT year and percent
+        special_units_fst = pynini.string_file(get_abs_path("data/measure/special_units.tsv"))
+        
         unit_inputs_regular = pynini.difference(
-            pynini.project(unit_graph, "input"), pynini.union(pynini.accep("yr"), pynini.accep("%"))
+            pynini.project(unit_graph, "input"), pynini.project(special_units_fst, "input")
         )
+        
         unit_graph_no_year = pynini.compose(unit_inputs_regular, unit_graph)
 
         percent_graph = pynini.compose(pynini.accep("%"), unit_graph)
@@ -474,7 +476,7 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
             + pynutil.insert(NEMO_SPACE)
             + pynutil.insert("}")
-            + pynini.closure(delete_space, 0, 1)
+            + delete_space
             + percent_unit
         )
 
@@ -483,7 +485,7 @@ class MeasureFst(GraphFst):
             + optional_graph_negative
             + decimal_graph
             + pynutil.insert(" }")
-            + pynini.closure(delete_space, 0, 1)
+            + delete_space
             + percent_unit
         )
 

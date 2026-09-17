@@ -22,6 +22,9 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     HI_SADHE,
     HI_SAVVA,
     NEMO_SPACE,
+    MIN_NEG_WEIGHT,
+    NEMO_DIGIT,
+    NEMO_HI_DIGIT,
     GraphFst,
     insert_space,
 )
@@ -90,7 +93,14 @@ class TimeFst(GraphFst):
         savva_numbers = cardinal_graph + pynini.cross(HI_TIME_FIFTEEN, "")
         savva_graph = pynutil.insert(HI_SAVVA) + pynutil.insert(NEMO_SPACE) + savva_numbers
 
-        sadhe_numbers = cardinal_graph + pynini.cross(HI_TIME_THIRTY, "")
+        # Restrict 'sadhe' from accepting 1 or 2 so it doesn't conflict with dedh/dhai
+        exclude_dedh_dhai = pynini.union("1", "१", "01", "०१", "2", "२", "02", "०२").optimize()
+        
+        # Project cardinal_graph to an acceptor, subtract exceptions, then compose (@) back to the transducer
+        valid_sadhe_inputs = pynini.difference(pynini.project(cardinal_graph, "input"), exclude_dedh_dhai)
+        sadhe_cardinal = valid_sadhe_inputs @ cardinal_graph
+        
+        sadhe_numbers = sadhe_cardinal + pynini.cross(HI_TIME_THIRTY, "")
         sadhe_graph = pynutil.insert(HI_SADHE) + pynutil.insert(NEMO_SPACE) + sadhe_numbers
 
         paune = delete_leading_zero + pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
@@ -125,15 +135,28 @@ class TimeFst(GraphFst):
             + pynutil.insert(NEMO_SPACE)
         )
 
-        final_graph = (
+        arabic_1_2 = pynini.closure(NEMO_DIGIT, 1, 2)
+        arabic_2 = pynini.closure(NEMO_DIGIT, 2, 2)
+        arabic_valid_time = arabic_1_2 + pynini.accep(":") + arabic_2 + pynini.closure(pynini.accep(":") + arabic_2, 0, 1)
+
+        deva_1_2 = pynini.closure(NEMO_HI_DIGIT, 1, 2)
+        deva_2 = pynini.closure(NEMO_HI_DIGIT, 2, 2)
+        deva_valid_time = deva_1_2 + pynini.accep(":") + deva_2 + pynini.closure(pynini.accep(":") + deva_2, 0, 1)
+
+        valid_time_pattern = pynini.union(arabic_valid_time, deva_valid_time).optimize()
+
+        # 2. Give special patterns a minimal negative weight so they safely beat the fallback graph_hm
+        unfiltered_graph = (
             graph_hms
             | pynutil.add_weight(graph_hm, 0.3)
             | pynutil.add_weight(graph_h, 0.3)
-            | pynutil.add_weight(graph_dedh_dhai, 0.1)
-            | pynutil.add_weight(graph_savva, 0.2)
-            | pynutil.add_weight(graph_sadhe, 0.2)
-            | pynutil.add_weight(graph_paune, 0.1)
+            | pynutil.add_weight(graph_dedh_dhai, MIN_NEG_WEIGHT)
+            | pynutil.add_weight(graph_savva, MIN_NEG_WEIGHT)
+            | pynutil.add_weight(graph_sadhe, MIN_NEG_WEIGHT)
+            | pynutil.add_weight(graph_paune, MIN_NEG_WEIGHT)
         )
+
+        final_graph = pynini.compose(valid_time_pattern, unfiltered_graph)
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
