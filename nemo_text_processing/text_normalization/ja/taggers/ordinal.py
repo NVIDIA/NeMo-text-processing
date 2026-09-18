@@ -17,6 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
 
 
 class OrdinalFst(GraphFst):
@@ -32,11 +33,12 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
         graph_cardinal = cardinal.just_cardinals
-        morpheme_pre = pynini.accep('第')
-        morpheme_post = pynini.accep('番目')
+        markers = dict(load_labels(get_abs_path("data/ordinal/marker.tsv")))
+        morpheme_pre = pynini.accep(markers["prefix"])
+        morpheme_post = pynini.accep(markers["suffix"])
         graph_ordinal = pynini.union(morpheme_pre + graph_cardinal, graph_cardinal + morpheme_post)
 
-        final_graph = pynutil.insert("integer: \"") + graph_ordinal + pynutil.insert("\"")
+        final_graph = pynutil.insert('integer: "') + graph_ordinal + pynutil.insert('"')
 
         graph_ordinal_final = self.add_tokens(final_graph)
         self.fst = graph_ordinal_final.optimize()
