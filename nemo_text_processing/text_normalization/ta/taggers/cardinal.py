@@ -80,11 +80,17 @@ SIGN_SPELLED_SUFFIXES = (
 # The adjectival stem replaces the cardinal's final -உ (or -ம்) with -ஆ: ஐந்து -> ஐந்தா,
 # ஆயிரம் -> ஆயிரமா; then a written ordinal marker follows.
 ORDINAL_STEM = NEMO_SIGMA + pynini.union(pynini.cross("ு", "ா"), pynini.cross("ம்", "மா"))
-# ஆம் and the clipped ம் spell the same ordinal (28ஆம், 28ம்); any inflected tail after வத-
-# is carried over (3ஆவதாக -> மூன்றாவதாக, 5வதுக்கு -> ஐந்தாவதுக்கு).
-ORDINAL_MARKERS = pynini.union(
+# ஆம் and the clipped ம் spell the same ordinal (28ஆம், 28ம்).
+_CLOSED_ORDINAL_MARKERS = pynini.union(
     pynutil.delete(pynini.union("வது", "ஆவது")) + pynutil.insert("வது"),
     pynutil.delete(pynini.union("ஆம்", "ம்")) + pynutil.insert("ம்"),
+)
+# The marker is written glued to the digits (2024ஆம்) or spaced off them (2024 ஆம் ஆண்டு); both
+# spell one ordinal, so the space is absorbed. Only the closed markers may be spaced: letting a
+# space precede the open வத- tail below would read 5 வதந்தி as ஐந்தாவதந்தி. Any inflected tail
+# after வத- is carried over (3ஆவதாக -> மூன்றாவதாக, 5வதுக்கு -> ஐந்தாவதுக்கு).
+ORDINAL_MARKERS = pynini.union(
+    pynini.closure(pynutil.delete(" "), 0, 1) + _CLOSED_ORDINAL_MARKERS,
     pynutil.delete(pynini.closure("ஆ", 0, 1)) + pynini.accep("வத") + pynini.closure(NEMO_TA_LETTER, 1),
 ).optimize()
 
@@ -108,6 +114,7 @@ class CardinalFst(GraphFst):
     Finite state transducer for classifying cardinals, e.g.
         -௨௩ -> cardinal { negative: "true" integer: "இருபத்துமூன்று" }
         2024ல் -> cardinal { integer: "இரண்டாயிரத்து இருபத்துநான்கில்" }
+        1010 -> cardinal { integer: "ஆயிரத்துப் பத்து" }
         007 -> cardinal { integer: "பூஜ்யம் பூஜ்யம் ஏழு" }
 
     Numbers up to the crore range are read as words; longer digit runs and leading-zero runs
@@ -238,7 +245,15 @@ class CardinalFst(GraphFst):
         self.style_scales = (sandhi @ drop_one_exact @ drop_one_rest @ oru_scales).optimize()
         self.style_fused = (self.style_scales @ fuse("யிரம்", exact_end) @ fuse("யிரத்து", " ")).optimize()
         # The bare digit reading, which ITN inverts; the grouping commas below are TN input only.
-        self.number_graph = (self.raw_graph @ self.style_fused @ oblique_scales).optimize()
+        # The oblique scale words end த்து and call for the same doubling, but they stay separate
+        # words, so the doubled consonant closes the scale word and the next word keeps its own:
+        # ஆயிரத்து பத்து -> ஆயிரத்துப் பத்து (1010). They are only spelled that way once the
+        # fusion above and the oblique rewrite below have run, so this sandhi comes last. It is
+        # left out of the ITN variants, which keep accepting the undoubled spoken forms.
+        late_sandhi = pynini.cdrewrite(
+            pynini.union(pynini.cross(" ப", "ப் ப"), pynini.cross(" த", "த் த")), "த்து", "", NEMO_SIGMA
+        )
+        self.number_graph = (self.raw_graph @ self.style_fused @ oblique_scales @ late_sandhi).optimize()
 
         # Grouping commas are deleted before the digits are read. A grouping opens with a
         # non-zero digit, so 00,000 is two zero runs and a comma.

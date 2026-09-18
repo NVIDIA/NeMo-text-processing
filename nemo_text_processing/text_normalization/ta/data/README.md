@@ -13,13 +13,14 @@ so what each table holds and which grammars read it is recorded here.
 | `numbers/hundred.tsv` | ௧௦௦ → நூறு | Read by the cardinal tagger |
 | `numbers/hundreds_exact.tsv` | ௨௦௦-௯௦௦ → இருநூறு … தொள்ளாயிரம் | Read by the cardinal tagger |
 | `numbers/hundreds_combined.tsv` | ௨-௮ → இருநூற்று … எண்ணூற்று | The joined sandhi stems (not bare prefixes such as முன்/நான், which would give wrong forms like "நான் நூற்று") |
+| `numbers/not_attributive.tsv` | word → why it is listed | The words a numeral is read alongside rather than modifies. A bare 1 before any other Tamil word is read as the attributive ஒரு (1 ரூபாய் → ஒரு ரூபாய்); before these it stays ஒன்று |
 | `numbers/quantity_words.tsv` | written scale word → spoken word → native\|english\|short | Read by the decimal, money and range taggers. `native` words are spoken as written, `english` (lakh, crore) and the glued `short` forms (L, cr, K, M, B) in Tamil |
 | `date/{days,months,year_suffix}.tsv` | day/month numerals → words; era abbreviations | Read by the date tagger |
 | `time/{hours,minutes,seconds}.tsv` | hours 0-24, minutes/seconds 1-59 → words | Minutes and seconds stop at 59 (10:60 is not a time). Hour 24 is admitted as 24:00 alone. Also read by the ITN time tagger from the spoken side |
 | `money/currency.tsv` | symbol/code → currency word | Includes the ரூ./ரூ spellings |
 | `money/major_minor_currencies.tsv` | major → minor unit word | Read by both directions: the TN money verbalizer emits these pairs and the ITN money tagger inverts them |
 | `fraction/idiomatic.tsv` | numerator word, denominator word → everyday fraction word (ஒன்று இரண்டு → அரை) | 3 columns. The three pairs spoken as their own everyday words instead of the கீழ் reading |
-| `measure/unit.tsv` | unit abbreviation → spoken unit | `st` (stone) is left out because it swallows English ordinals (1st); includes `மீ`, `லி`, `சத` and the dotless spellings |
+| `measure/unit.tsv` | unit abbreviation → spoken unit | `st` (stone) is left out because it swallows English ordinals (1st); includes `மீ`, `லி`, `சத` and the dotless spellings, the per-unit rates (`mph`, `m/s`, `kmpl`, `Mbps`) and the area and energy units (`sq ft`, `kWh`) |
 | `telephone/number.tsv` | digit in either script → word | Also read by the serial, electronic and ITN telephone taggers |
 | `whitelist/abbreviations.tsv` | abbreviation → expansion | Read by the whitelist tagger |
 | `whitelist/symbol.tsv` | symbol → spoken word | `-` and `+` are left out (a lone hyphen or plus is punctuation, and a leading sign is a field of the number classes), as are `<` `>` (markup; spoken only between digits by the tokenizer) |

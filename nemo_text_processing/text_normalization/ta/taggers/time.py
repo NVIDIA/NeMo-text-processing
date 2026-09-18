@@ -34,12 +34,21 @@ from nemo_text_processing.text_normalization.ta.graph_utils import (
 )
 from nemo_text_processing.text_normalization.ta.utils import get_abs_path
 
-# The verbalizer speaks மணி itself, so a written மணி/மணிக்கு and a bare case suffix on the
-# digits (3:30க்கு, 10:30 இல்) are absorbed rather than carried as a field.
-HOUR_NOUNS = ("மணிக்கு", "மணி")
-ABSORBED_SUFFIXES = ("க்கு", "ல்", "இல்")
+# The verbalizer speaks மணி itself, so a written hour noun is absorbed. A case suffix is not:
+# dropping it turns "at half past ten" into "ten thirty", so it travels as a field and the
+# verbalizer inflects whichever noun it speaks last (மணிக்கு, நிமிடத்திற்கு).
+HOUR_NOUN = "மணி"
+DATIVE, LOCATIVE = "க்கு", "இல்"
+# Written tails that carry a case: the hour noun already inflected, or a bare suffix on the
+# digits (3:30க்கு, 10:30 இல்).
+DATIVE_HOUR_NOUNS = ("மணிக்கு", "மணிக்கும்")
+LOCATIVE_HOUR_NOUNS = ("மணியில்",)
+DATIVE_SUFFIXES = ("க்கு", "க்கும்")
+LOCATIVE_SUFFIXES = ("ல்", "இல்")
 # Hour 24 is only meaningful as 24:00.
 EXACT_ONLY_HOURS = ("இருபத்துநான்கு",)
+# A zero hour is midnight, which Tamil reads as twelve; பூஜ்யம் மணி is not a clock reading.
+MIDNIGHT = ("பூஜ்யம்", "பன்னிரண்டு")
 
 
 class TimeFst(GraphFst):
@@ -47,14 +56,16 @@ class TimeFst(GraphFst):
     Finite state transducer for classifying time, e.g.
         12:30:30 -> time { hours: "பன்னிரண்டு" minutes: "முப்பது" seconds: "முப்பது" }
         1:40 -> time { hours: "ஒரு" minutes: "நாற்பது" }
-        10:00க்கு -> time { hours: "பத்து" }
+        10:00க்கு -> time { hours: "பத்து" morphosyntactic_features: "க்கு" }
         10:30 AM -> time { hours: "பத்து" minutes: "முப்பது" meridiem: "முற்பகல்" }
         காலை 10.30 -> time { hours: "பத்து" minutes: "முப்பது" meridiem: "காலை" }
 
     Reads ``data/time/hours.tsv``, ``data/time/minutes.tsv`` and ``data/time/seconds.tsv`` (Tamil
-    digits to words; hours 0-24, minutes and seconds 01-59). A press-style dotted time (10.30)
-    is only a time with a clock context: a trailing hour noun, or a day-part word before or
-    after it.
+    digits to words; hours 0-24, minutes and seconds 01-59; hour 0 is read as twelve, since
+    Tamil says பன்னிரண்டு மணி for midnight). A press-style dotted time (10.30) is only a time
+    with a clock context: a trailing hour noun, or a day-part word before or after it. A case
+    written on the time travels as ``morphosyntactic_features`` for the verbalizer to speak on
+    the noun it ends with.
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -90,6 +101,12 @@ class TimeFst(GraphFst):
             | pynini.compose(pynini.closure(NEMO_DIGIT, 1), TO_TA_DIGITS @ seconds_graph)
         ).optimize()
 
+        # Midnight reads as twelve; every other hour word passes through unchanged.
+        read_midnight = pynini.cross(*MIDNIGHT) | pynini.difference(
+            pynini.closure(NEMO_CHAR, 1), pynini.accep(MIDNIGHT[0])
+        )
+        hour_input = (hour_input @ read_midnight).optimize()
+
         hour_any = hour_input
         hour_input = hour_input @ pynini.difference(pynini.closure(NEMO_CHAR), pynini.union(*EXACT_ONLY_HOURS))
         self.hours = pynutil.insert("hours: \"") + hour_input + pynutil.insert("\" ")
@@ -97,11 +114,21 @@ class TimeFst(GraphFst):
         self.minutes = pynutil.insert("minutes: \"") + minute_input + pynutil.insert("\" ")
         self.seconds = pynutil.insert("seconds: \"") + second_input + pynutil.insert("\" ")
 
-        # A trailing written hour noun, or a case suffix the verbalizer does not attach, is
-        # consumed silently, glued to the digits or spaced (10:30க்கு, 10:30 இல், 7:00 மணி).
+        # A trailing written hour noun is absorbed, glued to the digits or spaced (7:00 மணி).
+        # A case on it, written on the noun or bare on the digits (10:30க்கு, 10:30 இல்), is
+        # carried as a field instead so the verbalizer can speak it.
+        def case_field(written: str) -> 'pynini.FstLike':
+            return pynutil.insert(f" morphosyntactic_features: \"{written}\" ")
+
         space = pynini.closure(NEMO_SPACE, 0, 1)
-        hour_word_tail = space + pynutil.delete(pynini.union(*HOUR_NOUNS))
-        absorbed_tail = hour_word_tail | space + pynutil.delete(pynini.union(*ABSORBED_SUFFIXES))
+
+        def tail(written, field=None) -> 'pynini.FstLike':
+            graph = space + pynutil.delete(pynini.union(*written))
+            return graph + case_field(field) if field else graph
+
+        # Only a written hour noun licenses a dotted time, so the bare suffixes stay out of it.
+        hour_word_tail = tail((HOUR_NOUN,)) | tail(DATIVE_HOUR_NOUNS, DATIVE) | tail(LOCATIVE_HOUR_NOUNS, LOCATIVE)
+        absorbed_tail = hour_word_tail | tail(DATIVE_SUFFIXES, DATIVE) | tail(LOCATIVE_SUFFIXES, LOCATIVE)
         optional_tail = pynini.closure(absorbed_tail, 0, 1).optimize()
 
         graph_hms = (

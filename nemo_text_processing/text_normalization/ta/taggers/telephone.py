@@ -30,7 +30,8 @@ class TelephoneFst(GraphFst):
 
     Reads ``data/telephone/number.tsv`` (digit in either script -> word). Indian mobile,
     landline and toll-free shapes are read digit by digit; a case suffix on the number lands on
-    the last digit word.
+    the last digit word. A local number written without its STD code is read this way only in
+    the 3-4 shape (123-4567), so a 4-4 span such as the year range 2010-2020 stays a range.
 
     Args:
         cardinal: CardinalFst
@@ -85,6 +86,13 @@ class TelephoneFst(GraphFst):
                 pynini.closure(digit_word, 4, 4) + pynutil.delete("-") + pynini.closure(digit_word, 3, 3) + last
             )
             landline = std_code + optional_sep + subscriber
+
+            # A local number written without its STD code: three digits, a dash, then four
+            # (123-4567). Only the 3-4 split is read this way, so a 4-4 span such as the year
+            # range 2010-2020 is left to the range class.
+            landline |= (
+                pynini.closure(digit_word, 3, 3) + pynutil.delete("-") + pynini.closure(digit_word, 3, 3) + last
+            )
 
             # Toll-free: 1800-XXX-XXXX / 1-800-XXX-XXXX.
             toll_free = (

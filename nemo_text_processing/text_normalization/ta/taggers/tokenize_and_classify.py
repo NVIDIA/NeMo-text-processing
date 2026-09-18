@@ -26,6 +26,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     NEMO_WHITE_SPACE,
     GraphFst,
+    convert_space,
     delete_extra_space,
     delete_space,
 )
@@ -62,6 +63,17 @@ SPOKEN_SYMBOLS = "#*&^%|~"
 LESS_THAN = "விடக் குறைவு"
 GREATER_THAN = "விட அதிகம்"
 INFIX_PLUS = "கூட்டல்"
+
+# A bare 1 before a noun it modifies is the attributive ஒரு, never the free-standing ஒன்று.
+ONE_ATTRIBUTIVE = "ஒரு"
+# The words a numeral is read alongside rather than modifies are listed in
+# data/numbers/not_attributive.tsv; before those a 1 stays ஒன்று.
+# How many groups a separator run may join, and the weight that keeps it behind every class
+# that reads such a span properly (a clock time costs up to 2.05) while staying ahead of
+# splitting the span at its separators (about 4.3). Three groups is what a date and an
+# hour-minute-second time need; a longer run is left alone rather than pay for the states.
+SEPARATOR_RUN_MAX_GROUPS = 3
+SEPARATOR_RUN_WEIGHT = 3.0
 
 # Zero-width and directional format characters with no linguistic role (ZWJ/ZWNJ are kept).
 _FORMAT_CHARS = "​﻿⁠­‎‏؜‪‫‬‭‮⁦⁧⁨⁩"
@@ -248,6 +260,40 @@ class ClassifyFst(GraphFst):
             serial_graph = SerialFst(cardinal=cardinal, deterministic=deterministic).fst
             electronic_graph = ElectronicFst(deterministic=deterministic).fst
 
+            # A bare 1 before a Tamil noun reads as ஒரு. The measure, money and decimal classes
+            # already do this for the units and scale words they know; this covers the plain
+            # nouns they do not (1 ரூபாய், 1 நாள்). It is ranked behind the ordinal so that
+            # 1 ஆம் is still முதலாம்.
+            not_attributive = [r[0] for r in load_labels(get_abs_path("data/numbers/not_attributive.tsv")) if r]
+            modified_noun = pynini.difference(
+                pynini.closure(NEMO_TA_LETTER, 1), pynini.union(*not_attributive)
+            ).optimize()
+            one_before_noun = (
+                pynutil.insert("name: \"")
+                + convert_space(
+                    pynini.cross(pynini.union("1", "௧"), ONE_ATTRIBUTIVE) + pynini.accep(" ") + modified_noun
+                )
+                + pynutil.insert("\"")
+            ).optimize()
+
+            # A run of digit groups joined by one separator that no other class could read: an
+            # impossible date (32-01-2024), a short one (15-06-24), an impossible clock time
+            # (10:30:60). Reading it group by group leaves no separator unspoken and asserts no
+            # range the text does not make. A colon run needs two groups, since a clock time is
+            # the only thing it can be; a hyphen run needs three, because two groups joined by a
+            # hyphen are the range 10-20.
+            run_group = pynini.compose(pynini.closure(NEMO_ALL_DIGIT, 1, 4), cardinal.final_graph).optimize()
+
+            def separator_run(separator: str, least_groups: int) -> 'pynini.FstLike':
+                tail = pynutil.delete(separator) + pynutil.insert(NEMO_SPACE) + run_group
+                return run_group + pynini.closure(tail, least_groups - 1, SEPARATOR_RUN_MAX_GROUPS - 1)
+
+            separator_run_graph = (
+                pynutil.insert("name: \"")
+                + convert_space(separator_run(":", 2) | separator_run("-", 3))
+                + pynutil.insert("\"")
+            ).optimize()
+
             whitelist_graph = WhiteListFst(
                 input_case=input_case, deterministic=deterministic, input_file=whitelist
             ).fst
@@ -276,7 +322,9 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(roman_graph, 1.1)
                 | pynutil.add_weight(electronic_graph, 1.1)
+                | pynutil.add_weight(one_before_noun, 1.15)
                 | pynutil.add_weight(serial_graph, 1.2)
+                | pynutil.add_weight(separator_run_graph, SEPARATOR_RUN_WEIGHT)
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")

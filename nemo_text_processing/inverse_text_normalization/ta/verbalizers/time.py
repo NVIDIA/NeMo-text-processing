@@ -30,6 +30,7 @@ class TimeFst(GraphFst):
     Finite state transducer for verbalizing times, e.g.
         time { hours: "10" minutes: "30" preserve_order: true } -> 10:30
         time { hours: "10" preserve_order: true } -> 10:00
+        time { hours: "10" minutes: "30" suffix: "க்கு" preserve_order: true } -> 10:30க்கு
         time { morphosyntactic_features: "காலை" hours: "10" preserve_order: true } -> காலை 10:00
     """
 
@@ -51,9 +52,16 @@ class TimeFst(GraphFst):
             1,
         )
 
+        # The case the spoken time carried is written onto the digits: 10:30க்கு.
+        suffix = pynini.closure(
+            delete_space + pynutil.delete("suffix: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\""),
+            0,
+            1,
+        )
+
         graph_h = hours + pynutil.insert(":00")
         graph_hm = hours + delete_space + pynutil.insert(":") + minutes
         graph_hms = graph_hm + delete_space + pynutil.insert(":") + seconds
         graph_hs = hours + pynutil.insert(":00:") + delete_space + seconds
-        self.graph = day_part + (graph_hms | graph_hm | graph_hs | graph_h) + delete_preserve_order
+        self.graph = day_part + (graph_hms | graph_hm | graph_hs | graph_h) + suffix + delete_preserve_order
         self.fst = self.delete_tokens(self.graph).optimize()

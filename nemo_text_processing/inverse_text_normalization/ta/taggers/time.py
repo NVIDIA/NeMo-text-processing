@@ -28,9 +28,15 @@ CLOCK_MAX_HOUR = 23
 # Bare "X மணி" is a duration (two hours); the hour-only form needs the dative மணிக்கு or a
 # day-part word. அரை alone is half an hour, never half past twelve.
 HOUR_NOUNS = ("மணிக்கு", "மணி")
-MINUTE_NOUNS = ("நிமிடங்கள்", "நிமிடம்", "நிமிடத்திற்கு", "நிமிடத்தில்", "நிமிடத்துக்கு")
-SECOND_NOUNS = ("வினாடிகள்", "வினாடி", "வினாடிக்கு", "வினாடியில்", "நொடி")
 CLOCK_HOUR_NOUN = "மணிக்கு"
+# The case the last spoken noun carries is written back onto the digits (10:30க்கு), because
+# dropping it leaves the sentence without a case-marked time.
+DATIVE, LOCATIVE = "க்கு", "ல்"
+NOUN_CASES = {
+    "hour": (("மணி",), ("மணிக்கு",), ("மணியில்",)),
+    "minute": (("நிமிடங்கள்", "நிமிடம்"), ("நிமிடத்திற்கு", "நிமிடத்துக்கு"), ("நிமிடத்தில்",)),
+    "second": (("வினாடிகள்", "வினாடி", "நொடி"), ("வினாடிக்கு",), ("வினாடியில்",)),
+}
 # The counting word for one minute or second (ஒரு நிமிடம் -> :01).
 MINUTE_ONE = "ஒரு"
 
@@ -39,7 +45,7 @@ class TimeFst(GraphFst):
     """
     Finite state transducer for classifying spoken times, e.g.
         பத்து மணி முப்பது நிமிடம் -> time { hours: "10" minutes: "30" preserve_order: true }
-        பத்து மணிக்கு -> time { hours: "10" preserve_order: true }
+        பத்து மணிக்கு -> time { hours: "10" suffix: "க்கு" preserve_order: true }
         பத்தரை மணிக்கு -> time { hours: "10" minutes: "30" preserve_order: true }
         காலை பத்து மணி -> time { morphosyntactic_features: "காலை" hours: "10" preserve_order: true }
 
@@ -69,10 +75,24 @@ class TimeFst(GraphFst):
         minute_words = cardinal.read(table_words("minutes") | pynini.cross(MINUTE_ONE, "01"))
         second_words = cardinal.read(table_words("seconds") | pynini.cross(MINUTE_ONE, "01"))
 
+        def case_field(written: str) -> 'pynini.FstLike':
+            return pynutil.insert(f" suffix: \"{written}\"")
+
+        def final_noun(kind: str) -> 'pynini.FstLike':
+            """The noun that ends the phrase, carrying whatever case it was spoken with."""
+            plain, dative, locative = NOUN_CASES[kind]
+            return (
+                pynutil.delete(pynini.union(*plain))
+                | pynutil.delete(pynini.union(*dative)) + case_field(DATIVE)
+                | pynutil.delete(pynini.union(*locative)) + case_field(LOCATIVE)
+            )
+
+        # The hour noun standing between the hour and the minutes carries no case of its own.
         hour_plain = pynutil.delete(pynini.union(*HOUR_NOUNS))
-        minute_plain = pynutil.delete(pynini.union(*MINUTE_NOUNS))
-        second_plain = pynutil.delete(pynini.union(*SECOND_NOUNS))
-        clock_noun = delete_space + pynutil.delete(CLOCK_HOUR_NOUN)
+        hour_final = final_noun("hour")
+        minute_plain = final_noun("minute")
+        second_plain = final_noun("second")
+        clock_noun = delete_space + pynutil.delete(CLOCK_HOUR_NOUN) + case_field(DATIVE)
 
         hours = pynutil.insert("hours: \"") + hour_words + pynutil.insert("\"")
         minutes = pynutil.insert(" minutes: \"") + minute_words + pynutil.insert("\"")
@@ -110,7 +130,7 @@ class TimeFst(GraphFst):
             + pynutil.insert("\" ")
             + pynutil.delete(" ")
         )
-        bare_hour = (hours | fused) + delete_space + hour_plain
+        bare_hour = (hours | fused) + delete_space + hour_final
         graph = pynini.closure(day_part, 0, 1) + graph | day_part + bare_hour
         graph += pynutil.insert(" preserve_order: true")
         self.fst = self.add_tokens(graph).optimize()

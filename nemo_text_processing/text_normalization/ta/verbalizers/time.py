@@ -17,6 +17,15 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
 
+HOUR_NOUN, MINUTE_NOUN, SECOND_NOUN = "மணி", "நிமிடம்", "வினாடி"
+# A case suffix the tagger carried, and the inflected shape of whichever noun is spoken last.
+# Only the last noun takes the case: 10:30க்கு is பத்து மணி முப்பது நிமிடத்திற்கு, not
+# பத்து மணிக்கு முப்பது நிமிடத்திற்கு.
+CASE_INFLECTIONS = {
+    "க்கு": ("மணிக்கு", "நிமிடத்திற்கு", "வினாடிக்கு"),
+    "இல்": ("மணியில்", "நிமிடத்தில்", "வினாடியில்"),
+}
+
 
 class TimeFst(GraphFst):
     """
@@ -24,6 +33,7 @@ class TimeFst(GraphFst):
         time { hours: "பத்து" minutes: "முப்பது" } -> பத்து மணி முப்பது நிமிடம்
         time { hours: "பத்து" } -> பத்து மணி
         time { hours: "பத்து" minutes: "முப்பது" meridiem: "முற்பகல்" } -> முற்பகல் பத்து மணி முப்பது நிமிடம்
+        time { hours: "ஏழு" morphosyntactic_features: "க்கு" } -> ஏழு மணிக்கு
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -37,14 +47,43 @@ class TimeFst(GraphFst):
         minute = pynutil.delete("minutes: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         second = pynutil.delete("seconds: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
-        insert_mani = pynutil.insert("மணி")
-        insert_minute = pynutil.insert("நிமிடம்")
-        insert_second = pynutil.insert("வினாடி")
+        def shapes(hour_last: str, minute_last: str, second_last: str) -> 'pynini.FstLike':
+            """
+            The four spoken shapes. Each noun is spoken plain except the one that ends the
+            phrase, which takes the ``_last`` form the caller passes.
+            """
+            head = hour + insert_space
+            graph_h = head + pynutil.insert(hour_last)
+            hm_head = head + pynutil.insert(HOUR_NOUN) + delete_space + insert_space + minute + insert_space
+            graph_hm = hm_head + pynutil.insert(minute_last)
+            graph_hms = (
+                hm_head
+                + pynutil.insert(MINUTE_NOUN)
+                + delete_space
+                + insert_space
+                + second
+                + insert_space
+                + pynutil.insert(second_last)
+            )
+            graph_hs = (
+                head
+                + pynutil.insert(HOUR_NOUN)
+                + delete_space
+                + insert_space
+                + second
+                + insert_space
+                + pynutil.insert(second_last)
+            )
+            return graph_hms | graph_hm | graph_hs | graph_h
 
-        graph_h = hour + insert_space + insert_mani
-        graph_hm = graph_h + delete_space + insert_space + minute + insert_space + insert_minute
-        graph_hms = graph_hm + delete_space + insert_space + second + insert_space + insert_second
-        graph_hs = graph_h + delete_space + insert_space + second + insert_space + insert_second
+        plain = shapes(HOUR_NOUN, MINUTE_NOUN, SECOND_NOUN)
+        # A carried case suffix is spoken on the last noun and the field itself is consumed.
+        inflected = pynini.union(
+            *[
+                shapes(*forms) + delete_space + pynutil.delete(f"morphosyntactic_features: \"{written}\"")
+                for written, forms in CASE_INFLECTIONS.items()
+            ]
+        )
 
         # A day-part word or a resolved AM/PM is fronted.
         meridiem = pynini.closure(
@@ -56,5 +95,5 @@ class TimeFst(GraphFst):
             0,
             1,
         )
-        self.graph = meridiem + (graph_hms | graph_hm | graph_hs | graph_h)
+        self.graph = meridiem + (plain | inflected)
         self.fst = self.delete_tokens(self.graph).optimize()

@@ -16,7 +16,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.ta.graph_utils import NEMO_ALL_DIGIT, NEMO_ALL_ZERO, VULGAR_PAIRS
+from nemo_text_processing.text_normalization.ta.graph_utils import (
+    NEMO_ALL_DIGIT,
+    NEMO_ALL_ZERO,
+    POINT_WORD,
+    VULGAR_PAIRS,
+)
 
 
 class FractionFst(GraphFst):
@@ -52,9 +57,14 @@ class FractionFst(GraphFst):
         numerator_input = pynini.difference(
             pynini.closure(any_digit, 1), NEMO_ALL_ZERO + pynini.closure(any_digit, 1)
         ).optimize()
+        numerator_number = pynini.compose(numerator_input, cardinal_graph)
+        # A decimal numerator is read as one number (1.5/2 -> ஒன்று புள்ளி ஐந்து கீழ் இரண்டு).
+        # Without this the span splits at the point and the point is left unspoken.
+        fractional_digits = cardinal.digit_by_digit | pynini.compose(any_digit, cardinal_graph)
+        numerator_number |= (numerator_number + pynini.cross(".", f" {POINT_WORD} ") + fractional_digits).optimize()
         numerator = (
             pynutil.insert("numerator: \"")
-            + pynini.compose(numerator_input, cardinal_graph)
+            + numerator_number
             + (pynini.cross("/", "\" ") | pynini.cross(" / ", "\" "))
         )
         denominator = pynutil.insert("denominator: \"") + denominator_graph + pynutil.insert("\"")
