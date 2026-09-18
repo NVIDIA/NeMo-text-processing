@@ -65,14 +65,16 @@ class TimeFst(GraphFst):
         self.minutes = pynutil.insert("minutes: \"") + minutes_graph + pynutil.insert("\" ")
         self.seconds = pynutil.insert("seconds: \"") + seconds_graph + pynutil.insert("\" ")
 
-       # hour minute seconds (allows 00 minutes and 00 seconds)
+        # hour minute seconds (allows 00 minutes and 00 seconds)
         graph_hms = (
             self.hours + delete_colon + insert_space + self.minutes + delete_colon + insert_space + self.seconds
         )
 
         # Restrict graph_hm from accepting 00 minutes so H:00 falls back to graph_h
         exclude_double_zero = pynini.union("00", "००").optimize()
-        minutes_no_zero_graph = pynini.difference(pynini.project(minutes_graph, "input"), exclude_double_zero) @ minutes_graph
+        minutes_no_zero_graph = (
+            pynini.difference(pynini.project(minutes_graph, "input"), exclude_double_zero) @ minutes_graph
+        )
         hm_minutes_restricted = pynutil.insert("minutes: \"") + minutes_no_zero_graph + pynutil.insert("\" ")
 
         # hour minute
@@ -101,7 +103,7 @@ class TimeFst(GraphFst):
         # Restrict 'sadhe' from accepting 1 or 2 so it doesn't conflict with dedh/dhai
         exclude_tsv = pynini.string_file(get_abs_path("data/time/exclude_dedh_dhai.tsv"))
         exclude_dedh_dhai = pynini.project(exclude_tsv, "input").optimize()
-        
+
         # Project cardinal_graph to an acceptor, subtract exceptions, then compose (@) back to the transducer
         valid_sadhe_inputs = pynini.difference(pynini.project(cardinal_graph, "input"), exclude_dedh_dhai)
         sadhe_cardinal = valid_sadhe_inputs @ cardinal_graph
