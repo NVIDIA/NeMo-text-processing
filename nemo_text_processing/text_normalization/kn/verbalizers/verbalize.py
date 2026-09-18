@@ -14,6 +14,7 @@
 
 from nemo_text_processing.text_normalization.kn.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.kn.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.kn.verbalizers.ordinal import OrdinalFst
 
 
 class VerbalizeFst(GraphFst):
@@ -33,6 +34,9 @@ class VerbalizeFst(GraphFst):
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
 
-        graph = cardinal_graph
+        ordinal = OrdinalFst(deterministic=deterministic)
+        ordinal_graph = ordinal.fst
+
+        graph = cardinal_graph | ordinal_graph
 
         self.fst = graph
