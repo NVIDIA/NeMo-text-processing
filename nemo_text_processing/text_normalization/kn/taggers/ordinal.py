@@ -23,7 +23,7 @@ class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying Kannada ordinals, e.g.
         ೧೦ನೇ -> ordinal { integer: "ಹತ್ತನೆಯ" }
-        12ನೇ -> ordinal { integer: "ಹನ್ನೆರಡನೆಯ" } # English/arabic digits also supported
+        12ನೇ -> ordinal { integer: "ಹನ್ನೆರಡನೆಯ" }
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -36,19 +36,16 @@ class OrdinalFst(GraphFst):
         exceptions = pynini.string_file(get_abs_path("data/ordinals/exceptions.tsv"))
         endings = pynini.string_file(get_abs_path("data/ordinals/ending.tsv"))
         kn_suffixes = pynini.string_file(get_abs_path("data/ordinals/kn_suffixes.tsv"))
-        en_suffixes = pynini.string_file(get_abs_path("data/ordinals/en_suffixes.tsv"))
-
-        drop_cardinal_ending = pynini.cdrewrite(pynutil.delete(endings), "", "[EOS]", NEMO_SIGMA).optimize()
+    
+        drop_cardinal_ending = pynini.cdrewrite(pynutil.delete(endings),"","[EOS]", NEMO_SIGMA).optimize()
 
         kn_ordinal_graph = cardinal.final_graph @ drop_cardinal_ending + kn_suffixes
-        en_ordinal_graph = cardinal.final_graph @ drop_cardinal_ending + en_suffixes
-        ordinal_g = pynini.union(kn_ordinal_graph, en_ordinal_graph).optimize()
 
-        exception_inputs = pynini.project(exceptions, "input").optimize()
-        ordinal_input = pynini.project(ordinal_g, "input").optimize()
-        ordinal_inputs = pynini.difference(ordinal_input, exception_inputs).optimize()
+        exception_inputs = pynini.project(exceptions,"input").optimize()
+        ordinal_input = pynini.project(kn_ordinal_graph,"input").optimize()
+        ordinal_inputs = pynini.difference(ordinal_input,exception_inputs).optimize()
 
-        ordinal_graph = (ordinal_inputs @ ordinal_g).optimize()
+        ordinal_graph = (ordinal_inputs @ kn_ordinal_graph).optimize()
 
         graph = pynini.union(exceptions, ordinal_graph).optimize()
 
