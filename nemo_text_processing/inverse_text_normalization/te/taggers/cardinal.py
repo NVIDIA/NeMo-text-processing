@@ -53,19 +53,17 @@ class CardinalFst(GraphFst):
         graph_crore = pynini.string_file(get_abs_path("data/numbers/crore.tsv"))
 
         two_te_digits = NEMO_TE_DIGIT + NEMO_TE_DIGIT
-        graph_digit |= (graph_people | graph_special) @ NEMO_TE_DIGIT
+        graph_digit |= graph_special @ NEMO_TE_DIGIT
 
         graph_two_digit = (
             graph_teens_and_ties
             | (graph_ties_prefix + delete_space + graph_digit)
             | (pynutil.insert("౦") + graph_digit)
-            | ((graph_people | graph_special) @ two_te_digits)
+            | (graph_special @ two_te_digits)
         )
 
         graph_two_digit_multiplier = (
-            graph_teens_and_ties
-            | (graph_ties_prefix + delete_space + graph_digit)
-            | ((graph_people | graph_special) @ two_te_digits)
+            graph_teens_and_ties | (graph_ties_prefix + delete_space + graph_digit) | (graph_special @ two_te_digits)
         )
 
         two_digit_or_zeros = graph_two_digit | pynutil.insert("౦౦")
@@ -124,7 +122,7 @@ class CardinalFst(GraphFst):
             1,
         )
 
-        graph = graph_number | graph_zero
+        graph = graph_number | graph_zero | graph_people
         graph |= graph_leading_zeros
         graph = graph.optimize()
 
