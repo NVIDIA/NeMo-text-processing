@@ -90,11 +90,8 @@ class DateFst(GraphFst):
         _d = pynini.union(*[pynini.accep(str(i)) for i in range(10)])
         _1to9 = pynini.union(*[pynini.accep(str(i)) for i in range(1, 10)])
 
-        # For standalone years:
-        # - No era: 1–4 digits with NO leading zeros
-        YEAR_NO_ERA_1TO4 = pynini.closure(pynutil.delete("0"), 0, 3) + _1to9 + pynini.closure(_d, 0, 3)
-        # - With era (기원전/기원후): allow leading zeros but strip them
-        YEAR_ERA_1TO4 = pynini.closure(pynutil.delete("0"), 0, 3) + _1to9 + pynini.closure(_d, 0, 3)
+        # Standalone year acceptor: 1-4 digits with leading zeros stripped.
+        YEAR_1TO4 = pynini.closure(pynutil.delete("0"), 0, 3) + _1to9 + pynini.closure(_d, 0, 3)
 
         # MM: 01-09 | 10-12
         MM = (pynini.accep("0") + _1to9) | (pynini.accep("1") + pynini.union("0", "1", "2"))
@@ -237,18 +234,13 @@ class DateFst(GraphFst):
                 era_component
                 + insert_space
                 + pynutil.insert("year: \"")
-                + (YEAR_ERA_1TO4 @ graph_cardinal)
+                + (YEAR_1TO4 @ graph_cardinal)
                 + pynini.accep("년")
                 + pynutil.insert("\"")
             )
             |
             # no era: 1~4 digits, no leading zero
-            (
-                pynutil.insert("year: \"")
-                + (YEAR_NO_ERA_1TO4 @ graph_cardinal)
-                + pynini.accep("년")
-                + pynutil.insert("\"")
-            )
+            (pynutil.insert("year: \"") + (YEAR_1TO4 @ graph_cardinal) + pynini.accep("년") + pynutil.insert("\""))
         ).optimize()
 
         individual_month_component = (
