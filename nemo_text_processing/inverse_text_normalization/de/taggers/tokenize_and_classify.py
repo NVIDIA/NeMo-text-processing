@@ -82,7 +82,7 @@ class ClassifyFst(GraphFst):
         else:
             logger.info(f"Creating ClassifyFst grammars.")
             tn_cardinal_tagger = TNCardinalTagger(deterministic=False)
-            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False)            
+            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False)
             tn_ordinal_verbalizer = TNOrdinalVerbalizer(deterministic=False)
             tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
             tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, deterministic=False)

@@ -19,7 +19,7 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
     NEMO_DIGIT,
     NEMO_NOT_QUOTE,
     GraphFst,
-    delete_space,   
+    delete_space,
 )
 
 
@@ -36,7 +36,7 @@ class DecimalFst(GraphFst):
         optional_sign = pynini.closure(
             pynutil.delete('negative: "') + NEMO_NOT_QUOTE + pynutil.delete('"') + delete_space, 0, 1
         )
-        
+
         fullstop_accep = pynini.accep(".")
         integer_chars = NEMO_DIGIT | fullstop_accep
         integer = (
@@ -47,7 +47,7 @@ class DecimalFst(GraphFst):
             + pynutil.delete('"')
         )
         optional_integer = pynini.closure(integer + delete_space, 0, 1)
-        
+
         fractional = (
             pynutil.insert(",")
             + pynutil.delete("fractional_part:")
@@ -57,7 +57,7 @@ class DecimalFst(GraphFst):
             + pynutil.delete('"')
         )
         optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
-        
+
         quantity_chars = NEMO_ALPHA | fullstop_accep
         quantity = (
             pynutil.delete("quantity:")
@@ -67,9 +67,9 @@ class DecimalFst(GraphFst):
             + pynutil.delete('"')
         )
         optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
-        
+
         graph = (optional_integer + optional_fractional + optional_quantity).optimize()
-        
+
         self.numbers = graph  # This part of the graph to be passed to other classes
         delete_tokens = self.delete_tokens(optional_sign + graph)
         self.fst = delete_tokens.optimize()
