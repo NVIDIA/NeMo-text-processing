@@ -21,6 +21,8 @@ cu mi	kubikmil
 cwt	centner
 da	atommassenhet
 db	decibel
+dba	decibel
+dl	deciliter
 dm2	kvadratdecimeter
 dm²	kvadratdecimeter
 dm3	kubikdecimeter
@@ -67,6 +69,7 @@ km²	kvadratkilometer
 km3	kubikkilometer
 km³	kubikkilometer
 km	kilometer
+km:s	kilometers
 kn	kilonewton
 kpa	kilopascal
 kp	kilopond
@@ -101,6 +104,7 @@ ml	milliliter
 mm2	kvadratmillimeter
 mm²	kvadratmillimeter
 m	meter
+mbar	millibar
 Mm	megameter
 mm	millimeter
 mol	mol
@@ -112,6 +116,7 @@ ms	millisekund
 Mv	megavolt
 mv	millivolt
 mw	megawatt
+mwh	megawattimme
 nm	nanometer
 ns	nanosekund
 ºc	celsiusgrad
@@ -134,6 +139,8 @@ TB	terabyte
 tim	timme
 tj	terajoule
 tl	teraliter
+tsk	tesked
+twh	terawattimme
 "	tum
 v	volt
 YB	yottabyte
@@ -145,3 +152,41 @@ zj	zettajoule
 μs	mikrosekund
 ω	ohm
 msk	matsked
+cl	centiliter
+hpa	hektopascal
+hPa	hektopascal
+kbit	kilobit
+kHz	kilohertz
+kJ	kilojoule
+kV	kilovolt
+kWh	kilowattimme
+kcal/dag	kilokalori per dag
+kcal/gram	kilokalori per gram
+l	liter
+lx	lux
+mbyte	megabyte
+mm vp	millimeter vattenpelare
+mmhg	millimeter kvicksilver
+mmHg	millimeter kvicksilver
+mmol	millimol
+mwel	megawatt el
+nmol	nanomol
+personkm	personkilometer
+pmol	pikomol
+twhel	terawattimme el
+twhkyla	terawattimme kyla
+twhvärme	terawattimme värme
+µm	mikrometer
+kvm	kvadratmeter
+m.ö.h	meter över havet
+mö.h	meter över havet
+inv/km2	invånare per kvadratkilometer
+kr/kg	kronor per kilo
+kr/m2	kronor per kvadratmeter
+kr/månad	kronor per månad
+kr/styck	kronor styck
+kr/år	kronor per år
+krm	kryddmått
+kton	kiloton
+nr/år	nummer per år
+tkr/månad	tusen kronor per månad
