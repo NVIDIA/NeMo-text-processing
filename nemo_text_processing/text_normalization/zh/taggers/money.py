@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 suffix = pynini.union(
@@ -65,6 +65,15 @@ class MoneyFst(GraphFst):
 
         cardinal = cardinal.just_cardinals
 
+        # Accept conventional comma-separated numbers while keeping the cardinal
+        # grammar responsible for converting the separator-free digit sequence.
+        grouped_digits = (
+            (NEMO_DIGIT - "0")
+            + pynini.closure(NEMO_DIGIT, 0, 2)
+            + pynini.closure(pynutil.delete(",") + NEMO_DIGIT**3, 1)
+        )
+        cardinal = (cardinal | grouped_digits @ cardinal).optimize()
+
         currency = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))
         currency_mandarin = pynini.string_file(get_abs_path("data/money/currency_mandarin.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
@@ -106,12 +115,10 @@ class MoneyFst(GraphFst):
         # larger money as decimals
         graph_decimal = (
             pynutil.insert('integer_part: \"')
-            + (
-                pynini.closure(cardinal, 1)
-                + pynutil.delete('.')
-                + pynutil.insert('点')
-                + pynini.closure((graph_digit | graph_zero), 1)
-            )
+            + cardinal
+            + pynutil.insert('\" fractional_part: \"')
+            + pynutil.delete('.')
+            + pynini.closure((graph_digit | graph_zero), 1)
             + pynutil.insert("\"")
         )
         graph_decimal_money = (
