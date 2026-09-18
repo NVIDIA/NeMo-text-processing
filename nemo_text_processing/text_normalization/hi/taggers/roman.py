@@ -32,11 +32,25 @@ class RomanFst(GraphFst):
             for False multiple transduction are generated (used for audio-based normalization)
     """
 
-    def __init__(self, deterministic: bool = True):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="roman", kind="classify", deterministic=deterministic)
 
-        roman_graph = pynini.string_file(get_abs_path("data/roman/roman_to_spoken.tsv")).optimize()
-        roman_numeral_only = pynini.project(roman_graph, "input").optimize()
+        components = load_labels(get_abs_path("data/roman/roman_components.tsv"))
+        ones = pynini.string_map(components[0:9]).optimize()
+        tens = pynini.string_map(components[9:18]).optimize()
+        hundreds = pynini.string_map(components[18:27]).optimize()
+        thousands = pynini.string_map(components[27:30]).optimize()
+
+        zero = pynutil.insert("0")
+        opt_hundreds = hundreds | zero
+        opt_tens = tens | zero
+        opt_ones = ones | zero
+
+        roman_to_arabic = pynini.union(
+            thousands + opt_hundreds + opt_tens + opt_ones, hundreds + opt_tens + opt_ones, tens + opt_ones, ones
+        ).optimize()
+
+        roman_to_spoken_fst = pynini.compose(roman_to_arabic, cardinal.graph_without_leading_zeros).optimize()
 
         devanagari_chars = pynini.project(
             pynini.string_file(get_abs_path("data/serial/chars.tsv")), "input"
@@ -58,14 +72,14 @@ class RomanFst(GraphFst):
             + pynutil.delete(separator)
             + insert_space
             + pynutil.insert('integer: "')
-            + roman_numeral_only
+            + roman_to_spoken_fst
             + pynutil.insert('"')
         ).optimize()
 
         numeral_before_key = (
             pynutil.insert("preserve_order: true ")
             + pynutil.insert('integer: "')
-            + roman_numeral_only
+            + roman_to_spoken_fst
             + pynutil.insert('"')
             + pynutil.delete(separator)
             + insert_space
@@ -74,45 +88,30 @@ class RomanFst(GraphFst):
             + pynutil.insert('"')
         ).optimize()
 
-        roman_rows = load_labels(get_abs_path("data/roman/roman_to_spoken.tsv"))
-        numerals_by_len_desc = sorted((n for n, _ in roman_rows), key=len, reverse=True)
-
         exception_rows = load_labels(get_abs_path("data/roman/roman_ordinal_exceptions.tsv"))
-        exception_fused_set = {fused for fused, _ in exception_rows}
-
-        suffix_rows_raw = load_labels(get_abs_path("data/ordinal/suffixes.tsv")) + load_labels(
-            get_abs_path("data/ordinal/suffixes_map.tsv")
-        )
 
         exception_graphs = []
         for fused, spoken_word in exception_rows:
-            matched_numeral = next(c for c in numerals_by_len_desc if fused.startswith(c))
             exception_graphs.append(
-                pynutil.insert('integer: "' + matched_numeral + '"')
+                pynutil.insert('integer: "-"')
                 + insert_space
                 + pynutil.insert('default_ordinal: "' + spoken_word + '"')
                 + pynutil.delete(fused)
             )
         glued_ordinal_exceptions_graph = pynini.union(*exception_graphs).optimize()
 
-        regular_row_graphs = []
-        for numeral, spoken in roman_rows:
-            for row in suffix_rows_raw:
+        suffixes_fst = pynini.union(
+            pynini.string_file(get_abs_path("data/ordinal/suffixes.tsv")),
+            pynini.string_file(get_abs_path("data/ordinal/suffixes_map.tsv")),
+        ).optimize()
 
-                suffix_input = row[0]
-                suffix_output = row[1] if len(row) > 1 else row[0]
-
-                fused = numeral + suffix_input
-                if fused in exception_fused_set:
-                    continue
-                spoken_ordinal = spoken + suffix_output
-                regular_row_graphs.append(
-                    pynutil.insert('integer: "' + numeral + '"')
-                    + insert_space
-                    + pynutil.insert('default_ordinal: "' + spoken_ordinal + '"')
-                    + pynutil.delete(fused)
-                )
-        glued_ordinal_regular_graph = pynini.union(*regular_row_graphs).optimize()
+        glued_ordinal_regular_graph = (
+            pynutil.insert('integer: "-"')
+            + insert_space
+            + pynutil.insert('default_ordinal: "')
+            + (roman_to_spoken_fst + suffixes_fst)
+            + pynutil.insert('"')
+        ).optimize()
 
         roman_glued_ordinal_fields = pynini.union(
             pynutil.add_weight(glued_ordinal_exceptions_graph, -0.1),
