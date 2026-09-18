@@ -22,6 +22,7 @@ pipeline {
     RU_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-29-25-0'
     SV_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
+    SE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
     ZH_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/11-13-24-0'
     IT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-22-24-0'
     HE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-24-25-0'
@@ -332,6 +333,24 @@ pipeline {
         }
       }
     }
+    stage('L0: Create SE TN/ITN Grammars') {
+      when {
+        anyOf {
+          branch 'main'
+          branch 'staging/**'
+          branch 'staging_*'
+          changeRequest target: 'main'
+        }
+      }
+      failFast true
+      parallel {
+        stage('L0: SE TN grammars') {
+         steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=se --text="100" --cache_dir ${SE_TN_CACHE}'
+          }
+        }
+      }
+    }
     stage('L0: Create JA ITN Grammars') {
       when {
         anyOf {
@@ -481,7 +500,7 @@ pipeline {
       }
     }
 
-     stage('L2: EN Sparrowhawk Tests') {
+    stage('L2: EN Sparrowhawk Tests') {
       when {
         anyOf {
           branch 'main' 
@@ -513,6 +532,21 @@ pipeline {
           }
         }
 
+      }
+    }
+
+    stage('L2: SE Sparrowhawk Tests') {
+      when {
+        anyOf {
+          branch 'main'
+          branch 'staging/**'
+          branch 'staging_*'
+          changeRequest target: 'main'
+        }
+      }
+      steps {
+        sh 'CUDA_VISIBLE_DEVICES="" cp -r /workspace/sparrowhawk/documentation/grammars /workspace/sparrowhawk/documentation/grammars_se_tn_grammars_cased && cd tools/text_processing_deployment && bash sh_test.sh --MODE="test_tn_grammars" --INPUT_CASE="cased" --OVERWRITE_CACHE=False --FAR_PATH=${SE_TN_CACHE}/SH_TN --GRAMMARS="tn_grammars" --LANGUAGE="se"'
+        sh 'CUDA_VISIBLE_DEVICES="" cd tests/nemo_text_processing/se && bash test_sparrowhawk_normalization.sh /workspace/sparrowhawk/documentation/grammars_se_tn_grammars_cased `pwd`/..'
       }
     }
     
