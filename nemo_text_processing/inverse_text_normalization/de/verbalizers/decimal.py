@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,31 +14,62 @@
 
 import pynini
 from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_preserve_order
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
+    NEMO_ALPHA,
+    NEMO_DIGIT,
+    NEMO_NOT_QUOTE,
+    GraphFst,
+    delete_space,
+)
 
 
 class DecimalFst(GraphFst):
     """
     Finite state transducer for verbalizing decimal, e.g.
-        decimal { negative: "true" integer_part: "12"  fractional_part: "5006" quantity: "billion" } -> -12.5006 billion
-
-    Args:
-        tn_decimal_verbalizer: TN decimal verbalizer
+        decimal { negative: "-" integer_part: "12"  fractional_part: "5006" quantity: "millionen" } -> -12,5006 Mio.
     """
 
-    def __init__(self, tn_decimal_verbalizer: GraphFst, deterministic: bool = True):
-        super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
-        delete_space = pynutil.delete(" ")
+    def __init__(self):
+        super().__init__(name="decimal", kind="verbalize")
+
+        # the tagger writes the sign itself, so the verbalizer just reads it out of the field
         optional_sign = pynini.closure(
-            pynutil.delete("negative: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"") + delete_space, 0, 1
+            pynutil.delete('negative: "') + NEMO_NOT_QUOTE + pynutil.delete('"') + delete_space, 0, 1
         )
-        optional_integer = pynini.closure(tn_decimal_verbalizer.integer, 0, 1)
-        optional_fractional = pynini.closure(
-            delete_space + pynutil.insert(",") + tn_decimal_verbalizer.fractional_default, 0, 1
+
+        fullstop_accep = pynini.accep(".")
+        integer_chars = NEMO_DIGIT | fullstop_accep
+        integer = (
+            pynutil.delete("integer_part:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(integer_chars, 1)
+            + pynutil.delete('"')
         )
-        graph = (optional_integer + optional_fractional + tn_decimal_verbalizer.optional_quantity).optimize()
-        self.numbers = optional_sign + graph
-        graph = self.numbers + delete_preserve_order
-        delete_tokens = self.delete_tokens(graph)
+        optional_integer = pynini.closure(integer + delete_space, 0, 1)
+
+        fractional = (
+            pynutil.insert(",")
+            + pynutil.delete("fractional_part:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynutil.delete('"')
+        )
+        optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
+
+        quantity_chars = NEMO_ALPHA | fullstop_accep
+        quantity = (
+            pynutil.delete("quantity:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(quantity_chars, 1)
+            + pynutil.delete('"')
+        )
+        optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
+
+        graph = (optional_integer + optional_fractional + optional_quantity).optimize()
+
+        self.numbers = graph  # This part of the graph to be passed to other classes
+        delete_tokens = self.delete_tokens(optional_sign + graph)
         self.fst = delete_tokens.optimize()
