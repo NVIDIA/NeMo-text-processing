@@ -14,11 +14,12 @@
 
 import pynini
 from pynini.lib import pynutil
-from nemo_text_processing.inverse_text_normalization.ger.graph_utils import (
-    NEMO_DIGIT,
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
     NEMO_ALPHA,
-    delete_space,
+    NEMO_DIGIT,
+    NEMO_NOT_QUOTE,
     GraphFst,
+    delete_space,   
 )
 
 
@@ -31,7 +32,11 @@ class DecimalFst(GraphFst):
     def __init__(self):
         super().__init__(name="decimal", kind="verbalize")
 
-        negative_sign = pynini.cross('negative: "-"', "-")
+        # the tagger writes the sign itself, so the verbalizer just reads it out of the field
+        optional_sign = pynini.closure(
+            pynutil.delete('negative: "') + NEMO_NOT_QUOTE + pynutil.delete('"') + delete_space, 0, 1
+        )
+        
         fullstop_accep = pynini.accep(".")
         integer_chars = NEMO_DIGIT | fullstop_accep
         integer = (
@@ -41,17 +46,18 @@ class DecimalFst(GraphFst):
             + pynini.closure(integer_chars, 1)
             + pynutil.delete('"')
         )
-
-        comma = pynutil.insert(",")
-
+        optional_integer = pynini.closure(integer + delete_space, 0, 1)
+        
         fractional = (
-            pynutil.delete("fractional_part:")
+            pynutil.insert(",")
+            + pynutil.delete("fractional_part:")
             + delete_space
             + pynutil.delete('"')
             + pynini.closure(NEMO_DIGIT, 1)
             + pynutil.delete('"')
         )
-
+        optional_fractional = pynini.closure(fractional + delete_space, 0, 1)
+        
         quantity_chars = NEMO_ALPHA | fullstop_accep
         quantity = (
             pynutil.delete("quantity:")
@@ -60,22 +66,10 @@ class DecimalFst(GraphFst):
             + pynini.closure(quantity_chars, 1)
             + pynutil.delete('"')
         )
-
-        # Accounts for cases like "tausend millionen"
-        recursive_quantity = pynini.closure(
-            pynutil.insert(" ") + quantity + delete_space, 0, 1
-        )
-
-        graph = (
-            integer
-            + delete_space
-            + comma
-            + fractional
-            + delete_space
-            + recursive_quantity.ques
-        ).optimize()
-
+        optional_quantity = pynini.closure(pynutil.insert(" ") + quantity + delete_space, 0, 1)
+        
+        graph = (optional_integer + optional_fractional + optional_quantity).optimize()
+        
         self.numbers = graph  # This part of the graph to be passed to other classes
-        graph_negative = (negative_sign + delete_space).ques + graph
-        delete_tokens = self.delete_tokens(graph_negative)
+        delete_tokens = self.delete_tokens(optional_sign + graph)
         self.fst = delete_tokens.optimize()

@@ -17,29 +17,79 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
 from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
-    delete_space,
     GraphFst,
+    delete_space,    
 )
+from nemo_text_processing.inverse_text_normalization.de.taggers.cardinal import CARDINAL_SCALES
 
+
+def get_quantity(decimal: 'pynini.FstLike', cardinal: GraphFst, deterministic: bool = True) -> 'pynini.FstLike':
+    """
+    Returns FST that transforms either a cardinal or a decimal followed by a quantity into a numeral
+        e.g. zehn millionen -> integer_part: "10" quantity: "Mio."
+        e.g. zehn komma fünf millionen -> integer_part: "10" fractional_part: "5" quantity: "Mio."
+
+    Args:
+        decimal: decimal FST
+        cardinal: CardinalFst, provides the shared magnitude graph and the 1 - 999 graph
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated
+    """
+    quantity = cardinal.magnitude
+    if not deterministic:
+        quantity |= pynutil.add_weight(
+            pynini.string_file(get_abs_path("data/numbers/quantity_nondeterministic.tsv")), 0.001
+        )
+
+    # after a bare integer "hundert" and "tausend" belong to the cardinal grammar: zwei hundert -> 200
+    cardinal_words = pynini.union(*[cardinal.scale_forms[scale] for scale in CARDINAL_SCALES]).optimize()
+    big_quantity = pynini.compose(
+        pynini.difference(cardinal.magnitude_words, cardinal_words).optimize(), quantity
+    )
+
+    res = (
+        pynutil.insert('integer_part: "')
+        + cardinal.graph_hundred_component_at_least_one_none_zero_digit
+        + pynutil.insert('"')
+        + pynutil.insert(' quantity: "')
+        + delete_space
+        + big_quantity
+        + pynutil.insert('"')
+    )
+    res |= decimal + pynutil.insert(' quantity: "') + delete_space + quantity + pynutil.insert('"')
+    return res
 
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal numbers
-        e.g. minus elf komma zwei null null sechs billionen -> decimal { negative: "-" integer_part: "11"  fractional_part: "2006" quantity: "Bio." }
+        e.g. minus elf komma zwei null null sechs billionen -> decimal { negative: "-" integer_part: "11"  fractional_part: "2006" quantity: "Billionen" }
     The tagger accepts canonical verbalized decimal input whereby every digit after the comma is pronounced separately:
         e.g. 12,345 -> zwölf komma drei vier fünf
             *12,345 -> zwölf komma drei hundert fünfundvierzig
-    Even powers of 10 are denormalized to their abbreviated forms:
-        e.g. million -> Mio.
-             millard -> Mrd.
+    Tausend, million and milliarde are denormalized to their abbreviated forms, hundert and larger magnitudes
+    keep the full word:
+        e.g. tausend -> Tsd.
+             million -> Mio.
+             milliarde -> Mrd.
+             billionen -> Billionen
+    A bare integer followed by "hundert" or "tausend" stays with the cardinal grammar, so the abbreviation only
+    shows up after a decimal: dreiviertel tausend -> 0,75 Tsd. but zwei tausend -> 2.000
+    For deterministic=False the full word forms of tausend, million and milliarde are generated as well:
+        e.g. millionen -> Mio. | Millionen
+    
+    Args:
+        cardinal: CardinalFst
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated
     """
 
-    def __init__(self, cardinal: GraphFst):
-        super().__init__(name="decimal", kind="classify")
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
+        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
         graph_cardinals = cardinal.graph_no_exception
         delete_comma = pynutil.delete("komma")
-        graph_digit = pynini.string_file(get_abs_path("data/decimal/digits.tsv"))
-
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
+        graph_digit |= pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        
         graph_integer = (
             pynutil.insert('integer_part: "')
             + graph_cardinals
@@ -66,7 +116,7 @@ class DecimalFst(GraphFst):
 
         # Coverage for verbalized 0,5 (einhalb)
         half = pynini.cross("einhalb", 'fractional_part: "5"')
-        einhalb = graph_integer_or_zero + delete_space.ques + half
+        einhalb = graph_integer_or_zero + half
 
         graph_decimal_no_sign |= einhalb
 
@@ -88,21 +138,11 @@ class DecimalFst(GraphFst):
 
         graph_decimal_no_sign |= graph_quarters
 
-        # Handles the negative sign
-        graph_negative = pynini.cross("minus", 'negative: "-" ') + delete_space
-
-        graph_decimal = graph_negative.ques + graph_decimal_no_sign
-
-        # Utilizes the quantity field to handle even powers of ten (eg. Million, Billion, etc.)
-        quantity = pynini.string_file(get_abs_path("data/decimal/quantity.tsv"))
-        graph_quantity = (
-            pynutil.insert(' quantity: "')
-            + delete_space.ques
-            + quantity
-            + pynutil.insert('"')
-        )
-
-        graph_decimal += graph_quantity.ques
-        self.graph_decimal = graph_decimal
-        graph = self.add_tokens(graph_decimal)
-        self.fst = graph.optimize()
+        # measure and money splice this in and write the sign themselves
+        self.final_graph_wo_negative = (
+            graph_decimal_no_sign | get_quantity(graph_decimal_no_sign, cardinal, deterministic=deterministic)
+        ).optimize()
+        
+        final_graph = cardinal.optional_minus_graph + self.final_graph_wo_negative
+        final_graph = self.add_tokens(final_graph)
+        self.fst = final_graph.optimize()

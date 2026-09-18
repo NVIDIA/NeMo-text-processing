@@ -32,7 +32,6 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation impo
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.de.taggers.cardinal import CardinalFst as TNCardinalTagger
 from nemo_text_processing.text_normalization.de.taggers.date import DateFst as TNDateTagger
-from nemo_text_processing.text_normalization.de.taggers.decimal import DecimalFst as TNDecimalTagger
 from nemo_text_processing.text_normalization.de.taggers.electronic import ElectronicFst as TNElectronicTagger
 from nemo_text_processing.text_normalization.de.taggers.whitelist import WhiteListFst as TNWhitelistTagger
 from nemo_text_processing.text_normalization.de.verbalizers.date import DateFst as TNDateVerbalizer
@@ -76,15 +75,14 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != 'None':
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"de_itn_{input_case}.far")
+            far_file = os.path.join(cache_dir, f"de_itn_{input_case}{'' if deterministic else '_nondet'}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
             logger.info(f"Creating ClassifyFst grammars.")
             tn_cardinal_tagger = TNCardinalTagger(deterministic=False)
-            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False)
-            tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
+            tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False)            
             tn_ordinal_verbalizer = TNOrdinalVerbalizer(deterministic=False)
             tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
             tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, deterministic=False)
@@ -98,7 +96,7 @@ class ClassifyFst(GraphFst):
 
             ordinal = OrdinalFst(itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer)
             ordinal_graph = ordinal.fst
-            decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger)
+            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
 
             fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_verbalizer=tn_fraction_verbalizer)

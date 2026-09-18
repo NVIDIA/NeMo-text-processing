@@ -26,6 +26,10 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
 )
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path, load_labels
 
+# ordered by value, each scale is three decimal digits larger than the previous one
+MAGNITUDE_SCALES = ("hundert", "tausend", "million", "milliarde", "billion", "billiarde", "trillion", "trilliarde")
+# after a bare integer these stay with the cardinal grammar: zwei tausend -> 2.000
+CARDINAL_SCALES = ("hundert", "tausend")
 
 def get_tens_digit(digit_path: str, tens_path: str, conjunction_path: str) -> 'pynini.FstLike':
     """
@@ -86,31 +90,40 @@ class CardinalFst(GraphFst):
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
 
-        zero = pynini.string_file(get_abs_path("data/cardinal/zero.tsv"))
-        digits = pynini.string_file(get_abs_path("data/cardinal/digits.tsv"))
-        irregular_teens = pynini.string_file(get_abs_path("data/cardinal/irregular_teens.tsv"))
+        zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        digits = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
+        irregular_teens = pynini.string_file(get_abs_path("data/numbers/irregular_teens.tsv"))
         to_denormalize = zero | digits | irregular_teens
 
-        regular_teens = pynini.string_file(get_abs_path("data/cardinal/regular_teens.tsv"))
+        regular_teens = pynini.string_file(get_abs_path("data/numbers/regular_teens.tsv"))
         teens = irregular_teens | regular_teens
-        tens = pynini.string_file(get_abs_path("data/cardinal/tens.tsv"))
+        tens = pynini.string_file(get_abs_path("data/numbers/tens.tsv"))
         ties = tens + pynutil.insert("0")
-        conjunction = load_labels(get_abs_path("data/cardinal/conjunction.tsv"))[0][0]
+        conjunction = load_labels(get_abs_path("data/numbers/conjunction.tsv"))[0][0]
 
         # the map is keyed on the compound spelling, so whitespace is stripped before lookup
         delete_all_spaces = pynini.cdrewrite(pynutil.delete(NEMO_WHITE_SPACE), "", "", NEMO_SIGMA)
         ties_digit = delete_all_spaces @ get_tens_digit(
-            get_abs_path("data/cardinal/digits.tsv"),
-            get_abs_path("data/cardinal/tens.tsv"),
-            get_abs_path("data/cardinal/conjunction.tsv"),
+            get_abs_path("data/numbers/digits.tsv"),
+            get_abs_path("data/numbers/tens.tsv"),
+            get_abs_path("data/numbers/conjunction.tsv"),
         )
 
         graph_10_99 = teens | ties | ties_digit
 
+        self.magnitude = pynini.string_file(get_abs_path("data/numbers/quantity.tsv")).optimize()
+        self.magnitude_words = pynini.project(self.magnitude, "input").optimize()
+        # the scale name is a prefix of all its own forms and of no other scale
+        self.scale_forms = {
+            scale: pynini.intersect(self.magnitude_words, pynini.accep(scale) + NEMO_SIGMA).optimize()
+            for scale in MAGNITUDE_SCALES
+        }
+
+        hundert = self.scale_forms["hundert"]
         hundreds = (
-            ((digits | pynutil.insert("1")) + delete_space + pynutil.delete("hundert") + delete_space + graph_10_99)
-            | ((digits | pynutil.insert("1")) + delete_space + pynini.cross("hundert", "0") + delete_space + digits)
-            | ((digits | pynutil.insert("1")) + delete_space + pynini.cross("hundert", "00"))
+            ((digits | pynutil.insert("1")) + delete_space + pynutil.delete(hundert) + delete_space + graph_10_99)
+            | ((digits | pynutil.insert("1")) + delete_space + pynini.cross(hundert, "0") + delete_space + digits)
+            | ((digits | pynutil.insert("1")) + delete_space + pynini.cross(hundert, "00"))
         )
 
         # Digits are grouped in clusters of three: {hundreds}{tens}{ones}.
@@ -120,49 +133,43 @@ class CardinalFst(GraphFst):
         leading_cluster = non_zero_digit_cluster | pynutil.insert("001")
 
         thousands = (
-            ((leading_cluster + delete_space + pynini.cross("tausend", ".")) | pynutil.insert("000."))
+            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["tausend"], ".")) | pynutil.insert("000."))
             + delete_space
             + digit_cluster
         )
-
-        million = pynini.accep("million") | pynini.accep("millionen")
+        
         millions = (
-            ((leading_cluster + delete_space + pynini.cross(million, ".")) | pynutil.insert("000."))
+            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["million"], ".")) | pynutil.insert("000."))
             + delete_space
             + thousands
         )
-
-        billion = pynini.accep("milliarde") | pynini.accep("milliarden")
+        
         billions = (
-            ((leading_cluster + delete_space + pynini.cross(billion, ".")) | pynutil.insert("000."))
+            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["milliarde"], ".")) | pynutil.insert("000."))
             + delete_space
             + millions
         )
-
-        trillion = pynini.accep("billion") | pynini.accep("billionen")
+        
         trillions = (
-            ((leading_cluster + delete_space + pynini.cross(trillion, ".")) | pynutil.insert("000."))
+            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["billion"], ".")) | pynutil.insert("000."))
             + delete_space
             + billions
         )
-
-        quadrillion = pynini.accep("billiarde") | pynini.accep("billiarden")
+        
         quadrillions = (
-            ((leading_cluster + delete_space + pynini.cross(quadrillion, ".")) | pynutil.insert("000."))
+            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["billiarde"], ".")) | pynutil.insert("000."))
             + delete_space
             + trillions
         )
-
-        quintillion = pynini.accep("trillion") | pynini.accep("trillionen")
+        
         quintillions = (
-            ((leading_cluster + delete_space + pynini.cross(quintillion, ".")) | pynutil.insert("000."))
+            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["trillion"], ".")) | pynutil.insert("000."))
             + delete_space
             + quadrillions
         )
-
-        sextillion = pynini.accep("trilliarde") | pynini.accep("trilliarden")
+        
         sextillions = (
-            ((leading_cluster + delete_space + pynini.cross(sextillion, ".")) | pynutil.insert("000."))
+            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["trilliarde"], ".")) | pynutil.insert("000."))
             + delete_space
             + quintillions
         )
@@ -204,10 +211,7 @@ class CardinalFst(GraphFst):
         graph = accept_denormalized_first_dozen | transduce_without_first_dozen
         self.graph = graph.optimize()
 
-        magnitude_word = pynini.union(
-            "hundert", "tausend", million, billion, trillion, quadrillion, quintillion, sextillion
-        )
-        ends_in_magnitude = pynini.compose(NEMO_SIGMA + magnitude_word, self.graph_no_exception)
+        ends_in_magnitude = pynini.compose(NEMO_SIGMA + self.magnitude_words, self.graph_no_exception)
         graph_magnitude_und = (
             ends_in_magnitude
             + delete_space
