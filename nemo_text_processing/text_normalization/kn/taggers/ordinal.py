@@ -36,14 +36,14 @@ class OrdinalFst(GraphFst):
         exceptions = pynini.string_file(get_abs_path("data/ordinals/exceptions.tsv"))
         endings = pynini.string_file(get_abs_path("data/ordinals/ending.tsv"))
         kn_suffixes = pynini.string_file(get_abs_path("data/ordinals/kn_suffixes.tsv"))
-    
-        drop_cardinal_ending = pynini.cdrewrite(pynutil.delete(endings),"","[EOS]", NEMO_SIGMA).optimize()
+
+        drop_cardinal_ending = pynini.cdrewrite(pynutil.delete(endings), "", "[EOS]", NEMO_SIGMA).optimize()
 
         kn_ordinal_graph = cardinal.final_graph @ drop_cardinal_ending + kn_suffixes
 
-        exception_inputs = pynini.project(exceptions,"input").optimize()
-        ordinal_input = pynini.project(kn_ordinal_graph,"input").optimize()
-        ordinal_inputs = pynini.difference(ordinal_input,exception_inputs).optimize()
+        exception_inputs = pynini.project(exceptions, "input").optimize()
+        ordinal_input = pynini.project(kn_ordinal_graph, "input").optimize()
+        ordinal_inputs = pynini.difference(ordinal_input, exception_inputs).optimize()
 
         ordinal_graph = (ordinal_inputs @ kn_ordinal_graph).optimize()
 
