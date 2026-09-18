@@ -2,3 +2,16 @@
 1- 2 = 5~one minus two equals five
 y=x +1~y equals x plus one
 x +1 = y~x plus one equals y
+1−2=3~one minus two equals three
+1∕2=3~one divided by two equals three
+1∗2=3~one times two equals three
+1∙2=3~one times two equals three
+1⋅2=3~one times two equals three
+1±2=3~one plus or minus two equals three
+1≤2=3~one less than or equal to two equals three
+1≥2=3~one greater than or equal to two equals three
+1≦2=3~one less than or equal to two equals three
+1≧2=3~one greater than or equal to two equals three
+1≠2=3~one not equal to two equals three
+1⊆2=3~one subset of or equal to two equals three
+1⋈2=3~one natural join two equals three

@@ -1,5 +1,9 @@
 $2~two dollars
 $2.00~two dollars
+₹2~two indian rupees
+₦2~two nigerian nairas
+₺2~two turkish liras
+₿2~two bitcoins
 ₩460 billion~four hundred sixty billion won
 ¥30 billion~thirty billion yen
 ¥30 b~thirty billion yen
