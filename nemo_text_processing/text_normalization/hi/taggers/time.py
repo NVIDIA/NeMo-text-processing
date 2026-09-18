@@ -21,6 +21,9 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
     HI_PAUNE,
     HI_SADHE,
     HI_SAVVA,
+    MIN_NEG_WEIGHT,
+    NEMO_DIGIT,
+    NEMO_HI_DIGIT,
     NEMO_SPACE,
     GraphFst,
     insert_space,
@@ -55,25 +58,33 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify")
 
         delete_colon = pynutil.delete(":")
-        cardinal_graph = cardinal.digit | cardinal.teens_and_ties
+        delete_leading_zero = pynini.closure(pynutil.delete("0") | pynutil.delete("०"), 0, 1)
+        cardinal_graph = delete_leading_zero + (cardinal.digit | cardinal.teens_and_ties)
 
-        self.hours = pynutil.insert("hours: \"") + hours_graph + pynutil.insert("\" ")
+        self.hours = pynutil.insert("hours: \"") + delete_leading_zero + hours_graph + pynutil.insert("\" ")
         self.minutes = pynutil.insert("minutes: \"") + minutes_graph + pynutil.insert("\" ")
         self.seconds = pynutil.insert("seconds: \"") + seconds_graph + pynutil.insert("\" ")
 
-        # hour minute seconds
+        # hour minute seconds (allows 00 minutes and 00 seconds)
         graph_hms = (
             self.hours + delete_colon + insert_space + self.minutes + delete_colon + insert_space + self.seconds
         )
 
+        # Restrict graph_hm from accepting 00 minutes so H:00 falls back to graph_h
+        exclude_double_zero = pynini.union("00", "००").optimize()
+        minutes_no_zero_graph = (
+            pynini.difference(pynini.project(minutes_graph, "input"), exclude_double_zero) @ minutes_graph
+        )
+        hm_minutes_restricted = pynutil.insert("minutes: \"") + minutes_no_zero_graph + pynutil.insert("\" ")
+
         # hour minute
-        graph_hm = self.hours + delete_colon + insert_space + self.minutes
+        graph_hm = self.hours + delete_colon + insert_space + hm_minutes_restricted
 
         # hour
         graph_h = self.hours + delete_colon + pynutil.delete(HI_DOUBLE_ZERO)
 
         # Support all combinations of Devanagari and Arabic digits for dedh/dhai patterns
-        dedh_dhai_graph = pynini.string_map(
+        dedh_dhai_graph = delete_leading_zero + pynini.string_map(
             [
                 ("१:३०", HI_DEDH),
                 ("१:30", HI_DEDH),
@@ -89,10 +100,18 @@ class TimeFst(GraphFst):
         savva_numbers = cardinal_graph + pynini.cross(HI_TIME_FIFTEEN, "")
         savva_graph = pynutil.insert(HI_SAVVA) + pynutil.insert(NEMO_SPACE) + savva_numbers
 
-        sadhe_numbers = cardinal_graph + pynini.cross(HI_TIME_THIRTY, "")
+        # Restrict 'sadhe' from accepting 1 or 2 so it doesn't conflict with dedh/dhai
+        exclude_tsv = pynini.string_file(get_abs_path("data/time/exclude_dedh_dhai.tsv"))
+        exclude_dedh_dhai = pynini.project(exclude_tsv, "input").optimize()
+
+        # Project cardinal_graph to an acceptor, subtract exceptions, then compose (@) back to the transducer
+        valid_sadhe_inputs = pynini.difference(pynini.project(cardinal_graph, "input"), exclude_dedh_dhai)
+        sadhe_cardinal = valid_sadhe_inputs @ cardinal_graph
+
+        sadhe_numbers = sadhe_cardinal + pynini.cross(HI_TIME_THIRTY, "")
         sadhe_graph = pynutil.insert(HI_SADHE) + pynutil.insert(NEMO_SPACE) + sadhe_numbers
 
-        paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
+        paune = delete_leading_zero + pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
         paune_numbers = paune + pynini.cross(HI_TIME_FORTYFIVE, "")
         paune_graph = pynutil.insert(HI_PAUNE) + pynutil.insert(NEMO_SPACE) + paune_numbers
 
@@ -124,15 +143,30 @@ class TimeFst(GraphFst):
             + pynutil.insert(NEMO_SPACE)
         )
 
-        final_graph = (
+        arabic_1_2 = pynini.closure(NEMO_DIGIT, 1, 2)
+        arabic_2 = pynini.closure(NEMO_DIGIT, 2, 2)
+        arabic_valid_time = (
+            arabic_1_2 + pynini.accep(":") + arabic_2 + pynini.closure(pynini.accep(":") + arabic_2, 0, 1)
+        )
+
+        deva_1_2 = pynini.closure(NEMO_HI_DIGIT, 1, 2)
+        deva_2 = pynini.closure(NEMO_HI_DIGIT, 2, 2)
+        deva_valid_time = deva_1_2 + pynini.accep(":") + deva_2 + pynini.closure(pynini.accep(":") + deva_2, 0, 1)
+
+        valid_time_pattern = pynini.union(arabic_valid_time, deva_valid_time).optimize()
+
+        # 2. Give special patterns a minimal negative weight so they safely beat the fallback graph_hm
+        unfiltered_graph = (
             graph_hms
             | pynutil.add_weight(graph_hm, 0.3)
             | pynutil.add_weight(graph_h, 0.3)
-            | pynutil.add_weight(graph_dedh_dhai, 0.1)
-            | pynutil.add_weight(graph_savva, 0.2)
-            | pynutil.add_weight(graph_sadhe, 0.2)
-            | pynutil.add_weight(graph_paune, 0.1)
+            | pynutil.add_weight(graph_dedh_dhai, MIN_NEG_WEIGHT)
+            | pynutil.add_weight(graph_savva, MIN_NEG_WEIGHT)
+            | pynutil.add_weight(graph_sadhe, MIN_NEG_WEIGHT)
+            | pynutil.add_weight(graph_paune, MIN_NEG_WEIGHT)
         )
+
+        final_graph = pynini.compose(valid_time_pattern, unfiltered_graph)
 
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
