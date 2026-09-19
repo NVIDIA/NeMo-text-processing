@@ -28,9 +28,9 @@ pipeline {
     HE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-24-25-0'
     HY_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-1'
-    JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
-    KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-25-6'
-    KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-29-26-1'
+    JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-17-26-0'
+    KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-15-26-0'
+    HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-15-26-0'
     DEFAULT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
   }
   stages {
@@ -333,7 +333,7 @@ pipeline {
         }
       }
     }
-    stage('L0: Create SE TN/ITN Grammars') {
+    stage('L0: Create SE TN Grammars') {
       when {
         anyOf {
           branch 'main'
@@ -351,7 +351,7 @@ pipeline {
         }
       }
     }
-    stage('L0: Create JA ITN Grammars') {
+    stage('L0: Create JA TN/ITN Grammars') {
       when {
         anyOf {
           branch 'main' 
@@ -365,6 +365,11 @@ pipeline {
         stage('L0: JA ITN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=ja --text="100" --cache_dir ${JA_TN_CACHE}'
+          }
+        }
+        stage('L0: JA TN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=ja --text="100" --cache_dir ${JA_TN_CACHE}'
           }
         }
       }
