@@ -81,6 +81,7 @@ test = [
 [dependency-groups]
 dev = [
   "nemo_text_processing[all]",
+  "prek>=0.5.3",
 ]
 
 [build-system]
