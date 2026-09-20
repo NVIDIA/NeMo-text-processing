@@ -52,11 +52,11 @@ classifiers = [
 ]
 dependencies = [
   "cdifflib>=1.2.9",
-  "editdistance>=0.8.1",
   "inflect>=7.5.0",
   "joblib>=1.6.0",
   "pandas>=3.0.6",
   "pynini>=2.1.7",
+  "rapidfuzz>=3.14.6",
   "regex>=2026.9.10",
   "sacremoses>=0.2.0",
   "tqdm>=4.70.1",
