@@ -14,6 +14,7 @@
 
 import pynini
 from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.ko.graph_utils import GraphFst
 
 

@@ -27,7 +27,7 @@ from nemo_text_processing.text_normalization.data_loader_utils import (
 """
 This file is for evaluation purposes.
 filter_loaded_data() cleans data (list of instances) for inverse text normalization. Filters and cleaners can be specified for each semiotic class individually.
-For example, normalized text should only include characters and whitespace characters but no punctuation. 
+For example, normalized text should only include characters and whitespace characters but no punctuation.
             Cardinal unnormalized instances should contain at least one integer and all other characters are removed.
 """
 
