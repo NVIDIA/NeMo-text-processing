@@ -30,7 +30,7 @@ RUN conda install -c conda-forge thrax=1.3.4 -y
 RUN git clone https://github.com/google/re2 
 RUN cd re2 && git checkout tags/2022-02-01 && make && make install
 RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
-RUN tar xzvf protobuf-2.5.0.tar.gz
+RUN tar --no-same-owner -xzvf protobuf-2.5.0.tar.gz
 RUN cd protobuf-2.5.0 && ./configure && make && make install && ldconfig
 RUN printf  "# Conda lib path \n/opt/conda/lib" > /etc/ld.so.conf.d/conda.so.conf
 ENV CPPFLAGS="-I/opt/conda/include"
