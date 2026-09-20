@@ -69,15 +69,26 @@ python -m pip install git+https://github.com/NVIDIA/NeMo-text-processing.git@{BR
 
 ### From source
 
-Use this installation mode if you are contributing to NeMo-text-processing.
+Use this installation mode if you are contributing to NeMo-text-processing. We use [uv](https://docs.astral.sh/uv/) for development environments.
 
-```
+```bash
 git clone https://github.com/NVIDIA/NeMo-text-processing
 cd NeMo-text-processing
-./reinstall.sh
+uv sync
 ```
 
-**_NOTE:_** If you only want the toolkit without additional conda-based dependencies, you may replace ``reinstall.sh`` with ``pip install -e .`` with the NeMo-text-processing root directory as your current working director.
+`uv sync` creates `.venv`, installs the project in editable mode, and adds the development tooling. Run commands with `uv run`:
+
+```bash
+uv run pytest --cpu
+uv run python nemo_text_processing/text_normalization/normalize.py --text="1"
+```
+
+To build distributable wheels or source distributions:
+
+```bash
+uv build
+```
 
 
 Contributing

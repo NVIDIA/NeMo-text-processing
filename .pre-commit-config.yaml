@@ -27,7 +27,6 @@ repos:
       - id: check-yaml
       - id: check-case-conflict
       - id: detect-private-key
-      - id: requirements-txt-fixer
 
   - repo: https://github.com/PyCQA/flake8
     rev: 7.3.0
@@ -50,4 +49,4 @@ repos:
       - id: black
         name: Format code
         args: [--skip-string-normalization, --line-length=119]
-        additional_dependencies: ['click>=8.0.2']
+        additional_dependencies: ['click>=8.5.0']
