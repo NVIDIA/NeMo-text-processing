@@ -23,7 +23,7 @@ from nemo_text_processing.text_normalization.normalize_with_audio import (
     NormalizerWithAudio,
 )
 
-from tests.nemo_text_processing.utils import (
+from ..utils import (
     CACHE_DIR,
     RUN_AUDIO_BASED_TESTS,
     parse_test_case_file,
@@ -32,15 +32,15 @@ from tests.nemo_text_processing.utils import (
 
 class TestDecimal:
     inverse_normalizer = InverseNormalizer(
-        lang="de", cache_dir=CACHE_DIR, overwrite_cache=False
+        lang='de', cache_dir=CACHE_DIR, overwrite_cache=False
     )
 
     @parameterized.expand(
         parse_test_case_file(
-            "de/data_inverse_text_normalization/test_cases_decimal.txt"
+            'de/data_inverse_text_normalization/test_cases_decimal.txt'
         )
     )
-    @pytest.mark.run_only_on("CPU")
+    @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
