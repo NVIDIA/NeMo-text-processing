@@ -106,6 +106,7 @@ def parse_args():
             'hi_en',
             'hy',
             'mr',
+            'te',
             'ja',
             'rw',
             'ko',
@@ -303,6 +304,13 @@ if __name__ == '__main__':
             ClassifyFst as ITNClassifyFst,
         )
         from nemo_text_processing.inverse_text_normalization.mr.verbalizers.verbalize import (
+            VerbalizeFst as ITNVerbalizeFst,
+        )
+    elif args.language == 'te':
+        from nemo_text_processing.inverse_text_normalization.te.taggers.tokenize_and_classify import (
+            ClassifyFst as ITNClassifyFst,
+        )
+        from nemo_text_processing.inverse_text_normalization.te.verbalizers.verbalize import (
             VerbalizeFst as ITNVerbalizeFst,
         )
     elif args.language == 'he':

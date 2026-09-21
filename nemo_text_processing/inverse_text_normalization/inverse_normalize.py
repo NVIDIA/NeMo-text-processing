@@ -121,6 +121,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.hi.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'te':  # Telugu
+            from nemo_text_processing.inverse_text_normalization.te.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.te.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
         elif lang == 'hi_en':  # Hindi-English code-switch
             from nemo_text_processing.inverse_text_normalization.hi_en.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.hi_en.verbalizers.verbalize_final import (
@@ -207,6 +212,7 @@ def parse_args():
             'zh',
             'he',
             'hi',
+            'te',
             'hy',
             'mr',
             'ja',

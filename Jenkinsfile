@@ -27,6 +27,7 @@ pipeline {
     HE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-24-25-0'
     HY_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-0'
     MR_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/03-12-24-1'
+    TE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/07-22-26-0'
     JA_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-17-24-1'
     HI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-26-5'
     KO_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-04-25-6'
@@ -297,6 +298,11 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=mr --text="शून्य " --cache_dir ${MR_TN_CACHE}'
           }
         }
+        stage('L0: TE ITN grammars') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/inverse_text_normalization/inverse_normalize.py --lang=te --text="సున్నా " --cache_dir ${TE_TN_CACHE}'
+          }
+        }
         stage('L0: HY TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=hy --text="6" --cache_dir ${HY_TN_CACHE}'
@@ -461,6 +467,11 @@ pipeline {
         stage('L1: Run all MR ITN tests (restore grammars from cache)') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/mr/ -m "not pleasefixme" --cpu --tn_cache_dir ${MR_TN_CACHE}'
+          }
+        }
+        stage('L1: Run all TE ITN tests (restore grammars from cache)') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/te/ -m "not pleasefixme" --cpu --tn_cache_dir ${TE_TN_CACHE}'
           }
         }
         stage('L1: Run all HY TN/ITN tests (restore grammars from cache)') {
