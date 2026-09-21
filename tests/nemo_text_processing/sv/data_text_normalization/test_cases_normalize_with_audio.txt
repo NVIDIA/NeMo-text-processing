@@ -20,6 +20,7 @@ den tredje paragrafen
 denna tredje paragraf
 ~9 kap.
 kapitel nio
+nionde kapitel
 nionde kapitlet
 det nionde kapitlet
 detta nionde kapitel
@@ -37,6 +38,7 @@ tredje klassen
 den tredje klassen
 denna tredje klass
 ~3:e kl.
+tredje klass
 tredje klassen
 den tredje klassen
 denna tredje klass

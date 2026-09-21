@@ -213,6 +213,7 @@ class OrdinalFst(GraphFst):
                     unit = pynutil.delete(written) + optional_dot
                     reference = reference_number + delete_space + unit
                     reference_graph |= reference + pynutil.insert(f" {definite}")
+                    reference_graph |= reference + pynutil.insert(f" {indefinite}")
                     reference_graph |= pynutil.insert(f"{article} ") + reference + pynutil.insert(f" {definite}")
                     reference_graph |= (
                         pynutil.insert(f"{demonstrative} ") + reference + pynutil.insert(f" {indefinite}")
