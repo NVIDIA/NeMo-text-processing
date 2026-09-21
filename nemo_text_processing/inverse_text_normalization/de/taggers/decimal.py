@@ -15,12 +15,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
-from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
-    GraphFst,
-    delete_space,    
-)
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.de.taggers.cardinal import CARDINAL_SCALES
+from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
 
 
 def get_quantity(decimal: 'pynini.FstLike', cardinal: GraphFst, deterministic: bool = True) -> 'pynini.FstLike':
@@ -43,9 +40,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal: GraphFst, deterministic: b
 
     # after a bare integer "hundert" and "tausend" belong to the cardinal grammar: zwei hundert -> 200
     cardinal_words = pynini.union(*[cardinal.scale_forms[scale] for scale in CARDINAL_SCALES]).optimize()
-    big_quantity = pynini.compose(
-        pynini.difference(cardinal.magnitude_words, cardinal_words).optimize(), quantity
-    )
+    big_quantity = pynini.compose(pynini.difference(cardinal.magnitude_words, cardinal_words).optimize(), quantity)
 
     res = (
         pynutil.insert('integer_part: "')
@@ -58,6 +53,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal: GraphFst, deterministic: b
     )
     res |= decimal + pynutil.insert(' quantity: "') + delete_space + quantity + pynutil.insert('"')
     return res
+
 
 class DecimalFst(GraphFst):
     """
@@ -76,7 +72,7 @@ class DecimalFst(GraphFst):
     shows up after a decimal: dreiviertel tausend -> 0,75 Tsd. but zwei tausend -> 2.000
     For deterministic=False the full word forms of tausend, million and milliarde are generated as well:
         e.g. millionen -> Mio. | Millionen
-    
+
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -89,28 +85,17 @@ class DecimalFst(GraphFst):
         delete_comma = pynutil.delete("komma")
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
         graph_digit |= pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        
-        graph_integer = (
-            pynutil.insert('integer_part: "')
-            + graph_cardinals
-            + pynutil.insert('" ')
-            + delete_space
-        )
+
+        graph_integer = pynutil.insert('integer_part: "') + graph_cardinals + pynutil.insert('" ') + delete_space
 
         # Handles cases where the integer may be missing before the comma and inserts a '0' in its place
-        graph_integer_or_zero = graph_integer | pynutil.insert(
-            'integer_part: "0" ', weight=-0.001
-        )
+        graph_integer_or_zero = graph_integer | pynutil.insert('integer_part: "0" ', weight=-0.001)
 
         graph_clean_digit = delete_space + graph_digit
 
         # Digits post-comma are pronounced individually
         graph_string_of_digits = pynini.closure(graph_clean_digit, 1)
-        graph_fractional = (
-            pynutil.insert('fractional_part: "')
-            + graph_string_of_digits
-            + pynutil.insert('"')
-        )
+        graph_fractional = pynutil.insert('fractional_part: "') + graph_string_of_digits + pynutil.insert('"')
 
         graph_decimal_no_sign = graph_integer_or_zero + delete_comma + graph_fractional
 
@@ -122,9 +107,7 @@ class DecimalFst(GraphFst):
 
         # Coverage for verbalized 1,5 (andterthald, einanderthalb)
         one_and_a_half = pynini.accep("anderthalb") | pynini.accep("einanderthalb")
-        graph_halves = pynini.cross(
-            one_and_a_half, 'integer_part: "1" fractional_part: "5"'
-        )
+        graph_halves = pynini.cross(one_and_a_half, 'integer_part: "1" fractional_part: "5"')
 
         graph_decimal_no_sign |= graph_halves
 
@@ -142,7 +125,7 @@ class DecimalFst(GraphFst):
         self.final_graph_wo_negative = (
             graph_decimal_no_sign | get_quantity(graph_decimal_no_sign, cardinal, deterministic=deterministic)
         ).optimize()
-        
+
         final_graph = cardinal.optional_minus_graph + self.final_graph_wo_negative
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

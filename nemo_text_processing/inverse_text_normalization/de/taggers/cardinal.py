@@ -31,6 +31,7 @@ MAGNITUDE_SCALES = ("hundert", "tausend", "million", "milliarde", "billion", "bi
 # after a bare integer these stay with the cardinal grammar: zwei tausend -> 2.000
 CARDINAL_SCALES = ("hundert", "tausend")
 
+
 def get_tens_digit(digit_path: str, tens_path: str, conjunction_path: str) -> 'pynini.FstLike':
     """
     getting all denormalizations for numbers between 21 - 99. German says the ones digit
@@ -133,43 +134,64 @@ class CardinalFst(GraphFst):
         leading_cluster = non_zero_digit_cluster | pynutil.insert("001")
 
         thousands = (
-            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["tausend"], ".")) | pynutil.insert("000."))
+            (
+                (leading_cluster + delete_space + pynini.cross(self.scale_forms["tausend"], "."))
+                | pynutil.insert("000.")
+            )
             + delete_space
             + digit_cluster
         )
-        
+
         millions = (
-            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["million"], ".")) | pynutil.insert("000."))
+            (
+                (leading_cluster + delete_space + pynini.cross(self.scale_forms["million"], "."))
+                | pynutil.insert("000.")
+            )
             + delete_space
             + thousands
         )
-        
+
         billions = (
-            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["milliarde"], ".")) | pynutil.insert("000."))
+            (
+                (leading_cluster + delete_space + pynini.cross(self.scale_forms["milliarde"], "."))
+                | pynutil.insert("000.")
+            )
             + delete_space
             + millions
         )
-        
+
         trillions = (
-            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["billion"], ".")) | pynutil.insert("000."))
+            (
+                (leading_cluster + delete_space + pynini.cross(self.scale_forms["billion"], "."))
+                | pynutil.insert("000.")
+            )
             + delete_space
             + billions
         )
-        
+
         quadrillions = (
-            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["billiarde"], ".")) | pynutil.insert("000."))
+            (
+                (leading_cluster + delete_space + pynini.cross(self.scale_forms["billiarde"], "."))
+                | pynutil.insert("000.")
+            )
             + delete_space
             + trillions
         )
-        
+
         quintillions = (
-            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["trillion"], ".")) | pynutil.insert("000."))
+            (
+                (leading_cluster + delete_space + pynini.cross(self.scale_forms["trillion"], "."))
+                | pynutil.insert("000.")
+            )
             + delete_space
             + quadrillions
         )
-        
+
         sextillions = (
-            ((leading_cluster + delete_space + pynini.cross(self.scale_forms["trilliarde"], ".")) | pynutil.insert("000."))
+            (
+                (leading_cluster + delete_space + pynini.cross(self.scale_forms["trilliarde"], "."))
+                | pynutil.insert("000.")
+            )
             + delete_space
             + quintillions
         )
