@@ -47,6 +47,9 @@
 2 kton~två kiloton
 2 mbar~två millibar
 2 ml/l~två milliliter per liter
+1 mm³~en kubikmillimeter
 2 mm³~två kubikmillimeter
+1 mm3~en kubikmillimeter
+2 mm3~två kubikmillimeter
 2 nr/år~två nummer per år
 2 tkr/månad~två tusen kronor per månad
