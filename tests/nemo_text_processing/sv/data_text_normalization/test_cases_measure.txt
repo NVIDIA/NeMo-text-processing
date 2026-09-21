@@ -31,7 +31,10 @@
 1 mmHg~en millimeter kvicksilver
 100 m.ö.h~hundra meter över havet
 1 kvm~en kvadratmeter
-2 dBA~två decibel
+1 dBA~en a-vägd decibel
+2 dBA~två a-vägda decibel
+2 dba~två a-vägda decibel
+2 db~två decibel
 2 inv/km2~två invånare per kvadratkilometer
 2 km:s~två kilometers
 2 kr/kg~två kronor per kilo

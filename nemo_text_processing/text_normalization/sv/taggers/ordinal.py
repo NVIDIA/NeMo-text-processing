@@ -202,6 +202,7 @@ class OrdinalFst(GraphFst):
         self.bare_ordinals = cleaned_graph
         reference_graph = pynini.Fst()
         if not deterministic:
+            reference_number = (cleaned_graph | self.suffixed_to_words).optimize()
             reference_groups = [
                 ("ordinal_common.tsv", "den", "denna"),
                 ("ordinal_neuter.tsv", "det", "detta"),
@@ -210,7 +211,7 @@ class OrdinalFst(GraphFst):
                 for written, definite, indefinite in load_labels(get_abs_path(f"data/reference/{filename}")):
                     optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
                     unit = pynutil.delete(written) + optional_dot
-                    reference = cleaned_graph + delete_space + unit
+                    reference = reference_number + delete_space + unit
                     reference_graph |= reference + pynutil.insert(f" {definite}")
                     reference_graph |= pynutil.insert(f"{article} ") + reference + pynutil.insert(f" {definite}")
                     reference_graph |= (

@@ -21,7 +21,8 @@ cu mi	kubikmil
 cwt	centner
 da	atommassenhet
 db	decibel
-dba	decibel
+dba	a-vägd decibel
+dBA	a-vägd decibel
 dl	deciliter
 dm2	kvadratdecimeter
 dm²	kvadratdecimeter
