@@ -33,9 +33,7 @@ from nemo_text_processing.text_normalization.pt.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.pt.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.pt.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.pt.taggers.ordinal import OrdinalFst
-from nemo_text_processing.text_normalization.pt.taggers.punctuation import (
-    PunctuationFst,
-)
+from nemo_text_processing.text_normalization.pt.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.pt.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.pt.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.pt.taggers.whitelist import WhiteListFst
