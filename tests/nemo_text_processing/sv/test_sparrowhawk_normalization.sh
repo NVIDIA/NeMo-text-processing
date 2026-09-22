@@ -15,7 +15,7 @@ runtest () {
 
     # trim white space
     spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/ / /g' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
     # input expected actual
     assertEquals "$written" "$spoken" "$denorm_pred"
@@ -83,4 +83,6 @@ testTNWord() {
 }
 
 # Load shUnit2
+# Clear directory arguments before shUnit2 interprets them as test names.
+set --
 . $PROJECT_DIR/../shunit2/shunit2
