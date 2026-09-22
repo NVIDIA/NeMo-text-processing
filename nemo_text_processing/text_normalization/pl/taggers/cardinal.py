@@ -202,9 +202,8 @@ class CardinalFst(GraphFst):
                 | pynutil.delete("0") + (digit | isolated_one)
             ).optimize()
             # Polish permits genitive-shaped alternatives for instrumental
-            # numerals (for example, "dwudziestu dwóch" alongside
-            # "dwudziestoma dwoma"). Keep these alternatives deterministic,
-            # matching the original Polish grammar's behavior.
+            # numerals (pięcioma or pięciu, trzydziestoma or trzydziestu)
+            # https://aleklasa.pl/gimnazjum/gramatyka/c182-fleksja/odmiana-liczebnikow
             if case == "ins" and deterministic:
                 instrumental_alternatives = (
                     pynutil.delete("0") + self._digit_for_slot(digit_graphs, "pl_gen")
