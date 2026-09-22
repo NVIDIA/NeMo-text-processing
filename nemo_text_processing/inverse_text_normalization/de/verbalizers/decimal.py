@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
 class DecimalFst(GraphFst):
     """
     Finite state transducer for verbalizing decimal, e.g.
-        decimal { negative: "-" integer_part: "12"  fractional_part: "5006" quantity: "millionen" } -> -12,5006 Mio.
+        decimal { negative: "-" integer_part: "12"  fractional_part: "5006" quantity: "Millionen" } -> -12,5006 Millionen
     """
 
     def __init__(self):

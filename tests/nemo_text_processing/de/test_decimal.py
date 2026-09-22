@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ class TestDecimal:
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
         assert pred == expected
 
-    """    
     normalizer = Normalizer(input_case='cased', lang='de', cache_dir=CACHE_DIR, overwrite_cache=False)
 
     normalizer_with_audio = (
@@ -53,4 +52,3 @@ class TestDecimal:
                 test_input, n_tagged=1000, punct_post_process=False
             )
             assert expected in pred_non_deterministic
-    """

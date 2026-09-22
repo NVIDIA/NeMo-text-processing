@@ -1,17 +1,17 @@
-null komma zwei millionen~0,2 Mio.
-eins komma zwei millionen~1,2 Mio.
+null komma zwei millionen~0,2 Millionen
+eins komma zwei millionen~1,2 Millionen
 minus sechzig komma zwei vier null null~-60,2400
 acht hundert achtzehn komma drei null drei~818,303
 achthundertachtzehn komma drei null drei~818,303
-anderthalb milliarden~1,5 Mrd.
+anderthalb milliarden~1,5 Milliarden
 einanderthalb billionen~1,5 Billionen
-zweieinhalb millionen~2,5 Mio.
-dreiviertel tausend~0,75 Tsd.
+zweieinhalb millionen~2,5 Millionen
+dreiviertel tausend~0,75 tausend
 vierundzwanzigtausendeinhunderteins komma fünf acht neun~24.101,589
 drei komma eins vier eins fünf neun~3,14159
 sechshunderttausendzwölfeinhalb~600.012,5
-eine million~1 Mio.
-zehn millionen~10 Mio.
+eine million~1 Million
+zehn millionen~10 Millionen
 komma fünf~0,5
 einhalb~0,5
 zwei einhalb~2,5
@@ -22,15 +22,16 @@ drei komma zwo~3,2
 null komma null fünf~0,05
 minus einhalb~-0,5
 minus anderthalb~-1,5
-minus drei komma fünf millionen~-3,5 Mio.
-neun hundert neun und neunzig millionen~999 Mio.
+minus drei komma fünf millionen~-3,5 Millionen
+minus zehn millionen~-10 Millionen
+neun hundert neun und neunzig millionen~999 Millionen
 eine billion~1 Billion
 eins komma fünf billiarden~1,5 Billiarden
 drei komma fünf trillionen~3,5 Trillionen
 vier komma fünf trilliarden~4,5 Trilliarden
 zwei tausend~2.000
 zwei hundert~200
-eine milliarde~1 Mrd.
+eine milliarde~1 Milliarde
 eine billiarde~1 Billiarde
 eine trillion~1 Trillion
 eine trilliarde~1 Trilliarde

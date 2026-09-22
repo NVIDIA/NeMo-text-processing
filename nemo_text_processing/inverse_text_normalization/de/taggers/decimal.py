@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.de.graph_utils import GraphFst, delete_space
-from nemo_text_processing.inverse_text_normalization.de.taggers.cardinal import CARDINAL_SCALES
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
 
 
 def get_quantity(decimal: 'pynini.FstLike', cardinal: GraphFst, deterministic: bool = True) -> 'pynini.FstLike':
     """
     Returns FST that transforms either a cardinal or a decimal followed by a quantity into a numeral
-        e.g. zehn millionen -> integer_part: "10" quantity: "Mio."
-        e.g. zehn komma fünf millionen -> integer_part: "10" fractional_part: "5" quantity: "Mio."
+        e.g. zehn millionen -> integer_part: "10" quantity: "Millionen"
+        e.g. zehn komma fünf millionen -> integer_part: "10" fractional_part: "5" quantity: "Millionen"
 
     Args:
         decimal: decimal FST
@@ -34,13 +33,19 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal: GraphFst, deterministic: b
     """
     quantity = cardinal.magnitude
     if not deterministic:
-        quantity |= pynutil.add_weight(
-            pynini.string_file(get_abs_path("data/numbers/quantity_nondeterministic.tsv")), 0.001
+        # Tsd., Mio. and Mrd. are the only magnitudes German abbreviates, a convention
+        # borrowed from French; anything above Milliarde is always written out
+        quantity |= pynini.string_map(
+            [
+                ("tausend", "Tsd."),
+                ("million", "Mio."),
+                ("millionen", "Mio."),
+                ("milliarde", "Mrd."),
+                ("milliarden", "Mrd."),
+            ]
         )
 
-    # after a bare integer "hundert" and "tausend" belong to the cardinal grammar: zwei hundert -> 200
-    cardinal_words = pynini.union(*[cardinal.scale_forms[scale] for scale in CARDINAL_SCALES]).optimize()
-    big_quantity = pynini.compose(pynini.difference(cardinal.magnitude_words, cardinal_words).optimize(), quantity)
+    big_quantity = pynini.compose(cardinal.big_magnitude_words, quantity)
 
     res = (
         pynutil.insert('integer_part: "')
@@ -62,16 +67,15 @@ class DecimalFst(GraphFst):
     The tagger accepts canonical verbalized decimal input whereby every digit after the comma is pronounced separately:
         e.g. 12,345 -> zwölf komma drei vier fünf
             *12,345 -> zwölf komma drei hundert fünfundvierzig
-    Tausend, million and milliarde are denormalized to their abbreviated forms, hundert and larger magnitudes
-    keep the full word:
-        e.g. tausend -> Tsd.
-             million -> Mio.
-             milliarde -> Mrd.
+    Magnitude words keep their full written form; the noun magnitudes are capitalised, while the
+    numerals "hundert" and "tausend" stay lower case:
+        e.g. million -> Million
              billionen -> Billionen
-    A bare integer followed by "hundert" or "tausend" stays with the cardinal grammar, so the abbreviation only
-    shows up after a decimal: dreiviertel tausend -> 0,75 Tsd. but zwei tausend -> 2.000
-    For deterministic=False the full word forms of tausend, million and milliarde are generated as well:
-        e.g. millionen -> Mio. | Millionen
+             tausend -> tausend
+    A bare integer followed by "hundert" or "tausend" stays with the cardinal grammar, so the quantity field only
+    shows up after a decimal: dreiviertel tausend -> 0,75 tausend but zwei tausend -> 2.000
+    For deterministic=False the abbreviated forms of tausend, million and milliarde are generated as well:
+        e.g. millionen -> Millionen | Mio.
 
     Args:
         cardinal: CardinalFst
