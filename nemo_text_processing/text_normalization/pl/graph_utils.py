@@ -87,3 +87,26 @@ def all_to_graph(graph_dict, default=None, deterministic=False):
             if key != default_key:
                 output_graph |= graph_dict[key]
     return output_graph.optimize()
+
+
+def dict_to_graph(input_dict: dict, deterministic: bool = True) -> dict:
+    """
+    Converts a nested dictionary of forms to a dict of pynini.FSTs.
+    Example input:
+        {'2': {'mi_pl_ins': ['form1', 'form2'], 'mi_sg_nom': 'form3'}}
+    Output:
+        {'2': {'mi_pl_ins': FST, 'mi_sg_nom': FST}}
+    """
+    graph_dict = {}
+    for key, value in input_dict.items():
+        graph_dict[key] = {}
+        for subkey, subvalue in value.items():
+            if isinstance(subvalue, list):
+                graph = pynini.cross(key, subvalue[0])
+                if not deterministic:
+                    for alt in subvalue[1:]:
+                        graph |= pynini.cross(key, alt)
+            else:
+                graph = pynini.cross(key, subvalue)
+            graph_dict[key][subkey] = graph
+    return graph_dict
