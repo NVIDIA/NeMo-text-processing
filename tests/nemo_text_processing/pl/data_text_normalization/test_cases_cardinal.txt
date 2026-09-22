@@ -1,0 +1,20 @@
+0~zero
+1~jeden
+2~dwa
+11~jedenaście
+21~dwadzieścia jeden
+22~dwadzieścia dwa
+105~sto pięć
+999~dziewięćset dziewięćdziesiąt dziewięć
+1000~tysiąc
+2000~dwa tysiące
+5000~pięć tysięcy
+21000~dwadzieścia jeden tysięcy
+1000000~milion
+2000001~dwa miliony jeden
+1832~tysiąc osiemset trzydzieści dwa
+2-ka~dwójka
+2ką~dwójką
+11-ce~jedenastce
+20-ek~dwudziestek
+200-kami~dwusetkami
