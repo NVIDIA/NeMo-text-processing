@@ -40,13 +40,11 @@ class RomanFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="roman", kind="verbalize", deterministic=deterministic)
 
-        roman_to_spoken = pynini.string_file(get_abs_path("data/roman/roman_to_spoken.tsv")).optimize()
-
         key_cardinal = (
             pynutil.delete('key_cardinal: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         ).optimize()
 
-        integer = (pynutil.delete('integer: "') + roman_to_spoken + pynutil.delete('"')).optimize()
+        integer = (pynutil.delete('integer: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')).optimize()
 
         default_ordinal = (
             pynutil.delete('default_ordinal: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
