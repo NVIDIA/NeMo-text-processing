@@ -64,7 +64,45 @@ class RomanFst(GraphFst):
 
         separator = (pynini.accep("-") | pynini.accep(" ")).optimize()
 
-        key_before_numeral = (
+        whitelist_context = pynini.project(
+            pynini.string_file(get_abs_path("data/roman/roman_whitelist_context.tsv")), "input"
+        ).optimize()
+
+        ambiguous_romans = pynini.project(
+            pynini.string_file(get_abs_path("data/roman/roman_ambiguous.tsv")), "input"
+        ).optimize()
+
+        #Split the core roman_to_spoken_fst into Safe and Ambiguous paths
+        safe_roman_inputs = pynini.difference(
+            pynini.project(roman_to_arabic, "input"), ambiguous_romans
+        ).optimize()
+
+        safe_roman_to_spoken_fst = (safe_roman_inputs @ roman_to_spoken_fst).optimize()
+        ambiguous_roman_to_spoken_fst = (ambiguous_romans @ roman_to_spoken_fst).optimize()
+
+        whitelist_word = pynini.project(
+            pynini.string_file(get_abs_path("data/roman/roman_whitelist_context.tsv")), "input"
+        ).optimize()
+
+        ambiguous_romans = pynini.project(
+            pynini.string_file(get_abs_path("data/roman/roman_ambiguous.tsv")), "input"
+        ).optimize()
+
+        #Phrase matcher that allows any Devanagari words before the whitelist word
+        whitelist_phrase = (
+            pynini.closure(devanagari_phrase + separator, 0, 1) + whitelist_word
+        ).optimize()
+
+        #Split the core roman_to_spoken_fst into Safe and Ambiguous paths
+        safe_roman_inputs = pynini.difference(
+            pynini.project(roman_to_arabic, "input"), ambiguous_romans
+        ).optimize()
+
+        safe_roman_to_spoken_fst = (safe_roman_inputs @ roman_to_spoken_fst).optimize()
+        ambiguous_roman_to_spoken_fst = (ambiguous_romans @ roman_to_spoken_fst).optimize()
+
+        #Path A: Safe Romans (Uses general Hindi context)
+        safe_key_before_numeral = (
             pynutil.insert("preserve_order: true ")
             + pynutil.insert('key_cardinal: "')
             + convert_space(devanagari_phrase)
@@ -72,19 +110,44 @@ class RomanFst(GraphFst):
             + pynutil.delete(separator)
             + insert_space
             + pynutil.insert('integer: "')
-            + roman_to_spoken_fst
+            + safe_roman_to_spoken_fst
             + pynutil.insert('"')
         ).optimize()
 
-        numeral_before_key = (
+        safe_numeral_before_key = (
             pynutil.insert("preserve_order: true ")
             + pynutil.insert('integer: "')
-            + roman_to_spoken_fst
+            + safe_roman_to_spoken_fst
             + pynutil.insert('"')
             + pynutil.delete(separator)
             + insert_space
             + pynutil.insert('key_cardinal: "')
             + convert_space(devanagari_phrase)
+            + pynutil.insert('"')
+        ).optimize()
+
+        #Path B: Ambiguous Romans (Strictly requires whitelist phrase)
+        ambiguous_key_before_numeral = (
+            pynutil.insert("preserve_order: true ")
+            + pynutil.insert('key_cardinal: "')
+            + convert_space(whitelist_phrase)
+            + pynutil.insert('"')
+            + pynutil.delete(separator)
+            + insert_space
+            + pynutil.insert('integer: "')
+            + ambiguous_roman_to_spoken_fst
+            + pynutil.insert('"')
+        ).optimize()
+
+        ambiguous_numeral_before_key = (
+            pynutil.insert("preserve_order: true ")
+            + pynutil.insert('integer: "')
+            + ambiguous_roman_to_spoken_fst
+            + pynutil.insert('"')
+            + pynutil.delete(separator)
+            + insert_space
+            + pynutil.insert('key_cardinal: "')
+            + convert_space(whitelist_phrase)
             + pynutil.insert('"')
         ).optimize()
 
@@ -132,6 +195,12 @@ class RomanFst(GraphFst):
             )
         ).optimize()
 
-        graph = pynini.union(key_before_numeral, numeral_before_key, roman_glued_ordinal).optimize()
+        graph = pynini.union(
+            safe_key_before_numeral, 
+            safe_numeral_before_key, 
+            ambiguous_key_before_numeral, 
+            ambiguous_numeral_before_key, 
+            roman_glued_ordinal
+        ).optimize()
 
         self.fst = self.add_tokens(graph).optimize()
