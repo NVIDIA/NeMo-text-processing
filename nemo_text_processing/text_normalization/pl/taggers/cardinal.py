@@ -24,7 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.pl.graph_utils import PL_ALPHA
+from nemo_text_processing.text_normalization.pl.graph_utils import PL_ALPHA, dict_to_graph
 from nemo_text_processing.text_normalization.pl.inflection import load_numeric_nouns
 from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
 
@@ -57,20 +57,6 @@ def get_digit_forms(filepath: str) -> Dict[str, Dict[str, object]]:
         else:
             forms[grammar] = [forms[grammar], form]
     return output
-
-
-def _forms_to_graphs(
-    forms: Dict[str, Dict[str, object]], deterministic: bool
-) -> Dict[str, Dict[str, 'pynini.FstLike']]:
-    graphs = {}
-    for number, slots in forms.items():
-        graphs[number] = {}
-        for slot, values in slots.items():
-            values = values if isinstance(values, list) else [values]
-            if deterministic:
-                values = values[:1]
-            graphs[number][slot] = pynini.union(*(pynini.cross(number, value) for value in values)).optimize()
-    return graphs
 
 
 def _invert_string_file(path: str) -> 'pynini.FstLike':
@@ -129,8 +115,8 @@ class CardinalFst(GraphFst):
 
         digit_forms = get_digit_forms("data/numbers/digit_forms.tsv")
         teen_forms = get_digit_forms("data/numbers/teens_forms.tsv")
-        digit_graphs = _forms_to_graphs(digit_forms, deterministic)
-        teen_graphs = _forms_to_graphs(teen_forms, deterministic)
+        digit_graphs = dict_to_graph(digit_forms, deterministic)
+        teen_graphs = dict_to_graph(teen_forms, deterministic)
 
         jeden = adjective_inflection("jeden", compound="jedno")
         from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
@@ -162,10 +148,15 @@ class CardinalFst(GraphFst):
         for forms in teen_forms.values():
             ordinary_slots.update(forms)
 
-        tens_nom = _invert_string_file("data/numbers/tens.tsv")
-        tens_gen = _invert_string_file("data/numbers/tens_gen.tsv")
-        tens_ins = _invert_string_file("data/numbers/tens_ins.tsv")
-        tens_compound = _invert_string_file("data/numbers/tens_prefix.tsv")
+        tens_graphs = dict_to_graph(get_digit_forms("data/numbers/tens_forms.tsv"), deterministic)
+
+        def tens_for_slot(slot):
+            return pynini.union(*(forms[slot] for forms in tens_graphs.values())).optimize()
+
+        tens_nom = tens_for_slot("mi_pl_nom")
+        tens_gen = tens_for_slot("pl_gen")
+        tens_ins = tens_for_slot("pl_ins")
+        tens_compound = tens_for_slot("compound")
         hundreds_nom = _invert_string_file("data/numbers/hundreds.tsv")
         hundreds_gen = _invert_string_file("data/numbers/hundreds_gen.tsv")
         hundreds_ins = _invert_string_file("data/numbers/hundreds_ins.tsv")
@@ -210,15 +201,18 @@ class CardinalFst(GraphFst):
                 | tens + component_join + (compound_digit | compound_one)
                 | pynutil.delete("0") + (digit | isolated_one)
             ).optimize()
-            # Instrumental compounds may leave the preceding tens in the
-            # genitive-shaped form while the final numeral is instrumental.
-            if case == "ins" and not deterministic:
+            # Polish permits genitive-shaped alternatives for instrumental
+            # numerals (for example, "dwudziestu dwóch" alongside
+            # "dwudziestoma dwoma"). Keep these alternatives deterministic,
+            # matching the original Polish grammar's behavior.
+            if case == "ins" and deterministic:
                 instrumental_alternatives = (
-                    tens_gen + component_join + (compound_digit | compound_one)
-                    | pynutil.delete("0") + self._digit_for_slot(digit_graphs, "pl_gen")
+                    pynutil.delete("0") + self._digit_for_slot(digit_graphs, "pl_gen")
                     | self._teen_for_slot(teen_graphs, "pl_gen")
+                    | tens_gen + join + self._digit_for_slot(digit_graphs, "mi_pl_ins")
+                    | tens_gen + join + self._digit_for_slot(digit_graphs, "pl_ins")
                 )
-                two_digit |= pynutil.add_weight(instrumental_alternatives, 0.001)
+                two_digit |= instrumental_alternatives
                 two_digit.optimize()
 
             hundred = (
