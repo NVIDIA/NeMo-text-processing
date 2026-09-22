@@ -12,4 +12,4 @@ dnr. 123~diarienummer hundratjugotre
 i.o.f.s. inte~i och för sig inte
 pga. vädret~på grund av vädret
 AckL gäller~ackordslagen gäller
-ackl gäller~ackl gäller
+ackl gäller~ackordslagen gäller
