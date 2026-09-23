@@ -84,7 +84,12 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal, deterministic=deterministic)
             fraction = FractionFst(cardinal, ordinal, deterministic=deterministic)
             decimal = DecimalFst(cardinal, deterministic=deterministic)
-            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+            measure = MeasureFst(
+                cardinal=cardinal,
+                decimal=decimal,
+                fraction=fraction,
+                deterministic=deterministic,
+            )
             money = MoneyFst(cardinal=cardinal, decimal=decimal, deterministic=deterministic)
             date = DateFst(cardinal, deterministic=deterministic)
             time = TimeFst(cardinal, deterministic=deterministic)
@@ -110,21 +115,32 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(word_graph, 100)
             )
 
-            # Wrap tokens properly
-            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
-            punct_graph = (
+            punct = (
                 pynutil.insert("tokens { ") + pynutil.add_weight(punctuation.fst, weight=2.1) + pynutil.insert(" }")
             )
-
-            # Simple graph structure
-            graph = token + pynini.closure(
-                pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space) + token
+            punct = pynini.closure(
+                pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
+                | (pynutil.insert(" ") + punct),
+                1,
             )
 
-            # Allow punctuation
-            graph |= punct_graph
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
+            token_plus_punct = (
+                pynini.closure(punct + pynutil.insert(" ")) + token + pynini.closure(pynutil.insert(" ") + punct)
+            )
 
-            self.fst = delete_space + graph + delete_space
+            graph = token_plus_punct + pynini.closure(
+                (
+                    pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
+                    | (pynutil.insert(" ") + punct + pynutil.insert(" "))
+                )
+                + token_plus_punct
+            )
+
+            graph = delete_space + graph + delete_space
+            graph |= punct
+
+            self.fst = graph.optimize()
 
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
