@@ -82,6 +82,11 @@ testTNElectronic() {
   runtest $input
 }
 
+testTNPunctuation() {
+  input=$PROJECT_DIR/pt/data_text_normalization/test_cases_punctuation.txt
+  runtest $input
+}
+
 # testTNWord() {
 #   input=$PROJECT_DIR/pt/data_text_normalization/test_cases_word.txt
 #   runtest $input
