@@ -15,13 +15,16 @@ zehn millionen~10 Millionen
 komma fünf~0,5
 einhalb~0,5
 zwei einhalb~2,5
+zwei anderthalb~zwei 1,5
 anderthalb~1,5
 einviertel~0,25
 dreiviertel~0,75
 drei komma zwo~3,2
 null komma null fünf~0,05
 minus einhalb~-0,5
+minus einviertel~-0,25
 minus anderthalb~-1,5
+minus zweieinhalb~-2,5
 minus drei komma fünf millionen~-3,5 Millionen
 minus zehn millionen~-10 Millionen
 neun hundert neun und neunzig millionen~999 Millionen

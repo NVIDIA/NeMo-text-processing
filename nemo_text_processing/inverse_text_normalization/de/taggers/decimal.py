@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.de.graph_utils import GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_DIGIT, GraphFst, delete_space
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
 
 
@@ -34,16 +34,7 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal: GraphFst, deterministic: b
     quantity = cardinal.magnitude
     if not deterministic:
         # Tsd., Mio. and Mrd. are the only magnitudes German abbreviates, a convention
-        # borrowed from French; anything above Milliarde is always written out
-        quantity |= pynini.string_map(
-            [
-                ("tausend", "Tsd."),
-                ("million", "Mio."),
-                ("millionen", "Mio."),
-                ("milliarde", "Mrd."),
-                ("milliarden", "Mrd."),
-            ]
-        )
+        quantity |= pynini.string_file(get_abs_path("data/numbers/quantity_nondeterministic.tsv"))
 
     big_quantity = pynini.compose(cardinal.big_magnitude_words, quantity)
 
@@ -64,19 +55,16 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal numbers
         e.g. minus elf komma zwei null null sechs billionen -> decimal { negative: "-" integer_part: "11"  fractional_part: "2006" quantity: "Billionen" }
-    The tagger accepts canonical verbalized decimal input whereby every digit after the comma is pronounced separately:
-        e.g. 12,345 -> zwölf komma drei vier fünf
-            *12,345 -> zwölf komma drei hundert fünfundvierzig
-    Magnitude words keep their full written form; the noun magnitudes are capitalised, while the
-    numerals "hundert" and "tausend" stay lower case:
-        e.g. million -> Million
-             billionen -> Billionen
-             tausend -> tausend
-    A bare integer followed by "hundert" or "tausend" stays with the cardinal grammar, so the quantity field only
-    shows up after a decimal: dreiviertel tausend -> 0,75 tausend but zwei tausend -> 2.000
-    For deterministic=False the abbreviated forms of tausend, million and milliarde are generated as well:
-        e.g. millionen -> Millionen | Mio.
-
+    The tagger accepts canonical verbalized decimal input whereby every digit after the comma is pronounced
+    separately, so zwölf komma drei hundert fünfundvierzig is not read as a single decimal:
+        e.g. zwölf komma drei vier fünf -> decimal { integer_part: "12" fractional_part: "345" }
+    Magnitude words keep their full written form, the nouns capitalised and the numeral "tausend" lower case.
+    After a bare integer "hundert" and "tausend" stay with the cardinal grammar, the larger scales do not:
+        e.g. eine million -> decimal { integer_part: "1" quantity: "Million" }
+        e.g. dreiviertel tausend -> decimal { integer_part: "0" fractional_part: "75" quantity: "tausend" }
+    Only tausend, million and milliarde have abbreviated forms:
+        for non-deterministic case: eine million ->
+            decimal { integer_part: "1" quantity: "Mio." }
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -92,38 +80,38 @@ class DecimalFst(GraphFst):
 
         graph_integer = pynutil.insert('integer_part: "') + graph_cardinals + pynutil.insert('" ') + delete_space
 
-        # Handles cases where the integer may be missing before the comma and inserts a '0' in its place
         graph_integer_or_zero = graph_integer | pynutil.insert('integer_part: "0" ', weight=-0.001)
 
         graph_clean_digit = delete_space + graph_digit
 
-        # Digits post-comma are pronounced individually
         graph_string_of_digits = pynini.closure(graph_clean_digit, 1)
         graph_fractional = pynutil.insert('fractional_part: "') + graph_string_of_digits + pynutil.insert('"')
 
         graph_decimal_no_sign = graph_integer_or_zero + delete_comma + graph_fractional
 
-        # Coverage for verbalized 0,5 (einhalb)
-        half = pynini.cross("einhalb", 'fractional_part: "5"')
-        einhalb = graph_integer_or_zero + half
+        fraction_values = pynini.string_file(get_abs_path("data/numbers/fractions.tsv"))
 
-        graph_decimal_no_sign |= einhalb
-
-        # Coverage for verbalized 1,5 (andterthald, einanderthalb)
-        one_and_a_half = pynini.accep("anderthalb") | pynini.accep("einanderthalb")
-        graph_halves = pynini.cross(one_and_a_half, 'integer_part: "1" fractional_part: "5"')
-
-        graph_decimal_no_sign |= graph_halves
-
-        # Coverage for verbalized 0,25 (einviertel) and 0,75 (dreiviertel)
-        graph_quarters = pynini.string_map(
-            [
-                ("einviertel", 'integer_part: "0" fractional_part: "25"'),
-                ("dreiviertel", 'integer_part: "0" fractional_part: "75"'),
-            ]
+        value_to_fields = (
+            pynutil.insert('integer_part: "')
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynini.cross(",", '" fractional_part: "')
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynutil.insert('"')
+        )
+        # "einhalb" attaches to a preceding integer (zwei einhalb -> 2,5), so it contributes only
+        # the digits after the comma and the integer part comes from graph_integer_or_zero
+        value_to_fractional = (
+            pynutil.insert('fractional_part: "')
+            + pynutil.delete(pynini.closure(NEMO_DIGIT, 1) + ",")
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynutil.insert('"')
         )
 
-        graph_decimal_no_sign |= graph_quarters
+        half = pynini.compose(pynini.accep("einhalb") @ fraction_values, value_to_fractional)
+        graph_decimal_no_sign |= graph_integer_or_zero + half
+
+        standalone = pynini.difference(pynini.project(fraction_values, "input"), pynini.accep("einhalb"))
+        graph_decimal_no_sign |= pynini.compose(standalone @ fraction_values, value_to_fields)
 
         # measure and money splice this in and write the sign themselves
         self.final_graph_wo_negative = (
