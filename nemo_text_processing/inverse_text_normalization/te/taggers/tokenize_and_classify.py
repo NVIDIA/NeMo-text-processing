@@ -25,12 +25,13 @@ from nemo_text_processing.inverse_text_normalization.te.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.inverse_text_normalization.te.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.te.taggers.word import WordFst
 
 
 class ClassifyFst(GraphFst):
     """
-    Final classification grammar for Telugu ITN cardinal processing.
+    Final classification grammar for Telugu ITN cardinal and decimal processing.
     """
 
     def __init__(
@@ -54,10 +55,16 @@ class ClassifyFst(GraphFst):
             logging.info("Creating Telugu ClassifyFst grammar.")
 
             cardinal = CardinalFst()
+            decimal = DecimalFst(cardinal)
+            decimal_graph = decimal.fst
             cardinal_graph = cardinal.fst
             word_graph = WordFst().fst
 
-            classify = pynutil.add_weight(cardinal_graph, 1.1) | pynutil.add_weight(word_graph, 100)
+            classify = (
+                pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(word_graph, 100)
+            )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
 
