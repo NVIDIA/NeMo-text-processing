@@ -14,7 +14,7 @@
 
 from nemo_text_processing.text_normalization.ta.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.ta.verbalizers.cardinal import CardinalFst
-
+from nemo_text_processing.text_normalization.ta.verbalizers.decimal import DecimalFst
 
 class VerbalizeFst(GraphFst):
     """
@@ -32,7 +32,10 @@ class VerbalizeFst(GraphFst):
 
         cardinal = CardinalFst(deterministic=deterministic)
         cardinal_graph = cardinal.fst
+        
+        decimal = DecimalFst(deterministic=deterministic)
+        decimal_graph = decimal.fst
 
-        graph = cardinal_graph
+        graph = cardinal_graph | decimal_graph
 
         self.fst = graph
