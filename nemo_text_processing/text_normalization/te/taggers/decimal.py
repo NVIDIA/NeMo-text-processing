@@ -63,9 +63,7 @@ class DecimalFst(GraphFst):
             )
 
         def keep(integer_digits, fraction_digits):
-            return (
-                pynini.closure(integer_digits | comma, 1) + point + pynini.closure(fraction_digits, 1)
-            )
+            return pynini.closure(integer_digits | comma, 1) + point + pynini.closure(fraction_digits, 1)
 
         final_graph = optional_sign + (same_script("0", NEMO_DIGIT) | same_script("౦", te_digit))
         mixed = pynini.closure(pynini.accep("-"), 0, 1) + (keep(NEMO_DIGIT, te_digit) | keep(te_digit, NEMO_DIGIT))
