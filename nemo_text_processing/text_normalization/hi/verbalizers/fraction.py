@@ -21,8 +21,8 @@ from nemo_text_processing.text_normalization.hi.graph_utils import MINUS, NEMO_N
 class FractionFst(GraphFst):
     """
     Finite state transducer for verbalizing fraction
-        e.g. fraction { integer: "तेईस" numerator: "चार" denominator: "छः" }-> तेईस चार बटा छः
-        e.g. fraction { numerator: "चार" denominator: "छः" } -> चार बटा छः
+        e.g. fraction { integer: "तेईस" numerator: "चार" denominator: "छह" }-> तेईस और चार बटा छह
+        e.g. fraction { numerator: "चार" denominator: "छह" } -> चार बटा छह
 
 
     Args:

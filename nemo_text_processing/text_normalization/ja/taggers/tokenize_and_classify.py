@@ -18,16 +18,36 @@ import os
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst, generator_main
+from nemo_text_processing.text_normalization.ja.graph_utils import (
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+    generator_main,
+)
+from nemo_text_processing.text_normalization.ja.taggers.address import AddressFst
 from nemo_text_processing.text_normalization.ja.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.ja.taggers.date import DateFst
 from nemo_text_processing.text_normalization.ja.taggers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.ja.taggers.electronic import ElectronicFst
 from nemo_text_processing.text_normalization.ja.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.ja.taggers.measure import MeasureFst
+from nemo_text_processing.text_normalization.ja.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.ja.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.ja.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.ja.taggers.range import RangeFst
+from nemo_text_processing.text_normalization.ja.taggers.roman import RomanFst
+from nemo_text_processing.text_normalization.ja.taggers.serial import SerialFst
+from nemo_text_processing.text_normalization.ja.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.ja.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.ja.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.ja.taggers.word import WordFst
+from nemo_text_processing.text_normalization.ja.verbalizers.cardinal import CardinalFst as CardinalVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.date import DateFst as DateVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.decimal import DecimalFst as DecimalVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.fraction import FractionFst as FractionVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.measure import MeasureFst as MeasureVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.money import MoneyFst as MoneyVerbalizer
+from nemo_text_processing.text_normalization.ja.verbalizers.time import TimeFst as TimeVerbalizer
 
 
 class ClassifyFst(GraphFst):
@@ -59,7 +79,7 @@ class ClassifyFst(GraphFst):
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
-            far_file = os.path.join(cache_dir, f"zh_tn_{deterministic}_deterministic_{whitelist_file}_tokenize.far")
+            far_file = os.path.join(cache_dir, f"ja_tn_{deterministic}_deterministic_{whitelist_file}_tokenize.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
         else:
@@ -68,25 +88,66 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             time = TimeFst(cardinal=cardinal, deterministic=deterministic)
             fraction = FractionFst(cardinal=cardinal, deterministic=deterministic)
+            measure = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction, deterministic=deterministic)
+            money = MoneyFst(cardinal=cardinal, deterministic=deterministic)
+            telephone = TelephoneFst(deterministic=deterministic)
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            address = AddressFst(cardinal=cardinal, deterministic=deterministic)
+            electronic = ElectronicFst(cardinal=cardinal, deterministic=deterministic)
+            roman = RomanFst(cardinal=cardinal, deterministic=deterministic)
+            serial = SerialFst(cardinal=cardinal, deterministic=deterministic)
+
+            cardinal_verbalizer = CardinalVerbalizer(deterministic=deterministic)
+            decimal_verbalizer = DecimalVerbalizer(deterministic=deterministic)
+            fraction_verbalizer = FractionVerbalizer(deterministic=deterministic)
+            date_final = date.fst @ DateVerbalizer(deterministic=deterministic).fst
+            time_final = time.fst @ TimeVerbalizer(deterministic=deterministic).fst
+            money_final = money.fst @ MoneyVerbalizer(decimal=decimal_verbalizer, deterministic=deterministic).fst
+            measure_final = (
+                measure.fst
+                @ MeasureVerbalizer(
+                    cardinal=cardinal_verbalizer,
+                    decimal=decimal_verbalizer,
+                    fraction=fraction_verbalizer,
+                    deterministic=deterministic,
+                ).fst
+            )
+            range_graph = RangeFst(
+                cardinal=cardinal.fst @ cardinal_verbalizer.fst,
+                date=date_final,
+                time=time_final,
+                money=money_final,
+                measure=measure_final,
+                deterministic=deterministic,
+            )
             whitelist = WhiteListFst(deterministic=deterministic)
             word = WordFst(deterministic=deterministic)
             punctuation = PunctuationFst(deterministic=deterministic)
 
             classify = pynini.union(
+                pynutil.add_weight(electronic.fst, 1.1),
+                pynutil.add_weight(address.fst, 1.1),
+                pynutil.add_weight(roman.fst, 1.1),
+                pynutil.add_weight(serial.fst, 1.1),
+                pynutil.add_weight(range_graph.fst, 1.1),
                 pynutil.add_weight(date.fst, 1.1),
-                pynutil.add_weight(fraction.fst, 1.0),
+                pynutil.add_weight(fraction.fst, 1.1),
+                pynutil.add_weight(money.fst, 1.1),
+                pynutil.add_weight(measure.fst, 1.1),
+                pynutil.add_weight(telephone.fst, 1.1),
                 pynutil.add_weight(time.fst, 1.1),
                 pynutil.add_weight(whitelist.fst, 1.1),
                 pynutil.add_weight(cardinal.fst, 1.1),
-                pynutil.add_weight(decimal.fst, 3.05),
+                pynutil.add_weight(decimal.fst, 1.1),
                 pynutil.add_weight(ordinal.fst, 1.1),
-                pynutil.add_weight(punctuation.fst, 1.0),
+                pynutil.add_weight(punctuation.fst, 1.1),
                 pynutil.add_weight(word.fst, 100),
             )
 
-            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
-            tagger = pynini.closure(token, 1)
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
+            tagger = (
+                delete_space + token + pynini.closure((delete_extra_space | pynini.accep("")) + token) + delete_space
+            )
 
             self.fst = tagger
 
