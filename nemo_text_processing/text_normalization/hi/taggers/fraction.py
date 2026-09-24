@@ -26,18 +26,18 @@ from nemo_text_processing.text_normalization.hi.graph_utils import (
 )
 from nemo_text_processing.text_normalization.hi.utils import get_abs_path
 
-HI_ONE_HALF = "१/२"  # 1/2
-HI_ONE_QUARTER = "१/४"  # 1/4
-HI_THREE_QUARTERS = "३/४"  # 3/4
+HI_ONE_HALF = "१/२"
+HI_ONE_QUARTER = "१/४"
+HI_THREE_QUARTERS = "३/४"
 
 
 class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
     "२३ ४/६" ->
-    fraction { integer: "तेईस" numerator: "चार" denominator: "छः"}
+    fraction { integer: "तेईस" numerator: "चार" denominator: "छह"}
     ४/६" ->
-    fraction { numerator: "चार" denominator: "छः"}
+    fraction { numerator: "चार" denominator: "छह"}
 
 
     Args:
@@ -54,13 +54,16 @@ class FractionFst(GraphFst):
         self.optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("-", "\"true\"") + pynutil.insert(NEMO_SPACE), 0, 1
         )
+
         self.integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
+
         self.numerator = (
             pynutil.insert("numerator: \"")
             + cardinal_graph
             + pynini.cross(pynini.union("/", NEMO_SPACE + "/" + NEMO_SPACE), "\"")
             + pynutil.insert(NEMO_SPACE)
         )
+
         self.denominator = pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
 
         dedh_dhai_graph = pynini.string_map(
@@ -76,6 +79,15 @@ class FractionFst(GraphFst):
         paune = pynini.string_file(get_abs_path("data/whitelist/paune_mappings.tsv"))
         paune_numbers = paune + pynini.cross(NEMO_SPACE + HI_THREE_QUARTERS, "")
         paune_graph = pynutil.insert(HI_PAUNE) + pynutil.insert(NEMO_SPACE) + paune_numbers
+
+        common_fraction_map = pynini.string_file(get_abs_path("data/fraction/common_fractions.tsv"))
+
+        graph_common_fraction = (
+            pynutil.insert("morphosyntactic_features: \"")
+            + common_fraction_map
+            + pynutil.insert("\"")
+            + pynutil.insert(NEMO_SPACE)
+        )
 
         graph_dedh_dhai = (
             pynutil.insert("morphosyntactic_features: \"")
@@ -114,10 +126,11 @@ class FractionFst(GraphFst):
 
         weighted_graph = (
             final_graph
+            | pynutil.add_weight(graph_common_fraction, -0.3)
             | pynutil.add_weight(graph_dedh_dhai, -0.2)
+            | pynutil.add_weight(graph_paune, -0.2)
             | pynutil.add_weight(graph_savva, -0.1)
             | pynutil.add_weight(graph_sadhe, -0.1)
-            | pynutil.add_weight(graph_paune, -0.2)
         )
 
         self.graph = weighted_graph

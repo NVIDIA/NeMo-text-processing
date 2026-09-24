@@ -84,6 +84,8 @@ class DateFst(GraphFst):
         era = pynini.union("기원전", "기원후").optimize()
         signs = pynutil.delete("/") | pynutil.delete(".") | pynutil.delete("-")
 
+        date_sep = signs + pynini.closure(delete_space, 0, 1) + insert_space
+
         # Strict digit ranges for M/D/Y and Y/M/D
         _d = pynini.union(*[pynini.accep(str(i)) for i in range(10)])
         _1to9 = pynini.union(*[pynini.accep(str(i)) for i in range(1, 10)])
@@ -185,14 +187,24 @@ class DateFst(GraphFst):
         graph_basic_date = (
             pynini.closure(era_component + insert_space, 0, 1)
             + year_component_y4_strict
-            + signs
-            + insert_space
+            + date_sep
             + (pynutil.insert("month: \"") + month_cardinal + pynutil.insert("월") + pynutil.insert("\""))
-            + signs
-            + insert_space
+            + date_sep
             + (pynutil.insert("day: \"") + cardinal_lz + pynutil.insert("일") + pynutil.insert("\""))
-            + pynini.closure(pynini.closure(insert_space, 0, 1) + week_component, 0, 1)
+            + pynini.closure(insert_space + week_component, 0, 1)
         )
+        graph_basic_date_with_dot_weekday = (
+            pynini.closure(era_component + insert_space, 0, 1)
+            + year_component_y4_strict
+            + date_sep
+            + (pynutil.insert("month: \"") + month_cardinal + pynutil.insert("월") + pynutil.insert("\""))
+            + date_sep
+            + (pynutil.insert("day: \"") + cardinal_lz + pynutil.insert("일") + pynutil.insert("\""))
+            + pynutil.delete(".")
+            + pynini.closure(delete_space, 0, 1)
+            + insert_space
+            + week_component
+        ).optimize()
 
         # American: MM/DD/YYYY
         graph_american_date = (
@@ -298,7 +310,8 @@ class DateFst(GraphFst):
         ).optimize()
 
         graph_all_date = (
-            graph_basic_date
+            graph_basic_date_with_dot_weekday
+            | graph_basic_date
             | graph_american_date
             | graph_european_date
             | graph_individual_component

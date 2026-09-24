@@ -37,7 +37,6 @@ class PunctuationFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="punctuation", kind="classify", deterministic=deterministic)
-        s = "!#$%&'()*+,-./:;<=>?@^_`{|}。，；：《》“”·~【】！？、‘’.<>-——_、。.「」『』‘`／・；’”“”‷･〔〕々〃ゝゞヽ〲〱〳〴〵ヾ〆，~"
 
         punct_symbols_to_exclude = ["[", "]"]
         punct_unicode = [
@@ -45,10 +44,11 @@ class PunctuationFst(GraphFst):
             for i in range(sys.maxunicode)
             if category(chr(i)).startswith("P") and chr(i) not in punct_symbols_to_exclude
         ]
+        extra_symbols = [label[0] for label in load_labels(get_abs_path("data/punctuation/extra.tsv"))]
 
         whitelist_symbols = load_labels(get_abs_path("data/symbol.tsv"))
         whitelist_symbols = [x[0] for x in whitelist_symbols]
-        self.punct_marks = [p for p in punct_unicode + list(s) if p not in whitelist_symbols]
+        self.punct_marks = [p for p in punct_unicode + extra_symbols if p not in whitelist_symbols]
 
         punct = pynini.union(*self.punct_marks)
         punct = pynini.closure(punct, 1)
@@ -62,9 +62,7 @@ class PunctuationFst(GraphFst):
             + pynini.accep(">")
         )
         punct = plurals._priority_union(emphasis, punct, NEMO_SIGMA)
-        range_component = pynini.cross("〜", "から") | pynini.accep(
-            "から"
-        )  # forcing this conversion for special tilde
+        range_component = pynini.string_file(get_abs_path("data/punctuation/range.tsv"))
 
-        self.graph = punct | pynutil.add_weight(range_component, -1.0)
-        self.fst = (pynutil.insert("name: \"") + self.graph + pynutil.insert("\"")).optimize()
+        self.graph = plurals._priority_union(range_component, punct, NEMO_SIGMA)
+        self.fst = (pynutil.insert('name: "') + self.graph + pynutil.insert('"')).optimize()
