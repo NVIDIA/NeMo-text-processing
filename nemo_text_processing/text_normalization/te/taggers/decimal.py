@@ -36,7 +36,8 @@ class DecimalFst(GraphFst):
 
         te_digit = pynini.difference(NEMO_ALL_DIGIT, NEMO_DIGIT).optimize()
         comma = pynini.accep(",")
-        point = pynutil.delete(".")
+        point = pynini.accep(".")
+        delete_point = pynutil.delete(point)
         optional_sign = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross("-", '"true" '),
             0,
@@ -54,7 +55,7 @@ class DecimalFst(GraphFst):
                 pynutil.insert('integer_part: "')
                 + integer
                 + pynutil.insert('"')
-                + point
+                + delete_point
                 + insert_space
                 + pynutil.insert('fractional_part: "')
                 + fraction
@@ -62,7 +63,9 @@ class DecimalFst(GraphFst):
             )
 
         def keep(integer_digits, fraction_digits):
-            return pynini.closure(integer_digits | comma, 1) + pynini.accep(".") + pynini.closure(fraction_digits, 1)
+            return (
+                pynini.closure(integer_digits | comma, 1) + point + pynini.closure(fraction_digits, 1)
+            )
 
         final_graph = optional_sign + (same_script("0", NEMO_DIGIT) | same_script("౦", te_digit))
         mixed = pynini.closure(pynini.accep("-"), 0, 1) + (keep(NEMO_DIGIT, te_digit) | keep(te_digit, NEMO_DIGIT))
