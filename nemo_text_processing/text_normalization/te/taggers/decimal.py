@@ -15,12 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.te.graph_utils import (
-    NEMO_ALL_DIGIT,
-    NEMO_DIGIT,
-    GraphFst,
-    insert_space,
-)
+from nemo_text_processing.text_normalization.te.graph_utils import NEMO_ALL_DIGIT, NEMO_DIGIT, GraphFst, insert_space
+
 
 class DecimalFst(GraphFst):
     """
@@ -66,15 +62,9 @@ class DecimalFst(GraphFst):
             )
 
         def keep(integer_digits, fraction_digits):
-            return (
-                pynini.closure(integer_digits | comma, 1)
-                + pynini.accep(".")
-                + pynini.closure(fraction_digits, 1)
-            )
+            return pynini.closure(integer_digits | comma, 1) + pynini.accep(".") + pynini.closure(fraction_digits, 1)
 
         final_graph = optional_sign + (same_script("0", NEMO_DIGIT) | same_script("౦", te_digit))
-        mixed = pynini.closure(pynini.accep("-"), 0, 1) + (
-            keep(NEMO_DIGIT, te_digit) | keep(te_digit, NEMO_DIGIT)
-        )
+        mixed = pynini.closure(pynini.accep("-"), 0, 1) + (keep(NEMO_DIGIT, te_digit) | keep(te_digit, NEMO_DIGIT))
         mixed = pynutil.insert('name: "') + mixed + pynutil.insert('"')
         self.fst = (self.add_tokens(final_graph) | mixed).optimize()

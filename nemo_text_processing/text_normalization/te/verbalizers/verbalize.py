@@ -37,9 +37,6 @@ class VerbalizeFst(GraphFst):
         decimal = DecimalFst(deterministic=deterministic)
         decimal_graph = decimal.fst
 
-        graph = (
-            cardinal_graph
-            | decimal_graph
-        )
+        graph = cardinal_graph | decimal_graph
 
         self.fst = graph

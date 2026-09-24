@@ -17,6 +17,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.te.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
 
+
 class DecimalFst(GraphFst):
     """
     Finite state transducer for verbalizing decimal, e.g.
