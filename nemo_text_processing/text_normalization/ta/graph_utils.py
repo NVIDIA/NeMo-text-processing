@@ -20,18 +20,18 @@ from typing import Dict
 import pynini
 from pynini import Far
 from pynini.export import export
-from pynini.lib import pynutil, utf8
+from pynini.lib import pynutil, utf8, byte
 
 from nemo_text_processing.text_normalization.ta.utils import get_abs_path
 
 NEMO_CHAR = utf8.VALID_UTF8_CHAR
+NEMO_DIGIT = byte.DIGIT
 
-ta_digit_map = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-ta_zero_map = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-
-ta_digit_only = pynini.project(ta_digit_map, "input").optimize()
-NEMO_ALL_ZERO = pynini.project(ta_zero_map, "input").optimize()
-NEMO_ALL_DIGIT = pynini.union(ta_digit_only, NEMO_ALL_ZERO).optimize()
+NEMO_ALL_ZERO = pynini.project(pynini.string_file(get_abs_path("data/numbers/zero.tsv")), "input").optimize()
+NEMO_ALL_DIGIT = pynini.union(
+    pynini.project(pynini.string_file(get_abs_path("data/numbers/digit.tsv")), "input"),
+    NEMO_ALL_ZERO,
+).optimize()
 
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_SPACE = " "
@@ -39,6 +39,15 @@ NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", NEMO_NON_BREAKING_SPACE).
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
+
+# Symbol constants
+PERIOD = "."
+COMMA = ","
+MINUS = "-"
+
+# Spoken-word constants
+POINT = "புள்ளி"
+MINUS_WORD = "கழித்தல்"
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")

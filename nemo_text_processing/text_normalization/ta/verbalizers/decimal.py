@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ta.graph_utils import NEMO_NOT_QUOTE, GraphFst, insert_space
+from nemo_text_processing.text_normalization.ta.graph_utils import (
+    MINUS_WORD, NEMO_NOT_QUOTE, POINT, GraphFst, delete_space,
+)
 
 
 class DecimalFst(GraphFst):
@@ -28,21 +30,31 @@ class DecimalFst(GraphFst):
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
-
     def __init__(self, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+        super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        delete_space = pynutil.delete(" ")
-        self.optional_sign = pynini.closure(
-            pynini.cross("negative: \"true\"", "கழித்தல்") + delete_space + insert_space, 0, 1
-        )
-        self.integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        self.fractional = (
-            pynutil.delete("fractional_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
-        )
+        def quoted_field(name):
+            return (pynutil.delete(f'{name}: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')).optimize()
 
-        graph = self.optional_sign + self.integer + delete_space + insert_space + self.fractional
+        sign_with_space = pynini.closure(
+            pynini.cross('negative: "true" ', MINUS_WORD) + pynutil.insert(" "), 0, 1
+        ).optimize()
 
-        self.numbers = graph
-        delete_tokens = self.delete_tokens(graph)
-        self.fst = delete_tokens.optimize()
+        with_integer = (
+            sign_with_space + quoted_field("integer_part") + delete_space
+            + pynutil.insert(f" {POINT} ") + quoted_field("fractional_part")
+        ).optimize()
+
+        without_integer = (
+            sign_with_space + pynutil.delete('has_integer: "false" ')
+            + pynutil.insert(f"{POINT} ") + quoted_field("fractional_part")
+        ).optimize()
+
+        literal_point_decimal = (
+            sign_with_space + quoted_field("integer_part") + delete_space
+            + pynutil.delete('literal_point: "true" ')
+            + pynutil.insert(" . ")
+            + quoted_field("fractional_part")
+        ).optimize()
+
+        self.fst = self.delete_tokens(with_integer | without_integer | literal_point_decimal).optimize()
