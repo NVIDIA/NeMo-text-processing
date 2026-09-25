@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.ta.graph_utils import (
     MINUS_WORD,
     NEMO_NOT_QUOTE,
     POINT,
+    PERIOD,
     GraphFst,
     delete_space,
 )
@@ -38,35 +39,43 @@ class DecimalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        def quoted_field(name):
-            return (pynutil.delete(f'{name}: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')).optimize()
+        not_quotes = pynini.closure(NEMO_NOT_QUOTE, 1)
+        quoted_integer = pynutil.delete('integer_part: "') + not_quotes + pynutil.delete('"')
+        delete_fraction_open = pynutil.delete('fractional_part: "')
 
         sign_with_space = pynini.closure(
             pynini.cross('negative: "true" ', MINUS_WORD) + pynutil.insert(" "), 0, 1
         ).optimize()
 
+        # Literal-point case: fractional_part stores ". <digits>"
+        literal_fraction = (pynini.accep(PERIOD + " " ) + not_quotes).optimize()
+        normal_fraction = pynini.difference(not_quotes, literal_fraction).optimize()
+
+        with_int_prefix = (sign_with_space + quoted_integer + delete_space).optimize()
+
+        literal_point_decimal = (
+            with_int_prefix
+            + delete_fraction_open
+            + pynutil.delete(PERIOD + " ")
+            + pynutil.insert(" " + PERIOD + " ")
+            + not_quotes
+            + pynutil.delete('"')
+        ).optimize()
+
         with_integer = (
-            sign_with_space
-            + quoted_field("integer_part")
-            + delete_space
+            with_int_prefix
             + pynutil.insert(f" {POINT} ")
-            + quoted_field("fractional_part")
+            + delete_fraction_open
+            + normal_fraction
+            + pynutil.delete('"')
         ).optimize()
 
         without_integer = (
             sign_with_space
-            + pynutil.delete('has_integer: "false" ')
             + pynutil.insert(f"{POINT} ")
-            + quoted_field("fractional_part")
+            + delete_fraction_open
+            + not_quotes
+            + pynutil.delete('"')
         ).optimize()
 
-        literal_point_decimal = (
-            sign_with_space
-            + quoted_field("integer_part")
-            + delete_space
-            + pynutil.delete('literal_point: "true" ')
-            + pynutil.insert(" . ")
-            + quoted_field("fractional_part")
-        ).optimize()
-
-        self.fst = self.delete_tokens(with_integer | without_integer | literal_point_decimal).optimize()
+        self.fst = self.delete_tokens(literal_point_decimal | with_integer | without_integer).optimize()

@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,69 +35,51 @@ class DecimalFst(GraphFst):
 
     Args:
         cardinal: CardinalFst
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated (used for audio-based normalization)
     """
-
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+
         ta_digit = pynini.difference(NEMO_ALL_DIGIT, NEMO_DIGIT).optimize()
         delete_point = pynutil.delete(PERIOD)
-        optional_sign = pynini.closure(pynutil.insert("negative: ") + pynini.cross(MINUS, '"true" '), 0, 1).optimize()
-
         zeros = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        sign = pynini.closure(pynini.accep(MINUS), 0, 1)
 
-        def same_script(digits):
+        optional_sign = pynini.closure(
+            pynutil.insert("negative: ") + pynini.cross(MINUS, '"true" '), 0, 1
+        )
+
+        def field(name, body):
+            return pynutil.insert(f'{name}: "') + body + pynutil.insert('"')
+
+        def build(digits):
             zero = pynini.compose(pynini.project(zeros, "input"), digits).optimize()
-            nonzero = pynini.difference(digits, zero)
-            valid_int = (zero | (nonzero + pynini.closure(digits | pynini.accep(COMMA)))).optimize()
+            nonzero = pynini.difference(digits, zero).optimize()
+            valid_int = (zero | nonzero + pynini.closure(digits | pynini.accep(COMMA))).optimize()
+
             integer = pynini.compose(valid_int, cardinal.final_graph).optimize()
             fraction = pynini.compose(pynini.closure(digits, 1), cardinal.single_digits_graph).optimize()
+            leading_zero = pynini.compose(zero + pynini.closure(digits, 1), cardinal.single_digits_graph).optimize()
 
-            with_int = (
-                pynutil.insert('integer_part: "')
-                + integer
-                + pynutil.insert('"')
+            with_int = field("integer_part", integer) + delete_point + insert_space + field("fractional_part", fraction)
+            without_int = delete_point + field("fractional_part", fraction)
+            leading_zero_decimal = (
+                field("integer_part", leading_zero)
                 + delete_point
                 + insert_space
-                + pynutil.insert('fractional_part: "')
+                + pynutil.insert('fractional_part: "' + PERIOD + ' ')
                 + fraction
                 + pynutil.insert('"')
-            ).optimize()
-            without_int = (
-                pynutil.insert('has_integer: "false" ')
-                + delete_point
-                + pynutil.insert('fractional_part: "')
-                + fraction
-                + pynutil.insert('"')
-            ).optimize()
+            )
+            return (leading_zero_decimal | with_int | without_int).optimize()
 
-            leading_zero_int_input = zero + pynini.closure(digits, 1)
-            leading_zero_int = pynini.compose(leading_zero_int_input, cardinal.single_digits_graph).optimize()
-            literal_point = (
-                pynutil.insert('integer_part: "')
-                + leading_zero_int
-                + pynutil.insert('" ')
-                + pynutil.insert('literal_point: "true" ')
-                + delete_point
-                + pynutil.insert('fractional_part: "')
-                + fraction
-                + pynutil.insert('"')
-            ).optimize()
+        final_graph = (optional_sign + (build(NEMO_DIGIT) | build(ta_digit))).optimize()
 
-            return (with_int | without_int | literal_point).optimize()
+        def script_decimal(digit):
+            return pynini.closure(digit | pynini.accep(COMMA), 0) + PERIOD + pynini.closure(digit, 1)
 
-        final_graph = (optional_sign + (same_script(NEMO_DIGIT) | same_script(ta_digit))).optimize()
-
-        # Mixed-script decimals
-        pure_ascii = pynini.closure(NEMO_DIGIT | pynini.accep(COMMA), 0) + PERIOD + pynini.closure(NEMO_DIGIT, 1)
-        pure_tamil = pynini.closure(ta_digit | pynini.accep(COMMA), 0) + PERIOD + pynini.closure(ta_digit, 1)
-        mixed_int = (
-            pynini.closure(NEMO_ALL_DIGIT | pynini.accep(COMMA), 0) + PERIOD + pynini.closure(NEMO_ALL_DIGIT, 1)
-        )
-        mixed_pattern = pynini.difference(mixed_int, pure_ascii | pure_tamil).optimize()
-        mixed = (
-            pynutil.insert('name: "') + pynini.closure(pynini.accep(MINUS), 0, 1) + mixed_pattern + pynutil.insert('"')
+        mixed = pynini.difference(
+            script_decimal(NEMO_ALL_DIGIT), script_decimal(NEMO_DIGIT) | script_decimal(ta_digit)
         ).optimize()
+        mixed = field("name", sign + mixed).optimize()
 
         self.fst = (self.add_tokens(final_graph) | mixed).optimize()
