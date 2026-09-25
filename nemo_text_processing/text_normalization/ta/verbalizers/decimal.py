@@ -16,7 +16,11 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ta.graph_utils import (
-    MINUS_WORD, NEMO_NOT_QUOTE, POINT, GraphFst, delete_space,
+    MINUS_WORD,
+    NEMO_NOT_QUOTE,
+    POINT,
+    GraphFst,
+    delete_space,
 )
 
 
@@ -30,6 +34,7 @@ class DecimalFst(GraphFst):
         deterministic: if True will provide a single transduction option,
             for False multiple transduction are generated (used for audio-based normalization)
     """
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
@@ -41,17 +46,24 @@ class DecimalFst(GraphFst):
         ).optimize()
 
         with_integer = (
-            sign_with_space + quoted_field("integer_part") + delete_space
-            + pynutil.insert(f" {POINT} ") + quoted_field("fractional_part")
+            sign_with_space
+            + quoted_field("integer_part")
+            + delete_space
+            + pynutil.insert(f" {POINT} ")
+            + quoted_field("fractional_part")
         ).optimize()
 
         without_integer = (
-            sign_with_space + pynutil.delete('has_integer: "false" ')
-            + pynutil.insert(f"{POINT} ") + quoted_field("fractional_part")
+            sign_with_space
+            + pynutil.delete('has_integer: "false" ')
+            + pynutil.insert(f"{POINT} ")
+            + quoted_field("fractional_part")
         ).optimize()
 
         literal_point_decimal = (
-            sign_with_space + quoted_field("integer_part") + delete_space
+            sign_with_space
+            + quoted_field("integer_part")
+            + delete_space
             + pynutil.delete('literal_point: "true" ')
             + pynutil.insert(" . ")
             + quoted_field("fractional_part")
