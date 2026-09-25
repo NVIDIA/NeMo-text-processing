@@ -36,6 +36,7 @@ class DecimalFst(GraphFst):
     Args:
         cardinal: CardinalFst
     """
+
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
@@ -44,9 +45,7 @@ class DecimalFst(GraphFst):
         zeros = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         sign = pynini.closure(pynini.accep(MINUS), 0, 1)
 
-        optional_sign = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross(MINUS, '"true" '), 0, 1
-        )
+        optional_sign = pynini.closure(pynutil.insert("negative: ") + pynini.cross(MINUS, '"true" '), 0, 1)
 
         def field(name, body):
             return pynutil.insert(f'{name}: "') + body + pynutil.insert('"')
@@ -60,7 +59,9 @@ class DecimalFst(GraphFst):
             fraction = pynini.compose(pynini.closure(digits, 1), cardinal.single_digits_graph).optimize()
             leading_zero = pynini.compose(zero + pynini.closure(digits, 1), cardinal.single_digits_graph).optimize()
 
-            with_int = field("integer_part", integer) + delete_point + insert_space + field("fractional_part", fraction)
+            with_int = (
+                field("integer_part", integer) + delete_point + insert_space + field("fractional_part", fraction)
+            )
             without_int = delete_point + field("fractional_part", fraction)
             leading_zero_decimal = (
                 field("integer_part", leading_zero)

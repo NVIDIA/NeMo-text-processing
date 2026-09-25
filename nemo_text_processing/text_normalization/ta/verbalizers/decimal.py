@@ -18,8 +18,8 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ta.graph_utils import (
     MINUS_WORD,
     NEMO_NOT_QUOTE,
-    POINT,
     PERIOD,
+    POINT,
     GraphFst,
     delete_space,
 )
@@ -48,7 +48,7 @@ class DecimalFst(GraphFst):
         ).optimize()
 
         # Literal-point case: fractional_part stores ". <digits>"
-        literal_fraction = (pynini.accep(PERIOD + " " ) + not_quotes).optimize()
+        literal_fraction = (pynini.accep(PERIOD + " ") + not_quotes).optimize()
         normal_fraction = pynini.difference(not_quotes, literal_fraction).optimize()
 
         with_int_prefix = (sign_with_space + quoted_integer + delete_space).optimize()
@@ -71,11 +71,7 @@ class DecimalFst(GraphFst):
         ).optimize()
 
         without_integer = (
-            sign_with_space
-            + pynutil.insert(f"{POINT} ")
-            + delete_fraction_open
-            + not_quotes
-            + pynutil.delete('"')
+            sign_with_space + pynutil.insert(f"{POINT} ") + delete_fraction_open + not_quotes + pynutil.delete('"')
         ).optimize()
 
         self.fst = self.delete_tokens(literal_point_decimal | with_integer | without_integer).optimize()
