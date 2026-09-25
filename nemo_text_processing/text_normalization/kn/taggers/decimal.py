@@ -14,16 +14,17 @@
 
 import pynini
 from pynini.lib import pynutil
+
 from nemo_text_processing.text_normalization.kn.graph_utils import (
-    GraphFst,
+    MINUS,
     NEMO_ALL_DIGIT,
     NEMO_DIGIT,
-    insert_space,
     PERIOD,
-    MINUS,
+    GraphFst,
+    insert_space,
 )
-from nemo_text_processing.text_normalization.kn.utils import get_abs_path
 from nemo_text_processing.text_normalization.kn.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.kn.utils import get_abs_path
 
 
 class DecimalFst(GraphFst):
@@ -60,7 +61,11 @@ class DecimalFst(GraphFst):
 
         integer_leadingzero = _ZEROS + insert_space + frac
         leadingzero_graph = (
-            pynutil.insert('integer_part: "') + integer_leadingzero + pynini.cross(PERIOD, " . ") + frac + pynutil.insert('"')
+            pynutil.insert('integer_part: "')
+            + integer_leadingzero
+            + pynini.cross(PERIOD, " . ")
+            + frac
+            + pynutil.insert('"')
         )
 
         graph_with_integer = leadingzero_graph | (integer + point + insert_space + fractional)

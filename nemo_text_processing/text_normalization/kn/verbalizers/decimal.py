@@ -14,24 +14,26 @@
 
 import pynini
 from pynini.lib import pynutil
-from nemo_text_processing.text_normalization.kn.graph_utils import Decimal_word, Minus_word, NEMO_NOT_QUOTE, GraphFst
 
- 
+from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_QUOTE, Decimal_word, GraphFst, Minus_word
+
+
 class DecimalFst(GraphFst):
-
     """
     Finite state transducer for verbalizing decimal, e.g.
         decimal { negative: "true" integer_part: "ಹನ್ನೆರಡು" fractional_part: "ಐದು ಆರು" } -> ಮೈನಸ್ ಹನ್ನೆರಡು ದಶಮಾಂಶ ಐದು ಆರು
 
     """
- 
+
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
- 
+
         self.optional_sign = pynini.closure(pynini.cross('negative: "true" ', Minus_word + " "), 0, 1)
         self.integer = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
-        self.fractional = pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
- 
+        self.fractional = (
+            pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
+        )
+
         graph_integer_and_fraction = (
             self.integer + pynutil.delete(" ") + pynutil.insert(" " + Decimal_word + " ") + self.fractional
         )
