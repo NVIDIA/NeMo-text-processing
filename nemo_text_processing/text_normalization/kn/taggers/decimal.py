@@ -20,57 +20,72 @@ from nemo_text_processing.text_normalization.kn.graph_utils import (
     NEMO_ALL_DIGIT,
     NEMO_DIGIT,
     PERIOD,
+    COMMA,
     GraphFst,
     insert_space,
 )
-from nemo_text_processing.text_normalization.kn.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.kn.utils import get_abs_path
-
+_ZEROS = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
 
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal, e.g.
        -೧೨.೫೬ -> decimal { negative: "true" integer_part: "ಹನ್ನೆರಡು" fractional_part: "ಐದು ಆರು" }
 
-    cardinal: CardinalFst
+    cardinal: GraphFst
     """
 
-    def __init__(self, cardinal: CardinalFst, deterministic: bool = True):
+    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
         graph_digit = cardinal.single_digits_graph
         cardinal_graph = cardinal.final_graph
-        _ZEROS = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
 
-        def _digit_graph(digits_fst):
-            return pynini.compose(digits_fst, graph_digit)
-
-        def _group(d):
-            return d + pynini.closure(insert_space + d)
-
-        ed = _digit_graph(NEMO_DIGIT)
-        kd = _digit_graph(pynini.difference(NEMO_ALL_DIGIT, NEMO_DIGIT))
-
-        frac = (_group(ed) | _group(kd)).optimize()
-
-        point = pynutil.delete(PERIOD)
+        dot_delete = pynutil.delete(PERIOD)
+        literal_dot = insert_space + pynini.accep(PERIOD) + insert_space
         opt_neg = pynini.closure(pynutil.insert("negative: ") + pynini.cross(MINUS, '"true"') + insert_space, 0, 1)
 
-        fractional = pynutil.insert('fractional_part: "') + frac + pynutil.insert('"')
-        integer = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"')
+        def spell_digits(digits_fst):
+            one = pynini.compose(digits_fst, graph_digit)
+            return (one + pynini.closure(insert_space + one)).optimize()
 
-        integer_leadingzero = _ZEROS + insert_space + frac
-        leadingzero_graph = (
+        def same_script(digits_fst):
+            frac = spell_digits(digits_fst)
+            zero_char = pynini.project(pynini.compose(digits_fst, _ZEROS), "input")
+            leading_zero_shape = (zero_char + pynini.closure(digits_fst, 1)).optimize()
+
+            integer_domain = pynini.difference(pynini.closure(digits_fst | COMMA, 1), leading_zero_shape)
+            integer = pynini.compose(integer_domain, cardinal_graph).optimize()
+            leading_zero_reading = pynini.compose(leading_zero_shape, frac).optimize()
+
+            with_leading_zero = (
+                pynutil.insert('integer_part: "') + leading_zero_reading + literal_dot + frac + pynutil.insert('"')
+            )
+            with_integer = (
+                pynutil.insert('integer_part: "')
+                + integer
+                + pynutil.insert('"')
+                + dot_delete
+                + insert_space
+                + pynutil.insert('fractional_part: "')
+                + frac
+                + pynutil.insert('"')
+            )
+            fraction_only = dot_delete + pynutil.insert('fractional_part: "') + frac + pynutil.insert('"')
+
+            return with_leading_zero | with_integer | fraction_only
+
+        graph_same_script = (
+            same_script(NEMO_DIGIT) | same_script(pynini.difference(NEMO_ALL_DIGIT, NEMO_DIGIT))
+        ).optimize()
+
+        shape = pynini.closure(NEMO_ALL_DIGIT | COMMA, 1) + pynini.accep(PERIOD) + pynini.closure(NEMO_ALL_DIGIT, 1)
+        passthrough = (
             pynutil.insert('integer_part: "')
-            + integer_leadingzero
-            + pynini.cross(PERIOD, " . ")
-            + frac
+            + pynini.difference(shape, pynini.project(graph_same_script, "input"))
             + pynutil.insert('"')
         )
 
-        graph_with_integer = leadingzero_graph | (integer + point + insert_space + fractional)
-        graph_without_integer = point + fractional
+        final_graph = (opt_neg + graph_same_script) | (pynini.closure(pynini.accep(MINUS), 0, 1) + passthrough)
 
-        final = opt_neg + (graph_with_integer | graph_without_integer)
-
-        self.fst = self.add_tokens(final).optimize()
+        self.fst = self.add_tokens(final_graph.optimize()).optimize()

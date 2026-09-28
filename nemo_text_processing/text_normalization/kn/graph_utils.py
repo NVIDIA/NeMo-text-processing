@@ -35,6 +35,7 @@ Decimal_word = "ದಶಮಾಂಶ"
 Minus_word = "ಮೈನಸ್"
 PERIOD = "."
 MINUS = "-"
+COMMA = ","
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_SPACE = " "
 NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00a0").optimize()
