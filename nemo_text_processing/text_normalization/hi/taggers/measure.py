@@ -474,6 +474,9 @@ class MeasureFst(GraphFst):
         delimiter = pynini.accep(" ") | pynutil.insert(" ")
         math_alpha = capitalized_input_graph(letters_map)
         equals = pynini.string_file(get_abs_path("data/measure/math_equal.tsv"))
+        math_unary = pynini.string_file(get_abs_path("data/measure/math_unary.tsv"))
+
+        optional_unary = pynini.closure(math_unary + delimiter, 0, 1)
 
         digit_or_zero = digit | zero
         fractional_bare = digit_or_zero + pynini.closure(insert_space + digit_or_zero)
@@ -482,15 +485,11 @@ class MeasureFst(GraphFst):
             cardinal_graph + pynutil.insert(" ") + math_separator + pynutil.insert(" ") + fractional_bare
         )
 
-        operand = cardinal_graph | flat_decimal | math_alpha
+        operand = optional_unary + (cardinal_graph | flat_decimal | math_alpha)
 
         math_expr = operand + pynini.closure(delimiter + math_operations + delimiter + operand)
 
-        math_expr_with_op = operand + pynini.closure(delimiter + math_operations + delimiter + operand, 1)
-
-        math = (math_expr_with_op + delimiter + equals + delimiter + math_expr) | (
-            math_expr + delimiter + equals + delimiter + math_expr_with_op
-        )
+        math = math_expr + delimiter + equals + delimiter + math_expr
 
         graph_math = (
             pynutil.insert('units: "math" cardinal { integer: "') + math + pynutil.insert('" } preserve_order: true')
