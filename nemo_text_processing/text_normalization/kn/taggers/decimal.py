@@ -34,7 +34,7 @@ class DecimalFst(GraphFst):
     Finite state transducer for classifying decimal, e.g.
        -೧೨.೫೬ -> decimal { negative: "true" integer_part: "ಹನ್ನೆರಡು" fractional_part: "ಐದು ಆರು" }
 
-    cardinal: GraphFst
+    cardinal: CardinalFst
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
@@ -89,5 +89,4 @@ class DecimalFst(GraphFst):
         )
 
         final_graph = (opt_neg + graph_same_script) | (pynini.closure(pynini.accep(MINUS), 0, 1) + passthrough)
-
         self.fst = self.add_tokens(final_graph.optimize()).optimize()
