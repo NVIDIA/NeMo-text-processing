@@ -16,16 +16,18 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.kn.graph_utils import (
+    COMMA,
     MINUS,
     NEMO_ALL_DIGIT,
     NEMO_DIGIT,
     PERIOD,
-    COMMA,
     GraphFst,
     insert_space,
 )
 from nemo_text_processing.text_normalization.kn.utils import get_abs_path
+
 _ZEROS = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+
 
 class DecimalFst(GraphFst):
     """
