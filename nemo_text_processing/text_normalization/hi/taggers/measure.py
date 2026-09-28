@@ -467,7 +467,7 @@ class MeasureFst(GraphFst):
             + cardinal_graph
             + pynutil.insert("\"")
         )
-        
+
         # Math Graph
         math_separator = pynini.string_file(get_abs_path("data/measure/math_separator.tsv"))
         math_operations = pynini.string_file(get_abs_path("data/measure/math_operation.tsv"))
@@ -481,9 +481,7 @@ class MeasureFst(GraphFst):
         digit_or_zero = digit | zero
         fractional_bare = digit_or_zero + pynini.closure(insert_space + digit_or_zero)
 
-        flat_decimal = (
-            cardinal_graph + pynutil.insert(" ") + math_separator + pynutil.insert(" ") + fractional_bare
-        )
+        flat_decimal = cardinal_graph + pynutil.insert(" ") + math_separator + pynutil.insert(" ") + fractional_bare
 
         operand = optional_unary + (cardinal_graph | flat_decimal | math_alpha)
 
