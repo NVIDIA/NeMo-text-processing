@@ -16,7 +16,7 @@ runtest () {
     spoken=${testcase_tokenized[1]}
 
     # replace non breaking space with breaking space
-    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
+    denorm_pred=$(echo $written | normalizer_main --config=sparrowhawk_configuration_pp.ascii_proto 2>&1 | tail -n 1 | sed 's/\xC2\xA0/ /g')
 
     # trim white space
     spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
@@ -79,6 +79,11 @@ testTNTelephone() {
 
 testTNElectronic() {
   input=$PROJECT_DIR/pt/data_text_normalization/test_cases_electronic.txt
+  runtest $input
+}
+
+testTNPunctuation() {
+  input=$PROJECT_DIR/pt/data_text_normalization/test_cases_punctuation.txt
   runtest $input
 }
 

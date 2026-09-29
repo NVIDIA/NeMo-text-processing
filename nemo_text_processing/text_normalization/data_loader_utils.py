@@ -47,6 +47,8 @@ known_types = [
     "ADDRESS",
     "ROMAN",
     "RANGE",
+    "SERIAL",
+    "WHITELIST",
 ]
 
 
