@@ -40,20 +40,21 @@ def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: 
         graph: A pynini.FstLike object
     """
     old_orth = number.replace("lj", "lli")
+    optional_space = pynini.closure(insert_space, 0, 1)
     graph = pynutil.add_weight(pynini.cross("001", number), -0.001)
     if not deterministic:
         graph |= pynutil.add_weight(pynini.cross("001", old_orth), -0.001)
         # 'ett' is usually wrong for these numbers, but it occurs
         for one in ["en", "ett"]:
-            graph |= pynutil.add_weight(pynini.cross("001", f"{one} {number}"), -0.001)
-            graph |= pynutil.add_weight(pynini.cross("001", f"{one} {old_orth}"), -0.001)
-            graph |= pynutil.add_weight(pynini.cross("001", f"{one}{number}"), -0.001)
-            graph |= pynutil.add_weight(pynini.cross("001", f"{one}{old_orth}"), -0.001)
+            article = pynini.cross("001", one) + optional_space
+            graph |= pynutil.add_weight(article + pynutil.insert(number), -0.001)
+            graph |= pynutil.add_weight(article + pynutil.insert(old_orth), -0.001)
     plural_suffix = pynutil.insert("er")
     graph |= non_zero_no_one + insert_space + pynutil.insert(number) + plural_suffix
     if not deterministic:
-        graph |= pynutil.add_weight(non_zero_no_one + insert_space + pynutil.insert(old_orth) + plural_suffix, -0.001)
-        graph |= pynutil.add_weight(non_zero_no_one + pynutil.insert(old_orth) + plural_suffix, -0.001)
+        graph |= pynutil.add_weight(
+            non_zero_no_one + optional_space + pynutil.insert(old_orth) + plural_suffix, -0.001
+        )
     graph |= pynutil.delete("000")
     graph += insert_space
     return graph
