@@ -7,6 +7,7 @@ runtest () {
   input=$1
   echo "INPUT is $input"
   cd ${GRAMMARS_DIR}
+  non_breaking_space=$(printf '\302\240')  # U+00A0
 
   # read test file
   while read testcase; do
@@ -15,7 +16,7 @@ runtest () {
 
     # trim white space
     spoken="$(echo -e "${spoken}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    denorm_pred="$(echo -e "${denorm_pred}" | sed -e 's/ / /g' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    denorm_pred="$(echo -e "${denorm_pred}" | sed -e "s/${non_breaking_space}/ /g" -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
     # input expected actual
     assertEquals "$written" "$spoken" "$denorm_pred"
