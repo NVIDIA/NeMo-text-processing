@@ -151,7 +151,15 @@ class TimeFst(GraphFst):
             | ((graph_saade | graph_sava | graph_paune) + pynini.closure(delete_space + delete_baje))
         )
 
+        time_zone_graph = pynini.invert(pynini.string_file(get_abs_path("data/time/time_zone.tsv")))
+        final_time_zone_optional = pynini.closure(
+            delete_space + insert_space + pynutil.insert("zone: \"") + time_zone_graph + pynutil.insert("\""),
+            0,
+            1,
+        )
+
         graph = graph_hms | graph_hm | graph_hs | graph_ms | graph_hour | graph_quarterly_measures
+        graph = graph + final_time_zone_optional
         self.graph = graph.optimize()
 
         final_graph = self.add_tokens(graph)

@@ -83,6 +83,21 @@ testITNWhiteList() {
   runtest $input
 }
 
+testITNElectronic() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_electronic.txt
+  runtest $input
+}
+
+testITNSerial() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_serial.txt
+  runtest $input
+}
+
+testITNRoman() {
+  input=$PROJECT_DIR/hi/data_inverse_text_normalization/test_cases_roman.txt
+  runtest $input
+}
+
 
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2

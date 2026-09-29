@@ -38,6 +38,8 @@ class InverseNormalizer(Normalizer):
         overwrite_cache: set to True to overwrite .far files
         max_number_of_permutations_per_split: a maximum number
             of permutations which can be generated from input sequence of tokens.
+        post_process: whether to apply language-specific punctuation post-processing
+            (currently used by Hindi). On by default.
     """
 
     def __init__(
@@ -48,6 +50,7 @@ class InverseNormalizer(Normalizer):
         cache_dir: str = None,
         overwrite_cache: bool = False,
         max_number_of_permutations_per_split: int = 729,
+        post_process: bool = True,
     ):
 
         assert input_case in ["lower_cased", "cased"]
@@ -156,6 +159,18 @@ class InverseNormalizer(Normalizer):
         self.parser = TokenParser()
         self.lang = lang
         self.max_number_of_permutations_per_split = max_number_of_permutations_per_split
+
+        # Optional punctuation post-processor, applied by Normalizer.normalize().
+        # Follows the en/vi pattern: a separate FST held on the normalizer and
+        # gated behind the `post_process` flag, rather than baked into the verbalizer.
+        self.post_processor = None
+        if lang == 'hi' and post_process:
+            from nemo_text_processing.inverse_text_normalization.hi.verbalizers.postprocessor import PostProcessor
+
+            self.post_processor = PostProcessor(
+                remove_space_before_punct=True,
+                remove_space_after_bracket=True,
+            )
 
     def inverse_normalize_list(self, texts: List[str], verbose=False) -> List[str]:
         """

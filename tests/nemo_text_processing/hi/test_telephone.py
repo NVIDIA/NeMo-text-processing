@@ -28,4 +28,4 @@ class TestTelephone:
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
         pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
-        assert pred.strip() == expected.strip()
+        assert pred == expected

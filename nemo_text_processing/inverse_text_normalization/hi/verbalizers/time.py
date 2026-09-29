@@ -102,7 +102,17 @@ class TimeFst(GraphFst):
             + delete_space
         )
 
+        zone = (
+            pynutil.delete("zone:")
+            + delete_space
+            + pynutil.delete("\"")
+            + pynini.closure(NEMO_CHAR - " ", 1)
+            + pynutil.delete("\"")
+        )
+        optional_zone = pynini.closure(delete_space + insert_space + zone, 0, 1)
+
         graph = graph_hour | graph_hms | graph_hm | graph_hs | graph_ms
+        graph = graph + optional_zone
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

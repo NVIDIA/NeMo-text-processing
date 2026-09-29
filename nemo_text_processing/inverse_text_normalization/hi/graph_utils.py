@@ -34,6 +34,21 @@ graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
 NEMO_HI_DIGIT = pynini.union("०", "१", "२", "३", "४", "५", "६", "७", "८", "९").optimize()
 DEVANAGARI_DIGIT = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"]
 
+DIGIT_GLYPH_TO_ASCII = pynini.union(
+    *[pynini.cross(glyph, str(value)) for value, glyph in enumerate(DEVANAGARI_DIGIT)]
+).optimize()
+DIGIT_WORD_TO_DEVANAGARI = (
+    pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
+    | pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
+).optimize()
+
+# Devanagari characters (consonants, vowels, matras, signs) excluding the digits
+# (0x0966-0x096F). Shared so classes like serial and electronic can reuse it.
+DEVANAGARI_LETTER = pynini.union(
+    *[chr(c) for c in range(0x0900, 0x0966)],
+    *[chr(c) for c in range(0x0970, 0x0980)],
+).optimize()
+
 NEMO_HEX = pynini.union(*string.hexdigits).optimize()
 NEMO_NON_BREAKING_SPACE = u"\u00a0"
 NEMO_ZWNJ = u"\u200c"
@@ -81,6 +96,34 @@ def generator_main(file_name: str, graphs: Dict[str, 'pynini.FstLike']):
         exporter[rule] = graph.optimize()
     exporter.close()
     logging.info(f'Created {file_name}')
+
+
+def load_symbols(path):
+    """
+    Builds a dict mapping a symbol name to an FST that deletes a spoken Hindi
+    phrase and inserts its written form. TSV columns: name, spoken phrase, output
+    (optional). Rows sharing a name are unioned; "<space>" in the output inserts a
+    space.
+    """
+    table = {}
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.rstrip("\r\n")
+            if not line or line.startswith("#"):
+                continue
+            cols = line.split("\t")
+            name = cols[0]
+            words = cols[1].split(" ")
+            out = cols[2] if len(cols) > 2 else ""
+            if out == "<space>":
+                out = " "
+            fst = pynutil.delete(words[0])
+            for word in words[1:]:
+                fst += delete_space + pynutil.delete(word)
+            if out:
+                fst += pynutil.insert(out)
+            table[name] = (table[name] | fst) if name in table else fst
+    return table
 
 
 def convert_space(fst) -> 'pynini.FstLike':
