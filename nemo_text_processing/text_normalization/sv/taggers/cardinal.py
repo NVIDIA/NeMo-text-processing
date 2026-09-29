@@ -44,7 +44,8 @@ def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: 
     graph = pynutil.add_weight(pynini.cross("001", number), -0.001)
     if not deterministic:
         graph |= pynutil.add_weight(pynini.cross("001", old_orth), -0.001)
-        # 'ett' is usually wrong for these numbers, but it occurs
+        # "million" by default, this covers "one million"; "en" is the
+        # correct form of "one" for these words, but "ett" is also possible
         for one in ["en", "ett"]:
             article = pynini.cross("001", one) + optional_space
             graph |= pynutil.add_weight(article + pynutil.insert(number), -0.001)
