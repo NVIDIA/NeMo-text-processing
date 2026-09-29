@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.hi.graph_utils import (
     NEMO_ALL_DIGIT,
     NEMO_ALL_ZERO,
+    NEMO_DIGIT,
     GraphFst,
     insert_space,
 )
@@ -348,10 +349,45 @@ class CardinalFst(GraphFst):
         )
         cardinal_with_leading_zeros = pynutil.add_weight(cardinal_with_leading_zeros, 0.5)
 
+        # Handle large numbers written with digit-group separators.
+        delete_separator = pynutil.delete(",")
+        two_digits = NEMO_ALL_DIGIT + NEMO_ALL_DIGIT
+        three_digits = NEMO_ALL_DIGIT + NEMO_ALL_DIGIT + NEMO_ALL_DIGIT
+        # Indian grouping: 1-2 leading digits, groups of 2, final group of 3.
+        indian_grouping = (
+            pynini.closure(NEMO_ALL_DIGIT, 1, 2)
+            + pynini.closure(delete_separator + two_digits)
+            + delete_separator
+            + three_digits
+        )
+        # International grouping: 1-3 leading digits, one or more groups of 3.
+        western_grouping = pynini.closure(NEMO_ALL_DIGIT, 1, 3) + pynini.closure(delete_separator + three_digits, 1)
+        strip_separators = (indian_grouping | western_grouping).optimize()
+        cardinal_with_separators = pynini.compose(strip_separators, graph_without_leading_zeros).optimize()
+
         # Full graph including leading zeros - for standalone cardinal matching
-        final_graph = graph_without_leading_zeros | cardinal_with_leading_zeros
+        final_graph = graph_without_leading_zeros | cardinal_with_leading_zeros | cardinal_with_separators
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
+
+        # --- Centralized logic for Address & Serial classes ---
+        # 1-3 digit groups read as cardinals, 4+ digits read digit-by-digit
+        limited_cardinal_graph = (self.digit | self.zero | self.teens_and_ties | self.graph_hundreds).optimize()
+
+        any_digit = pynini.union(
+            NEMO_DIGIT,
+            pynini.project(
+                pynini.union(
+                    pynini.string_file(get_abs_path("data/numbers/digit.tsv")),
+                    pynini.string_file(get_abs_path("data/numbers/zero.tsv")),
+                ),
+                "input",
+            ),
+        ).optimize()
+
+        digitwise_4plus = pynini.compose(any_digit**4 + pynini.closure(any_digit), self.single_digits_graph).optimize()
+
+        self.code_num_graph = (limited_cardinal_graph | digitwise_4plus).optimize()
 
         self.final_graph = final_graph.optimize()
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.final_graph + pynutil.insert("\"")

@@ -17,7 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.ja.utils import get_abs_path
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
 
 
 class TimeFst(GraphFst):
@@ -36,32 +36,39 @@ class TimeFst(GraphFst):
         graph_cardinal = cardinal.just_cardinals
 
         hour_clock = pynini.string_file(get_abs_path("data/time/hour.tsv"))
-        minute_clock = pynini.string_file(get_abs_path("data/time/minute.tsv"))
-        second_clock = pynini.string_file(get_abs_path("data/time/second.tsv"))
+        minute_second_clock = pynini.string_file(get_abs_path("data/time/minute_second.tsv"))
         division = pynini.string_file(get_abs_path("data/time/division.tsv"))
+        zero_decimal = pynini.string_file(get_abs_path("data/numbers/zero_decimal.tsv"))
+        decimal_point = pynini.string_file(get_abs_path("data/numbers/decimal_point.tsv"))
+        suffixes = dict(load_labels(get_abs_path("data/time/suffix.tsv")))
+        hour_suffix = suffixes["hour"]
+        hour_variants = pynini.union(hour_suffix, suffixes["duration_hour"], suffixes["approximate_hour"])
+        minute_suffix = suffixes["minute"]
+        minute_modifier = pynini.union(suffixes["past"], suffixes["approximate"])
+        half = suffixes["half"]
+        second_suffix = suffixes["second"]
 
-        division_component = pynutil.insert("suffix: \"") + division + pynutil.insert("\"")
+        division_component = pynutil.insert('suffix: "') + division + pynutil.insert('"')
+        hour_number = pynutil.add_weight(zero_decimal, -0.1) | graph_cardinal
         hour_component = (
-            pynutil.insert("hours: \"")
-            + (graph_cardinal | (graph_cardinal + pynini.cross(".", "点") + graph_cardinal))
-            + (pynini.accep("時") | pynini.accep("時間") | pynini.accep("時頃"))
-            + pynutil.insert("\"")
+            pynutil.insert('hours: "')
+            + (hour_number | (graph_cardinal + decimal_point + graph_cardinal))
+            + hour_variants
+            + pynutil.insert('"')
         )
-        minute_component = pynutil.insert("minutes: \"") + (
-            graph_cardinal | (graph_cardinal + pynini.cross(".", "点") + graph_cardinal)
-        ) + pynini.accep("分") + pynini.closure((pynini.accep("過ぎ") | pynini.accep("頃")), 0, 1) + pynutil.insert(
-            "\""
-        ) | (
-            pynutil.insert("minutes: \"")
-            + pynini.accep("半")
-            + pynini.closure((pynini.accep("過ぎ") | pynini.accep("頃")), 0, 1)
-            + pynutil.insert("\"")
+        minute_component = pynutil.insert('minutes: "') + (
+            graph_cardinal | (graph_cardinal + decimal_point + graph_cardinal)
+        ) + pynini.accep(minute_suffix) + pynini.closure(minute_modifier, 0, 1) + pynutil.insert('"') | (
+            pynutil.insert('minutes: "')
+            + pynini.accep(half)
+            + pynini.closure(minute_modifier, 0, 1)
+            + pynutil.insert('"')
         )
         second_component = (
-            pynutil.insert("seconds: \"")
-            + (graph_cardinal | (graph_cardinal + pynini.cross(".", "点") + graph_cardinal))
-            + pynini.accep("秒")
-            + pynutil.insert("\"")
+            pynutil.insert('seconds: "')
+            + (graph_cardinal | (graph_cardinal + decimal_point + graph_cardinal))
+            + pynini.accep(second_suffix)
+            + pynutil.insert('"')
         )
 
         graph_individual_time = pynini.closure(division_component + pynutil.insert(" "), 0, 1) + (
@@ -75,28 +82,28 @@ class TimeFst(GraphFst):
 
         colon = pynutil.delete(":")
         hour_clock_component = (
-            pynutil.insert("hours: \"")
+            pynutil.insert('hours: "')
             + pynutil.delete("0").ques
             + hour_clock
-            + pynutil.insert("時")
-            + pynutil.insert("\"")
+            + pynutil.insert(hour_suffix)
+            + pynutil.insert('"')
         )
         minute_clock_component = (
-            pynutil.insert("minutes: \"")
+            pynutil.insert('minutes: "')
             + pynutil.delete("0").ques
-            + minute_clock
-            + pynutil.insert("分")
-            + pynutil.insert("\"")
+            + minute_second_clock
+            + pynutil.insert(minute_suffix)
+            + pynutil.insert('"')
         )
         second_clock_component = (
-            pynutil.insert("seconds: \"")
+            pynutil.insert('seconds: "')
             + pynutil.delete("0").ques
-            + second_clock
-            + pynutil.insert("秒")
-            + pynutil.insert("\"")
+            + minute_second_clock
+            + pynutil.insert(second_suffix)
+            + pynutil.insert('"')
         )
 
-        graph_clock = (
+        graph_clock_with_seconds = (
             hour_clock_component
             + pynutil.insert(" ")
             + colon
@@ -104,7 +111,10 @@ class TimeFst(GraphFst):
             + pynutil.insert(" ")
             + colon
             + second_clock_component
-        ) | (hour_clock_component + pynutil.insert(" ") + colon + minute_clock_component)
+        )
+        graph_clock_with_minutes = hour_clock_component + pynutil.insert(" ") + colon + minute_clock_component
+        graph_clock_without_minutes = hour_clock_component + colon + pynutil.delete("00")
+        graph_clock = graph_clock_with_seconds | graph_clock_with_minutes | graph_clock_without_minutes
 
         graph = graph_individual_time | graph_clock
 

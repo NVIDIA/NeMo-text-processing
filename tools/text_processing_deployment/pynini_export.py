@@ -278,6 +278,7 @@ if __name__ == '__main__':
         from nemo_text_processing.text_normalization.ar.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
+        from nemo_text_processing.text_normalization.ar.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'it':
         from nemo_text_processing.text_normalization.it.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,

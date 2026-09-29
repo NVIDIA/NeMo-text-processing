@@ -129,43 +129,24 @@ class FractionFst(GraphFst):
         # Sigma for rewrite context (entire string)
         sigma = pynini.closure(NEMO_NOT_QUOTE | NEMO_SPACE)
 
-        # Fix subject particle agreement (이 → 가 for vowel-ending numerals)
-        # e.g., 사이 → 사가, 구이 → 구가
-        subject_rewrite = pynini.cdrewrite(
+        # Fix particle agreement for vowel-ending numerals.
+        # Subject: 이 -> 가
+        # Topic: 은 -> 는
+        # Object: 을 -> 를
+        particle_rewrite = pynini.cdrewrite(
             pynini.string_map(
                 [
+                    # Subject particle
                     ("이이", "이가"),
                     ("사이", "사가"),
                     ("오이", "오가"),
                     ("구이", "구가"),
-                ]
-            ),
-            "",
-            "",
-            sigma,
-        )
-
-        # Fix topic particle agreement (은 → 는)
-        # e.g., 이은 → 이는, 사은 → 사는
-        topic_rewrite = pynini.cdrewrite(
-            pynini.string_map(
-                [
+                    # Topic particle
                     ("이은", "이는"),
                     ("사은", "사는"),
                     ("오은", "오는"),
                     ("구은", "구는"),
-                ]
-            ),
-            "",
-            "",
-            sigma,
-        )
-
-        # Fix object particle agreement (을 → 를)
-        # e.g., 오을 → 오를, 이을 → 이를
-        object_rewrite = pynini.cdrewrite(
-            pynini.string_map(
-                [
+                    # Object particle
                     ("이을", "이를"),
                     ("사을", "사를"),
                     ("오을", "오를"),
@@ -178,5 +159,5 @@ class FractionFst(GraphFst):
         )
 
         # Apply all rewrite rules sequentially and final optimized FST
-        final_graph = final_graph @ subject_rewrite @ topic_rewrite @ object_rewrite
+        final_graph = final_graph @ particle_rewrite
         self.fst = final_graph.optimize()

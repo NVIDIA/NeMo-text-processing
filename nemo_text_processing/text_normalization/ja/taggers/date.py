@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.ja.graph_utils import (
     NEMO_NON_BREAKING_SPACE,
     GraphFst,
 )
-from nemo_text_processing.text_normalization.ja.utils import get_abs_path
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
 
 
 class DateFst(GraphFst):
@@ -70,17 +70,29 @@ class DateFst(GraphFst):
         week = pynini.string_file(get_abs_path("data/date/week.tsv"))
         era = pynini.string_file(get_abs_path("data/date/era.tsv"))
         era_abbrev = pynini.string_file(get_abs_path("data/date/era_abbrev.tsv"))
+        suffixes = dict(load_labels(get_abs_path("data/date/suffix.tsv")))
+        year_suffix = suffixes["year"]
+        month_suffix = suffixes["month"]
+        day_suffix = suffixes["day"]
+        century_suffix = suffixes["century"]
+        decade_suffix = suffixes["decade"]
+        ten_day_period = pynini.union(
+            suffixes["early_ten_days"],
+            suffixes["middle_ten_days"],
+            suffixes["late_ten_days"],
+        )
+        range_separator = pynini.string_file(get_abs_path("data/punctuation/range.tsv"))
 
         signs = pynutil.delete("/") | pynutil.delete(".") | pynutil.delete("-")
         delete_spaces = pynini.closure(
             pynutil.delete(" ") | pynutil.delete(NEMO_NARROW_NON_BREAK_SPACE) | pynutil.delete(NEMO_NON_BREAKING_SPACE)
         )
 
-        era_component = pynutil.insert("era: \"") + era + pynutil.insert("\"")
-        era_abbrev_component = pynutil.insert("era: \"") + era_abbrev + pynutil.insert("\"")
-        year_component = pynutil.insert("year: \"") + graph_cardinal + pynutil.insert("年") + pynutil.insert("\"")
-        month_component = pynutil.insert("month: \"") + month + pynutil.insert("月") + pynutil.insert("\"")
-        day_component = pynutil.insert("day: \"") + day + pynutil.insert("日") + pynutil.insert("\"")
+        era_component = pynutil.insert('era: "') + era + pynutil.insert('"')
+        era_abbrev_component = pynutil.insert('era: "') + era_abbrev + pynutil.insert('"')
+        year_component = pynutil.insert('year: "') + graph_cardinal + pynutil.insert(year_suffix) + pynutil.insert('"')
+        month_component = pynutil.insert('month: "') + month + pynutil.insert(month_suffix) + pynutil.insert('"')
+        day_component = pynutil.insert('day: "') + day + pynutil.insert(day_suffix) + pynutil.insert('"')
 
         front_bracket = (
             (
@@ -119,24 +131,24 @@ class DateFst(GraphFst):
         # this graph optionally accepts () around weekday to accomodate to inputs like (月〜金), thus being longer
 
         week_component = (
-            (front_bracket + pynutil.insert("weekday: \"") + week + preceding_bracket + pynutil.insert("\""))
+            (front_bracket + pynutil.insert('weekday: "') + week + preceding_bracket + pynutil.insert('"'))
             | (
                 front_bracket
-                + pynutil.insert("weekday: \"")
+                + pynutil.insert('weekday: "')
                 + week
-                + pynini.cross("〜", "から")
+                + range_separator
                 + week
                 + preceding_bracket
-                + pynutil.insert("\"")
+                + pynutil.insert('"')
             )
             | (
                 front_bracket
-                + pynutil.insert("weekday: \"")
+                + pynutil.insert('weekday: "')
                 + week
                 + pynutil.delete("・")
                 + week
                 + preceding_bracket
-                + pynutil.insert("\"")
+                + pynutil.insert('"')
             )
         )
 
@@ -154,37 +166,33 @@ class DateFst(GraphFst):
         # 2024年, 9月, 28日
         individual_year_component = (
             pynini.closure(era_component + pynutil.insert(" "), 0, 1)
-            + pynutil.insert("year: \"")
+            + pynutil.insert('year: "')
             + graph_cardinal
-            + pynini.accep("年")
-            + pynutil.insert("\"")
+            + pynini.accep(year_suffix)
+            + pynutil.insert('"')
         )
         # this extra individual year component is to accomodate inputs R. 2024 with out "年"
         # the inputs may or maynot include "年", thus below:
         individual_year_component_2 = (
             pynini.closure(era_component + pynutil.insert(" "), 0, 1)
-            + pynutil.insert("year: \"")
+            + pynutil.insert('year: "')
             + graph_cardinal
-            + (pynini.accep("世紀") | pynini.accep(""))
-            + pynutil.insert("\"")
+            + (pynini.accep(century_suffix) | pynini.accep(""))
+            + pynutil.insert('"')
         ) | (
             era_abbrev_component
             + pynutil.insert(" ")
-            + pynutil.insert("year: \"")
+            + pynutil.insert('year: "')
             + graph_cardinal
-            + pynutil.insert("年")
-            + pynutil.insert("\"")
+            + pynutil.insert(year_suffix)
+            + pynutil.insert('"')
         )
 
         individual_month_component = (
-            pynutil.insert("month: \"") + month + pynini.accep("月") + pynutil.insert("\"")
-        ) | (
-            pynutil.insert("month: \"")
-            + (pynini.accep("中旬") | pynini.accep("下旬") | pynini.accep("上旬"))
-            + pynutil.insert("\"")
-        )
+            pynutil.insert('month: "') + month + pynini.accep(month_suffix) + pynutil.insert('"')
+        ) | (pynutil.insert('month: "') + ten_day_period + pynutil.insert('"'))
         individual_day_component = (
-            pynutil.insert("day: \"") + graph_cardinal + pynini.accep("日") + pynutil.insert("\"")
+            pynutil.insert('day: "') + graph_cardinal + pynini.accep(day_suffix) + pynutil.insert('"')
         )
 
         graph_individual_component = (
@@ -208,13 +216,13 @@ class DateFst(GraphFst):
             )
         ) + pynini.closure(pynutil.insert(" ") + week_component, 0, 1)
 
-        nendai = pynini.accep("年代")
+        nendai = pynini.accep(decade_suffix)
         era_nendai = (
             pynini.closure(era_component + pynutil.insert(" "), 0, 1)
-            + pynutil.insert("year: \"")
+            + pynutil.insert('year: "')
             + graph_cardinal
             + nendai
-            + pynutil.insert("\"")
+            + pynutil.insert('"')
         )
 
         graph_all_date = (

@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.ja.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_DIGIT, GraphFst
 from nemo_text_processing.text_normalization.ja.utils import get_abs_path
 
 
@@ -24,6 +24,7 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal, e.g.
         0.5 -> decimal { integer_part: "零" fractional_part: "五" }
+        0.05 -> decimal { integer_part: "零" fractional_part: "零五" }
         -0.5万 -> decimal { negative: "マイナス" integer_part: "零" fractional_part: "五" quantity: "万"}
 
     Args:
@@ -35,21 +36,30 @@ class DecimalFst(GraphFst):
 
         cardinal_before_decimal = cardinal.just_cardinals
         cardinal_after_decimal = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+        zero_decimal = pynini.string_file(get_abs_path("data/numbers/zero_decimal.tsv"))
+        decimal_point = pynini.string_file(get_abs_path("data/numbers/decimal_point.tsv"))
+        decimal_separator = pynini.project(decimal_point, "input")
+        sign = pynini.string_file(get_abs_path("data/numbers/sign.tsv"))
 
-        graph_integer = pynutil.insert('integer_part: \"') + cardinal_before_decimal + pynutil.insert("\"")
+        graph_integer = (
+            pynutil.insert('integer_part: "')
+            + (
+                zero_decimal
+                | (pynini.difference(NEMO_DIGIT, "0") @ cardinal_before_decimal)
+                | (pynini.closure(NEMO_DIGIT, 2) @ cardinal_before_decimal)
+            )
+            + pynutil.insert('"')
+        )
         graph_fraction = (
-            pynutil.insert("fractional_part: \"")
-            + pynini.closure((cardinal_after_decimal | zero), 1)
-            + pynutil.insert("\"")
+            pynutil.insert('fractional_part: "')
+            + pynini.closure((cardinal_after_decimal | zero_decimal), 1)
+            + pynutil.insert('"')
         )
-        graph_decimal_no_sign = graph_integer + pynutil.delete('.') + pynutil.insert(" ") + graph_fraction
+        graph_decimal_no_sign = (
+            graph_integer + pynutil.delete(decimal_separator) + pynutil.insert(" ") + graph_fraction
+        )
 
-        graph_optional_sign = (
-            pynutil.insert("negative: \"")
-            + (pynini.cross("-", "マイナス") | pynini.accep("マイナス"))
-            + pynutil.insert("\"")
-        )
+        graph_optional_sign = pynutil.insert('negative: "') + sign + pynutil.insert('"')
 
         graph_decimal = graph_decimal_no_sign | (graph_optional_sign + pynutil.insert(" ") + graph_decimal_no_sign)
 
