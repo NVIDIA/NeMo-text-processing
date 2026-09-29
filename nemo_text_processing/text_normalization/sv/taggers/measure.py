@@ -47,10 +47,11 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         cardinal_graph_ett = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
+        optional_dot = pynini.closure(pynutil.delete("."), 0, 1)
 
         graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
         graph_optionally_dotted_units = pynini.string_file(get_abs_path("data/measure/unit_optional_dot.tsv"))
-        graph_unit |= graph_optionally_dotted_units + pynini.closure(pynutil.delete("."), 0, 1)
+        graph_unit |= graph_optionally_dotted_units + optional_dot
         graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
         greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
