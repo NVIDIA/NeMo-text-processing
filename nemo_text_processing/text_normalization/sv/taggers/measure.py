@@ -47,8 +47,11 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         cardinal_graph_ett = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
+        optional_dot = pynini.closure(pynutil.delete("."), 0, 1)
 
         graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
+        graph_optionally_dotted_units = pynini.string_file(get_abs_path("data/measure/unit_optional_dot.tsv"))
+        graph_unit |= graph_optionally_dotted_units + optional_dot
         graph_unit_ett = pynini.string_file(get_abs_path("data/measure/unit_neuter.tsv"))
         graph_plurals = pynini.string_file(get_abs_path("data/measure/unit_plural.tsv"))
         greek_lower = pynini.string_file(get_abs_path("data/measure/greek_lower.tsv"))
@@ -215,13 +218,14 @@ class MeasureFst(GraphFst):
 
         math_operations = pynini.string_file(get_abs_path("data/math_operations.tsv"))
         delimiter = pynini.accep(" ") | pynutil.insert(" ")
+        math_operand = cardinal_graph_ett | SV_ALPHA | greek
 
         equals = pynini.cross("=", "är")
         if not deterministic:
             equals |= pynini.cross("=", "är lika med")
 
         math = (
-            (cardinal_graph_ett | SV_ALPHA | greek)
+            math_operand
             + delimiter
             + math_operations
             + (delimiter | SV_ALPHA)
@@ -229,11 +233,11 @@ class MeasureFst(GraphFst):
             + delimiter
             + equals
             + delimiter
-            + (cardinal_graph_ett | SV_ALPHA | greek)
+            + math_operand
         )
 
         math |= (
-            (cardinal_graph_ett | SV_ALPHA | greek)
+            math_operand
             + delimiter
             + equals
             + delimiter
@@ -243,6 +247,8 @@ class MeasureFst(GraphFst):
             + delimiter
             + cardinal_graph_ett
         )
+
+        math |= math_operand + delimiter + math_operations + delimiter + math_operand
 
         math = (
             pynutil.insert("units: \"math\" cardinal { integer: \"")

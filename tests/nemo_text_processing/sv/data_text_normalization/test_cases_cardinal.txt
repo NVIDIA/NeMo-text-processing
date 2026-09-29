@@ -18,6 +18,15 @@
 201~tvåhundraett
 111~hundraelva
 110~hundratio
+§ 3~paragraf tre
+3 §~paragraf tre
+kap. 9~kapitel nio
+9 kap~kapitel nio
+st. 2~stycke två
+2 st.~stycke två
+s. 4~sida fyra
+art. 7~artikel sju
+3 mom.~moment tre
 1000~tusen
 540~femhundrafyrtio
 850~åttahundrafemtio

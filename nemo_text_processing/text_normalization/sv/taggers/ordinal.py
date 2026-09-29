@@ -26,7 +26,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 
 
 class OrdinalFst(GraphFst):
@@ -200,12 +200,39 @@ class OrdinalFst(GraphFst):
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
         self.bare_ordinals = cleaned_graph
-        kapitlet_word = pynini.union("kapitlet", pynini.cross("kap", "kapitlet"))
-        kapitlet = cleaned_graph + NEMO_SPACE + kapitlet_word
+        reference_graph = pynini.Fst()
+        reference_number = (cleaned_graph | self.suffixed_to_words).optimize()
+        reference_groups = [
+            ("ordinal_common.tsv", "den", "denna"),
+            ("ordinal_neuter.tsv", "det", "detta"),
+        ]
+        for filename, article, demonstrative in reference_groups:
+            for written, definite, indefinite in load_labels(get_abs_path(f"data/reference/{filename}")):
+                optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
+                abbreviated_unit = pynutil.delete(written) + optional_dot
+                abbreviated_reference = reference_number + delete_space + abbreviated_unit
+                reference = reference_number + delete_space + (abbreviated_unit | pynutil.delete(definite))
+                reference_graph |= reference + insert_space + pynutil.insert(definite)
+                if not deterministic:
+                    reference_graph |= abbreviated_reference + insert_space + pynutil.insert(indefinite)
+                    reference_graph |= (
+                        pynutil.insert(article)
+                        + insert_space
+                        + abbreviated_reference
+                        + insert_space
+                        + pynutil.insert(definite)
+                    )
+                    reference_graph |= (
+                        pynutil.insert(demonstrative)
+                        + insert_space
+                        + abbreviated_reference
+                        + insert_space
+                        + pynutil.insert(indefinite)
+                    )
 
         tok_graph = (
             pynutil.insert("integer: \"")
-            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | kapitlet)
+            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | reference_graph)
             + pynutil.insert("\"")
         )
 
