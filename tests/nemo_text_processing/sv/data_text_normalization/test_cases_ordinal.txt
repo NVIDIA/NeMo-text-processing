@@ -4,3 +4,12 @@
 2.~andra
 20.~tjugonde
 23.~tjugotredje
+42.~fyrtioandra
+99.~nittionionde
+100.~hundrade
+101.~hundraförsta
+112.~hundratolfte
+200.~tvåhundrade
+999.~niohundranittionionde
+2 kap~andra kapitlet
+2 kapitlet~andra kapitlet
