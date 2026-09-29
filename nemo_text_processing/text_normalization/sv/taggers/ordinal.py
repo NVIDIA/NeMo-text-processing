@@ -201,6 +201,7 @@ class OrdinalFst(GraphFst):
 
         self.bare_ordinals = cleaned_graph
         reference_graph = pynini.Fst()
+        reference_number = (cleaned_graph | self.suffixed_to_words).optimize()
         reference_groups = [
             ("ordinal_common.tsv", "den", "denna"),
             ("ordinal_neuter.tsv", "det", "detta"),
@@ -208,17 +209,23 @@ class OrdinalFst(GraphFst):
         for filename, article, demonstrative in reference_groups:
             for written, definite, indefinite in load_labels(get_abs_path(f"data/reference/{filename}")):
                 optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
-                unit = pynutil.delete(written) + optional_dot | pynutil.delete(definite)
-                reference = cleaned_graph + delete_space + unit
+                abbreviated_unit = pynutil.delete(written) + optional_dot
+                abbreviated_reference = reference_number + delete_space + abbreviated_unit
+                reference = reference_number + delete_space + (abbreviated_unit | pynutil.delete(definite))
                 reference_graph |= reference + insert_space + pynutil.insert(definite)
                 if not deterministic:
+                    reference_graph |= abbreviated_reference + insert_space + pynutil.insert(indefinite)
                     reference_graph |= (
-                        pynutil.insert(article) + insert_space + reference + insert_space + pynutil.insert(definite)
+                        pynutil.insert(article)
+                        + insert_space
+                        + abbreviated_reference
+                        + insert_space
+                        + pynutil.insert(definite)
                     )
                     reference_graph |= (
                         pynutil.insert(demonstrative)
                         + insert_space
-                        + reference
+                        + abbreviated_reference
                         + insert_space
                         + pynutil.insert(indefinite)
                     )

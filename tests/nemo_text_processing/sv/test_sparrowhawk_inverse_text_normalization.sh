@@ -63,4 +63,6 @@ testITNWord() {
 }
 
 # Load shUnit2
+# Clear directory arguments before shUnit2 interprets them as test names.
+set --
 . $PROJECT_DIR/../shunit2/shunit2
