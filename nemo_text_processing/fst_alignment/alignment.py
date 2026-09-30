@@ -217,7 +217,7 @@ def indexed_map_to_output(alignment: List[tuple], start: int, end: int, mode: st
     # extend aligned_start to left
 
     while (
-        aligned_start - 1 > 0
+        aligned_start - 1 >= 0
         and alignment[aligned_start - 1][0] == EPS
         and (alignment[aligned_start - 1][1] in tn_itn_symbols or alignment[aligned_start - 1][1] == EPS)
     ):
