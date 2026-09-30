@@ -29,12 +29,18 @@ from nemo_text_processing.text_normalization.ta.utils import get_abs_path
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimals
-        e.g. "1.5" -> decimal { integer_part: "ஒன்று" fractional_part: "புள்ளி ஐந்து" }
-        e.g. "-2.67" -> decimal { negative: "true" integer_part: "இரண்டு" fractional_part: "புள்ளி ஆறு ஏழு" }
+    Finite state transducer for classifying decimals. The tagger only stores the digits after
+    the point; the verbalizer inserts the word for the decimal point (புள்ளி).
+        e.g. "1.5" -> decimal { integer_part: "ஒன்று" fractional_part: "ஐந்து" }
+        e.g. "-2.67" -> decimal { negative: "true" integer_part: "இரண்டு" fractional_part: "ஆறு ஏழு" }
+        e.g. "00.5" -> decimal { integer_part: "சுழியம் சுழியம்" fractional_part: "ஐந்து" }
+        e.g. ".5" -> decimal { fractional_part: "ஐந்து" }
+        Mixed Latin/Tamil digits (e.g. "௧.2") are not converted and pass through as a plain word token.
 
     Args:
         cardinal: CardinalFst
+        deterministic: if True will provide a single transduction option,
+            for False multiple transduction are generated (used for audio-based normalization)
     """
 
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
@@ -64,12 +70,7 @@ class DecimalFst(GraphFst):
             )
             without_int = delete_point + field("fractional_part", fraction)
             leading_zero_decimal = (
-                field("integer_part", leading_zero)
-                + delete_point
-                + insert_space
-                + pynutil.insert('fractional_part: "' + PERIOD + ' ')
-                + fraction
-                + pynutil.insert('"')
+                field("integer_part", leading_zero) + delete_point + insert_space + field("fractional_part", fraction)
             )
             return (leading_zero_decimal | with_int | without_int).optimize()
 

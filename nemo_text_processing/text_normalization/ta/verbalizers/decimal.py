@@ -18,7 +18,6 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.ta.graph_utils import (
     MINUS_WORD,
     NEMO_NOT_QUOTE,
-    PERIOD,
     POINT,
     GraphFst,
     delete_space,
@@ -27,9 +26,11 @@ from nemo_text_processing.text_normalization.ta.graph_utils import (
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for verbalizing decimals
-        e.g. decimal { integer_part: "ஒன்று" fractional_part: "புள்ளி ஐந்து" } -> "ஒன்று புள்ளி ஐந்து"
-        e.g. decimal { negative: "true" integer_part: "இரண்டு" fractional_part: "புள்ளி ஆறு ஏழு" } -> "கழித்தல் இரண்டு புள்ளி ஆறு ஏழு"
+    Finite state transducer for verbalizing decimals. The verbalizer inserts the word for the
+    decimal point (புள்ளி); the tagger only stores the digits after the point.
+        e.g. decimal { integer_part: "ஒன்று" fractional_part: "ஐந்து" } -> "ஒன்று புள்ளி ஐந்து"
+        e.g. decimal { negative: "true" integer_part: "இரண்டு" fractional_part: "ஆறு ஏழு" } -> "கழித்தல் இரண்டு புள்ளி ஆறு ஏழு"
+        e.g. decimal { fractional_part: "ஐந்து" } -> "புள்ளி ஐந்து"
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -47,31 +48,14 @@ class DecimalFst(GraphFst):
             pynini.cross('negative: "true" ', MINUS_WORD) + pynutil.insert(" "), 0, 1
         ).optimize()
 
-        # Literal-point case: fractional_part stores ". <digits>"
-        literal_fraction = (pynini.accep(PERIOD + " ") + not_quotes).optimize()
-        normal_fraction = pynini.difference(not_quotes, literal_fraction).optimize()
-
         with_int_prefix = (sign_with_space + quoted_integer + delete_space).optimize()
 
-        literal_point_decimal = (
-            with_int_prefix
-            + delete_fraction_open
-            + pynutil.delete(PERIOD + " ")
-            + pynutil.insert(" " + PERIOD + " ")
-            + not_quotes
-            + pynutil.delete('"')
-        ).optimize()
-
         with_integer = (
-            with_int_prefix
-            + pynutil.insert(f" {POINT} ")
-            + delete_fraction_open
-            + normal_fraction
-            + pynutil.delete('"')
+            with_int_prefix + pynutil.insert(f" {POINT} ") + delete_fraction_open + not_quotes + pynutil.delete('"')
         ).optimize()
 
         without_integer = (
             sign_with_space + pynutil.insert(f"{POINT} ") + delete_fraction_open + not_quotes + pynutil.delete('"')
         ).optimize()
 
-        self.fst = self.delete_tokens(literal_point_decimal | with_integer | without_integer).optimize()
+        self.fst = self.delete_tokens(with_integer | without_integer).optimize()
