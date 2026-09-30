@@ -96,7 +96,7 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst()
             cardinal_graph = cardinal.fst
 
-            ordinal = OrdinalFst(itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer)
+            ordinal = OrdinalFst(cardinal=cardinal)
             ordinal_graph = ordinal.fst
             decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger)
             decimal_graph = decimal.fst
