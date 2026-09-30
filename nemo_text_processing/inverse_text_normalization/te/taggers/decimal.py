@@ -71,7 +71,7 @@ class DecimalFst(GraphFst):
                 1,
             )
             + point
-            + delete_extra_space
+            + delete_space
             + graph_fractional
         )
 
