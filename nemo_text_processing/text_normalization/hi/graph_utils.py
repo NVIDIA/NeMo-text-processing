@@ -101,7 +101,7 @@ MIN_NEG_WEIGHT = -0.0001
 MIN_POS_WEIGHT = 0.0001
 INPUT_CASED = "cased"
 INPUT_LOWER_CASED = "lower_cased"
-MINUS = " ऋणात्मक "
+MINUS = "ऋणात्मक "
 
 
 def capitalized_input_graph(

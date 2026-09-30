@@ -15,13 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.hi.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.hi.graph_utils import MINUS, NEMO_NOT_QUOTE, GraphFst, delete_space
 
 
 class CardinalFst(GraphFst):
     """
     Finite state transducer for verbalizing cardinal, e.g.
-        cardinal { negative: "true" integer: "23" } -> minus twenty three
+        cardinal { negative: "true" integer: "तेईस" } -> ऋणात्मक तेईस
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -31,7 +31,7 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
-        self.optional_sign = pynini.cross("negative: \"true\"", "ऋणात्मक ")
+        self.optional_sign = pynini.cross("negative: \"true\"", MINUS)
         if not deterministic:
             self.optional_sign |= pynini.cross("negative: \"true\"", "माइनस ")
 
