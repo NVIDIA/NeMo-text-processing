@@ -58,13 +58,17 @@ class DecimalFst(GraphFst):
     The tagger accepts canonical verbalized decimal input whereby every digit after the comma is pronounced
     separately, so zwölf komma drei hundert fünfundvierzig is not read as a single decimal:
         e.g. zwölf komma drei vier fünf -> decimal { integer_part: "12" fractional_part: "345" }
+
     Magnitude words keep their full written form, the nouns capitalised and the numeral "tausend" lower case.
     After a bare integer "hundert" and "tausend" stay with the cardinal grammar, the larger scales do not:
         e.g. eine million -> decimal { integer_part: "1" quantity: "Million" }
         e.g. dreiviertel tausend -> decimal { integer_part: "0" fractional_part: "75" quantity: "tausend" }
+
     Only tausend, million and milliarde have abbreviated forms:
         for non-deterministic case: eine million ->
             decimal { integer_part: "1" quantity: "Mio." }
+    The abbreviations are only reachable by building ClassifyFst(deterministic=False) directly,
+    InverseNormalizer does not expose the flag.
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -98,8 +102,9 @@ class DecimalFst(GraphFst):
             + pynini.closure(NEMO_DIGIT, 1)
             + pynutil.insert('"')
         )
-        # "einhalb" attaches to a preceding integer (zwei einhalb -> 2,5), so it contributes only
-        # the digits after the comma and the integer part comes from graph_integer_or_zero
+        # fractions below one attach to a preceding integer (zwei einhalb -> 2,5) so they contribute
+        # only the digits after the comma, the integer part comes from graph_integer_or_zero;
+        # anderthalb carries its own integer part and cannot attach
         value_to_fractional = (
             pynutil.insert('fractional_part: "')
             + pynutil.delete(pynini.closure(NEMO_DIGIT, 1) + ",")
@@ -107,11 +112,14 @@ class DecimalFst(GraphFst):
             + pynutil.insert('"')
         )
 
-        half = pynini.compose(pynini.accep("einhalb") @ fraction_values, value_to_fractional)
-        graph_decimal_no_sign |= graph_integer_or_zero + half
+        decimal_value = pynini.closure(NEMO_DIGIT, 1) + pynini.accep(",") + pynini.closure(NEMO_DIGIT, 1)
+        below_one = pynini.accep("0,") + pynini.closure(NEMO_DIGIT, 1)
 
-        standalone = pynini.difference(pynini.project(fraction_values, "input"), pynini.accep("einhalb"))
-        graph_decimal_no_sign |= pynini.compose(standalone @ fraction_values, value_to_fields)
+        fraction_below_one = pynini.compose(fraction_values, below_one)
+        fraction_at_least_one = pynini.compose(fraction_values, pynini.difference(decimal_value, below_one))
+
+        graph_decimal_no_sign |= graph_integer_or_zero + pynini.compose(fraction_below_one, value_to_fractional)
+        graph_decimal_no_sign |= pynini.compose(fraction_at_least_one, value_to_fields)
 
         # measure and money splice this in and write the sign themselves
         self.final_graph_wo_negative = (

@@ -25,8 +25,15 @@ minus einhalb~-0,5
 minus einviertel~-0,25
 minus anderthalb~-1,5
 minus zweieinhalb~-2,5
+minus zwei einviertel~-2,25
+zwei einviertel~2,25
+zweieinviertel~2,25
+fünfdreiviertel~5,75
 minus drei komma fünf millionen~-3,5 Millionen
+viereinviertel millionen~4,25 Millionen
 minus zehn millionen~-10 Millionen
+ein hundert zwanzig millionen~120 Millionen
+vier hundert sechzig millionen~460 Millionen
 neun hundert neun und neunzig millionen~999 Millionen
 eine billion~1 Billion
 eins komma fünf billiarden~1,5 Billiarden
@@ -35,6 +42,7 @@ vier komma fünf trilliarden~4,5 Trilliarden
 zwei tausend~2.000
 zwei hundert~200
 eine milliarde~1 Milliarde
+achtzehn milliarden~18 Milliarden
 eine billiarde~1 Billiarde
 eine trillion~1 Trillion
 eine trilliarde~1 Trilliarde

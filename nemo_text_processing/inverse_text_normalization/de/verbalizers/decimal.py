@@ -38,7 +38,7 @@ class DecimalFst(GraphFst):
         )
 
         fullstop_accep = pynini.accep(".")
-        integer_chars = NEMO_DIGIT | fullstop_accep
+        integer_chars = NEMO_DIGIT | fullstop_accep | pynini.accep("/") | pynini.accep(" ")
         integer = (
             pynutil.delete("integer_part:")
             + delete_space

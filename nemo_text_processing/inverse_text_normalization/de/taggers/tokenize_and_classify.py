@@ -58,6 +58,8 @@ class ClassifyFst(GraphFst):
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
+        deterministic: if False the decimal grammar emits abbreviated magnitudes (Tsd., Mio., Mrd.).
+            InverseNormalizer always builds the deterministic grammar, so this is for direct construction only.
         whitelist: path to a file with whitelist replacements
         input_case: accepting either "lower_cased" or "cased" input.
     """
