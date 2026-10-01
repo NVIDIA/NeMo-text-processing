@@ -73,9 +73,8 @@ class DecimalFst(GraphFst):
                 + frac
                 + pynutil.insert('"')
             )
-            fraction_only = dot_delete + pynutil.insert('fractional_part: "') + frac + pynutil.insert('"')
 
-            return with_leading_zero | with_integer | fraction_only
+            return with_leading_zero | with_integer
 
         graph_same_script = (
             same_script(NEMO_DIGIT) | same_script(pynini.difference(NEMO_ALL_DIGIT, NEMO_DIGIT))
@@ -84,9 +83,9 @@ class DecimalFst(GraphFst):
         shape = pynini.closure(NEMO_ALL_DIGIT | COMMA, 1) + pynini.accep(PERIOD) + pynini.closure(NEMO_ALL_DIGIT, 1)
         passthrough = (
             pynutil.insert('integer_part: "')
+            + pynini.closure(pynini.accep(MINUS), 0, 1)
             + pynini.difference(shape, pynini.project(graph_same_script, "input"))
             + pynutil.insert('"')
         )
-
-        final_graph = (opt_neg + graph_same_script) | (pynini.closure(pynini.accep(MINUS), 0, 1) + passthrough)
+        final_graph = (opt_neg + graph_same_script) | passthrough
         self.fst = self.add_tokens(final_graph.optimize()).optimize()

@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_QUOTE, Decimal_word, GraphFst, Minus_word
+from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_QUOTE, DECIMAL_WORD, GraphFst, MINUS_WORD
 
 
 class DecimalFst(GraphFst):
@@ -28,17 +28,16 @@ class DecimalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        self.optional_sign = pynini.closure(pynini.cross('negative: "true" ', Minus_word + " "), 0, 1)
+        self.optional_sign = pynini.closure(pynini.cross('negative: "true" ', MINUS_WORD + " "), 0, 1)
         self.integer = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         self.fractional = (
             pynutil.delete('fractional_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         )
 
         graph_integer_and_fraction = (
-            self.integer + pynutil.delete(" ") + pynutil.insert(" " + Decimal_word + " ") + self.fractional
+            self.integer + pynutil.delete(" ") + pynutil.insert(" " + DECIMAL_WORD + " ") + self.fractional
         )
 
         graph_integer_only = self.integer
-        graph_fraction_only = pynutil.insert(Decimal_word + " ") + self.fractional
-        graph = self.optional_sign + (graph_integer_and_fraction | graph_integer_only | graph_fraction_only)
+        graph = self.optional_sign + (graph_integer_and_fraction | graph_integer_only)
         self.fst = self.delete_tokens(graph).optimize()
