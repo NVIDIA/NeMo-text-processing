@@ -15,7 +15,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_NOT_QUOTE, DECIMAL_WORD, GraphFst, MINUS_WORD
+from nemo_text_processing.text_normalization.kn.graph_utils import DECIMAL_WORD, MINUS_WORD, NEMO_NOT_QUOTE, GraphFst
 
 
 class DecimalFst(GraphFst):
