@@ -1,4 +1,6 @@
 ein hundertste~100.
+ein hundert erste~101.
+einhundertsiebte~107.
 fünf und zwanzig tausend ein hundert elftem~25111.
 fünfundzwanzigtausendeinhundertelftem~25111.
 zweite~zweite
@@ -13,8 +15,18 @@ dreizehntem~13.
 ein und zwanzigstes~21.
 drei und zwanzigstes~23.
 dreiundzwanzigstes~23.
+dreiundzwanzigsten~23.
+dreißigste~30.
+ein hundert dritte~103.
+einhundertdritte~103.
 ein hundert elftes~111.
-ein tausendstem~1000.
-dem ein tausendstem~dem 1000.
+ein hundert vierzigste~140.
+am hundertfünfzigsten~am 150.
+der tausendste~der 1000.
+dem tausendsten~dem 1000.
 ein hundert ein und zwanzigste~121.
 einhunderteinundzwanzigste~121.
+zwei tausend fünf und zwanzigster~2025.
+eine millionste~1000000.
+eine milliardste~1000000000.
+zum ersten Mal~zum ersten Mal
