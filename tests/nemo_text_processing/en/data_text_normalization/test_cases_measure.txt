@@ -19,3 +19,18 @@ covid-19.5~covid- nineteen point five
 41,459.00 km³~forty one thousand four hundred and fifty nine point zero zero cubic kilometers
 Nancy lived on 1428 Elm St.~Nancy lived on fourteen twenty eight Elm Street
 Nancy lived on 1428 Elm St. It was a strange place.~Nancy lived on fourteen twenty eight Elm Street. It was a strange place.
+5 mins~five minutes
+2 hrs~two hours
+30 secs~thirty seconds
+3 kgs~three kilograms
+2 wks~two weeks
+6 mos~six months
+5 yrs~five years
+2-3 mins~two to three minutes
+5 min~five minutes
+2 hr~two hours
+1 sec~one second
+3 kg~three kilograms
+2 wk~two weeks
+6 mo~six months
+5 yr~five years
