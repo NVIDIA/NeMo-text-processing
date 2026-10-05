@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -146,12 +146,18 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.ko.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'ta':  # Tamil
+            from nemo_text_processing.inverse_text_normalization.ta.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.ta.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
         else:
             raise NotImplementedError(f"Language {lang} has not been supported yet.")
 
         self.tagger = ClassifyFst(
             cache_dir=cache_dir, whitelist=whitelist, overwrite_cache=overwrite_cache, input_case=input_case
         )
+
         self.verbalizer = VerbalizeFinalFst()
         self.parser = TokenParser()
         self.lang = lang
@@ -211,6 +217,7 @@ def parse_args():
             'mr',
             'ja',
             'ko',
+            'ta',
         ],
         default="en",
         type=str,
