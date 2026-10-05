@@ -83,7 +83,6 @@ if __name__ == "__main__":
     inverse_normalizer = InverseNormalizer(
         lang=args.lang,
         input_case=args.input_case,
-        overwrite_cache=True,
     )
 
     if args.output_case == "lower_cased":

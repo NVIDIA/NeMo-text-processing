@@ -131,6 +131,7 @@ class CardinalFst(GraphFst):
             ("றாயிரம்", "று ஆயிரம்"),
             ("த்தாயிரம்", "த்து ஆயிரம்"),
             ("ந்தாயிரம்", "ந்து ஆயிரம்"),
+            ("தாயிரம்", "து ஆயிரம்"),
         ]
 
         thousand_fusion_pairs_with_join = []
@@ -154,9 +155,29 @@ class CardinalFst(GraphFst):
 
         graph_two_digit_thousand_multiplier = (self.graph_two_digit | graph_numeric_two_digit).optimize()
 
-        graph_two_digit_thousand_exact = graph_thousand_fusion_rewrite @ (
-            graph_two_digit_thousand_multiplier + pynini.cross(" ", "") + pynini.cross("ஆயிரம்", "௦௦௦")
-        )
+        tie_fused_pairs = []
+
+        with open(
+            nemo_text_processing.inverse_text_normalization.ta.utils.get_abs_path("data/numbers/teens_and_ties.tsv"),
+            encoding="utf-8-sig",
+        ) as f:
+            for line in f:
+                line = line.strip().lstrip("\ufeff")
+                if not line:
+                    continue
+
+                numeral, word = line.split("\t")
+
+                if word.endswith("ு"):
+                    stem = word[:-1]
+                    tie_fused_pairs.append((stem + "ாயிரம்", numeral))
+
+        graph_tie_fused = pynini.string_map(tie_fused_pairs)
+        graph_two_digit_thousand_exact = (
+            graph_thousand_fusion_rewrite
+            @ (graph_two_digit_thousand_multiplier + pynini.cross(" ", "") + pynini.cross("ஆயிரம்", "௦௦௦"))
+            | graph_tie_fused + pynutil.insert("௦௦௦")
+        ).optimize()
 
         # Hundreds.
         self.graph_exact_hundreds = graph_hundreds + pynutil.insert("௦௦")
