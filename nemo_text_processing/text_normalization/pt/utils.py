@@ -17,6 +17,7 @@ Portuguese (PT) text normalization utilities.
 
 Provides get_abs_path for resolving data paths and load_labels for reading TSV label files.
 """
+
 import csv
 import os
 
