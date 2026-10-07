@@ -53,9 +53,6 @@ class DecimalFst(GraphFst):
 
         optional_sign = pynini.closure(pynutil.insert("negative: ") + pynini.cross(MINUS, '"true" '), 0, 1)
 
-        def field(name, body):
-            return pynutil.insert(f'{name}: "') + body + pynutil.insert('"')
-
         def build(digits):
             zero = pynini.compose(pynini.project(zeros, "input"), digits).optimize()
             nonzero = pynini.difference(digits, zero).optimize()
@@ -65,13 +62,13 @@ class DecimalFst(GraphFst):
             fraction = pynini.compose(pynini.closure(digits, 1), cardinal.single_digits_graph).optimize()
             leading_zero = pynini.compose(zero + pynini.closure(digits, 1), cardinal.single_digits_graph).optimize()
 
-            with_int = (
-                field("integer_part", integer) + delete_point + insert_space + field("fractional_part", fraction)
-            )
-            without_int = delete_point + field("fractional_part", fraction)
-            leading_zero_decimal = (
-                field("integer_part", leading_zero) + delete_point + insert_space + field("fractional_part", fraction)
-            )
+            integer_part = pynutil.insert('integer_part: "') + integer + pynutil.insert('"')
+            leading_zero_part = pynutil.insert('integer_part: "') + leading_zero + pynutil.insert('"')
+            fractional_part = pynutil.insert('fractional_part: "') + fraction + pynutil.insert('"')
+
+            with_int = integer_part + delete_point + insert_space + fractional_part
+            without_int = delete_point + fractional_part
+            leading_zero_decimal = leading_zero_part + delete_point + insert_space + fractional_part
             return (leading_zero_decimal | with_int | without_int).optimize()
 
         final_graph = (optional_sign + (build(NEMO_DIGIT) | build(ta_digit))).optimize()
@@ -82,6 +79,6 @@ class DecimalFst(GraphFst):
         mixed = pynini.difference(
             script_decimal(NEMO_ALL_DIGIT), script_decimal(NEMO_DIGIT) | script_decimal(ta_digit)
         ).optimize()
-        mixed = field("name", sign + mixed).optimize()
+        mixed = (pynutil.insert('name: "') + sign + mixed + pynutil.insert('"')).optimize()
 
         self.fst = (self.add_tokens(final_graph) | mixed).optimize()
