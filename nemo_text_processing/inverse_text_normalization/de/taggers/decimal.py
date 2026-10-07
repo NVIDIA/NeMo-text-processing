@@ -19,38 +19,6 @@ from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
 
 
-def get_quantity(decimal: 'pynini.FstLike', cardinal: GraphFst, deterministic: bool = True) -> 'pynini.FstLike':
-    """
-    Returns FST that transforms either a cardinal or a decimal followed by a quantity into a numeral
-        e.g. zehn millionen -> integer_part: "10" quantity: "Millionen"
-        e.g. zehn komma fünf millionen -> integer_part: "10" fractional_part: "5" quantity: "Millionen"
-
-    Args:
-        decimal: decimal FST
-        cardinal: CardinalFst, provides the shared magnitude graph and the 1 - 999 graph
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated
-    """
-    quantity = cardinal.magnitude
-    if not deterministic:
-        # Tsd., Mio. and Mrd. are the only magnitudes German abbreviates, a convention
-        quantity |= pynini.string_file(get_abs_path("data/numbers/quantity_nondeterministic.tsv"))
-
-    big_quantity = pynini.compose(cardinal.big_magnitude_words, quantity)
-
-    res = (
-        pynutil.insert('integer_part: "')
-        + cardinal.graph_hundred_component_at_least_one_none_zero_digit
-        + pynutil.insert('"')
-        + pynutil.insert(' quantity: "')
-        + delete_space
-        + big_quantity
-        + pynutil.insert('"')
-    )
-    res |= decimal + pynutil.insert(' quantity: "') + delete_space + quantity + pynutil.insert('"')
-    return res
-
-
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal numbers
@@ -67,8 +35,9 @@ class DecimalFst(GraphFst):
     Only tausend, million and milliarde have abbreviated forms:
         for non-deterministic case: eine million ->
             decimal { integer_part: "1" quantity: "Mio." }
-    The abbreviations are only reachable by building ClassifyFst(deterministic=False) directly,
+    The abbreviations are only reachable by building ClassifyFst(deterministic=False) directly, since
     InverseNormalizer does not expose the flag.
+
     Args:
         cardinal: CardinalFst
         deterministic: if True will provide a single transduction option,
@@ -121,10 +90,29 @@ class DecimalFst(GraphFst):
         graph_decimal_no_sign |= graph_integer_or_zero + pynini.compose(fraction_below_one, value_to_fractional)
         graph_decimal_no_sign |= pynini.compose(fraction_at_least_one, value_to_fields)
 
+        quantity = cardinal.magnitude
+        if not deterministic:
+            # Tsd., Mio. and Mrd. are the only magnitudes German abbreviates, a convention
+            quantity |= pynini.string_file(get_abs_path("data/numbers/quantity_nondeterministic.tsv"))
+
+        big_quantity = pynini.compose(cardinal.big_magnitude_words, quantity)
+
+        graph_quantity = (
+            pynutil.insert('integer_part: "')
+            + cardinal.graph_hundred_component_at_least_one_none_zero_digit
+            + pynutil.insert('"')
+            + pynutil.insert(' quantity: "')
+            + delete_space
+            + big_quantity
+            + pynutil.insert('"')
+        )
+
+        graph_quantity |= (
+            graph_decimal_no_sign + pynutil.insert(' quantity: "') + delete_space + quantity + pynutil.insert('"')
+        )
+
         # measure and money splice this in and write the sign themselves
-        self.final_graph_wo_negative = (
-            graph_decimal_no_sign | get_quantity(graph_decimal_no_sign, cardinal, deterministic=deterministic)
-        ).optimize()
+        self.final_graph_wo_negative = (graph_decimal_no_sign | graph_quantity).optimize()
 
         final_graph = cardinal.optional_minus_graph + self.final_graph_wo_negative
         final_graph = self.add_tokens(final_graph)
