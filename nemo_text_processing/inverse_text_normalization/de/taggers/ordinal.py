@@ -40,7 +40,7 @@ class OrdinalFst(GraphFst):
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/irregular_digits.tsv"))
         graph_ties = pynini.string_file(get_abs_path("data/ordinals/ties.tsv"))
         graph_thousands = pynini.string_file(get_abs_path("data/ordinals/thousands.tsv"))
-        ordinal_stem = graph_digit | graph_ties | graph_thousands
+        self.ordinal_stem = (graph_digit | graph_ties | graph_thousands).optimize()
 
         suffixes = pynini.string_file(get_abs_path("data/ordinals/suffixes.tsv"))
 
@@ -49,7 +49,7 @@ class OrdinalFst(GraphFst):
 
         # a stem outside the tables is already the cardinal, so the rewrite only drops the ending
         to_cardinal_words = pynini.cdrewrite(
-            pynini.closure(ordinal_stem, 0, 1) + pynutil.delete(suffixes),
+            pynini.closure(self.ordinal_stem, 0, 1) + pynutil.delete(suffixes),
             "",
             "[EOS]",
             NEMO_SIGMA,
