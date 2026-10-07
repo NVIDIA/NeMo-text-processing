@@ -19,7 +19,6 @@ from nemo_text_processing.text_normalization.ta.graph_utils import (
     COMMA,
     MINUS,
     NEMO_ALL_DIGIT,
-    NEMO_DIGIT,
     PERIOD,
     GraphFst,
     insert_space,
@@ -31,11 +30,11 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimals. The tagger only stores the digits after
     the point; the verbalizer inserts the word for the decimal point (புள்ளி).
+    Both Latin (0-9) and Tamil (௦-௯) digits are accepted.
         e.g. "1.5" -> decimal { integer_part: "ஒன்று" fractional_part: "ஐந்து" }
         e.g. "-2.67" -> decimal { negative: "true" integer_part: "இரண்டு" fractional_part: "ஆறு ஏழு" }
         e.g. "00.5" -> decimal { integer_part: "சுழியம் சுழியம்" fractional_part: "ஐந்து" }
         e.g. ".5" -> decimal { fractional_part: "ஐந்து" }
-        Mixed Latin/Tamil digits (e.g. "௧.2") are not converted and pass through as a plain word token.
 
     Args:
         cardinal: CardinalFst
@@ -46,39 +45,28 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
-        ta_digit = pynini.difference(NEMO_ALL_DIGIT, NEMO_DIGIT).optimize()
         delete_point = pynutil.delete(PERIOD)
         zeros = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-        sign = pynini.closure(pynini.accep(MINUS), 0, 1)
+        digits = pynini.closure(NEMO_ALL_DIGIT, 1)
 
         optional_sign = pynini.closure(pynutil.insert("negative: ") + pynini.cross(MINUS, '"true" '), 0, 1)
 
-        def build(digits):
-            zero = pynini.compose(pynini.project(zeros, "input"), digits).optimize()
-            nonzero = pynini.difference(digits, zero).optimize()
-            valid_int = (zero | nonzero + pynini.closure(digits | pynini.accep(COMMA))).optimize()
+        zero = pynini.compose(pynini.project(zeros, "input"), NEMO_ALL_DIGIT).optimize()
+        nonzero = pynini.difference(NEMO_ALL_DIGIT, zero).optimize()
+        valid_int = (zero | nonzero + pynini.closure(NEMO_ALL_DIGIT | pynini.accep(COMMA))).optimize()
 
-            integer = pynini.compose(valid_int, cardinal.final_graph).optimize()
-            fraction = pynini.compose(pynini.closure(digits, 1), cardinal.single_digits_graph).optimize()
-            leading_zero = pynini.compose(zero + pynini.closure(digits, 1), cardinal.single_digits_graph).optimize()
+        integer = pynini.compose(valid_int, cardinal.final_graph).optimize()
+        fraction = pynini.compose(digits, cardinal.single_digits_graph).optimize()
+        leading_zero = pynini.compose(zero + digits, cardinal.single_digits_graph).optimize()
 
-            integer_part = pynutil.insert('integer_part: "') + integer + pynutil.insert('"')
-            leading_zero_part = pynutil.insert('integer_part: "') + leading_zero + pynutil.insert('"')
-            fractional_part = pynutil.insert('fractional_part: "') + fraction + pynutil.insert('"')
+        integer_part = pynutil.insert('integer_part: "') + integer + pynutil.insert('"')
+        leading_zero_part = pynutil.insert('integer_part: "') + leading_zero + pynutil.insert('"')
+        fractional_part = pynutil.insert('fractional_part: "') + fraction + pynutil.insert('"')
 
-            with_int = integer_part + delete_point + insert_space + fractional_part
-            without_int = delete_point + fractional_part
-            leading_zero_decimal = leading_zero_part + delete_point + insert_space + fractional_part
-            return (leading_zero_decimal | with_int | without_int).optimize()
+        with_int = integer_part + delete_point + insert_space + fractional_part
+        without_int = delete_point + fractional_part
+        leading_zero_decimal = leading_zero_part + delete_point + insert_space + fractional_part
 
-        final_graph = (optional_sign + (build(NEMO_DIGIT) | build(ta_digit))).optimize()
+        final_graph = optional_sign + (leading_zero_decimal | with_int | without_int)
 
-        def script_decimal(digit):
-            return pynini.closure(digit | pynini.accep(COMMA), 0) + PERIOD + pynini.closure(digit, 1)
-
-        mixed = pynini.difference(
-            script_decimal(NEMO_ALL_DIGIT), script_decimal(NEMO_DIGIT) | script_decimal(ta_digit)
-        ).optimize()
-        mixed = (pynutil.insert('name: "') + sign + mixed + pynutil.insert('"')).optimize()
-
-        self.fst = (self.add_tokens(final_graph) | mixed).optimize()
+        self.fst = self.add_tokens(final_graph).optimize()
