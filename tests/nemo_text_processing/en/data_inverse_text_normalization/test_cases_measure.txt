@@ -110,3 +110,7 @@ eight point five megawatts~8.5 mW
 eight point five meters~8.5 m
 eight point five two percent~8.52 %
 eight point four four percent~8.44 %
+two inches~2 in
+five feet ten inches~5 ft 10 in
+three point five inches~3.5 in
+it is ten inches long~it is 10 in long
