@@ -16,6 +16,7 @@ import pytest
 from parameterized import parameterized
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
+
 from ..utils import parse_test_case_file
 
 

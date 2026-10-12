@@ -44,7 +44,10 @@ pipeline {
 
     stage('NeMo Installation') {
       steps {
-        sh './reinstall.sh release'
+        sh '''
+          pip install --upgrade uv==0.12.17
+          uv sync --locked
+        '''
       }
     }
 

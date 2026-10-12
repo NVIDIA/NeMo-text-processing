@@ -24,11 +24,11 @@ from pynini import Far
 """
 This files takes 1. Far file containing a fst graph created by TN or ITN 2. entire string.
 Optionally: 3. start position of substring 4. end (exclusive) position of substring
-and returns input output mapping of all words in the string bounded by whitespace. 
+and returns input output mapping of all words in the string bounded by whitespace.
 If start and end position specified returns
 1. mapped output string 2. start and end indices of mapped substring
 
-Usage: 
+Usage:
 
 python alignment.py --fst=<fst file> --text="2615 Forest Av, 1 Aug 2016" --rule=TOKENIZE_AND_CLASSIFY --start=22 --end=26 --grammar=TN
 

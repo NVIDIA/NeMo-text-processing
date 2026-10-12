@@ -18,9 +18,9 @@ from argparse import ArgumentParser
 from time import perf_counter
 from typing import List, Optional, Tuple
 
-import editdistance
 import pynini
 from pynini.lib import rewrite
+from rapidfuzz.distance import Levenshtein
 
 from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
 from nemo_text_processing.text_normalization.normalize import Normalizer
@@ -33,9 +33,9 @@ The script provides multiple normalization options and chooses the best one that
 
 To run this script with a .json manifest file, the manifest file should contain the following fields:
     "text" - raw text (could be changed using "--manifest_text_field")
-    "pred_text" - ASR model prediction, see https://github.com/NVIDIA/NeMo/blob/main/examples/asr/transcribe_speech.py 
+    "pred_text" - ASR model prediction, see https://github.com/NVIDIA/NeMo/blob/main/examples/asr/transcribe_speech.py
         on how to transcribe manifest
-    
+
     Example for a manifest line:
         {"text": "In December 2015, ...", "pred_txt": "on december two thousand fifteen"}
 
@@ -418,7 +418,7 @@ def calculate_cer(normalized_texts: List[str], pred_text: str, remove_punct=Fals
             for punct in "!?:;,.-()*+-/<=>@^_":
                 text_clean = text_clean.replace(punct, " ").replace("  ", " ")
 
-        cer = editdistance.eval(pred_text, text_clean) * 100.0 / len(pred_text)
+        cer = Levenshtein.distance(pred_text, text_clean) * 100.0 / len(pred_text)
         normalized_options.append((text, cer, i))
     return normalized_options
 
