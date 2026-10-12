@@ -23,29 +23,15 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal numbers
         e.g. minus elf komma zwei null null sechs billionen -> decimal { negative: "-" integer_part: "11"  fractional_part: "2006" quantity: "Billionen" }
-    The tagger accepts canonical verbalized decimal input whereby every digit after the comma is pronounced
-    separately, so zwölf komma drei hundert fünfundvierzig is not read as a single decimal:
         e.g. zwölf komma drei vier fünf -> decimal { integer_part: "12" fractional_part: "345" }
-
-    Magnitude words keep their full written form, the nouns capitalised and the numeral "tausend" lower case.
-    After a bare integer "hundert" and "tausend" stay with the cardinal grammar, the larger scales do not:
         e.g. eine million -> decimal { integer_part: "1" quantity: "Million" }
         e.g. dreiviertel tausend -> decimal { integer_part: "0" fractional_part: "75" quantity: "tausend" }
-
-    Only tausend, million and milliarde have abbreviated forms:
-        for non-deterministic case: eine million ->
-            decimal { integer_part: "1" quantity: "Mio." }
-    The abbreviations are only reachable by building ClassifyFst(deterministic=False) directly, since
-    InverseNormalizer does not expose the flag.
-
     Args:
         cardinal: CardinalFst
-        deterministic: if True will provide a single transduction option,
-            for False multiple transduction are generated
     """
 
-    def __init__(self, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(self, cardinal: GraphFst):
+        super().__init__(name="decimal", kind="classify")
         graph_cardinals = cardinal.graph_no_exception
         delete_comma = pynutil.delete("komma")
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
@@ -91,9 +77,6 @@ class DecimalFst(GraphFst):
         graph_decimal_no_sign |= pynini.compose(fraction_at_least_one, value_to_fields)
 
         quantity = cardinal.magnitude
-        if not deterministic:
-            # Tsd., Mio. and Mrd. are the only magnitudes German abbreviates, a convention
-            quantity |= pynini.string_file(get_abs_path("data/numbers/quantity_nondeterministic.tsv"))
 
         big_quantity = pynini.compose(cardinal.big_magnitude_words, quantity)
 

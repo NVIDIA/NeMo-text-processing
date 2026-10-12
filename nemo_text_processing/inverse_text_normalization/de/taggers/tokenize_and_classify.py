@@ -58,8 +58,6 @@ class ClassifyFst(GraphFst):
     Args:
         cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
         overwrite_cache: set to True to overwrite .far files
-        deterministic: if False the decimal grammar emits abbreviated magnitudes (Tsd., Mio., Mrd.).
-            InverseNormalizer always builds the deterministic grammar, so this is for direct construction only.
         whitelist: path to a file with whitelist replacements
         input_case: accepting either "lower_cased" or "cased" input.
     """
@@ -77,7 +75,7 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != 'None':
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"de_itn_{input_case}{'' if deterministic else '_nondet'}.far")
+            far_file = os.path.join(cache_dir, f"de_itn_{input_case}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
             logger.info(f"ClassifyFst.fst was restored from {far_file}.")
@@ -98,7 +96,7 @@ class ClassifyFst(GraphFst):
 
             ordinal = OrdinalFst(itn_cardinal_tagger=cardinal, tn_ordinal_verbalizer=tn_ordinal_verbalizer)
             ordinal_graph = ordinal.fst
-            decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
+            decimal = DecimalFst(cardinal=cardinal)
             decimal_graph = decimal.fst
 
             fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_verbalizer=tn_fraction_verbalizer)

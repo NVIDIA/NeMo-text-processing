@@ -203,7 +203,6 @@ class CardinalFst(GraphFst):
         # the graph the other German semiotic classes consume, without the first-dozen exception
         self.graph_no_exception = (graph_cardinals @ remove_leading_zeros).optimize()
 
-        # 1-999 without leading zeros, consumed by the decimal tagger's get_quantity
         self.graph_hundred_component_at_least_one_none_zero_digit = (
             non_zero_digit_cluster @ remove_leading_zeros
         ).optimize()
