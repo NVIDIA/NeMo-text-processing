@@ -62,10 +62,10 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     return cardinal_string @ fst
 
 
-def load_cased_digits(bare=True):
+def load_cased_digits(use_bare_forms: bool = True):
     digits_cased = {}
     for key in CASE_KEYS:
-        if bare:
+        if use_bare_forms:
             fkey = f"bare_{key}"
         else:
             fkey = key
@@ -99,7 +99,7 @@ def build_cased_number_fsts(deterministic=True):
 
     # digits
     def get_digit_cased_fst(bare=True, deterministic=deterministic):
-        digits_cased = load_cased_digits(bare)
+        digits_cased = load_cased_digits(use_bare_forms=bare)
 
         digits_cased_fst = {}
         for k in digits_cased:
