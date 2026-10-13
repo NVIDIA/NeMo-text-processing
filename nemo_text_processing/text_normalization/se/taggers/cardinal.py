@@ -285,18 +285,17 @@ def make_million(
     spacer = make_spacer(deterministic)
     initial = pynini.accep(initial)
 
-    graph_million = pynutil.add_weight(
-        pynini.cross("001", initial + pynini.accep("iljovdna")) + spacer, -0.001
-    )
+    graph_million = pynutil.add_weight(pynini.cross("001", initial + pynini.accep("iljovdna")) + spacer, -0.001)
     graph_million |= (
-        at_least_one_non_zero_digit_no_one + spacer
-        + pynutil.insert(initial + pynini.accep("iljovnna")) + spacer
+        at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(initial + pynini.accep("iljovnna")) + spacer
     )
     if not deterministic:
         graph_million |= pynutil.add_weight(pynini.cross("001", initial + pynini.accep("iljon")) + spacer, -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", initial + pynini.accep("iljun")) + spacer, -0.001)
         graph_million |= pynutil.add_weight(pynini.cross("001", initial + pynini.accep("illiuvdna")) + spacer, -0.001)
-        graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(initial + pynini.accep("illiuvnna")) + spacer
+        graph_million |= (
+            at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(initial + pynini.accep("illiuvnna")) + spacer
+        )
     graph_million |= pynutil.delete("000")
     return graph_million
 
@@ -308,7 +307,9 @@ def make_milliard(
     initial = pynini.accep(initial)
 
     graph_milliard = pynutil.add_weight(pynini.cross("001", initial + pynini.accep("iljárda")), -0.001) + spacer
-    graph_milliard |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(initial + pynini.accep("iljárdda")) + spacer
+    graph_milliard |= (
+        at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(initial + pynini.accep("iljárdda")) + spacer
+    )
     graph_milliard |= pynutil.delete("000")
     return graph_milliard
 
