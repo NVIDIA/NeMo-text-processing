@@ -156,19 +156,7 @@ class OrdinalFst(GraphFst):
             graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000")
         )
 
-        higher_endings = pynini.string_map(
-            [
-                ("duhát", "duháhat"),
-                ("duhat", "duháhat"),
-                ("iljárda", "iljárddat"),
-                ("iljon", "iljovnnat"),
-                ("iljun", "iljovnnat"),
-                ("iljovdna", "iljovnnat"),
-                ("illiuvdna", "iljovnnat"),
-                ("iljovnna", "iljovnnat"),
-                ("illiuvnna", "iljovnnat"),
-            ]
-        )
+        higher_endings = pynini.string_file(get_abs_path("data/ordinal/higher_endings.tsv"))
 
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
