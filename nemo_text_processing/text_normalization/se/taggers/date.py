@@ -95,8 +95,14 @@ class DateFst(GraphFst):
         graph_mdy = graph_md + pynini.closure(pynini.accep(" ") + year_only, 0, 1) + preserve_order
         self.mdy = graph_mdy.optimize()
 
+        # "/" and "-" bare day-month readings are ambiguous with MeasureFst's
+        # math expressions (e.g. "14-2", "2/3" read as a score/fraction), so in
+        # deterministic mode only "." is offered; both readings are genuinely
+        # valid, so the non-deterministic (audio-alignment) pipeline also
+        # offers "/" and "-".
         graph_dmy = pynini.Fst()
-        for separator in ["/", "."]:
+        separators = ["."] if deterministic else ["/", "."]
+        for separator in separators:
             graph_dmy |= (
                 day
                 + pynutil.delete(separator)
@@ -104,6 +110,11 @@ class DateFst(GraphFst):
                 + month_number
                 + pynini.closure(pynutil.delete(separator) + insert_space + year_only, 0, 1)
             )
+
+        if not deterministic:
+            year_optional = pynini.closure(NEMO_SPACE + year_only, 0, 1)
+            graph_dmy |= day + pynini.cross("-", " ") + month_number + year_optional
+
         self.dmy = graph_dmy.optimize()
         graph_ymd = (
             year_only
@@ -117,14 +128,7 @@ class DateFst(GraphFst):
             year_only + pynutil.delete("-") + insert_space + month_number + pynutil.delete("-") + insert_space + day
         )
 
-        separators = ["/", "-"]
-        for sep in separators:
-            year_optional = pynini.closure(NEMO_SPACE + year_only, 0, 1)
-            new_graph = day + pynini.cross(sep, " ") + month_number + year_optional
-            graph_dmy |= new_graph
-
         final_graph = graph_dmy
-        # final_graph |= year_only
         final_graph |= graph_ymd
         final_graph |= graph_mdy
 
