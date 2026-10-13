@@ -527,8 +527,9 @@ class CardinalFst(GraphFst):
         self.graph |= self.graph_suffixed
         if not deterministic:
             self.graph |= pynini.union(*self.graphs.values())
-            # Acapela North Sami Language Manual (2015), p. 8.
-            self.graph |= pynini.string_file(get_abs_path("data/inflection/cardinal_alternatives.tsv"))
+            # The regular reading of 6:i is guhttii; Acapela also lists guhtti.
+            # See https://divvun.no/tale/Manual_Sami.pdf, section 5.1.
+            self.graph |= pynini.string_map([("6:i", "guhtti")])
         self.graph = self.graph.optimize()
 
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
