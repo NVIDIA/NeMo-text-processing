@@ -156,11 +156,11 @@ def build_cased_number_fsts(deterministic=True):
     tens_cased_fst = {}
     # com.sg/loc.pl is different for 'logi'
     for k in digits_cased_fst:
-        logi = "logi"
+        logi = pynini.accep("logi")
         digit_cased_no_one = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
         digit_nom_no_one = (NEMO_DIGIT - "1") @ digits_bare_cased_fst["nom_sg"]
         if k == 'com_sg':
-            logi = "logiin"
+            logi = pynini.accep("logiin")
             ten = digit_cased_no_one
         else:
             ten = digits_nom_no_one
