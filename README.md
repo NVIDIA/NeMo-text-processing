@@ -71,13 +71,38 @@ python -m pip install git+https://github.com/NVIDIA/NeMo-text-processing.git@{BR
 
 Use this installation mode if you are contributing to NeMo-text-processing.
 
+We use [uv](https://docs.astral.sh/uv/) for development environments.
+
 ```
 git clone https://github.com/NVIDIA/NeMo-text-processing
 cd NeMo-text-processing
-./reinstall.sh
+uv sync
 ```
 
-**_NOTE:_** If you only want the toolkit without additional conda-based dependencies, you may replace ``reinstall.sh`` with ``pip install -e .`` with the NeMo-text-processing root directory as your current working director.
+`uv sync` creates `.venv`, installs the project in editable mode and adds the
+test and style tooling. Run things through it with `uv run`:
+
+```
+uv run pytest --cpu
+uv run python nemo_text_processing/text_normalization/normalize.py --text="1"
+```
+
+**_NOTE:_** uv is a convenience, not a requirement — the project is a standard
+PEP 621 package. `pip install -e ".[all]"` from the repository root does the same
+thing.
+
+**_NOTE:_** No `uv.lock` is committed. This is a library rather than an
+application, so the resolution that matters is the consumer's; run `uv lock`
+locally if you want one.
+
+
+### Building
+
+```
+uv build
+```
+
+writes a wheel and an sdist to `dist/`. `python -m build` does the same.
 
 
 Contributing
