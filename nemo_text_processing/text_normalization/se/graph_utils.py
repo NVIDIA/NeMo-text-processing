@@ -16,6 +16,26 @@ import pynini
 from pynini.lib import byte, pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import delete_space
+from nemo_text_processing.text_normalization.se.utils import load_labels
+
+CASE_KEYS = ["ess", "com_pl", "com_sg", "gen_sg", "gen_pl", "ill_pl", "ill_sg", "loc_sg", "nom_pl"]
+CASE_KEYS_EXT = CASE_KEYS + ["nom_sg"]
+CASE_ALIASES = {
+    "acc_sg": "nom_sg",
+    "acc_pl": "gen_pl",
+    "loc_pl": "com_sg",
+}
+
+
+def load_case_forms(abs_path, extended=False):
+    """Loads case forms from a TSV file."""
+    keys = CASE_KEYS_EXT if extended else CASE_KEYS
+    return {
+        label[0]: label[1]
+        for label in load_labels(abs_path)
+        if label and label[0] in keys
+    }
+
 
 _ALPHA_UPPER = "AÁBCČDĐEFGHIJKLMNŊOPQRSŠTŦUVWXYZŽÆØÅÄÖ"
 _ALPHA_LOWER = "aábcčdđefghijklmnŋopqrsštŧuvwxyzžæøåäö"

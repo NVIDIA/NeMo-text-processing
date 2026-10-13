@@ -23,12 +23,15 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     GraphFst,
     delete_space,
 )
-from nemo_text_processing.text_normalization.se.graph_utils import SE_ALPHA, make_spacer
-from nemo_text_processing.text_normalization.se.utils import (
+from nemo_text_processing.text_normalization.se.graph_utils import (
     CASE_ALIASES,
     CASE_KEYS,
-    get_abs_path,
+    SE_ALPHA,
     load_case_forms,
+    make_spacer,
+)
+from nemo_text_processing.text_normalization.se.utils import (
+    get_abs_path,
     load_labels,
 )
 
