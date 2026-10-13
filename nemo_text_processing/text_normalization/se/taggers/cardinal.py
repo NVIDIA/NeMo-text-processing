@@ -135,9 +135,9 @@ def build_cased_number_fsts(deterministic=True):
     # teens
     teens_cased_fst = {}
     nuppelogin = pynutil.insert("nuppelogin")
+    assert "nom_sg" in digits_cased_fst
+    assert "nom_sg" in logi_cased
     for k in digits_cased_fst:
-        assert "nom_sg" in digits_cased_fst
-        assert "nom_sg" in logi_cased
         if k == "nom_sg":
             teens_cased_fst[k] = pynutil.delete("1") + digits_cased_fst[k] + pynutil.insert("nuppelohkái")
         else:
