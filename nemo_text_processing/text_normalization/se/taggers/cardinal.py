@@ -283,14 +283,20 @@ def make_million(
     initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True
 ) -> 'pynini.FstLike':
     spacer = make_spacer(deterministic)
+    initial = pynini.accep(initial)
 
-    graph_million = pynutil.add_weight(pynini.cross("001", f"{initial}iljovdna") + spacer, -0.001)
-    graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}iljovnna") + spacer
+    graph_million = pynutil.add_weight(
+        pynini.cross("001", initial + pynini.accep("iljovdna")) + spacer, -0.001
+    )
+    graph_million |= (
+        at_least_one_non_zero_digit_no_one + spacer
+        + pynutil.insert(initial + pynini.accep("iljovnna")) + spacer
+    )
     if not deterministic:
-        graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}iljon") + spacer, -0.001)
-        graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}iljun") + spacer, -0.001)
-        graph_million |= pynutil.add_weight(pynini.cross("001", f"{initial}illiuvdna") + spacer, -0.001)
-        graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}illiuvnna") + spacer
+        graph_million |= pynutil.add_weight(pynini.cross("001", initial + pynini.accep("iljon")) + spacer, -0.001)
+        graph_million |= pynutil.add_weight(pynini.cross("001", initial + pynini.accep("iljun")) + spacer, -0.001)
+        graph_million |= pynutil.add_weight(pynini.cross("001", initial + pynini.accep("illiuvdna")) + spacer, -0.001)
+        graph_million |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(initial + pynini.accep("illiuvnna")) + spacer
     graph_million |= pynutil.delete("000")
     return graph_million
 
@@ -299,9 +305,10 @@ def make_milliard(
     initial: str, at_least_one_non_zero_digit_no_one: 'pynini.FstLike', deterministic=True
 ) -> 'pynini.FstLike':
     spacer = make_spacer(deterministic)
+    initial = pynini.accep(initial)
 
-    graph_milliard = pynutil.add_weight(pynini.cross("001", f"{initial}iljárda"), -0.001) + spacer
-    graph_milliard |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(f"{initial}iljárdda") + spacer
+    graph_milliard = pynutil.add_weight(pynini.cross("001", initial + pynini.accep("iljárda")), -0.001) + spacer
+    graph_milliard |= at_least_one_non_zero_digit_no_one + spacer + pynutil.insert(initial + pynini.accep("iljárdda")) + spacer
     graph_milliard |= pynutil.delete("000")
     return graph_milliard
 
@@ -324,11 +331,11 @@ class CardinalFst(GraphFst):
         digit = pynini.invert(pynini.string_file(get_abs_path("data/numbers/digit.tsv")))
 
         # Any single digit
-        graph_digit = digit
+        graph_digit = digit.copy()
         self.digit_inverse = pynini.invert(digit)
         digits_no_one = (NEMO_DIGIT - "1") @ graph_digit
 
-        graph_zero = zero
+        graph_zero = zero.copy()
         if not deterministic:
             graph_zero |= pynini.cross("0", "nulla")
             graph_digit |= pynini.cross("1", "akta")
