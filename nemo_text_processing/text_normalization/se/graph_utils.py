@@ -30,11 +30,7 @@ CASE_ALIASES = {
 def load_case_forms(abs_path, extended=False):
     """Loads case forms from a TSV file."""
     keys = CASE_KEYS_EXT if extended else CASE_KEYS
-    return {
-        label[0]: label[1]
-        for label in load_labels(abs_path)
-        if label and label[0] in keys
-    }
+    return {label[0]: label[1] for label in load_labels(abs_path) if label and label[0] in keys}
 
 
 _ALPHA_UPPER = "AÁBCČDĐEFGHIJKLMNŊOPQRSŠTŦUVWXYZŽÆØÅÄÖ"

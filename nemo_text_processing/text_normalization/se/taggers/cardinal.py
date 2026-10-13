@@ -30,10 +30,7 @@ from nemo_text_processing.text_normalization.se.graph_utils import (
     load_case_forms,
     make_spacer,
 )
-from nemo_text_processing.text_normalization.se.utils import (
-    get_abs_path,
-    load_labels,
-)
+from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
 
 
 def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
