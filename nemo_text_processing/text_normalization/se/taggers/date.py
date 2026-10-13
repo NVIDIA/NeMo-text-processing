@@ -22,6 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_SPACE,
     GraphFst,
     convert_space,
+    delete_space,
     insert_space,
 )
 from nemo_text_processing.text_normalization.se.graph_utils import TO_LOWER
@@ -158,8 +159,12 @@ class DateFst(GraphFst):
             abbreviated_month_genitive
             + NEMO_SPACE
             + interval_first
-            + pynutil.delete(". b. - ")
-            + pynutil.insert(" beaivvis ")
+            + pynutil.delete(".")
+            + NEMO_SPACE
+            + pynini.cross("b.", "beaivvis")
+            + delete_space
+            + pynutil.delete("-")
+            + NEMO_SPACE
             + abbreviated_month_genitive
             + NEMO_SPACE
             + interval_last
