@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unicodedata
+
 import pynini
 from pynini.lib import pynutil
 
@@ -45,7 +47,12 @@ class MeasureFst(GraphFst):
         rate = cardinal_token(cardinal.graph) + separator + unit_token(unit_rate)
 
         delimiter = delete_zero_or_one_space + pynutil.insert(" ")
-        operand = cardinal.graph
+        greek = pynini.string_map(
+            (letter, unicodedata.name(letter).split()[-1].lower())
+            for letter in map(chr, range(0x03B1, 0x03CA))
+            if unicodedata.name(letter).startswith("GREEK SMALL LETTER ")
+        )
+        operand = cardinal.graph | greek
         no_equals_operator = pynini.string_file(get_abs_path("data/math_operations_no_equals.tsv"))
         equals_operator = pynini.string_file(get_abs_path("data/math_operations.tsv"))
         prefix = pynini.string_file(get_abs_path("data/math_prefix.tsv")) + pynutil.insert(" ") + operand
