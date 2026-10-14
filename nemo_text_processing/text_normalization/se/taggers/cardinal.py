@@ -346,13 +346,10 @@ class CardinalFst(GraphFst):
         ties = digits_no_one + pynini.cross("0", "logi")
         ties |= digits_no_one + pynutil.insert("logi") + digit
 
-        graph_tens = teen
-        graph_ties = ties
+        self.tens = teen.copy().optimize()
+        self.ties = ties.copy().optimize()
 
-        self.tens = graph_tens.optimize()
-        self.ties = graph_ties.optimize()
-
-        two_digit_non_zero = pynini.union(graph_tens, graph_ties, (pynutil.delete("0") + graph_digit))
+        two_digit_non_zero = pynini.union(teen, ties, (pynutil.delete("0") + graph_digit))
         graph_two_digit_non_zero = pynini.union(graph_digit, two_digit_non_zero)
 
         self.two_digit_non_zero = graph_two_digit_non_zero.optimize()
@@ -370,7 +367,7 @@ class CardinalFst(GraphFst):
         self.hundreds = graph_hundreds.optimize()
 
         # For all three digit strings with leading zeroes (graph appends '0's to manage place in string)
-        graph_hundreds_component = pynini.union(graph_hundreds, pynutil.delete("0") + (graph_tens | graph_ties))
+        graph_hundreds_component = pynini.union(graph_hundreds, pynutil.delete("0") + (teen | ties))
 
         graph_hundreds_component_at_least_one_non_zero_digit = graph_hundreds_component | (
             pynutil.delete("00") + graph_digit
