@@ -24,15 +24,11 @@ from nemo_text_processing.text_normalization.se.utils import get_abs_path
 
 def fraction_nfkc_graph():
     symbols = "½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅐⅛⅜⅝⅞⅑⅒"
-    return pynini.string_map(
-        (symbol, unicodedata.normalize("NFKC", symbol)) for symbol in symbols
-    )
+    return pynini.string_map((symbol, unicodedata.normalize("NFKC", symbol)) for symbol in symbols)
 
 
 def ascii_fraction_slash(graph):
-    slash_to_ascii = pynini.cdrewrite(
-        pynini.cross("\u2044", "/"), "", "", NEMO_SIGMA
-    )
+    slash_to_ascii = pynini.cdrewrite(pynini.cross("\u2044", "/"), "", "", NEMO_SIGMA)
     return graph @ slash_to_ascii
 
 
