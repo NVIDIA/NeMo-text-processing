@@ -97,7 +97,7 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal=cardinal)
             decimal_graph = decimal.fst
 
-            fraction = FractionFst(cardinal=cardinal, ordinal=ordinal, deterministic=deterministic)
+            fraction = FractionFst(cardinal=cardinal, ordinal=ordinal)
             fraction_graph = fraction.fst
 
             measure_graph = MeasureFst(

@@ -16,7 +16,6 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
-    NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_NOT_QUOTE,
     GraphFst,
@@ -29,13 +28,11 @@ class FractionFst(GraphFst):
     Finite state transducer for verbalizing fraction, e.g.
         fraction { numerator: "1" denominator: "2" } -> 1/2
         fraction { negative: "-" integer_part: "1" numerator: "3" denominator: "4" } -> -1 3/4
-        fraction { numerator: "2" denominator: "3" quantity: "Millionen" } -> 2/3 Millionen
     """
 
     def __init__(self):
         super().__init__(name="fraction", kind="verbalize")
 
-        # the tagger writes the sign itself, so the verbalizer just reads it out of the field
         optional_sign = pynini.closure(
             pynutil.delete('negative: "') + NEMO_NOT_QUOTE + pynutil.delete('"') + delete_space, 0, 1
         )
@@ -67,15 +64,6 @@ class FractionFst(GraphFst):
             + pynutil.delete('"')
         )
 
-        quantity = (
-            pynutil.delete("quantity:")
-            + delete_space
-            + pynutil.delete('"')
-            + pynini.closure(NEMO_ALPHA | fullstop_accep, 1)
-            + pynutil.delete('"')
-        )
-        optional_quantity = pynini.closure(delete_space + pynutil.insert(" ") + quantity, 0, 1)
-
-        graph = optional_integer + numerator + delete_space + denominator + optional_quantity
+        graph = optional_integer + numerator + delete_space + denominator
 
         self.fst = self.delete_tokens(optional_sign + graph).optimize()

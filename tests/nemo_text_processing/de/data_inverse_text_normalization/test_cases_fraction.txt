@@ -44,8 +44,6 @@ minus vier tausend fünfhundertzwei eintausendeinhundertzehntel~-4502/1110
 ein ein halb~1 1/2
 einen ein halb~1 1/2
 ein tausendstel~1/1000
-zwei drittel millionen~2/3 Millionen
-zwei drittel million~2/3 Million
 vier drei viertel~4 3/4
 minus vier drei viertel~-4 3/4
 ein millionstel~1/1000000
