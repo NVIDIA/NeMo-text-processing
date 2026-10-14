@@ -13,11 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unicodedata
+
 import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst, convert_space
 from nemo_text_processing.text_normalization.se.utils import get_abs_path
+
+
+def fraction_nfkc_graph():
+    symbols = "½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅐⅛⅜⅝⅞⅑⅒"
+    return pynini.string_map(
+        (symbol, unicodedata.normalize("NFKC", symbol)) for symbol in symbols
+    )
+
+
+def ascii_fraction_slash(graph):
+    slash_to_ascii = pynini.cdrewrite(
+        pynini.cross("\u2044", "/"), "", "", NEMO_SIGMA
+    )
+    return graph @ slash_to_ascii
 
 
 class FractionFst(GraphFst):
@@ -42,9 +58,9 @@ class FractionFst(GraphFst):
         one_fraction = pynutil.delete("1/") + denominator_nominative
         other_fraction = cardinal.graph + pynutil.delete("/") + pynutil.insert(" ") + denominator_genitive
         spoken_fraction = (one_fraction | other_fraction).optimize()
-        symbol_fraction = (
-            pynini.string_file(get_abs_path("data/numbers/fraction_symbols.tsv")) @ spoken_fraction
-        ).optimize()
+        nfkc_graph = fraction_nfkc_graph()
+        ascii_graph = ascii_fraction_slash(nfkc_graph)
+        symbol_fraction = (ascii_graph @ spoken_fraction).optimize()
 
         integer_input = pynini.project(cardinal.graph, "input")
         generic_integer = pynini.difference(integer_input, pynini.union("1", "2")) @ cardinal.graph
@@ -52,6 +68,9 @@ class FractionFst(GraphFst):
 
         graph = symbol_fraction | mixed | pynini.string_file(get_abs_path("data/numbers/fraction.tsv"))
         if not deterministic:
+            ascii_forms = pynini.project(ascii_graph, "output")
+            unicode_forms = pynini.project(nfkc_graph, "output")
+            graph |= (ascii_forms | ascii_fraction_slash(unicode_forms)) @ spoken_fraction
             graph |= pynini.string_file(get_abs_path("data/numbers/fraction_nd.tsv"))
             graph |= cardinal.graph + pynutil.delete(" ") + pynutil.insert(" ja ") + symbol_fraction
 
