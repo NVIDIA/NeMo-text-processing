@@ -61,16 +61,16 @@ class FractionFst(GraphFst):
         nfkc_graph = fraction_nfkc_graph()
         ascii_graph = ascii_fraction_slash(nfkc_graph)
         symbol_fraction = (ascii_graph @ spoken_fraction).optimize()
+        ascii_forms = pynini.project(ascii_graph, "output")
+        unicode_forms = pynini.project(nfkc_graph, "output")
+        raw_fraction = (ascii_forms | ascii_fraction_slash(unicode_forms)) @ spoken_fraction
 
         integer_input = pynini.project(cardinal.graph, "input")
         generic_integer = pynini.difference(integer_input, pynini.union("1", "2")) @ cardinal.graph
         mixed = generic_integer + pynutil.delete(" ") + pynutil.insert(" ja ") + symbol_fraction
 
-        graph = symbol_fraction | mixed | pynini.string_file(get_abs_path("data/numbers/fraction.tsv"))
+        graph = symbol_fraction | raw_fraction | mixed | pynini.string_file(get_abs_path("data/numbers/fraction.tsv"))
         if not deterministic:
-            ascii_forms = pynini.project(ascii_graph, "output")
-            unicode_forms = pynini.project(nfkc_graph, "output")
-            graph |= (ascii_forms | ascii_fraction_slash(unicode_forms)) @ spoken_fraction
             graph |= pynini.string_file(get_abs_path("data/numbers/fraction_nd.tsv"))
             graph |= cardinal.graph + pynutil.delete(" ") + pynutil.insert(" ja ") + symbol_fraction
 
