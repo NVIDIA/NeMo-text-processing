@@ -14,8 +14,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst, convert_space
-from nemo_text_processing.text_normalization.sv.graph_utils import TO_LOWER
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 
 
@@ -35,29 +34,25 @@ class WhiteListFst(GraphFst):
     def __init__(self, input_case: str, deterministic: bool = True, input_file: str = None):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
 
-        def _get_whitelist_graph(input_case, file):
+        def _get_whitelist_graph(input_case, file, uppercase_variants=False):
             whitelist = load_labels(file)
             if input_case == "lower_cased":
                 whitelist = [[x[0].lower()] + x[1:] for x in whitelist]
+            elif uppercase_variants:
+                whitelist += [
+                    [variant] + row[1:]
+                    for row in whitelist
+                    for variant in (row[0][0].upper() + row[0][1:], row[0].upper())
+                    if variant != row[0]
+                ]
             graph = pynini.string_map(whitelist)
             return graph
 
-        def _get_case_insensitive_graph(input_case, file):
-            graph = _get_whitelist_graph("lower_cased", file)
-            if input_case == "lower_cased":
-                return graph
-            lower_cased_input = pynini.cdrewrite(TO_LOWER, "", "", NEMO_SIGMA)
-            return lower_cased_input @ graph
-
-        def _get_case_insensitive_optional_dot_graph(input_case, file):
-            graph = _get_case_insensitive_graph(input_case, file)
-            return graph + pynini.closure(pynutil.delete("."), 0, 1)
-
         graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist.tsv"))
-        graph |= _get_case_insensitive_graph(input_case, get_abs_path("data/abbreviations/abbreviations.tsv"))
-        graph |= _get_case_insensitive_optional_dot_graph(
+        graph |= _get_whitelist_graph(input_case, get_abs_path("data/abbreviations/abbreviations.tsv"))
+        graph |= _get_whitelist_graph(
             input_case, get_abs_path("data/abbreviations/abbreviations_opt_dot.tsv")
-        )
+        ) + pynini.closure(pynutil.delete("."), 0, 1)
         if not deterministic and input_case != "lower_cased":
             lower_cased_graph = _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv"))
             graph |= pynutil.add_weight(lower_cased_graph, weight=0.0001)
@@ -73,10 +68,7 @@ class WhiteListFst(GraphFst):
             units_graph = _get_whitelist_graph(input_case, file=get_abs_path("data/measure/unit.tsv"))
             units_graph |= _get_whitelist_graph(input_case, file=get_abs_path("data/measure/unit_neuter.tsv"))
             units_graph |= _get_whitelist_graph(
-                input_case, file=get_abs_path("data/abbreviations/nondeterministic.tsv")
-            )
-            units_graph |= _get_case_insensitive_graph(
-                input_case, get_abs_path("data/abbreviations/abbreviations_alternatives.tsv")
+                input_case, get_abs_path("data/abbreviations/abbreviations_alternatives.tsv"), uppercase_variants=True
             )
             graph |= units_graph
 
