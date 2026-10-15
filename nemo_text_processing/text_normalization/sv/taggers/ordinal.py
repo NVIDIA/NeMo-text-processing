@@ -203,18 +203,24 @@ class OrdinalFst(GraphFst):
         reference_graph = pynini.Fst()
         reference_number = (cleaned_graph | self.suffixed_to_words).optimize()
         reference_groups = [
-            ("ordinal_common.tsv", "den", "denna"),
-            ("ordinal_neuter.tsv", "det", "detta"),
+            ("ordinal_common_definite.tsv", "ordinal_common_indefinite.tsv", "den", "denna"),
+            ("ordinal_neuter_definite.tsv", "ordinal_neuter_indefinite.tsv", "det", "detta"),
         ]
-        for filename, article, demonstrative in reference_groups:
-            for written, definite, indefinite in load_labels(get_abs_path(f"data/reference/{filename}")):
+        for definite_file, indefinite_file, article, demonstrative in reference_groups:
+            definite_path = get_abs_path(f"data/reference/{definite_file}")
+            definite_to_indefinite = (
+                pynini.invert(pynini.string_file(definite_path))
+                @ pynini.string_file(get_abs_path(f"data/reference/{indefinite_file}"))
+            )
+            for written, definite in load_labels(definite_path):
+                insert_indefinite = pynutil.insert(definite) @ definite_to_indefinite
                 optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
                 abbreviated_unit = pynutil.delete(written) + optional_dot
                 abbreviated_reference = reference_number + delete_space + abbreviated_unit
                 reference = reference_number + delete_space + (abbreviated_unit | pynutil.delete(definite))
                 reference_graph |= reference + insert_space + pynutil.insert(definite)
                 if not deterministic:
-                    reference_graph |= abbreviated_reference + insert_space + pynutil.insert(indefinite)
+                    reference_graph |= abbreviated_reference + insert_space + insert_indefinite
                     reference_graph |= (
                         pynutil.insert(article)
                         + insert_space
@@ -227,7 +233,7 @@ class OrdinalFst(GraphFst):
                         + insert_space
                         + abbreviated_reference
                         + insert_space
-                        + pynutil.insert(indefinite)
+                        + insert_indefinite
                     )
 
         tok_graph = (
