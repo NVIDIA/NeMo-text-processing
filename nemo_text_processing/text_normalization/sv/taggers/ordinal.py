@@ -25,8 +25,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, optional_dot
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 
 
 class OrdinalFst(GraphFst):
@@ -200,41 +201,26 @@ class OrdinalFst(GraphFst):
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
         self.bare_ordinals = cleaned_graph
-        reference_graph = pynini.Fst()
         reference_number = (cleaned_graph | self.suffixed_to_words).optimize()
-        reference_groups = [
-            ("ordinal_common_definite.tsv", "ordinal_common_indefinite.tsv", "den", "denna"),
-            ("ordinal_neuter_definite.tsv", "ordinal_neuter_indefinite.tsv", "det", "detta"),
-        ]
-        for definite_file, indefinite_file, article, demonstrative in reference_groups:
-            definite_path = get_abs_path(f"data/reference/{definite_file}")
-            definite_to_indefinite = (
-                pynini.invert(pynini.string_file(definite_path))
-                @ pynini.string_file(get_abs_path(f"data/reference/{indefinite_file}"))
-            )
-            for written, definite in load_labels(definite_path):
-                insert_indefinite = pynutil.insert(definite) @ definite_to_indefinite
-                optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
-                abbreviated_unit = pynutil.delete(written) + optional_dot
-                abbreviated_reference = reference_number + delete_space + abbreviated_unit
-                reference = reference_number + delete_space + (abbreviated_unit | pynutil.delete(definite))
-                reference_graph |= reference + insert_space + pynutil.insert(definite)
-                if not deterministic:
-                    reference_graph |= abbreviated_reference + insert_space + insert_indefinite
-                    reference_graph |= (
-                        pynutil.insert(article)
-                        + insert_space
-                        + abbreviated_reference
-                        + insert_space
-                        + pynutil.insert(definite)
-                    )
-                    reference_graph |= (
-                        pynutil.insert(demonstrative)
-                        + insert_space
-                        + abbreviated_reference
-                        + insert_space
-                        + insert_indefinite
-                    )
+
+        def optionally_dotted(graph):
+            alphabetic = pynini.closure(SV_ALPHA, 1) @ graph
+            return graph | (alphabetic + optional_dot)
+
+        def reference_group(gender, article, demonstrative):
+            definite = pynini.string_file(get_abs_path(f"data/reference/ordinal_{gender}_definite.tsv"))
+            indefinite = pynini.string_file(get_abs_path(f"data/reference/ordinal_{gender}_indefinite.tsv"))
+            head = reference_number + NEMO_SPACE
+            abbreviated_definite = head + optionally_dotted(definite)
+            graph = abbreviated_definite | (head + pynini.project(definite, "output"))
+            if not deterministic:
+                abbreviated_indefinite = head + optionally_dotted(indefinite)
+                graph |= abbreviated_indefinite
+                graph |= pynutil.insert(article) + insert_space + abbreviated_definite
+                graph |= pynutil.insert(demonstrative) + insert_space + abbreviated_indefinite
+            return graph
+
+        reference_graph = reference_group("common", "den", "denna") | reference_group("neuter", "det", "detta")
 
         tok_graph = (
             pynutil.insert("integer: \"")
