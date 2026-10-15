@@ -24,7 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     delete_zero_or_one_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, TO_LOWER
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, TO_LOWER, optional_dot
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 
 
@@ -47,7 +47,6 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         cardinal_graph_ett = cardinal.graph
         cardinal_graph_en = cardinal.graph_en
-        optional_dot = pynini.closure(pynutil.delete("."), 0, 1)
 
         graph_unit = pynini.string_file(get_abs_path("data/measure/unit.tsv"))
         graph_optionally_dotted_units = pynini.string_file(get_abs_path("data/measure/unit_optional_dot.tsv"))

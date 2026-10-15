@@ -15,6 +15,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.sv.graph_utils import optional_dot
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 
 
@@ -52,7 +53,7 @@ class WhiteListFst(GraphFst):
         graph |= _get_whitelist_graph(input_case, get_abs_path("data/abbreviations/abbreviations.tsv"))
         graph |= _get_whitelist_graph(
             input_case, get_abs_path("data/abbreviations/abbreviations_opt_dot.tsv")
-        ) + pynini.closure(pynutil.delete("."), 0, 1)
+        ) + optional_dot
         if not deterministic and input_case != "lower_cased":
             lower_cased_graph = _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv"))
             graph |= pynutil.add_weight(lower_cased_graph, weight=0.0001)
