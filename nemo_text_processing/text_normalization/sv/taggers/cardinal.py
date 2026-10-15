@@ -24,8 +24,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
-from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, optional_dot
+from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 
 
 def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: bool = True) -> 'pynini.FstLike':
@@ -363,16 +363,26 @@ class CardinalFst(GraphFst):
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
-        reference_graph = pynini.Fst()
-        reference_labels = load_labels(get_abs_path("data/reference/reference_labels.tsv"))
+        reference_labels = pynini.string_file(get_abs_path("data/reference/reference_labels.tsv"))
         if not deterministic:
-            reference_labels += load_labels(get_abs_path("data/reference/reference_labels_nondeterministic.tsv"))
-        for written, spoken in reference_labels:
-            optional_dot = pynini.closure(pynutil.delete("."), 0, 1) if written.isalpha() else pynini.accep("")
-            unit = pynutil.delete(written) + optional_dot
-            unit_first = pynutil.insert(f"{spoken} ") + unit + delete_space + self.graph
-            number_first = pynutil.insert(f"{spoken} ") + self.graph + delete_space + unit
-            reference_graph |= unit_first | number_first
+            reference_labels |= pynini.string_file(
+                get_abs_path("data/reference/reference_labels_nondeterministic.tsv")
+            )
+        alphabetic_labels = pynini.closure(SV_ALPHA, 1) @ reference_labels
+        unit = reference_labels | (alphabetic_labels + optional_dot)
+        unit_first = unit + delete_space + insert_space + self.graph
+        number_first = pynini.union(
+            *(
+                pynutil.insert(spoken)
+                + insert_space
+                + self.graph
+                + delete_space
+                + pynutil.delete(written)
+                + (optional_dot if written.isalpha() else pynini.accep(""))
+                for written, spoken, _ in reference_labels.paths().items()
+            )
+        )
+        reference_graph = unit_first | number_first
         final_graph |= pynutil.insert("integer: \"") + reference_graph + pynutil.insert("\"")
         if not deterministic:
             final_graph |= pynutil.add_weight(
