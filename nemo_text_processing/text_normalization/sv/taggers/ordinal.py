@@ -166,19 +166,7 @@ class OrdinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
-        ordinal_endings = pynini.string_map(
-            [
-                ("ljon", "ljonte"),
-                ("ljoner", "ljonte"),
-                ("llion", "llionte"),
-                ("llioner", "llionte"),
-                ("ljard", "ljarte"),
-                ("ljarder", "ljarte"),
-                ("lliard", "lliarte"),
-                ("lliarder", "lliarte"),
-                ("tusen", "tusende"),
-            ]
-        )
+        ordinal_endings = pynini.string_file(get_abs_path("data/ordinals/ordinal_endings.tsv"))
 
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
