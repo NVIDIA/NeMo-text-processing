@@ -18,7 +18,9 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
+    NEMO_PUNCT,
     NEMO_SIGMA,
+    NEMO_SPACE,
     GraphFst,
     convert_space,
     delete_space,
@@ -115,6 +117,10 @@ class MoneyFst(GraphFst):
         graph_integer_only |= graph_integer_ett + ensure_space + graph_maj_plural_nt
 
         final_graph = (graph_integer_only + optional_delete_fractional_zeros) | graph_decimal
+
+        currency_quantity = pynini.string_file(get_abs_path("data/money/currency_quantity.tsv"))
+        amount = pynini.closure(NEMO_DIGIT | NEMO_PUNCT | NEMO_SPACE, 1)
+        final_graph |= (amount + currency_quantity) @ final_graph
 
         # remove trailing zeros of non zero number in the first 2 digits and fill up to 2 digits
         # e.g. 2000 -> 20, 0200->02, 01 -> 01, 10 -> 10

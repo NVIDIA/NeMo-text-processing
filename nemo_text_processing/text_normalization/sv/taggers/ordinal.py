@@ -25,6 +25,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, optional_dot
 from nemo_text_processing.text_normalization.sv.taggers.cardinal import filter_punctuation, make_million
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 
@@ -165,19 +166,7 @@ class OrdinalFst(GraphFst):
             + (graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000"))
         )
 
-        ordinal_endings = pynini.string_map(
-            [
-                ("ljon", "ljonte"),
-                ("ljoner", "ljonte"),
-                ("llion", "llionte"),
-                ("llioner", "llionte"),
-                ("ljard", "ljarte"),
-                ("ljarder", "ljarte"),
-                ("lliard", "lliarte"),
-                ("lliarder", "lliarte"),
-                ("tusen", "tusende"),
-            ]
-        )
+        ordinal_endings = pynini.string_file(get_abs_path("data/ordinals/ordinal_endings.tsv"))
 
         self.graph = (
             ((NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT, 0))
@@ -200,12 +189,52 @@ class OrdinalFst(GraphFst):
         self.suffixed_to_words = self.suffixed_ordinal @ self.graph
 
         self.bare_ordinals = cleaned_graph
-        kapitlet_word = pynini.union("kapitlet", pynini.cross("kap", "kapitlet"))
-        kapitlet = cleaned_graph + NEMO_SPACE + kapitlet_word
+        reference_number = (cleaned_graph | self.suffixed_to_words).optimize()
+
+        def optionally_dotted(graph):
+            alphabetic = pynini.closure(SV_ALPHA, 1) @ graph
+            return graph | (alphabetic + optional_dot)
+
+        def reference_group(gender, article, demonstrative):
+            definite = pynini.string_file(get_abs_path(f"data/reference/ordinal_{gender}_definite.tsv"))
+            indefinite = pynini.string_file(get_abs_path(f"data/reference/ordinal_{gender}_indefinite.tsv"))
+            alphabetic = pynini.closure(SV_ALPHA, 1)
+            symbolic = pynini.project(indefinite, "input") - alphabetic
+            preferred = (alphabetic @ definite) | (symbolic @ indefinite)
+            head = reference_number + NEMO_SPACE
+            graph = (head + optionally_dotted(preferred)) | (head + pynini.project(definite, "output"))
+            if not deterministic:
+                abbreviated_definite = head + optionally_dotted(definite)
+                abbreviated_indefinite = head + optionally_dotted(indefinite)
+                graph |= abbreviated_definite | abbreviated_indefinite
+                graph |= pynutil.insert(article) + insert_space + abbreviated_definite
+                graph |= pynutil.insert(demonstrative) + insert_space + abbreviated_indefinite
+
+                def unit_first(form):
+                    return pynini.union(
+                        *(
+                            pynutil.delete(written)
+                            + (optional_dot if written.isalpha() else pynini.accep(""))
+                            + pynutil.delete(NEMO_SPACE)
+                            + reference_number
+                            + insert_space
+                            + pynutil.insert(spoken)
+                            for written, spoken, _ in form.paths().items()
+                        )
+                    )
+
+                unit_first_definite = unit_first(definite)
+                unit_first_indefinite = unit_first(indefinite)
+                graph |= unit_first_definite | unit_first_indefinite
+                graph |= pynutil.insert(article) + insert_space + unit_first_definite
+                graph |= pynutil.insert(demonstrative) + insert_space + unit_first_indefinite
+            return graph
+
+        reference_graph = reference_group("common", "den", "denna") | reference_group("neuter", "det", "detta")
 
         tok_graph = (
             pynutil.insert("integer: \"")
-            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | kapitlet)
+            + (cleaned_graph + pynutil.delete(".") | self.suffixed_to_words | reference_graph)
             + pynutil.insert("\"")
         )
 

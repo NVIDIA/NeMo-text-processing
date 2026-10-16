@@ -15,6 +15,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.sv.graph_utils import optional_dot
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path, load_labels
 
 
@@ -34,18 +35,29 @@ class WhiteListFst(GraphFst):
     def __init__(self, input_case: str, deterministic: bool = True, input_file: str = None):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
 
-        def _get_whitelist_graph(input_case, file):
+        def _get_whitelist_graph(input_case, file, uppercase_variants=False):
             whitelist = load_labels(file)
             if input_case == "lower_cased":
                 whitelist = [[x[0].lower()] + x[1:] for x in whitelist]
+            elif uppercase_variants:
+                whitelist += [
+                    [variant] + row[1:]
+                    for row in whitelist
+                    for variant in (row[0][0].upper() + row[0][1:], row[0].upper())
+                    if variant != row[0]
+                ]
             graph = pynini.string_map(whitelist)
             return graph
 
         graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist.tsv"))
+        graph |= _get_whitelist_graph(input_case, get_abs_path("data/abbreviations/abbreviations.tsv"))
+        graph |= (
+            _get_whitelist_graph(input_case, get_abs_path("data/abbreviations/abbreviations_opt_dot.tsv"))
+            + optional_dot
+        )
         if not deterministic and input_case != "lower_cased":
-            graph |= pynutil.add_weight(
-                _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv")), weight=0.0001
-            )
+            lower_cased_graph = _get_whitelist_graph("lower_cased", get_abs_path("data/whitelist.tsv"))
+            graph |= pynutil.add_weight(lower_cased_graph, weight=0.0001)
 
         if input_file:
             whitelist_provided = _get_whitelist_graph(input_case, input_file)
@@ -57,7 +69,9 @@ class WhiteListFst(GraphFst):
         if not deterministic:
             units_graph = _get_whitelist_graph(input_case, file=get_abs_path("data/measure/unit.tsv"))
             units_graph |= _get_whitelist_graph(input_case, file=get_abs_path("data/measure/unit_neuter.tsv"))
-            units_graph |= _get_whitelist_graph(input_case, file=get_abs_path("data/abbreviations_nondet.tsv"))
+            units_graph |= _get_whitelist_graph(
+                input_case, get_abs_path("data/abbreviations/abbreviations_alternatives.tsv"), uppercase_variants=True
+            )
             graph |= units_graph
 
         self.graph = graph
