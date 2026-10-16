@@ -18,6 +18,12 @@ tredje paragraf
 tredje paragrafen
 den tredje paragrafen
 denna tredje paragraf
+~§ 3
+paragraf tre
+tredje paragraf
+tredje paragrafen
+den tredje paragrafen
+denna tredje paragraf
 ~9 kap.
 kapitel nio
 nionde kapitel

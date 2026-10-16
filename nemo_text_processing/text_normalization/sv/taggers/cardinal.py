@@ -371,18 +371,20 @@ class CardinalFst(GraphFst):
         alphabetic_labels = pynini.closure(SV_ALPHA, 1) @ reference_labels
         unit = reference_labels | (alphabetic_labels + optional_dot)
         unit_first = unit + delete_space + insert_space + self.graph
-        number_first = pynini.union(
-            *(
-                pynutil.insert(spoken)
-                + insert_space
-                + self.graph
-                + delete_space
-                + pynutil.delete(written)
-                + (optional_dot if written.isalpha() else pynini.accep(""))
-                for written, spoken, _ in reference_labels.paths().items()
+        reference_graph = unit_first
+        if not deterministic:
+            number_first = pynini.union(
+                *(
+                    pynutil.insert(spoken)
+                    + insert_space
+                    + self.graph
+                    + delete_space
+                    + pynutil.delete(written)
+                    + (optional_dot if written.isalpha() else pynini.accep(""))
+                    for written, spoken, _ in reference_labels.paths().items()
+                )
             )
-        )
-        reference_graph = unit_first | number_first
+            reference_graph |= number_first
         final_graph |= pynutil.insert("integer: \"") + reference_graph + pynutil.insert("\"")
         if not deterministic:
             final_graph |= pynutil.add_weight(

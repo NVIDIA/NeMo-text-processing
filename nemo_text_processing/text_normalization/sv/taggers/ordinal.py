@@ -210,14 +210,36 @@ class OrdinalFst(GraphFst):
         def reference_group(gender, article, demonstrative):
             definite = pynini.string_file(get_abs_path(f"data/reference/ordinal_{gender}_definite.tsv"))
             indefinite = pynini.string_file(get_abs_path(f"data/reference/ordinal_{gender}_indefinite.tsv"))
+            alphabetic = pynini.closure(SV_ALPHA, 1)
+            symbolic = pynini.project(indefinite, "input") - alphabetic
+            preferred = (alphabetic @ definite) | (symbolic @ indefinite)
             head = reference_number + NEMO_SPACE
-            abbreviated_definite = head + optionally_dotted(definite)
-            graph = abbreviated_definite | (head + pynini.project(definite, "output"))
+            graph = (head + optionally_dotted(preferred)) | (head + pynini.project(definite, "output"))
             if not deterministic:
+                abbreviated_definite = head + optionally_dotted(definite)
                 abbreviated_indefinite = head + optionally_dotted(indefinite)
-                graph |= abbreviated_indefinite
+                graph |= abbreviated_definite | abbreviated_indefinite
                 graph |= pynutil.insert(article) + insert_space + abbreviated_definite
                 graph |= pynutil.insert(demonstrative) + insert_space + abbreviated_indefinite
+
+                def unit_first(form):
+                    return pynini.union(
+                        *(
+                            pynutil.delete(written)
+                            + (optional_dot if written.isalpha() else pynini.accep(""))
+                            + pynutil.delete(NEMO_SPACE)
+                            + reference_number
+                            + insert_space
+                            + pynutil.insert(spoken)
+                            for written, spoken, _ in form.paths().items()
+                        )
+                    )
+
+                unit_first_definite = unit_first(definite)
+                unit_first_indefinite = unit_first(indefinite)
+                graph |= unit_first_definite | unit_first_indefinite
+                graph |= pynutil.insert(article) + insert_space + unit_first_definite
+                graph |= pynutil.insert(demonstrative) + insert_space + unit_first_indefinite
             return graph
 
         reference_graph = reference_group("common", "den", "denna") | reference_group("neuter", "det", "detta")
