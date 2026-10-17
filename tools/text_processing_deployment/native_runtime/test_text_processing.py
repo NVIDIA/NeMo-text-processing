@@ -12,12 +12,11 @@ import unittest
 from pathlib import Path
 
 import pynini
-from .byte_transducer import NativePipeline, export_fst
-from nemo_text_processing.text_normalization.data_loader_utils import (
-    post_process_punct,
-    pre_process,
-)
 from sacremoses import MosesDetokenizer
+
+from nemo_text_processing.text_normalization.data_loader_utils import post_process_punct, pre_process
+
+from .byte_transducer import NativePipeline, export_fst
 
 
 class TextProcessingTest(unittest.TestCase):
@@ -84,9 +83,7 @@ class TextProcessingTest(unittest.TestCase):
         results = []
         for lib in self.libs:
             result, length = ctypes.c_void_p(), ctypes.c_size_t()
-            status = lib.tn_text_stage(
-                stage, a, len(a), b, len(b), ctypes.byref(result), ctypes.byref(length)
-            )
+            status = lib.tn_text_stage(stage, a, len(a), b, len(b), ctypes.byref(result), ctypes.byref(length))
             self.assertEqual(status, 0)
             results.append(ctypes.string_at(result.value, length.value).decode())
         self.assertEqual(results[0], results[1], "SIMD/scalar mismatch")
@@ -97,9 +94,7 @@ class TextProcessingTest(unittest.TestCase):
         self.assertEqual(self.stage(0, written, ""), pre_process(written).strip())
         detokenized = self.detokenizer.detokenize([output], unescape=False)
         self.assertEqual(self.stage(1, "", output), detokenized)
-        expected = " ".join(
-            post_process_punct(input=written, normalized_text=detokenized).split()
-        )
+        expected = " ".join(post_process_punct(input=written, normalized_text=detokenized).split())
         self.assertEqual(self.stage(2, written, output), expected)
 
     def test_public_punctuation_and_unicode_cases(self) -> None:
@@ -198,9 +193,7 @@ class TextProcessingTest(unittest.TestCase):
                 self.assertEqual(status, -1)
 
     def test_stream_and_complete_api(self) -> None:
-        export_fst(
-            pynini.cross("x", 'tokens { name: "word" }'), self.root / "tagger.bin"
-        )
+        export_fst(pynini.cross("x", 'tokens { name: "word" }'), self.root / "tagger.bin")
         export_fst(
             pynini.cross(' tokens { name: "word"  } ', "word"),
             self.root / "verbalizer.bin",
@@ -209,12 +202,8 @@ class TextProcessingTest(unittest.TestCase):
         values = ["x", " \nx\t", "", "\u2003x\u00a0"]
         native = NativePipeline(self.library, self.root)
         try:
-            self.assertEqual(
-                [native.normalize(s) for s in values], ["word", "word", "", "word"]
-            )
-            self.assertEqual(
-                native.normalize_batch(values), ["word", "word", "", "word"]
-            )
+            self.assertEqual([native.normalize(s) for s in values], ["word", "word", "", "word"])
+            self.assertEqual(native.normalize_batch(values), ["word", "word", "", "word"])
             self.assertEqual(native.normalize_batch([]), [])
             with self.assertRaisesRegex(RuntimeError, "Batch record 1"):
                 native.normalize_batch(["x", "\0", "x"])
@@ -231,23 +220,15 @@ class TextProcessingTest(unittest.TestCase):
                 self.assertEqual(status, -1)
                 self.assertIsNone(output.value)
                 self.assertEqual(size.value, 0)
-            self.assertEqual(
-                native.normalize_batch(values), ["word", "word", "", "word"]
-            )
+            self.assertEqual(native.normalize_batch(values), ["word", "word", "", "word"])
 
         finally:
             native.close()
         source = self.root / "input.frames"
         target = self.root / "output.frames"
-        source.write_bytes(
-            b"".join(struct.pack("<I", len(s.encode())) + s.encode() for s in values)
-        )
-        subprocess.run(
-            [str(self.executable), str(self.root), str(source), str(target)], check=True
-        )
-        expected = b"".join(
-            struct.pack("<I", len(s)) + s for s in [b"word", b"word", b"", b"word"]
-        )
+        source.write_bytes(b"".join(struct.pack("<I", len(s.encode())) + s.encode() for s in values))
+        subprocess.run([str(self.executable), str(self.root), str(source), str(target)], check=True)
+        expected = b"".join(struct.pack("<I", len(s)) + s for s in [b"word", b"word", b"", b"word"])
         self.assertEqual(target.read_bytes(), expected)
         source.write_bytes(b"\x02\x00")
         result = subprocess.run(
@@ -272,9 +253,7 @@ class TextProcessingTest(unittest.TestCase):
         normalizer.verbalizer = SimpleNamespace(fst=pynini.cross("unreachable", "word"))
         normalizer.post_processor = SimpleNamespace(fst=pynini.accep("word"))
         for tags in ['tokens { name: "word" }', 'tokens { name: "" }']:
-            normalizer.tagger = SimpleNamespace(
-                fst=pynini.cross(pynini.escape("[ x ]"), tags)
-            )
+            normalizer.tagger = SimpleNamespace(fst=pynini.cross(pynini.escape("[ x ]"), tags))
             for name, component in [
                 ("tagger", normalizer.tagger),
                 ("verbalizer", normalizer.verbalizer),
@@ -283,9 +262,7 @@ class TextProcessingTest(unittest.TestCase):
                 export_fst(component.fst, self.root / (name + ".bin"))
             native = NativePipeline(self.library, self.root)
             try:
-                expected = normalizer.normalize(
-                    "[x]", punct_pre_process=True, punct_post_process=True
-                )
+                expected = normalizer.normalize("[x]", punct_pre_process=True, punct_post_process=True)
                 self.assertEqual(native.normalize("[x]"), expected)
             finally:
                 native.close()

@@ -141,8 +141,7 @@ class NativePipeline:
         self.lib.tn_pipeline_normalize.argtypes = self.lib.tn_pipeline_rewrite.argtypes
         self.lib.tn_pipeline_normalize.restype = ctypes.c_int
         paths = [
-            (grammar_directory / (name + ".bin")).absolute()
-            for name in ("tagger", "verbalizer", "postprocessor")
+            (grammar_directory / (name + ".bin")).absolute() for name in ("tagger", "verbalizer", "postprocessor")
         ]
         self.handle = self.lib.tn_pipeline_load(*(str(path).encode() for path in paths))
         if not self.handle:
@@ -172,9 +171,7 @@ class NativePipeline:
         function.argtypes = self.lib.tn_pipeline_rewrite.argtypes
         function.restype = ctypes.c_int
         output, size = ctypes.c_void_p(), ctypes.c_size_t()
-        if function(
-            self.handle, frames, len(frames), ctypes.byref(output), ctypes.byref(size)
-        ):
+        if function(self.handle, frames, len(frames), ctypes.byref(output), ctypes.byref(size)):
             raise RuntimeError(self.lib.tn_error().decode())
         data = ctypes.string_at(output.value, size.value)
         result, position = [], 0
@@ -197,12 +194,8 @@ class NativePipeline:
         encoded = text.encode()
         output = ctypes.c_void_p()
         size = ctypes.c_size_t()
-        function = (
-            self.lib.tn_pipeline_normalize if complete else self.lib.tn_pipeline_rewrite
-        )
-        status = function(
-            self.handle, encoded, len(encoded), ctypes.byref(output), ctypes.byref(size)
-        )
+        function = self.lib.tn_pipeline_normalize if complete else self.lib.tn_pipeline_rewrite
+        status = function(self.handle, encoded, len(encoded), ctypes.byref(output), ctypes.byref(size))
         if status < 0:
             raise RuntimeError(self.lib.tn_error().decode())
         if status:

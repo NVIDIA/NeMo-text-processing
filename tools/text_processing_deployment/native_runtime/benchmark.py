@@ -39,17 +39,14 @@ def main() -> None:
                         seconds["native_normalization"] += time.perf_counter() - begin
                         if output is None:
                             counts["no_path"] += 1
-                            differences.write(
-                                json.dumps({"written": written, "error": "no path"})
-                                + "\n"
-                            )
+                            differences.write(json.dumps({"written": written, "error": "no path"}) + "\n")
                             continue
                         reference = row["spoken"]
                         if output != reference:
                             counts["exact_differences"] += 1
-                            counts["word_token_differences"] += re.findall(
-                                r"\w+", output
-                            ) != re.findall(r"\w+", reference)
+                            counts["word_token_differences"] += re.findall(r"\w+", output) != re.findall(
+                                r"\w+", reference
+                            )
                             differences.write(
                                 json.dumps(
                                     {

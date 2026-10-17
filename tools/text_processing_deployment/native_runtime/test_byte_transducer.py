@@ -48,11 +48,7 @@ class ByteTransducerTest(unittest.TestCase):
                     actual = runtime.rewrite(text)
                     lattice = pynini.compose(pynini.accep(pynini.escape(text)), graph)
                     expected_cost = (
-                        float(
-                            pynini.shortestdistance(lattice, reverse=True)[
-                                lattice.start()
-                            ]
-                        )
+                        float(pynini.shortestdistance(lattice, reverse=True)[lattice.start()])
                         if lattice.start() >= 0
                         else float("inf")
                     )
@@ -60,15 +56,9 @@ class ByteTransducerTest(unittest.TestCase):
                     if actual is not None:
                         output, cost = actual
                         self.assertAlmostEqual(cost, expected_cost, places=5)
-                        constrained = pynini.compose(
-                            lattice, pynini.accep(pynini.escape(output))
-                        )
+                        constrained = pynini.compose(lattice, pynini.accep(pynini.escape(output)))
                         self.assertGreaterEqual(constrained.start(), 0)
-                        output_cost = float(
-                            pynini.shortestdistance(constrained, reverse=True)[
-                                constrained.start()
-                            ]
-                        )
+                        output_cost = float(pynini.shortestdistance(constrained, reverse=True)[constrained.start()])
                         self.assertAlmostEqual(output_cost, expected_cost, places=5)
         finally:
             runtime.close()
@@ -133,9 +123,7 @@ class ByteTransducerTest(unittest.TestCase):
         tags = 'tokens { money { currency: "dollars" integer: "twelve" } }'
         reordered = ' tokens {  money { integer: "twelve" currency: "dollars"  }  } '
         export_fst(pynini.cross("input", tags), self.root / "tagger.bin")
-        export_fst(
-            pynini.cross(reordered, "twelve dollars"), self.root / "verbalizer.bin"
-        )
+        export_fst(pynini.cross(reordered, "twelve dollars"), self.root / "verbalizer.bin")
         export_fst(
             pynini.cross("twelve dollars", "TWELVE DOLLARS"),
             self.root / "postprocessor.bin",
@@ -152,9 +140,7 @@ class ByteTransducerTest(unittest.TestCase):
         tags = 'tokens { money { currency: "dollars" integer: "twelve" preserve_order: true } }'
         forbidden = ' tokens {  money { integer: "twelve" currency: "dollars" preserve_order: true  }  } '
         export_fst(pynini.cross("input", tags), self.root / "tagger.bin")
-        export_fst(
-            pynini.cross(forbidden, "twelve dollars"), self.root / "verbalizer.bin"
-        )
+        export_fst(pynini.cross(forbidden, "twelve dollars"), self.root / "verbalizer.bin")
         export_fst(pynini.accep("twelve dollars"), self.root / "postprocessor.bin")
         native = NativePipeline(self.library, self.root)
         try:
@@ -184,9 +170,7 @@ class ByteTransducerTest(unittest.TestCase):
             (2, 1, 0, 0, 0.0),
             (1, 3, 0, 0, 1e8),
         ]:
-            graph.add_arc(
-                src, pynini.Arc(ilabel, olabel, pynini.Weight("tropical", weight), dst)
-            )
+            graph.add_arc(src, pynini.Arc(ilabel, olabel, pynini.Weight("tropical", weight), dst))
         path = self.root / "merge.bin"
         export_fst(graph, path)
         runtime = ByteTransducer(self.library, path)
@@ -210,9 +194,7 @@ class ByteTransducerTest(unittest.TestCase):
             (2, 4, 97, 122, 0.0),
             (3, 4, 0, 113, 0.0),
         ]:
-            graph.add_arc(
-                src, pynini.Arc(ilabel, olabel, pynini.Weight("tropical", weight), dst)
-            )
+            graph.add_arc(src, pynini.Arc(ilabel, olabel, pynini.Weight("tropical", weight), dst))
         path = self.root / "lookahead.bin"
         export_fst(graph, path)
         for mode, expected in [("transducer", "yq"), ("lookahead", "xz")]:
@@ -255,9 +237,7 @@ class ByteTransducerTest(unittest.TestCase):
                         expected = None
                     actual = runtime.rewrite(text)
                     with self.subTest(text=text):
-                        self.assertEqual(
-                            None if actual is None else actual[0], expected
-                        )
+                        self.assertEqual(None if actual is None else actual[0], expected)
             finally:
                 runtime.close()
 
@@ -275,9 +255,7 @@ class ByteTransducerTest(unittest.TestCase):
             (3, 1, 98, 121, -10),
             (4, 2, 0, 120, 0),
         ]:
-            graph.add_arc(
-                src, pynini.Arc(ilabel, olabel, pynini.Weight("tropical", weight), dst)
-            )
+            graph.add_arc(src, pynini.Arc(ilabel, olabel, pynini.Weight("tropical", weight), dst))
         path = self.root / "phase-merge.bin"
         export_fst(graph, path)
         runtime = ByteTransducer(self.library, path, mode="lookahead")
@@ -328,11 +306,7 @@ class ByteTransducerTest(unittest.TestCase):
                                 rng.choice([0, 120, 121, 122]),
                                 pynini.Weight(
                                     "tropical",
-                                    0
-                                    if case >= 600
-                                    else rng.choice(
-                                        [0, 0, 0, -1e-8, 0.1, 0.2, 1e8, -10]
-                                    ),
+                                    0 if case >= 600 else rng.choice([0, 0, 0, -1e-8, 0.1, 0.2, 1e8, -10]),
                                 ),
                                 ids[later],
                             ),
@@ -361,16 +335,10 @@ class ByteTransducerTest(unittest.TestCase):
                                 expected = None
                         else:
                             lattice = pynini.accep(text) @ graph
-                            expected = (
-                                pynini.shortestpath(lattice).string()
-                                if lattice.start() >= 0
-                                else None
-                            )
+                            expected = pynini.shortestpath(lattice).string() if lattice.start() >= 0 else None
                         actual = runtime.rewrite(text)
                         with self.subTest(case=case, mode=mode, text=text):
-                            self.assertEqual(
-                                None if actual is None else actual[0], expected
-                            )
+                            self.assertEqual(None if actual is None else actual[0], expected)
                 finally:
                     runtime.close()
 
@@ -388,9 +356,7 @@ class ByteTransducerTest(unittest.TestCase):
             (2, 0, 0, 120),
             (2, 1, 0, 121),
         ]:
-            graph.add_arc(
-                src, pynini.Arc(ilabel, olabel, pynini.Weight.one("tropical"), dst)
-            )
+            graph.add_arc(src, pynini.Arc(ilabel, olabel, pynini.Weight.one("tropical"), dst))
         graph.arcsort("ilabel")
         expected = pynini.shortestpath(pynini.accep("b") @ graph).string()
         self.assertEqual(expected, "yx")
