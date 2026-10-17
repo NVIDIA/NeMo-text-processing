@@ -261,9 +261,7 @@ class TextProcessingTest(unittest.TestCase):
                                 RuntimeError, f"^Batch record {record}: Embedded NUL is unsupported$"
                             ):
                                 native.normalize_batch(values)
-                            frames = b"".join(
-                                struct.pack("<I", len(text.encode())) + text.encode() for text in values
-                            )
+                            frames = b"".join(struct.pack("<I", len(text.encode())) + text.encode() for text in values)
                             output, size = ctypes.c_void_p(1), ctypes.c_size_t(1)
                             status = native.lib.tn_pipeline_normalize_batch(
                                 native.handle, frames, len(frames), ctypes.byref(output), ctypes.byref(size)
