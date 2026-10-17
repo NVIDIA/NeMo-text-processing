@@ -514,6 +514,8 @@ public:
 
   DagWorkspace dag;
   bool push_prefix = false;
+  // Removed input epsilon arcs still affect AutoQueue and terminal lookahead phase.
+  bool input_had_nul = false, trailing_nul = false;
   // Specialize record execution so each arc does not retest the same mode flags.
   template <bool compress, bool lookahead>
   bool rewrite_dag_impl(const char *data, size_t size, float &best_cost) {
@@ -563,7 +565,7 @@ public:
             if (!can_consume(terminal, nextlabel))
               return;
           }
-          bool prefix = lookahead && nextpos < size && last_epsilon;
+          bool prefix = lookahead && (nextpos < size || trailing_nul) && last_epsilon;
           uint32_t target = dag.get(terminal * 2 + prefix, nextpos);
           if (edges.size() >= 10000000)
             throw std::runtime_error("DAG edge limit");
@@ -644,7 +646,7 @@ public:
     }
     // AutoQueue tests known acyclicity before falling back to unweighted LIFO.
     // Prepared lookahead retains the acyclic property for empty input only.
-    bool lifo = unweighted && !(lookahead ? size == 0 : known_acyclic);
+    bool lifo = unweighted && !(lookahead ? size == 0 && !input_had_nul : known_acyclic);
     if (lifo && !lookahead && !has_queue_properties)
       throw std::runtime_error(
           "Re-export legacy grammar with cached queue properties");
@@ -727,6 +729,20 @@ public:
     return rewrite_dag_impl<false, false>(data, size, cost);
   }
   bool rewrite(const char *data, size_t size, float &cost) {
+    // Pynini compiles byte zero as epsilon, not a consuming input label.
+    // Keep it in the original text for punctuation and failed-verbalization fallback.
+    input_had_nul = std::memchr(data, 0, size) != nullptr;
+    trailing_nul = size && !data[size - 1];
+    if (input_had_nul) {
+      if (!push_prefix && !project_output)
+        throw std::runtime_error("NUL requires lookahead or output-projected mode");
+      std::string input;
+      input.reserve(size);
+      for (size_t i = 0; i < size; ++i)
+        if (data[i])
+          input.push_back(data[i]);
+      return rewrite_dag(input.data(), input.size(), cost);
+    }
     return rewrite_dag(data, size, cost);
   }
 
@@ -986,7 +1002,9 @@ public:
     if (!tagger.rewrite(text, length, cost))
       return false;
     auto tokens = TagParser(tagger.result).parse();
-    for (size_t begin = 0; begin < tokens.size();) {
+    // NeMo attempts verbalization even when the tag parser returns no tokens.
+    size_t begin = 0;
+    do {
       size_t end = begin, count = 1;
       while (end < tokens.size()) {
         size_t n = permutation_count({tokens[end]});
@@ -1021,7 +1039,7 @@ public:
         return false;
       }
       begin = end;
-    }
+    } while (begin < tokens.size());
     result = collapse_spaces(result);
     if (!result.empty()) {
       if (!postprocessor.rewrite(result.data(), result.size(), cost))

@@ -169,15 +169,13 @@ class TextProcessingTest(unittest.TestCase):
             with self.subTest(written=a, output=b):
                 self.check_pair(a, b)
 
-    def test_invalid_utf8_and_nul(self) -> None:
+    def test_invalid_utf8(self) -> None:
         for value in (
             b"\xc0\x80",
             b"\xed\xa0\x80",
             b"\xf4\x90\x80\x80",
             b"\xff",
             b"\xe2\x82",
-            b"\0",
-            b"a" * 16 + b"\0",
         ):
             for lib in self.libs:
                 result, length = ctypes.c_void_p(), ctypes.c_size_t()
@@ -206,7 +204,7 @@ class TextProcessingTest(unittest.TestCase):
             self.assertEqual(native.normalize_batch(values), ["word", "word", "", "word"])
             self.assertEqual(native.normalize_batch([]), [])
             with self.assertRaisesRegex(RuntimeError, "Batch record 1"):
-                native.normalize_batch(["x", "\0", "x"])
+                native.normalize_batch(["x", "unmatched", "x"])
             self.assertEqual(native.normalize_batch(["x"]), ["word"])
             for malformed in [b"\x02\x00", struct.pack("<I", 5) + b"x"]:
                 output, size = ctypes.c_void_p(1), ctypes.c_size_t(1)
@@ -239,39 +237,45 @@ class TextProcessingTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn(b"Truncated input frame header", result.stderr)
 
-    def test_embedded_nul_batch_failure_and_reuse(self) -> None:
-        export_fst(pynini.cross("x", 'tokens { name: "word" }'), self.root / "tagger.bin")
-        export_fst(pynini.cross(' tokens { name: "word"  } ', "word"), self.root / "verbalizer.bin")
-        export_fst(pynini.accep("word"), self.root / "postprocessor.bin")
-        # Exercise both sides of SIMD boundaries and NUL after multibyte UTF-8.
-        malformed = ["a" * n + "\0readable suffix" for n in (0, 1, 15, 16, 17, 31, 32, 33, 63, 64, 65)]
-        malformed += ["René paid \0 twelve dollars.", "x\0", "\u2003\0\u00a0"]
-        for library in (self.library, self.scalar):
-            native = NativePipeline(library, self.root)
-            try:
-                for value in malformed:
-                    with self.subTest(library=library.name, value=value):
-                        with self.assertRaisesRegex(RuntimeError, "Embedded NUL is unsupported"):
-                            native.normalize(value)
-                        self.assertEqual(native.normalize("x"), "word")
-                        for record in range(3):
-                            values = ["x", "", "x"]
-                            values[record] = value
-                            with self.assertRaisesRegex(
-                                RuntimeError, f"^Batch record {record}: Embedded NUL is unsupported$"
-                            ):
-                                native.normalize_batch(values)
-                            frames = b"".join(struct.pack("<I", len(text.encode())) + text.encode() for text in values)
-                            output, size = ctypes.c_void_p(1), ctypes.c_size_t(1)
-                            status = native.lib.tn_pipeline_normalize_batch(
-                                native.handle, frames, len(frames), ctypes.byref(output), ctypes.byref(size)
-                            )
-                            self.assertEqual(status, -1)
-                            self.assertIsNone(output.value)
-                            self.assertEqual(size.value, 0)
-                            self.assertEqual(native.normalize_batch(["x", "", "x"]), ["word", "", "word"])
-            finally:
-                native.close()
+    def test_embedded_nul_matches_reference(self) -> None:
+        from types import SimpleNamespace
+
+        from nemo_text_processing.text_normalization.normalize import Normalizer
+        from nemo_text_processing.text_normalization.token_parser import TokenParser
+
+        values = ["a" * n + "\0word" for n in (0, 1, 15, 16, 17, 31, 32, 33, 63, 64, 65)]
+        values += ["René\0 word", "x\0", "\u2003\0\u00a0", "\0", " \0 \0 ", "[\0x]", "x \0 y"]
+        normalizer = Normalizer.__new__(Normalizer)
+        normalizer.lang = "en"
+        normalizer.parser = TokenParser()
+        normalizer.max_number_of_permutations_per_split = 729
+        normalizer.moses_detokenizer = self.detokenizer
+        prepared = {pre_process(" ".join(value.split())).strip().replace("\0", "") for value in values}
+        normalizer.tagger = SimpleNamespace(
+            fst=pynini.union(*(pynini.cross(pynini.escape(value), 'tokens { name: "word" }') for value in prepared))
+        )
+        normalizer.verbalizer = SimpleNamespace(fst=pynini.cross(' tokens { name: "word"  } ', "word"))
+        normalizer.post_processor = SimpleNamespace(fst=pynini.accep("word"))
+        # Also check the early-return path, which must retain the original NUL.
+        for failed_verbalization in (False, True):
+            if failed_verbalization:
+                normalizer.verbalizer.fst = pynini.cross("unreachable", "word")
+            for name in ("tagger", "verbalizer", "post_processor"):
+                filename = "postprocessor" if name == "post_processor" else name
+                export_fst(getattr(normalizer, name).fst, self.root / (filename + ".bin"))
+            expected = [
+                normalizer.normalize(" ".join(value.split()), punct_pre_process=True, punct_post_process=True)
+                for value in values
+            ]
+            for library in (self.library, self.scalar):
+                native = NativePipeline(library, self.root)
+                try:
+                    with self.subTest(library=library.name, failed_verbalization=failed_verbalization):
+                        self.assertEqual([native.normalize(value) for value in values], expected)
+                        self.assertEqual(native.normalize_batch(values), expected)
+                        self.assertEqual(native.normalize_batch(values), expected)
+                finally:
+                    native.close()
 
     def test_failed_verbalization_matches_reference(self) -> None:
         from types import SimpleNamespace
@@ -286,7 +290,7 @@ class TextProcessingTest(unittest.TestCase):
         normalizer.moses_detokenizer = self.detokenizer
         normalizer.verbalizer = SimpleNamespace(fst=pynini.cross("unreachable", "word"))
         normalizer.post_processor = SimpleNamespace(fst=pynini.accep("word"))
-        for tags in ['tokens { name: "word" }', 'tokens { name: "" }']:
+        for tags in [" ", 'tokens { name: "word" }', 'tokens { name: "" }']:
             normalizer.tagger = SimpleNamespace(fst=pynini.cross(pynini.escape("[ x ]"), tags))
             for name, component in [
                 ("tagger", normalizer.tagger),

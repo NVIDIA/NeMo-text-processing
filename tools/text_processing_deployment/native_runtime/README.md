@@ -51,8 +51,10 @@ NativePipeline loads tagger.bin, verbalizer.bin and postprocessor.bin from a sup
 Its normalize method performs complete English processing; normalize_core exposes the transducer stages for diagnostics.
 normalize_batch uses one native call for a list of records, with no Python callbacks during normalization.
 Batches use the same framing as the standalone driver, allow at most 64 MiB of input or output, and return no partial result on failure.
-Embedded NUL characters can occur in crawl text and are rejected even inside an otherwise readable sentence.
-Corpus preparation should reject and count those records before batching; the runtime does not strip characters or silently discard records.
+Embedded NUL characters follow Pynini's epsilon interpretation at transducer input.
+They remain available in the original text for punctuation handling and failed-verbalization fallback; containing NUL does not discard a record.
+The evaluator retains the original input's emptiness and trailing-epsilon phase when choosing tied paths.
+The low-level direct-transducer mode still rejects NUL because its composition-filter tie ordering is not implemented; the complete English pipeline uses prepared lookahead.
 A record failure identifies the zero-based batch index, publishes no partial output and leaves the handle usable for the next call.
 ByteTransducer evaluates individual exported graphs and returns both output and path cost.
 The C ABI also supports native callers without Python.
@@ -84,7 +86,7 @@ The audited dependency set is NeMo text processing 1.2.0, Pynini 2.1.6.post1, Py
 Changing grammar exports or dependencies requires fresh differential validation.
 TNBYTE02 exports retain cached acyclicity rather than recomputing it, since that cache affects reference queue choice.
 Re-export legacy TNBYTE01 grammars before direct-mode unweighted execution; missing queue metadata is an error there.
-Malformed UTF-8, NUL, unsupported labels and resource-limit failures are explicit errors, not silent fallbacks.
+Malformed UTF-8, unsupported labels and resource-limit failures are explicit errors, not silent fallbacks.
 
 Relevant implementation references:
 

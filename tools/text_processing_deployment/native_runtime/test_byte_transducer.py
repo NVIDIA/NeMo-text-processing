@@ -327,7 +327,11 @@ class ByteTransducerTest(unittest.TestCase):
             for mode in ["transducer", "output"]:
                 runtime = ByteTransducer(self.library, path, mode=mode)
                 try:
-                    for text in ["", "a", "b", "ab", "ba", "aa", "bbb", "abab"]:
+                    for text in ["", "a", "b", "ab", "ba", "aa", "bbb", "abab", "\0", "a\0", "a\0b", "\0b"]:
+                        if mode == "transducer" and "\0" in text:
+                            with self.assertRaisesRegex(RuntimeError, "NUL requires"):
+                                runtime.rewrite(text)
+                            continue
                         if mode == "output":
                             try:
                                 expected = rewrite.top_rewrite(text, graph)
@@ -341,6 +345,44 @@ class ByteTransducerTest(unittest.TestCase):
                             self.assertEqual(None if actual is None else actual[0], expected)
                 finally:
                     runtime.close()
+
+    def test_nul_preserves_lookahead_queue_and_terminal_phase(self) -> None:
+        # Expected outputs were checked against OpenFst's prepared lookahead matcher.
+        cases = [
+            (10, {0: 2, 4: 0, 9: 0}, "a\0", "zxyzy", [
+                (0, 0, 122, 1), (0, 98, 120, 9), (1, 0, 120, 2), (2, 0, 0, 3),
+                (2, 0, 0, 8), (2, 97, 0, 9), (3, 98, 0, 4), (3, 0, 0, 5),
+                (3, 0, 121, 7), (4, 98, 120, 5), (4, 0, 0, 7), (4, 0, 121, 9),
+                (5, 0, 120, 6), (5, 97, 121, 7), (5, 0, 122, 8), (6, 98, 0, 7),
+                (7, 0, 122, 8), (8, 0, 121, 9),
+            ]),
+            (12, {4: 0, 6: 2, 7: 0, 11: 0}, "\0", "yy", [
+                (0, 98, 0, 1), (0, 0, 121, 2), (0, 98, 120, 11), (1, 0, 0, 2),
+                (2, 0, 120, 3), (2, 0, 121, 10), (3, 0, 0, 4), (4, 98, 121, 5),
+                (4, 97, 121, 9), (4, 0, 122, 11), (5, 97, 120, 6), (5, 98, 122, 9),
+                (6, 97, 122, 7), (7, 97, 122, 8), (7, 98, 122, 10), (7, 97, 0, 11),
+                (8, 0, 0, 9), (9, 98, 122, 10), (9, 0, 121, 11), (10, 0, 0, 11),
+            ]),
+        ]
+        for count, finals, text, expected, arcs in cases:
+            graph = pynini.Fst()
+            for _ in range(count):
+                graph.add_state()
+            graph.set_start(0)
+            for state, weight in finals.items():
+                graph.set_final(state, pynini.Weight("tropical", weight))
+            for source, ilabel, olabel, target in arcs:
+                graph.add_arc(source, pynini.Arc(ilabel, olabel, pynini.Weight.one("tropical"), target))
+            graph.arcsort("ilabel")
+            path = self.root / "nul-queue.bin"
+            export_fst(graph, path)
+            runtime = ByteTransducer(self.library, path, mode="lookahead")
+            try:
+                self.assertEqual(runtime.rewrite(text)[0], expected)
+                runtime.rewrite(text.replace("\0", ""))
+                self.assertEqual(runtime.rewrite(text)[0], expected)
+            finally:
+                runtime.close()
 
     def test_unweighted_reference_queue_order(self) -> None:
         # OpenFst AutoQueue chooses LIFO when acyclicity is not already known.

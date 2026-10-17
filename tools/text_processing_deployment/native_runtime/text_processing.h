@@ -102,8 +102,6 @@ std::u32string decode(std::string_view s) {
       throw std::runtime_error("Invalid UTF-8 code point");
     out.push_back(c);
   }
-  if (out.find(U'\0') != std::u32string::npos)
-    throw std::runtime_error("Embedded NUL is unsupported");
   return out;
 }
 std::string encode(const std::u32string &s) {
