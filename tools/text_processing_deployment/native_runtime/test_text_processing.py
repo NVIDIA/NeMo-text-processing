@@ -239,6 +239,42 @@ class TextProcessingTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn(b"Truncated input frame header", result.stderr)
 
+    def test_embedded_nul_batch_failure_and_reuse(self) -> None:
+        export_fst(pynini.cross("x", 'tokens { name: "word" }'), self.root / "tagger.bin")
+        export_fst(pynini.cross(' tokens { name: "word"  } ', "word"), self.root / "verbalizer.bin")
+        export_fst(pynini.accep("word"), self.root / "postprocessor.bin")
+        # Exercise both sides of SIMD boundaries and NUL after multibyte UTF-8.
+        malformed = ["a" * n + "\0readable suffix" for n in (0, 1, 15, 16, 17, 31, 32, 33, 63, 64, 65)]
+        malformed += ["René paid \0 twelve dollars.", "x\0", "\u2003\0\u00a0"]
+        for library in (self.library, self.scalar):
+            native = NativePipeline(library, self.root)
+            try:
+                for value in malformed:
+                    with self.subTest(library=library.name, value=value):
+                        with self.assertRaisesRegex(RuntimeError, "Embedded NUL is unsupported"):
+                            native.normalize(value)
+                        self.assertEqual(native.normalize("x"), "word")
+                        for record in range(3):
+                            values = ["x", "", "x"]
+                            values[record] = value
+                            with self.assertRaisesRegex(
+                                RuntimeError, f"^Batch record {record}: Embedded NUL is unsupported$"
+                            ):
+                                native.normalize_batch(values)
+                            frames = b"".join(
+                                struct.pack("<I", len(text.encode())) + text.encode() for text in values
+                            )
+                            output, size = ctypes.c_void_p(1), ctypes.c_size_t(1)
+                            status = native.lib.tn_pipeline_normalize_batch(
+                                native.handle, frames, len(frames), ctypes.byref(output), ctypes.byref(size)
+                            )
+                            self.assertEqual(status, -1)
+                            self.assertIsNone(output.value)
+                            self.assertEqual(size.value, 0)
+                            self.assertEqual(native.normalize_batch(["x", "", "x"]), ["word", "", "word"])
+            finally:
+                native.close()
+
     def test_failed_verbalization_matches_reference(self) -> None:
         from types import SimpleNamespace
 

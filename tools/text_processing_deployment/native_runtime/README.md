@@ -51,6 +51,9 @@ NativePipeline loads tagger.bin, verbalizer.bin and postprocessor.bin from a sup
 Its normalize method performs complete English processing; normalize_core exposes the transducer stages for diagnostics.
 normalize_batch uses one native call for a list of records, with no Python callbacks during normalization.
 Batches use the same framing as the standalone driver, allow at most 64 MiB of input or output, and return no partial result on failure.
+Embedded NUL characters can occur in crawl text and are rejected even inside an otherwise readable sentence.
+Corpus preparation should reject and count those records before batching; the runtime does not strip characters or silently discard records.
+A record failure identifies the zero-based batch index, publishes no partial output and leaves the handle usable for the next call.
 ByteTransducer evaluates individual exported graphs and returns both output and path cost.
 The C ABI also supports native callers without Python.
 

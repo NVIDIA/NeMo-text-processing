@@ -162,7 +162,13 @@ class NativePipeline:
         return self._normalize(text, complete=True)
 
     def normalize_batch(self, texts: list[str]) -> list[str]:
-        """Run a bounded batch in native code and fail without returning partial results."""
+        """Run a bounded batch in native code and fail without returning partial results.
+
+        Embedded NUL characters are unsupported, including inside otherwise valid text.
+        A failing record raises RuntimeError with its zero-based batch index.
+        The handle remains usable after failure; no partial result is returned.
+        Corpus callers should explicitly reject and count malformed records before batching.
+        """
         if not self.handle:
             raise RuntimeError("Pipeline is closed")
         encoded = [text.encode() for text in texts]
