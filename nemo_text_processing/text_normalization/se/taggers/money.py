@@ -17,7 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_zero_or_one_space
-from nemo_text_processing.text_normalization.se.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.se.utils import get_abs_path
 
 
 class MoneyFst(GraphFst):
@@ -28,15 +28,21 @@ class MoneyFst(GraphFst):
 
         currency_nominative = pynini.string_file(get_abs_path("data/money/currency_major.tsv"))
         currency_genitive = pynini.string_file(get_abs_path("data/money/currency_major_gen.tsv"))
+        minor_nominative = pynini.string_file(get_abs_path("data/money/currency_minor.tsv"))
+        minor_genitive = pynini.string_file(get_abs_path("data/money/currency_minor_gen.tsv"))
         minor_standalone = pynini.string_file(get_abs_path("data/money/currency_minor_standalone.tsv"))
         minor_standalone_genitive = pynini.string_file(get_abs_path("data/money/currency_minor_standalone_gen.tsv"))
+
+        def forms(graph):
+            return {written: spoken for written, spoken, _ in graph.paths().items()}
+
         major_forms = {
-            "nom": dict(load_labels(get_abs_path("data/money/currency_major.tsv"))),
-            "gen": dict(load_labels(get_abs_path("data/money/currency_major_gen.tsv"))),
+            "nom": forms(currency_nominative),
+            "gen": forms(currency_genitive),
         }
         minor_forms = {
-            "nom": dict(load_labels(get_abs_path("data/money/currency_minor.tsv"))),
-            "gen": dict(load_labels(get_abs_path("data/money/currency_minor_gen.tsv"))),
+            "nom": forms(minor_nominative),
+            "gen": forms(minor_genitive),
         }
         cardinal_graph = cardinal.graphs["nom_sg"]
         one = pynini.accep("1") @ cardinal_graph
