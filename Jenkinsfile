@@ -22,7 +22,6 @@ pipeline {
     RU_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
     VI_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/10-29-25-0'
     SV_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
-    SE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/06-08-23-0'
     ZH_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/11-13-24-0'
     IT_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/08-22-24-0'
     HE_TN_CACHE='/home/jenkins/TestData/text_norm/ci/grammars/09-24-25-0'
@@ -329,24 +328,6 @@ pipeline {
         stage('L0: ZH TN grammars') {
           steps {
             sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=zh --text="6" --cache_dir ${ZH_TN_CACHE}'
-          }
-        }
-      }
-    }
-    stage('L0: Create SE TN Grammars') {
-      when {
-        anyOf {
-          branch 'main'
-          branch 'staging/**'
-          branch 'staging_*'
-          changeRequest target: 'main'
-        }
-      }
-      failFast true
-      parallel {
-        stage('L0: SE TN grammars') {
-         steps {
-            sh 'CUDA_VISIBLE_DEVICES="" python nemo_text_processing/text_normalization/normalize.py --lang=se --text="100" --cache_dir ${SE_TN_CACHE}'
           }
         }
       }
