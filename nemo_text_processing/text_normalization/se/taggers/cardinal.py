@@ -422,7 +422,7 @@ class CardinalFst(GraphFst):
 
         self.graph_higher = (
             graph_trilliard + graph_trillion + graph_billiard + graph_billion + graph_milliard + graph_million
-        )
+        ).optimize()
         graph_under_million = graph_thousands_component_at_least_one_non_zero_digit | pynutil.delete("000000")
         graph_without_conjunction = self.graph_higher + graph_under_million
 
