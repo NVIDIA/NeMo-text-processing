@@ -14,8 +14,10 @@
 
 import pytest
 from parameterized import parameterized
+from pynini.lib import rewrite
 
 from nemo_text_processing.text_normalization.normalize import Normalizer
+from nemo_text_processing.text_normalization.se.taggers.cardinal import CardinalFst
 
 from ..utils import CACHE_DIR, parse_test_case_file
 
@@ -29,3 +31,28 @@ class TestCardinal:
     def test_norm(self, test_input, expected):
         pred = self.normalizer.normalize(test_input, verbose=False)
         assert pred == expected
+
+
+class TestCardinalNonDeterministic:
+    cardinal = CardinalFst(deterministic=False)
+
+    @parameterized.expand(
+        [
+            ("20", "ill_sg", "guovttelohkái"),
+            ("20", "loc_sg", "guovttelogis"),
+            ("200", "ill_sg", "guovttečuohtái"),
+            ("200", "loc_sg", "guovttečuođis"),
+            ("201", "ill_sg", "guoktečuođioktii"),
+            ("201", "loc_sg", "guoktečuođiovttas"),
+        ]
+    )
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_cased_compound(self, test_input, case, expected):
+        assert expected in rewrite.rewrites(test_input, self.cardinal.graphs[case])
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_alternative_readings(self):
+        assert {"akta", "okta"} <= set(rewrite.rewrites("1", self.cardinal.graph))
+        assert {"guhtti", "guhttii"} <= set(rewrite.rewrites("6:i", self.cardinal.graph))

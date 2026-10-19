@@ -68,7 +68,10 @@ def load_cased_digits(use_bare_forms: bool = True):
         if use_bare_forms:
             fkey = f"bare_{key}"
         else:
-            fkey = key
+            # Singular illative and locative compounds use the genitive first component:
+            # https://gtoahpa-02.uit.no/sme/gramm/logut.eng.html
+            # Attested locative example, guovttečuođis: https://yle.fi/a/74-20230547
+            fkey = "gen_sg" if key in ("ill_sg", "loc_sg") else key
         digits_cased[key] = {}
         for label in load_labels(get_abs_path(f"data/numbers/digit_{fkey}.tsv")):
             digits_cased[key][label[1]] = label[0]
@@ -158,6 +161,8 @@ def build_cased_number_fsts(deterministic=True):
     for k in digits_cased_fst:
         logi = pynini.accep("logi")
         digit_cased_no_one = (NEMO_DIGIT - "1") @ digits_bare_cased_fst[k]
+        if k in ("ill_sg", "loc_sg"):
+            digit_cased_no_one = (NEMO_DIGIT - "1") @ digits_cased_fst[k]
         digit_nom_no_one = (NEMO_DIGIT - "1") @ digits_bare_cased_fst["nom_sg"]
         if k == 'com_sg':
             logi = pynini.accep("logiin")
