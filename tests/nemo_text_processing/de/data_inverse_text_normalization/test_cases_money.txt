@@ -1,23 +1,31 @@
-zwei dollar~$2
-ein dollar~$1
-eine million dollar~$1 Million
-zwei komma null null null eins dollar~$2,0001
-zwei komma null eins dollar~$2,01
-zwei komma null null dollar~$2,00
-ein cent~€0,01
-zwei cent~€0,02
-zwanzig cent~€0,20
-zweiundzwanzig cent~€0,22
-einhundert cent~100 cent
-zwei dollar zwanzig~$2,20
+zwei dollar~2 $
+ein dollar~1 $
+eine million dollar~1 Million $
+zwei komma null null null eins dollar~2,0001 $
+zwei komma null eins dollar~2,01 $
+zwei komma null null dollar~2,00 $
+ein cent~0,01 €
+zwei cent~0,02 €
+zwanzig cent~0,20 €
+zweiundzwanzig cent~0,22 €
+zwei dollar zwanzig~2,20 $
 zweidollarzwanzig~zweidollarzwanzig
-zwei dollar und zwanzig cent~$2,20
-zwei euro und zwanzig cent~€2,20
-zwei pfund und zwanzig pence~£2,20
-zwei euro zwanzig cent~€2,20
-zwei millionen euro~€2 Millionen
-zwei komma zwei null null millionen euro~€2,200 Millionen
-zwei komma zwei null eins millionen euro~€2,201 Millionen
-zwei komma zwei eins millionen euro~€2,21 Millionen
-zwei pfund und ein penny~£2,01
-zwei pfund und ein hundert penny~£2 und 100 penny
+zwei dollar und zwanzig cent~2,20 $
+zwei euro und zwanzig cent~2,20 €
+zwei pfund und zwanzig pence~2,20 pfund
+zwei euro zwanzig cent~2,20 €
+zwei millionen euro~2 Millionen €
+zwei komma zwei null null millionen euro~2,200 Millionen €
+zwei komma zwei null eins millionen euro~2,201 Millionen €
+zwei komma zwei eins millionen euro~2,21 Millionen €
+zwei pfund und ein penny~2,01 pfund
+zwei pfund und ein hundert penny~2 pfund und 100 penny
+zwanzig euro cent~0,20 €
+zwanzig eurocent~0,20 €
+zweiundzwanzig us cent~0,22 $
+fünfzig yen und vierunddreißig sen~50,34 ¥
+fünfzig yen vierunddreißig~50,34 ¥
+sechsundsiebzig paise~0,76 ₹
+vierzig złoty zehn groszen~40,10 zł
+vierzig złoty ein grosz~40,01 zł
+dreizehn franken~13 CHF

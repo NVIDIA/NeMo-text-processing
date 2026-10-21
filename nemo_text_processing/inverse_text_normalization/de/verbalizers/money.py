@@ -14,28 +14,33 @@
 
 import pynini
 from pynini.lib import pynutil
-
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
+    NEMO_CHAR,
+    GraphFst,
+    delete_extra_space,
+    delete_space,
+)
 
 
 class MoneyFst(GraphFst):
     """
-    Finite state transducer for verbalizing money, e.g.
-        money { integer_part: "12" fractional_part: "05" currency: "$" } -> $12.05
+    Finite state transducer for verbalizing money,
+        e.g. money { integer_part: "7" currency: "€" } -> 7 €
+        e.g. money { integer_part: "76.987" currency: "$" } -> 76.987 $
 
     Args:
-        decimal: ITN Decimal verbalizer
+        decimal: DecimalFst
     """
 
-    def __init__(self, decimal: GraphFst, deterministic: bool = True):
-        super().__init__(name="money", kind="verbalize", deterministic=deterministic)
+    def __init__(self, decimal: GraphFst):
+        super().__init__(name="money", kind="verbalize")
         unit = (
             pynutil.delete("currency:")
-            + delete_space
+            + delete_extra_space
             + pynutil.delete("\"")
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
         )
-        graph = unit + delete_space + decimal.numbers
+        graph = decimal.numbers + delete_space + unit
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
