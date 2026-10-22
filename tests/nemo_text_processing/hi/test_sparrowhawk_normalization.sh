@@ -112,10 +112,10 @@ testTNAddress() {
  runtest $input
 }
 
-#testTNMath() {
-#  input=$PROJECT_DIR/en/data_text_normalization/test_cases_math.txt
-#  runtest $input
-#}
+testTNMath() {
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_math.txt
+ runtest $input
+}
 
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2

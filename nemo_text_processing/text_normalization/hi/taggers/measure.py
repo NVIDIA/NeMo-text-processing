@@ -468,6 +468,31 @@ class MeasureFst(GraphFst):
             + pynutil.insert("\"")
         )
 
+        # Math Graph
+        math_separator = pynini.string_file(get_abs_path("data/measure/math_separator.tsv"))
+        math_operations = pynini.string_file(get_abs_path("data/measure/math_operation.tsv"))
+        delimiter = pynini.accep(" ") | pynutil.insert(" ")
+        math_alpha = capitalized_input_graph(letters_map)
+        equals = pynini.string_file(get_abs_path("data/measure/math_equal.tsv"))
+        math_unary = pynini.string_file(get_abs_path("data/measure/math_unary.tsv"))
+
+        optional_unary = pynini.closure(math_unary + delimiter, 0, 1)
+
+        digit_or_zero = digit | zero
+        fractional_bare = digit_or_zero + pynini.closure(insert_space + digit_or_zero)
+
+        flat_decimal = cardinal_graph + pynutil.insert(" ") + math_separator + pynutil.insert(" ") + fractional_bare
+
+        operand = optional_unary + (cardinal_graph | flat_decimal | math_alpha)
+
+        math_expr = operand + pynini.closure(delimiter + math_operations + delimiter + operand)
+
+        math = math_expr + delimiter + equals + delimiter + math_expr
+
+        graph_math = (
+            pynutil.insert('units: "math" cardinal { integer: "') + math + pynutil.insert('" } preserve_order: true')
+        )
+
         graph_cardinal_percent = (
             pynutil.insert("cardinal { ")
             + optional_graph_negative
@@ -505,6 +530,7 @@ class MeasureFst(GraphFst):
             | pynutil.add_weight(graph_savva, -0.1)
             | pynutil.add_weight(graph_sadhe, -0.1)
             | pynutil.add_weight(graph_paune, -0.5)
+            | pynutil.add_weight(graph_math, 0.1)
             | address_graph
             | structured_address_graph
         )
