@@ -87,5 +87,8 @@ testTNElectronic() {
 #   runtest $input
 # }
 
+# Remove all command-line arguments
+shift $#
+
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2

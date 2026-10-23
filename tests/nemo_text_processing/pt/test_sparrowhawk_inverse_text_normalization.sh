@@ -1,7 +1,7 @@
 #! /bin/sh
 
 GRAMMARS_DIR=${1:-"/workspace/sparrowhawk/documentation/grammars"}
-PROJECT_DIR=${2:-"/workspace/tests/en"}
+PROJECT_DIR=${2:-"/workspace/tests"}
 
 runtest () {
   input=$1
@@ -81,6 +81,9 @@ testITNWord() {
   input=$PROJECT_DIR/pt/data_inverse_text_normalization/test_cases_word.txt
   runtest $input
 }
+
+# Remove all command-line arguments
+shift $#
 
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2
