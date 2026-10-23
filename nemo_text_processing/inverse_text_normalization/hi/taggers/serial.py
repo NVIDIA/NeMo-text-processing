@@ -92,6 +92,10 @@ class SerialFst(GraphFst):
         contains_alpha = NEMO_SIGMA + NEMO_ALPHA + NEMO_SIGMA
         contains_digit = NEMO_SIGMA + NEMO_DIGIT + NEMO_SIGMA
         alnum_mix = pynini.intersect(contains_alpha, contains_digit).optimize()
+        # के is also the Hindi postposition "of", so digits whose only letter is a
+        # single K (कार्ड के आठ एक दो तीन -> K8123) are left to the other classes.
+        lone_k = (pynini.closure(NEMO_DIGIT) + pynini.accep("K") + pynini.closure(NEMO_DIGIT)).optimize()
+        alnum_mix = pynini.difference(alnum_mix, lone_k).optimize()
         alnum_body = (alnum_body @ alnum_mix).optimize()
 
         graph = pynutil.insert("name: \"") + (serial_core | power_graph | alnum_body) + pynutil.insert("\"")
