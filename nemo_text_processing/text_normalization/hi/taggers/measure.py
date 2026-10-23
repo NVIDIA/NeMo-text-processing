@@ -505,10 +505,11 @@ class MeasureFst(GraphFst):
             | pynutil.add_weight(graph_savva, -0.1)
             | pynutil.add_weight(graph_sadhe, -0.1)
             | pynutil.add_weight(graph_paune, -0.5)
-            | address_graph
-            | structured_address_graph
         )
+        plain_graph = graph
+        graph = plain_graph | address_graph | structured_address_graph
         self.graph = graph.optimize()
+        self.plain_fst = self.add_tokens(plain_graph)
 
         final_graph = self.add_tokens(graph)
         self.fst = final_graph

@@ -23,8 +23,8 @@ class MoneyFst(GraphFst):
     """
     Finite state transducer for verbalizing money, e.g.
         money { currency_maj: "रुपए" integer_part: "बारह" } } -> बारह रुपए
-        money { currency_maj: "रुपए" integer_part: "बारह" fractional_part: "पचास" currency_min: "पैसे" } -> बारह रुपए पचास पैसे
-        money { currency_maj: "रुपए" integer_part: "शून्य" fractional_part: "पचास" currency_min: "पैसे" } -> पचास पैसे
+        money { currency_maj: "रुपए" integer_part: "बारह" fractional_part: "पचास" currency_min: "true" } -> बारह रुपए पचास पैसे
+        money { currency_maj: "रुपए" integer_part: "शून्य" fractional_part: "पचास" currency_min: "true" } -> पचास पैसे
 
     Args:
         cardinal: CardinalFst
@@ -47,23 +47,31 @@ class MoneyFst(GraphFst):
         decimal_tsv = pynini.string_file(get_abs_path("data/money/decimal.tsv"))
         decimal_word = pynini.project(decimal_tsv, "output")
 
-        currency_minor = pynutil.delete('currency_min: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
-
         quantity = pynutil.delete('quantity: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
 
         drop_preserve_order = pynini.closure(
             pynutil.delete("preserve_order:") + sp + pynutil.delete("true") + sp, 0, 1
         )
 
-        graph_major_only = integer_part + sp + currency_major
+        all_currencies = [maj for _, maj in load_labels(get_abs_path("data/money/currency.tsv"))]
+        all_currencies += [maj for _, maj in load_labels(get_abs_path("data/money/currency_singular.tsv"))]
+
+        native_major_only_graphs = []
+        for major in set(all_currencies):
+            graph_major_slot = pynutil.delete('currency_maj: "') + pynutil.delete(major) + pynutil.delete('"')
+            native_major_only_graphs.append(graph_major_slot + sp + integer_part + pynutil.insert(" " + major))
+
+        graph_major_only = pynini.union(*native_major_only_graphs) | (integer_part + sp + currency_major)
 
         all_major_names = [maj for maj, _ in load_labels(get_abs_path("data/money/major_minor_currencies.tsv"))]
+        major_to_minor = dict(load_labels(get_abs_path("data/money/major_minor_currencies.tsv")))
 
         major_minor_graphs = []
         minor_only_graphs = []
 
         for major in all_major_names:
             graph_major_slot = pynutil.delete('currency_maj: "') + pynutil.delete(major) + pynutil.delete('"')
+            minor_slot = pynutil.delete('currency_min: "true"') + pynutil.insert(major_to_minor[major])
 
             major_minor_graphs.append(
                 graph_major_slot
@@ -74,17 +82,11 @@ class MoneyFst(GraphFst):
                 + sp
                 + fractional_part
                 + sp
-                + currency_minor
+                + minor_slot
             )
 
             minor_only_graphs.append(
-                graph_major_slot
-                + sp
-                + pynutil.delete('integer_part: "शून्य"')
-                + sp
-                + fractional_part
-                + sp
-                + currency_minor
+                graph_major_slot + sp + pynutil.delete('integer_part: "शून्य"') + sp + fractional_part + sp + minor_slot
             )
 
         graph_major_minor = pynini.union(*major_minor_graphs)

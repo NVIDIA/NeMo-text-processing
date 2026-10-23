@@ -152,7 +152,12 @@ class SerialFst(GraphFst):
             + pynini.union(date_year_suffix, date_suffixes)
         )
 
-        exclusions = pure_word_slash | pure_latin_word | dimension_pattern | ordinal_pattern | date_pattern
+        numeric_pair = pynini.closure(any_digit, 1) + pynini.accep("-") + pynini.closure(any_digit, 1)
+
+        exclusions = (
+            pure_word_slash | pure_latin_word | dimension_pattern | ordinal_pattern | date_pattern | numeric_pair
+        )
+
         accepted_inputs = pynini.difference(NEMO_SIGMA, exclusions).optimize()
 
         serial_graph = pynini.compose(accepted_inputs, serial_graph).optimize()
