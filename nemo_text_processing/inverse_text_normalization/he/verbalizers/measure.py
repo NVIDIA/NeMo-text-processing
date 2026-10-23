@@ -16,6 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
+from nemo_text_processing.inverse_text_normalization.he.utils import INCH_IN_TOKEN
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_NOT_QUOTE,
@@ -96,6 +97,7 @@ class MeasureFst(GraphFst):
         unit @= pynini.cdrewrite(
             pynini.cross("\[SPACE\]", NEMO_SPACE), "", "", NEMO_SIGMA  # noqa: W605
         )  # For space separated measures.
+        unit @= pynini.cdrewrite(pynini.cross(INCH_IN_TOKEN, '"'), "", "", NEMO_SIGMA)
 
         numbers_units = delete_space + unit
         numbers_graph = (graph_cardinal | graph_decimal) + numbers_units

@@ -230,3 +230,5 @@ seventy two degrees fahrenheit~72 °F
 Seventy two Degrees Fahrenheit~72 °F
 two hundred seventy three kelvin~273 K
 Nine GigaBits per second~9 gbps
+Two inches~2 in
+it is ten inches long~it is 10 in long

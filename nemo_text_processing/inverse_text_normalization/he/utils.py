@@ -14,6 +14,12 @@
 
 import os
 
+
+# An inch is written as a double quote, which cannot go inside a quoted token field: Sparrowhawk
+# rejects the token and leaves the whole input unnormalized. The taggers write the double prime
+# instead, and the verbalizers write the double quote back.
+INCH_IN_TOKEN = "″"
+
 ####################
 # HEBREW CONSTANTS #
 ####################

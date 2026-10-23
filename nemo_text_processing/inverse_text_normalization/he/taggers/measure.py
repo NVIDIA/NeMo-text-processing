@@ -18,8 +18,9 @@ from pynini.lib import pynutil
 from nemo_text_processing.inverse_text_normalization.he.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.he.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.he.taggers.decimal import DecimalFst
-from nemo_text_processing.inverse_text_normalization.he.utils import get_abs_path
+from nemo_text_processing.inverse_text_normalization.he.utils import INCH_IN_TOKEN, get_abs_path
 from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_SIGMA,
     NEMO_SPACE,
     delete_extra_space,
     delete_space,
@@ -84,7 +85,9 @@ class MeasureFst(GraphFst):
 
         # convert units
         joined_units = pynini.string_file(get_abs_path("data/measurements.tsv"))
-        joined_units = pynini.invert(joined_units)
+        joined_units = pynini.invert(joined_units) @ pynini.cdrewrite(
+            pynini.cross('"', INCH_IN_TOKEN), "", "", NEMO_SIGMA
+        )
         joined_units = pynutil.insert('units: "') + joined_units + pynutil.insert('"')
 
         spaced_units = pynini.string_file(get_abs_path("data/spaced_measurements.tsv"))
