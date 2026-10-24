@@ -36,5 +36,10 @@ testTNPunctuation() {
   input=$PROJECT_DIR/ta/data_text_normalization/test_cases_punctuation.txt
   runtest $input
 }
+
+testTNDecimal() {
+  input=$PROJECT_DIR/ta/data_text_normalization/test_cases_decimal.txt
+  runtest $input
+}
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2
