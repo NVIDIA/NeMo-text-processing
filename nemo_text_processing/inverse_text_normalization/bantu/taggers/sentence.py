@@ -12,33 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Sentence-level tagging: numbers are resolved in context, over maximal runs of known number words.
+"""Sentence-level helpers shared by the taggers: number-word runs, token formats and the money-signal filter.
 
-Segmentation is internal to the compiled classifier, not a Python runtime pass.
-Weights only prefer a normalization over leaving words unchanged. All numeric
-readings have equal weight, so structure alone must make the reading unique;
-the kernel tests check that every test input has exactly one best reading.
+The classifier reads the whole sentence at once. Maximal runs of number words are
+marked first, so each run is read as a single number in the context of the word
+before it (a counted noun, a currency phrase or a money cue). Weights only prefer a
+normalization over leaving words unchanged. All numeric readings have equal weight,
+so structure alone must make the reading unique; the kernel tests check that every
+test input has exactly one best reading.
 """
-import string
-
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile, invariant_context
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import build_cardinal
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.money import build_amount
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import (
-    build_noun_scale_amount,
-    build_scale_amount,
-)
+from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_NOT_SPACE, NEMO_WHITE_SPACE
 
-# Input words: lowercase ASCII letters (an apostrophe is allowed inside a word,
-# e.g. Luganda n'ebiri), one space between words. Cased input and punctuation are
-# handled by each language's own classifier, not by the kernel.
-WORD = pynini.closure(pynini.union(*string.ascii_lowercase, "'"), 1).optimize()
-# Internal markers on implied-currency amounts; removed before output.
-IMPLIED = "#"  # allowed at the start of the input or right after a money cue
-CUE_ONLY = "%"  # allowed only right after a money cue
+# Internal markers, removed before output. Control characters, so they never clash with input text.
+RUN_START = "\x01"  # start of a run of number words
+RUN_END = "\x02"  # end of a run of number words
+IMPLIED = "\x03"  # implied-currency amount: allowed at the start of the input or right after a money cue
+CUE_ONLY = "\x04"  # implied-currency amount: allowed only right after a money cue
+MARKERS = pynini.union(RUN_START, RUN_END, IMPLIED, CUE_ONLY).optimize()
+
+# Any input word: every character except whitespace. An apostrophe may be part of a
+# number word (Luganda n'ebiri). Words with capitals, digits or punctuation are
+# ordinary words and pass through unchanged.
+WORD_CHAR = pynini.difference(NEMO_NOT_SPACE, MARKERS).optimize()
+WORD = pynini.closure(WORD_CHAR, 1).optimize()
+# Runs of whitespace between words become a single space.
+SINGLE_SPACES = pynini.closure(WORD_CHAR | pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")).optimize()
 
 
 def word_token(graph: pynini.Fst) -> pynini.Fst:
@@ -49,6 +51,11 @@ def cardinal_token(graph: pynini.Fst) -> pynini.Fst:
     return pynutil.insert('tokens { cardinal { integer: "') + graph + pynutil.insert('" } }')
 
 
+def run(graph: pynini.Fst) -> pynini.Fst:
+    """Reads a whole marked run of number words with graph."""
+    return pynutil.delete(RUN_START) + graph + pynutil.delete(RUN_END)
+
+
 def join_aware_runs(number_words, join_words):
     """Marks maximal runs of number words; a join word followed by an ordinary word ends the run.
 
@@ -57,6 +64,8 @@ def join_aware_runs(number_words, join_words):
     A run may still end on a join at the end of the input, where it is malformed
     and falls back whole (a cut-off amount is not guessed). A join between two
     number words still extends the run, so malformed internals fall back whole.
+
+    Returns (number word, ordinary word or join, segmenter).
     """
     numeric_word = pynini.union(*sorted(number_words)).optimize()
     join_word = pynini.union(*sorted(join_words)).optimize()
@@ -69,7 +78,7 @@ def join_aware_runs(number_words, join_words):
     before_others = pynini.closure(numeric_word + " ") + plain_number
 
     def marked(graph):
-        return pynutil.insert("<") + graph + pynutil.insert(">")
+        return pynutil.insert(RUN_START) + graph + pynutil.insert(RUN_END)
 
     runs = pynini.closure(marked(before_others) + " " + others + " ") + (
         marked(before_others) + " " + others | marked(numbers)
@@ -78,30 +87,10 @@ def join_aware_runs(number_words, join_words):
     return numeric_word, any_word, segmenter
 
 
-def money_token(phrase: str, amount: pynini.Fst, code: str) -> pynini.Fst:
-    return (
-        pynutil.delete(phrase + " <")
-        + pynutil.insert('tokens { money { integer_part: "')
-        + amount
-        + pynutil.insert(f'" currency: "{code}" }} }}')
-        + pynutil.delete(">")
-    )
-
-
-def implied_money_token(amount: pynini.Fst, code: str, marker: str) -> pynini.Fst:
-    """A bare amount whose currency is implied by policy (e.g. mitwalo -> UGX)."""
-    return (
-        pynutil.delete("<")
-        + pynutil.insert(marker + 'tokens { money { integer_part: "')
-        + amount
-        + pynutil.insert(f'" currency: "{code}" }} }}')
-        + pynutil.delete(">")
-    )
-
-
 def money_cue_word(profile: CardinalProfile) -> pynini.Fst:
+    """Words that signal a payment (e.g. Luganda money verbs); empty if the profile has none."""
     cues = profile.money_cues
-    letters = pynini.closure(pynini.union(*string.ascii_lowercase, "'"))
+    letters = pynini.closure(WORD_CHAR)
     options = [letters + pynini.union(*cues.stems) + letters] if cues.stems else []
     options += [pynini.union(*cues.words)] if cues.words else []
     if not options:
@@ -113,84 +102,14 @@ def money_cue_word(profile: CardinalProfile) -> pynini.Fst:
 
 
 def only_with_money_signal(profile: CardinalProfile) -> pynini.Fst:
-    """Keep implied money only where something signals a payment, then drop markers.
+    """Keeps marked implied-currency amounts only where they are allowed, then drops the markers.
 
-    "nsasula mitwalo ebiri" (I pay ...) is money; "embuzi mitwalo ebiri" (goats)
-    is left alone, because embuzi is not a money cue.
+    An amount marked IMPLIED is money at the start of the input or right after a money
+    cue; one marked CUE_ONLY only right after a money cue. Otherwise the tagging is
+    rejected and another reading (the words unchanged, or a counted noun) is used.
     """
-    sigma = pynini.union(*(pynini.escape(chr(code)) for code in range(32, 127))).optimize()
-    plain = pynini.difference(sigma, pynini.union(IMPLIED, CUE_ONLY)).optimize()
+    plain = pynini.difference(NEMO_CHAR, pynini.union(IMPLIED, CUE_ONLY)).optimize()
     after_cue = 'tokens { name: "' + money_cue_word(profile) + '" } ' + pynini.union(IMPLIED, CUE_ONLY)
     allowed = (pynini.closure(pynini.accep(IMPLIED), 0, 1) + pynini.closure(plain | after_cue)).optimize()
     strip = pynini.closure(plain | pynutil.delete(IMPLIED) | pynutil.delete(CUE_ONLY))
     return (allowed @ strip.optimize()).optimize()
-
-
-def build_tagger(profile: CardinalProfile) -> pynini.Fst:
-    numeric_word, other_word, segmenter = join_aware_runs(profile.number_words(), profile.join_words())
-    fallback_run = (
-        pynutil.delete("<")
-        + word_token(numeric_word)
-        + pynini.closure(" " + word_token(numeric_word))
-        + pynutil.delete(">")
-    )
-    recognized = []
-    for context in profile.contexts:
-        recognized.append(
-            word_token(pynini.accep(context.noun))
-            + " "
-            + pynutil.delete("<")
-            + cardinal_token(build_cardinal(profile, context) | build_noun_scale_amount(profile, context))
-            + pynutil.delete(">")
-        )
-    for currency in profile.currencies:
-        recognized.append(money_token(currency.phrase, build_amount(profile, currency), currency.code))
-    implied = []
-    for scale in profile.counted_scales:
-        if not scale.implied_currency:
-            continue
-        # Bare heads (mitwalo): money anywhere, or only with a signal.
-        implied.append(
-            implied_money_token(
-                build_scale_amount(profile, scale, "bare"),
-                scale.implied_currency,
-                "" if scale.implied_anywhere else IMPLIED,
-            )
-        )
-        # Augmented heads (emitwalo, akakadde): money only after a cue (or at the start).
-        if scale.counting_plural or scale.counting_ones or scale.money_only_ones:
-            implied.append(
-                implied_money_token(
-                    build_scale_amount(profile, scale, "counting_money"),
-                    scale.implied_currency,
-                    IMPLIED if scale.counting_money_at_start else CUE_ONLY,
-                )
-            )
-    recognized.extend(implied)
-    # Any other word + an augmented head counts that word, whether or not it is listed
-    # (embuzi emitwalo ebiri = 20,000 goats). Money cues, currency words and listed
-    # nouns are excluded: after a cue or a currency it is money, and listed nouns
-    # already agree fully above.
-    listed = [context.noun for context in profile.contexts]
-    listed += [currency.phrase.split()[-1] for currency in profile.currencies]
-    if profile.money_cues.stems or profile.money_cues.words:
-        listed_or_cue = pynini.union(*listed, money_cue_word(profile))
-    else:
-        listed_or_cue = pynini.union(*listed)
-    any_noun = pynini.difference(other_word, listed_or_cue.optimize()).optimize()
-    for scale in profile.counted_scales:
-        if scale.counts_any_word:
-            amount = build_scale_amount(profile, scale, "counting", invariant_context(profile))
-            recognized.append(
-                word_token(any_noun) + " " + pynutil.delete("<") + cardinal_token(amount) + pynutil.delete(">")
-            )
-    chunks = pynini.union(
-        *recognized,
-        pynutil.add_weight(word_token(other_word), 1),
-        pynutil.add_weight(fallback_run, 1),
-    )
-    sentence = chunks + pynini.closure(" " + chunks)
-    tagger = segmenter @ sentence
-    if implied:
-        tagger @= only_with_money_signal(profile)
-    return tagger.optimize()

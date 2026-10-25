@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Small explicit resource contract, not a universal Bantu grammar schema."""
+"""The settings a language supplies to the shared Bantu kernel: its number words, agreement and scales."""
 from dataclasses import dataclass, replace
+from typing import Dict, FrozenSet, List, Tuple
 
-Forms = tuple[tuple[str, str], ...]
-VOWELS = "aeiou"
+Forms = Tuple[Tuple[str, str], ...]
 
 
 @dataclass(frozen=True)
@@ -43,7 +43,7 @@ class CurrencyContext:
     phrase: str
     code: str
     agreement_class: str
-    roles: tuple[str, ...] = ()  # extra readings licensed only after this phrase
+    roles: Tuple[str, ...] = ()  # extra readings licensed only after this phrase
 
 
 @dataclass(frozen=True)
@@ -57,15 +57,15 @@ class CountedScale:
     count_class: str  # agreement class of unit words inside the count
     tens: Forms  # tens words inside a count, coefficient 1-9
     remainder_class: str  # agreement class of the amount after the scale
-    contracted_teen_joins: tuple[str, ...] = ()  # teen join before a vowel, e.g. n'
+    contracted_teen_joins: Tuple[str, ...] = ()  # teen join before a vowel, e.g. n'
     implied_currency: str = ""  # payment policy: a bare amount means this currency
     count_ones: Forms = ()  # a "one" ending a count, e.g. kkumi na kamu (11)
     count_hundreds: Forms = ()  # hundreds inside a count, e.g. obukadde kikumi (100)
     # Heads with the augment (Luganda e-/a-/o-) count the noun before them; the bare
-    # heads above are money. Decided with the native speaker 2026-10-15/18.
+    # heads above are money.
     counting_plural: str = ""  # e.g. emitwalo, obukadde
-    counting_ones: tuple[str, ...] = ()  # e.g. akakadde kamu
-    money_only_ones: tuple[str, ...] = ()  # one, as money only: akakadde (not ebitabo akakadde)
+    counting_ones: Tuple[str, ...] = ()  # e.g. akakadde kamu
+    money_only_ones: Tuple[str, ...] = ()  # one, as money only: akakadde (not ebitabo akakadde)
     implied_anywhere: bool = False  # bare heads are money wherever they appear
     counting_money_at_start: bool = False  # augmented heads are money at the start of input
     counts_any_word: bool = False  # word + augmented head counts that word, listed or not
@@ -76,35 +76,37 @@ class CountedScale:
 class MoneyCues:
     """Words that signal a payment just before an amount (e.g. Luganda money verbs)."""
 
-    stems: tuple[str, ...] = ()  # match anywhere inside a word
-    words: tuple[str, ...] = ()  # match only the whole word
-    not_cues: tuple[str, ...] = ()  # whole words containing a stem that are not cues
+    stems: Tuple[str, ...] = ()  # match anywhere inside a word
+    words: Tuple[str, ...] = ()  # match only the whole word
+    not_cues: Tuple[str, ...] = ()  # whole words containing a stem that are not cues
 
 
 @dataclass(frozen=True)
 class CardinalProfile:
     language: str
-    contexts: tuple[NounContext, ...]
+    contexts: Tuple[NounContext, ...]
     ten: str
     teen_join: str
-    places: tuple[Place, ...]
+    places: Tuple[Place, ...]
     exact_boundaries: Forms
-    roles: tuple[tuple[str, Forms], ...]
+    roles: Tuple[Tuple[str, Forms], ...]
     max_value: int
-    currencies: tuple[CurrencyContext, ...] = ()
-    counted_scales: tuple[CountedScale, ...] = ()
+    currencies: Tuple[CurrencyContext, ...] = ()
+    counted_scales: Tuple[CountedScale, ...] = ()
     money_cues: MoneyCues = MoneyCues()
     # Words that continue a number but are not handled yet (e.g. "and a half").
     # They join the number's run, so the whole phrase stays unchanged.
-    held_back_words: tuple[str, ...] = ()
+    held_back_words: Tuple[str, ...] = ()
+    # Vowels, for contracting a join before a vowel-initial word (Luganda na + ebiri -> n'ebiri).
+    vowels: str = "aeiou"
 
-    def join_words(self) -> frozenset[str]:
+    def join_words(self) -> FrozenSet[str]:
         """Words that join number parts; they may also be ordinary words (e.g. locative mu)."""
         joins = [self.teen_join] + [place.remainder_join for place in self.places]
         return frozenset(word for join in joins for word in join.split())
 
-    def number_words(self) -> frozenset[str]:
-        """Lexical run boundaries, including joins and role-only candidates."""
+    def number_words(self) -> FrozenSet[str]:
+        """Every word that can be part of a number, including joins and role-only words."""
         surfaces = [self.ten, self.teen_join]
         for place in self.places:
             surfaces.append(place.remainder_join)
@@ -126,13 +128,13 @@ class CardinalProfile:
         return frozenset(word for form in surfaces for word in form.split())
 
 
-def scale_teen_words(profile: CardinalProfile, scale: CountedScale) -> list[str]:
+def scale_teen_words(profile: CardinalProfile, scale: CountedScale) -> List[str]:
     """Contracted teen words such as n'ebiri / nebiri (one word each)."""
     context = agreement_context(profile, scale.count_class)
     return [
         prefix + form
         for form, _ in context.final_units + scale.count_ones
-        if form[0] in VOWELS
+        if form[0] in profile.vowels
         for prefix in scale.contracted_teen_joins
     ]
 
@@ -158,7 +160,7 @@ def invariant_context(profile: CardinalProfile) -> NounContext:
     return NounContext("invariant", "", units + ((profile.ten, "10"),), units)
 
 
-def with_spelling_variants(profile: CardinalProfile, variants: dict[str, tuple[str, ...]]) -> CardinalProfile:
+def with_spelling_variants(profile: CardinalProfile, variants: Dict[str, Tuple[str, ...]]) -> CardinalProfile:
     """Accept extra spellings of whole words (e.g. abiiri for abiri) in every form."""
 
     def spell(forms: Forms) -> Forms:

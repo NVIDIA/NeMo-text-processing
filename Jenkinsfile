@@ -483,6 +483,11 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/ko/ -m "not pleasefixme" --cpu --tn_cache_dir ${KO_TN_CACHE}'
           }
         }
+        stage('L1: Run Bantu kernel ITN tests') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/bantu/ -m "not pleasefixme" --cpu'
+          }
+        }
       }
     }
 

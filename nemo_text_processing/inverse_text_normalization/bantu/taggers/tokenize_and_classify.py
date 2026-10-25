@@ -12,14 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 
 import pynini
 
 from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.sentence import build_tagger
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, generator_main
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.money import MoneyFst
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.sentence import (
+    SINGLE_SPACES,
+    join_aware_runs,
+    only_with_money_signal,
+)
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.word import WordFst
+from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, GraphFst, generator_main
+from nemo_text_processing.utils.logging import logger
 
 
 class ClassifyFst(GraphFst):
@@ -27,10 +34,13 @@ class ClassifyFst(GraphFst):
     Sentence-level classifier for a Bantu language, configured by a language profile.
 
     Unlike most languages, the whole sentence is read at once: number words are
-    resolved in their context (the counted noun, a currency phrase, a money verb,
+    resolved in their context (the counted noun, a currency phrase, a money cue,
     or a join word followed by an ordinary word), and the value is fully resolved
     here. The verbalizer only formats it. Output is the standard token format, e.g.
-        "ente bbiri" -> tokens { name: "ente" } tokens { cardinal { integer: "2" } }
+        bakopa bapi -> tokens { name: "bakopa" } tokens { cardinal { integer: "2" } }
+
+    The kernel reads lower-cased input. Other words, including words with capitals,
+    digits or punctuation, pass through unchanged.
 
     Args:
         profile: the language profile (word lists, agreement, scales, currencies)
@@ -44,13 +54,24 @@ class ClassifyFst(GraphFst):
         far_file = None
         if cache_dir is not None and cache_dir != "None":
             os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"{profile.language}_itn.far")
+            far_file = os.path.join(cache_dir, f"{profile.language}_itn_{INPUT_LOWER_CASED}.far")
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
         else:
-            logging.info(f"Creating ClassifyFst grammars for {profile.language}.")
-            self.fst = build_tagger(profile)
+            logger.info(f"Creating ClassifyFst grammars for {profile.language}.")
+            number_word, ordinary_word, segmenter = join_aware_runs(profile.number_words(), profile.join_words())
+            cardinal = CardinalFst(profile, ordinary_word)
+            money = MoneyFst(profile)
+            word = WordFst(number_word, ordinary_word)
+
+            token = pynini.union(cardinal.fst, money.fst, word.fst)
+            sentence = token + pynini.closure(" " + token)
+            graph = SINGLE_SPACES @ segmenter @ sentence
+            if money.has_implied_currency:
+                graph @= only_with_money_signal(profile)
+            self.fst = graph.optimize()
+
             if far_file:
                 generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")
+                logger.info(f"ClassifyFst grammars are saved to {far_file}.")

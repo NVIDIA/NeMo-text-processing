@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.sentence import WORD
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_SPACE, GraphFst, delete_space
 
 
 class WordFst(GraphFst):
@@ -26,5 +26,11 @@ class WordFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="word", kind="verbalize")
-        graph = pynutil.delete("name:") + delete_space + pynutil.delete('"') + WORD + pynutil.delete('"')
+        graph = (
+            pynutil.delete("name:")
+            + delete_space
+            + pynutil.delete('"')
+            + pynini.closure(NEMO_NOT_SPACE, 1)
+            + pynutil.delete('"')
+        )
         self.fst = graph.optimize()

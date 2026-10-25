@@ -1,0 +1,32 @@
+bakopa bapi~bakopa 2
+zikopa zipi~zikopa 2
+makopa mapi~makopa 2
+kopa ima~kopa 1
+bakopa zipi~bakopa zipi
+bakopa ima~bakopa ima
+bakopa sei~bakopa 6
+zikopa nona~zikopa 9
+makopa deka~makopa 10
+zikopa deka ke zipi~zikopa 12
+bakopa pideka vo baima~bakopa 21
+zikopa hanto pi vo kodeka vo ziko~zikopa 233
+bakopa milo~bakopa 1,000
+bakopa milo vo hanto~bakopa 1,100
+zikopa milo nona vo hanto nona vo nonadeka vo nona~zikopa 9,999
+bakopa tausi~bakopa 1,000
+makopa dekafu~makopa 15
+bakopa piideka~bakopa 20
+bakopa piideka vo baima~bakopa 21
+koin piideka~20 XTS
+bakopa hanto vo milo~bakopa hanto vo milo
+bakopa deka ke~bakopa deka ke
+bakopa bapi bako~bakopa bapi bako
+bakopa bapi vo kasa~bakopa 2 vo kasa
+zikopa pideka vo kasa~zikopa 20 vo kasa
+rana bakopa bako vo kasa lena~rana bakopa 3 vo kasa lena
+rana bakopa bapi lena zikopa ziko~rana bakopa 2 lena zikopa 3
+bakopa bapi zikopa ziko~bakopa 2 zikopa 3
+bakopa  bapi~bakopa 2
+bakopa bapi !~bakopa 2 !
+zikopa ziko, bakopa bapi~zikopa ziko, bakopa 2
+ŋoma bakopa bapi~ŋoma bakopa 2

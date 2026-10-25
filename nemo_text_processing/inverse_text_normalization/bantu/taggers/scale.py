@@ -22,17 +22,18 @@ Unit words in the count agree with the scale noun; the remainder agrees with wha
 is counted. A remainder must be at least 10, so a single unit after the join always
 belongs to the count (6-9 have the same form in every class).
 """
+from typing import Optional, Tuple
+
 import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.bantu.profile import (
-    VOWELS,
     CardinalProfile,
     CountedScale,
     NounContext,
     agreement_context,
 )
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import (
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import (
     DIGIT,
     NONZERO,
     build_cardinal,
@@ -41,7 +42,7 @@ from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal impo
 )
 
 
-def build_count(profile: CardinalProfile, scale: CountedScale) -> tuple[pynini.Fst, pynini.Fst]:
+def build_count(profile: CardinalProfile, scale: CountedScale) -> Tuple[pynini.Fst, pynini.Fst]:
     """Digits for a plural count: 02-99, or 100-999 when the scale has count_hundreds.
 
     Returns (count, round_hundreds): round_hundreds is the part of count that is
@@ -56,7 +57,7 @@ def build_count(profile: CardinalProfile, scale: CountedScale) -> tuple[pynini.F
     join = profile.places[0].remainder_join
     teen_units = []
     for form, value in final_units:
-        if form[0] in VOWELS:
+        if form[0] in profile.vowels:
             spoken = [" " + prefix + form for prefix in scale.contracted_teen_joins]
         else:
             spoken = [profile.teen_join + form]
@@ -81,7 +82,7 @@ HEADS = ("bare", "counting", "counting_money", "all")
 
 
 def build_scale_amount(
-    profile: CardinalProfile, scale: CountedScale, heads: str = "all", remainder_context: NounContext | None = None
+    profile: CardinalProfile, scale: CountedScale, heads: str = "all", remainder_context: Optional[NounContext] = None
 ) -> pynini.Fst:
     """Digits for a counted-scale amount, bounded by the profile maximum.
 
@@ -126,7 +127,7 @@ def build_scale_amount(
         if smaller.power < scale.power:
             remainder |= build_scale_amount(profile, smaller, "all", context)
     amount = head + (pynutil.insert("0" * width) | pynutil.delete(join) + (remainder @ padded(2)))
-    # After round hundreds, tens/units words continue the count (decision 2026-10-16):
+    # After round hundreds, tens/units words continue the count:
     # obukadde lwenda mu kyenda mu mwenda = 999 million, never 900 million + 99.
     amount |= plural + round_hundreds + (pynutil.insert("0" * width) | pynutil.delete(join) + (remainder @ padded(3)))
     canonical = pynutil.delete(pynini.closure("0")) + NONZERO + pynini.closure(DIGIT)

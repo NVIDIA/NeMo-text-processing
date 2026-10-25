@@ -12,74 +12,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Bounded decimal place-value FSTs, built from a profile. No runtime arithmetic."""
 import pynini
-from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile, Forms, NounContext
-
-DIGIT = pynini.union(*"0123456789").optimize()
-NONZERO = pynini.union(*"123456789").optimize()
-
-
-def mapping(forms: Forms) -> pynini.Fst:
-    return pynini.string_map(forms).optimize() if forms else pynini.Fst()
-
-
-def integer_domain(max_value: int) -> pynini.Fst:
-    """Canonical positive decimal strings <= bound, without integer enumeration."""
-    if isinstance(max_value, bool) or not isinstance(max_value, int) or max_value < 1:
-        raise ValueError("max_value must be a positive integer")
-    bound = str(max_value)
-    branches = [pynini.accep(bound)]
-    if len(bound) > 1:
-        branches.append(NONZERO + pynini.closure(DIGIT, 0, len(bound) - 2))
-    for index, limit in enumerate(bound):
-        minimum = 1 if index == 0 else 0
-        if int(limit) > minimum:
-            lower = pynini.union(*(str(n) for n in range(minimum, int(limit))))
-            branches.append(
-                pynini.accep(bound[:index])
-                + lower
-                + pynini.closure(DIGIT, len(bound) - index - 1, len(bound) - index - 1)
-            )
-    return pynini.union(*branches).optimize()
+from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile, invariant_context
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import build_cardinal
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import (
+    build_noun_scale_amount,
+    build_scale_amount,
+)
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.sentence import (
+    cardinal_token,
+    money_cue_word,
+    run,
+    word_token,
+)
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
-def build_cardinal(profile: CardinalProfile, context: NounContext) -> pynini.Fst:
-    """Compose fixed-width places, supply skipped zeros, then canonicalize once."""
-    atomic = mapping(context.atomic_units)
-    if not context.compounds:
-        return (atomic @ integer_domain(profile.max_value)).optimize()
-    units = mapping(context.final_units)
-    lower = units
-    expected_power = 1
-    for place in profile.places:
-        if place.power != expected_power:
-            raise ValueError("places must be consecutive ascending decimal powers")
-        if any(value not in "123456789" or len(value) != 1 for _, value in place.forms):
-            raise ValueError("place coefficients must be single nonzero digits")
-        # A present high place either consumes a smaller remainder or emits zeros.
-        high = mapping(place.forms) + (
-            pynutil.delete(place.remainder_join) + lower | pynutil.insert("0" * place.power)
-        )
-        if place.power == 1:
-            high |= pynini.cross(profile.ten, "10")
-            high |= pynini.cross(profile.ten, "1") + pynutil.delete(profile.teen_join) + units
-            high |= mapping(context.teen_variants)
-        lower = (pynutil.insert("0") + lower | high).optimize()
-        expected_power += 1
-    canonical = pynutil.delete(pynini.closure("0")) + NONZERO + pynini.closure(DIGIT)
-    compounds = lower @ canonical
-    # A final-one form need not be licensed as a standalone plural count.
-    compounds @= NONZERO + pynini.closure(DIGIT, 1)
-    result = atomic | compounds | mapping(profile.exact_boundaries)
-    return (result @ integer_domain(profile.max_value)).optimize()
+class CardinalFst(GraphFst):
+    """
+    Finite state transducer for classifying a counted number: a noun followed by a
+    run of number words that agree with it. The noun stays a word; the number is
+    fully resolved here, e.g.
+        bakopa pideka vo baima -> tokens { name: "bakopa" } tokens { cardinal { integer: "21" } }
 
+    Any other word followed by a counting scale (Luganda embuzi emitwalo ebiri,
+    20,000 goats) is also a counted number. Here the count may only end in forms
+    that are the same in every class, so no agreement with an unlisted noun is guessed.
 
-def build_role(profile: CardinalProfile, role: str) -> pynini.Fst:
-    """Explicit role probe; not a standalone sentence or currency grammar."""
-    for name, forms in profile.roles:
-        if name == role:
-            return mapping(forms)
-    raise KeyError(role)
+    Args:
+        profile: the language profile
+        ordinary_word: any word that is not a number word
+    """
+
+    def __init__(self, profile: CardinalProfile, ordinary_word: pynini.Fst):
+        super().__init__(name="cardinal", kind="classify")
+
+        graphs = []
+        for context in profile.contexts:
+            number = build_cardinal(profile, context) | build_noun_scale_amount(profile, context)
+            graphs.append(word_token(pynini.accep(context.noun)) + " " + run(cardinal_token(number)))
+
+        # Listed nouns already agree fully above. After a money cue or a currency word
+        # the amount is money, handled by MoneyFst.
+        excluded = [context.noun for context in profile.contexts]
+        excluded += [currency.phrase.split()[-1] for currency in profile.currencies]
+        excluded = pynini.union(*excluded, money_cue_word(profile)).optimize()
+        any_noun = pynini.difference(ordinary_word, excluded).optimize()
+        for scale in profile.counted_scales:
+            if scale.counts_any_word:
+                amount = build_scale_amount(profile, scale, "counting", invariant_context(profile))
+                graphs.append(word_token(any_noun) + " " + run(cardinal_token(amount)))
+
+        self.fst = pynini.union(*graphs).optimize()

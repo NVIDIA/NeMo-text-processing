@@ -19,7 +19,7 @@ from dataclasses import replace
 import pytest
 
 from nemo_text_processing.inverse_text_normalization.bantu.profile import MoneyCues, Place
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import build_role, integer_domain
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import build_role, integer_domain
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import build_scale_amount
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.tokenize_and_classify import ClassifyFst
 
@@ -81,7 +81,7 @@ class TestBantuKernelProfile:
     @pytest.mark.unit
     def test_far_cache_roundtrip(self, tmp_path):
         built = ClassifyFst(TOY_PROFILE, cache_dir=str(tmp_path), overwrite_cache=True)
-        assert (tmp_path / "toy_itn.far").exists()
+        assert (tmp_path / "toy_itn_lower_cased.far").exists()
         restored = ClassifyFst(TOY_PROFILE, cache_dir=str(tmp_path))
         normalizer = build_normalizer(TOY_PROFILE)
         for spoken in ("bakopa pideka vo baima", "kasa emina epi", "lipoka obumega bapi", "bakopa bapi vo kasa"):
