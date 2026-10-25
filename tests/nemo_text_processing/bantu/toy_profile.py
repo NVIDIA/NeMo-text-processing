@@ -22,7 +22,9 @@ each kernel feature is exercised (Luganda equivalents in brackets):
 - teens join with "ke", larger parts with "vo" [na, mu]
 - "vo" is also an ordinary word, "in" [mu]
 - a currency phrase that licenses a special reading: koin mapi = 20 XTS, but makopa mapi = 2 [abiri]
-- a counted scale of ten-thousands: mina + count [mitwalo]
+- a counted scale of ten-thousands: mina + count [mitwalo]; after a listed noun,
+  emina counts that noun, also as an ordinary number place for 1-9:
+  bakopa emina epi = 20,000, bakopa emina pideka = 200,000 [abantu emitwalo ebiri / abiri]
 - implied currency: bare "mina" is always money; word + "emina" counts that word,
   except after a money verb [mitwalo / emitwalo]
 - a held-back word that continues a number but is not handled: halfu [n'ekitundu]
@@ -59,6 +61,10 @@ TENS = (
 )
 
 
+# Count forms agreeing with class 8 (ekopa, and the ten-thousands noun mina): 2-9.
+EIGHT_COUNTS = tuple(("e" + stem, value) for stem, value in STEMS) + INVARIANT
+
+
 def plural(class_id, noun, prefix, final_one=None, teen_variants=()):
     units = tuple((prefix + stem, value) for stem, value in STEMS) + INVARIANT
     final = units + (((final_one, "1"),) if final_one else ())
@@ -86,6 +92,7 @@ TOY_PROFILE = with_spelling_variants(
             Place(1, TENS, " vo "),
             Place(2, multiples("hanto"), " vo "),
             Place(3, multiples("milo"), " vo "),
+            Place(4, (("omuna", "1"),) + tuple((f"emina {word}", value) for word, value in EIGHT_COUNTS), " vo "),
         ),
         exact_boundaries=(("tausi", "1000"),),
         roles=(("short-tens", (("mapi", "20"),)),),
@@ -106,6 +113,7 @@ TOY_PROFILE = with_spelling_variants(
                 counting_plural="emina",
                 implied_anywhere=True,
                 counts_any_word=True,
+                after_counted_nouns=True,
             ),
             # Millions [obukadde]: augmented forms are also money at the start of input,
             # count listed nouns with agreement, and need "one" to count (akamega kaima).

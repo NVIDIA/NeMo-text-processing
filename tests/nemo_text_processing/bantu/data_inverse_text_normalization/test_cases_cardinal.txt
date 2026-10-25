@@ -30,3 +30,12 @@ bakopa  bapi~bakopa 2
 bakopa bapi !~bakopa 2 !
 zikopa ziko, bakopa bapi~zikopa ziko, bakopa 2
 ŋoma bakopa bapi~ŋoma bakopa 2
+bakopa omuna~bakopa 10,000
+bakopa emina epi~bakopa 20,000
+zikopa emina nona vo milo fu vo hanto~zikopa 95,100
+ekopa emina eko vo kasa~ekopa 30,000 vo kasa
+bakopa emina pideka~bakopa 200,000
+bakopa emina deka k'epi~bakopa 120,000
+bakopa emina pideka vo ema~bakopa 210,000
+bakopa emina pideka vo milo fu~bakopa 205,000
+bakopa emina pideka vo baima~bakopa emina pideka vo baima

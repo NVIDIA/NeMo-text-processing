@@ -53,8 +53,10 @@ class CardinalFst(GraphFst):
             number = build_cardinal(profile, context) | build_noun_scale_amount(profile, context)
             graphs.append(word_token(pynini.accep(context.noun)) + " " + run(cardinal_token(number)))
 
-        # Listed nouns already agree fully above. After a money cue or a currency word
-        # the amount is money, handled by MoneyFst.
+        # Listed nouns are counted by their own cardinal above: a profile covers large
+        # amounts after them with its places (Luganda abantu emitwalo ebiri) or with
+        # after_counted_nouns. After a money cue or a currency word the amount is money,
+        # handled by MoneyFst.
         excluded = [context.noun for context in profile.contexts]
         excluded += [currency.phrase.split()[-1] for currency in profile.currencies]
         excluded = pynini.union(*excluded, money_cue_word(profile)).optimize()
