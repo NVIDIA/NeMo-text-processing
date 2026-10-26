@@ -79,11 +79,11 @@ class FractionFst(GraphFst):
 
         # the space between two fields is read from the input, so a field boundary cannot fall
         # inside a glued word and ein dreizehntel cannot read as ein drei zehntel
-        graph_fraction_wo_negative = (
+        self.graph_wo_negative = (
             pynini.closure(integer_part + NEMO_SPACE, 0, 1) + numerator + NEMO_SPACE + denominator
         ).optimize()
 
-        final_graph = cardinal.optional_minus_graph + graph_fraction_wo_negative
+        final_graph = cardinal.optional_minus_graph + self.graph_wo_negative
 
         # the graph the other German semiotic classes consume, without the first-dozen exception
         integer_chars = pynini.closure(NEMO_DIGIT | pynini.accep("."), 1)

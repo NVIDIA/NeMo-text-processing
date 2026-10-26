@@ -66,5 +66,5 @@ class FractionFst(GraphFst):
 
         graph = optional_integer + numerator + delete_space + denominator
 
-        self.numbers = graph.optimize()
+        self.numbers = (graph + delete_space).optimize()
         self.fst = self.delete_tokens(optional_sign + graph).optimize()
