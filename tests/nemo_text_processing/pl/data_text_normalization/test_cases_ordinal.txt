@@ -1,0 +1,9 @@
+1.~pierwszy
+2.~drugi
+11.~jedenasty
+20.~dwudziesty
+21.~dwudziesty pierwszy
+100.~setny
+101.~sto pierwszy
+121.~sto dwudziesty pierwszy
+999.~dziewięćset dziewięćdziesiąty dziewiąty
