@@ -26,8 +26,6 @@ from nemo_text_processing.text_normalization.kn.graph_utils import (
 )
 from nemo_text_processing.text_normalization.kn.utils import get_abs_path
 
-_ZEROS = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
-
 
 class DecimalFst(GraphFst):
     """
@@ -40,6 +38,8 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal: GraphFst, deterministic: bool = True):
         super().__init__(name="decimal", kind="classify", deterministic=deterministic)
 
+        _ZEROS = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
+
         graph_digit = cardinal.single_digits_graph
         cardinal_graph = cardinal.final_graph
 
@@ -47,12 +47,9 @@ class DecimalFst(GraphFst):
         literal_dot = insert_space + pynini.accep(PERIOD) + insert_space
         opt_neg = pynini.closure(pynutil.insert("negative: ") + pynini.cross(MINUS, '"true"') + insert_space, 0, 1)
 
-        def spell_digits(digits_fst):
-            one = pynini.compose(digits_fst, graph_digit)
-            return (one + pynini.closure(insert_space + one)).optimize()
-
         def same_script(digits_fst):
-            frac = spell_digits(digits_fst)
+            one = pynini.compose(digits_fst, graph_digit)
+            frac = (one + pynini.closure(insert_space + one)).optimize()
             zero_char = pynini.project(pynini.compose(digits_fst, _ZEROS), "input")
             leading_zero_shape = (zero_char + pynini.closure(digits_fst, 1)).optimize()
 
