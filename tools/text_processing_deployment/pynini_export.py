@@ -231,6 +231,7 @@ if __name__ == '__main__':
         )
         from nemo_text_processing.text_normalization.hu.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'se':
+        print("Northern Sámi ('se') is currently in beta release.")
         from nemo_text_processing.text_normalization.se.taggers.tokenize_and_classify import (
             ClassifyFst as TNClassifyFst,
         )
