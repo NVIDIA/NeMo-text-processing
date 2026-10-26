@@ -25,14 +25,8 @@ class OrdinalFst(GraphFst):
         zehnter -> ordinal { integer: "10" }
         dreiundzwanzigstes -> ordinal { integer: "23" }
 
-    Single-digit ordinals are not tagged, so they stay spelled out, e.g.
-        dritter -> dritter
-    They are still exposed as digits in self.graph_ordinals, e.g.
-        dritter -> 3.
-    for other semiotic classes such as date.
-
     Args:
-        cardinal: ITN Cardinal Tagger
+        cardinal: CardinalFst
     """
 
     def __init__(self, cardinal: GraphFst):
