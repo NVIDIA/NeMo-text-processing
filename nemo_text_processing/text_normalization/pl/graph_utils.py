@@ -108,5 +108,5 @@ def dict_to_graph(input_dict: dict, deterministic: bool = True) -> dict:
                         graph |= pynini.cross(key, alt)
             else:
                 graph = pynini.cross(key, subvalue)
-            graph_dict[key][subkey] = graph
+            graph_dict[key][subkey] = graph.optimize()
     return graph_dict
