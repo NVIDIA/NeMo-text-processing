@@ -53,15 +53,7 @@ class MoneyFst(GraphFst):
             pynutil.delete("preserve_order:") + sp + pynutil.delete("true") + sp, 0, 1
         )
 
-        all_currencies = [maj for _, maj in load_labels(get_abs_path("data/money/currency.tsv"))]
-        all_currencies += [maj for _, maj in load_labels(get_abs_path("data/money/currency_singular.tsv"))]
-
-        native_major_only_graphs = []
-        for major in set(all_currencies):
-            graph_major_slot = pynutil.delete('currency_maj: "') + pynutil.delete(major) + pynutil.delete('"')
-            native_major_only_graphs.append(graph_major_slot + sp + integer_part + pynutil.insert(" " + major))
-
-        graph_major_only = pynini.union(*native_major_only_graphs) | (integer_part + sp + currency_major)
+        graph_major_only = integer_part + sp + currency_major
 
         all_major_names = [maj for maj, _ in load_labels(get_abs_path("data/money/major_minor_currencies.tsv"))]
         major_to_minor = dict(load_labels(get_abs_path("data/money/major_minor_currencies.tsv")))
@@ -69,9 +61,12 @@ class MoneyFst(GraphFst):
         major_minor_graphs = []
         minor_only_graphs = []
 
+        # the minor-unit word depends on the currency, so each currency gets its own branch
         for major in all_major_names:
             graph_major_slot = pynutil.delete('currency_maj: "') + pynutil.delete(major) + pynutil.delete('"')
-            minor_slot = pynutil.delete('currency_min: "true"') + pynutil.insert(major_to_minor[major])
+            minor_slot = (
+                pynutil.delete('currency_min: "true"') + pynutil.insert(major_to_minor[major])
+            )
 
             major_minor_graphs.append(
                 graph_major_slot
@@ -86,7 +81,13 @@ class MoneyFst(GraphFst):
             )
 
             minor_only_graphs.append(
-                graph_major_slot + sp + pynutil.delete('integer_part: "शून्य"') + sp + fractional_part + sp + minor_slot
+                graph_major_slot
+                + sp
+                + pynutil.delete('integer_part: "शून्य"')
+                + sp
+                + fractional_part
+                + sp
+                + minor_slot
             )
 
         graph_major_minor = pynini.union(*major_minor_graphs)
