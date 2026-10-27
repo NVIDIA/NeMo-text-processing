@@ -35,12 +35,18 @@ from nemo_text_processing.text_normalization.hi.taggers.measure import MeasureFs
 from nemo_text_processing.text_normalization.hi.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.hi.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.hi.taggers.punctuation import PunctuationFst
+from nemo_text_processing.text_normalization.hi.taggers.range import RangeFst
 from nemo_text_processing.text_normalization.hi.taggers.roman import RomanFst
 from nemo_text_processing.text_normalization.hi.taggers.serial import SerialFst
 from nemo_text_processing.text_normalization.hi.taggers.telephone import TelephoneFst
 from nemo_text_processing.text_normalization.hi.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.hi.taggers.whitelist import WhiteListFst
 from nemo_text_processing.text_normalization.hi.taggers.word import WordFst
+from nemo_text_processing.text_normalization.hi.verbalizers.cardinal import CardinalFst as VCardinalFst
+from nemo_text_processing.text_normalization.hi.verbalizers.date import DateFst as VDateFst
+from nemo_text_processing.text_normalization.hi.verbalizers.decimal import DecimalFst as VDecimalFst
+from nemo_text_processing.text_normalization.hi.verbalizers.measure import MeasureFst as VMeasureFst
+from nemo_text_processing.text_normalization.hi.verbalizers.time import TimeFst as VTimeFst
 
 
 class ClassifyFst(GraphFst):
@@ -130,6 +136,30 @@ class ClassifyFst(GraphFst):
             electronic = ElectronicFst(deterministic=deterministic)
             electronic_graph = electronic.fst
 
+            v_cardinal = VCardinalFst(deterministic=deterministic)
+            v_date = VDateFst()
+            date_final = pynini.compose(date_graph, v_date.fst)
+
+            v_decimal = VDecimalFst(deterministic=deterministic)
+            decimal_final = pynini.compose(decimal_graph, v_decimal.fst)
+
+            v_time = VTimeFst(cardinal=v_cardinal)
+            time_final = pynini.compose(time_graph, v_time.fst)
+
+            v_measure = VMeasureFst(decimal=v_decimal, cardinal=v_cardinal)
+            measure_final = pynini.compose(measure.plain_fst, v_measure.fst)
+
+            range_tagger = RangeFst(
+                time=time_final,
+                date=date_final,
+                cardinal=pynini.compose(cardinal_graph, v_cardinal.fst),
+                decimal=decimal_final,
+                money=money_graph,
+                measure=measure_final,
+                deterministic=deterministic,
+            )
+            range_graph = range_tagger.fst
+
             classify = (
                 pynutil.add_weight(whitelist_graph, 1.01)
                 | pynutil.add_weight(cardinal_graph, 1.1)
@@ -144,6 +174,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(electronic_graph, 1.1)
                 | pynutil.add_weight(serial_graph, 1.11)
                 | pynutil.add_weight(roman_graph, 1.1)
+                | pynutil.add_weight(range_graph, 1.1)
             )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=2.1) + pynutil.insert(" }")
