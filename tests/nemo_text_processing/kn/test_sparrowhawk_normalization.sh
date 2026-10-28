@@ -27,6 +27,10 @@ testTNCardinal() {
   input=$PROJECT_DIR/kn/data_text_normalization/test_cases_cardinal.txt
   runtest $input
 }
+testTNFraction() {
+  input=$PROJECT_DIR/kn/data_text_normalization/test_cases_fraction.txt
+  runtest $input
+}
 testTNWord() {
   input=$PROJECT_DIR/kn/data_text_normalization/test_cases_word.txt
   runtest $input
