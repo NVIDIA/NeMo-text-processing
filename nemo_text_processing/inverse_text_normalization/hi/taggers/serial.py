@@ -19,9 +19,9 @@ from nemo_text_processing.inverse_text_normalization.hi.graph_utils import (
     DEVANAGARI_LETTER,
     DIGIT_GLYPH_TO_ASCII,
     DIGIT_WORD_TO_DEVANAGARI,
-    NEMO_NON_BREAKING_SPACE,
     NEMO_SIGMA,
     GraphFst,
+    convert_space,
     delete_space,
     load_symbols,
 )
@@ -40,6 +40,7 @@ class SerialFst(GraphFst):
         e.g. आई ए तीन दो -> tokens { name: "IA32" }
         e.g. जी एस ए टी हाइफ़न एक आठ -> tokens { name: "GSAT-18" }
         e.g. रेडमी के तीन -> tokens { name: "रेडमी K3" }
+        e.g. रेडमी के दो फोन -> tokens { name: "रेडमी के २ फोन" }
         e.g. चार के वीडियो -> tokens { name: "4K वीडियो" }
 
     Args:
@@ -50,9 +51,10 @@ class SerialFst(GraphFst):
         super().__init__(name="serial", kind="classify")
 
         cardinal_to_devanagari = cardinal.graph.optimize()
+        devanagari_number = (cardinal_to_devanagari | DIGIT_WORD_TO_DEVANAGARI).optimize()
 
         devanagari_to_ascii = pynini.cdrewrite(DIGIT_GLYPH_TO_ASCII, "", "", NEMO_SIGMA)
-        spoken_number = pynini.compose(cardinal_to_devanagari | DIGIT_WORD_TO_DEVANAGARI, devanagari_to_ascii)
+        spoken_number = pynini.compose(devanagari_number, devanagari_to_ascii)
         devanagari_numeral = pynini.closure(DIGIT_GLYPH_TO_ASCII, 1)
         number = (spoken_number | devanagari_numeral).optimize()
         number_words = pynini.arcmap(pynini.project(number, "input"), map_type="rmweight").optimize()
@@ -95,17 +97,26 @@ class SerialFst(GraphFst):
         contains_alpha = NEMO_SIGMA + NEMO_ALPHA + NEMO_SIGMA
         contains_digit = NEMO_SIGMA + NEMO_DIGIT + NEMO_SIGMA
         alnum_mix = pynini.intersect(contains_alpha, contains_digit).optimize()
-        lone_k = (pynini.closure(NEMO_DIGIT) + pynini.accep("K") + pynini.closure(NEMO_DIGIT)).optimize()
+        k_letter = (letter_map_upper @ pynini.accep("K")).optimize()
+        k_word = pynini.project(k_letter, "input")
+        lone_k = (
+            pynini.closure(NEMO_DIGIT) + pynini.project(k_letter, "output") + pynini.closure(NEMO_DIGIT)
+        ).optimize()
         alnum_mix = pynini.difference(alnum_mix, lone_k).optimize()
-        alnum_body = (alnum_body @ alnum_mix).optimize()
 
-        k_letter = delete_space + pynini.cross("के", "K") + delete_space
-        nbsp = pynutil.insert(NEMO_NON_BREAKING_SPACE)
+        word_gap = delete_space + pynutil.insert(" ")
         k_brands = pynini.string_file(get_abs_path("data/serial/k_brands.tsv"))
-        brand_model = k_brands + nbsp + k_letter + number
         k_screen_words = pynini.string_file(get_abs_path("data/serial/k_screen_words.tsv"))
-        resolution = (number @ pynini.union("4", "8")) + k_letter + nbsp + k_screen_words
-        k_context = (brand_model | resolution).optimize()
+        k_device_words = pynini.string_file(get_abs_path("data/serial/k_device_words.tsv"))
+        k_resolutions = pynini.string_file(get_abs_path("data/serial/k_resolutions.tsv"))
+
+        brand_model = k_brands + word_gap + k_letter + delete_space + number
+        resolution = (number @ k_resolutions) + delete_space + k_letter + word_gap + k_screen_words
+        brand_of = k_brands + word_gap + k_word + word_gap + devanagari_number + word_gap + k_device_words
+        k_context = convert_space(brand_model | resolution | brand_of).optimize()
+        k_context_words = pynini.arcmap(pynini.project(k_context, "input"), map_type="rmweight").optimize()
+
+        alnum_body = (pynini.difference(NEMO_SIGMA, k_context_words) @ alnum_body @ alnum_mix).optimize()
 
         graph = (
             pynutil.insert("name: \"") + (serial_core | power_graph | alnum_body | k_context) + pynutil.insert("\"")
