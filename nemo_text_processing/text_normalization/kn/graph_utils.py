@@ -38,6 +38,8 @@ NEMO_WHITE_SPACE = pynini.union(" ", "\t", "\n", "\r", u"\u00a0").optimize()
 NEMO_NOT_SPACE = pynini.difference(NEMO_CHAR, NEMO_WHITE_SPACE).optimize()
 NEMO_NOT_QUOTE = pynini.difference(NEMO_CHAR, r'"').optimize()
 NEMO_SIGMA = pynini.closure(NEMO_CHAR)
+MINUS_WORD = "ಮೈನಸ್"
+DIVIDE_WORD ="ಬೈ"
 
 delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
 insert_space = pynutil.insert(" ")
