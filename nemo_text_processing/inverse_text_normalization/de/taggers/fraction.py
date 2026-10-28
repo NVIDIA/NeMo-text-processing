@@ -32,17 +32,9 @@ class FractionFst(GraphFst):
         ein ein halb -> fraction { integer_part: "1" numerator: "1" denominator: "2" }
         minus ein zwei und zwanzigstel -> fraction { negative: "-" numerator: "1" denominator: "22" }
 
-    Fractions without a numerator are not converted, because "Viertel", the denominator 4, is also a city district and "halb" can be an adverb,
-    which would cause issues like
-        "das Viertel ist schön" -> das 1/4 ist schön
-        "sich halb links halten" -> sich 1/2 links halten
-
-    einhalb, anderthalb, einviertel and dreiviertel are converted to 0,5, 1,5, 0,25 and 0,75,
-    so they belong to the decimal grammar and not here.
-
     Args:
-        cardinal: ITN Cardinal tagger
-        ordinal: ITN Ordinal tagger, provides the stems a denominator is built on
+        cardinal: CardinalFst
+        ordinal: OrdinalFst
     """
 
     def __init__(self, cardinal: GraphFst, ordinal: GraphFst):
@@ -52,16 +44,13 @@ class FractionFst(GraphFst):
         non_empty = pynini.difference(NEMO_SIGMA, "").optimize()
         cardinal_graph = (non_empty @ cardinal.graph_no_exception).optimize()
 
-        # a numerator and a denominator are written without the thousand separators
-        # the cardinal inserts, the integer part keeps them as the decimal does
         remove_separators = pynini.cdrewrite(pynutil.delete("."), "", "", NEMO_SIGMA)
         cardinal_no_separators = (cardinal_graph @ remove_separators).optimize()
 
         suffixes = pynini.string_file(get_abs_path("data/fractions/suffixes.tsv"))
         half = pynini.string_file(get_abs_path("data/fractions/half.tsv"))
 
-        # a German denominator is the ordinal stem plus -tel, and a stem outside the ordinal
-        # tables is already the cardinal, so for those the rewrite only drops the ending
+        # a German denominator is the ordinal stem plus -tel
         to_cardinal_words = pynini.cdrewrite(
             pynini.closure(ordinal.ordinal_stem, 0, 1) + pynutil.delete(suffixes),
             "",
@@ -77,8 +66,7 @@ class FractionFst(GraphFst):
             pynutil.insert('denominator: "') + (denominator_words @ cardinal_no_separators) + pynutil.insert('"')
         )
 
-        # the space between two fields is read from the input, so a field boundary cannot fall
-        # inside a glued word and ein dreizehntel cannot read as ein drei zehntel
+        # the space between fields is read from the input, so ein dreizehntel cannot read as ein drei zehntel
         self.graph_wo_negative = (
             pynini.closure(integer_part + NEMO_SPACE, 0, 1) + numerator + NEMO_SPACE + denominator
         ).optimize()
