@@ -24,7 +24,7 @@ class FractionFst(GraphFst):
     Finite state transducer for classifying fraction
         ೨೩ ೪/೬-> fraction { integer_part: "ಇಪ್ಪತ್ತಮೂರು" numerator: "ನಾಲ್ಕು" denominator: "ಆರರಲ್ಲಿ" }
         ೪/೦-> fraction { numerator: "ನಾಲ್ಕು" denominator: "ಸೊನ್ನೆ" }
-    
+
 
     Args:
         cardinal: cardinal GraphFst
