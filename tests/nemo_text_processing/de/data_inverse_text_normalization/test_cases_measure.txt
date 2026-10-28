@@ -38,3 +38,12 @@ sieben bytes~7 B
 fünf kilos~5 kg
 hundert zwanzig m m h g~120 mmHg
 minus zwei komma fünf grad celsius~-2,5 °C
+ein meter null fünf~1,05 m
+ein meter null null fünf~1,005 m
+ein meter fünfzig~1,50 m
+zwei meter zehn~2,10 m
+ein kilometer zwei hundert~1,200 km
+zwei flüssigunzen~2 fl. oz.
+fünf volumenprozent~5 % vol.
+zwei zoll~2 "
+zwei zoll pro stunde~2 "/h

@@ -117,11 +117,9 @@ class MeasureFst(GraphFst):
         )
 
         # Graphs scrambled decimal and SI combination where the SI unit is placed before the fractional part
+        scrambled_tail = cardinals_no_separators | pynutil.add_weight(decimal.graph_string_of_digits, 0.01)
         scrambled_decimal = (
-            pynutil.insert("morphosyntactic_features: ")
-            + pynutil.insert('"')
-            + cardinals_no_separators
-            + pynutil.insert('"')
+            pynutil.insert("morphosyntactic_features: ") + pynutil.insert('"') + scrambled_tail + pynutil.insert('"')
         )
         graph_decimal_scrambled = (
             graph_cardinal + pynini.accep(NEMO_SPACE) + graph_unit + pynini.accep(NEMO_SPACE) + scrambled_decimal

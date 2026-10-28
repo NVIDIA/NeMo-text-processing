@@ -15,7 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_CHAR, NEMO_DIGIT, NEMO_SPACE, GraphFst
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
+    NEMO_CHAR,
+    NEMO_DIGIT,
+    NEMO_NOT_QUOTE,
+    NEMO_SPACE,
+    GraphFst,
+)
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
 
 
@@ -46,7 +52,7 @@ class MeasureFst(GraphFst):
             pynutil.delete("units:")
             + pynutil.delete(NEMO_SPACE)
             + pynutil.delete('"')
-            + pynini.closure(pynini.difference(NEMO_CHAR, NEMO_SPACE), 1)
+            + (pynini.closure(NEMO_NOT_QUOTE, 1) | pynini.closure(pynini.difference(NEMO_CHAR, NEMO_SPACE), 1))
             + pynutil.delete('"')
         )
 

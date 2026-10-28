@@ -42,46 +42,46 @@ mikrogramm	µg
 milligramm	mg
 kilogramm	kg
 kilo	kg
-pfund	lb
+pfund	Pfd.
 unze	oz.
-zentner	cwt
+zentner	Ztr.
 korn	gr
 drachne	dr
-petagramm	pg
+petagramm	Pg
 stunde	h
 sekunde	s
 minute	min
-decisekunde	ds
+dezisekunde	ds
 millisekunde	ms
 mikrosekunde	μs
 hertz	Hz
 kilowatt	kW
 kilowattstunde	kWh
-gigahertz	gHz
+gigahertz	GHz
 kilohertz	kHz
-megahertz	mHz
-terrahertz	tHz
+megahertz	MHz
+terahertz	THz
 volt	V
-megacoulomb	mC
+megacoulomb	MC
 milliampere	mA
 ampere	A
-terawatt	tW
+terawatt	TW
 millivolt	mV
-megawatt	mW
-gigawatt	gW
+megawatt	MW
+gigawatt	GW
 ohm	ω
 dezibel	dB
 gigabyte	GB
 gigabit	Gbit
 kilobit	kb
-petabit	pb
+petabit	Pbit
 megabyte	MB
 megabit	mbit
 megabits	mbit
 kilobyte	kB
 terabyte	TB
 kilovolt	kV
-megavolt	mV
+megavolt	MV
 kilonewton	kN
 milliliter	ml
 liter	l
@@ -95,12 +95,10 @@ weber	Wb
 hektopascal	hPa
 karat	kt
 newton	N
-dots per inch	dpi
 seemeile	sm
-petameter	pm
-megameter	mm
+petameter	Pm
+megameter	Mm
 attometer	am
-Gray	Gy
 gray	Gy
 yottabyte	YB
 m bit	mbit
@@ -110,112 +108,103 @@ lichtjahr	Lj
 lichtjahre	Lj
 lichtjahren	Lj
 p h	pH
-esslöffel	el
+esslöffel	EL
+esslöffeln	EL
 gauss	Gs
 gauß	Gs
 flüssigunzen	fl. oz.
-teelöffel	tl
-teelöffeln	tl
+teelöffel	TL
+teelöffeln	TL
 lumen durch watt	lm/W
 dalton	Da
 kilodalton	kDa
-neper	np
-stokes	st
+neper	Np
+stokes	St
 k m h	km/h
 knoten	kn
 millimeter quecksilbersäule	mmHg
-m m h g	mmHg 
+m m h g	mmHg
 fentometer	fm
-l k w	LKW
 ar	a
 kilojoule	kJ
-gigapascal	gPa
+gigapascal	GPa
 kiloampere	kA
 phot	ph
 elektronenvolt	eV
 deziliter	dl
 hektoliter	hl
-doppelzenter	dz
-milibar	mb
 zentiliter	cl
-kaffelöffel	kl
+kaffelöffel	KL
+kaffelöffeln	KL
 g b	GB
 maxwell	Mx
-poise	p
+poise	P
 zoll	"
 zettabyte	ZB
 voltampere	VA
 joule	J
 stundenkilometer	km/h
-glykämische last	GL
-glykämischer index	GI
 m b	MB
 farad	F
 parsec	Pc
 dekameter	dam
 dekametern	dam
-mililiter	ml
-mililitern	ml
-terrameter	tm
-zettameter	zm
-yottameter	ym
+milliliter	ml
+millilitern	ml
+terrameter	Tm
+zettameter	Zm
+yottameter	Ym
 watt	W
 sievert	Sv
 millisievert	mSv
-gigameter	gm
-exameter	em
+gigameter	Gm
+exameter	Em
 pascalsekunde	Pa·s
-megapascal	mPa
+megapascal	MPa
 byte	B
-exabyte	eB
+exabyte	EB
 tesla	T
 henry	H
-milisievert	mSv
 mikrosievert	μSv
 millimol	mmol
 coulomb	C
-exohertz	eHz
-feinunz	oz. tr. 
+exohertz	EHz
+feinunze	oz. tr.
 lumen	lm
 tonne	t
 zentistokes	cSt
-kilowatt	kW
-megadalton	mDa
+megadalton	MDa
 katal	kat
 pascal	Pa
 petabyte	PB
-megabyte	MB
-hektoliter	hl
-gallon	ga
+gallon	gal.
 gallonen	ga
 jahr	a
 kilopascal	kPa
 mikron	μ
-ångström	å
+ångström	Å
 kilopond	kp
 radiant	rad
 volumenprozent	% vol.
 kubikdezimeter	dm³
-becquerel	bq
+becquerel	Bq.
 dekapascal	daPa
-pferdestärken	ps
+pferdestärken	PS
 bit	b
 mikropascal	μPa
 petahertz	PHz
 p p m	ppm
 candela	cd
-winkelminute	moa
-winkelminuten	moa
+winkelminute	MOA
+winkelminuten	MOA
 winkelsekunde	soa
 winkelsekunden	soa
-m m h g	mmHg
-l k w	LKW
-doppelzentner	dZ
+doppelzentner	dz
 millibar	mbar
 kaffeelöffel	KL
 newtonmeter	Nm
-messerspitze	msp.
-messerspitzen	msp.
+messerspitze	Msp.
+messerspitzen	Msp.
 quadratdezimeter	dm²
 quadrat sekunde	s²
 quadratsekunde	s²
@@ -223,13 +212,9 @@ seiten pro minute	seiten/min
 seite pro minute	seite/min
 c l	cl
 feinunzen	oz. tr.
-volumenprozent	% vol.
 unzen	oz.
-t b	tb
-dioptrie
-dioptrien
-monat
-monate
-mol
-erg
-tassen zucker
+t b	TB
+dioptrie	dpt
+dioptrien	dpt
+mol	mol
+erg	erg
