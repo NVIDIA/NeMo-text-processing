@@ -39,9 +39,7 @@ class OrdinalFst(GraphFst):
 
         digit_map = {row[0]: row[1] for row in load_labels(get_abs_path("data/numbers/digit.tsv"))}
         one_verbal = digit_map["1"]
-        digits_as_one = pynini.union(
-            *[inp for inp, verbal in digit_map.items() if verbal == one_verbal]
-        ).optimize()
+        digits_as_one = pynini.union(*[inp for inp, verbal in digit_map.items() if verbal == one_verbal]).optimize()
 
         tie_stems = {row[1] for row in load_labels(get_abs_path("data/numbers/ties.tsv"))}
         exact_power = {row[0]: row[1] for row in load_labels(get_abs_path("data/numbers/exact_power.tsv"))}
@@ -64,9 +62,7 @@ class OrdinalFst(GraphFst):
         plain_numbers = pynini.difference(pynini.closure(NEMO_ALL_DIGIT, 1), digits_as_one).optimize()
         number_input = pynini.union(plain_numbers, grouped_numbers).optimize()
 
-        ordinal_graph = (number_input @ cardinal.final_graph @ cardinal_to_ordinal) + pynutil.delete(
-            written_suffix
-        )
+        ordinal_graph = (number_input @ cardinal.final_graph @ cardinal_to_ordinal) + pynutil.delete(written_suffix)
         graph = pynini.union(exceptions, ordinal_graph).optimize()
         self.graph = graph
 
