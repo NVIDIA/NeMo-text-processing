@@ -30,6 +30,7 @@ from nemo_text_processing.text_normalization.te.taggers.cardinal import Cardinal
 from nemo_text_processing.text_normalization.te.taggers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.te.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.te.taggers.word import WordFst
+from nemo_text_processing.text_normalization.te.taggers.ordinal import OrdinalFst
 
 
 class ClassifyFst(GraphFst):
@@ -80,7 +81,14 @@ class ClassifyFst(GraphFst):
             decimal = DecimalFst(cardinal=cardinal, deterministic=deterministic)
             decimal_graph = decimal.fst
 
-            classify = pynutil.add_weight(cardinal_graph, 1.1) | pynutil.add_weight(decimal_graph, 1.1)
+            ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
+            ordinal_graph = ordinal.fst
+
+            classify = (
+                pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(ordinal_graph, 1.1)
+            )
 
             word_graph = WordFst(deterministic=deterministic).fst
 
