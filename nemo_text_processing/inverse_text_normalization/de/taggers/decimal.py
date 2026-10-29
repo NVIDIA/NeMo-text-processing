@@ -15,46 +15,88 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.de.taggers.decimal import get_quantity, quantities
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SIGMA, GraphFst
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_DIGIT, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path
 
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal
-        e.g. minus elf komma zwei null null sechs billionen -> decimal { negative: "true" integer_part: "11"  fractional_part: "2006" quantity: "billionen" }
-        e.g. eine billion -> decimal { integer_part: "1" quantity: "billion" }
+    Finite state transducer for classifying decimal numbers
+        e.g. minus elf komma zwei null null sechs billionen -> decimal { negative: "-" integer_part: "11"  fractional_part: "2006" quantity: "Billionen" }
+        e.g. zwölf komma drei vier fünf -> decimal { integer_part: "12" fractional_part: "345" }
+        e.g. eine million -> decimal { integer_part: "1" quantity: "Million" }
+        e.g. dreiviertel tausend -> decimal { integer_part: "0" fractional_part: "75" quantity: "tausend" }
     Args:
-        itn_cardinal_tagger: ITN Cardinal tagger
-        tn_decimal_tagger: TN decimal tagger
+        cardinal: CardinalFst
     """
 
-    def __init__(self, itn_cardinal_tagger: GraphFst, tn_decimal_tagger: GraphFst, deterministic: bool = True):
-        super().__init__(name="decimal", kind="classify", deterministic=deterministic)
+    def __init__(self, cardinal: GraphFst):
+        super().__init__(name="decimal", kind="classify")
+        graph_cardinals = cardinal.graph_no_exception
+        delete_comma = pynutil.delete("komma")
+        graph_digit = pynini.string_file(get_abs_path("data/numbers/digits.tsv"))
+        graph_digit |= pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
 
-        self.graph = tn_decimal_tagger.graph.invert().optimize()
+        graph_integer = pynutil.insert('integer_part: "') + graph_cardinals + pynutil.insert('" ') + delete_space
 
-        delete_point = pynutil.delete(" komma")
+        graph_integer_or_zero = graph_integer | pynutil.insert('integer_part: "0" ', weight=-0.001)
 
-        allow_spelling = pynini.cdrewrite(pynini.cross("eine ", "eins ") + quantities, "[BOS]", "[EOS]", NEMO_SIGMA)
+        graph_clean_digit = delete_space + graph_digit
 
-        graph_fractional = pynutil.insert("fractional_part: \"") + self.graph + pynutil.insert("\"")
-        graph_integer = (
-            pynutil.insert("integer_part: \"") + itn_cardinal_tagger.graph_no_exception + pynutil.insert("\"")
+        graph_string_of_digits = pynini.closure(graph_clean_digit, 1)
+        graph_fractional = pynutil.insert('fractional_part: "') + graph_string_of_digits + pynutil.insert('"')
+
+        graph_decimal_no_sign = graph_integer_or_zero + delete_comma + graph_fractional
+
+        fraction_values = pynini.string_file(get_abs_path("data/numbers/fractions.tsv"))
+
+        value_to_fields = (
+            pynutil.insert('integer_part: "')
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynini.cross(",", '" fractional_part: "')
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynutil.insert('"')
         )
-        final_graph_wo_sign = graph_integer + delete_point + pynini.accep(" ") + graph_fractional
-
-        self.final_graph_wo_negative = (
-            allow_spelling
-            @ (
-                final_graph_wo_sign
-                | get_quantity(
-                    final_graph_wo_sign, itn_cardinal_tagger.graph_hundred_component_at_least_one_none_zero_digit
-                )
-            ).optimize()
+        # fractions below one attach to a preceding integer (zwei einhalb -> 2,5) so they contribute
+        # only the digits after the comma, the integer part comes from graph_integer_or_zero;
+        # anderthalb carries its own integer part and cannot attach
+        value_to_fractional = (
+            pynutil.insert('fractional_part: "')
+            + pynutil.delete(pynini.closure(NEMO_DIGIT, 1) + ",")
+            + pynini.closure(NEMO_DIGIT, 1)
+            + pynutil.insert('"')
         )
 
-        final_graph = itn_cardinal_tagger.optional_minus_graph + self.final_graph_wo_negative
-        final_graph += pynutil.insert(" preserve_order: true")
+        decimal_value = pynini.closure(NEMO_DIGIT, 1) + pynini.accep(",") + pynini.closure(NEMO_DIGIT, 1)
+        below_one = pynini.accep("0,") + pynini.closure(NEMO_DIGIT, 1)
+
+        fraction_below_one = pynini.compose(fraction_values, below_one)
+        fraction_at_least_one = pynini.compose(fraction_values, pynini.difference(decimal_value, below_one))
+
+        graph_decimal_no_sign |= graph_integer_or_zero + pynini.compose(fraction_below_one, value_to_fractional)
+        graph_decimal_no_sign |= pynini.compose(fraction_at_least_one, value_to_fields)
+
+        quantity = cardinal.magnitude
+
+        big_quantity = pynini.compose(cardinal.big_magnitude_words, quantity)
+
+        graph_quantity = (
+            pynutil.insert('integer_part: "')
+            + cardinal.graph_hundred_component_at_least_one_none_zero_digit
+            + pynutil.insert('"')
+            + pynutil.insert(' quantity: "')
+            + delete_space
+            + big_quantity
+            + pynutil.insert('"')
+        )
+
+        graph_quantity |= (
+            graph_decimal_no_sign + pynutil.insert(' quantity: "') + delete_space + quantity + pynutil.insert('"')
+        )
+
+        # measure and money splice this in and write the sign themselves
+        self.final_graph_wo_negative = (graph_decimal_no_sign | graph_quantity).optimize()
+
+        final_graph = cardinal.optional_minus_graph + self.final_graph_wo_negative
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

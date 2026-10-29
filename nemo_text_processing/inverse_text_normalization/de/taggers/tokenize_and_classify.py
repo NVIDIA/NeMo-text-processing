@@ -32,7 +32,6 @@ from nemo_text_processing.inverse_text_normalization.en.taggers.punctuation impo
 from nemo_text_processing.inverse_text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.de.taggers.cardinal import CardinalFst as TNCardinalTagger
 from nemo_text_processing.text_normalization.de.taggers.date import DateFst as TNDateTagger
-from nemo_text_processing.text_normalization.de.taggers.decimal import DecimalFst as TNDecimalTagger
 from nemo_text_processing.text_normalization.de.taggers.electronic import ElectronicFst as TNElectronicTagger
 from nemo_text_processing.text_normalization.de.taggers.whitelist import WhiteListFst as TNWhitelistTagger
 from nemo_text_processing.text_normalization.de.verbalizers.date import DateFst as TNDateVerbalizer
@@ -84,7 +83,6 @@ class ClassifyFst(GraphFst):
             logger.info(f"Creating ClassifyFst grammars.")
             tn_cardinal_tagger = TNCardinalTagger(deterministic=False)
             tn_date_tagger = TNDateTagger(cardinal=tn_cardinal_tagger, deterministic=False)
-            tn_decimal_tagger = TNDecimalTagger(cardinal=tn_cardinal_tagger, deterministic=False)
             tn_ordinal_verbalizer = TNOrdinalVerbalizer(deterministic=False)
             tn_fraction_verbalizer = TNFractionVerbalizer(ordinal=tn_ordinal_verbalizer, deterministic=False)
             tn_time_verbalizer = TNTimeVerbalizer(cardinal_tagger=tn_cardinal_tagger, deterministic=False)
@@ -98,7 +96,7 @@ class ClassifyFst(GraphFst):
 
             ordinal = OrdinalFst(cardinal=cardinal)
             ordinal_graph = ordinal.fst
-            decimal = DecimalFst(itn_cardinal_tagger=cardinal, tn_decimal_tagger=tn_decimal_tagger)
+            decimal = DecimalFst(cardinal=cardinal)
             decimal_graph = decimal.fst
 
             fraction = FractionFst(itn_cardinal_tagger=cardinal, tn_fraction_verbalizer=tn_fraction_verbalizer)
