@@ -84,7 +84,11 @@ class ClassifyFst(GraphFst):
             ordinal = OrdinalFst(cardinal=cardinal, deterministic=deterministic)
             ordinal_graph = ordinal.fst
 
-            classify = pynutil.add_weight(cardinal_graph, 1.1) | pynutil.add_weight(decimal_graph, 1.2) | pynutil.add_weight(ordinal_graph, 1.3)
+            classify = (
+                pynutil.add_weight(cardinal_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.2)
+                | pynutil.add_weight(ordinal_graph, 1.3)
+            )
 
             word_graph = WordFst().fst
 
