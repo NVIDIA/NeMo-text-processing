@@ -30,7 +30,6 @@ class MeasureFst(GraphFst):
         e.g. drei viertel ohm -> measure { fraction { 3/4 } units: "ω" }
         e.g. ein meter fünfzig -> measure { cardinal { integer: "1" } units: "m" morphosyntactic_features: "50" }
         e.g. sechzehner -> measure { cardinal { integer: "16" } morphosyntactic_features: "er" }
-        e.g. kapitel vier -> measure { units: "Kapitel" cardinal { integer: "4" } }
         e.g. vierzehnfach -> measure { cardinal { integer: "14" } morphosyntactic_features: "fach" }
 
 
@@ -53,7 +52,6 @@ class MeasureFst(GraphFst):
         denominator_markers = pynini.string_file(get_abs_path("data/measure/denominator_markers.tsv"))
         numeral_noun_suffixes = pynini.string_file(get_abs_path("data/measure/numeral_noun_suffixes.tsv"))
         adverbial_suffixes = pynini.string_file(get_abs_path("data/measure/adverbial_suffixes.tsv"))
-        labelling_nouns = pynini.string_file(get_abs_path("data/measure/nouns_forcing_denormalization.tsv"))
 
         cardinals = pynutil.insert('integer: "') + cardinal.graph_no_exception + pynutil.insert('"')
         # leaves the first dozen verbalized
@@ -75,7 +73,6 @@ class MeasureFst(GraphFst):
         depluralized = plurals._priority_union(plural_to_singular_exceptions, graph_suffixes, NEMO_SIGMA).optimize()
         graph_SI = (depluralized @ graph_SI_abbr) | graph_SI_abbr
 
-        # Handles units in the denominator
         graph_denominator = denominator_markers + pynutil.delete(NEMO_SPACE) + graph_SI
         graph_unit = (
             pynutil.insert('units: "')
@@ -87,7 +84,6 @@ class MeasureFst(GraphFst):
             + pynutil.insert('"')
         )
 
-        # Graphs cardinals
         graph_cardinal = (
             pynutil.insert("cardinal {")
             + pynutil.insert(NEMO_SPACE)
@@ -105,8 +101,6 @@ class MeasureFst(GraphFst):
             + pynutil.insert("}")
         )
 
-        # Graphs decimals
-        # Curly braces are added to the decimal graph to permit later use of the decimal verbalizer
         graph_decimal = (
             pynutil.insert("decimal {")
             + pynutil.insert(NEMO_SPACE)
@@ -118,14 +112,19 @@ class MeasureFst(GraphFst):
 
         # Graphs scrambled decimal and SI combination where the SI unit is placed before the fractional part
         scrambled_tail = cardinals_no_separators | pynutil.add_weight(decimal.graph_string_of_digits, 0.01)
-        scrambled_decimal = (
-            pynutil.insert("morphosyntactic_features: ") + pynutil.insert('"') + scrambled_tail + pynutil.insert('"')
-        )
         graph_decimal_scrambled = (
-            graph_cardinal + pynini.accep(NEMO_SPACE) + graph_unit + pynini.accep(NEMO_SPACE) + scrambled_decimal
+            cardinal.optional_minus_graph
+            + pynutil.insert('integer_part: "')
+            + cardinal.graph_no_exception
+            + pynutil.insert('"')
+            + pynini.accep(NEMO_SPACE)
+            + graph_unit
+            + pynini.accep(NEMO_SPACE)
+            + pynutil.insert('fractional_part: "')
+            + scrambled_tail
+            + pynutil.insert('"')
         )
 
-        # Graphs fractions
         graph_fraction = (
             pynutil.insert("fraction {")
             + pynutil.insert(NEMO_SPACE)
@@ -156,29 +155,17 @@ class MeasureFst(GraphFst):
             + pynutil.insert('"')
         )
 
-        # Handles nouns that label rather than count, forcing the numeral to be denormalized
-        graph_labelling_noun = (
-            pynutil.insert('units: "')
-            + labelling_nouns
-            + pynutil.insert('"')
-            + pynini.accep(NEMO_SPACE)
-            + graph_cardinal
-        )
-
         graphs_combined = graph_cardinal | pynutil.add_weight(graph_decimal, 0.01) | graph_fraction
         final_graph = (
             (graphs_combined + pynini.accep(NEMO_SPACE) + graph_unit)
             | graph_decimal_scrambled
             | graph_numeral_nouns
             | graph_adverbials
-            | graph_labelling_noun
         )
 
-        # Removes empty integer string
         removes_empty_ints = pynutil.delete('cardinal { integer: "" } ')
         remove_empty_ints = pynini.cdrewrite(removes_empty_ints, "", "", NEMO_SIGMA)
         final_graph = final_graph @ remove_empty_ints
 
-        # Combines and optimizes everything
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

@@ -32,9 +32,8 @@ class MeasureFst(GraphFst):
         e.g. measure { cardinal { negative: "-" integer: "67" } units: "kg" } -> -67 kg
         e.g. measure { decimal { integer_part: "1" fractional_part: "5" } units: "km/h" } -> 1,5 km/h
         e.g. measure { fraction { 3/4 } units: "ω" } -> 3/4 ω
-        e.g. measure { cardinal { integer: "1" } units: "m" morphosyntactic_features: "50" } -> 1,50 m
+        e.g. measure { integer_part: "1" units: "m" fractional_part: "50" } -> 1,50 m
         e.g. measure { cardinal { integer: "16" } morphosyntactic_features: "er" } -> 16er
-        e.g. measure { units: "Kapitel" cardinal { integer: "4" } } -> Kapitel 4
         e.g. measure { cardinal { integer: "14" } morphosyntactic_features: "fach" } -> 14-fach
     """
 
@@ -89,12 +88,13 @@ class MeasureFst(GraphFst):
 
         # Handles scrambled decimals
         graph_scrambled_decimal = (
-            graph_cardinal
-            + pynini.cross(NEMO_SPACE, ",")
-            + pynutil.delete("morphosyntactic_features:")
-            + pynutil.delete(NEMO_SPACE)
-            + pynutil.delete('"')
+            graph_negative.ques
+            + pynutil.delete('integer_part: "')
             + pynini.closure(cardinal_component, 1)
+            + pynutil.delete('"')
+            + pynini.cross(NEMO_SPACE, ",")
+            + pynutil.delete('fractional_part: "')
+            + pynini.closure(NEMO_DIGIT, 1)
             + pynutil.delete('"')
         )
 
@@ -118,9 +118,6 @@ class MeasureFst(GraphFst):
             + numeral_noun_suffixes
             + pynutil.delete('"')
         )
-
-        # Handles nouns that label rather than count
-        graph_labelling_noun = graph_unit + pynini.accep(NEMO_SPACE) + graph_cardinal
 
         # Handles numeral adverbials created with affixed "-mal" or "-fach"
         # The block below handles both hyphenated and non-hyphenated cases
@@ -154,7 +151,6 @@ class MeasureFst(GraphFst):
                 + graph_unit
             )
             | graph_numeral_noun
-            | graph_labelling_noun
             | graph_adverbials
             | graph_morphosyntactic_features
         )
