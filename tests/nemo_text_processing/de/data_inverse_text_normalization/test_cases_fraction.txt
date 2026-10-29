@@ -1,5 +1,8 @@
-null nulltel~0/0
 ein halb~1/2
+eine halbe~1/2
+einem halben~1/2
+einer halben~1/2
+ein halber~1/2
 vier halbe~4/2
 ein drittel~1/3
 ein viertel~1/4
@@ -8,11 +11,11 @@ ein sechstel~1/6
 ein siebtel~1/7
 ein achtel~1/8
 zwei neuntel~2/9
-ein ein halb~1 1/2
-ein sechstel~1/6
-ein zehntel~1/10
 ein elftel~1/11
 ein zehntel~1/10
+zwei zehnteln~2/10
+eines zehntels~1/10
+einer zehntel~1/10
 ein zwölftel~1/12
 ein dreizehntel~1/13
 ein vierzehntel~1/14
@@ -29,6 +32,21 @@ ein sechzigstel~1/60
 ein siebzigstel~1/70
 ein achtzigstel~1/80
 ein neunzigstel~1/90
-ein ein hundertstel~1/100
+ein einhundertstel~1/100
 ein zwei und zwanzigstel~1/22
 minus ein zwei und zwanzigstel~-1/22
+einem sechzigstel~1/60
+einen viertel~1/4
+einen halben~1/2
+ein halbes~1/2
+ein siebtel~1/7
+minus vier tausend fünfhundertzwei eintausendeinhundertzehntel~-4502/1110
+ein ein halb~1 1/2
+einen ein halb~1 1/2
+ein tausendstel~1/1000
+vier drei viertel~4 3/4
+minus vier drei viertel~-4 3/4
+ein millionstel~1/1000000
+das viertel ist schön~das viertel ist schön
+sich halb links halten~sich halb links halten
+auf halbem Weg~auf halbem Weg
