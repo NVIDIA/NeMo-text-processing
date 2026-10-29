@@ -9,8 +9,7 @@
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# See the License for the specific language governing permissions and limitations under the License.
 
 import pynini
 from pynini.lib import pynutil
@@ -24,7 +23,6 @@ class OrdinalFst(GraphFst):
     """
     Finite state transducer for classifying Telugu ordinals, e.g.
         21వ -> ordinal { integer: "ఇరవై ఒకటవ" }
-        -21వ -> ordinal { negative: "true" integer: "ఇరవై ఒకటవ" }
 
     Args:
         cardinal: CardinalFst used to verbalize the numeric part
@@ -36,40 +34,40 @@ class OrdinalFst(GraphFst):
         super().__init__(name="ordinal", kind="classify", deterministic=deterministic)
 
         written_suffix = load_labels(get_abs_path("data/ordinal/suffix.tsv"))[0][0].strip()
+        delete_suffix = pynutil.delete(written_suffix)
 
         digit_map = {row[0]: row[1] for row in load_labels(get_abs_path("data/numbers/digit.tsv"))}
         one_verbal = digit_map["1"]
-        digits_as_one = pynini.union(*[inp for inp, verbal in digit_map.items() if verbal == one_verbal]).optimize()
-
-        tie_stems = {row[1] for row in load_labels(get_abs_path("data/numbers/ties.tsv"))}
-        exact_power = {row[0]: row[1] for row in load_labels(get_abs_path("data/numbers/exact_power.tsv"))}
-        append_power_keys = {row[0] for row in load_labels(get_abs_path("data/ordinal/word_append_powers.tsv"))}
-        word_append_stems = tie_stems | {exact_power[key] for key in append_power_keys if key in exact_power}
-        word_append = pynini.union(
-            *(pynini.cross(stem, stem + written_suffix) for stem in word_append_stems)
+        digits_as_one = pynini.union(
+            *[inp for inp, verbal in digit_map.items() if verbal == one_verbal]
         ).optimize()
 
-        exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
+        tie_stems = {row[1] for row in load_labels(get_abs_path("data/numbers/ties.tsv"))}
+        extra_stems = {row[0].strip() for row in load_labels(get_abs_path("data/ordinal/word_append_stems.tsv"))}
+        word_append = pynini.union(
+            *(
+                pynini.cross(stem, stem + written_suffix)
+                for stem in tie_stems | extra_stems
+            )
+        ).optimize()
+
         char_rewrite = pynini.string_file(get_abs_path("data/ordinal/char_rewrites.tsv"))
-        ordinal_rewrite = word_append | char_rewrite
-        cardinal_to_ordinal = (NEMO_SIGMA + ordinal_rewrite).optimize()
+        cardinal_to_ordinal = (NEMO_SIGMA + (word_append | char_rewrite)).optimize()
 
         sep, two, three = pynutil.delete(","), NEMO_ALL_DIGIT**2, NEMO_ALL_DIGIT**3
         grouped_numbers = pynini.union(
             pynini.closure(NEMO_ALL_DIGIT, 1, 2) + pynini.closure(sep + two) + sep + three,
             pynini.closure(NEMO_ALL_DIGIT, 1, 3) + pynini.closure(sep + three, 1),
-        ).optimize()
-        plain_numbers = pynini.difference(pynini.closure(NEMO_ALL_DIGIT, 1), digits_as_one).optimize()
+        )
+        plain_numbers = pynini.difference(pynini.closure(NEMO_ALL_DIGIT, 1), digits_as_one)
         number_input = pynini.union(plain_numbers, grouped_numbers).optimize()
 
-        ordinal_graph = (number_input @ cardinal.final_graph @ cardinal_to_ordinal) + pynutil.delete(written_suffix)
+        ordinal_graph = (
+            number_input @ cardinal.final_graph @ cardinal_to_ordinal
+        ) + delete_suffix
+        exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
         graph = pynini.union(exceptions, ordinal_graph).optimize()
         self.graph = graph
 
-        optional_sign = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("-", '"true" '),
-            0,
-            1,
-        )
-        final_graph = optional_sign + pynutil.insert('integer: "') + graph + pynutil.insert('"')
+        final_graph = pynutil.insert('integer: "') + graph + pynutil.insert('"')
         self.fst = self.add_tokens(final_graph).optimize()

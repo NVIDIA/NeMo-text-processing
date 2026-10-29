@@ -16,14 +16,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.te.graph_utils import NEMO_NOT_QUOTE, GraphFst
-from nemo_text_processing.text_normalization.te.utils import get_abs_path, load_labels
 
 
 class OrdinalFst(GraphFst):
     """
     Finite state transducer for verbalizing Telugu ordinals, e.g.
         ordinal { integer: "పదవ" } -> పదవ
-        ordinal { negative: "true" integer: "ఇరవై ఒకటవ" } -> మైనస్ ఇరవై ఒకటవ
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -33,12 +31,6 @@ class OrdinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="ordinal", kind="verbalize", deterministic=deterministic)
 
-        symbols = dict(load_labels(get_abs_path("data/decimal/symbols.tsv")))
-        optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", symbols["minus"] + " "), 0, 1)
-        integer = (
-            pynutil.delete("integer:")
-            + pynutil.delete(" \"")
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
-        )
-        self.fst = self.delete_tokens(optional_sign + integer).optimize()
+        integer = pynini.closure(NEMO_NOT_QUOTE, 1)
+        integer = pynutil.delete("integer:") + pynutil.delete(" \"") + integer + pynutil.delete("\"")
+        self.fst = self.delete_tokens(integer).optimize()
