@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +23,8 @@ each kernel feature is exercised (Luganda equivalents in brackets):
 - teens join with "ke", larger parts with "vo" [na, mu]
 - "vo" is also an ordinary word, "in" [mu]
 - a currency phrase that licenses a special reading: koin mapi = 20 XTS, but makopa mapi = 2 [abiri]
+- other currency phrases, each agreeing with its own class: dolari zipi = 2 USD,
+  yuro mafu = 5 EUR, yeni efu = 5 JPY
 - a counted scale of ten-thousands: mina + count [mitwalo]; after a listed noun,
   emina counts that noun, also as an ordinary number place for 1-9:
   bakopa emina epi = 20,000, bakopa emina pideka = 200,000 [abantu emitwalo ebiri / abiri]
@@ -97,7 +100,14 @@ TOY_PROFILE = with_spelling_variants(
         exact_boundaries=(("tausi", "1000"),),
         roles=(("short-tens", (("mapi", "20"),)),),
         max_value=999_999_999,
-        currencies=(CurrencyContext("koin", "XTS", agreement_class="4", roles=("short-tens",)),),
+        currencies=(
+            CurrencyContext("koin", "XTS", agreement_class="4", roles=("short-tens",)),
+            # Base cases for common currencies; the words are made up like the rest.
+            CurrencyContext("dolari", "USD", agreement_class="4"),
+            CurrencyContext("paundi", "GBP", agreement_class="4"),
+            CurrencyContext("yuro", "EUR", agreement_class="6"),
+            CurrencyContext("yeni", "JPY", agreement_class="8"),
+        ),
         counted_scales=(
             # Ten-thousands [mitwalo]: bare mina is money anywhere; emina counts a word.
             CountedScale(

@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Sentence-level helpers shared by the taggers: number-word runs, token formats and the money-signal filter.
+"""Helpers shared by the Bantu taggers: number-word runs, token formats and the money-signal filter.
 
 The classifier reads the whole sentence at once. Maximal runs of number words are
 marked first, so each run is read as a single number in the context of the word
@@ -25,7 +26,12 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, NEMO_NOT_SPACE, NEMO_WHITE_SPACE
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_CHAR,
+    NEMO_NOT_SPACE,
+    NEMO_SPACE,
+    NEMO_WHITE_SPACE,
+)
 
 # Internal markers, removed before output. Control characters, so they never clash with input text.
 RUN_START = "\x01"  # start of a run of number words
@@ -40,15 +46,16 @@ MARKERS = pynini.union(RUN_START, RUN_END, IMPLIED, CUE_ONLY).optimize()
 WORD_CHAR = pynini.difference(NEMO_NOT_SPACE, MARKERS).optimize()
 WORD = pynini.closure(WORD_CHAR, 1).optimize()
 # Runs of whitespace between words become a single space.
-SINGLE_SPACES = pynini.closure(WORD_CHAR | pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")).optimize()
+SINGLE_SPACES = pynini.closure(WORD_CHAR | pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), NEMO_SPACE)).optimize()
 
 
 def word_token(graph: pynini.Fst) -> pynini.Fst:
     return pynutil.insert('tokens { name: "') + graph + pynutil.insert('" }')
 
 
-def cardinal_token(graph: pynini.Fst) -> pynini.Fst:
-    return pynutil.insert('tokens { cardinal { integer: "') + graph + pynutil.insert('" } }')
+def token(graph: pynini.Fst) -> pynini.Fst:
+    """Wraps a class token, e.g. cardinal { ... }, as one item of the sentence."""
+    return pynutil.insert("tokens { ") + graph + pynutil.insert(" }")
 
 
 def run(graph: pynini.Fst) -> pynini.Fst:
@@ -73,17 +80,17 @@ def join_aware_runs(number_words, join_words):
     plain_number = pynini.difference(numeric_word, join_word).optimize()
     any_word = (other_word | join_word).optimize()
     # Between or after runs: words and joins, containing at least one ordinary word.
-    others = (pynini.closure(any_word + " ") + other_word + pynini.closure(" " + any_word)).optimize()
-    numbers = numeric_word + pynini.closure(" " + numeric_word)
-    before_others = pynini.closure(numeric_word + " ") + plain_number
+    others = (pynini.closure(any_word + NEMO_SPACE) + other_word + pynini.closure(NEMO_SPACE + any_word)).optimize()
+    numbers = numeric_word + pynini.closure(NEMO_SPACE + numeric_word)
+    before_others = pynini.closure(numeric_word + NEMO_SPACE) + plain_number
 
     def marked(graph):
         return pynutil.insert(RUN_START) + graph + pynutil.insert(RUN_END)
 
-    runs = pynini.closure(marked(before_others) + " " + others + " ") + (
-        marked(before_others) + " " + others | marked(numbers)
+    runs = pynini.closure(marked(before_others) + NEMO_SPACE + others + NEMO_SPACE) + (
+        marked(before_others) + NEMO_SPACE + others | marked(numbers)
     )
-    segmenter = (others | pynini.closure(others + " ", 0, 1) + runs).optimize()
+    segmenter = (others | pynini.closure(others + NEMO_SPACE, 0, 1) + runs).optimize()
     return numeric_word, any_word, segmenter
 
 
@@ -109,7 +116,7 @@ def only_with_money_signal(profile: CardinalProfile) -> pynini.Fst:
     rejected and another reading (the words unchanged, or a counted noun) is used.
     """
     plain = pynini.difference(NEMO_CHAR, pynini.union(IMPLIED, CUE_ONLY)).optimize()
-    after_cue = 'tokens { name: "' + money_cue_word(profile) + '" } ' + pynini.union(IMPLIED, CUE_ONLY)
+    after_cue = 'tokens { name: "' + money_cue_word(profile) + '" }' + NEMO_SPACE + pynini.union(IMPLIED, CUE_ONLY)
     allowed = (pynini.closure(pynini.accep(IMPLIED), 0, 1) + pynini.closure(plain | after_cue)).optimize()
     strip = pynini.closure(plain | pynutil.delete(IMPLIED) | pynutil.delete(CUE_ONLY))
     return (allowed @ strip.optimize()).optimize()

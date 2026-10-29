@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -99,6 +100,8 @@ class CardinalProfile:
     held_back_words: Tuple[str, ...] = ()
     # Vowels, for contracting a join before a vowel-initial word (Luganda na + ebiri -> n'ebiri).
     vowels: str = "aeiou"
+    # Written separator between digit groups in the output (25,000).
+    thousands_separator: str = ","
 
     def join_words(self) -> FrozenSet[str]:
         """Words that join number parts; they may also be ordinary words (e.g. locative mu)."""

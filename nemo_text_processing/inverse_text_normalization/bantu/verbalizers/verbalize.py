@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,12 +25,11 @@ class VerbalizeFst(GraphFst):
     classifier, so verbalizing is formatting only.
 
     Args:
-        profile: the language profile (sets the largest value)
-        thousands_separator: written separator between digit groups
+        profile: the language profile (sets the largest value and the thousands separator)
     """
 
-    def __init__(self, profile: CardinalProfile, thousands_separator: str = ","):
+    def __init__(self, profile: CardinalProfile):
         super().__init__(name="verbalize", kind="verbalize")
-        cardinal = CardinalFst(profile.max_value, thousands_separator).fst
-        money = MoneyFst(profile.max_value, thousands_separator).fst
+        cardinal = CardinalFst(profile.max_value, profile.thousands_separator).fst
+        money = MoneyFst(profile.max_value, profile.thousands_separator).fst
         self.fst = (cardinal | money).optimize()

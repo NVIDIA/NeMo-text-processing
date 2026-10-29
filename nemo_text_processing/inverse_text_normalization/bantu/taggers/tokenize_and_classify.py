@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,16 +17,21 @@ import os
 
 import pynini
 
-from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import CardinalFst
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.money import MoneyFst
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.sentence import (
+from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import (
     SINGLE_SPACES,
     join_aware_runs,
     only_with_money_signal,
 )
+from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.word import WordFst
-from nemo_text_processing.text_normalization.en.graph_utils import INPUT_LOWER_CASED, GraphFst, generator_main
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    INPUT_LOWER_CASED,
+    NEMO_SPACE,
+    GraphFst,
+    generator_main,
+)
 from nemo_text_processing.utils.logging import logger
 
 
@@ -66,7 +72,7 @@ class ClassifyFst(GraphFst):
             word = WordFst(number_word, ordinary_word)
 
             token = pynini.union(cardinal.fst, money.fst, word.fst)
-            sentence = token + pynini.closure(" " + token)
+            sentence = token + pynini.closure(NEMO_SPACE + token)
             graph = SINGLE_SPACES @ segmenter @ sentence
             if money.has_implied_currency:
                 graph @= only_with_money_signal(profile)

@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import CUE_ONLY, IMPLIED, run, token
 from nemo_text_processing.inverse_text_normalization.bantu.profile import (
     CardinalProfile,
     CurrencyContext,
@@ -26,8 +28,7 @@ from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import
     integer_domain,
 )
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import build_scale_amount
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.sentence import CUE_ONLY, IMPLIED, run
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 
 
 def build_amount(profile: CardinalProfile, currency: CurrencyContext) -> pynini.Fst:
@@ -38,14 +39,6 @@ def build_amount(profile: CardinalProfile, currency: CurrencyContext) -> pynini.
     for scale in profile.counted_scales:
         amount |= build_scale_amount(profile, scale)
     return amount.optimize()
-
-
-def money_token(amount: pynini.Fst, code: str, marker: str = "") -> pynini.Fst:
-    return run(
-        pynutil.insert(marker + 'tokens { money { integer_part: "')
-        + amount
-        + pynutil.insert(f'" currency: "{code}" }} }}')
-    )
 
 
 class MoneyFst(GraphFst):
@@ -69,10 +62,15 @@ class MoneyFst(GraphFst):
     def __init__(self, profile: CardinalProfile):
         super().__init__(name="money", kind="classify")
 
+        def money_token(amount, code, marker=""):
+            fields = pynutil.insert('integer_part: "') + amount + pynutil.insert(f'" currency: "{code}"')
+            return run(pynutil.insert(marker) + token(self.add_tokens(fields)))
+
         graphs = []
         for currency in profile.currencies:
             graphs.append(
-                pynutil.delete(currency.phrase + " ") + money_token(build_amount(profile, currency), currency.code)
+                pynutil.delete(currency.phrase + NEMO_SPACE)
+                + money_token(build_amount(profile, currency), currency.code)
             )
 
         self.has_implied_currency = False

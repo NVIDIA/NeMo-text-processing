@@ -37,3 +37,16 @@ bakopa akamega kaima~bakopa 1,000,000
 lipoka obumega bapi~lipoka 2,000,000 XTS
 mina epi halfu~mina epi halfu
 lipoka mina epi halfu~lipoka mina epi halfu
+dolari zide~4 USD
+dolari pideka vo zima~21 USD
+dolari mina epi~20,000 USD
+paundi zifu~5 GBP
+paundi milo vo hanto~1,100 GBP
+yuro mafu~5 EUR
+yuro deka ke mapi~12 EUR
+yeni efu~5 JPY
+yeni bumega bako~3,000,000 JPY
+lipoka dolari ziko~lipoka 3 USD
+dolari mapi~dolari mapi
+yuro kasa~yuro kasa
+yeni~yeni

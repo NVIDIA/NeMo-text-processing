@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,13 +17,16 @@
 
 Values are composed digit by digit inside the FST; there is no runtime arithmetic.
 """
+import string
+
 import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile, Forms, NounContext
 
-DIGIT = pynini.union(*"0123456789").optimize()
-NONZERO = pynini.union(*"123456789").optimize()
+NONZERO_DIGITS = string.digits[1:]
+DIGIT = pynini.union(*string.digits).optimize()
+NONZERO = pynini.union(*NONZERO_DIGITS).optimize()
 
 
 def mapping(forms: Forms) -> pynini.Fst:
@@ -60,7 +64,7 @@ def build_cardinal(profile: CardinalProfile, context: NounContext) -> pynini.Fst
     for place in profile.places:
         if place.power != expected_power:
             raise ValueError("places must be consecutive ascending decimal powers")
-        if any(value not in "123456789" or len(value) != 1 for _, value in place.forms):
+        if any(value not in NONZERO_DIGITS or len(value) != 1 for _, value in place.forms):
             raise ValueError("place coefficients must be single nonzero digits")
         # A present high place either consumes a smaller remainder or emits zeros.
         high = mapping(place.forms) + (

@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,20 +14,16 @@
 # limitations under the License.
 
 import pynini
+from pynini.lib import pynutil
 
+from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import money_cue_word, run, token, word_token
 from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile, invariant_context
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import build_cardinal
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import (
     build_noun_scale_amount,
     build_scale_amount,
 )
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.sentence import (
-    cardinal_token,
-    money_cue_word,
-    run,
-    word_token,
-)
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 
 
 class CardinalFst(GraphFst):
@@ -48,10 +45,13 @@ class CardinalFst(GraphFst):
     def __init__(self, profile: CardinalProfile, ordinary_word: pynini.Fst):
         super().__init__(name="cardinal", kind="classify")
 
+        def cardinal_token(number):
+            return token(self.add_tokens(pynutil.insert('integer: "') + number + pynutil.insert('"')))
+
         graphs = []
         for context in profile.contexts:
             number = build_cardinal(profile, context) | build_noun_scale_amount(profile, context)
-            graphs.append(word_token(pynini.accep(context.noun)) + " " + run(cardinal_token(number)))
+            graphs.append(word_token(pynini.accep(context.noun)) + NEMO_SPACE + run(cardinal_token(number)))
 
         # Listed nouns are counted by their own cardinal above: a profile covers large
         # amounts after them with its places (Luganda abantu emitwalo ebiri) or with
@@ -64,6 +64,6 @@ class CardinalFst(GraphFst):
         for scale in profile.counted_scales:
             if scale.counts_any_word:
                 amount = build_scale_amount(profile, scale, "counting", invariant_context(profile))
-                graphs.append(word_token(any_noun) + " " + run(cardinal_token(amount)))
+                graphs.append(word_token(any_noun) + NEMO_SPACE + run(cardinal_token(amount)))
 
         self.fst = pynini.union(*graphs).optimize()

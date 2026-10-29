@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,13 +27,12 @@ class VerbalizeFinalFst(GraphFst):
     Finite state transducer that verbalizes an entire sentence.
 
     Args:
-        profile: the language profile (sets the largest value)
-        thousands_separator: written separator between digit groups
+        profile: the language profile (sets the largest value and the thousands separator)
     """
 
-    def __init__(self, profile: CardinalProfile, thousands_separator: str = ","):
+    def __init__(self, profile: CardinalProfile):
         super().__init__(name="verbalize_final", kind="verbalize")
-        types = VerbalizeFst(profile, thousands_separator).fst | WordFst().fst
+        types = VerbalizeFst(profile).fst | WordFst().fst
         graph = (
             pynutil.delete("tokens")
             + delete_space

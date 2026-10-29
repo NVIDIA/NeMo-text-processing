@@ -1,4 +1,5 @@
 # Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+# Copyright (c) 2026, Crane Labs. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,6 +41,7 @@ from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import
     integer_domain,
     mapping,
 )
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE
 
 
 def build_count(profile: CardinalProfile, scale: CountedScale) -> Tuple[pynini.Fst, pynini.Fst]:
@@ -58,7 +60,7 @@ def build_count(profile: CardinalProfile, scale: CountedScale) -> Tuple[pynini.F
     teen_units = []
     for form, value in final_units:
         if form[0] in profile.vowels:
-            spoken = [" " + prefix + form for prefix in scale.contracted_teen_joins]
+            spoken = [NEMO_SPACE + prefix + form for prefix in scale.contracted_teen_joins]
         else:
             spoken = [profile.teen_join + form]
         teen_units.extend(pynini.cross(s, value) for s in spoken)
@@ -107,7 +109,7 @@ def build_scale_amount(
         ones.extend(scale.money_only_ones)
     if not ones and not plurals:
         return pynini.Fst()
-    plural = pynini.union(*(pynutil.delete(p + " ") for p in plurals)) if plurals else pynini.Fst()
+    plural = pynini.union(*(pynutil.delete(p + NEMO_SPACE) for p in plurals)) if plurals else pynini.Fst()
     head = plural + count
     if ones:
         head |= pynini.union(*(pynini.cross(one, "01") for one in ones))
