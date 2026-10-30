@@ -17,7 +17,7 @@ import pynini
 from pynini.examples import plurals
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_SIGMA, NEMO_SPACE, GraphFst
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, GraphFst
 from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path, load_labels
 
 
@@ -27,11 +27,8 @@ class MeasureFst(GraphFst):
         e.g. zwei kilogramm -> measure { cardinal { integer: "2" } units: "kg" }
         e.g. minus siebenundsechzig kilogramm -> measure { cardinal { negative: "-" integer: "67" } units: "kg" }
         e.g. eins komma fünf kilometer pro stunde -> measure { decimal { integer_part: "1" fractional_part: "5" } units: "km/h" }
-        e.g. drei viertel ohm -> measure { fraction { 3/4 } units: "ω" }
-        e.g. ein meter fünfzig -> measure { cardinal { integer: "1" } units: "m" morphosyntactic_features: "50" }
-        e.g. sechzehner -> measure { cardinal { integer: "16" } morphosyntactic_features: "er" }
-        e.g. vierzehnfach -> measure { cardinal { integer: "14" } morphosyntactic_features: "fach" }
-
+        e.g. drei viertel ohm -> measure { fraction { numerator: "3" denominator: "4" } units: "ω" }
+        e.g. ein meter fünfzig -> measure { decimal { integer_part: "1" fractional_part: "50" } units: "m" }
 
     Args:
         cardinal: CardinalFst
@@ -50,12 +47,9 @@ class MeasureFst(GraphFst):
         plural_to_singular_exceptions = pynini.string_file(get_abs_path("data/measure/plural_to_singular.tsv"))
         plural_suffixes = load_labels(get_abs_path("data/measure/plural_suffixes.tsv"))
         denominator_markers = pynini.string_file(get_abs_path("data/measure/denominator_markers.tsv"))
-        numeral_noun_suffixes = pynini.string_file(get_abs_path("data/measure/numeral_noun_suffixes.tsv"))
-        adverbial_suffixes = pynini.string_file(get_abs_path("data/measure/adverbial_suffixes.tsv"))
+        scrambled_units = [unit for unit, in load_labels(get_abs_path("data/measure/scrambled_units.tsv"))]
 
         cardinals = pynutil.insert('integer: "') + cardinal.graph_no_exception + pynutil.insert('"')
-        # leaves the first dozen verbalized
-        cardinals_canonical = pynutil.insert('integer: "') + cardinal.graph + pynutil.insert('"')
         cardinals_no_separators = cardinal.graph_no_exception @ pynini.cdrewrite(
             pynutil.delete("."), "", "", NEMO_SIGMA
         )
@@ -84,19 +78,15 @@ class MeasureFst(GraphFst):
             + pynutil.insert('"')
         )
 
+        # Only units with a decimal subdivision take a scrambled tail: "ein Meter fünfzig" is 1,50 m.
+        graph_SI_scrambled = (graph_SI @ pynini.union(*scrambled_units)).optimize()
+        graph_unit_scrambled = pynutil.insert('units: "') + graph_SI_scrambled + pynutil.insert('"')
+
         graph_cardinal = (
             pynutil.insert("cardinal {")
             + pynutil.insert(NEMO_SPACE)
             + cardinal.optional_minus_graph
             + cardinals
-            + pynutil.insert(NEMO_SPACE)
-            + pynutil.insert("}")
-        )
-
-        graph_cardinal_canonical = (
-            pynutil.insert("cardinal {")
-            + pynutil.insert(NEMO_SPACE)
-            + cardinals_canonical
             + pynutil.insert(NEMO_SPACE)
             + pynutil.insert("}")
         )
@@ -110,20 +100,42 @@ class MeasureFst(GraphFst):
             + pynutil.insert("}")
         )
 
-        # Graphs scrambled decimal and SI combination where the SI unit is placed before the fractional part
         scrambled_tail = cardinals_no_separators | pynutil.add_weight(decimal.graph_string_of_digits, 0.01)
-        graph_decimal_scrambled = (
+        scrambled_in_reading_order = (
             cardinal.optional_minus_graph
             + pynutil.insert('integer_part: "')
             + cardinal.graph_no_exception
             + pynutil.insert('"')
             + pynini.accep(NEMO_SPACE)
-            + graph_unit
+            + graph_unit_scrambled
             + pynini.accep(NEMO_SPACE)
             + pynutil.insert('fractional_part: "')
             + scrambled_tail
             + pynutil.insert('"')
         )
+
+        # The unit is read between the numbers, so a single pass has to emit it there and reorder afterwards.
+        integer_chars = pynini.closure(NEMO_DIGIT | pynini.accep("."), 1)
+        digits = pynini.closure(NEMO_DIGIT, 1)
+        negative_field = pynini.accep('negative: "-" ')
+        reorder_unit_last = pynini.union(
+            *[
+                pynutil.insert("decimal { ")
+                + negative_field.ques
+                + pynini.accep('integer_part: "')
+                + integer_chars
+                + pynini.accep('"')
+                + pynutil.delete(f' units: "{unit}"')
+                + pynini.accep(NEMO_SPACE)
+                + pynini.accep('fractional_part: "')
+                + digits
+                + pynini.accep('"')
+                + pynutil.insert(" }")
+                + pynutil.insert(f' units: "{unit}"')
+                for unit in scrambled_units
+            ]
+        ).optimize()
+        graph_decimal_scrambled = (scrambled_in_reading_order @ reorder_unit_last).optimize()
 
         graph_fraction = (
             pynutil.insert("fraction {")
@@ -134,34 +146,8 @@ class MeasureFst(GraphFst):
             + pynutil.insert("}")
         )
 
-        # Handles numeral nouns (e.g. fünfer -> fiver) as part of the MEASURE class
-        graph_numeral_nouns = (
-            graph_cardinal_canonical
-            + pynutil.insert(NEMO_SPACE)
-            + pynutil.insert("morphosyntactic_features: ")
-            + pynutil.insert('"')
-            + numeral_noun_suffixes
-            + pynutil.insert('"')
-        )
-
-        # Handles numeral adverbials created with affixed "-mal" or "-fach"
-        graph_adverbials = (
-            (graph_cardinal_canonical | graph_decimal)
-            + (pynutil.delete("-") | pynutil.delete(NEMO_SPACE)).ques
-            + pynutil.insert(NEMO_SPACE)
-            + pynutil.insert("morphosyntactic_features: ")
-            + pynutil.insert('"')
-            + adverbial_suffixes
-            + pynutil.insert('"')
-        )
-
         graphs_combined = graph_cardinal | pynutil.add_weight(graph_decimal, 0.01) | graph_fraction
-        final_graph = (
-            (graphs_combined + pynini.accep(NEMO_SPACE) + graph_unit)
-            | graph_decimal_scrambled
-            | graph_numeral_nouns
-            | graph_adverbials
-        )
+        final_graph = (graphs_combined + pynini.accep(NEMO_SPACE) + graph_unit) | graph_decimal_scrambled
 
         removes_empty_ints = pynutil.delete('cardinal { integer: "" } ')
         remove_empty_ints = pynini.cdrewrite(removes_empty_ints, "", "", NEMO_SIGMA)

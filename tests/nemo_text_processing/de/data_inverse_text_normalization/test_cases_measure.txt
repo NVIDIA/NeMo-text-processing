@@ -26,14 +26,6 @@ null fuß~0 ft
 ein halb fuß~1/2 ft
 ein ein halb fuß~1 1/2 ft
 minus ein ein halb fuß~-1 1/2 ft
-sechzehner~16er
-fünfer~fünfer
-einfach~einfach
-dreifach~dreifach
-dreizehnfach~13-fach
-zweimal~zweimal
-vierzehnmal~14-mal
-eineinhalbmal~1,5-mal
 sieben bytes~7 B
 fünf kilos~5 kg
 hundert zwanzig m m h g~120 mmHg
@@ -45,5 +37,12 @@ zwei meter zehn~2,10 m
 ein kilometer zwei hundert~1,200 km
 zwei flüssigunzen~2 fl. oz.
 fünf volumenprozent~5 % vol.
-zwei zoll~2 "
-zwei zoll pro stunde~2 "/h
+zwei zoll~2 ″
+zwei zoll pro stunde~2 ″/h
+ein drittel liter~1/3 l
+minus ein meter fünfzig~-1,50 m
+zehn p p m~10 ppm
+zwei t b~2 TB
+zwanzig seiten pro minute~20 Seiten/min
+fünf prozent~5 %
+zwei stunden dreißig~2 h 30
