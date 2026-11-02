@@ -46,6 +46,7 @@ class WhiteListFst(GraphFst):
             return graph
 
         graph = _get_whitelist_graph(input_case, get_abs_path("data/whitelist/abbreviations.tsv"))
+        graph |= _get_whitelist_graph(input_case, get_abs_path("data/whitelist/symbol.tsv"))
 
         if deterministic:
             graph |= graph.optimize()
