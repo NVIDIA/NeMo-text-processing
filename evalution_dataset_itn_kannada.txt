@@ -1,0 +1,1400 @@
+CARDINAL	೪ ಷಟ್ಕಗಳು ೧೪ ಚೌಕಗಳು	ನಾಲ್ಕು ಷಟ್ಕಗಳು ಹದಿನಾಲ್ಕು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಓಟ ಗಳಿಸಿದ	ಆರು ಓಟ ಗಳಿಸಿದ
+<eos>	<eos>
+CARDINAL	೩ ಗೋಲು ಹೊಡೆದ	ಮೂರು ಗೋಲು ಹೊಡೆದ
+<eos>	<eos>
+CARDINAL	೯ ಷಟ್ಕಗಳು	ಒಂಬತ್ತು ಷಟ್ಕಗಳು
+<eos>	<eos>
+CARDINAL	೫ ಚೌಕಗಳು	ಐದು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	೨ ಷಟ್ಕಗಳು ೧೨ ಓಟ	ಎರಡು ಷಟ್ಕಗಳು ಹನ್ನೆರಡು ಓಟ
+<eos>	<eos>
+CARDINAL	೯ ಅಂಕಗಳು	ಒಂಬತ್ತು ಅಂಕಗಳು
+<eos>	<eos>
+CARDINAL	೪ ಮೃತ ೧೮ ಗಾಯಗೊಂಡ	ನಾಲ್ಕು ಮೃತ ಹದಿನೆಂಟು ಗಾಯಗೊಂಡ
+<eos>	<eos>
+CARDINAL	೫ ಗೋಲು ಹೊಡೆದ	ಐದು ಗೋಲು ಹೊಡೆದ
+<eos>	<eos>
+CARDINAL	೩ ಬ್ಯಾಟ್ಸ್ಮನ್ ೧೨ ಆಟಗಾರ	ಮೂರು ಬ್ಯಾಟ್ಸ್ಮನ್ ಹನ್ನೆರಡು ಆಟಗಾರ
+<eos>	<eos>
+CARDINAL	೧ ಓವರ್ ೧೩ ಓಟ	ಒಂದು ಓವರ್ ಹದಿಮೂರು ಓಟ
+<eos>	<eos>
+CARDINAL	೩ ಓವರ್	ಮೂರು ಓವರ್
+<eos>	<eos>
+CARDINAL	೫ ಗೋಲು	ಐದು ಗೋಲು
+<eos>	<eos>
+CARDINAL	೩ ಸೇಬು	ಮೂರು ಸೇಬು
+<eos>	<eos>
+CARDINAL	೭ ಬಾಳೆಹಣ್ಣು	ಏಳು ಬಾಳೆಹಣ್ಣು
+<eos>	<eos>
+CARDINAL	೩ ಸೋಲು ೧೨ ಗೆಲುವು	ಮೂರು ಸೋಲು ಹನ್ನೆರಡು ಗೆಲುವು
+<eos>	<eos>
+CARDINAL	೫ ಸೋಲು ೧ ಡ್ರಾ ೧೭ ಗೆಲುವು	ಐದು ಸೋಲು ಒಂದು ಡ್ರಾ ಹದಿನೇಳು ಗೆಲುವು
+<eos>	<eos>
+CARDINAL	೮ ಪಂದ್ಯ ಡ್ರಾ	ಎಂಟು ಪಂದ್ಯ ಡ್ರಾ
+<eos>	<eos>
+CARDINAL	೪ ಚೌಕಗಳು	ನಾಲ್ಕು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	೮ ಷಟ್ಕಗಳು ೨ ಔಟ್	ಎಂಟು ಷಟ್ಕಗಳು ಎರಡು ಔಟ್
+<eos>	<eos>
+CARDINAL	೬ ಆಟಗಾರ ಔಟ್	ಆರು ಆಟಗಾರ ಔಟ್
+<eos>	<eos>
+CARDINAL	೪ ಓಟ ೩ ಚೌಕಗಳು	ನಾಲ್ಕು ಓಟ ಮೂರು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	ಒನ್‌ಪ್ಲಸ್ ೮ ಪ್ರೊ	ಒನ್‌ಪ್ಲಸ್ ಎಂಟು ಪ್ರೊ
+<eos>	<eos>
+CARDINAL	೫ ಚಾರ್ಜರ್	ಐದು ಚಾರ್ಜರ್
+<eos>	<eos>
+CARDINAL	೪ ಓವರ್‌ನಲ್ಲಿ ೧೭ ಓಟ	ನಾಲ್ಕು ಓವರ್‌ನಲ್ಲಿ ಹದಿನೇಳು ಓಟ
+<eos>	<eos>
+CARDINAL	೫ ಚಾಕೊಲೇಟ್‌ಗಳು ೯ ಟಾಫಿಗಳು	ಐದು ಚಾಕೊಲೇಟ್‌ಗಳು ಒಂಬತ್ತು ಟಾಫಿಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಬ್ಯಾಟ್ಸ್‌ಮನ್ ೨ ಬೌಲರ್	ಆರು ಬ್ಯಾಟ್ಸ್‌ಮನ್ ಎರಡು ಬೌಲರ್
+<eos>	<eos>
+CARDINAL	೧ ವಿಕೆಟ್ ಕೀಪರ್	ಒಂದು ವಿಕೆಟ್ ಕೀಪರ್
+<eos>	<eos>
+CARDINAL	೮ ಕ್ಯಾಚ್ ಔಟ್	ಎಂಟು ಕ್ಯಾಚ್ ಔಟ್
+<eos>	<eos>
+CARDINAL	೫ ವಿಕೆಟ್‌ಗೆ ೧೦ ಓಟ	ಐದು ವಿಕೆಟ್‌ಗೆ ಹತ್ತು ಓಟ
+<eos>	<eos>
+CARDINAL	೭ ಗೆಲುವು ೨ ಡ್ರಾ	ಏಳು ಗೆಲುವು ಎರಡು ಡ್ರಾ
+<eos>	<eos>
+CARDINAL	೨ ಚೌಕಗಳು	ಎರಡು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಓಟ ೫ ವಿಕೆಟ್	ಆರು ಓಟ ಐದು ವಿಕೆಟ್
+<eos>	<eos>
+CARDINAL	೭ ಚೆಂಡು ೧೧ ಓಟ	ಏಳು ಚೆಂಡು ಹನ್ನೊಂದು ಓಟ
+<eos>	<eos>
+CARDINAL	೬ ಚಾಕೊಲೇಟ್ ೪ ಟಾಫಿ	ಆರು ಚಾಕೊಲೇಟ್ ನಾಲ್ಕು ಟಾಫಿ
+<eos>	<eos>
+CARDINAL	೮ ಕಂಚು ೨ ಚಿನ್ನ	ಎಂಟು ಕಂಚು ಎರಡು ಚಿನ್ನ
+<eos>	<eos>
+CARDINAL	೧ ಚಿನ್ನದ ಪದಕ 	ಒಂದು ಚಿನ್ನದ ಪದಕ
+<eos>	<eos>
+CARDINAL	೩ ಓಟ	ಮೂರು ಓಟ
+<eos>	<eos>
+CARDINAL	೫ ಓವರ್‌	ಐದು ಓವರ್‌
+<eos>	<eos>
+CARDINAL	೬ ಚೆಂಡು	ಆರು ಚೆಂಡು
+<eos>	<eos>
+CARDINAL	೩ ಇನ್ನಿಂಗ್ಸ್	ಮೂರು ಇನ್ನಿಂಗ್ಸ್
+<eos>	<eos>
+CARDINAL	ಶ್ಲೋಕ ೭ ಪಾಠ ೧೫	ಶ್ಲೋಕ ಏಳು ಪಾಠ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ಸಂಖ್ಯೆ ೨ ಪದ್ಯ ೪	ಪಾಠ ಸಂಖ್ಯೆ ಎರಡು ಪದ್ಯ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	ಪುಟ ಸಂಖ್ಯೆ ೮ ಪ್ಯಾರಾಗ್ರಾಫ್ ೬	ಪುಟ ಸಂಖ್ಯೆ ಎಂಟು ಪ್ಯಾರಾಗ್ರಾಫ್ ಆರು
+<eos>	<eos>
+CARDINAL	೨ ಚೆಂಡು ೪ ಓಟ	ಎರಡು ಚೆಂಡು ನಾಲ್ಕು ಓಟ
+<eos>	<eos>
+CARDINAL	೬ ವಿಕೆಟ್	ಆರು ವಿಕೆಟ್
+<eos>	<eos>
+CARDINAL	೨ ಅಂಕಗಳು ೫ ಗೋಲು	ಎರಡು ಅಂಕಗಳು ಐದು ಗೋಲು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೧೦ ಶ್ಲೋಕ ೨	ಪಾಠ ಹತ್ತು ಶ್ಲೋಕ ಎರಡು
+<eos>	<eos>
+CARDINAL	ಅಧ್ಯಾಯ ೫ ದೃಶ್ಯ ೬	ಅಧ್ಯಾಯ ಐದು ದೃಶ್ಯ ಆರು
+<eos>	<eos>
+CARDINAL	೬ ಪ್ರಶ್ನೆ ೫ ತಪ್ಪು	ಆರು ಪ್ರಶ್ನೆ ಐದು ತಪ್ಪು
+<eos>	<eos>
+CARDINAL	೩ ಗುಲಾಬಿ ೪ ಮಲ್ಲಿಗೆ ೨ ಚೆಂಡುಹೂವು	ಮೂರು ಗುಲಾಬಿ ನಾಲ್ಕು ಮಲ್ಲಿಗೆ ಎರಡು ಚೆಂಡುಹೂವು
+<eos>	<eos>
+CARDINAL	೨ ಉಚಿತ ಹೊಡೆತ ೧ ಅಮಾನ್ಯ ಎಸೆತ	ಎರಡು ಉಚಿತ ಹೊಡೆತ ಒಂದು ಅಮಾನ್ಯ ಎಸೆತ
+<eos>	<eos>
+CARDINAL	೩ ದೂರವಾಣಿ ೧ ಚಾರ್ಜರ್	ಮೂರು ದೂರವಾಣಿ ಒಂದು ಚಾರ್ಜರ್
+<eos>	<eos>
+CARDINAL	೬ ಡ್ರಾ ೭ ಸೋಲು ೯ ಗೆಲುವು	ಆರು ಡ್ರಾ ಏಳು ಸೋಲು ಒಂಬತ್ತು ಗೆಲುವು
+<eos>	<eos>
+CARDINAL	೪ ಕಾರು ೨ ಬೈಕ್	ನಾಲ್ಕು ಕಾರು ಎರಡು ಬೈಕ್
+<eos>	<eos>
+CARDINAL	೧ ಬುಟ್ಟಿ ೮ ಹಣ್ಣು	ಒಂದು ಬುಟ್ಟಿ ಎಂಟು ಹಣ್ಣು
+<eos>	<eos>
+CARDINAL	೩ ಸಾಲು ೮ ಜನ	ಮೂರು ಸಾಲು ಎಂಟು ಜನ
+<eos>	<eos>
+CARDINAL	೧೦ ಪೆನ್ಸಿಲ್ ೨ ಪೆನ್	ಹತ್ತು ಪೆನ್ಸಿಲ್ ಎರಡು ಪೆನ್
+<eos>	<eos>
+CARDINAL	೫ ಬಿಲ್ಡಿಂಗ್	ಐದು ಬಿಲ್ಡಿಂಗ್
+<eos>	<eos>
+CARDINAL	೬ ಮಕ್ಕಳು	ಆರು ಮಕ್ಕಳು
+<eos>	<eos>
+CARDINAL	ಪ್ಯಾರಾಗ್ರಾಫ್ ೧೩ ಸಾಲು ೪	ಪ್ಯಾರಾಗ್ರಾಫ್ ಹದಿಮೂರು ಸಾಲು ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೩ ಚಿನ್ನ ೪ ಬೆಳ್ಳಿ	ಮೂರು ಚಿನ್ನ ನಾಲ್ಕು ಬೆಳ್ಳಿ
+<eos>	<eos>
+CARDINAL	೫ ಗುಂಡಿಗಳು	ಐದು ಗುಂಡಿಗಳು
+<eos>	<eos>
+CARDINAL	೮ ಬಸ್ತಿ	ಎಂಟು ಬಸ್ತಿ
+<eos>	<eos>
+CARDINAL	೩ ಲ್ಯಾಪ್‌ಟಾಪ್	ಮೂರು ಲ್ಯಾಪ್‌ಟಾಪ್
+<eos>	<eos>
+CARDINAL	೧ ಷಟ್ಕಗಳು ೨ ಚೌಕಗಳು	ಒಂದು ಷಟ್ಕಗಳು ಎರಡು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	೫ ಬಸ್	ಐದು ಬಸ್
+<eos>	<eos>
+CARDINAL	೨ ಟ್ರಕ್	ಎರಡು ಟ್ರಕ್
+<eos>	<eos>
+CARDINAL	೩ ಗಾಡಿ	ಮೂರು ಗಾಡಿ
+<eos>	<eos>
+CARDINAL	೬ ಶಾರ್ಕ್ ೩೦ ಹೂಡಿಕೆದಾರರು	ಆರು ಶಾರ್ಕ್ ಮೂವತ್ತು ಹೂಡಿಕೆದಾರರು
+<eos>	<eos>
+CARDINAL	೨ ಸಚಿವರು ೫೦ ಸಮಸ್ಯೆಗಳು	ಎರಡು ಸಚಿವರು ಐವತ್ತು ಸಮಸ್ಯೆಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಬೌಲರ್	ಆರು ಬೌಲರ್
+<eos>	<eos>
+CARDINAL	ಶ್ಲೋಕ ೩ ಪಾಠ ೧	ಶ್ಲೋಕ ಮೂರು ಪಾಠ ಒಂದು
+<eos>	<eos>
+CARDINAL	ಸಾಲು ೬ ಪ್ಯಾರಾಗ್ರಾಫ್ ೯	ಸಾಲು ಆರು ಪ್ಯಾರಾಗ್ರಾಫ್ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	ಪುಸ್ತಕ ೧ ಪಾಠ ೮	ಪುಸ್ತಕ ಒಂದು ಪಾಠ ಎಂಟು
+<eos>	<eos>
+CARDINAL	ಸಣ್ಣ ಕಥೆ ಸಂಖ್ಯೆ ೨ ಸಾಲು ೬	ಸಣ್ಣ ಕಥೆ ಸಂಖ್ಯೆ ಎರಡು ಸಾಲು ಆರು
+<eos>	<eos>
+CARDINAL	ಖೈದಿ ಸಂಖ್ಯೆ ೪	ಖೈದಿ ಸಂಖ್ಯೆ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	ಪುಟ ಸಂಖ್ಯೆ ೧೦ ಸಾಲು ೨	ಪುಟ ಸಂಖ್ಯೆ ಹತ್ತು ಸಾಲು ಎರಡು
+<eos>	<eos>
+CARDINAL	೪ ಡಾಕ್ಟರ್	ನಾಲ್ಕು ಡಾಕ್ಟರ್
+<eos>	<eos>
+CARDINAL	೨ ಚೆಂಡು ೩ ಓಟ	ಎರಡು ಚೆಂಡು ಮೂರು ಓಟ
+<eos>	<eos>
+CARDINAL	ಅಂಕಗಳು ೨ ಗೋಲು ೪	ಅಂಕಗಳು ಎರಡು ಗೋಲು ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ಸಂಖ್ಯೆ ೪	ಪಾಠ ಸಂಖ್ಯೆ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೮ ಓವರ್	ಎಂಟು ಓವರ್
+<eos>	<eos>
+CARDINAL	೭ ಓಟ ೨ ಓವರ್	ಏಳು ಓಟ ಎರಡು ಓವರ್
+<eos>	<eos>
+CARDINAL	೪ ಚೆಂಡು ೮ ಓಟ	ನಾಲ್ಕು ಚೆಂಡು ಎಂಟು ಓಟ
+<eos>	<eos>
+CARDINAL	೩ ಬಾಟಲಿ ೫ ಗ್ಲಾಸ್	ಮೂರು ಬಾಟಲಿ ಐದು ಗ್ಲಾಸ್
+<eos>	<eos>
+CARDINAL	೬ ಓಟ	ಆರು ಓಟ
+<eos>	<eos>
+CARDINAL	೬ ಗೋಲು	ಆರು ಗೋಲು
+<eos>	<eos>
+CARDINAL	೧೦ ಅಂಕಗಳು ೩ ಗೋಲು	ಹತ್ತು ಅಂಕಗಳು ಮೂರು ಗೋಲು
+<eos>	<eos>
+CARDINAL	೧೪ ಷಟ್ಕಗಳು ೩ ಚೌಕಗಳು	ಹದಿನಾಲ್ಕು ಷಟ್ಕಗಳು ಮೂರು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಸೇಬು ೩ ಬಾಳೆಹಣ್ಣು	ಆರು ಸೇಬು ಮೂರು ಬಾಳೆಹಣ್ಣು
+<eos>	<eos>
+CARDINAL	೩ ಪಂದ್ಯ ಡ್ರಾ	ಮೂರು ಪಂದ್ಯ ಡ್ರಾ
+<eos>	<eos>
+CARDINAL	೬ ಪಂದ್ಯ ಸೋತರು	ಆರು ಪಂದ್ಯ ಸೋತರು
+<eos>	<eos>
+CARDINAL	೯ ಪಂದ್ಯ ಗೆದ್ದರು	ಒಂಬತ್ತು ಪಂದ್ಯ ಗೆದ್ದರು
+<eos>	<eos>
+CARDINAL	ಶ್ಲೋಕ ೬ ಪಾಠ ೯	ಶ್ಲೋಕ ಆರು ಪಾಠ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	ಪದ ೪ ಸಾಲು ಸಂಖ್ಯೆ ೩	ಪದ ನಾಲ್ಕು ಸಾಲು ಸಂಖ್ಯೆ ಮೂರು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೧೦ ಪುಟ ೪	ಪಾಠ ಹತ್ತು ಪುಟ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೫ ಕಾರು ೨ ಮೋಟಾರ್‌ಸೈಕಲ್	ಐದು ಕಾರು ಎರಡು ಮೋಟಾರ್‌ಸೈಕಲ್
+<eos>	<eos>
+CARDINAL	೭ ಅಂಕಗಳು ೨ ಗೋಲು	ಏಳು ಅಂಕಗಳು ಎರಡು ಗೋಲು
+<eos>	<eos>
+CARDINAL	೪ ರಾತ್ರಿ ೩ ದಿನ	ನಾಲ್ಕು ರಾತ್ರಿ ಮೂರು ದಿನ
+<eos>	<eos>
+CARDINAL	೧ ಏಸ್ ೧ ರಾಣಿ ೫ ಕಾರ್ಡ್‌ಗಳು	ಒಂದು ಏಸ್ ಒಂದು ರಾಣಿ ಐದು ಕಾರ್ಡ್‌ಗಳು
+<eos>	<eos>
+CARDINAL	ಸಾಲು ೨ ಪ್ಯಾರಾಗ್ರಾಫ್ ೧	ಸಾಲು ಎರಡು ಪ್ಯಾರಾಗ್ರಾಫ್ ಒಂದು
+<eos>	<eos>
+CARDINAL	೫ ಜೋಡಿ ಬೂಟುಗಳು	ಐದು ಜೋಡಿ ಬೂಟುಗಳು
+<eos>	<eos>
+CARDINAL	೧೦ ಓವರ್‌ನಲ್ಲಿ ೯ ಓಟ	ಹತ್ತು ಓವರ್‌ನಲ್ಲಿ ಒಂಬತ್ತು ಓಟ
+<eos>	<eos>
+CARDINAL	೮ ಓಟ	ಎಂಟು ಓಟ
+<eos>	<eos>
+CARDINAL	೪ ಷಟ್ಕಗಳು ೧ ಚೌಕ	ನಾಲ್ಕು ಷಟ್ಕಗಳು ಒಂದು ಚೌಕ
+<eos>	<eos>
+CARDINAL	ಪುಟ ಸಂಖ್ಯೆ ೯ ರ ಸಾಲು ೪	ಪುಟ ಸಂಖ್ಯೆ ಒಂಬತ್ತು ರ ಸಾಲು ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	ಪಾರಾ ೧೦ ರ ರುಕು ೩	ಪಾರಾ ಹತ್ತು ರ ರುಕು ಮೂರು
+<eos>	<eos>
+CARDINAL	ಆಯತ್ ೪ ರುಕು ೬	ಆಯತ್ ನಾಲ್ಕು ರುಕು ಆರು
+<eos>	<eos>
+CARDINAL	ಪಾರಾ ೯ ರುಕು ೬	ಪಾರಾ ಒಂಬತ್ತು ರುಕು ಆರು
+<eos>	<eos>
+CARDINAL	೮ ಪ್ಯಾಂಟ್‌ ೯ ಅಂಗಿ	ಎಂಟು ಪ್ಯಾಂಟ್‌ ಒಂಬತ್ತು ಅಂಗಿ
+<eos>	<eos>
+CARDINAL	೪ ರೊಟ್ಟಿ ೨ ಪಲ್ಯ	ನಾಲ್ಕು ರೊಟ್ಟಿ ಎರಡು ಪಲ್ಯ
+<eos>	<eos>
+CARDINAL	೩ ಪಂದ್ಯ ೪ ಗೆಲುವು	ಮೂರು ಪಂದ್ಯ ನಾಲ್ಕು ಗೆಲುವು
+<eos>	<eos>
+CARDINAL	೪ ಸೋಲು ೩ ಗೆಲುವು ೧ ಡ್ರಾ	ನಾಲ್ಕು ಸೋಲು ಮೂರು ಗೆಲುವು ಒಂದು ಡ್ರಾ
+<eos>	<eos>
+CARDINAL	ಚಿತ್ರ ೧೯ ಪಾಠ ೨	ಚಿತ್ರ ಹತ್ತೊಂಬತ್ತು ಪಾಠ ಎರಡು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೧ ಪುಟ ೧೨೨	ಪಾಠ ಒಂದು ಪುಟ ನೂರ ಇಪ್ಪತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೩ ಸಾಲು ೬	ಪಾಠ ಮೂರು ಸಾಲು ಆರು
+<eos>	<eos>
+CARDINAL	ಶ್ಲೋಕ ೧೦ ಪುಟ ೩	ಶ್ಲೋಕ ಹತ್ತು ಪುಟ ಮೂರು
+<eos>	<eos>
+CARDINAL	೬ ಅಂಕಗಳು ೩ ಗೋಲು	ಆರು ಅಂಕಗಳು ಮೂರು ಗೋಲು
+<eos>	<eos>
+CARDINAL	೨ ಟೆಸ್ಟ್ ಪಂದ್ಯ ೬ ಒನ್ ಡೇ	ಎರಡು ಟೆಸ್ಟ್ ಪಂದ್ಯ ಆರು ಒನ್ ಡೇ
+<eos>	<eos>
+CARDINAL	೨ ಓವರ್‌ನಲ್ಲಿ ೭ ಓಟ	ಎರಡು ಓವರ್‌ನಲ್ಲಿ ಏಳು ಓಟ
+<eos>	<eos>
+CARDINAL	೮ ಓವರ್‌ನಲ್ಲಿ ೪೫ ಓಟ	ಎಂಟು ಓವರ್‌ನಲ್ಲಿ ನಲವತ್ತೈದು ಓಟ
+<eos>	<eos>
+CARDINAL	೯ ಓವರ್‌ನಲ್ಲಿ ೬೦ ಓಟ	ಒಂಬತ್ತು ಓವರ್‌ನಲ್ಲಿ ಅರವತ್ತು ಓಟ
+<eos>	<eos>
+CARDINAL	೫ ಪಂದ್ಯ ೪ ಗೆಲುವು	ಐದು ಪಂದ್ಯ ನಾಲ್ಕು ಗೆಲುವು
+<eos>	<eos>
+CARDINAL	೨ ಗೆಲುವು ೪ ಸೋಲು ೫ ಡ್ರಾ	ಎರಡು ಗೆಲುವು ನಾಲ್ಕು ಸೋಲು ಐದು ಡ್ರಾ
+<eos>	<eos>
+CARDINAL	ಶ್ಲೋಕ ೯ ಪುಟ ೭	ಶ್ಲೋಕ ಒಂಬತ್ತು ಪುಟ ಏಳು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೨ ಪುಟ ೬೬	ಪಾಠ ಎರಡು ಪುಟ ಅರವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	ರೇಖಾಚಿತ್ರ ೨ ಪುಟ ಸಂಖ್ಯೆ ೧೩	ರೇಖಾಚಿತ್ರ ಎರಡು ಪುಟ ಸಂಖ್ಯೆ ಹದಿಮೂರು
+<eos>	<eos>
+CARDINAL	ಚಿತ್ರ ಸಂಖ್ಯೆ ೮ ಪಾಠ ೪	ಚಿತ್ರ ಸಂಖ್ಯೆ ಎಂಟು ಪಾಠ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	ಪುಟ ಸಂಖ್ಯೆ ೧೦ ಪಾಠ ೩	ಪುಟ ಸಂಖ್ಯೆ ಹತ್ತು ಪಾಠ ಮೂರು
+<eos>	<eos>
+CARDINAL	ರುಕು ೩ ಆಯತ್ ೮	ರುಕು ಮೂರು ಆಯತ್ ಎಂಟು
+<eos>	<eos>
+CARDINAL	ರುಕು ೪ ಆಯತ್ ೬ ರ ಸಾಲು ೩೩	ರುಕು ನಾಲ್ಕು ಆಯತ್ ಆರು ರ ಸಾಲು ಮೂವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	ಪಾರಾ ೨ ರುಕು ೭ ರ ಸಾಲು ೧೫	ಪಾರಾ ಎರಡು ರುಕು ಏಳು ರ ಸಾಲು ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೩೦ ಪಾರೆ ರ ಸಾಲು ೮	ಮೂವತ್ತು ಪಾರೆ ರ ಸಾಲು ಎಂಟು
+<eos>	<eos>
+CARDINAL	೪ ಷಟ್ಕಗಳು ೧೨ ಚೌಕಗಳು	ನಾಲ್ಕು ಷಟ್ಕಗಳು ಹನ್ನೆರಡು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	5 ಅಂಕಗಳು 7 ಗೋಲು	ಐದು ಅಂಕಗಳು ಏಳು ಗೋಲು
+<eos>	<eos>
+CARDINAL	ಆವೃತ್ತಿ ೨ ಪೀಳಿಗೆ ೪	ಆವೃತ್ತಿ ಎರಡು ಪೀಳಿಗೆ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೮ ಇಟ್ಟಿಗೆ ೩೨ ಕಲ್ಲು	ಎಂಟು ಇಟ್ಟಿಗೆ ಮೂವತ್ತೆರಡು ಕಲ್ಲು
+<eos>	<eos>
+CARDINAL	೯ ಓವರ್‌ನಲ್ಲಿ ೧೫ ಓಟ	ಒಂಬತ್ತು ಓವರ್‌ನಲ್ಲಿ ಹದಿನೈದು ಓಟ
+<eos>	<eos>
+CARDINAL	೪ ವಿಕೆಟ್ ೧೧೩ ಓಟ	ನಾಲ್ಕು ವಿಕೆಟ್ ನೂರ ಹದಿಮೂರು ಓಟ
+<eos>	<eos>
+CARDINAL	೭ ವಿಕೆಟ್ ೨೧೧ ಓಟ	ಏಳು ವಿಕೆಟ್ ಇನ್ನೂರ ಹನ್ನೊಂದು ಓಟ
+<eos>	<eos>
+CARDINAL	೪ ಷಟ್ಕಗಳು ೫ ಚೌಕಗಳು ೪೪ ಓಟ	ನಾಲ್ಕು ಷಟ್ಕಗಳು ಐದು ಚೌಕಗಳು ನಲವತ್ತನಾಲ್ಕು ಓಟ
+<eos>	<eos>
+CARDINAL	ರುಕು ೮ ಸಾಲು ೧೦	ರುಕು ಎಂಟು ಸಾಲು ಹತ್ತು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೯ ಪಂಕ್ತಿ ೧೩	ಪಾಠ ಒಂಬತ್ತು ಪಂಕ್ತಿ ಹದಿಮೂರು
+<eos>	<eos>
+CARDINAL	ಭಾಗ ೧೦ ಪಂಕ್ತಿ ೬ ಶ್ಲೋಕ ೨	ಭಾಗ ಹತ್ತು ಪಂಕ್ತಿ ಆರು ಶ್ಲೋಕ ಎರಡು
+<eos>	<eos>
+CARDINAL	ಭಾಗ ೧೨ ಶ್ಲೋಕ ೩ ಪಂಕ್ತಿ ೧೭	ಭಾಗ ಹನ್ನೆರಡು ಶ್ಲೋಕ ಮೂರು ಪಂಕ್ತಿ ಹದಿನೇಳು
+<eos>	<eos>
+CARDINAL	೭ ಓವರ್	ಏಳು ಓವರ್
+<eos>	<eos>
+CARDINAL	೬ ಚೌಕಗಳು	ಆರು ಚೌಕಗಳು 
+<eos>	<eos>
+CARDINAL	೩ ಒನ್ ಡೇ ೫ ಟೆಸ್ಟ್ ಪಂದ್ಯ	ಮೂರು ಒನ್ ಡೇ ಐದು ಟೆಸ್ಟ್ ಪಂದ್ಯ
+<eos>	<eos>
+CARDINAL	೭ ಆಟಗಾರ ೨ ಗಾಯಾಳು	ಏಳು ಆಟಗಾರ ಎರಡು ಗಾಯಾಳು
+<eos>	<eos>
+CARDINAL	ಆವೃತ್ತಿ ೩ ಪೀಳಿಗೆ ೧೦	ಆವೃತ್ತಿ ಮೂರು ಪೀಳಿಗೆ ಹತ್ತು
+<eos>	<eos>
+CARDINAL	ರುಕು ೧೪ ಪಾರಾ ೮	ರುಕು ಹದಿನಾಲ್ಕು ಪಾರಾ ಎಂಟು
+<eos>	<eos>
+CARDINAL	ಶ್ಲೋಕ ೮ ಪಾಠ ೬	ಶ್ಲೋಕ ಎಂಟು ಪಾಠ ಆರು
+<eos>	<eos>
+CARDINAL	ಉಪನ್ಯಾಸ ೩ ವರ್ಗ ೮	ಉಪನ್ಯಾಸ ಮೂರು ವರ್ಗ ಎಂಟು
+<eos>	<eos>
+CARDINAL	ವರ್ಗ ೧೦ ವಿಭಾಗ ೨	ವರ್ಗ ಹತ್ತು ವಿಭಾಗ ಎರಡು
+<eos>	<eos>
+CARDINAL	೩ ಡ್ರಾ ೨ ಸೋಲು	ಮೂರು ಡ್ರಾ ಎರಡು ಸೋಲು
+<eos>	<eos>
+CARDINAL	ಶ್ಲೋಕ ೩ ಪಾಠ ೧೧	ಶ್ಲೋಕ ಮೂರು ಪಾಠ ಹನ್ನೊಂದು
+<eos>	<eos>
+CARDINAL	ಸಾಲು ೬ ಪಾಠ ೧೦	ಸಾಲು ಆರು ಪಾಠ ಹತ್ತು
+<eos>	<eos>
+CARDINAL	ರುಕು ೨ ಪಾರಾ ೧೫	ರುಕು ಎರಡು ಪಾರಾ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೪ ಷಟ್ಕಗಳು ೫ ಚೆಂಡು	ನಾಲ್ಕು ಷಟ್ಕಗಳು ಐದು ಚೆಂಡು
+<eos>	<eos>
+CARDINAL	೨ ಚೆಂಡು ೧ ಓಟ	ಎರಡು ಚೆಂಡು ಒಂದು ಓಟ
+<eos>	<eos>
+CARDINAL	ಸಾಲು ೮ ಚಾಪ್ಟರ್ ೧೯	ಸಾಲು ಎಂಟು ಚಾಪ್ಟರ್ ಹತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	ಪುಟ ೧೦ ಪ್ಯಾರಾಗ್ರಾಫ್ ೨	ಪುಟ ಹತ್ತು ಪ್ಯಾರಾಗ್ರಾಫ್ ಎರಡು
+<eos>	<eos>
+CARDINAL	೯ ಓವರ್‌ನಲ್ಲಿ ೧೭ ಓಟ	ಒಂಬತ್ತು ಓವರ್‌ನಲ್ಲಿ ಹದಿನೇಳು ಓಟ
+<eos>	<eos>
+CARDINAL	೪ ಚೆಂಡಿನಲ್ಲಿ ೬ ಓಟ	ನಾಲ್ಕು ಚೆಂಡಿನಲ್ಲಿ ಆರು ಓಟ
+<eos>	<eos>
+CARDINAL	೧೭ ಚೆಂಡಿನಲ್ಲಿ ೧೦ ಓಟ	ಹದಿನೇಳು ಚೆಂಡಿನಲ್ಲಿ ಹತ್ತು ಓಟ
+<eos>	<eos>
+CARDINAL	೫ ಓವರ್ ೬೬ ಓಟ	ಐದು ಓವರ್ ಅರವತ್ತಾರು ಓಟ
+<eos>	<eos>
+CARDINAL	೮ ಅಂಕಗಳು ೯ ಗೋಲು	ಎಂಟು ಅಂಕಗಳು ಒಂಬತ್ತು ಗೋಲು
+<eos>	<eos>
+CARDINAL	೫ ಸೀಬೆಹಣ್ಣು	ಐದು ಸೀಬೆಹಣ್ಣು
+<eos>	<eos>
+CARDINAL	೬ ರುಕು ೭ ಪಾರಾ	ಆರು ರುಕು ಏಳು ಪಾರಾ
+<eos>	<eos>
+CARDINAL	ಶ್ಲೋಕ ೮ ಪದ ೯	ಶ್ಲೋಕ ಎಂಟು ಪದ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೭ ಓವರ್‌ನಲ್ಲಿ ೨೧ ಓಟ	ಏಳು ಓವರ್‌ನಲ್ಲಿ ಇಪ್ಪತ್ತೊಂದು ಓಟ
+<eos>	<eos>
+CARDINAL	೧ ಓವರ್‌ನಲ್ಲಿ ೩ ಓಟ	ಒಂದು ಓವರ್‌ನಲ್ಲಿ ಮೂರು ಓಟ
+<eos>	<eos>
+CARDINAL	೭ ಷಟ್ಕಗಳು ೫ ಚೌಕಗಳು	ಏಳು ಷಟ್ಕಗಳು ಐದು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಶ್ಲೋಕ	ಮೂರು ಶ್ಲೋಕ
+<eos>	<eos>
+CARDINAL	೬ ಪುಟ	ಆರು ಪುಟ
+<eos>	<eos>
+CARDINAL	೫ ಷಟ್ಕಗಳು	ಐದು ಷಟ್ಕಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಬಾಟಲಿ ೧೦ ಗ್ಲಾಸ್	ಮೂರು ಬಾಟಲಿ ಹತ್ತು ಗ್ಲಾಸ್
+<eos>	<eos>
+CARDINAL	೩ ಪಂದ್ಯ	ಮೂರು ಪಂದ್ಯ
+<eos>	<eos>
+CARDINAL	೬ ಪಂದ್ಯ ೪ ಡ್ರಾ	ಆರು ಪಂದ್ಯ ನಾಲ್ಕು ಡ್ರಾ
+<eos>	<eos>
+CARDINAL	೨ ಚೆಂಡುದಲ್ಲಿ ೩ ಓಟ	ಎರಡು ಚೆಂಡುದಲ್ಲಿ ಮೂರು ಓಟ
+<eos>	<eos>
+CARDINAL	೩ ಅಂಕಗಳು ೪ ಗೋಲು	ಮೂರು ಅಂಕಗಳು ನಾಲ್ಕು ಗೋಲು
+<eos>	<eos>
+CARDINAL	ಆಯತ್ ೪ ಸಾಲು ೯	ಆಯತ್ ನಾಲ್ಕು ಸಾಲು ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	ಪಾರಾ ೪ ರುಕು ೧೦ ಸಾಲು ೧೭	ಪಾರಾ ನಾಲ್ಕು ರುಕು ಹತ್ತು ಸಾಲು ಹದಿನೇಳು
+<eos>	<eos>
+CARDINAL	ಪಾರಾ ೬ ರುಕು ೨೫ ಸಾಲು ೨೦	ಪಾರಾ ಆರು ರುಕು ಇಪ್ಪತ್ತೈದು ಸಾಲು ಇಪ್ಪತ್ತು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೩ ದೋಹಾ ೪ ಸಾಲು ೨	ಪಾಠ ಮೂರು ದೋಹಾ ನಾಲ್ಕು ಸಾಲು ಎರಡು
+<eos>	<eos>
+CARDINAL	ಸಾಲು ೮ ಪದ ೬	ಸಾಲು ಎಂಟು ಪದ ಆರು
+<eos>	<eos>
+CARDINAL	ನಿಬಂಧನೆ ೧೦ ಪ್ಯಾರಾಗ್ರಾಫ್ ೨	ನಿಬಂಧನೆ ಹತ್ತು ಪ್ಯಾರಾಗ್ರಾಫ್ ಎರಡು
+<eos>	<eos>
+CARDINAL	೭ ಸ್ವರ	ಏಳು ಸ್ವರ
+<eos>	<eos>
+CARDINAL	ಹಾಡು ೪ ಕೋರಸ್ ೨	ಹಾಡು ನಾಲ್ಕು ಕೋರಸ್ ಎರಡು
+<eos>	<eos>
+CARDINAL	ಮುದ್ರೆ ಸಂಖ್ಯೆ ೯ ಸಾಲು ೮	ಮುದ್ರೆ ಸಂಖ್ಯೆ ಒಂಬತ್ತು ಸಾಲು ಎಂಟು
+<eos>	<eos>
+CARDINAL	ಆಯತ್ ೧೦ ಸಾಲು ೧೮	ಆಯತ್ ಹತ್ತು ಸಾಲು ಹದಿನೆಂಟು
+<eos>	<eos>
+CARDINAL	೬ ಓವರ್ ೨೦ ಓಟ	ಆರು ಓವರ್ ಇಪ್ಪತ್ತು ಓಟ
+<eos>	<eos>
+CARDINAL	೮೦ ಓಟ ೩ ವಿಕೆಟ್	ಎಂಬತ್ತು ಓಟ ಮೂರು ವಿಕೆಟ್
+<eos>	<eos>
+CARDINAL	೪ ಸ್ಪಿನ್ನರ್ ೩ ಬ್ಯಾಟ್ಸ್ಮನ್ ೧ ವಿಕೆಟ್ ಕೀಪರ್	ನಾಲ್ಕು ಸ್ಪಿನ್ನರ್ ಮೂರು ಬ್ಯಾಟ್ಸ್ಮನ್ ಒಂದು ವಿಕೆಟ್ ಕೀಪರ್
+<eos>	<eos>
+CARDINAL	೧ ಗೋಲ್ ಕೀಪರ್ ೬ ಪ್ಲೇಯರ್	ಒಂದು ಗೋಲ್ ಕೀಪರ್ ಆರು ಪ್ಲೇಯರ್
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೧೮ ಪದ ೫	ಪಾಠ ಹದಿನೆಂಟು ಪದ ಐದು
+<eos>	<eos>
+CARDINAL	ದೋಹಾ ೬ ಸಾಲು ೯	ದೋಹಾ ಆರು ಸಾಲು ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	ಚಿತ್ರ ೬ ಪುಟ ೮೦	ಚಿತ್ರ ಆರು ಪುಟ ಎಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೨ ಡ್ರಾ ೩ ಗೆಲುವು	ಎರಡು ಡ್ರಾ ಮೂರು ಗೆಲುವು
+<eos>	<eos>
+CARDINAL	೪ ಮೌಖಿಕ ಪರೀಕ್ಷೆ ೩ ಪರೀಕ್ಷೆ	ನಾಲ್ಕು ಮೌಖಿಕ ಪರೀಕ್ಷೆ ಮೂರು ಪರೀಕ್ಷೆ
+<eos>	<eos>
+CARDINAL	೪ ಪರೀಕ್ಷೆ ೬ ಅಧಿವೇಶನ	ನಾಲ್ಕು ಪರೀಕ್ಷೆ ಆರು ಅಧಿವೇಶನ
+<eos>	<eos>
+CARDINAL	೩ ತಟ್ಟೆ ೪ ಬಟ್ಟಲು ೨ ಚಮಚ	ಮೂರು ತಟ್ಟೆ ನಾಲ್ಕು ಬಟ್ಟಲು ಎರಡು ಚಮಚ
+<eos>	<eos>
+CARDINAL	೪ ಡ್ರಾ ೫ ಗೆಲುವು	ನಾಲ್ಕು ಡ್ರಾ ಐದು ಗೆಲುವು
+<eos>	<eos>
+CARDINAL	೮ ಷಟ್ಕಗಳು ೧೪ ಚೌಕಗಳು	ಎಂಟು ಷಟ್ಕಗಳು ಹದಿನಾಲ್ಕು ಚೌಕಗಳು
+<eos>	<eos>
+CARDINAL	೫ ಓವರ್ ೪ ವಿಕೆಟ್	ಐದು ಓವರ್ ನಾಲ್ಕು ವಿಕೆಟ್
+<eos>	<eos>
+CARDINAL	೩ ಓಟ ೨ ವಿಕೆಟ್	ಮೂರು ಓಟ ಎರಡು ವಿಕೆಟ್
+<eos>	<eos>
+CARDINAL	೬ ಓವರ್ ೪ ಓಟ	ಆರು ಓವರ್ ನಾಲ್ಕು ಓಟ
+<eos>	<eos>
+CARDINAL	೪ ಪರೀಕ್ಷೆ ಪಂದ್ಯ ೧ ಒನ್ ಡೇ	ನಾಲ್ಕು ಪರೀಕ್ಷೆ ಪಂದ್ಯ ಒಂದು ಒನ್ ಡೇ
+<eos>	<eos>
+CARDINAL	೨ ಅಂಕಗಳು ೧೨ ಗೋಲು	ಎರಡು ಅಂಕಗಳು ಹನ್ನೆರಡು ಗೋಲು
+<eos>	<eos>
+CARDINAL	೭ ಚಮಚ ಮುರಿದವು	ಏಳು ಚಮಚ ಮುರಿದವು
+<eos>	<eos>
+CARDINAL	೧೦ ರಲ್ಲಿ ೬ ಅಂಕ	ಹತ್ತು ರಲ್ಲಿ ಆರು ಅಂಕ
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೨ ರ ಪುಟ ಸಂಖ್ಯೆ ೧೨	ಪಾಠ ಎರಡು ರ ಪುಟ ಸಂಖ್ಯೆ ಹನ್ನೆರಡು
+<eos>	<eos>
+CARDINAL	೧ ಓವರ್‌ನಲ್ಲಿ ೬ ಚೆಂಡು	ಒಂದು ಓವರ್‌ನಲ್ಲಿ ಆರು ಚೆಂಡು
+<eos>	<eos>
+CARDINAL	೭ ಶಾಟ್ ಸರಿಯಾಗಿ ತಗುಲಿದವು	ಏಳು ಶಾಟ್ ಸರಿಯಾಗಿ ತಗುಲಿದವು
+<eos>	<eos>
+CARDINAL	ಭಾರತಕ್ಕೆ ೪ ಅಂಕ ಮುನ್ನಡೆ	ಭಾರತಕ್ಕೆ ನಾಲ್ಕು ಅಂಕ ಮುನ್ನಡೆ
+<eos>	<eos>
+CARDINAL	ಶತಕಕ್ಕೆ ೩ ಓಟ ಬಾಕಿ	ಶತಕಕ್ಕೆ ಮೂರು ಓಟ ಬಾಕಿ
+<eos>	<eos>
+CARDINAL	೧ ಸೋತ ೨ ಡ್ರಾ	ಒಂದು ಸೋತ ಎರಡು ಡ್ರಾ
+<eos>	<eos>
+CARDINAL	ಅರ್ಜೆಂಟಿನಾ ೨ ಅಂಕ ಹಿಂದೆ	ಅರ್ಜೆಂಟಿನಾ ಎರಡು ಅಂಕ ಹಿಂದೆ
+<eos>	<eos>
+CARDINAL	೨ ಗೋಲು ಆಯಿತು	ಎರಡು ಗೋಲು ಆಯಿತು
+<eos>	<eos>
+CARDINAL	೮ ಹೆಚ್ಚುವರಿ ಓಟ	ಎಂಟು ಹೆಚ್ಚುವರಿ ಓಟ
+<eos>	<eos>
+CARDINAL	೪ ಅಗಲ ಎಸೆತ	ನಾಲ್ಕು ಅಗಲ ಎಸೆತ
+<eos>	<eos>
+CARDINAL	ತರಗತಿ ೯	ತರಗತಿ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	ತರಗತಿ ೫	ತರಗತಿ ಐದು
+<eos>	<eos>
+CARDINAL	೯ ಭಾಗ	ಒಂಬತ್ತು ಭಾಗ
+<eos>	<eos>
+CARDINAL	ತರಗತಿ ೪ ಪಾಠ ೩	ತರಗತಿ ನಾಲ್ಕು ಪಾಠ ಮೂರು
+<eos>	<eos>
+CARDINAL	ಪಾಠ ೯	ಪಾಠ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	ಪುಟ ಸಂಖ್ಯೆ ೮	ಪುಟ ಸಂಖ್ಯೆ ಎಂಟು
+<eos>	<eos>
+CARDINAL	೪ ಬಾಟಲಿ	ನಾಲ್ಕು ಬಾಟಲಿ
+<eos>	<eos>
+CARDINAL	೧೦೦ ರಲ್ಲಿ ೪ ಅಂಕ	 ನೂರು ರಲ್ಲಿ ನಾಲ್ಕು ಅಂಕ
+<eos>	<eos>
+CARDINAL	೮ ಅಂಕ	ಎಂಟು ಅಂಕ
+<eos>	<eos>
+CARDINAL	ಕನ್ನಡಕದ ಅಂಕ ೨	ಕನ್ನಡಕದ ಅಂಕ ಎರಡು
+<eos>	<eos>
+CARDINAL	೭ ಚಪ್ಪಲಿ	ಏಳು ಚಪ್ಪಲಿ
+<eos>	<eos>
+CARDINAL	೫ ಬೂಟು	ಐದು ಬೂಟು
+<eos>	<eos>
+CARDINAL	೨ ಸ್ಯಾಂಡಲ್	ಎರಡು ಸ್ಯಾಂಡಲ್
+<eos>	<eos>
+CARDINAL	೭ ಆಟ ಗೆದ್ದ	ಏಳು ಆಟ ಗೆದ್ದ
+<eos>	<eos>
+CARDINAL	೬ ಮುಚ್ಚಳ	ಆರು ಮುಚ್ಚಳ 
+<eos>	<eos>
+CARDINAL	೧೦೦೦ ರ ೨ ನೋಟು	ಒಂದು ಸಾವಿರ ರ ಎರಡು ನೋಟು
+<eos>	<eos>
+CARDINAL	೧೯ ರಲ್ಲಿ ೩ ಗ್ಲಾಸ್	ಹತ್ತೊಂಬತ್ತು ರಲ್ಲಿ ಮೂರು ಗ್ಲಾಸ್ 
+<eos>	<eos>
+CARDINAL	ಪುಟ ೧೯೯ ಪಾಠ ೬	ಪುಟ ನೂರ ತೊಂಬತ್ತೊಂಬತ್ತು ಪಾಠ ಆರು
+<eos>	<eos>
+CARDINAL	೮ ಪಾರೆ	ಎಂಟು ಪಾರೆ
+<eos>	<eos>
+CARDINAL	ಭಾಗ ೫ ಪಾಠ ೧೯	ಭಾಗ ಐದು ಪಾಠ ಹತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೮೦ ಓಟ ೬ ವಿಕೆಟ್	ಎಂಬತ್ತು ಓಟ ಆರು ವಿಕೆಟ್
+<eos>	<eos>
+CARDINAL	೯ ಹೆಚ್ಚುವರಿ ಓಟ	ಒಂಬತ್ತು ಹೆಚ್ಚುವರಿ ಓಟ
+<eos>	<eos>
+CARDINAL	೧೧ ಚೆಂಡು ೮ ಓಟ	ಹನ್ನೊಂದು ಚೆಂಡು ಎಂಟು ಓಟ
+<eos>	<eos>
+CARDINAL	೨ ಹಳದಿ ೮ ಕೆಂಪು ಕಾರ್ಡ್	ಎರಡು ಹಳದಿ ಎಂಟು ಕೆಂಪು ಕಾರ್ಡ್
+<eos>	<eos>
+CARDINAL	ಅಧ್ಯಾಯ ೧೨ ಶ್ಲೋಕ ೮	ಅಧ್ಯಾಯ ಹನ್ನೆರಡು ಶ್ಲೋಕ ಎಂಟು
+<eos>	<eos>
+CARDINAL	ಪುಟ ೮೮ ಅಧ್ಯಾಯ ೭	ಪುಟ ಎಂಬತ್ತೆಂಟು ಅಧ್ಯಾಯ ಏಳು
+<eos>	<eos>
+CARDINAL	೧೦೦ ಓಟ ೫ ವಿಕೆಟ್	ನೂರು ಓಟ ಐದು ವಿಕೆಟ್
+<eos>	<eos>
+CARDINAL	೮ ಗೋಲಿನಿಂದ ಗೆಲುವು	ಎಂಟು ಗೋಲಿನಿಂದ ಗೆಲುವು
+<eos>	<eos>
+CARDINAL	೩ ಚಕ್ರ ವಾಹನ	ಮೂರು ಚಕ್ರ ವಾಹನ
+<eos>	<eos>
+CARDINAL	ಅಧ್ಯಾಯ ೧೯ ಭಾಗ ೪	ಅಧ್ಯಾಯ ಹತ್ತೊಂಬತ್ತು ಭಾಗ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೧ ತಿಂಗಳು ೮ ದಿನ	ಹನ್ನೊಂದು ತಿಂಗಳು ಎಂಟು ದಿನ
+<eos>	<eos>
+CARDINAL	೯ ದಿನ ೧೨ ಗಂಟೆ	ಒಂಬತ್ತು ದಿನ ಹನ್ನೆರಡು ಗಂಟೆ
+<eos>	<eos>
+CARDINAL	೪ ಕಟ್ಟು ೧೩ ಕಾರ್ಡ್	ನಾಲ್ಕು ಕಟ್ಟು ಹದಿಮೂರು ಕಾರ್ಡ್
+<eos>	<eos>
+CARDINAL	೭ ಪಂದ್ಯ ೧೨ ವಿಕೆಟ್	ಏಳು ಪಂದ್ಯ ಹನ್ನೆರಡು ವಿಕೆಟ್
+<eos>	<eos>
+CARDINAL	೧ ವ್ಯಕ್ತಿ	ಒಂದು ವ್ಯಕ್ತಿ
+<eos>	<eos>
+CARDINAL	೨ ಮಹಿಳೆಯರು	ಎರಡು ಮಹಿಳೆಯರು
+<eos>	<eos>
+CARDINAL	೩ ಮಕ್ಕಳು	ಮೂರು ಮಕ್ಕಳು
+<eos>	<eos>
+CARDINAL	೪ ಪುಸ್ತಕಗಳು	ನಾಲ್ಕು ಪುಸ್ತಕಗಳು
+<eos>	<eos>
+CARDINAL	೫ ಕೊಠಡಿಗಳು	ಐದು ಕೊಠಡಿಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಮನೆಗಳು	ಆರು ಮನೆಗಳು
+<eos>	<eos>
+CARDINAL	೭ ಪುಟಗಳು	ಏಳು ಪುಟಗಳು
+<eos>	<eos>
+CARDINAL	೮ ನಾಣ್ಯಗಳು	ಎಂಟು ನಾಣ್ಯಗಳು
+<eos>	<eos>
+CARDINAL	೯ ಡಬ್ಬಿಗಳು	ಒಂಬತ್ತು ಡಬ್ಬಿಗಳು
+<eos>	<eos>
+CARDINAL	೧೦ ಕೆಲಸಗಳು	ಹತ್ತು ಕೆಲಸಗಳು
+<eos>	<eos>
+CARDINAL	೧೧ ಹಣ್ಣು ೨ ಹೂವು	ಹನ್ನೊಂದು ಹಣ್ಣು ಎರಡು ಹೂವು
+<eos>	<eos>
+CARDINAL	೩ ಹೂವು	ಮೂರು ಹೂವು
+<eos>	<eos>
+CARDINAL	೧೩ ಕುಂಡಿಗಳು ೪ ಗಿಡಗಳು	ಹದಿಮೂರು ಕುಂಡಿಗಳು ನಾಲ್ಕು ಗಿಡಗಳು
+<eos>	<eos>
+CARDINAL	೪ ಪಪ್ಪಾಯಿ	ನಾಲ್ಕು ಪಪ್ಪಾಯಿ
+<eos>	<eos>
+CARDINAL	೫ ಮಾವಿನಹಣ್ಣು	ಐದು ಮಾವಿನಹಣ್ಣು
+<eos>	<eos>
+CARDINAL	೬ ಬಾಳೆಹಣ್ಣು	ಆರು ಬಾಳೆಹಣ್ಣು
+<eos>	<eos>
+CARDINAL	೭ ದ್ರಾಕ್ಷಿ	ಏಳು ದ್ರಾಕ್ಷಿ
+<eos>	<eos>
+CARDINAL	೮ ಕಿತ್ತಳೆಹಣ್ಣು	ಎಂಟು ಕಿತ್ತಳೆಹಣ್ಣು
+<eos>	<eos>
+CARDINAL	೯ ಸೇಬು	ಒಂಬತ್ತು ಸೇಬು
+<eos>	<eos>
+CARDINAL	೧೦ ಚಿಕ್ಕು	ಹತ್ತು ಚಿಕ್ಕು
+<eos>	<eos>
+CARDINAL	೧ ಕಮಲ	ಒಂದು ಕಮಲ
+<eos>	<eos>
+CARDINAL	೨ ಕಲ್ಲುಗಳು	ಎರಡು ಕಲ್ಲುಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಕುರ್ಚಿಗಳು	ಮೂರು ಕುರ್ಚಿಗಳು
+<eos>	<eos>
+CARDINAL	೪ ಬ್ಯಾಗ್	ನಾಲ್ಕು ಬ್ಯಾಗ್
+<eos>	<eos>
+CARDINAL	೫ ಫೋನ್	ಐದು ಫೋನ್
+<eos>	<eos>
+CARDINAL	೬ ಕೊಠಡಿಗಳು	ಆರು ಕೊಠಡಿಗಳು
+<eos>	<eos>
+CARDINAL	೭ ಮಹಿಳೆಯರು	ಏಳು ಮಹಿಳೆಯರು
+<eos>	<eos>
+CARDINAL	೮ ಪುಸ್ತಕಗಳು	ಎಂಟು ಪುಸ್ತಕಗಳು
+<eos>	<eos>
+CARDINAL	೯ ವಾಹನಗಳು	ಒಂಬತ್ತು ವಾಹನಗಳು
+<eos>	<eos>
+CARDINAL	೧೦ ನದಿಗಳು	ಹತ್ತು ನದಿಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಎಮ್ಮೆಗಳು	ಮೂರು ಎಮ್ಮೆಗಳು
+<eos>	<eos>
+CARDINAL	೨ ಬೂಟುಗಳು	ಎರಡು ಬೂಟುಗಳು
+<eos>	<eos>
+CARDINAL	೩ ನಾಯಿಗಳು	ಮೂರು ನಾಯಿಗಳು
+<eos>	<eos>
+CARDINAL	೪ ಕುದುರೆಗಳು	ನಾಲ್ಕು ಕುದುರೆಗಳು
+<eos>	<eos>
+CARDINAL	೫ ಪುತ್ರರು	ಐದು ಪುತ್ರರು
+<eos>	<eos>
+CARDINAL	೬ ಕೋಳಿಗಳು	ಆರು ಕೋಳಿಗಳು
+<eos>	<eos>
+CARDINAL	೭ ಕತ್ತೆಗಳು	ಏಳು ಕತ್ತೆಗಳು
+<eos>	<eos>
+CARDINAL	೮ ಹುಡುಗಿಯರು	ಎಂಟು ಹುಡುಗಿಯರು
+<eos>	<eos>
+CARDINAL	೯ ಹುಡುಗರು	ಒಂಬತ್ತು ಹುಡುಗರು
+<eos>	<eos>
+CARDINAL	೧೦ ಪ್ರಶ್ನೆಗಳು	ಹತ್ತು ಪ್ರಶ್ನೆಗಳು
+<eos>	<eos>
+CARDINAL	೧ ಶರ್ಟ್	ಒಂದು ಶರ್ಟ್
+<eos>	<eos>
+CARDINAL	೨ ದೋಣಿಗಳು	ಎರಡು ದೋಣಿಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಡಬ್ಬಿಗಳು	ಮೂರು ಡಬ್ಬಿಗಳು
+<eos>	<eos>
+CARDINAL	೪ ಮುಚ್ಚಳಗಳು	ನಾಲ್ಕು ಮುಚ್ಚಳಗಳು
+<eos>	<eos>
+CARDINAL	೫ ನೋಟ	ಐದು ನೋಟ
+<eos>	<eos>
+CARDINAL	೬ ನಾಣ್ಯ	ಆರು ನಾಣ್ಯ
+<eos>	<eos>
+CARDINAL	೭ ಗಾಯ	ಏಳು ಗಾಯ
+<eos>	<eos>
+CARDINAL	೮ ಬಣ್ಣ	ಎಂಟು ಬಣ್ಣ
+<eos>	<eos>
+CARDINAL	೯ ಜನ	ಒಂಬತ್ತು ಜನ
+<eos>	<eos>
+CARDINAL	೧೦ ದಿನ	ಹತ್ತು ದಿನ
+<eos>	<eos>
+CARDINAL	೫ ಮಾತು	ಐದು ಮಾತು
+<eos>	<eos>
+CARDINAL	೨ ಔಷಧಗಳು	ಎರಡು ಔಷಧಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಗೂಡುಗಳು	ಮೂರು ಗೂಡುಗಳು
+<eos>	<eos>
+CARDINAL	೪ ಗೆಳತಿಯರು	ನಾಲ್ಕು ಗೆಳತಿಯರು
+<eos>	<eos>
+CARDINAL	೫ ಗಿಡಗಳು	ಐದು ಗಿಡಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಪರದೆ	ಆರು ಪರದೆ
+<eos>	<eos>
+CARDINAL	೭ ಬೆಕ್ಕುಗಳು	ಏಳು ಬೆಕ್ಕುಗಳು
+<eos>	<eos>
+CARDINAL	೮ ಇಲಿಗಳು	ಎಂಟು ಇಲಿಗಳು
+<eos>	<eos>
+CARDINAL	೯ ಗಾಡಿಗಳು	ಒಂಬತ್ತು ಗಾಡಿಗಳು
+<eos>	<eos>
+CARDINAL	೧೦ ಕಣ್ಣುಗಳು	ಹತ್ತು ಕಣ್ಣುಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಗೋಡೆಗಳು	ಆರು ಗೋಡೆಗಳು
+<eos>	<eos>
+CARDINAL	೨ ಗಡಿಯಾರಗಳು	ಎರಡು ಗಡಿಯಾರಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಪಪ್ಪಾಯಿಗಳು	ಮೂರು ಪಪ್ಪಾಯಿಗಳು
+<eos>	<eos>
+CARDINAL	೪ ಸೈಕಲ್ಗಳು	ನಾಲ್ಕು ಸೈಕಲ್ಗಳು
+<eos>	<eos>
+CARDINAL	೫ ಕಿಟಕಿಗಳು	ಐದು ಕಿಟಕಿಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಕೊಂಬೆಗಳು	ಆರು ಕೊಂಬೆಗಳು
+<eos>	<eos>
+CARDINAL	೭ ಗೊಂಬೆಗಳು	ಏಳು ಗೊಂಬೆಗಳು
+<eos>	<eos>
+CARDINAL	೮ ಕವಿತೆಗಳು	ಎಂಟು ಕವಿತೆಗಳು
+<eos>	<eos>
+CARDINAL	೯ ಕಥೆಗಳು	ಒಂಬತ್ತು ಕಥೆಗಳು
+<eos>	<eos>
+CARDINAL	೧೦ ಕಥೆಗಳು	ಹತ್ತು ಕಥೆಗಳು
+<eos>	<eos>
+CARDINAL	೭ ಮೊಗ್ಗುಗಳು	ಏಳು ಮೊಗ್ಗುಗಳು
+<eos>	<eos>
+CARDINAL	೨ ಕೋಳಿಗಳು	ಎರಡು ಕೋಳಿಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಬೀದಿಗಳು	ಮೂರು ಬೀದಿಗಳು
+<eos>	<eos>
+CARDINAL	೪ ದಿನಾಂಕಗಳು	ನಾಲ್ಕು ದಿನಾಂಕಗಳು
+<eos>	<eos>
+CARDINAL	೫ ಉಪಕರಣ	ಐದು ಉಪಕರಣ
+<eos>	<eos>
+CARDINAL	೬ ಹುಡುಗಿಯರು	ಆರು ಹುಡುಗಿಯರು
+<eos>	<eos>
+CARDINAL	೭ ತಟ್ಟೆಗಳು	ಏಳು ತಟ್ಟೆಗಳು
+<eos>	<eos>
+CARDINAL	೮ ಸ್ತ್ರೀಯರು	ಎಂಟು ಸ್ತ್ರೀಯರು
+<eos>	<eos>
+CARDINAL	೯ ರಾತ್ರಿ	ಒಂಬತ್ತು ರಾತ್ರಿ
+<eos>	<eos>
+CARDINAL	೧೦ ತರಕಾರಿಗಳು	ಹತ್ತು ತರಕಾರಿಗಳು
+<eos>	<eos>
+CARDINAL	೮ ಮಕ್ಕಳು	ಎಂಟು ಮಕ್ಕಳು
+<eos>	<eos>
+CARDINAL	೨ ಟೋಪಿಗಳು	ಎರಡು ಟೋಪಿಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಹುಡುಗಿಯರು	ಮೂರು ಹುಡುಗಿಯರು
+<eos>	<eos>
+CARDINAL	೪ ನದಿಗಳು	ನಾಲ್ಕು ನದಿಗಳು
+<eos>	<eos>
+CARDINAL	೫ ನಾರಿಯರು	ಐದು ನಾರಿಯರು
+<eos>	<eos>
+CARDINAL	೬ ಬಿಂದಿಗಳು	ಆರು ಬಿಂದಿಗಳು
+<eos>	<eos>
+CARDINAL	೭ ಡಬ್ಬಿಗಳು	ಏಳು ಡಬ್ಬಿಗಳು
+<eos>	<eos>
+CARDINAL	೯ ಗೊಂಬೆಗಳು	ಒಂಬತ್ತು ಗೊಂಬೆಗಳು
+<eos>	<eos>
+CARDINAL	೧೦ ಕಥೆಗಳು	ಹತ್ತು ಕಥೆಗಳು
+<eos>	<eos>
+CARDINAL	೯ ಪತ್ರಿಕೆಗಳು	ಒಂಬತ್ತು ಪತ್ರಿಕೆಗಳು
+<eos>	<eos>
+CARDINAL	೨ ಲತೆಗಳು	ಎರಡು ಲತೆಗಳು
+<eos>	<eos>
+CARDINAL	೩ ಕವಿತೆಗಳು	ಮೂರು ಕವಿತೆಗಳು
+<eos>	<eos>
+CARDINAL	೪ ಸರೋವರಗಳು	ನಾಲ್ಕು ಸರೋವರಗಳು
+<eos>	<eos>
+CARDINAL	೫ ಚಪ್ಪಲಿಗಳು	ಐದು ಚಪ್ಪಲಿಗಳು
+<eos>	<eos>
+CARDINAL	೬ ಹಸುಗಳು	ಆರು ಹಸುಗಳು
+<eos>	<eos>
+CARDINAL	೭ ರಸ್ತೆಗಳು	ಏಳು ರಸ್ತೆಗಳು
+<eos>	<eos>
+CARDINAL	೮ ಕಣ್ಣುಗಳು	ಎಂಟು ಕಣ್ಣುಗಳು
+<eos>	<eos>
+CARDINAL	೧೦ ಮಾತುಗಳು	ಹತ್ತು ಮಾತುಗಳು
+<eos>	<eos>
+CARDINAL	೧೦೧	ನೂರ ಒಂದು
+<eos>	<eos>
+CARDINAL	೧೦೨	ನೂರ ಎರಡು
+<eos>	<eos>
+CARDINAL	೧೦೩	ನೂರ ಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೪	ನೂರ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೫	ನೂರ ಐದು
+<eos>	<eos>
+CARDINAL	೧೦೬	ನೂರ ಆರು
+<eos>	<eos>
+CARDINAL	೧೦೭	ನೂರ ಏಳು
+<eos>	<eos>
+CARDINAL	೧೦೮	ನೂರ ಎಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೯	ನೂರ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೧೦	ನೂರ ಹತ್ತು
+<eos>	<eos>
+CARDINAL	೧೧೧	ನೂರ ಹನ್ನೊಂದು
+<eos>	<eos>
+CARDINAL	೧೧೨	ನೂರ ಹನ್ನೆರಡು
+<eos>	<eos>
+CARDINAL	೧೧೩	ನೂರ ಹದಿಮೂರು
+<eos>	<eos>
+CARDINAL	೧೧೪	ನೂರ ಹದಿನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೧೫	ನೂರ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೧೧೬	ನೂರ ಹದಿನಾರು
+<eos>	<eos>
+CARDINAL	೮೧೭	ಎಂಟುನೂರ ಹದಿನೇಳು
+<eos>	<eos>
+CARDINAL	೮೧೮	ಎಂಟುನೂರ ಹದಿನೆಂಟು
+<eos>	<eos>
+CARDINAL	೮೧೯	ಎಂಟುನೂರ ಹತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೮೨೦	ಎಂಟುನೂರ ಇಪ್ಪತ್ತು
+<eos>	<eos>
+CARDINAL	೮೨೧	ಎಂಟುನೂರ ಇಪ್ಪತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೮೨೨	ಎಂಟುನೂರ ಇಪ್ಪತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೮೨೩	ಎಂಟುನೂರ ಇಪ್ಪತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೮೨೪	ಎಂಟುನೂರ ಇಪ್ಪತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೮೨೫	ಎಂಟುನೂರ ಇಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೮೨೬	ಎಂಟುನೂರ ಇಪ್ಪತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೮೨೭	ಎಂಟುನೂರ ಇಪ್ಪತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೮೨೮	ಎಂಟುನೂರ ಇಪ್ಪತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೮೨೯	ಎಂಟುನೂರ ಇಪ್ಪತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೮೩೦	ಎಂಟುನೂರ ಮೂವತ್ತು
+<eos>	<eos>
+CARDINAL	೮೩೧	ಎಂಟುನೂರ ಮೂವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೮೩೨	ಎಂಟುನೂರ ಮೂವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೮೩೩	ಎಂಟುನೂರ ಮೂವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೮೩೪	ಎಂಟುನೂರ ಮೂವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೮೩೫	ಎಂಟುನೂರ ಮೂವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೮೩೬	ಎಂಟುನೂರ ಮೂವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೭೩೭	ಏಳುನೂರ ಮೂವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೭೩೮	ಏಳುನೂರ ಮೂವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೭೩೯	ಏಳುನೂರ ಮೂವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೭೪೦	ಏಳುನೂರ ನಲವತ್ತು
+<eos>	<eos>
+CARDINAL	೭೪೧	ಏಳುನೂರ ನಲವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೭೪೨	ಏಳುನೂರ ನಲವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೭೪೩	ಏಳುನೂರ ನಲವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೭೪೪	ಏಳುನೂರ ನಲವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೭೪೫	ಏಳುನೂರ ನಲವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೪೪೬	ನಾನೂರ ನಲವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೪೪೭	ನಾನೂರ ನಲವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೪೪೮	ನಾನೂರ ನಲವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೪೪೯	ನಾನೂರ ನಲವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೪೫೦	ನಾನೂರ ಐವತ್ತು
+<eos>	<eos>
+CARDINAL	೪೬೧	ನಾನೂರ ಅರವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೭೫	ನೂರ ಎಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೮೧	ನೂರ ಎಂಬತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೯೦	ನೂರ ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೯೯	ನೂರ ತೊಂಬತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೧	ಒಂದು ಸಾವಿರದ ಒಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೨	ಒಂದು ಸಾವಿರದ ಎರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೩	ಒಂದು ಸಾವಿರದ ಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೪	ಒಂದು ಸಾವಿರದ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೫	ಒಂದು ಸಾವಿರದ ಐದು
+<eos>	<eos>
+CARDINAL	೧೦೦೬	ಒಂದು ಸಾವಿರದ ಆರು
+<eos>	<eos>
+CARDINAL	೧೦೦೭	ಒಂದು ಸಾವಿರದ ಏಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೮	ಒಂದು ಸಾವಿರದ ಎಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೯	ಒಂದು ಸಾವಿರದ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೧೦	ಒಂದು ಸಾವಿರದ ಹತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೧೧	ಒಂದು ಸಾವಿರದ ಹನ್ನೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೧೨	ಒಂದು ಸಾವಿರದ ಹನ್ನೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೧೩	ಒಂದು ಸಾವಿರದ ಹದಿಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೧೪	ಒಂದು ಸಾವಿರದ ಹದಿನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೧೫	ಒಂದು ಸಾವಿರದ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೧೦೧೬	ಒಂದು ಸಾವಿರದ ಹದಿನಾರು
+<eos>	<eos>
+CARDINAL	೧೦೧೭	ಒಂದು ಸಾವಿರದ ಹದಿನೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೧೮	ಒಂದು ಸಾವಿರದ ಹದಿನೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೧೯	ಒಂದು ಸಾವಿರದ ಹತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೨೦	ಒಂದು ಸಾವಿರದ ಇಪ್ಪತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೨೧	ಒಂದು ಸಾವಿರದ ಇಪ್ಪತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೨೨	ಒಂದು ಸಾವಿರದ ಇಪ್ಪತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೧೨೩	ಒಂದು ಸಾವಿರದ ನೂರ ಇಪ್ಪತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೪೨೪	ಒಂದು ಸಾವಿರದ ನಾನೂರ ಇಪ್ಪತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೫೨೫	ಒಂದು ಸಾವಿರದ ಐನೂರ ಇಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೩೨೬	ಒಂದು ಸಾವಿರದ ಮುನ್ನೂರ ಇಪ್ಪತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೪೨೭	ಒಂದು ಸಾವಿರದ ನಾನೂರ ಇಪ್ಪತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೬೨೮	ಒಂದು ಸಾವಿರದ ಆರುನೂರ ಇಪ್ಪತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೭೨೯	ಒಂದು ಸಾವಿರದ ಏಳುನೂರ ಇಪ್ಪತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೮೩೦	ಒಂದು ಸಾವಿರದ ಎಂಟುನೂರ ಮೂವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೧೩೧	ಒಂದು ಸಾವಿರದ ನೂರ ಮೂವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೨೩೨	ಒಂದು ಸಾವಿರದ ಇನ್ನೂರ ಮೂವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೩೩೩	ಒಂದು ಸಾವಿರದ ಮುನ್ನೂರ ಮೂವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೪೩೪	ಒಂದು ಸಾವಿರದ ನಾನೂರ ಮೂವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೫೩೫	ಒಂದು ಸಾವಿರದ ಐನೂರ ಮೂವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೬೩೬	ಒಂದು ಸಾವಿರದ ಆರುನೂರ ಮೂವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೭೩೭	ಒಂದು ಸಾವಿರದ ಏಳುನೂರ ಮೂವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೮೩೮	ಒಂದು ಸಾವಿರದ ಎಂಟುನೂರ ಮೂವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೯೩೯	ಒಂದು ಸಾವಿರದ ಒಂಬೈನೂರ ಮೂವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೪೦	ಒಂದು ಸಾವಿರದ ನಲವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೪೧	ಒಂದು ಸಾವಿರದ ನಲವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೪೨	ಒಂದು ಸಾವಿರದ ನಲವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೪೩	ಒಂದು ಸಾವಿರದ ನಲವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೪೪	ಒಂದು ಸಾವಿರದ ನಲವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೪೫	ಒಂದು ಸಾವಿರದ ನಲವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೪೬	ಒಂದು ಸಾವಿರದ ನಲವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೪೭	ಒಂದು ಸಾವಿರದ ನಲವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೪೮	ಒಂದು ಸಾವಿರದ ನಲವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೪೯	ಒಂದು ಸಾವಿರದ ನಲವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೫೦	ಒಂದು ಸಾವಿರದ ಐವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೬೧	ಒಂದು ಸಾವಿರದ ಅರವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೭೫	ಒಂದು ಸಾವಿರದ ಎಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೮೧	ಒಂದು ಸಾವಿರದ ಎಂಬತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೯೦	ಒಂದು ಸಾವಿರದ ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೯೯	ಒಂದು ಸಾವಿರದ ತೊಂಬತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧	ಹತ್ತು ಸಾವಿರದ ಒಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨	ಹತ್ತು ಸಾವಿರದ ಎರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೩	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೪	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೧೩೦೫	ಹನ್ನೊಂದು ಸಾವಿರದ ಮುನ್ನೂರ ಐದು
+<eos>	<eos>
+CARDINAL	೧೨೪೫೬	ಹನ್ನೆರಡು ಸಾವಿರದ ನಾನೂರ ಐವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೩೦೪೭	ಹದಿಮೂರು ಸಾವಿರದ ನಲವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೮	ಹತ್ತು ಸಾವಿರದ ಎಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೯	ಹತ್ತು ಸಾವಿರದ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೦	ಹತ್ತು ಸಾವಿರದ ಹತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೧	ಹತ್ತು ಸಾವಿರದ ಹನ್ನೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೨	ಹತ್ತು ಸಾವಿರದ ಹನ್ನೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೩	ಹತ್ತು ಸಾವಿರದ ಹದಿಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೪	ಹತ್ತು ಸಾವಿರದ ಹದಿನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೫	ಹತ್ತು ಸಾವಿರದ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೬	ಹತ್ತು ಸಾವಿರದ ಹದಿನಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೭	ಹತ್ತು ಸಾವಿರದ ಹದಿನೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೮	ಹತ್ತು ಸಾವಿರದ ಹದಿನೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೧೯	ಹತ್ತು ಸಾವಿರದ ಹತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೦	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೧	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೨	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೩	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೪	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೫	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೬	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೭	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೮	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೯	ಹತ್ತು ಸಾವಿರದ ಇಪ್ಪತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೦	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೧	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೨	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೩	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೪	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೫	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೬	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೭	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೮	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೩೯	ಹತ್ತು ಸಾವಿರದ ಮೂವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೦	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೧	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೨	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೩	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೪	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೫	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೬	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೭	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೮	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೪೯	ಹತ್ತು ಸಾವಿರದ ನಲವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೫೦	ಹತ್ತು ಸಾವಿರದ ಐವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೬೧	ಹತ್ತು ಸಾವಿರದ ಅರವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೭೫	ಹತ್ತು ಸಾವಿರದ ಎಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೮೧	ಹತ್ತು ಸಾವಿರದ ಎಂಬತ್ತೊಂದು
+<eos>	<eos><eos>	<eos>
+CARDINAL	೧೦೦೯೦	ಹತ್ತು ಸಾವಿರದ ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೯೯	ಹತ್ತು ಸಾವಿರದ ತೊಂಬತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧	ಒಂದು ಲಕ್ಷದ ಒಂದು
+<eos>	<eos>
+CARDINAL	೧೧೦೦೦೨	ಒಂದು ಲಕ್ಷದ ಹತ್ತು ಸಾವಿರದ ಎರಡು
+<eos>	<eos>
+CARDINAL	೧೨೦೪೦೩	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತು ಸಾವಿರದ ನಾನೂರ ಮೂರು
+<eos>	<eos>
+CARDINAL	೧೪೧೫೦೪	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತೊಂದು ಸಾವಿರದ ಐನೂರ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೫೧೫೧೫	ಒಂದು ಲಕ್ಷದ ಐವತ್ತೊಂದು ಸಾವಿರದ ಐನೂರ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೬	ಒಂದು ಲಕ್ಷದ ಆರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೭	ಒಂದು ಲಕ್ಷದ ಏಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೮	ಒಂದು ಲಕ್ಷದ ಎಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೯	ಒಂದು ಲಕ್ಷದ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೦	ಒಂದು ಲಕ್ಷದ ಹತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೧	ಒಂದು ಲಕ್ಷದ ಹನ್ನೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೨	ಒಂದು ಲಕ್ಷದ ಹನ್ನೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೩	ಒಂದು ಲಕ್ಷದ ಹದಿಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೪	ಒಂದು ಲಕ್ಷದ ಹದಿನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೫	ಒಂದು ಲಕ್ಷದ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೬	ಒಂದು ಲಕ್ಷದ ಹದಿನಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೭	ಒಂದು ಲಕ್ಷದ ಹದಿನೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೮	ಒಂದು ಲಕ್ಷದ ಹದಿನೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೧೯	ಒಂದು ಲಕ್ಷದ ಹತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೦	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೧	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೨	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೩	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೪	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೫	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೬	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೭	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೮	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೨೯	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೦	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೧	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೨	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೩	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೪	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೫	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೬	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೭	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೮	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೩೯	ಒಂದು ಲಕ್ಷದ ಮೂವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೦	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೧	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೨	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೩	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೪	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೫	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೬	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೭	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೮	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೪೯	ಒಂದು ಲಕ್ಷದ ನಲವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೫೦	ಒಂದು ಲಕ್ಷದ ಐವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೬೧	ಒಂದು ಲಕ್ಷದ ಅರವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೭೫	ಒಂದು ಲಕ್ಷದ ಎಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೮೧	ಒಂದು ಲಕ್ಷದ ಎಂಬತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೯೦	ಒಂದು ಲಕ್ಷದ ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೯೯	ಒಂದು ಲಕ್ಷದ ತೊಂಬತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧	ಹತ್ತು ಲಕ್ಷದ ಒಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨	ಹತ್ತು ಲಕ್ಷದ ಎರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩	ಹತ್ತು ಲಕ್ಷದ ಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪	ಹತ್ತು ಲಕ್ಷದ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೫	ಹತ್ತು ಲಕ್ಷದ ಐದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೬	ಹತ್ತು ಲಕ್ಷದ ಆರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೭	ಹತ್ತು ಲಕ್ಷದ ಏಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೮	ಹತ್ತು ಲಕ್ಷದ ಎಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೯	ಹತ್ತು ಲಕ್ಷದ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೦	ಹತ್ತು ಲಕ್ಷದ ಹತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೧	ಹತ್ತು ಲಕ್ಷದ ಹನ್ನೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೨	ಹತ್ತು ಲಕ್ಷದ ಹನ್ನೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೩	ಹತ್ತು ಲಕ್ಷದ ಹದಿಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೪	ಹತ್ತು ಲಕ್ಷದ ಹದಿನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೫	ಹತ್ತು ಲಕ್ಷದ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೬	ಹತ್ತು ಲಕ್ಷದ ಹದಿನಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೭	ಹತ್ತು ಲಕ್ಷದ ಹದಿನೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೮	ಹತ್ತು ಲಕ್ಷದ ಹದಿನೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೧೯	ಹತ್ತು ಲಕ್ಷದ ಹತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೦	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೧	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೨	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೩	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೪	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೫	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೬	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೭	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೮	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೨೯	ಹತ್ತು ಲಕ್ಷದ ಇಪ್ಪತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೦	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೧	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೨	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೩	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೪	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೫	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೬	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೭	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೮	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೩೯	ಹತ್ತು ಲಕ್ಷದ ಮೂವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೦	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೧	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೨	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೩	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೪	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೫	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೬	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೭	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೮	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೪೯	ಹತ್ತು ಲಕ್ಷದ ನಲವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೫೦	ಹತ್ತು ಲಕ್ಷದ ಐವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೬೧	ಹತ್ತು ಲಕ್ಷದ ಅರವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೭೫	ಹತ್ತು ಲಕ್ಷದ ಎಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೮೧	ಹತ್ತು ಲಕ್ಷದ ಎಂಬತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೯೦	ಹತ್ತು ಲಕ್ಷದ ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೯೯	ಹತ್ತು ಲಕ್ಷದ ತೊಂಬತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೧	ಒಂದು ಕೋಟಿಯ ಒಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೨	ಒಂದು ಕೋಟಿಯ ಎರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೩	ಒಂದು ಕೋಟಿಯ ಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೪	ಒಂದು ಕೋಟಿಯ ನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೫	ಒಂದು ಕೋಟಿಯ ಐದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೬	ಒಂದು ಕೋಟಿಯ ಆರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೭	ಒಂದು ಕೋಟಿಯ ಏಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೮	ಒಂದು ಕೋಟಿಯ ಎಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೦೯	ಒಂದು ಕೋಟಿಯ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೦	ಒಂದು ಕೋಟಿಯ ಹತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೧	ಒಂದು ಕೋಟಿಯ ಹನ್ನೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೨	ಒಂದು ಕೋಟಿಯ ಹನ್ನೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೩	ಒಂದು ಕೋಟಿಯ ಹದಿಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೪	ಒಂದು ಕೋಟಿಯ ಹದಿನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೫	ಒಂದು ಕೋಟಿಯ ಹದಿನೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೬	ಒಂದು ಕೋಟಿಯ ಹದಿನಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೭	ಒಂದು ಕೋಟಿಯ ಹದಿನೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೮	ಒಂದು ಕೋಟಿಯ ಹದಿನೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೧೯	ಒಂದು ಕೋಟಿಯ ಹತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೦	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೧	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೨	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೩	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೪	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೫	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೬	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೭	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೮	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೨೯	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೦	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೧	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೨	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೩	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೪	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೫	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೬	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೭	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೮	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೩೯	ಒಂದು ಕೋಟಿಯ ಮೂವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೦	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೧	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೨	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೩	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೪	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತನಾಲ್ಕು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೫	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೬	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೭	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೮	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತೆಂಟು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೪೯	ಒಂದು ಕೋಟಿಯ ನಲವತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೫೦	ಒಂದು ಕೋಟಿಯ ಐವತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೬೧	ಒಂದು ಕೋಟಿಯ ಅರವತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೭೫	ಒಂದು ಕೋಟಿಯ ಎಪ್ಪತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೮೧	ಒಂದು ಕೋಟಿಯ ಎಂಬತ್ತೊಂದು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೯೦	ಒಂದು ಕೋಟಿಯ ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೦೦೦೦೦೯೯	ಒಂದು ಕೋಟಿಯ ತೊಂಬತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೧೩೨೩	ಒಂದು ಸಾವಿರದ ಮುನ್ನೂರ ಇಪ್ಪತ್ತಮೂರು
+<eos>	<eos>
+CARDINAL	೧೩೪೫	ಒಂದು ಸಾವಿರದ ಮುನ್ನೂರ ನಲವತ್ತೈದು
+<eos>	<eos>
+CARDINAL	೧೩೪೫೬	ಹದಿಮೂರು ಸಾವಿರದ ನಾನೂರ ಐವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೨೩೪೬	ಹನ್ನೆರಡು ಸಾವಿರದ ಮುನ್ನೂರ ನಲವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೧೨೩೪೫೬	ಒಂದು ಲಕ್ಷದ ಇಪ್ಪತ್ತಮೂರು ಸಾವಿರದ ನಾನೂರ ಐವತ್ತಾರು
+<eos>	<eos>
+CARDINAL	೮೭೨೯೮೭	ಎಂಟು ಲಕ್ಷದ ಎಪ್ಪತ್ತೆರಡು ಸಾವಿರದ ಒಂಬೈನೂರ ಎಂಬತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೯೮೭೬೦೯	ಒಂಬತ್ತು ಲಕ್ಷದ ಎಂಬತ್ತೇಳು ಸಾವಿರದ ಆರುನೂರ ಒಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೯೮೭೬೭೮೯	ತೊಂಬತ್ತೆಂಟು ಲಕ್ಷದ ಎಪ್ಪತ್ತಾರು ಸಾವಿರದ ಏಳುನೂರ ಎಂಬತ್ತೊಂಬತ್ತು
+<eos>	<eos>
+CARDINAL	೨೩೪೫೫೬೭	ಇಪ್ಪತ್ತಮೂರು ಲಕ್ಷದ ನಲವತ್ತೈದು ಸಾವಿರದ ಐನೂರ ಅರವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೨೩೪೫೫೬೭	ಒಂದು ಕೋಟಿಯ ಇಪ್ಪತ್ತಮೂರು ಲಕ್ಷದ ನಲವತ್ತೈದು ಸಾವಿರದ ಐನೂರ ಅರವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೨೧೨೧೨೧೨೨	ಹನ್ನೆರಡು ಕೋಟಿಯ ಹನ್ನೆರಡು ಲಕ್ಷದ ಹನ್ನೆರಡು ಸಾವಿರದ ನೂರ ಇಪ್ಪತ್ತೆರಡು
+<eos>	<eos>
+CARDINAL	೧೦೦೨೩೪೫೫೬೭	ನೂರು ಕೋಟಿಯ ಇಪ್ಪತ್ತಮೂರು ಲಕ್ಷದ ನಲವತ್ತೈದು ಸಾವಿರದ ಐನೂರ ಅರವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೧೨೨೩೪೫೫೬೭	ನೂರ ಹನ್ನೆರಡು ಕೋಟಿಯ ಇಪ್ಪತ್ತಮೂರು ಲಕ್ಷದ ನಲವತ್ತೈದು ಸಾವಿರದ ಐನೂರ ಅರವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೦೨೨೩೪೫೫೬೭	ನೂರ ಎರಡು ಕೋಟಿಯ ಇಪ್ಪತ್ತಮೂರು ಲಕ್ಷದ ನಲವತ್ತೈದು ಸಾವಿರದ ಐನೂರ ಅರವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೧೧೦೨೨೩೪೫೫೬೭	ಒಂದು ಸಾವಿರದ ನೂರ ಎರಡು ಕೋಟಿಯ ಇಪ್ಪತ್ತಮೂರು ಲಕ್ಷದ ನಲವತ್ತೈದು ಸಾವಿರದ ಐನೂರ ಅರವತ್ತೇಳು
+<eos>	<eos>
+CARDINAL	೫೧೦೨೨೩೪೫೫೬೭	ಐದು ಸಾವಿರದ ನೂರ ಎರಡು ಕೋಟಿಯ ಇಪ್ಪತ್ತಮೂರು ಲಕ್ಷದ ನಲವತ್ತೈದು ಸಾವಿರದ ಐನೂರ ಅರವತ್ತೇಳು
+<eos>	<eos>
