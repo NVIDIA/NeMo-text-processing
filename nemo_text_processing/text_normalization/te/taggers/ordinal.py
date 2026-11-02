@@ -59,9 +59,7 @@ class OrdinalFst(GraphFst):
         plain_numbers = pynini.difference(pynini.closure(NEMO_ALL_DIGIT, 1), digits_as_one)
         number_input = pynini.union(plain_numbers, grouped_numbers).optimize()
 
-        ordinal_graph = (
-            number_input @ cardinal.final_graph @ cardinal_to_ordinal
-        ) + delete_suffix
+        ordinal_graph = (number_input @ cardinal.final_graph @ cardinal_to_ordinal) + delete_suffix
         exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
         graph = pynini.union(exceptions, ordinal_graph).optimize()
         self.graph = graph
