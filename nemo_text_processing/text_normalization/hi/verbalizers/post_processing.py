@@ -78,12 +78,7 @@ class PostProcessingFst:
         delete_space = pynutil.delete(" ")
 
         # Delete space before no_space_before_punct marks
-        graph = pynini.cdrewrite(
-            delete_space,
-            "",
-            no_space_before_punct,
-            NEMO_SIGMA
-        ).optimize()
+        graph = pynini.cdrewrite(delete_space, "", no_space_before_punct, NEMO_SIGMA).optimize()
 
         # Remove space after opening brackets
         no_space_after_punct = pynini.union(*brackets, "“", "‘")
