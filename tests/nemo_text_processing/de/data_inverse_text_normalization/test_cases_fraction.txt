@@ -50,3 +50,9 @@ ein millionstel~1/1000000
 das viertel ist schön~das viertel ist schön
 sich halb links halten~sich halb links halten
 auf halbem Weg~auf halbem Weg
+zwei drittel~2/3
+drei viertel~3/4
+vier fünftel~4/5
+elf zwölftel~11/12
+minus zwei drittel~-2/3
+drei einhundertstel~3/100
