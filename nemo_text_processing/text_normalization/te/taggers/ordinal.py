@@ -36,14 +36,16 @@ class OrdinalFst(GraphFst):
         written_suffix = load_labels(get_abs_path("data/ordinal/suffix.tsv"))[0][0].strip()
         delete_suffix = pynutil.delete(written_suffix)
 
-        digit_map = {row[0]: row[1] for row in load_labels(get_abs_path("data/numbers/digit.tsv"))}
-        one_verbal = digit_map["1"]
-        digits_as_one = pynini.union(*[inp for inp, verbal in digit_map.items() if verbal == one_verbal]).optimize()
+        digits_as_one = pynini.project(
+            pynini.string_file(get_abs_path("data/ordinal/standalone_one_digits.tsv")),
+            "input",
+        ).optimize()
 
-        tie_stems = {row[1] for row in load_labels(get_abs_path("data/numbers/ties.tsv"))}
-        extra_stems = {row[0].strip() for row in load_labels(get_abs_path("data/ordinal/word_append_stems.tsv"))}
+        ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
+        ties_word_append = pynini.project(ties, "output") + pynutil.insert(written_suffix)
         word_append = pynini.union(
-            *(pynini.cross(stem, stem + written_suffix) for stem in tie_stems | extra_stems)
+            ties_word_append,
+            pynini.string_file(get_abs_path("data/ordinal/word_append_stems.tsv")),
         ).optimize()
 
         char_rewrite = pynini.string_file(get_abs_path("data/ordinal/char_rewrites.tsv"))
@@ -57,7 +59,9 @@ class OrdinalFst(GraphFst):
         plain_numbers = pynini.difference(pynini.closure(NEMO_ALL_DIGIT, 1), digits_as_one)
         number_input = pynini.union(plain_numbers, grouped_numbers).optimize()
 
-        ordinal_graph = (number_input @ cardinal.final_graph @ cardinal_to_ordinal) + delete_suffix
+        ordinal_graph = (
+            number_input @ cardinal.final_graph @ cardinal_to_ordinal
+        ) + delete_suffix
         exceptions = pynini.string_file(get_abs_path("data/ordinal/exceptions.tsv"))
         graph = pynini.union(exceptions, ordinal_graph).optimize()
         self.graph = graph
