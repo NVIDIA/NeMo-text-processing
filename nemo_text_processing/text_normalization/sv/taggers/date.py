@@ -22,7 +22,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, optional_dot
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 
 
@@ -57,7 +57,6 @@ class DateFst(GraphFst):
 
         numbers = cardinal.graph
         optional_leading_zero = delete_leading_zero | NEMO_DIGIT
-        optional_dot = pynini.closure(pynutil.delete("."), 0, 1)
         optional_comma = pynini.closure(pynutil.delete(","), 0, 1)
 
         # 01, 31, 1

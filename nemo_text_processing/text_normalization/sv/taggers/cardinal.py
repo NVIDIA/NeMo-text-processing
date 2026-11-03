@@ -24,7 +24,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA
+from nemo_text_processing.text_normalization.sv.graph_utils import SV_ALPHA, optional_dot
 from nemo_text_processing.text_normalization.sv.utils import get_abs_path
 
 
@@ -40,19 +40,22 @@ def make_million(number: str, non_zero_no_one: 'pynini.FstLike', deterministic: 
         graph: A pynini.FstLike object
     """
     old_orth = number.replace("lj", "lli")
+    optional_space = pynini.closure(insert_space, 0, 1)
     graph = pynutil.add_weight(pynini.cross("001", number), -0.001)
     if not deterministic:
         graph |= pynutil.add_weight(pynini.cross("001", old_orth), -0.001)
-        # 'ett' is usually wrong for these numbers, but it occurs
+        # "million" by default, this covers "one million"; "en" is the
+        # correct form of "one" for these words, but "ett" is also possible
         for one in ["en", "ett"]:
-            graph |= pynutil.add_weight(pynini.cross("001", f"{one} {number}"), -0.001)
-            graph |= pynutil.add_weight(pynini.cross("001", f"{one} {old_orth}"), -0.001)
-            graph |= pynutil.add_weight(pynini.cross("001", f"{one}{number}"), -0.001)
-            graph |= pynutil.add_weight(pynini.cross("001", f"{one}{old_orth}"), -0.001)
-    graph |= non_zero_no_one + pynutil.insert(f" {number}er")
+            article = pynini.cross("001", one) + optional_space
+            graph |= pynutil.add_weight(article + pynutil.insert(number), -0.001)
+            graph |= pynutil.add_weight(article + pynutil.insert(old_orth), -0.001)
+    plural_suffix = pynutil.insert("er")
+    graph |= non_zero_no_one + insert_space + pynutil.insert(number) + plural_suffix
     if not deterministic:
-        graph |= pynutil.add_weight(non_zero_no_one + pynutil.insert(f" {old_orth}er"), -0.001)
-        graph |= pynutil.add_weight(non_zero_no_one + pynutil.insert(f"{old_orth}er"), -0.001)
+        graph |= pynutil.add_weight(
+            non_zero_no_one + optional_space + pynutil.insert(old_orth) + plural_suffix, -0.001
+        )
     graph |= pynutil.delete("000")
     graph += insert_space
     return graph
@@ -360,6 +363,29 @@ class CardinalFst(GraphFst):
         optional_minus_graph = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
         final_graph = optional_minus_graph + pynutil.insert("integer: \"") + self.graph + pynutil.insert("\"")
+        reference_labels = pynini.string_file(get_abs_path("data/reference/reference_labels.tsv"))
+        if not deterministic:
+            reference_labels |= pynini.string_file(
+                get_abs_path("data/reference/reference_labels_nondeterministic.tsv")
+            )
+        alphabetic_labels = pynini.closure(SV_ALPHA, 1) @ reference_labels
+        unit = reference_labels | (alphabetic_labels + optional_dot)
+        unit_first = unit + delete_space + insert_space + self.graph
+        reference_graph = unit_first
+        if not deterministic:
+            number_first = pynini.union(
+                *(
+                    pynutil.insert(spoken)
+                    + insert_space
+                    + self.graph
+                    + delete_space
+                    + pynutil.delete(written)
+                    + (optional_dot if written.isalpha() else pynini.accep(""))
+                    for written, spoken, _ in reference_labels.paths().items()
+                )
+            )
+            reference_graph |= number_first
+        final_graph |= pynutil.insert("integer: \"") + reference_graph + pynutil.insert("\"")
         if not deterministic:
             final_graph |= pynutil.add_weight(
                 optional_minus_graph + pynutil.insert("integer: \"") + self.graph_en + pynutil.insert("\""), -0.001
