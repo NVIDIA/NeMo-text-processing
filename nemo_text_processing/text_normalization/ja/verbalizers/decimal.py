@@ -17,6 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
 
 
 class DecimalFst(GraphFst):
@@ -29,20 +30,22 @@ class DecimalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        graph_integer = pynutil.delete("integer_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
+        decimal_point = load_labels(get_abs_path("data/numbers/decimal_point.tsv"))[0][1]
+
+        graph_integer = pynutil.delete('integer_part: "') + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete('"')
         graph_fraction = (
-            pynutil.delete("fractional_part: \"")
-            + pynutil.insert("点")
+            pynutil.delete('fractional_part: "')
+            + pynutil.insert(decimal_point)
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
 
         graph_optional_sign = pynini.closure(
             pynutil.delete("negative:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
         )
 
         graph_decimal_no_sign = graph_integer + pynutil.delete(" ") + graph_fraction

@@ -17,6 +17,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.ja.graph_utils import NEMO_NOT_QUOTE, NEMO_SPACE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.ja.utils import get_abs_path, load_labels
 
 
 class FractionFst(GraphFst):
@@ -24,7 +25,7 @@ class FractionFst(GraphFst):
     Finite state transducer for verbalizing fractionss, e.g.
     tokens { fraction { denominator: "二" numerator: "一"} } ->     1/2
     tokens { fraction { integer: "一" denominator: "四" numerator: "三" } } -> 1と3/4
-    tokens { fraction { integer: "1" denominator: "4" numerator: "3" } } -> 一荷四分の三
+    tokens { fraction { integer: "1" denominator: "4" numerator: "3" } } -> 一と四分の三
     tokens { fraction { denominator: "√3" numerator: "1" } } -> ルート三分の一
     tokens { fraction { denominator: "1.65" numerator: "50" } } -> 一点六五分の五十
     tokens { fraction { denominator: "二" numerator: "一"} } -> マイナス1/2
@@ -33,35 +34,41 @@ class FractionFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)
 
+        markers = dict(load_labels(get_abs_path("data/fraction/marker.tsv")))
+        fraction_marker = markers["fraction"]
+        root_written = markers["root_written"]
+        root_spoken = markers["root_spoken"]
+        mixed = markers["mixed"]
+
         denominator_component = (
-            pynutil.delete('denominator: \"') + pynini.closure(NEMO_NOT_QUOTE - "√") + pynutil.delete("\"")
+            pynutil.delete('denominator: "') + pynini.closure(NEMO_NOT_QUOTE - root_written) + pynutil.delete('"')
         )
         numerator_component = (
-            pynutil.delete('numerator: \"') + pynini.closure(NEMO_NOT_QUOTE - "√") + pynutil.delete("\"")
+            pynutil.delete('numerator: "') + pynini.closure(NEMO_NOT_QUOTE - root_written) + pynutil.delete('"')
         )
 
         # 1/3
         graph_regular_fraction = (
-            denominator_component + pynutil.delete(NEMO_SPACE) + pynutil.insert("分の") + numerator_component
+            denominator_component + pynutil.delete(NEMO_SPACE) + pynutil.insert(fraction_marker) + numerator_component
         )
 
         denominator_component_root = (
-            pynutil.delete('denominator: \"')
-            + pynini.cross("√", "ルート")
-            + pynini.closure(NEMO_NOT_QUOTE - "√")
-            + pynutil.delete("\"")
+            pynutil.delete('denominator: "')
+            + pynini.cross(root_written, root_spoken)
+            + pynini.closure(NEMO_NOT_QUOTE - root_written)
+            + pynutil.delete('"')
         )
         numerator_component_root = (
-            pynutil.delete('numerator: \"')
-            + pynini.cross("√", "ルート")
-            + pynini.closure(NEMO_NOT_QUOTE - "√")
-            + pynutil.delete("\"")
+            pynutil.delete('numerator: "')
+            + pynini.cross(root_written, root_spoken)
+            + pynini.closure(NEMO_NOT_QUOTE - root_written)
+            + pynutil.delete('"')
         )
         # √3/1
         graph_regular_fraction_root = (
             (denominator_component_root | denominator_component)
             + pynutil.delete(NEMO_SPACE)
-            + pynutil.insert("分の")
+            + pynutil.insert(fraction_marker)
             + (numerator_component_root | numerator_component)
         )
 
@@ -69,9 +76,9 @@ class FractionFst(GraphFst):
         graph_regular_fraction_char = (
             (denominator_component | denominator_component_root)
             + pynutil.delete(NEMO_SPACE)
-            + pynutil.delete("morphosyntactic_features: \"")
+            + pynutil.delete('morphosyntactic_features: "')
             + pynini.closure(NEMO_NOT_QUOTE)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynutil.delete(NEMO_SPACE)
             + (numerator_component | numerator_component_root)
         )
@@ -79,23 +86,21 @@ class FractionFst(GraphFst):
         graph_integer = (
             pynutil.delete("integer_part:")
             + delete_space
-            + pynutil.delete("\"")
-            + pynini.closure(pynini.cross("√", "ルート"), 0, 1)
-            + pynini.closure(
-                NEMO_NOT_QUOTE - pynini.union("荷", "と", "√")
-            )  # had to remove these 3 items fron nemo_not _quote so the root is properly converted in a deterministic way.
-            + pynutil.insert("荷")
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
+            + pynini.closure(pynini.cross(root_written, root_spoken), 0, 1)
+            + pynini.closure(NEMO_NOT_QUOTE - pynini.union(mixed, root_written))
+            + pynutil.insert(mixed)
+            + pynutil.delete('"')
         )
 
         graph_integer_with_char = (
             pynutil.delete("integer_part:")
             + delete_space
-            + pynutil.delete("\"")
-            + pynini.closure(pynini.cross("√", "ルート"), 0, 1)
-            + pynini.closure(NEMO_NOT_QUOTE - pynini.union("荷", "と", "√"))
-            + (pynini.accep("と") | pynini.accep("荷"))
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
+            + pynini.closure(pynini.cross(root_written, root_spoken), 0, 1)
+            + pynini.closure(NEMO_NOT_QUOTE - pynini.union(mixed, root_written))
+            + pynini.accep(mixed)
+            + pynutil.delete('"')
         )
 
         graph_regular_integer = (
@@ -107,9 +112,9 @@ class FractionFst(GraphFst):
         optional_sign = (
             pynutil.delete("negative:")
             + delete_space
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE)
-            + pynutil.delete("\"")
+            + pynutil.delete('"')
             + delete_space
         )
 

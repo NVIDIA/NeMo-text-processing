@@ -26,7 +26,7 @@ class FractionFst(GraphFst):
         e.g.,
         四分の三 -> fraction { denominator: "4" numerator: "3" }
         一と四分の三 -> fraction { integer: "1" denominator: "4" numerator: "3" }
-        一荷四分の三 -> fraction { integer: "1" denominator: "4" numerator: "3" }
+        一と四分の三 -> fraction { integer: "1" denominator: "4" numerator: "3" }
         ルート三分の一 -> fraction { denominator: "√3" numerator: "1" }
         一点六五分の五十 -> fraction { denominator: "1.65" numerator: "50" }
         二ルート六分の三 -> -> fraction { denominator: "2√6 " numerator: "3" }
@@ -40,7 +40,7 @@ class FractionFst(GraphFst):
             pynutil.delete("分の") | pynutil.delete(" 分 の　") | pynutil.delete("分 の　") | pynutil.delete("分 の")
         )
 
-        integer_word = pynutil.delete("と") | pynutil.delete("荷")
+        integer_word = pynutil.delete("と")
         root_word = pynini.accep("√") | pynini.cross("ルート", "√")
 
         graph_sign = (
