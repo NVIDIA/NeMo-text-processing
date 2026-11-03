@@ -25,8 +25,8 @@ class OrdinalFst(GraphFst):
 
     Examples:
         మొదటి -> ordinal { integer: "౧" }
+        పదకొండవ -> ordinal { integer: "౧౧" }
         ఇరవై ఒకటవ -> ordinal { integer: "౨౧" }
-        వంద ఒకటవ -> ordinal { integer: "౧౦౧" }
 
     Args:
         cardinal: CardinalFst instance used to obtain the cardinal graph.
@@ -38,13 +38,32 @@ class OrdinalFst(GraphFst):
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))
         graph_teens = pynini.string_file(get_abs_path("data/ordinals/teens_and_ties.tsv"))
         graph_hundred = pynini.string_file(get_abs_path("data/ordinals/hundred_digit.tsv"))
+        graph_cardinal_teens = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
 
         cardinal_graph = cardinal.graph_no_exception
+
+        cardinal_words = pynini.project(graph_cardinal_teens, "input").optimize()
+
+        suffix_rule = pynini.union(
+            pynini.cross("డు", "డవ"),
+            pynini.cross("డు", "డో"),
+            pynini.cross("గు", "గవ"),
+            pynini.cross("గు", "గో"),
+            pynini.cross("ను", "నవ"),
+            pynini.cross("ను", "నో"),
+            pynini.cross("రు", "రవ"),
+            pynini.cross("రు", "రో"),
+        ).optimize()
+
+        cardinal_to_ordinal = (pynini.closure(NEMO_CHAR) + suffix_rule).optimize()
+
+        generated_teens = (cardinal_words @ cardinal_to_ordinal).invert().optimize()
 
         ordinal_tail = pynini.union(
             graph_digit,
             graph_teens,
             graph_hundred,
+            generated_teens,
         ).optimize()
 
         graph = pynini.compose(
