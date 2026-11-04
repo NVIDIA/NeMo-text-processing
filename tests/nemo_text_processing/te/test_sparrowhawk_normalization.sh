@@ -43,5 +43,10 @@ testTNDecimal() {
   runtest $input
 }
 
+testTNOrdinal() {
+  input=$PROJECT_DIR/te/data_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
+
 # Load shUnit2
 . $PROJECT_DIR/../shunit2/shunit2
