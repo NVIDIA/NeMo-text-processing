@@ -43,7 +43,7 @@ class MeasureFst(GraphFst):
 
         unit = (
             pynutil.delete("units: \"")
-            + pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.accep("address"))
+            + pynini.difference(pynini.closure(NEMO_NOT_QUOTE, 1), pynini.union("address", "math"))
             + pynutil.delete("\"")
             + delete_space
         )
@@ -71,6 +71,7 @@ class MeasureFst(GraphFst):
         graph = (graph_cardinal | graph_decimal) + delete_space + insert_space + unit
 
         preserve_order = pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
+
         address = (
             pynutil.delete("units: \"address\" ")
             + delete_space
@@ -79,7 +80,25 @@ class MeasureFst(GraphFst):
             + pynini.closure(preserve_order)
         )
 
-        graph |= address
+        math_cardinal = (
+            pynutil.delete("cardinal {")
+            + delete_space
+            + pynutil.delete("integer: \"")
+            + pynini.closure(NEMO_NOT_QUOTE, 1)
+            + pynutil.delete("\"")
+            + delete_space
+            + pynutil.delete("}")
+        )
+
+        math_graph = (
+            pynutil.delete("units: \"math\" ")
+            + delete_space
+            + math_cardinal
+            + delete_space
+            + pynini.closure(preserve_order)
+        )
+
+        graph |= address | math_graph
 
         self.decimal = graph_decimal
         delete_tokens = self.delete_tokens(graph)
