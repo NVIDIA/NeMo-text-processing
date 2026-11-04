@@ -27,6 +27,7 @@ class OrdinalFst(GraphFst):
         మొదటి -> ordinal { integer: "౧" }
         పదకొండవ -> ordinal { integer: "౧౧" }
         ఇరవై ఒకటవ -> ordinal { integer: "౨౧" }
+        రెండువందలవ -> ordinal { integer: "౨౦౦" }
 
     Args:
         cardinal: CardinalFst instance used to obtain the cardinal graph.
@@ -38,13 +39,15 @@ class OrdinalFst(GraphFst):
         graph_digit = pynini.string_file(get_abs_path("data/ordinals/digit.tsv"))
         graph_teens = pynini.string_file(get_abs_path("data/ordinals/teens_and_ties.tsv"))
         graph_hundred = pynini.string_file(get_abs_path("data/ordinals/hundred_digit.tsv"))
+        graph_cardinal_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_cardinal_teens = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
+        graph_cardinal_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
 
         cardinal_graph = cardinal.graph_no_exception
 
-        cardinal_words = pynini.project(graph_cardinal_teens, "input").optimize()
+        cardinal_teens = pynini.project(graph_cardinal_teens, "input").optimize()
 
-        suffix_rule = pynini.union(
+        teen_suffix = pynini.union(
             pynini.cross("డు", "డవ"),
             pynini.cross("డు", "డో"),
             pynini.cross("గు", "గవ"),
@@ -55,15 +58,37 @@ class OrdinalFst(GraphFst):
             pynini.cross("రు", "రో"),
         ).optimize()
 
-        cardinal_to_ordinal = (pynini.closure(NEMO_CHAR) + suffix_rule).optimize()
+        generated_teens = (cardinal_teens @ (pynini.closure(NEMO_CHAR) + teen_suffix)).invert().optimize()
 
-        generated_teens = (cardinal_words @ cardinal_to_ordinal).invert().optimize()
+        cardinal_digits = pynini.project(graph_cardinal_digit, "input").optimize()
+
+        first_digit = pynini.project(
+            graph_cardinal_digit @ pynini.accep("౧"),
+            "input",
+        ).optimize()
+
+        hundred_multipliers = pynini.difference(
+            cardinal_digits,
+            first_digit,
+        ).optimize()
+
+        hundred_marker = (pynini.project(graph_cardinal_hundred, "input") @ pynini.accep("వందలు")).optimize()
+
+        hundred_words = (hundred_multipliers + hundred_marker).optimize()
+
+        hundred_suffix = pynini.union(
+            pynini.cross("లు", "లవ"),
+            pynini.cross("లు", "లో"),
+        ).optimize()
+
+        generated_hundreds = (hundred_words @ (pynini.closure(NEMO_CHAR) + hundred_suffix)).invert().optimize()
 
         ordinal_tail = pynini.union(
             graph_digit,
             graph_teens,
             graph_hundred,
             generated_teens,
+            generated_hundreds,
         ).optimize()
 
         graph = pynini.compose(
