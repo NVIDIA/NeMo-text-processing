@@ -62,11 +62,9 @@ class RangeFst(GraphFst):
         range_decimal = decimal + delete_space + dash_to_se + delete_space + decimal
 
         range_measure = measure + delete_space + dash_to_se + delete_space + measure
-        range_measure = pynutil.add_weight(range_measure, -1.5)
+        range_measure = pynutil.add_weight(range_measure, -0.5)
 
         range_pattern = range_time | range_date | range_cardinal | range_decimal | range_measure
-
-        range_pattern = pynutil.add_weight(range_pattern, 0.1)
 
         self.graph = range_pattern.optimize()
 
@@ -76,6 +74,5 @@ class RangeFst(GraphFst):
         # says the currency after the number). Emit two money tokens with "से" between them instead.
         money_separator = pynutil.insert(' } tokens { name: "से" } tokens { ')
         range_money = money + delete_space + pynutil.delete("-") + delete_space + money_separator + money
-        range_money = pynutil.add_weight(range_money, 0.1)
 
         self.fst = (graph | range_money).optimize()
