@@ -13,17 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Kernel verbalizers on their own: formatting only, values are resolved by the classifier."""
+"""The test language's verbalizer on its own: formatting only, values are resolved by the classifier."""
 
 import pytest
 from parameterized import parameterized
 from pynini.lib import rewrite
 
-from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.verbalize_final import build_final_verbalizer
+from nemo_text_processing.inverse_text_normalization.toy.verbalizers.verbalize_final import VerbalizeFinalFst
 
-from .toy_profile import TOY_PROFILE
-
-VERBALIZER = build_final_verbalizer(TOY_PROFILE.max_value, TOY_PROFILE.thousands_separator)
+VERBALIZER = VerbalizeFinalFst().fst
 
 
 class TestBantuKernelVerbalizer:

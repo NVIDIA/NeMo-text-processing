@@ -149,6 +149,13 @@ class TestBantuDataLoader:
 
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
+    def test_currency_unknown_class(self, tmp_path):
+        root = write(tmp_path, {**BASE, "money/currency.tsv": [("koin", "XTS", "99", "")]})
+        with pytest.raises(ValueError, match=r"currency\.tsv:1.*99"):
+            load_profile(root, SKELETON)
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
     def test_roles_cues_exact_and_variants(self, tmp_path):
         files = {
             **BASE,

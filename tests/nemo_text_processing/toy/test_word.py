@@ -16,16 +16,17 @@
 import pytest
 from parameterized import parameterized
 
-from ..utils import parse_test_case_file
-from .toy_profile import TOY_PROFILE
-from .utils import best_tags, build_normalizer
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
+
+from ..utils import CACHE_DIR, parse_test_case_file
+from .utils import best_tags
 
 
 class TestWord:
 
-    inverse_normalizer = build_normalizer(TOY_PROFILE)
+    inverse_normalizer = InverseNormalizer(lang='toy', cache_dir=CACHE_DIR, overwrite_cache=False)
 
-    @parameterized.expand(parse_test_case_file('bantu/data_inverse_text_normalization/test_cases_word.txt'))
+    @parameterized.expand(parse_test_case_file('toy/data_inverse_text_normalization/test_cases_word.txt'))
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):

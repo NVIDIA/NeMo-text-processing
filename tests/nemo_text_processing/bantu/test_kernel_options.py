@@ -13,8 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Kernel behaviour that depends on the profile itself: validation, optional features, caching."""
+"""
+Kernel options that a case file cannot switch: invalid profiles, optional features,
+caching, and how the test language is exposed. Variants of the test language are
+built from its profile with some settings changed.
+"""
 
+import sys
 from dataclasses import replace
 
 import pytest
@@ -24,12 +29,24 @@ from nemo_text_processing.inverse_text_normalization.bantu.profile import MoneyC
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import build_role
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import build_scale_amount
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.tokenize_and_classify import build_classifier
+from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer, parse_args
+from nemo_text_processing.inverse_text_normalization.toy.settings import load
+from nemo_text_processing.inverse_text_normalization.toy.taggers.tokenize_and_classify import ClassifyFst
 
-from .toy_profile import TOY_PROFILE
-from .utils import build_normalizer
+from ..utils import CACHE_DIR
+
+TOY_PROFILE = load()
+SAMPLES = ("bakopa pideka vo baima", "kasa emina epi", "lipoka obumega bapi", "bakopa bapi vo kasa")
 
 
-class TestBantuKernelProfile:
+def build_normalizer(profile) -> InverseNormalizer:
+    """The test language's runtime with its classifier rebuilt from a changed profile."""
+    normalizer = InverseNormalizer(lang='toy', cache_dir=CACHE_DIR)
+    normalizer.tagger.fst = build_classifier(profile)
+    return normalizer
+
+
+class TestBantuKernelOptions:
     # A broken profile is rejected when the grammar is built, with a clear error.
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
@@ -98,3 +115,36 @@ class TestBantuKernelProfile:
         money = MoneyFst(cardinal)
         assert money.has_implied_currency
         assert money.fst.num_states() > 0
+
+    # The compiled classifier is saved to and restored from a FAR file with the same results.
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_far_cache_roundtrip(self, tmp_path):
+        built = ClassifyFst(cache_dir=str(tmp_path), overwrite_cache=True)
+        assert (tmp_path / "toy_itn_lower_cased.far").exists()
+        restored = ClassifyFst(cache_dir=str(tmp_path))
+        normalizer = InverseNormalizer(lang='toy', cache_dir=CACHE_DIR)
+        for spoken in SAMPLES:
+            normalizer.tagger = built
+            expected = normalizer.inverse_normalize(spoken, verbose=False)
+            normalizer.tagger = restored
+            assert normalizer.inverse_normalize(spoken, verbose=False) == expected
+
+    # Cased input builds the same grammar (the kernel reads lower-cased words), cached under its own name.
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_cased_input_case(self, tmp_path):
+        ClassifyFst(cache_dir=str(tmp_path), input_case="cased")
+        assert (tmp_path / "toy_itn_cased.far").exists()
+        cased = InverseNormalizer(lang='toy', cache_dir=str(tmp_path), input_case='cased')
+        lower = InverseNormalizer(lang='toy', cache_dir=CACHE_DIR)
+        for spoken in SAMPLES:
+            assert cased.inverse_normalize(spoken, verbose=False) == lower.inverse_normalize(spoken, verbose=False)
+
+    # The test language is not offered on the command line.
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_hidden_from_cli(self, monkeypatch):
+        monkeypatch.setattr(sys, "argv", ["inverse_normalize.py", "--language", "toy", "--text", "kasa"])
+        with pytest.raises(SystemExit):
+            parse_args()

@@ -485,7 +485,7 @@ pipeline {
         }
         stage('L1: Run Bantu kernel ITN tests') {
           steps {
-            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/bantu/ -m "not pleasefixme" --cpu'
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/bantu/ tests/nemo_text_processing/toy/ -m "not pleasefixme" --cpu'
           }
         }
       }
