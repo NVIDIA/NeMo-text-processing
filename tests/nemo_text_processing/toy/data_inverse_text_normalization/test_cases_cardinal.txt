@@ -1,0 +1,60 @@
+kopa ima~kopa 1
+zikopa zipi~zikopa 2
+zikopa ziko~zikopa 3
+zikopa zide~zikopa 4
+zikopa zifu~zikopa 5
+zikopa sei~zikopa 6
+zikopa siti~zikopa 7
+zikopa oto~zikopa 8
+zikopa nona~zikopa 9
+zikopa deka~zikopa 10
+zikopa deka ke zima~zikopa 11
+zikopa deka ke zipi~zikopa 12
+zikopa deka ke ziko~zikopa 13
+zikopa deka ke zide~zikopa 14
+zikopa deka ke zifu~zikopa 15
+zikopa deka ke sei~zikopa 16
+zikopa deka ke siti~zikopa 17
+zikopa deka ke oto~zikopa 18
+zikopa deka ke nona~zikopa 19
+zikopa pideka~zikopa 20
+bakopa bapi~bakopa 2
+makopa mapi~makopa 2
+bakopa zipi~bakopa zipi
+bakopa ima~bakopa ima
+bakopa sei~bakopa 6
+makopa deka~makopa 10
+bakopa pideka vo baima~bakopa 21
+zikopa hanto pi vo kodeka vo ziko~zikopa 233
+bakopa milo~bakopa 1,000
+bakopa milo vo hanto~bakopa 1,100
+zikopa milo nona vo hanto nona vo nonadeka vo nona~zikopa 9,999
+bakopa tausi~bakopa 1,000
+makopa dekafu~makopa 15
+bakopa piideka~bakopa 20
+bakopa piideka vo baima~bakopa 21
+koin piideka~20 XTS
+bakopa hanto vo milo~bakopa hanto vo milo
+bakopa deka ke~bakopa deka ke
+bakopa bade bako~bakopa bade bako
+bakopa bafu vo kasa~bakopa 5 vo kasa
+zikopa pideka vo kasa~zikopa 20 vo kasa
+rana bakopa bako vo kasa lena~rana bakopa 3 vo kasa lena
+rana bakopa bade lena zikopa ziko~rana bakopa 4 lena zikopa 3
+bakopa bako zikopa zifu~bakopa 3 zikopa 5
+bakopa  bafu~bakopa 5
+bakopa sei !~bakopa 6 !
+zikopa ziko, bakopa bade~zikopa ziko, bakopa 4
+ŋoma bakopa siti~ŋoma bakopa 7
+bakopa omuna~bakopa 10,000
+bakopa emina epi~bakopa 20,000
+zikopa emina nona vo milo fu vo hanto~zikopa 95,100
+ekopa emina eko vo kasa~ekopa 30,000 vo kasa
+bakopa emina pideka~bakopa 200,000
+bakopa emina deka k'epi~bakopa 120,000
+bakopa emina pideka vo ema~bakopa 210,000
+bakopa emina pideka vo milo fu~bakopa 205,000
+bakopa emina pideka vo baima~bakopa emina pideka vo baima
+bakopa obumega bako vo emina dedeka vo efu vo milo siti vo hanto sei vo pideka vo baima~bakopa 3,457,621
+bakopa akamega kaima vo milo fu vo kodeka~bakopa 1,005,030
+zikopa obumega bafu vo emina eko vo kodeka~zikopa 5,030,030
