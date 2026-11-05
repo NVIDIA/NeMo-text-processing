@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import DIGIT, integer_domain
+from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import DIGIT, integer_domain
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
 
 

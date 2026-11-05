@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Helpers shared by the Bantu taggers: number-word runs, token formats and the money-signal filter.
+"""Helpers shared by the Bantu taggers: digit strings, number-word runs, token formats and the money-signal filter.
 
 The classifier reads the whole sentence at once. Maximal runs of number words are
 marked first, so each run is read as a single number in the context of the word
@@ -22,16 +22,48 @@ normalization over leaving words unchanged. All numeric readings have equal weig
 so structure alone must make the reading unique; the kernel tests check that every
 test input has exactly one best reading.
 """
+import string
+
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile
+from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile, Forms
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_NOT_SPACE,
     NEMO_SPACE,
     NEMO_WHITE_SPACE,
 )
+
+# Values are composed digit by digit inside the FSTs; there is no runtime arithmetic.
+NONZERO_DIGITS = string.digits[1:]
+DIGIT = pynini.union(*string.digits).optimize()
+NONZERO = pynini.union(*NONZERO_DIGITS).optimize()
+
+
+def mapping(forms: Forms) -> pynini.Fst:
+    return pynini.string_map(forms).optimize() if forms else pynini.Fst()
+
+
+def integer_domain(max_value: int) -> pynini.Fst:
+    """Canonical positive decimal strings <= bound, without integer enumeration."""
+    if isinstance(max_value, bool) or not isinstance(max_value, int) or max_value < 1:
+        raise ValueError("max_value must be a positive integer")
+    bound = str(max_value)
+    branches = [pynini.accep(bound)]
+    if len(bound) > 1:
+        branches.append(NONZERO + pynini.closure(DIGIT, 0, len(bound) - 2))
+    for index, limit in enumerate(bound):
+        minimum = 1 if index == 0 else 0
+        if int(limit) > minimum:
+            lower = pynini.union(*(str(n) for n in range(minimum, int(limit))))
+            branches.append(
+                pynini.accep(bound[:index])
+                + lower
+                + pynini.closure(DIGIT, len(bound) - index - 1, len(bound) - index - 1)
+            )
+    return pynini.union(*branches).optimize()
+
 
 # Internal markers, removed before output. Control characters, so they never clash with input text.
 RUN_START = "\x01"  # start of a run of number words

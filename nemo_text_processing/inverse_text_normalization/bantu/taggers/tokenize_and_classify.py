@@ -68,7 +68,7 @@ class ClassifyFst(GraphFst):
             logger.info(f"Creating ClassifyFst grammars for {profile.language}.")
             number_word, ordinary_word, segmenter = join_aware_runs(profile.number_words(), profile.join_words())
             cardinal = CardinalFst(profile, ordinary_word)
-            money = MoneyFst(profile)
+            money = MoneyFst(cardinal)
             word = WordFst(number_word, ordinary_word)
 
             token = pynini.union(cardinal.fst, money.fst, word.fst)

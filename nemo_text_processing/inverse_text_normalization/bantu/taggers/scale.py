@@ -28,19 +28,14 @@ from typing import Optional, Tuple
 import pynini
 from pynini.lib import pynutil
 
+from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import DIGIT, NONZERO, integer_domain, mapping
 from nemo_text_processing.inverse_text_normalization.bantu.profile import (
     CardinalProfile,
     CountedScale,
     NounContext,
     agreement_context,
 )
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import (
-    DIGIT,
-    NONZERO,
-    build_cardinal,
-    integer_domain,
-    mapping,
-)
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import build_cardinal
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE
 
 

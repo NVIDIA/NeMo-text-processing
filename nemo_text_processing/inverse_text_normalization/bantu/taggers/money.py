@@ -17,25 +17,20 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import CUE_ONLY, IMPLIED, run, token
-from nemo_text_processing.inverse_text_normalization.bantu.profile import (
-    CardinalProfile,
-    CurrencyContext,
-    agreement_context,
-)
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import (
-    build_cardinal,
-    build_role,
-    integer_domain,
-)
+from nemo_text_processing.inverse_text_normalization.bantu.profile import CurrencyContext, agreement_context
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import build_scale_amount
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, GraphFst
 
 
-def build_amount(profile: CardinalProfile, currency: CurrencyContext) -> pynini.Fst:
+def build_amount(cardinal: CardinalFst, currency: CurrencyContext) -> pynini.Fst:
     """Digits for an amount after this currency phrase: agreeing numbers, licensed roles and counted scales."""
-    amount = build_cardinal(profile, agreement_context(profile, currency.agreement_class))
+    profile = cardinal.profile
+    if currency.agreement_class not in cardinal.by_class:
+        agreement_context(profile, currency.agreement_class)  # raises a clear error
+    amount = cardinal.by_class[currency.agreement_class].copy()  # |= below edits in place
     for role in currency.roles:
-        amount |= build_role(profile, role) @ integer_domain(profile.max_value)
+        amount |= cardinal.roles[role]
     for scale in profile.counted_scales:
         amount |= build_scale_amount(profile, scale)
     return amount.optimize()
@@ -56,11 +51,12 @@ class MoneyFst(GraphFst):
     once the whole sentence is tagged.
 
     Args:
-        profile: the language profile
+        cardinal: the CardinalFst, whose number graphs the amounts reuse
     """
 
-    def __init__(self, profile: CardinalProfile):
+    def __init__(self, cardinal: CardinalFst):
         super().__init__(name="money", kind="classify")
+        profile = cardinal.profile
 
         def money_token(amount, code, marker=""):
             fields = pynutil.insert('integer_part: "') + amount + pynutil.insert(f'" currency: "{code}"')
@@ -70,7 +66,7 @@ class MoneyFst(GraphFst):
         for currency in profile.currencies:
             graphs.append(
                 pynutil.delete(currency.phrase + NEMO_SPACE)
-                + money_token(build_amount(profile, currency), currency.code)
+                + money_token(build_amount(cardinal, currency), currency.code)
             )
 
         self.has_implied_currency = False

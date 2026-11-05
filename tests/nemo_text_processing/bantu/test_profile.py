@@ -19,8 +19,9 @@ from dataclasses import replace
 
 import pytest
 
+from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import integer_domain
 from nemo_text_processing.inverse_text_normalization.bantu.profile import MoneyCues, Place
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.number import build_role, integer_domain
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import build_role
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import build_scale_amount
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.tokenize_and_classify import ClassifyFst
 
@@ -90,3 +91,20 @@ class TestBantuKernelProfile:
             expected = normalizer.inverse_normalize(spoken, verbose=False)
             normalizer.tagger = restored
             assert normalizer.inverse_normalize(spoken, verbose=False) == expected
+
+    # Money reuses the cardinal's graphs, as in other NeMo languages.
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_money_takes_the_cardinal(self):
+        from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import join_aware_runs
+        from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import CardinalFst
+        from nemo_text_processing.inverse_text_normalization.bantu.taggers.money import MoneyFst
+
+        _, ordinary_word, _ = join_aware_runs(TOY_PROFILE.number_words(), TOY_PROFILE.join_words())
+        cardinal = CardinalFst(TOY_PROFILE, ordinary_word)
+        assert cardinal.profile is TOY_PROFILE
+        assert set(cardinal.by_class) == {"2", "4", "6", "8"}
+        assert set(cardinal.roles) == {"short-tens"}
+        money = MoneyFst(cardinal)
+        assert money.has_implied_currency
+        assert money.fst.num_states() > 0
