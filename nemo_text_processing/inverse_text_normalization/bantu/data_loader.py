@@ -56,8 +56,11 @@ SCALE_PARTS = {"tens": "tens", "ones": "count_ones", "hundreds": "count_hundreds
 CUE_KINDS = {"stem": "stems", "word": "words", "not": "not_cues"}
 
 
-def read_rows(data_dir: str, name: str, columns: int) -> List[Tuple[str, List[str]]]:
-    """Non-blank rows of one TSV as (location, row); location is "path:line" for error messages."""
+def read_rows(data_dir: str, name: str, columns: int, last_optional: bool = False) -> List[Tuple[str, List[str]]]:
+    """
+    Non-blank rows of one TSV as (location, row); location is "path:line" for error messages.
+    Every cell must be non-empty, except the last one when last_optional is set.
+    """
     path = os.path.join(data_dir, name)
     if not os.path.exists(path):
         return []
@@ -68,6 +71,9 @@ def read_rows(data_dir: str, name: str, columns: int) -> List[Tuple[str, List[st
                 continue
             if len(row) != columns:
                 raise ValueError(f"{path}:{line}: expected {columns} columns, found {len(row)}")
+            required = row[:-1] if last_optional else row
+            if not all(required):
+                raise ValueError(f"{path}:{line}: empty field")
             rows.append((f"{path}:{line}", row))
     return rows
 
@@ -86,6 +92,8 @@ def load_profile(data_dir: str, skeleton: CardinalProfile) -> CardinalProfile:
         data_dir: the language's data folder
         skeleton: the language's profile with empty word lists (from its settings.py)
     """
+    if not os.path.isdir(data_dir):
+        raise ValueError(f"no data folder at {data_dir}")
     contexts = {
         context.class_id: {"atomic_units": [], "final_units": [], "teen_variants": []} for context in skeleton.contexts
     }
@@ -112,12 +120,17 @@ def load_profile(data_dir: str, skeleton: CardinalProfile) -> CardinalProfile:
     for _, (form, value, role) in read_rows(data_dir, "numbers/roles.tsv", 3):
         roles.setdefault(role, []).append((form, value))
 
-    known_classes = {context.class_id for context in skeleton.contexts}
+    # An amount after a currency agrees with a class whose numbers compound.
+    compounding = {context.class_id for context in skeleton.contexts if context.compounds}
     currencies = []
-    for location, (phrase, code, class_id, currency_roles) in read_rows(data_dir, "money/currency.tsv", 4):
-        if class_id not in known_classes:
-            raise ValueError(f"{location}: unknown class {class_id!r}")
+    rows = read_rows(data_dir, "money/currency.tsv", 4, last_optional=True)
+    for location, (phrase, code, class_id, currency_roles) in rows:
+        if class_id not in compounding:
+            raise ValueError(f"{location}: unknown or non-compounding class {class_id!r}")
         names = tuple(name for name in currency_roles.split(",") if name)
+        for name in names:
+            if name not in roles:
+                raise ValueError(f"{location}: unknown role {name!r}")
         currencies.append(CurrencyContext(phrase, code, class_id, names))
 
     cues = {field: [] for field in CUE_KINDS.values()}

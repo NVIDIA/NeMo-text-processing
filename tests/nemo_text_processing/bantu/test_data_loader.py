@@ -15,6 +15,8 @@
 
 """The shared loader that fills a language's profile skeleton from its TSV files."""
 
+from dataclasses import replace
+
 import pytest
 
 from nemo_text_processing.inverse_text_normalization.bantu.data_loader import load_profile
@@ -141,7 +143,8 @@ class TestBantuDataLoader:
     @pytest.mark.unit
     def test_currency_roles(self, tmp_path):
         rows = [("koin", "XTS", "2", "short-tens"), ("dolari", "USD", "2", "")]
-        profile = load_profile(write(tmp_path, {**BASE, "money/currency.tsv": rows}), SKELETON)
+        files = {**BASE, "money/currency.tsv": rows, "numbers/roles.tsv": [("mapi", "20", "short-tens")]}
+        profile = load_profile(write(tmp_path, files), SKELETON)
         assert profile.currencies == (
             CurrencyContext("koin", "XTS", "2", ("short-tens",)),
             CurrencyContext("dolari", "USD", "2", ()),
@@ -190,3 +193,31 @@ class TestBantuDataLoader:
         assert [c.noun for c in profile.contexts] == ["kopa", "bakopa", "zikopa", "makopa", "ekopa"]
         assert ("piideka", "2") in profile.places[0].forms
         assert build_classifier(profile).num_states() > 0
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_currency_unknown_role(self, tmp_path):
+        root = write(tmp_path, {**BASE, "money/currency.tsv": [("koin", "XTS", "2", "nosuchrole")]})
+        with pytest.raises(ValueError, match=r"currency\.tsv:1.*nosuchrole"):
+            load_profile(root, SKELETON)
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_currency_class_must_compound(self, tmp_path):
+        skeleton = replace(SKELETON, contexts=SKELETON.contexts + (NounContext("1", "kopa", (), (), compounds=False),))
+        root = write(tmp_path, {**BASE, "money/currency.tsv": [("koin", "XTS", "1", "")]})
+        with pytest.raises(ValueError, match=r"currency\.tsv:1.*class '1'"):
+            load_profile(root, skeleton)
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_empty_field(self, tmp_path):
+        root = write(tmp_path, {**BASE, "numbers/units.tsv": [("", "3", "2", "any")]})
+        with pytest.raises(ValueError, match=r"units\.tsv:1.*empty"):
+            load_profile(root, SKELETON)
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_missing_data_dir(self, tmp_path):
+        with pytest.raises(ValueError, match="no data folder"):
+            load_profile(str(tmp_path / "nope"), SKELETON)
