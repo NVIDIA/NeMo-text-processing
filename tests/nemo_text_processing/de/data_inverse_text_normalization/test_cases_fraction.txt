@@ -1,3 +1,4 @@
+null nulltel~0/0
 ein halb~1/2
 eine halbe~1/2
 einem halben~1/2
@@ -33,6 +34,7 @@ ein siebzigstel~1/70
 ein achtzigstel~1/80
 ein neunzigstel~1/90
 ein einhundertstel~1/100
+ein ein hundertstel~1/100
 ein zwei und zwanzigstel~1/22
 minus ein zwei und zwanzigstel~-1/22
 einem sechzigstel~1/60
