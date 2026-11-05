@@ -25,7 +25,6 @@ class OrdinalFst(GraphFst):
     Finite state transducer for classifying Tamil ordinals, e.g.
         1ஆவது  -> ordinal { integer: "முதலாவது" }
         ௨௭ஆவது -> ordinal { integer: "இருபத்தேழாவது" }
-        2nd    -> ordinal { integer: "இரண்டாவது" }
 
     Args:
         cardinal: CardinalFst
