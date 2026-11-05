@@ -65,6 +65,14 @@ def integer_domain(max_value: int) -> pynini.Fst:
     return pynini.union(*branches).optimize()
 
 
+def format_integer(max_value: int, thousands_separator: str) -> "pynini.FstLike":
+    """Groups digits in threes, e.g. 25000 -> 25,000. Rejects values outside 1..max_value."""
+    first = pynini.closure(DIGIT, 1, 3)
+    triple = pynini.closure(DIGIT, 3, 3)
+    grouped = first + pynini.closure(pynutil.insert(thousands_separator) + triple)
+    return (integer_domain(max_value) @ grouped).optimize()
+
+
 # Internal markers, removed before output. Control characters, so they never clash with input text.
 RUN_START = "\x01"  # start of a run of number words
 RUN_END = "\x02"  # end of a run of number words

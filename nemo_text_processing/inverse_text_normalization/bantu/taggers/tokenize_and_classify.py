@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
 import pynini
 
 from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import (
@@ -26,18 +24,13 @@ from nemo_text_processing.inverse_text_normalization.bantu.profile import Cardin
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.money import MoneyFst
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.word import WordFst
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    INPUT_LOWER_CASED,
-    NEMO_SPACE,
-    GraphFst,
-    generator_main,
-)
-from nemo_text_processing.utils.logging import logger
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE
 
 
-class ClassifyFst(GraphFst):
+def build_classifier(profile: CardinalProfile) -> pynini.Fst:
     """
-    Sentence-level classifier for a Bantu language, configured by a language profile.
+    Sentence-level classifier for a Bantu language, built from its profile. Each
+    language's ClassifyFst calls this and handles caching.
 
     Unlike most languages, the whole sentence is read at once: number words are
     resolved in their context (the counted noun, a currency phrase, a money cue,
@@ -50,34 +43,15 @@ class ClassifyFst(GraphFst):
 
     Args:
         profile: the language profile (word lists, agreement, scales, currencies)
-        cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
-        overwrite_cache: set to True to overwrite .far files
     """
+    number_word, ordinary_word, segmenter = join_aware_runs(profile.number_words(), profile.join_words())
+    cardinal = CardinalFst(profile, ordinary_word)
+    money = MoneyFst(cardinal)
+    word = WordFst(number_word, ordinary_word)
 
-    def __init__(self, profile: CardinalProfile, cache_dir: str = None, overwrite_cache: bool = False):
-        super().__init__(name="tokenize_and_classify", kind="classify")
-
-        far_file = None
-        if cache_dir is not None and cache_dir != "None":
-            os.makedirs(cache_dir, exist_ok=True)
-            far_file = os.path.join(cache_dir, f"{profile.language}_itn_{INPUT_LOWER_CASED}.far")
-        if not overwrite_cache and far_file and os.path.exists(far_file):
-            self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logger.info(f"ClassifyFst.fst was restored from {far_file}.")
-        else:
-            logger.info(f"Creating ClassifyFst grammars for {profile.language}.")
-            number_word, ordinary_word, segmenter = join_aware_runs(profile.number_words(), profile.join_words())
-            cardinal = CardinalFst(profile, ordinary_word)
-            money = MoneyFst(cardinal)
-            word = WordFst(number_word, ordinary_word)
-
-            token = pynini.union(cardinal.fst, money.fst, word.fst)
-            sentence = token + pynini.closure(NEMO_SPACE + token)
-            graph = SINGLE_SPACES @ segmenter @ sentence
-            if money.has_implied_currency:
-                graph @= only_with_money_signal(profile)
-            self.fst = graph.optimize()
-
-            if far_file:
-                generator_main(far_file, {"tokenize_and_classify": self.fst})
-                logger.info(f"ClassifyFst grammars are saved to {far_file}.")
+    token = pynini.union(cardinal.fst, money.fst, word.fst)
+    sentence = token + pynini.closure(NEMO_SPACE + token)
+    graph = SINGLE_SPACES @ segmenter @ sentence
+    if money.has_implied_currency:
+        graph @= only_with_money_signal(profile)
+    return graph.optimize()

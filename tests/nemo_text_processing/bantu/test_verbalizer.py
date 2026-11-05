@@ -19,11 +19,11 @@ import pytest
 from parameterized import parameterized
 from pynini.lib import rewrite
 
-from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.verbalize_final import VerbalizeFinalFst
+from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.verbalize_final import build_final_verbalizer
 
 from .toy_profile import TOY_PROFILE
 
-VERBALIZER = VerbalizeFinalFst(TOY_PROFILE).fst
+VERBALIZER = build_final_verbalizer(TOY_PROFILE.max_value, TOY_PROFILE.thousands_separator)
 
 
 class TestBantuKernelVerbalizer:

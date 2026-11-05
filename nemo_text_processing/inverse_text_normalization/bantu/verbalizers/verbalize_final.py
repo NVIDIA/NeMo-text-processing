@@ -16,31 +16,28 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile
-from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.verbalize import VerbalizeFst
+from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.verbalize import build_verbalizer
 from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import delete_extra_space, delete_space
 
 
-class VerbalizeFinalFst(GraphFst):
+def build_final_verbalizer(max_value: int, thousands_separator: str) -> pynini.Fst:
     """
-    Finite state transducer that verbalizes an entire sentence.
+    Verbalizes an entire sentence. Each language's VerbalizeFinalFst calls this.
 
     Args:
-        profile: the language profile (sets the largest value and the thousands separator)
+        max_value: largest value the language allows
+        thousands_separator: written separator between digit groups
     """
-
-    def __init__(self, profile: CardinalProfile):
-        super().__init__(name="verbalize_final", kind="verbalize")
-        types = VerbalizeFst(profile).fst | WordFst().fst
-        graph = (
-            pynutil.delete("tokens")
-            + delete_space
-            + pynutil.delete("{")
-            + delete_space
-            + types
-            + delete_space
-            + pynutil.delete("}")
-        )
-        graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
-        self.fst = graph.optimize()
+    types = build_verbalizer(max_value, thousands_separator) | WordFst().fst
+    graph = (
+        pynutil.delete("tokens")
+        + delete_space
+        + pynutil.delete("{")
+        + delete_space
+        + types
+        + delete_space
+        + pynutil.delete("}")
+    )
+    graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
+    return graph.optimize()

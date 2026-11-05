@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from types import SimpleNamespace
+
 from pynini.lib import rewrite
 
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.tokenize_and_classify import ClassifyFst
-from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.verbalize_final import VerbalizeFinalFst
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.tokenize_and_classify import build_classifier
+from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.verbalize_final import build_final_verbalizer
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.token_parser import TokenParser
 
@@ -30,8 +32,8 @@ def build_normalizer(profile) -> InverseNormalizer:
     """
     normalizer = InverseNormalizer.__new__(InverseNormalizer)
     normalizer.lang = profile.language
-    normalizer.tagger = ClassifyFst(profile)
-    normalizer.verbalizer = VerbalizeFinalFst(profile)
+    normalizer.tagger = SimpleNamespace(fst=build_classifier(profile))
+    normalizer.verbalizer = SimpleNamespace(fst=build_final_verbalizer(profile.max_value, profile.thousands_separator))
     normalizer.parser = TokenParser()
     normalizer.max_number_of_permutations_per_split = 729  # InverseNormalizer default
     normalizer.post_processor = None

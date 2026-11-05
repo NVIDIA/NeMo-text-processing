@@ -13,23 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.inverse_text_normalization.bantu.profile import CardinalProfile
+import pynini
+
 from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst
 
 
-class VerbalizeFst(GraphFst):
+def build_verbalizer(max_value: int, thousands_separator: str) -> pynini.Fst:
     """
     Composes the verbalizer grammars. Values arrive fully resolved from the
     classifier, so verbalizing is formatting only.
 
     Args:
-        profile: the language profile (sets the largest value and the thousands separator)
+        max_value: largest value the language allows
+        thousands_separator: written separator between digit groups
     """
-
-    def __init__(self, profile: CardinalProfile):
-        super().__init__(name="verbalize", kind="verbalize")
-        cardinal = CardinalFst(profile.max_value, profile.thousands_separator).fst
-        money = MoneyFst(profile.max_value, profile.thousands_separator).fst
-        self.fst = (cardinal | money).optimize()
+    cardinal = CardinalFst(max_value, thousands_separator).fst
+    money = MoneyFst(max_value, thousands_separator).fst
+    return (cardinal | money).optimize()

@@ -13,19 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import DIGIT, integer_domain
+from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import format_integer
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
-
-
-def format_integer(max_value: int, thousands_separator: str) -> "pynini.FstLike":
-    """Groups digits in threes, e.g. 25000 -> 25,000. Rejects values outside 1..max_value."""
-    first = pynini.closure(DIGIT, 1, 3)
-    triple = pynini.closure(DIGIT, 3, 3)
-    grouped = first + pynini.closure(pynutil.insert(thousands_separator) + triple)
-    return (integer_domain(max_value) @ grouped).optimize()
 
 
 class CardinalFst(GraphFst):

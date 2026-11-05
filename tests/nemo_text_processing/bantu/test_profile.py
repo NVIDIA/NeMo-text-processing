@@ -23,7 +23,7 @@ from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import in
 from nemo_text_processing.inverse_text_normalization.bantu.profile import MoneyCues, Place
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.cardinal import build_role
 from nemo_text_processing.inverse_text_normalization.bantu.taggers.scale import build_scale_amount
-from nemo_text_processing.inverse_text_normalization.bantu.taggers.tokenize_and_classify import ClassifyFst
+from nemo_text_processing.inverse_text_normalization.bantu.taggers.tokenize_and_classify import build_classifier
 
 from .toy_profile import TOY_PROFILE
 from .utils import build_normalizer
@@ -35,11 +35,15 @@ class TestBantuKernelProfile:
     @pytest.mark.unit
     def test_invalid_profiles_are_rejected(self):
         with pytest.raises(ValueError, match="no compound agreement context"):
-            ClassifyFst(replace(TOY_PROFILE, currencies=(replace(TOY_PROFILE.currencies[0], agreement_class="99"),)))
+            build_classifier(
+                replace(TOY_PROFILE, currencies=(replace(TOY_PROFILE.currencies[0], agreement_class="99"),))
+            )
         with pytest.raises(ValueError, match="consecutive ascending"):
-            ClassifyFst(replace(TOY_PROFILE, places=TOY_PROFILE.places[1:]))
+            build_classifier(replace(TOY_PROFILE, places=TOY_PROFILE.places[1:]))
         with pytest.raises(ValueError, match="single nonzero digits"):
-            ClassifyFst(replace(TOY_PROFILE, places=(Place(1, (("pideka", "20"),), " vo "),) + TOY_PROFILE.places[1:]))
+            build_classifier(
+                replace(TOY_PROFILE, places=(Place(1, (("pideka", "20"),), " vo "),) + TOY_PROFILE.places[1:])
+            )
         with pytest.raises(ValueError, match="positive integer"):
             integer_domain(0)
         with pytest.raises(KeyError):
@@ -77,20 +81,6 @@ class TestBantuKernelProfile:
     def test_scale_without_counting_heads(self):
         bare_only = replace(TOY_PROFILE.counted_scales[0], counting_plural="", counting_ones=())
         assert build_scale_amount(TOY_PROFILE, bare_only, "counting").num_states() == 0
-
-    # The compiled classifier is saved to and restored from a FAR file with the same results.
-    @pytest.mark.run_only_on('CPU')
-    @pytest.mark.unit
-    def test_far_cache_roundtrip(self, tmp_path):
-        built = ClassifyFst(TOY_PROFILE, cache_dir=str(tmp_path), overwrite_cache=True)
-        assert (tmp_path / "toy_itn_lower_cased.far").exists()
-        restored = ClassifyFst(TOY_PROFILE, cache_dir=str(tmp_path))
-        normalizer = build_normalizer(TOY_PROFILE)
-        for spoken in ("bakopa pideka vo baima", "kasa emina epi", "lipoka obumega bapi", "bakopa bapi vo kasa"):
-            normalizer.tagger = built
-            expected = normalizer.inverse_normalize(spoken, verbose=False)
-            normalizer.tagger = restored
-            assert normalizer.inverse_normalize(spoken, verbose=False) == expected
 
     # Money reuses the cardinal's graphs, as in other NeMo languages.
     @pytest.mark.run_only_on('CPU')

@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.inverse_text_normalization.bantu.verbalizers.cardinal import format_integer
+from nemo_text_processing.inverse_text_normalization.bantu.graph_utils import format_integer
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_UPPER, GraphFst, delete_space, insert_space
 
 
