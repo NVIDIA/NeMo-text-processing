@@ -26,8 +26,8 @@ class MoneyFst(GraphFst):
     """
     Finite state transducer for classifying money, suppletive aware, e.g.
         ₹५० -> money { currency_maj: "रुपए" integer_part: "पचास" }
-        ₹५०.५० -> money { currency_maj: "रुपए" integer_part: "पचास" fractional_part: "पचास" currency_min: "पैसे" }
-        ₹०.५० -> { money { currency_maj: "रुपए" integer_part: "शून्य" fractional_part: "पचास" currency_min: "पैसे" }
+        ₹५०.५० -> money { currency_maj: "रुपए" integer_part: "पचास" fractional_part: "पचास" currency_min: "true" }
+        ₹०.५० -> { money { currency_maj: "रुपए" integer_part: "शून्य" fractional_part: "पचास" currency_min: "true" }
 
     Args:
         cardinal: CardinalFst
@@ -157,29 +157,25 @@ class MoneyFst(GraphFst):
         maj_to_min = dict(load_labels(get_abs_path("data/money/major_minor_currencies.tsv")))
 
         def _build_major_and_minor(sym_maj_labels, int_graph):
-            result = None
+            # the minor-unit word is chosen in the verbalizer from the major currency, so the number graph is shared
+            majors = None
             for sym, maj in sym_maj_labels:
-                min_name = maj_to_min.get(maj)
-                if not min_name:
+                if not maj_to_min.get(maj):
                     continue
-
                 curr_maj = pynutil.insert('currency_maj: "') + pynini.cross(sym, maj) + pynutil.insert('"')
-                curr_min = pynutil.insert('currency_min: "') + pynutil.insert(min_name) + pynutil.insert('"')
+                majors = curr_maj if majors is None else majors | curr_maj
 
-                g = (
-                    optional_graph_negative
-                    + curr_maj
-                    + insert_space
-                    + int_graph
-                    + pynini.cross(decimal_separator, " ")
-                    + fraction
-                    + insert_space
-                    + curr_min
-                ).optimize()
-
-                result = g if result is None else pynini.union(result, g).optimize()
-
-            return result
+            curr_min = pynutil.insert('currency_min: "true"')
+            return (
+                optional_graph_negative
+                + majors
+                + insert_space
+                + int_graph
+                + pynini.cross(decimal_separator, " ")
+                + fraction
+                + insert_space
+                + curr_min
+            ).optimize()
 
         graph_major_and_minor = _build_major_and_minor(maj_labels, integer)
         graph_major_and_minor_singular = _build_major_and_minor(maj_singular_labels, integer_one)
