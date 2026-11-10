@@ -42,21 +42,12 @@ class OrdinalFst(GraphFst):
         graph_cardinal_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_cardinal_teens = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv"))
         graph_cardinal_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
+        teen_suffix = pynini.string_file(get_abs_path("data/ordinals/teen_suffix.tsv")).optimize()
+        hundred_suffix = pynini.string_file(get_abs_path("data/ordinals/hundred_suffix.tsv")).optimize()
 
         cardinal_graph = cardinal.graph_no_exception
 
         cardinal_teens = pynini.project(graph_cardinal_teens, "input").optimize()
-
-        teen_suffix = pynini.union(
-            pynini.cross("డు", "డవ"),
-            pynini.cross("డు", "డో"),
-            pynini.cross("గు", "గవ"),
-            pynini.cross("గు", "గో"),
-            pynini.cross("ను", "నవ"),
-            pynini.cross("ను", "నో"),
-            pynini.cross("రు", "రవ"),
-            pynini.cross("రు", "రో"),
-        ).optimize()
 
         generated_teens = (cardinal_teens @ (pynini.closure(NEMO_CHAR) + teen_suffix)).invert().optimize()
 
@@ -75,11 +66,6 @@ class OrdinalFst(GraphFst):
         hundred_marker = (pynini.project(graph_cardinal_hundred, "input") @ pynini.accep("వందలు")).optimize()
 
         hundred_words = (hundred_multipliers + hundred_marker).optimize()
-
-        hundred_suffix = pynini.union(
-            pynini.cross("లు", "లవ"),
-            pynini.cross("లు", "లో"),
-        ).optimize()
 
         generated_hundreds = (hundred_words @ (pynini.closure(NEMO_CHAR) + hundred_suffix)).invert().optimize()
 
