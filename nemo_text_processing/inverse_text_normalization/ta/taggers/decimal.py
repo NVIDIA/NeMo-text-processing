@@ -21,83 +21,68 @@ from nemo_text_processing.inverse_text_normalization.ta.utils import get_abs_pat
 
 class DecimalFst(GraphFst):
     """
-    Finite state transducer for classifying decimal numbers in Tamil.
+    Finite state transducer for classifying decimal numbers in Tamil, e.g.
+        நூற்று ஒன்று புள்ளி ஆறு -> decimal { integer_part: "௧௦௧" fractional_part: "௬" }
+        இருநூற்று ஆறு புள்ளி இரண்டு ஒன்பது -> decimal { integer_part: "௨௦௬" fractional_part: "௨௯" }
+        எதிர்மறை ஒன்று புள்ளி ஐந்து -> decimal { negative: "true" integer_part: "௧" fractional_part: "௫" }
 
-    Decimal point is indicated by "à®ªà¯à®³à¯à®³à®¿" followed by one or more digits.
-    Integer part is mandatory (matches all blind test cases).
-
-    Examples:
-        - à®’à®©à¯à®±à¯ à®ªà¯à®³à¯à®³à®¿ à®‡à®°à®£à¯à®Ÿà¯ â†’ decimal { integer_part: "à¯§" fractional_part: "à¯¨" }
-        - à®ªà¯‚à®œà¯à®œà®¿à®¯à®®à¯ à®ªà¯à®³à¯à®³à®¿ à®’à®©à¯à®±à¯ â†’ decimal { integer_part: "à¯¦" fractional_part: "à¯§" }
-        - à®ªà¯‚à®œà¯à®¯à®®à¯ à®ªà¯à®³à¯à®³à®¿ à®’à®©à¯à®ªà®¤à¯ à®Žà®Ÿà¯à®Ÿà¯ à®Žà®Ÿà¯à®Ÿà¯ â†’ decimal { integer_part: "à¯¦" fractional_part: "à¯¯à¯®à¯®" }
-        - à®®à¯‚à®©à¯à®±à¯ à®ªà¯à®³à¯à®³à®¿ à®’à®©à¯à®±à¯ à®¨à®¾à®©à¯à®•à¯ â†’ decimal { integer_part: "à¯©" fractional_part: "à¯§à¯ª" }
-        - à®¨à¯‚à®±à¯à®±à¯ à®‡à®°à®£à¯à®Ÿà¯ à®ªà¯à®³à¯à®³à®¿ à®®à¯‚à®©à¯à®±à¯ â†’ decimal { integer_part: "à¯§à¯¦à¯¨" fractional_part: "à¯©" }
-        - à®Žà®¤à®¿à®°à¯à®®à®±à¯ˆ à®’à®©à¯à®±à¯ à®ªà¯à®³à¯à®³à®¿ à®à®¨à¯à®¤à¯ â†’ decimal { negative: "true" integer_part: "à¯§" fractional_part: "à¯«" }
+    The integer part is parsed with the cardinal grammar; the digits after "புள்ளி"
+    are read one by one (zero variants come from zero.tsv).
 
     Args:
-        cardinal: CardinalFst - used for parsing the integer part
+        cardinal: CardinalFst, used for the integer part
     """
 
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="decimal", kind="classify")
 
-        # Get the cardinal graph for integer part parsing
-        # Using graph_no_exception to match Hindi design and avoid
-        # accidentally rejecting valid number forms
-        cardinal_graph = cardinal.graph_no_exception
-
-        # =====================================================
-        # Graph for digits after decimal point
-        # Supports "à®ªà¯‚à®œà¯à®œà®¿à®¯à®®à¯", "à®ªà¯‚à®œà¯à®¯à®®à¯", and "à®šà¯à®´à®¿à®¯à®®à¯" variants
-        # =====================================================
-
-        # Zero variants from zero.tsv
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
-
-        # Digits 1-9 from digit.tsv
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
 
-        # Combine zero and digits for decimal part
-        graph_decimal = graph_zero | graph_digit
+        # Integer part: reuse the full cardinal graph if the cardinal class exposes it,
+        # otherwise assemble it from the sub-graphs CardinalFst always exposes.
+        cardinal_graph = getattr(cardinal, "graph_no_exception", None)
+        if cardinal_graph is None:
+            cardinal_graph = (
+                graph_zero
+                | graph_digit
+                | cardinal.graph_two_digit
+                | cardinal.graph_exact_hundreds
+                | cardinal.graph_hundred_with_remainder
+                | cardinal.graph_exact_thousands
+                | cardinal.graph_thousand_with_remainder
+                | cardinal.graph_lakh
+                | cardinal.graph_lakh_with_remainder
+                | cardinal.graph_crore
+                | cardinal.graph_crore_with_remainder
+            ).optimize()
 
-        # One or more digits after decimal point
-        # e.g., "à®’à®©à¯à®±à¯" â†’ "à¯§", "à®’à®©à¯à®±à¯ à®‡à®°à®£à¯à®Ÿà¯" â†’ "à¯§à¯¨"
-        graph_decimal = (pynini.closure(graph_decimal + delete_space) + graph_decimal).optimize()
+        # Digits after the decimal point, spoken one at a time: "இரண்டு ஒன்பது" -> "௨௯"
+        graph_single_digit = (graph_zero | graph_digit).optimize()
+        graph_fraction_digits = (pynini.closure(graph_single_digit + delete_space) + graph_single_digit).optimize()
 
         # =====================================================
         # Decimal point marker
         # =====================================================
         point = pynutil.delete("à®ªà¯à®³à¯à®³à®¿")
 
-        # =====================================================
-        # Optional negative marker
-        # =====================================================
-        optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("à®Žà®¤à®¿à®°à¯à®®à®±à¯ˆ", "\"true\"") + delete_extra_space,
+        optional_negative = pynini.closure(
+            pynutil.insert("negative: ") + pynini.cross("எதிர்மறை", '"true"') + delete_extra_space,
             0,
             1,
         )
 
-        # =====================================================
-        # Integer part (mandatory - matches all blind tests)
-        # =====================================================
-        graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
-
-        # =====================================================
-        # Fractional part
-        # =====================================================
-        graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
+        integer_part = pynutil.insert('integer_part: "') + cardinal_graph + pynutil.insert('"')
+        fractional_part = pynutil.insert('fractional_part: "') + graph_fraction_digits + pynutil.insert('"')
 
         # =====================================================
         # Final decimal graph
         # Integer part is mandatory (all blind tests have it)
         # =====================================================
         self.final_graph_wo_negative = (
-            graph_integer + delete_extra_space + point + delete_extra_space + graph_fractional
-        )
+            integer_part + delete_space + point + delete_extra_space + fractional_part
+        ).optimize()
 
-        final_graph = optional_graph_negative + self.final_graph_wo_negative
-
-        # Add tokens for final output
+        final_graph = optional_negative + self.final_graph_wo_negative
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

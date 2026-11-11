@@ -19,14 +19,16 @@ from nemo_text_processing.inverse_text_normalization.ta.graph_utils import NEMO_
 
 
 class DecimalFst(GraphFst):
+    """
+    Finite state transducer for verbalizing decimal numbers in Tamil, e.g.
+        decimal { integer_part: "௧௦௧" fractional_part: "௬" } -> ௧௦௧.௬
+        decimal { negative: "true" integer_part: "௧" fractional_part: "௫" } -> -௧.௫
+    """
+
     def __init__(self):
         super().__init__(name="decimal", kind="verbalize")
 
-        optional_sign = pynini.closure(
-            pynini.cross('negative: "true"', "-") + delete_space,
-            0,
-            1,
-        )
+        optional_sign = pynini.closure(pynini.cross('negative: "true"', "-") + delete_space, 0, 1)
 
         integer = (
             pynutil.delete("integer_part:")
@@ -34,12 +36,6 @@ class DecimalFst(GraphFst):
             + pynutil.delete('"')
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
-        )
-
-        optional_integer = pynini.closure(
-            integer + delete_space,
-            0,
-            1,
         )
 
         fractional = (
@@ -51,13 +47,6 @@ class DecimalFst(GraphFst):
             + pynutil.delete('"')
         )
 
-        optional_fractional = pynini.closure(
-            fractional + delete_space,
-            0,
-            1,
-        )
-
-        graph = optional_integer + optional_fractional
-        graph = optional_sign + graph
+        graph = optional_sign + integer + delete_space + fractional
 
         self.fst = self.delete_tokens(graph).optimize()
