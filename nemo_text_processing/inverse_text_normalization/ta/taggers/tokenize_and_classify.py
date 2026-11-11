@@ -25,6 +25,7 @@ from nemo_text_processing.inverse_text_normalization.ta.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.inverse_text_normalization.ta.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.ta.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.ta.taggers.punctuation import PunctuationFst
 from nemo_text_processing.inverse_text_normalization.ta.taggers.word import WordFst
 
@@ -58,11 +59,18 @@ class ClassifyFst(GraphFst):
             cardinal = CardinalFst()
             cardinal_graph = cardinal.fst
 
+            decimal = DecimalFst(cardinal)
+            decimal_graph = decimal.fst
+
             word_graph = WordFst().fst
 
             punct_graph = PunctuationFst().fst
 
-            classify = pynutil.add_weight(cardinal_graph, 1.1) | pynutil.add_weight(word_graph, 100)
+            classify = (
+                pynutil.add_weight(decimal_graph, 0.8)
+                | pynutil.add_weight(cardinal_graph, 1.0)
+                | pynutil.add_weight(word_graph, 100)
+            )
 
             punct = pynutil.insert("tokens { ") + pynutil.add_weight(punct_graph, weight=1.1) + pynutil.insert(" }")
 

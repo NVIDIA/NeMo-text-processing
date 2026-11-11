@@ -1,4 +1,4 @@
-# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
+﻿# Copyright (c) 2026, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.import pynini
 from nemo_text_processing.inverse_text_normalization.ta.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.ta.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.ta.verbalizers.decimal import DecimalFst as DecimalVerbalizer
 from nemo_text_processing.inverse_text_normalization.ta.verbalizers.word import WordFst
 
 
@@ -21,6 +22,7 @@ class VerbalizeFst(GraphFst):
         super().__init__(name="verbalize", kind="verbalize")
 
         cardinal = CardinalFst()
+        decimal = DecimalVerbalizer()
         word = WordFst()
 
-        self.fst = (cardinal.fst | word.fst).optimize()
+        self.fst = (cardinal.fst | decimal.fst | word.fst).optimize()
