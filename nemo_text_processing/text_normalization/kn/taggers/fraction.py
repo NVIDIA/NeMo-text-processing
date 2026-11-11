@@ -31,7 +31,7 @@ class FractionFst(GraphFst):
     Finite state transducer for classifying fraction
         ೨೩ ೪/೬-> fraction { integer_part: "ಇಪ್ಪತ್ತಮೂರು" numerator: "ನಾಲ್ಕು" denominator: "ಆರರಲ್ಲಿ" }
         ೪/೦-> fraction { numerator: "ನಾಲ್ಕು" denominator: "ಸೊನ್ನೆ" }
-    
+
 
     Args:
         cardinal: cardinal GraphFst
@@ -44,22 +44,22 @@ class FractionFst(GraphFst):
 
         number = cardinal.final_graph
 
-        words = pynini.string_file(get_abs_path("data/fraction/words.tsv"))  
-        special_fractions = pynini.string_file(get_abs_path("data/fraction/special_fractions.tsv")) 
+        words = pynini.string_file(get_abs_path("data/fraction/words.tsv"))
+        special_fractions = pynini.string_file(get_abs_path("data/fraction/special_fractions.tsv"))
         scales = pynini.union(
             pynini.string_file(get_abs_path("data/numbers/scale_suffixes.tsv")),
             pynini.string_file(get_abs_path("data/fraction/scale_suffixes.tsv")),
-        ) 
+        )
         locative_suffix = pynini.string_file(get_abs_path("data/fraction/locative_suffixes.tsv"))
         lengthen_suffix = pynini.string_file(get_abs_path("data/fraction/lengthen_suffixes.tsv"))
 
         remove_slash_spaces = pynini.cdrewrite(pynini.cross(NEMO_SPACE + "/" + NEMO_SPACE, "/"), "", "", NEMO_SIGMA)
         symbol_to_key = remove_slash_spaces @ special_fractions
 
-        alone = symbol_to_key @ words 
-        half_after_integer = symbol_to_key @ pynini.cross("ARDHA", "VARE") @ words 
-        quarter_after_integer = symbol_to_key @ pynini.accep("KAALU") @ words 
-        three_quarters_after_integer = symbol_to_key @ pynini.accep("MUKKAALU") @ words 
+        alone = symbol_to_key @ words
+        half_after_integer = symbol_to_key @ pynini.cross("ARDHA", "VARE") @ words
+        quarter_after_integer = symbol_to_key @ pynini.accep("KAALU") @ words
+        three_quarters_after_integer = symbol_to_key @ pynini.accep("MUKKAALU") @ words
 
         scale_to_key = pynini.invert(scales) @ pynini.union("thousand", "lakh", "crore")
         to_genitive_words = (scale_to_key + pynutil.insert("_gen")) @ scales
