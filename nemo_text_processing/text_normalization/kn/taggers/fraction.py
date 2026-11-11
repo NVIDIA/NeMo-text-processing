@@ -16,9 +16,9 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.kn.graph_utils import (
+    COMMA,
     NEMO_ALL_DIGIT,
     NEMO_DIGIT,
-    COMMA ,
     NEMO_SIGMA,
     NEMO_SPACE,
     GraphFst,
