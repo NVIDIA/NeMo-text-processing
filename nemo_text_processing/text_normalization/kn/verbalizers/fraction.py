@@ -52,9 +52,7 @@ class FractionFst(GraphFst):
         special = pynutil.delete('morphosyntactic_features: "') + quoted + pynutil.delete('"')
 
         sign = pynini.cross('negative: "true"', MINUS_WORD) + pynutil.insert(NEMO_SPACE) + pynutil.delete(NEMO_SPACE)
-        integer = (
-            integer_part + pynutil.delete(NEMO_SPACE) + pynutil.insert(NEMO_SPACE + connector + NEMO_SPACE)
-        )
+        integer = integer_part + pynutil.delete(NEMO_SPACE) + pynutil.insert(NEMO_SPACE + connector + NEMO_SPACE)
 
         fraction = denominator + NEMO_SPACE + numerator
 
