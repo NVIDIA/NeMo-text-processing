@@ -15,7 +15,14 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.kn.graph_utils import NEMO_SIGMA, NEMO_SPACE, GraphFst
+from nemo_text_processing.text_normalization.kn.graph_utils import (
+    NEMO_ALL_DIGIT,
+    NEMO_DIGIT,
+    COMMA ,
+    NEMO_SIGMA,
+    NEMO_SPACE,
+    GraphFst,
+)
 from nemo_text_processing.text_normalization.kn.utils import get_abs_path
 
 
@@ -83,10 +90,33 @@ class FractionFst(GraphFst):
         integer_part = pynutil.insert('integer_part: "') + number + pynutil.insert('"')
         numerator = pynutil.insert('numerator: "') + number + pynutil.insert('"')
         denominator = pynutil.insert('denominator: "') + (number @ to_locative) + pynutil.insert('"')
-        generic = pynini.closure(integer_part + NEMO_SPACE, 0, 1) + numerator + slash + denominator
+        fraction_graph = pynini.closure(integer_part + NEMO_SPACE, 0, 1) + numerator + slash + denominator
+
+        ascii_number = pynini.closure(NEMO_DIGIT | COMMA, 1)
+        kannada_number = pynini.closure(pynini.difference(NEMO_ALL_DIGIT, NEMO_DIGIT) | COMMA, 1)
+        any_number = pynini.closure(NEMO_ALL_DIGIT | COMMA, 1)
+
+        slash_in = pynini.union("/", NEMO_SPACE + "/" + NEMO_SPACE)
+
+        ascii_pair = ascii_number + slash_in + ascii_number
+        kannada_pair = kannada_number + slash_in + kannada_number
+        same_script_pairs = (ascii_pair | kannada_pair).optimize()
+        mixed_pair = pynini.difference(any_number + slash_in + any_number, same_script_pairs).optimize()
+
+        same_script = pynini.union(
+            pynini.closure(ascii_number + NEMO_SPACE, 0, 1) + ascii_pair,
+            pynini.closure(kannada_number + NEMO_SPACE, 0, 1) + kannada_pair,
+        ).optimize()
 
         special_symbols = pynini.project(alone, "input")
         with_special = pynini.union(special_symbols, NEMO_SIGMA + NEMO_SPACE + special_symbols).optimize()
-        generic = pynini.compose(pynini.difference(NEMO_SIGMA, with_special), generic)
+        generic = pynini.compose(pynini.difference(same_script, with_special), fraction_graph)
 
-        self.fst = self.add_tokens(negative_sign + (generic | special)).optimize()
+        passthrough = (
+            pynutil.insert('morphosyntactic_features: "')
+            + pynini.closure(pynini.accep("-"), 0, 1)
+            + mixed_pair
+            + pynutil.insert('"')
+        )
+
+        self.fst = self.add_tokens((negative_sign + (generic | special)) | passthrough).optimize()
