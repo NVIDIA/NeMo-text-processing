@@ -31,7 +31,7 @@ class DecimalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", "سالب"), 0, 1)
+        optional_sign = pynini.closure(pynini.cross("negative: \"true\" ", "سالب "), 0, 1)
         integer = pynutil.delete(" \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
         integer_part = pynutil.delete("integer_part:") + integer
         fractional_part = pynutil.delete("fractional_part:") + integer
