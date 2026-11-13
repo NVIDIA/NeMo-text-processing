@@ -68,3 +68,25 @@ class TestCardinal:
                 punct_post_process=False,
             )
             assert expected in pred_non_deterministic, f"input: {test_input}"
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_normalize_list_empty(self):
+        assert self.normalizer_en.normalize_list([]) == []
+        assert self.inverse_normalizer_en.inverse_normalize_list([]) == []
+
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_normalize_manifest_empty(self, tmp_path):
+        manifest = tmp_path / "empty.json"
+        manifest.write_text("")
+        output = tmp_path / "empty_normalized.json"
+        self.normalizer_en.normalize_manifest(
+            manifest=str(manifest),
+            n_jobs=1,
+            punct_pre_process=True,
+            punct_post_process=True,
+            batch_size=10,
+            output_filename=str(output),
+        )
+        assert output.read_text() == ""

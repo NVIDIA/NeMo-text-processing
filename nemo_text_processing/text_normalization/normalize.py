@@ -262,6 +262,9 @@ class Normalizer:
             ]
             return normalized_lines
 
+        if not texts:
+            return []
+
         # to save intermediate results to a file
         batch = min(len(texts), batch_size)
 
@@ -520,7 +523,7 @@ class Normalizer:
         logger.warning(f'Normalizing {len(lines)} line(s) of {manifest}...')
 
         # to save intermediate results to a file
-        batch = min(len(lines), batch_size)
+        batch = max(1, min(len(lines), batch_size))
 
         tmp_dir = "/tmp/parts"
         if os.path.exists(tmp_dir):
