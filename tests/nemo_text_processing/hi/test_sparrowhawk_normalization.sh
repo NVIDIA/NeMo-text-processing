@@ -47,10 +47,10 @@ testTNDecimal() {
   runtest $input
 }
 
-#testTNRange() {
-#  input=$PROJECT_DIR/hi/data_text_normalization/test_cases_range.txt
-#  runtest $input
-#}
+testTNRange() {
+ input=$PROJECT_DIR/hi/data_text_normalization/test_cases_range.txt
+ runtest $input
+}
 
 testTNSerial() {
   input=$PROJECT_DIR/hi/data_text_normalization/test_cases_serial.txt
