@@ -20,6 +20,9 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.pt.graph_utils import NEMO_SIGMA, NEMO_SPACE, generator_main
 from nemo_text_processing.utils.logging import logger
 
+NO_SPACE_BEFORE_PUNCT = [",", ".", "!", "?", ":", ";", ")", r"\]", "}"]
+NO_SPACE_AFTER_PUNCT = ["(", r"\[", "{"]
+
 
 class PostProcessingFst:
     """
@@ -50,11 +53,8 @@ class PostProcessingFst:
         Returns graph to post process punctuation marks for Portuguese, removing the spaces
         that the tokenizer/verbalizer unconditionally inserts between tokens.
         """
-        no_space_before_punct = [",", ".", "!", "?", ":", ";", ")", r"\]", "}"]
-        no_space_after_punct = ["(", r"\[", "{"]
-
-        no_space_before_punct_fst = pynini.union(*no_space_before_punct)
-        no_space_after_punct_fst = pynini.union(*no_space_after_punct)
+        no_space_before_punct_fst = pynini.union(*NO_SPACE_BEFORE_PUNCT)
+        no_space_after_punct_fst = pynini.union(*NO_SPACE_AFTER_PUNCT)
 
         delete_space = pynutil.delete(NEMO_SPACE)
 
