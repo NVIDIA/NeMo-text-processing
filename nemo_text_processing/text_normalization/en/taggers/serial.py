@@ -180,7 +180,11 @@ class SerialFst(GraphFst):
         ).optimize()
         serial_graph |= pynutil.add_weight(slash_serial, MIN_NEG_WEIGHT)
 
-        serial_graph |= pynini.compose(graph_with_space, serial_graph_alnum.optimize()).optimize()
+        serial_graph_alnum = pynini.compose(graph_with_space, serial_graph_alnum.optimize()).optimize()
+        if deterministic:
+            # Prefer the delimited reading when both paths match, e.g. "133-ABC".
+            serial_graph_alnum = pynutil.add_weight(serial_graph_alnum, MIN_POS_WEIGHT)
+        serial_graph |= serial_graph_alnum
         serial_graph = pynini.compose(pynini.closure(NEMO_NOT_SPACE, 2), serial_graph).optimize()
 
         # this is not to verbolize "/" as "slash" in cases like "import/export"
