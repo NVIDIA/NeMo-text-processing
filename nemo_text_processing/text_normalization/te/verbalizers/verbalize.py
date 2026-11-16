@@ -15,6 +15,7 @@
 from nemo_text_processing.text_normalization.te.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.te.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.te.verbalizers.decimal import DecimalFst
+from nemo_text_processing.text_normalization.te.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.te.verbalizers.ordinal import OrdinalFst
 
 
@@ -41,6 +42,9 @@ class VerbalizeFst(GraphFst):
         ordinal = OrdinalFst(deterministic=deterministic)
         ordinal_graph = ordinal.fst
 
-        graph = cardinal_graph | decimal_graph | ordinal_graph
+        fraction = FractionFst(deterministic=deterministic)
+        fraction_graph = fraction.fst
+
+        graph = cardinal_graph | decimal_graph | ordinal_graph | fraction_graph
 
         self.fst = graph
