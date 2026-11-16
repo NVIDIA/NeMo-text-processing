@@ -33,6 +33,7 @@ NEMO_ALL_ZERO = pynini.project(zero_map, "input").optimize()
 NEMO_ALL_DIGIT = pynini.union(digit_only, NEMO_ALL_ZERO).optimize()
 DECIMAL_WORD = "ಬಿಂದು"
 MINUS_WORD = "ಮೈನಸ್"
+DIVIDE_WORD = "ಬೈ"
 PERIOD = "."
 MINUS = "-"
 COMMA = ","
