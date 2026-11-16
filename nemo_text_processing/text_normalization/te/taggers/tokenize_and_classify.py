@@ -28,8 +28,8 @@ from nemo_text_processing.text_normalization.te.graph_utils import (
 )
 from nemo_text_processing.text_normalization.te.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.te.taggers.decimal import DecimalFst
-from nemo_text_processing.text_normalization.te.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.te.taggers.fraction import FractionFst
+from nemo_text_processing.text_normalization.te.taggers.ordinal import OrdinalFst
 from nemo_text_processing.text_normalization.te.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.te.taggers.word import WordFst
 

@@ -59,6 +59,7 @@ class FractionFst(GraphFst):
 
         def signed(graph):
             return optional_negative + graph
+
         num_den = (
             pynutil.insert("numerator: \"")
             + cardinal_graph
@@ -97,7 +98,5 @@ class FractionFst(GraphFst):
         self.fst = self.add_tokens(
             signed(morph | mixed(no_ascii(int_in), no_ascii(common_in)) | mixed(no_te(int_in), no_te(common_in)))
             | signed(optional_int + pynini.compose(rational_tail, num_den))
-            | signed(
-                pynini.compose(cross_tail, pynutil.insert('morphosyntactic_features: "slash" ') + num_den)
-            )
+            | signed(pynini.compose(cross_tail, pynutil.insert('morphosyntactic_features: "slash" ') + num_den))
         ).optimize()
