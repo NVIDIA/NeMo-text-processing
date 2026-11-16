@@ -42,7 +42,7 @@ class FractionFst(GraphFst):
 
         bai_frac = field("numerator", " ") + pynutil.insert(f" {bai} ") + field("denominator")
         cross_frac = (
-            pynutil.delete('literal_slash: "true" ')
+            pynutil.delete('morphosyntactic_features: "slash" ')
             + field("numerator", " ")
             + pynutil.insert("/")
             + field("denominator")
