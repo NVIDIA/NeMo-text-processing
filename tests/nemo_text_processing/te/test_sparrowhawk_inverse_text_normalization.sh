@@ -26,5 +26,9 @@ testITNDecimal() {
   input=$PROJECT_DIR/te/data_inverse_text_normalization/test_cases_decimal.txt
   runtest $input
 }
+testITNOrdinal() {
+  input=$PROJECT_DIR/te/data_inverse_text_normalization/test_cases_ordinal.txt
+  runtest $input
+}
 
 . $PROJECT_DIR/../shunit2/shunit2
