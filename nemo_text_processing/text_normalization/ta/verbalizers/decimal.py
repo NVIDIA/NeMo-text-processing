@@ -30,7 +30,6 @@ class DecimalFst(GraphFst):
     decimal point (புள்ளி); the tagger only stores the digits after the point.
         e.g. decimal { integer_part: "ஒன்று" fractional_part: "ஐந்து" } -> "ஒன்று புள்ளி ஐந்து"
         e.g. decimal { negative: "true" integer_part: "இரண்டு" fractional_part: "ஆறு ஏழு" } -> "கழித்தல் இரண்டு புள்ளி ஆறு ஏழு"
-        e.g. decimal { fractional_part: "ஐந்து" } -> "புள்ளி ஐந்து"
 
     Args:
         deterministic: if True will provide a single transduction option,
@@ -54,8 +53,4 @@ class DecimalFst(GraphFst):
             with_int_prefix + pynutil.insert(f" {POINT} ") + delete_fraction_open + not_quotes + pynutil.delete('"')
         ).optimize()
 
-        without_integer = (
-            sign_with_space + pynutil.insert(f"{POINT} ") + delete_fraction_open + not_quotes + pynutil.delete('"')
-        ).optimize()
-
-        self.fst = self.delete_tokens(with_integer | without_integer).optimize()
+        self.fst = self.delete_tokens(with_integer).optimize()
