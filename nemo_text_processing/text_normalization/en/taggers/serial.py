@@ -63,9 +63,13 @@ def _build_serial_graph(
     ).optimize()
 
     serial_graph = pynutil.add_weight(serial_graph, MIN_POS_WEIGHT)
-    serial_graph |= (
-        pynini.closure(NEMO_NOT_SPACE, 1) + (pynini.cross("^2", " squared") | pynini.cross("^3", " cubed")).optimize()
+    # the base of a power is verbalized too, e.g. "3^2" -> "three squared", "1.5^2" -> "one point five squared"
+    digit = pynini.compose(NEMO_DIGIT, num_graph)
+    power_base = num_graph + pynini.closure(
+        pynini.cross(".", " point ") + digit + pynini.closure(pynutil.insert(" ") + digit), 0, 1
     )
+    power_base |= pynini.difference(pynini.closure(NEMO_NOT_SPACE, 1), NEMO_SIGMA + NEMO_DIGIT + NEMO_SIGMA)
+    serial_graph |= (power_base + (pynini.cross("^2", " squared") | pynini.cross("^3", " cubed"))).optimize()
 
     serial_graph = (
         pynini.closure((serial_graph | num_graph | alphas) + delimiter)
