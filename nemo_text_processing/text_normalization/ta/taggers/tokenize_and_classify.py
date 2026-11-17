@@ -86,7 +86,7 @@ class ClassifyFst(GraphFst):
 
             classify = (
                 pynutil.add_weight(cardinal_graph, 1.1)
-                | pynutil.add_weight(decimal_graph, 1.2)
+                | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
             )
 

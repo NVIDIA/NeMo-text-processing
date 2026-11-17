@@ -30,11 +30,10 @@ class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimals. The tagger only stores the digits after
     the point; the verbalizer inserts the word for the decimal point (புள்ளி).
-    Both Latin (0-9) and Tamil (௦-௯) digits are accepted.
+    Both Latin (0-9) and Tamil (௦-௯) digits are accepted. A decimal must have an integer part.
         e.g. "1.5" -> decimal { integer_part: "ஒன்று" fractional_part: "ஐந்து" }
         e.g. "-2.67" -> decimal { negative: "true" integer_part: "இரண்டு" fractional_part: "ஆறு ஏழு" }
         e.g. "00.5" -> decimal { integer_part: "சுழியம் சுழியம்" fractional_part: "ஐந்து" }
-        e.g. ".5" -> decimal { fractional_part: "ஐந்து" }
 
     Args:
         cardinal: CardinalFst
@@ -64,9 +63,8 @@ class DecimalFst(GraphFst):
         fractional_part = pynutil.insert('fractional_part: "') + fraction + pynutil.insert('"')
 
         with_int = integer_part + delete_point + insert_space + fractional_part
-        without_int = delete_point + fractional_part
         leading_zero_decimal = leading_zero_part + delete_point + insert_space + fractional_part
 
-        final_graph = optional_sign + (leading_zero_decimal | with_int | without_int)
+        final_graph = optional_sign + (leading_zero_decimal | with_int)
 
         self.fst = self.add_tokens(final_graph).optimize()
