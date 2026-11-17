@@ -28,6 +28,7 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     convert_space,
 )
 from nemo_text_processing.text_normalization.en.utils import get_abs_path, load_labels
+from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as OrdinalVerbalizer
 
 
 def _leading_zero_graph(cardinal: GraphFst) -> "pynini.FstLike":
@@ -182,6 +183,14 @@ class SerialFst(GraphFst):
 
         serial_graph |= pynini.compose(graph_with_space, serial_graph_alnum.optimize()).optimize()
         serial_graph = pynini.compose(pynini.closure(NEMO_NOT_SPACE, 2), serial_graph).optimize()
+
+        # ordinal followed by hyphenated words, e.g. "3rd-party" -> "third-party"
+        ordinal_num = pynini.compose(
+            pynutil.insert('integer: "') + ordinal.graph + pynutil.insert('"'),
+            OrdinalVerbalizer(deterministic=deterministic).graph,
+        )
+        ordinal_compound = ordinal_num + pynini.closure(pynini.accep("-") + alphas, 1)
+        serial_graph |= pynutil.add_weight(ordinal_compound, MIN_NEG_WEIGHT).optimize()
 
         # this is not to verbolize "/" as "slash" in cases like "import/export"
         serial_graph = pynini.compose(
