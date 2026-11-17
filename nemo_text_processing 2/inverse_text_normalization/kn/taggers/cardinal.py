@@ -5,7 +5,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     [apache.org](http://www.apache.org/licenses/LICENSE-2.0)
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,6 +46,7 @@ class CardinalFst(GraphFst):
         graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv")).invert()
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv")).invert()
         graph_teens_and_ties = pynini.string_file(get_abs_path("data/numbers/teens_and_ties.tsv")).invert()
+        graph_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv")).invert()
 
         self.graph_zero = graph_zero
         self.graph_digit = graph_digit
@@ -54,12 +55,13 @@ class CardinalFst(GraphFst):
         self.graph_two_digit = graph_teens_and_ties | (pynutil.insert("೦") + graph_digit)
 
         # Kannada unit words
-        graph_hundred = pynini.cross("ನೂರು", "")
-        delete_hundred = pynutil.delete("ನೂರು") | pynutil.delete("ನೂರ")
+        # Combine standard digit + hundred mapping with suppletive stems from hundred.tsv
         delete_thousand = pynutil.delete("ಸಾವಿರ") | pynutil.delete("ಸಾವಿರದ")
 
-        # Hundreds component
-        graph_hundred_component = pynini.union(graph_digit + delete_space + graph_hundred, pynutil.insert("೦"))
+        # Hundreds component combining standard digit-based hundreds and suppletive hundred.tsv forms
+        graph_hundred_component = pynini.union(
+            graph_digit + delete_space + pynutil.delete("ನೂರು"), graph_hundred, pynutil.insert("೦")
+        )
         graph_hundred_component += delete_space
         graph_hundred_component += self.graph_two_digit | pynutil.insert("೦೦")
 
@@ -72,7 +74,7 @@ class CardinalFst(GraphFst):
 
         # Transducer for patterns like "ಹನ್ನೊಂದು ನೂರು" -> 1100
         graph_hundred_as_thousand = pynini.union(
-            graph_teens_and_ties + delete_space + graph_hundred, pynutil.insert("೦")
+            graph_teens_and_ties + delete_space + pynutil.delete("ನೂರು"), graph_hundred, pynutil.insert("೦")
         )
         graph_hundred_as_thousand += delete_space
         graph_hundred_as_thousand += self.graph_two_digit | pynutil.insert("೦೦")
@@ -104,7 +106,7 @@ class CardinalFst(GraphFst):
             + delete_space
             + pynutil.insert("೧೫೦", weight=-0.1)
             + delete_space
-            + delete_hundred,
+            + pynutil.delete("ನೂರು"),
             -0.1,
         )
         # ಎರಡೂವರೆ ನೂರು -> 250
@@ -113,7 +115,7 @@ class CardinalFst(GraphFst):
             + delete_space
             + pynutil.insert("೨೫೦", weight=-0.1)
             + delete_space
-            + delete_hundred,
+            + pynutil.delete("ನೂರು"),
             -0.1,
         )
 
@@ -164,11 +166,8 @@ class CardinalFst(GraphFst):
             "೦",
         )
 
-        # labels_exception = [pynini.string_file(get_abs_path("data/numbers/labels_exception.tsv"))]
-        # graph_exception = pynini.union(*labels_exception).optimize()
-
         self.graph_no_exception = graph
-        self.graph = graph  # (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
+        self.graph = graph
 
         # Handle negative numbers (ಋಣ = negative in Kannada)
         optional_minus_graph = pynini.closure(
