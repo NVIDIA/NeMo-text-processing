@@ -95,6 +95,7 @@ def parse_args():
             "ru",
             'fr',
             'hu',
+            'pl',
             'sv',
             'vi',
             'zh',
@@ -240,6 +241,11 @@ if __name__ == '__main__':
             ClassifyFst as TNClassifyFst,
         )
         from nemo_text_processing.text_normalization.sv.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
+    elif args.language == 'pl':
+        from nemo_text_processing.text_normalization.pl.taggers.tokenize_and_classify import (
+            ClassifyFst as TNClassifyFst,
+        )
+        from nemo_text_processing.text_normalization.pl.verbalizers.verbalize import VerbalizeFst as TNVerbalizeFst
     elif args.language == 'vi':
         from nemo_text_processing.inverse_text_normalization.vi.taggers.tokenize_and_classify import (
             ClassifyFst as ITNClassifyFst,
