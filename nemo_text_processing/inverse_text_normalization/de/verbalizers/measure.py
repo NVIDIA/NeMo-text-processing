@@ -15,51 +15,67 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_CHAR, GraphFst, delete_space
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import (
+    NEMO_CHAR,
+    NEMO_NOT_QUOTE,
+    NEMO_SPACE,
+    GraphFst,
+)
 
 
 class MeasureFst(GraphFst):
     """
-    Finite state transducer for verbalizing measure, e.g.
-        measure { cardinal { negative: "true" integer: "12" } units: "kg" } -> -12 kg
-        measure { decimal { integer_part: "1/2" } units: "kg" } -> 1/2 kg
-        measure { decimal { integer_part: "1" fractional_part: "2" quantity: "million" } units: "kg" } -> 1,2 million kg
-
-    Args:
-        decimal: ITN Decimal verbalizer
-        cardinal: ITN Cardinal verbalizer
+    Finite state transducer for verbalizing measures:
+        e.g. measure { cardinal { integer: "2" } units: "kg" } -> 2 kg
+        e.g. measure { cardinal { negative: "-" integer: "67" } units: "kg" } -> -67 kg
+        e.g. measure { decimal { integer_part: "1" fractional_part: "5" } units: "km/h" } -> 1,5 km/h
+        e.g. measure { fraction { numerator: "3" denominator: "4" } units: "ω" } -> 3/4 ω
+        e.g. measure { decimal { integer_part: "1" fractional_part: "50" } units: "m" } -> 1,50 m
     """
 
-    def __init__(self, decimal: GraphFst, cardinal: GraphFst, deterministic: bool = True):
-        super().__init__(name="measure", kind="verbalize", deterministic=deterministic)
-        optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-"), 0, 1)
-        unit = (
+    def __init__(self, cardinal: GraphFst, decimal: GraphFst, fraction: GraphFst):
+        super().__init__(name="measure", kind="verbalize")
+        graph_cardinals = cardinal.numbers
+        graph_decimals = decimal.numbers
+        graph_fractions = fraction.numbers
+        graph_negative = pynini.cross('negative: "-"', "-") + pynutil.delete(NEMO_SPACE)
+
+        graph_unit = (
             pynutil.delete("units:")
-            + delete_space
-            + pynutil.delete("\"")
-            + pynini.closure(NEMO_CHAR - " ", 1)
-            + pynutil.delete("\"")
-            + delete_space
+            + pynutil.delete(NEMO_SPACE)
+            + pynutil.delete('"')
+            + (pynini.closure(NEMO_NOT_QUOTE, 1) | pynini.closure(pynini.difference(NEMO_CHAR, NEMO_SPACE), 1))
+            + pynutil.delete('"')
         )
-        graph_decimal = (
-            pynutil.delete("decimal {")
-            + delete_space
-            + optional_sign
-            + delete_space
-            + decimal.numbers
-            + delete_space
-            + pynutil.delete("}")
-        )
+
         graph_cardinal = (
             pynutil.delete("cardinal {")
-            + delete_space
-            + optional_sign
-            + delete_space
-            + cardinal.numbers
-            + delete_space
+            + pynutil.delete(NEMO_SPACE)
+            + graph_negative.ques
+            + graph_cardinals
+            + pynutil.delete(NEMO_SPACE)
             + pynutil.delete("}")
         )
 
-        graph = (graph_cardinal | graph_decimal) + delete_space + pynutil.insert(" ") + unit
+        graph_decimal = (
+            pynutil.delete("decimal {")
+            + pynutil.delete(NEMO_SPACE)
+            + graph_negative.ques
+            + graph_decimals
+            + pynutil.delete(NEMO_SPACE)
+            + pynutil.delete("}")
+        )
+
+        graph_fraction = (
+            pynutil.delete("fraction {")
+            + pynutil.delete(NEMO_SPACE)
+            + graph_negative.ques
+            + graph_fractions
+            + pynutil.delete(NEMO_SPACE)
+            + pynutil.delete("}")
+        )
+
+        graph = (graph_decimal | graph_cardinal | graph_fraction) + pynini.accep(NEMO_SPACE) + graph_unit
+
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

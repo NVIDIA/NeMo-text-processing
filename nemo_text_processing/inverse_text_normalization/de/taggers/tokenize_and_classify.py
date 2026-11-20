@@ -100,9 +100,7 @@ class ClassifyFst(GraphFst):
             fraction = FractionFst(cardinal=cardinal, ordinal=ordinal)
             fraction_graph = fraction.fst
 
-            measure_graph = MeasureFst(
-                itn_cardinal_tagger=cardinal, itn_decimal_tagger=decimal, itn_fraction_tagger=fraction
-            ).fst
+            measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction).fst
             date_graph = DateFst(
                 itn_cardinal_tagger=cardinal, tn_date_verbalizer=tn_date_verbalizer, tn_date_tagger=tn_date_tagger
             ).fst

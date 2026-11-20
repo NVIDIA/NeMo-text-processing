@@ -43,8 +43,8 @@ class DecimalFst(GraphFst):
 
         graph_clean_digit = delete_space + graph_digit
 
-        graph_string_of_digits = pynini.closure(graph_clean_digit, 1)
-        graph_fractional = pynutil.insert('fractional_part: "') + graph_string_of_digits + pynutil.insert('"')
+        self.graph_string_of_digits = pynini.closure(graph_clean_digit, 1).optimize()
+        graph_fractional = pynutil.insert('fractional_part: "') + self.graph_string_of_digits + pynutil.insert('"')
 
         graph_decimal_no_sign = graph_integer_or_zero + delete_comma + graph_fractional
 

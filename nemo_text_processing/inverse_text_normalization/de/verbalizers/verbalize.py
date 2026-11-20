@@ -38,11 +38,12 @@ class VerbalizeFst(GraphFst):
         cardinal_graph = cardinal.fst
         decimal = DecimalFst()
         decimal_graph = decimal.fst
-        measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal).fst
+        fraction = FractionFst()
+        fraction_graph = fraction.fst
+        measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal, fraction=fraction).fst
         money_graph = MoneyFst(decimal=decimal).fst
         time_graph = TimeFst().fst
         ordinal_graph = OrdinalFst().fst
-        fraction_graph = FractionFst().fst
         graph = (
             time_graph | money_graph | measure_graph | decimal_graph | cardinal_graph | ordinal_graph | fraction_graph
         )

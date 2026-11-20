@@ -12,93 +12,144 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import pynini
+from pynini.examples import plurals
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.de.taggers.measure import singular_to_plural, unit_singular
-from nemo_text_processing.text_normalization.en.graph_utils import (
-    NEMO_SIGMA,
-    GraphFst,
-    convert_space,
-    delete_extra_space,
-    delete_space,
-)
+from nemo_text_processing.inverse_text_normalization.de.graph_utils import NEMO_DIGIT, NEMO_SIGMA, NEMO_SPACE, GraphFst
+from nemo_text_processing.inverse_text_normalization.de.utils import get_abs_path, load_labels
 
 
 class MeasureFst(GraphFst):
     """
-    Finite state transducer for classifying measure. Allows for plural form for unit.
-        e.g. minus elf kilogramm -> measure { cardinal { negative: "true" integer: "11" } units: "kg" }
-        e.g. drei stunden -> measure { cardinal { integer: "3" } units: "h" }
-        e.g. ein halb kilogramm -> measure { decimal { integer_part: "1/2" } units: "kg" }
-        e.g. eins komma zwei kilogramm -> measure { decimal { integer_part: "1" fractional_part: "2" } units: "kg" }
+    Finite state transducer for classifying measure. Allows for plural forms of SI units.
+        e.g. zwei kilogramm -> measure { cardinal { integer: "2" } units: "kg" }
+        e.g. minus siebenundsechzig kilogramm -> measure { cardinal { negative: "-" integer: "67" } units: "kg" }
+        e.g. eins komma fünf kilometer pro stunde -> measure { decimal { integer_part: "1" fractional_part: "5" } units: "km/h" }
+        e.g. drei viertel ohm -> measure { fraction { numerator: "3" denominator: "4" } units: "ω" }
+        e.g. ein meter fünfzig -> measure { decimal { integer_part: "1" fractional_part: "50" } units: "m" }
 
     Args:
-        itn_cardinal_tagger: ITN Cardinal tagger
-        itn_decimal_tagger: ITN Decimal tagger
-        itn_fraction_tagger: ITN Fraction tagger
+        cardinal: CardinalFst
+        decimal: DecimalFst
+        fraction: FractionFst
     """
 
     def __init__(
         self,
-        itn_cardinal_tagger: GraphFst,
-        itn_decimal_tagger: GraphFst,
-        itn_fraction_tagger: GraphFst,
-        deterministic: bool = True,
+        cardinal: GraphFst,
+        decimal: GraphFst,
+        fraction: GraphFst,
     ):
-        super().__init__(name="measure", kind="classify", deterministic=deterministic)
+        super().__init__(name="measure", kind="classify")
+        graph_SI_abbr = pynini.string_file(get_abs_path("data/measure/measurements.tsv"))
+        plural_to_singular_exceptions = pynini.string_file(get_abs_path("data/measure/plural_to_singular.tsv"))
+        plural_suffixes = load_labels(get_abs_path("data/measure/plural_suffixes.tsv"))
+        denominator_markers = pynini.string_file(get_abs_path("data/measure/denominator_markers.tsv"))
+        scrambled_units = [unit for unit, in load_labels(get_abs_path("data/measure/scrambled_units.tsv"))]
 
-        cardinal_graph = (
-            pynini.cdrewrite(pynini.cross(pynini.union("ein", "eine"), "eins"), "[BOS]", "[EOS]", NEMO_SIGMA)
-            @ itn_cardinal_tagger.graph_no_exception
+        cardinals = pynutil.insert('integer: "') + cardinal.graph_no_exception + pynutil.insert('"')
+        cardinals_no_separators = cardinal.graph_no_exception @ pynini.cdrewrite(
+            pynutil.delete("."), "", "", NEMO_SIGMA
+        )
+        decimals = decimal.final_graph_wo_negative
+        fractions = fraction.graph_wo_negative
+
+        graph_suffixes = pynini.union(
+            *[
+                NEMO_SIGMA + pynini.accep(lemma_ending) + pynutil.delete(plural_ending)
+                for lemma_ending, plural_ending in plural_suffixes
+            ]
+        )
+        depluralized = plurals._priority_union(plural_to_singular_exceptions, graph_suffixes, NEMO_SIGMA).optimize()
+        graph_SI = (depluralized @ graph_SI_abbr) | graph_SI_abbr
+
+        graph_denominator = denominator_markers + pynutil.delete(NEMO_SPACE) + graph_SI
+        graph_unit = (
+            pynutil.insert('units: "')
+            + (
+                graph_SI
+                | graph_denominator
+                | pynutil.add_weight(graph_SI + pynutil.delete(NEMO_SPACE) + graph_denominator, 0.01)
+            )
+            + pynutil.insert('"')
         )
 
-        graph_unit_singular = pynini.invert(unit_singular)  # singular -> abbr
-        unit = (pynini.invert(singular_to_plural()) @ graph_unit_singular) | graph_unit_singular  # plural -> abbr
-        unit = convert_space(unit)
-        graph_unit_singular = convert_space(graph_unit_singular)
+        # Only units with a decimal subdivision take a scrambled tail: "ein Meter fünfzig" is 1,50 m.
+        graph_SI_scrambled = (graph_SI @ pynini.union(*scrambled_units)).optimize()
+        graph_unit_scrambled = pynutil.insert('units: "') + graph_SI_scrambled + pynutil.insert('"')
 
-        optional_graph_negative = pynini.closure(
-            pynutil.insert("negative: ") + pynini.cross("minus", "\"true\"") + delete_extra_space, 0, 1
+        graph_cardinal = (
+            pynutil.insert("cardinal {")
+            + pynutil.insert(NEMO_SPACE)
+            + cardinal.optional_minus_graph
+            + cardinals
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
         )
 
-        unit_misc = pynutil.insert("/") + pynutil.delete("pro") + delete_space + graph_unit_singular
-
-        unit = (
-            pynutil.insert("units: \"")
-            + (unit | unit_misc | pynutil.add_weight(unit + delete_space + unit_misc, 0.01))
-            + pynutil.insert("\"")
+        graph_decimal = (
+            pynutil.insert("decimal {")
+            + pynutil.insert(NEMO_SPACE)
+            + cardinal.optional_minus_graph
+            + decimals
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
         )
 
-        subgraph_decimal = (
-            pynutil.insert("decimal { ")
-            + optional_graph_negative
-            + itn_decimal_tagger.final_graph_wo_negative
-            + pynutil.insert(" }")
-            + delete_extra_space
-            + unit
+        scrambled_tail = cardinals_no_separators | pynutil.add_weight(decimal.graph_string_of_digits, 0.01)
+        scrambled_in_reading_order = (
+            cardinal.optional_minus_graph
+            + pynutil.insert('integer_part: "')
+            + cardinal.graph_no_exception
+            + pynutil.insert('"')
+            + pynini.accep(NEMO_SPACE)
+            + graph_unit_scrambled
+            + pynini.accep(NEMO_SPACE)
+            + pynutil.insert('fractional_part: "')
+            + scrambled_tail
+            + pynutil.insert('"')
         )
 
-        subgraph_fraction = (
-            pynutil.insert("decimal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer_part: \"")
-            + itn_fraction_tagger.graph
-            + pynutil.insert("\" }")
-            + delete_extra_space
-            + unit
+        # The unit is read between the numbers, so a single pass has to emit it there and reorder afterwards.
+        integer_chars = pynini.closure(NEMO_DIGIT | pynini.accep("."), 1)
+        digits = pynini.closure(NEMO_DIGIT, 1)
+        negative_field = pynini.accep('negative: "-" ')
+        reorder_unit_last = pynini.union(
+            *[
+                pynutil.insert("decimal { ")
+                + negative_field.ques
+                + pynini.accep('integer_part: "')
+                + integer_chars
+                + pynini.accep('"')
+                + pynutil.delete(f' units: "{unit}"')
+                + pynini.accep(NEMO_SPACE)
+                + pynini.accep('fractional_part: "')
+                + digits
+                + pynini.accep('"')
+                + pynutil.insert(" }")
+                + pynutil.insert(f' units: "{unit}"')
+                for unit in scrambled_units
+            ]
+        ).optimize()
+        graph_decimal_scrambled = (scrambled_in_reading_order @ reorder_unit_last).optimize()
+
+        graph_fraction = (
+            pynutil.insert("fraction {")
+            + pynutil.insert(NEMO_SPACE)
+            + cardinal.optional_minus_graph
+            + fractions
+            + pynutil.insert(NEMO_SPACE)
+            + pynutil.insert("}")
         )
 
-        subgraph_cardinal = (
-            pynutil.insert("cardinal { ")
-            + optional_graph_negative
-            + pynutil.insert("integer: \"")
-            + cardinal_graph
-            + pynutil.insert("\"")
-            + pynutil.insert(" }")
-            + delete_extra_space
-            + unit
-        )
-        final_graph = subgraph_cardinal | subgraph_decimal | subgraph_fraction
+        graphs_combined = graph_cardinal | pynutil.add_weight(graph_decimal, 0.01) | graph_fraction
+        final_graph = (graphs_combined + pynini.accep(NEMO_SPACE) + graph_unit) | graph_decimal_scrambled
+
+        removes_empty_ints = pynutil.delete('cardinal { integer: "" } ')
+        remove_empty_ints = pynini.cdrewrite(removes_empty_ints, "", "", NEMO_SIGMA)
+        final_graph = final_graph @ remove_empty_ints
+
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()
