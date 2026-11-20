@@ -179,9 +179,15 @@ class DateFst(GraphFst):
 
         graph_d_m = days_graph_bare + delete_dash + months_graph_bare
 
-        graph_dd_mm_yyyy = days_graph_padded + delete_dash + months_graph_padded + delete_dash + years_graph
+        graph_dd_mm_yyyy = pynini.union(*[
+            days_graph_padded + pynutil.delete(sep) + months_graph_padded + pynutil.delete(sep) + years_graph
+            for sep in ["-", "/", "."]
+        ])
 
-        graph_d_m_yyyy = days_graph_bare + delete_dash + months_graph_bare + delete_dash + years_graph
+        graph_d_m_yyyy = pynini.union(*[
+            days_graph_bare + pynutil.delete(sep) + months_graph_bare + pynutil.delete(sep) + years_graph
+            for sep in ["-", "/", "."]
+        ])
 
         graph_dd_month = days_graph_padded + delete_space + months_graph_numeric_padded
 
