@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import (  # common string literals
     MIN_NEG_WEIGHT,
+    MIN_POS_WEIGHT,
     NEMO_ALPHA,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
@@ -76,12 +77,19 @@ class ElectronicFst(GraphFst):
         )
         dict_words_graph = dict_words_without_delimiter | dict_words
 
+        # Prefer complete dictionary words over partial matches such as "proGRAM".
+        spelled_letters = pynutil.add_weight(TO_UPPER, MIN_POS_WEIGHT) if deterministic else TO_UPPER
+
         all_accepted_symbols_start = (
-            dict_words_graph | pynini.closure(TO_UPPER) | pynini.closure(NEMO_UPPER) | accepted_symbols
+            dict_words_graph | pynini.closure(spelled_letters) | pynini.closure(NEMO_UPPER) | accepted_symbols
         ).optimize()
 
         all_accepted_symbols_end = (
-            dict_words_graph | numbers | pynini.closure(TO_UPPER) | pynini.closure(NEMO_UPPER) | accepted_symbols
+            dict_words_graph
+            | numbers
+            | pynini.closure(spelled_letters)
+            | pynini.closure(NEMO_UPPER)
+            | accepted_symbols
         ).optimize()
 
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbol.tsv")).optimize()
