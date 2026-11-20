@@ -56,8 +56,6 @@ class MeasureFst(GraphFst):
         decimals = decimal.final_graph_wo_negative
         fractions = fraction.graph_wo_negative
 
-        # Crudely depluralizes nominal forms.
-        # Assumes the nominative case as the default, but it also applies to cases of morphological syncretism.
         graph_suffixes = pynini.union(
             *[
                 NEMO_SIGMA + pynini.accep(lemma_ending) + pynutil.delete(plural_ending)
