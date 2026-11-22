@@ -22,9 +22,11 @@ from nemo_text_processing.text_normalization.it.utils import get_abs_path
 class TimeFst(GraphFst):
     """
     Finite state transducer for verbalizing time, e.g.
-    tokens { time { hours: "15" minutes: "30" seconds: "30" preserve_order: true } } -> quindici e mezza trenta secondi
-    tokens { time { hours: "12" minutes: "15" } } -> dodici e un quarto
+    tokens { time { hours: "15" minutes: "30" seconds: "30" preserve_order: true } } -> quindici e trenta minuti e trenta secondi
+    tokens { time { hours: "12" minutes: "15" } } -> dodici e quindici minuti
     tokens { time { hours: "3" minutes: "38" } } -> tre e trentotto minuti
+    Deterministic verbalization prefers numeric minutes; nondeterministic verbalization
+    also provides equally weighted quarter-hour and half-hour alternatives.
     Args:
         cardinal_tagger: cardinal_tagger tagger GraphFst
         deterministic: if True will provide a single transduction option,
@@ -41,11 +43,16 @@ class TimeFst(GraphFst):
         minute = pynutil.delete("minutes: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
         second = pynutil.delete("seconds: \"") + pynini.closure(NEMO_DIGIT, 1) + pynutil.delete("\"")
 
+        minute_verbalized = minute @ number_verbalization + pynutil.insert(" minuti")
+        colloquial_weight = 0.001 if deterministic else 0.0
+        quarter_hour = pynutil.add_weight(minute @ pynini.cross("15", "un quarto"), colloquial_weight)
+        half_hour = pynutil.add_weight(minute @ pynini.cross("30", " mezza"), colloquial_weight)
+
         graph_hms_15 = (
             hour_verbalized
             + pynini.accep(" ")
             + pynutil.insert("e ")
-            + (minute @ number_verbalization + pynutil.insert(" minuti") | minute @ pynini.cross("15", "un quarto"))
+            + (minute_verbalized | quarter_hour)
             + pynini.accep(" ")
             + pynutil.insert("e ")
             + second @ number_verbalization
@@ -56,26 +63,16 @@ class TimeFst(GraphFst):
             hour_verbalized
             + pynini.accep(" ")
             + pynutil.insert("e ")
-            + (minute @ number_verbalization + pynutil.insert(" minuti") | minute @ pynini.cross("30", " mezza"))
+            + (minute_verbalized | half_hour)
             + pynini.accep(" ")
             + pynutil.insert("e ")
             + second @ number_verbalization
             + pynutil.insert(" secondi")
         )
 
-        graph_hm_15 = (
-            hour_verbalized
-            + pynini.accep(" ")
-            + pynutil.insert("e ")
-            + (minute @ number_verbalization + pynutil.insert(" minuti") | minute @ pynini.cross("15", "un quarto"))
-        )
+        graph_hm_15 = hour_verbalized + pynini.accep(" ") + pynutil.insert("e ") + (minute_verbalized | quarter_hour)
 
-        graph_hm_30 = (
-            hour_verbalized
-            + pynini.accep(" ")
-            + pynutil.insert("e ")
-            + (minute @ number_verbalization + pynutil.insert(" minuti") | minute @ pynini.cross("30", " mezza"))
-        )
+        graph_hm_30 = hour_verbalized + pynini.accep(" ") + pynutil.insert("e ") + (minute_verbalized | half_hour)
 
         graph_h = hour_verbalized
 

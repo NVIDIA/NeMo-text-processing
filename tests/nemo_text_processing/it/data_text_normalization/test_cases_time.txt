@@ -4,3 +4,5 @@
 23:45~ventitre e quarantacinque minuti
 03:38~tre e trentotto minuti
 l'evento inizia alle 16:00~l'evento inizia alle sedici
+12:15~dodici e quindici minuti~dodici e un quarto
+15:30:30~quindici e trenta minuti e trenta secondi~quindici e mezza e trenta secondi
