@@ -18,6 +18,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
 from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces
 from nemo_text_processing.text_normalization.pl.inflection import (
+    adjective_inflection,
     load_adjective_abbreviations,
     load_ambiguous_abbreviations,
     load_inflected_abbreviations,
@@ -25,7 +26,7 @@ from nemo_text_processing.text_normalization.pl.inflection import (
 )
 from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
 from nemo_text_processing.text_normalization.pl.taggers.roman import _name_forms
-from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 
 def _get_whitelist_graph(input_case: str, filepath: str) -> 'pynini.FstLike':

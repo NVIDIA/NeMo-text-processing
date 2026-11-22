@@ -18,7 +18,8 @@ from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, NEMO_SIGMA, GraphFst, insert_space
 from nemo_text_processing.text_normalization.pl.graph_utils import all_to_graph
-from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.inflection import adjective_inflection
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 
 def complete_paradigm(partial: Dict[str, str], complete: bool = False):

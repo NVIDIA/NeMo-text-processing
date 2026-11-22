@@ -16,9 +16,10 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst
+from nemo_text_processing.text_normalization.pl.inflection import adjective_inflection
 from nemo_text_processing.text_normalization.pl.taggers.cardinal import CASES
 from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
-from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 
 class DecimalFst(GraphFst):

@@ -26,8 +26,8 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     insert_space,
 )
 from nemo_text_processing.text_normalization.pl.graph_utils import PL_ALPHA, dict_to_graph
-from nemo_text_processing.text_normalization.pl.inflection import load_numeric_nouns
-from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.inflection import adjective_inflection, load_numeric_nouns
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 CASES = ["nom", "gen", "dat", "acc", "ins", "loc", "voc"]
 DEFAULT_SLOT = "mi_sg_nom"

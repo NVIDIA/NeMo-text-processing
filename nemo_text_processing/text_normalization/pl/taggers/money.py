@@ -22,9 +22,9 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     delete_space,
     insert_space,
 )
-from nemo_text_processing.text_normalization.pl.inflection import inflect_noun
+from nemo_text_processing.text_normalization.pl.inflection import adjective_inflection, inflect_noun
 from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
-from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
+from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 
 def _inflect_currency(lemma, grammar_file, gender):
