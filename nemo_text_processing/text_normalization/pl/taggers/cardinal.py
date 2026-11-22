@@ -123,7 +123,7 @@ class CardinalFst(GraphFst):
         from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
 
         complete_paradigm(jeden, complete=True)
-        self.jeden_all = {slot: pynini.cross("1", form) for slot, form in jeden.items()}
+        self.jeden_all = {slot: pynini.cross("1", form).optimize() for slot, form in jeden.items()}
 
         zero_forms = {
             "sg_nom": "zero",
@@ -134,7 +134,7 @@ class CardinalFst(GraphFst):
             "sg_loc": "zerze",
             "sg_voc": "zero",
         }
-        self.zero_all = {slot: pynini.cross("0", form) for slot, form in zero_forms.items()}
+        self.zero_all = {slot: pynini.cross("0", form).optimize() for slot, form in zero_forms.items()}
         self.zero_sg = {slot[3:]: graph for slot, graph in self.zero_all.items()}
         single_digit = pynini.union(
             self.zero_all["sg_nom"],
@@ -257,6 +257,7 @@ class CardinalFst(GraphFst):
                 | self.noun_graph
             )
 
+        self.graph.optimize()
         self.graph_unfiltered = self.graph
         optional_minus = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", '"true" '), 0, 1)
         final_graph = optional_minus + pynutil.insert('integer: "') + self.graph + pynutil.insert('"')
