@@ -20,13 +20,6 @@ from nemo_text_processing.text_normalization.pl.inflection import inflect_noun
 from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
 
-def _case(slot: str) -> str:
-    for case in ("nom", "gen", "dat", "acc", "ins", "loc", "voc"):
-        if slot == case or slot.endswith(f"_{case}"):
-            return case
-    raise ValueError(f"Cannot determine case from {slot!r}")
-
-
 class MeasureFst(GraphFst):
     """Classifies integer measures with case-inflected masculine units."""
 
