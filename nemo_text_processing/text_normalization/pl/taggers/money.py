@@ -109,19 +109,13 @@ class MoneyFst(GraphFst):
                     f"{minor_gender}_pl_nom" if f"{minor_gender}_pl_nom" in cardinal.graphs else "mi_pl_nom"
                 )
                 minor_one = (
-                    (one @ cardinal.graphs[minor_singular_slot])
-                    + insert_space
-                    + pynutil.insert(minor_forms["sg_nom"])
+                    (one @ cardinal.graphs[minor_singular_slot]) + insert_space + pynutil.insert(minor_forms["sg_nom"])
                 )
                 minor_few = (
-                    (few @ cardinal.graphs[minor_plural_slot])
-                    + insert_space
-                    + pynutil.insert(minor_forms["pl_nom"])
+                    (few @ cardinal.graphs[minor_plural_slot]) + insert_space + pynutil.insert(minor_forms["pl_nom"])
                 )
                 minor_many = (
-                    (many @ cardinal.graphs[minor_plural_slot])
-                    + insert_space
-                    + pynutil.insert(minor_forms["pl_gen"])
+                    (many @ cardinal.graphs[minor_plural_slot]) + insert_space + pynutil.insert(minor_forms["pl_gen"])
                 )
                 minor = minor_values @ (minor_one | minor_few | minor_many)
                 minor_integer = (
@@ -171,7 +165,11 @@ class MoneyFst(GraphFst):
                     + pynutil.insert('"')
                 )
                 quantity_graphs.append(
-                    quantity_spoken + pynutil.delete(NEMO_SPACE) + pynutil.delete(quantity) + optional_space + marker_graph
+                    quantity_spoken
+                    + pynutil.delete(NEMO_SPACE)
+                    + pynutil.delete(quantity)
+                    + optional_space
+                    + marker_graph
                 )
 
             return (

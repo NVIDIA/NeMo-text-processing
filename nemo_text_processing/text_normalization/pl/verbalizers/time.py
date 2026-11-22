@@ -51,7 +51,5 @@ class TimeFst(GraphFst):
         )
         duration_seconds_only = duration + delete_space + pynutil.delete('seconds: "') + value + pynutil.delete('"')
         duration_fst = duration + duration_hours + duration_minutes + duration_seconds | duration_seconds_only
-        zone = pynini.closure(
-            collapse_spaces + pynutil.delete('zone: "') + value + pynutil.delete('"'), 0, 1
-        )
+        zone = pynini.closure(collapse_spaces + pynutil.delete('zone: "') + value + pynutil.delete('"'), 0, 1)
         self.fst = self.delete_tokens((hours + minutes + seconds | legacy_fst | duration_fst) + zone).optimize()

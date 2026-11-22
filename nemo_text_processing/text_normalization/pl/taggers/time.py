@@ -50,12 +50,7 @@ class TimeFst(GraphFst):
 
         plain = time_graph("f_sg_nom", pynini.accep(""))
         governed = time_graph("f_sg_loc", pynini.accep("o") + collapse_spaces)
-        hour_abbreviation = (
-            pynini.accep("o")
-            + collapse_spaces
-            + pynini.cross("godz.", "godzinie")
-            + collapse_spaces
-        )
+        hour_abbreviation = pynini.accep("o") + collapse_spaces + pynini.cross("godz.", "godzinie") + collapse_spaces
         governed |= time_graph("f_sg_loc", hour_abbreviation)
 
         locale_hour = pynini.cross("00", "zero") | hours @ ordinal.graphs["f_sg_nom"]

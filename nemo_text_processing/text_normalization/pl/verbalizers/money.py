@@ -31,6 +31,4 @@ class MoneyFst(GraphFst):
         currency = pynutil.delete('currency: "') + value + pynutil.delete('"')
         decimal = DecimalFst(deterministic=deterministic).fst
         fraction = FractionFst(deterministic=deterministic).fst
-        self.fst = self.delete_tokens(
-            (integer | decimal | fraction) + collapse_spaces + currency
-        ).optimize()
+        self.fst = self.delete_tokens((integer | decimal | fraction) + collapse_spaces + currency).optimize()

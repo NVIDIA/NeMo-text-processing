@@ -63,13 +63,9 @@ class WhiteListFst(GraphFst):
                 number, case = noun_slot.split("_", 1)
                 slot = f"{gender}_{number}_{case}"
                 saint = saint_forms[slot]
-                contextual = (
-                    pynini.cross("św.", saint) + collapse_spaces + pynini.accep(surface_name)
-                )
+                contextual = pynini.cross("św.", saint) + collapse_spaces + pynini.accep(surface_name)
                 contextual |= (
-                    pynini.cross("Św.", saint[0].upper() + saint[1:])
-                    + collapse_spaces
-                    + pynini.accep(surface_name)
+                    pynini.cross("Św.", saint[0].upper() + saint[1:]) + collapse_spaces + pynini.accep(surface_name)
                 )
                 self.saint_graphs[slot] = (
                     contextual if slot not in self.saint_graphs else self.saint_graphs[slot] | contextual

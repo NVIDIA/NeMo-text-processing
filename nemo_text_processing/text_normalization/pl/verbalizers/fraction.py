@@ -29,9 +29,7 @@ class FractionFst(GraphFst):
             1,
         )
         numerator = pynutil.delete('numerator: "') + value + pynutil.delete('"')
-        denominator = (
-            collapse_spaces + pynutil.delete('denominator: "') + value + pynutil.delete('"')
-        )
+        denominator = collapse_spaces + pynutil.delete('denominator: "') + value + pynutil.delete('"')
         lexical = pynutil.delete('value: "') + value + pynutil.delete('"')
         mixed_lexical = integer + lexical
         self.fst = self.delete_tokens(integer + numerator + denominator | mixed_lexical | lexical).optimize()

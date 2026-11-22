@@ -37,6 +37,4 @@ class MeasureFst(GraphFst):
         decimal = DecimalFst(deterministic=deterministic).fst
         fraction = FractionFst(deterministic=deterministic).fst
         units = pynutil.delete('units: "') + value + pynutil.delete('"')
-        self.fst = self.delete_tokens(
-            (cardinal | decimal | fraction) + collapse_spaces + units
-        ).optimize()
+        self.fst = self.delete_tokens((cardinal | decimal | fraction) + collapse_spaces + units).optimize()

@@ -115,14 +115,11 @@ class ClassifyFst(GraphFst):
                 )
             punct_only = pynutil.add_weight(punctuation, punct_w)
             punct = pynini.closure(
-                pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                | insert_space + punct_only,
+                pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space) | insert_space + punct_only,
                 1,
             )
             token_plus_punct = (
-                pynini.closure(punct + insert_space)
-                + classify_and_verbalize
-                + pynini.closure(insert_space + punct)
+                pynini.closure(punct + insert_space) + classify_and_verbalize + pynini.closure(insert_space + punct)
             )
             graph = token_plus_punct + pynini.closure(
                 (
