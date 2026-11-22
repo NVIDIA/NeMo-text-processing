@@ -81,7 +81,7 @@ def all_to_graph(graph_dict, default=None, deterministic=False):
                 break
     else:
         default_key = default
-    output_graph = graph_dict[default_key]
+    output_graph = graph_dict[default_key].copy()
     if not deterministic:
         for key in graph_dict:
             if key != default_key:

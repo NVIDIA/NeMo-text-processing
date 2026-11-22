@@ -88,7 +88,7 @@ class MeasureFst(GraphFst):
 
         self.decimal_graphs = {}
         for case in ("nom", "gen", "dat", "acc", "ins", "loc", "voc"):
-            decimal_graph = decimal.graphs[case]
+            decimal_graph = decimal.graphs[case].copy()
             if not deterministic:
                 decimal_graph |= decimal.digit_graphs[case]
             self.decimal_graphs[case] = fractional_measure(decimal_graph, "decimal").optimize()
@@ -101,7 +101,7 @@ class MeasureFst(GraphFst):
         lexical_fraction_graph = pynini.Fst()
         if not deterministic:
             for gender in unit_genders:
-                lexical = fraction.lexical_graphs.get(gender, pynini.Fst())
+                lexical = fraction.lexical_graphs.get(gender, pynini.Fst()).copy()
                 if "all" in fraction.lexical_graphs:
                     lexical |= fraction.lexical_graphs["all"]
                 lexical = pynutil.insert('value: "') + lexical + pynutil.insert('"')
