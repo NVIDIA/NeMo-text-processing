@@ -14,6 +14,7 @@
 
 import pytest
 from parameterized import parameterized
+from pynini.lib import rewrite
 
 from nemo_text_processing.inverse_text_normalization.inverse_normalize import InverseNormalizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
@@ -42,6 +43,23 @@ class TestFraction:
         if CACHE_DIR and RUN_AUDIO_BASED_TESTS
         else None
     )
+
+    @parameterized.expand(
+        [
+            ("1/4", "một phần tư"),
+            ("3/4", "ba phần tư"),
+            ("-3/4", "âm ba phần tư"),
+            ("5 1/4", "năm và một phần tư"),
+            ("3/4m", "ba phần tư mét"),
+            ("1/3", "một phần ba"),
+        ]
+    )
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_unique_exception(self, test_input, expected):
+        # A plain shortest path can hide ties that another decoder resolves differently.
+        tagged = rewrite.one_top_rewrite(test_input, self.normalizer.tagger.fst)
+        assert rewrite.one_top_rewrite(tagged, self.normalizer.verbalizer.fst) == expected
 
     @parameterized.expand(parse_test_case_file('vi/data_text_normalization/test_cases_fraction.txt'))
     @pytest.mark.run_only_on('CPU')

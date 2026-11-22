@@ -49,6 +49,9 @@ class OrdinalFst(GraphFst):
 
         combined_graph = cardinal.graph
         if exception_graph:
+            if deterministic:
+                # Prefer ordinal exceptions over cardinal readings in every decoder.
+                exception_graph = pynutil.add_weight(exception_graph, -0.0001)
             combined_graph = pynini.union(exception_graph, cardinal.graph)
 
         self.graph = (

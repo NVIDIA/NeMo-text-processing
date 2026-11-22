@@ -48,6 +48,9 @@ class FractionFst(GraphFst):
         denominator_exception_graph = (
             pynini.union(*denominator_exception_patterns) if denominator_exception_patterns else None
         )
+        if denominator_exception_graph and deterministic:
+            # Prefer denominator exceptions over cardinal readings in every decoder.
+            denominator_exception_graph = pynutil.add_weight(denominator_exception_graph, -0.0001)
         denominator_graph = (
             pynini.union(denominator_exception_graph, cardinal_graph)
             if denominator_exception_graph
