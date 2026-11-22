@@ -27,5 +27,12 @@ class TestChar:
     @pytest.mark.run_only_on('CPU')
     @pytest.mark.unit
     def test_norm_char(self, test_input, expected):
+        preds = self.normalizer.normalize(test_input, punct_post_process=False)
+        assert expected == preds
+
+    @parameterized.expand(parse_test_case_file('it/data_text_normalization/test_cases_electronic_post_process.txt'))
+    @pytest.mark.run_only_on('CPU')
+    @pytest.mark.unit
+    def test_norm_char_punct_post_process(self, test_input, expected):
         preds = self.normalizer.normalize(test_input, punct_post_process=True)
         assert expected == preds
