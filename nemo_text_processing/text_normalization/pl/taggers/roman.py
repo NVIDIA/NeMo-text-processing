@@ -15,8 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space, delete_space, insert_space
-from nemo_text_processing.text_normalization.pl.graph_utils import roman_to_int
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces, roman_to_int
 from nemo_text_processing.text_normalization.pl.inflection import case_prepositions, inflect_noun
 from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
@@ -48,9 +48,9 @@ class RomanFst(GraphFst):
                     continue
                 name_graph = pynini.accep(surface_name)
                 if category == "pope" and noun_slot == "sg_nom":
-                    title = pynini.union("Papież", "papież") + delete_space + insert_space
+                    title = pynini.union("Papież", "papież") + collapse_spaces
                     name_graph |= title + pynini.accep(surface_name)
-                graph = name_graph + delete_space + insert_space + roman_to_int(ordinal.graphs[ordinal_slot])
+                graph = name_graph + collapse_spaces + roman_to_int(ordinal.graphs[ordinal_slot])
                 if case in prepositions:
                     graph |= prepositions[case] + graph
                 self.graphs[ordinal_slot] = (

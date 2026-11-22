@@ -15,7 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces
 
 
 class DateFst(GraphFst):
@@ -25,6 +26,6 @@ class DateFst(GraphFst):
         day = pynutil.delete('day: "') + value + pynutil.delete('"')
         month = pynutil.delete('month: "') + value + pynutil.delete('"')
         year = pynutil.delete('year: "') + value + pynutil.delete('"')
-        graph = day + delete_space + pynutil.insert(" ") + month
-        graph += pynini.closure(delete_space + pynutil.insert(" ") + year, 0, 1)
+        graph = day + collapse_spaces + month
+        graph += pynini.closure(collapse_spaces + year, 0, 1)
         self.fst = self.delete_tokens(graph | year).optimize()

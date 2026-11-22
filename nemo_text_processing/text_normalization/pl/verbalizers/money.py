@@ -15,7 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst
+from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces
 from nemo_text_processing.text_normalization.pl.verbalizers.decimal import DecimalFst
 from nemo_text_processing.text_normalization.pl.verbalizers.fraction import FractionFst
 
@@ -31,5 +32,5 @@ class MoneyFst(GraphFst):
         decimal = DecimalFst(deterministic=deterministic).fst
         fraction = FractionFst(deterministic=deterministic).fst
         self.fst = self.delete_tokens(
-            (integer | decimal | fraction) + delete_space + pynutil.insert(" ") + currency
+            (integer | decimal | fraction) + collapse_spaces + currency
         ).optimize()

@@ -15,7 +15,8 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, convert_space
+from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces
 from nemo_text_processing.text_normalization.pl.inflection import (
     load_adjective_abbreviations,
     load_ambiguous_abbreviations,
@@ -63,12 +64,11 @@ class WhiteListFst(GraphFst):
                 slot = f"{gender}_{number}_{case}"
                 saint = saint_forms[slot]
                 contextual = (
-                    pynini.cross("św.", saint) + delete_space + pynutil.insert(" ") + pynini.accep(surface_name)
+                    pynini.cross("św.", saint) + collapse_spaces + pynini.accep(surface_name)
                 )
                 contextual |= (
                     pynini.cross("Św.", saint[0].upper() + saint[1:])
-                    + delete_space
-                    + pynutil.insert(" ")
+                    + collapse_spaces
                     + pynini.accep(surface_name)
                 )
                 self.saint_graphs[slot] = (

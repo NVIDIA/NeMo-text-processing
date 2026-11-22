@@ -16,6 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import GraphFst, delete_space
+from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces
 from nemo_text_processing.text_normalization.pl.inflection import inflect_noun
 from nemo_text_processing.text_normalization.pl.utils import get_abs_path, load_labels
 
@@ -48,14 +49,12 @@ class TimeFst(GraphFst):
             return graph
 
         plain = time_graph("f_sg_nom", pynini.accep(""))
-        governed = time_graph("f_sg_loc", pynini.accep("o") + delete_space + pynutil.insert(" "))
+        governed = time_graph("f_sg_loc", pynini.accep("o") + collapse_spaces)
         hour_abbreviation = (
             pynini.accep("o")
-            + delete_space
-            + pynutil.insert(" ")
+            + collapse_spaces
             + pynini.cross("godz.", "godzinie")
-            + delete_space
-            + pynutil.insert(" ")
+            + collapse_spaces
         )
         governed |= time_graph("f_sg_loc", hour_abbreviation)
 

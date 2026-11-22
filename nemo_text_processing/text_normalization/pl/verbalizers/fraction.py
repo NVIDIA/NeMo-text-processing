@@ -16,6 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces
 
 
 class FractionFst(GraphFst):
@@ -29,7 +30,7 @@ class FractionFst(GraphFst):
         )
         numerator = pynutil.delete('numerator: "') + value + pynutil.delete('"')
         denominator = (
-            delete_space + pynutil.insert(" ") + pynutil.delete('denominator: "') + value + pynutil.delete('"')
+            collapse_spaces + pynutil.delete('denominator: "') + value + pynutil.delete('"')
         )
         lexical = pynutil.delete('value: "') + value + pynutil.delete('"')
         mixed_lexical = integer + lexical

@@ -16,6 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces
 
 
 class TimeFst(GraphFst):
@@ -24,7 +25,7 @@ class TimeFst(GraphFst):
         value = pynini.closure(NEMO_NOT_QUOTE, 1)
         hours = pynutil.delete('hours: "') + value + pynutil.delete('"')
         minutes = pynini.closure(
-            delete_space + pynutil.insert(" ") + pynutil.delete('minutes: "') + value + pynutil.delete('"'),
+            collapse_spaces + pynutil.delete('minutes: "') + value + pynutil.delete('"'),
             0,
             1,
         )
@@ -35,7 +36,7 @@ class TimeFst(GraphFst):
         )
         legacy = pynutil.delete('legacy: "true"') + delete_space
         legacy_seconds = pynini.closure(
-            delete_space + pynutil.insert(" ") + pynutil.delete('seconds: "') + value + pynutil.delete('"'),
+            collapse_spaces + pynutil.delete('seconds: "') + value + pynutil.delete('"'),
             0,
             1,
         )
@@ -43,7 +44,7 @@ class TimeFst(GraphFst):
         duration = pynutil.delete('duration: "true"') + delete_space
         duration_hours = pynini.closure(hours + delete_space, 0, 1)
         duration_minutes = pynini.closure(
-            delete_space + pynutil.insert(" ") + pynutil.delete('minutes: "') + value + pynutil.delete('"'), 0, 1
+            collapse_spaces + pynutil.delete('minutes: "') + value + pynutil.delete('"'), 0, 1
         )
         duration_seconds = pynini.closure(
             delete_space + pynutil.insert(" i ") + pynutil.delete('seconds: "') + value + pynutil.delete('"'), 0, 1
@@ -51,6 +52,6 @@ class TimeFst(GraphFst):
         duration_seconds_only = duration + delete_space + pynutil.delete('seconds: "') + value + pynutil.delete('"')
         duration_fst = duration + duration_hours + duration_minutes + duration_seconds | duration_seconds_only
         zone = pynini.closure(
-            delete_space + pynutil.insert(" ") + pynutil.delete('zone: "') + value + pynutil.delete('"'), 0, 1
+            collapse_spaces + pynutil.delete('zone: "') + value + pynutil.delete('"'), 0, 1
         )
         self.fst = self.delete_tokens((hours + minutes + seconds | legacy_fst | duration_fst) + zone).optimize()

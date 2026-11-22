@@ -15,7 +15,13 @@
 import pynini
 from pynini.lib import pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import NEMO_DIGIT, GraphFst, delete_space
+from nemo_text_processing.text_normalization.en.graph_utils import (
+    NEMO_DIGIT,
+    NEMO_SPACE,
+    GraphFst,
+    delete_space,
+    insert_space,
+)
 from nemo_text_processing.text_normalization.pl.inflection import inflect_noun
 from nemo_text_processing.text_normalization.pl.taggers.ordinal import complete_paradigm
 from nemo_text_processing.text_normalization.pl.utils import adjective_inflection, get_abs_path, load_labels
@@ -61,7 +67,7 @@ class MoneyFst(GraphFst):
         few = pynini.intersect(positive, pynini.closure(NEMO_DIGIT) + pynini.union("2", "3", "4"))
         few -= pynini.closure(NEMO_DIGIT) + pynini.union("12", "13", "14")
         many = pynini.union("0", pynini.difference(pynini.difference(positive, one), few)).optimize()
-        minor_join = pynutil.insert(" i ") if deterministic else pynutil.insert(" ")
+        minor_join = pynutil.insert(" i ") if deterministic else insert_space
 
         def amount(number, graph, unit):
             return (
@@ -104,17 +110,17 @@ class MoneyFst(GraphFst):
                 )
                 minor_one = (
                     (one @ cardinal.graphs[minor_singular_slot])
-                    + pynutil.insert(" ")
+                    + insert_space
                     + pynutil.insert(minor_forms["sg_nom"])
                 )
                 minor_few = (
                     (few @ cardinal.graphs[minor_plural_slot])
-                    + pynutil.insert(" ")
+                    + insert_space
                     + pynutil.insert(minor_forms["pl_nom"])
                 )
                 minor_many = (
                     (many @ cardinal.graphs[minor_plural_slot])
-                    + pynutil.insert(" ")
+                    + insert_space
                     + pynutil.insert(minor_forms["pl_gen"])
                 )
                 minor = minor_values @ (minor_one | minor_few | minor_many)
@@ -165,7 +171,7 @@ class MoneyFst(GraphFst):
                     + pynutil.insert('"')
                 )
                 quantity_graphs.append(
-                    quantity_spoken + pynutil.delete(" ") + pynutil.delete(quantity) + optional_space + marker_graph
+                    quantity_spoken + pynutil.delete(NEMO_SPACE) + pynutil.delete(quantity) + optional_space + marker_graph
                 )
 
             return (

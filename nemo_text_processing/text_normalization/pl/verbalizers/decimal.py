@@ -16,6 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.text_normalization.en.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.pl.graph_utils import collapse_spaces
 
 
 class DecimalFst(GraphFst):
@@ -24,8 +25,8 @@ class DecimalFst(GraphFst):
         value = pynini.closure(NEMO_NOT_QUOTE, 1)
         negative = pynini.closure(pynini.cross('negative: "true"', "minus ") + delete_space, 0, 1)
         integer = pynutil.delete('integer_part: "') + value + pynutil.delete('"')
-        separator = delete_space + pynutil.insert(" ") + pynutil.delete('separator: "') + value + pynutil.delete('"')
+        separator = collapse_spaces + pynutil.delete('separator: "') + value + pynutil.delete('"')
         fractional = (
-            delete_space + pynutil.insert(" ") + pynutil.delete('fractional_part: "') + value + pynutil.delete('"')
+            collapse_spaces + pynutil.delete('fractional_part: "') + value + pynutil.delete('"')
         )
         self.fst = self.delete_tokens(negative + integer + separator + fractional).optimize()

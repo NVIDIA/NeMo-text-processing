@@ -22,11 +22,13 @@ from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
     NEMO_NOT_SPACE,
+    NEMO_SPACE,
     NEMO_WHITE_SPACE,
     GraphFst,
     delete_extra_space,
     delete_space,
     generator_main,
+    insert_space,
 )
 from nemo_text_processing.text_normalization.en.taggers.punctuation import PunctuationFst
 from nemo_text_processing.text_normalization.en.verbalizers.abbreviation import AbbreviationFst as vAbbreviationFst
@@ -114,18 +116,18 @@ class ClassifyFst(GraphFst):
             punct_only = pynutil.add_weight(punctuation, punct_w)
             punct = pynini.closure(
                 pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                | pynutil.insert(" ") + punct_only,
+                | insert_space + punct_only,
                 1,
             )
             token_plus_punct = (
-                pynini.closure(punct + pynutil.insert(" "))
+                pynini.closure(punct + insert_space)
                 + classify_and_verbalize
-                + pynini.closure(pynutil.insert(" ") + punct)
+                + pynini.closure(insert_space + punct)
             )
             graph = token_plus_punct + pynini.closure(
                 (
                     pynini.compose(pynini.closure(NEMO_WHITE_SPACE, 1), delete_extra_space)
-                    | pynutil.insert(" ") + punct + pynutil.insert(" ")
+                    | insert_space + punct + insert_space
                 )
                 + token_plus_punct
             )
@@ -135,7 +137,7 @@ class ClassifyFst(GraphFst):
                 delete_extra_space + pynini.closure(NEMO_NOT_SPACE, 1)
             )
             remove_extra_spaces |= (
-                pynini.closure(pynutil.delete(" "), 1)
+                pynini.closure(pynutil.delete(NEMO_SPACE), 1)
                 + pynini.closure(NEMO_NOT_SPACE, 1)
                 + pynini.closure(delete_extra_space + pynini.closure(NEMO_NOT_SPACE, 1))
             )

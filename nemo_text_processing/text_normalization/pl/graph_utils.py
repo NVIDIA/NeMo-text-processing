@@ -16,7 +16,7 @@
 import pynini
 from pynini.lib import byte, pynutil
 
-from nemo_text_processing.text_normalization.en.graph_utils import delete_space, insert_space
+from nemo_text_processing.text_normalization.en.graph_utils import NEMO_SPACE, delete_space, insert_space
 
 from .utils import get_abs_path, load_labels
 
@@ -31,10 +31,12 @@ PL_UPPER = pynini.union(*_ALPHA_UPPER).optimize()
 PL_ALPHA = pynini.union(PL_LOWER, PL_UPPER).optimize()
 PL_ALNUM = pynini.union(byte.DIGIT, PL_ALPHA).optimize()
 
-bos_or_space = pynini.union("[BOS]", " ")
-eos_or_space = pynini.union("[EOS]", " ")
+bos_or_space = pynini.union("[BOS]", NEMO_SPACE)
+eos_or_space = pynini.union("[EOS]", NEMO_SPACE)
 
-ensure_space = pynini.cross(pynini.closure(delete_space, 0, 1), " ")
+collapse_spaces = delete_space + insert_space
+
+ensure_space = pynini.cross(pynini.closure(delete_space, 0, 1), NEMO_SPACE)
 
 
 def roman_to_int(fst: 'pynini.FstLike') -> 'pynini.FstLike':

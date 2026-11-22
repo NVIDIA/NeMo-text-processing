@@ -20,6 +20,7 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.en.graph_utils import (
     NEMO_DIGIT,
     NEMO_SIGMA,
+    NEMO_SPACE,
     GraphFst,
     delete_space,
     insert_space,
@@ -39,8 +40,8 @@ def filter_punctuation(fst: 'pynini.FstLike') -> 'pynini.FstLike':
     cardinal_string = pynini.closure(NEMO_DIGIT, 1)
     cardinal_string |= (
         up_to_three_digits
-        + pynutil.delete(" ")
-        + pynini.closure(exactly_three_digits + pynutil.delete(" "))
+        + pynutil.delete(NEMO_SPACE)
+        + pynini.closure(exactly_three_digits + pynutil.delete(NEMO_SPACE))
         + exactly_three_digits
     )
     return cardinal_string @ fst
@@ -162,10 +163,10 @@ class CardinalFst(GraphFst):
         hundreds_ins = _invert_string_file("data/numbers/hundreds_ins.tsv")
         hundreds_compound = _invert_string_file("data/numbers/hundreds.tsv")
 
-        join = pynutil.insert(" ")
+        join = insert_space
         compound_join = pynutil.insert("")
         if not deterministic:
-            compound_join |= pynutil.add_weight(pynutil.insert(" "), 0.001)
+            compound_join |= pynutil.add_weight(insert_space, 0.001)
 
         self.graphs = {}
         self.two_digit_graphs = {}
@@ -241,7 +242,7 @@ class CardinalFst(GraphFst):
 
         compound_boundary = pynutil.delete("-")
         if not deterministic:
-            compound_boundary += pynini.union(pynutil.insert(""), pynutil.add_weight(pynutil.insert(" "), 0.001))
+            compound_boundary += pynini.union(pynutil.insert(""), pynutil.add_weight(insert_space, 0.001))
         self.compound = (self.graphs["compound"] + compound_boundary + pynini.closure(PL_ALPHA, 1)).optimize()
 
         self.graph = (
@@ -345,14 +346,14 @@ class CardinalFst(GraphFst):
                 quantity = forms["pl_gen"]
                 factor = (
                     pynutil.delete("000")
-                    | pynini.cross("001", singular) + pynutil.insert(" ")
+                    | pynini.cross("001", singular) + insert_space
                     | plural_group + pynutil.insert(" " + plural + " ")
                     | quantity_group + pynutil.insert(" " + quantity + " ")
                 )
             else:
                 factor = (
                     pynutil.delete("000")
-                    | pynini.cross("001", forms[f"sg_{case}"]) + pynutil.insert(" ")
+                    | pynini.cross("001", forms[f"sg_{case}"]) + insert_space
                     | non_one_group + pynutil.insert(" " + forms[f"pl_{case}"] + " ")
                 )
             if not deterministic:
