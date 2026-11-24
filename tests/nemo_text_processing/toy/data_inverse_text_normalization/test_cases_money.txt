@@ -50,3 +50,7 @@ lipoka dolari ziko~lipoka 3 USD
 dolari mapi~dolari mapi
 yuro kasa~yuro kasa
 yeni~yeni
+kasa vo mina epi~kasa vo 20,000 XTS
+kasa ke mina otodeka~kasa ke 800,000 XTS
+vo mina epi~vo 20,000 XTS
+vo mina epi vo kasa~vo 20,000 XTS vo kasa
