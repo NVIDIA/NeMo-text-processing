@@ -1,0 +1,24 @@
+[nəməsteː]~[nəməsteː]
+[bʱaːɾət]~[bʱaːɾət]
+[ɦɪndiː]~[ɦɪndiː]
+[nəməsteː bʱaːɾət]~[nəməsteː bʱaːɾət]
+[bʱaːɾət ke ɦɪndiː, nəməsteː!]~[bʱaːɾət ke ɦɪndiː, nəməsteː!]
+[नमस्ते]~[नमस्ते]
+<breathing/>~<breathing/>
+go <noise/> home~go <noise/> home
+go<noise/>home~go<noise/>home
+<pausing/>~<pausing/>
+<cough/>~<cough/>
+<pitch=-.3>123 123</pitch>~<pitch=-.3> एक सौ तेईस एक सौ तेईस </pitch>
+<singing> haleluja </singing>~<singing> haleluja </singing>
+<singing> नमस्ते </singing>~<singing> नमस्ते </singing>
+<singing> हल्लेलूया </singing>~<singing> हल्लेलूया </singing>
+<pitch=-.3>१२३ १२३</pitch>~<pitch=-.3> एक सौ तेईस एक सौ तेईस </pitch>
+मैं <noise/> घर जा रहा हूँ~मैं <noise/> घर जा रहा हूँ
+मैं<noise/>घर~मैं<noise/>घर
+<breathing/> नमस्ते~<breathing/> नमस्ते
+<cough/> 50~<cough/> पचास
+[ˈnəməsteɪ] भारत~[ˈnəməsteɪ] भारत
+[ˈnəməsteɪ] 10~[ˈnəməsteɪ] दस
+<pitch=1.5>₹100</pitch>~<pitch=1.5> एक सौ रुपए </pitch>
+<singing> नमस्ते, दुनिया! </singing>~<singing> नमस्ते, दुनिया! </singing>

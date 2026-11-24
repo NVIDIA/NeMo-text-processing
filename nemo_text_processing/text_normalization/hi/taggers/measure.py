@@ -517,7 +517,7 @@ class MeasureFst(GraphFst):
         address_graph = self.get_address_graph(cardinal, ordinal, serial, input_case)
         structured_address_graph = self.get_structured_address_graph(cardinal, ordinal, input_case)
 
-        graph = (
+        plain_graph = (
             pynutil.add_weight(graph_decimal, 0.1)
             | pynutil.add_weight(graph_decimal_year_formal, 0.1)
             | pynutil.add_weight(graph_decimal_percent, 0.1)
@@ -525,17 +525,19 @@ class MeasureFst(GraphFst):
             | pynutil.add_weight(graph_cardinal_year_formal, 0.1)
             | pynutil.add_weight(graph_cardinal_percent, 0.1)
             | pynutil.add_weight(graph_cardinal_year_informal, -0.1)  # Higher priority for small numbers
-            | pynutil.add_weight(graph_exceptions, 0.1)
             | pynutil.add_weight(graph_dedh_dhai, -0.2)
             | pynutil.add_weight(graph_savva, -0.1)
             | pynutil.add_weight(graph_sadhe, -0.1)
             | pynutil.add_weight(graph_paune, -0.5)
+        ).optimize()
+
+        graph = (
+            plain_graph
+            | pynutil.add_weight(graph_exceptions, 0.1)
             | pynutil.add_weight(graph_math, 0.1)
             | address_graph
             | structured_address_graph
         )
-        plain_graph = graph
-        graph = plain_graph | address_graph | structured_address_graph
         self.graph = graph.optimize()
         self.plain_fst = self.add_tokens(plain_graph)
 
