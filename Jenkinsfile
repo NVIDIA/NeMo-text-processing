@@ -488,6 +488,11 @@ pipeline {
             sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/bantu/ tests/nemo_text_processing/toy/ -m "not pleasefixme" --cpu'
           }
         }
+        stage('L1: Run all LG ITN tests') {
+          steps {
+            sh 'CUDA_VISIBLE_DEVICES="" pytest tests/nemo_text_processing/lg/ -m "not pleasefixme" --cpu'
+          }
+        }
       }
     }
 

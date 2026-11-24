@@ -1,0 +1,130 @@
+omuntu omu~omuntu 1
+abantu babiri~abantu 2
+abantu basatu~abantu 3
+abantu bana~abantu 4
+abantu bataano~abantu 5
+abantu mukaaga~abantu 6
+abantu musanvu~abantu 7
+abantu munaana~abantu 8
+abantu mwenda~abantu 9
+abantu kkumi~abantu 10
+omuti gumu~omuti 1
+emiti ebiri~emiti 2
+emiti esatu~emiti 3
+emiti ena~emiti 4
+emiti etaano~emiti 5
+emiti mukaaga~emiti 6
+emiti musanvu~emiti 7
+emiti munaana~emiti 8
+emiti mwenda~emiti 9
+emiti kkumi~emiti 10
+eggi limu~eggi 1
+amagi abiri~amagi 2
+amagi asatu~amagi 3
+amagi ana~amagi 4
+amagi ataano~amagi 5
+amagi mukaaga~amagi 6
+amagi musanvu~amagi 7
+amagi munaana~amagi 8
+amagi mwenda~amagi 9
+amagi kkumi~amagi 10
+ekitabo kimu~ekitabo 1
+ebitabo bibiri~ebitabo 2
+ebitabo bisatu~ebitabo 3
+ebitabo bina~ebitabo 4
+ebitabo bitaano~ebitabo 5
+ebitabo mukaaga~ebitabo 6
+ebitabo musanvu~ebitabo 7
+ebitabo munaana~ebitabo 8
+ebitabo mwenda~ebitabo 9
+ebitabo kkumi~ebitabo 10
+ente emu~ente 1
+ente bbiri~ente 2
+ente ssatu~ente 3
+ente nnya~ente 4
+ente ttaano~ente 5
+ente mukaaga~ente 6
+ente musanvu~ente 7
+ente munaana~ente 8
+ente mwenda~ente 9
+ente kkumi~ente 10
+olulimi lumu~olulimi 1
+akatabo kamu~akatabo 1
+obutabo bubiri~obutabo 2
+obutabo busatu~obutabo 3
+obutabo buna~obutabo 4
+obutabo butaano~obutabo 5
+obutabo mukaaga~obutabo 6
+obutabo musanvu~obutabo 7
+obutabo munaana~obutabo 8
+obutabo mwenda~obutabo 9
+obutabo kkumi~obutabo 10
+okutu kumu~okutu 1
+abantu kkumi na babiri~abantu 12
+ebitabo kkumi na bisatu~ebitabo 13
+ente kkumi na nnya~ente 14
+amagi kkumi nataano~amagi 15
+abantu kkumi na mukaaga~abantu 16
+ebitabo kkumi na musanvu~ebitabo 17
+ente kkumi na munaana~ente 18
+amagi kkumi na mwenda~amagi 19
+abantu amakumi abiri~abantu 20
+emiti amakumi asatu~emiti 30
+amagi amakumi ana~amagi 40
+ebitabo amakumi ataano~ebitabo 50
+ente nkaaga~ente 60
+abantu nsanvu~abantu 70
+emiti kinaana~emiti 80
+ebitabo kyenda~ebitabo 90
+abantu amakumi abiri mu babiri~abantu 22
+ebitabo amakumi asatu mu bitaano~ebitabo 35
+ente nkaaga mu ssatu~ente 63
+abantu kikumi~abantu 100
+ebitabo bikumi bibiri~ebitabo 200
+ente bikumi bisatu~ente 300
+amagi bikumi bina~amagi 400
+emiti bikumi bitaano~emiti 500
+abantu lukaaga~abantu 600
+ebitabo lusanvu~ebitabo 700
+ente lunaana~ente 800
+amagi lwenda~amagi 900
+abantu lukumi~abantu 1,000
+ebitabo nkumi bbiri~ebitabo 2,000
+ente kakaaga~ente 6,000
+abantu omutwalo~abantu 10,000
+emiti emitwalo ebiri mu nkumi ttaano~emiti 25,000
+ebitabo akakadde kamu~ebitabo 1,000,000
+abantu lukumi mu bikumi bisatu mu amakumi ana mu babiri~abantu 1,342
+emiti kkumi na gumu~emiti 11
+ente amakumi abiri mu emu~ente 21
+ente kyenda mu mwenda~ente 99
+ente kikumi mu emu~ente 101
+ente lwenda mu kyenda mu mwenda~ente 999
+ente lukumi mu emu~ente 1,001
+ente kenda mu lwenda mu kyenda mu mwenda~ente 9,999
+ente omutwalo mu emu~ente 10,001
+amagi kikumi mu abiri~amagi 102
+ebitabo kikumi mu bitaano~ebitabo 105
+emiti kikumi mu kkumi na gumu~emiti 111
+abantu kikumi mu kkumi na babiri~abantu 112
+ebitabo kikumi mu kkumi na bitaano~ebitabo 115
+ebitabo lukumi mu bibiri~ebitabo 1,002
+abantu lukumi mu kkumi na babiri~abantu 1,012
+emiti lukumi mu amakumi abiri mu ena~emiti 1,024
+amagi lukumi mu kikumi~amagi 1,100
+obutabo lukumi mu kikumi mu bubiri~obutabo 1,102
+abantu omutwalo mu babiri~abantu 10,002
+emiti amakumi abiri mu ena~emiti 24
+obutabo amakumi abiri mu butaano~obutabo 25
+amagi amakumi ana mu abiri~amagi 42
+obutabo bikumi bibiri mu amakumi asatu mu buna~obutabo 234
+emiti nkumi bbiri mu bikumi bibiri mu amakumi abiri mu etaano~emiti 2,225
+amagi kkumi n'abiri~amagi 12
+amagi kkumi nabiri~amagi 12
+emiti kkumi n'ebiri~emiti 12
+ente kkumi n'emu~ente 11
+mpaka emitwalo ebiri~mpaka 20,000
+abantu emitwalo abiri~abantu 200,000
+embuzi emitwalo ebiri~embuzi 20,000
+amagi kkumi n'abiiri~amagi 12
+amagi kkumi nabiiri~amagi 12
