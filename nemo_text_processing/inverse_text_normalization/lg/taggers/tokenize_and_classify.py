@@ -38,20 +38,39 @@ CONTRACTED_AND = ("n'", "n")
 SPLIT = "\x05"
 
 
-def split_contracted_and(profile: CardinalProfile) -> pynini.Fst:
-    """Offers a split of contracted "and" off a plural scale word, before the kernel reads the sentence.
+def augmented_scale_words(profile: CardinalProfile):
+    """Pairs (augmented, bare) of scale words: a vowel + the bare singular or plural, if the language uses it.
 
-    yampa emmere n'emitwalo ebiri -> yampa emmere ne mitwalo ebiri -> yampa emmere ne 20,000 UGX.
-    The scale word loses its augment (emitwalo -> mitwalo): after "and", an amount is money,
-    and the bare form is the one the kernel reads as money (reviewed 2026-11-24). "ne" is the
-    written form of the split-off "and". Only plural scale words split; their bare form is a
-    complete scale head. The split is optional and its "ne" is marked, so keep_converted_splits
-    can drop it wherever the kernel does not convert the amount after it.
+    Luganda: emitwalo/mitwalo, omutwalo/mutwalo, obukadde/bukadde, akakadde/kakadde, ...
+    Only forms already in the word lists count, so nothing is invented.
+    """
+    known = set(profile.number_words())
+    for scale in profile.counted_scales:
+        known.add(scale.counting_plural)
+        known.update(scale.money_only_ones)
+        known.update(word for phrase in scale.counting_ones for word in phrase.split())
+    return sorted(
+        (vowel + bare, bare)
+        for scale in profile.counted_scales
+        for bare in (scale.singular, scale.plural)
+        for vowel in "aeiou"
+        if vowel + bare in known
+    )
+
+
+def split_contracted_and(profile: CardinalProfile) -> pynini.Fst:
+    """Offers a split of contracted "and" off a scale word, before the kernel reads the sentence.
+
+    yampa emmere n'emitwalo ebiri -> yampa emmere ne mitwalo ebiri -> yampa emmere ne 20,000 UGX,
+    and n'omutwalo gumu -> ne mutwalo gumu -> ne 10,000 UGX. The scale word loses its augment
+    (emitwalo -> mitwalo, omutwalo -> mutwalo): after "and", an amount is money, and the bare
+    form is the one the kernel reads as money (reviewed 2026-11-24). "ne" is the written form
+    of the split-off "and". The split is optional and its "ne" is marked, so
+    keep_converted_splits can drop it wherever the kernel does not convert the amount after it.
     """
     pairs = [
-        (contracted + scale.counting_plural, "ne" + SPLIT + NEMO_SPACE + scale.plural)
-        for scale in profile.counted_scales
-        if scale.counting_plural
+        (contracted + augmented, "ne" + SPLIT + NEMO_SPACE + bare)
+        for augmented, bare in augmented_scale_words(profile)
         for contracted in CONTRACTED_AND
     ]
     left = pynini.union("[BOS]", NEMO_SPACE)
