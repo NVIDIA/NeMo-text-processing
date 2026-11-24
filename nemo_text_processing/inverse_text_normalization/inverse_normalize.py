@@ -131,6 +131,11 @@ class InverseNormalizer(Normalizer):
             from nemo_text_processing.inverse_text_normalization.hy.verbalizers.verbalize_final import (
                 VerbalizeFinalFst,
             )
+        elif lang == 'lg':  # Luganda, on the shared Bantu kernel
+            from nemo_text_processing.inverse_text_normalization.lg.taggers.tokenize_and_classify import ClassifyFst
+            from nemo_text_processing.inverse_text_normalization.lg.verbalizers.verbalize_final import (
+                VerbalizeFinalFst,
+            )
         elif lang == 'ja':  # Japanese
             from nemo_text_processing.inverse_text_normalization.ja.taggers.tokenize_and_classify import ClassifyFst
             from nemo_text_processing.inverse_text_normalization.ja.verbalizers.verbalize_final import (
@@ -216,6 +221,7 @@ def parse_args():
             'mr',
             'ja',
             'ko',
+            'lg',
         ],
         default="en",
         type=str,

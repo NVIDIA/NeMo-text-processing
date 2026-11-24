@@ -46,6 +46,7 @@ def parse_args():
             "hi_en",
             "hy",
             "ko",
+            "lg",
             "mr",
             "pt",
             "ru",

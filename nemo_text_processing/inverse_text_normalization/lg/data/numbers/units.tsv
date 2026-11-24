@@ -1,0 +1,84 @@
+omu	1	1	atomic
+babiri	2	2	any
+basatu	3	2	any
+bana	4	2	any
+bataano	5	2	any
+mukaaga	6	2	any
+musanvu	7	2	any
+munaana	8	2	any
+mwenda	9	2	any
+kkumi	10	2	atomic
+gumu	1	3	atomic
+ebiri	2	4	any
+esatu	3	4	any
+ena	4	4	any
+etaano	5	4	any
+mukaaga	6	4	any
+musanvu	7	4	any
+munaana	8	4	any
+mwenda	9	4	any
+kkumi	10	4	atomic
+gumu	1	4	final
+kkumi n'ebiri	12	4	teen
+kkumi nebiri	12	4	teen
+kkumi n'esatu	13	4	teen
+kkumi nesatu	13	4	teen
+kkumi n'ena	14	4	teen
+kkumi nena	14	4	teen
+kkumi n'etaano	15	4	teen
+kkumi netaano	15	4	teen
+limu	1	5	atomic
+abiri	2	6	any
+asatu	3	6	any
+ana	4	6	any
+ataano	5	6	any
+mukaaga	6	6	any
+musanvu	7	6	any
+munaana	8	6	any
+mwenda	9	6	any
+kkumi	10	6	atomic
+kkumi nataano	15	6	teen
+kkumi n'abiri	12	6	teen
+kkumi nabiri	12	6	teen
+kkumi n'asatu	13	6	teen
+kkumi nasatu	13	6	teen
+kkumi n'ana	14	6	teen
+kkumi nana	14	6	teen
+kkumi n'ataano	15	6	teen
+kkumi n'abiiri	12	6	teen
+kkumi nabiiri	12	6	teen
+kimu	1	7	atomic
+bibiri	2	8	any
+bisatu	3	8	any
+bina	4	8	any
+bitaano	5	8	any
+mukaaga	6	8	any
+musanvu	7	8	any
+munaana	8	8	any
+mwenda	9	8	any
+kkumi	10	8	atomic
+emu	1	9	atomic
+bbiri	2	10	any
+ssatu	3	10	any
+nnya	4	10	any
+ttaano	5	10	any
+mukaaga	6	10	any
+musanvu	7	10	any
+munaana	8	10	any
+mwenda	9	10	any
+kkumi	10	10	atomic
+emu	1	10	final
+kkumi n'emu	11	10	teen
+kkumi nemu	11	10	teen
+lumu	1	11	atomic
+kamu	1	12	atomic
+bubiri	2	14	any
+busatu	3	14	any
+buna	4	14	any
+butaano	5	14	any
+mukaaga	6	14	any
+musanvu	7	14	any
+munaana	8	14	any
+mwenda	9	14	any
+kkumi	10	14	atomic
+kumu	1	15	atomic

@@ -108,9 +108,12 @@ def join_aware_runs(number_words, join_words):
 
     Joins such as Luganda mu also have nonnumeric uses ("in"). In
     "ente bbiri mu nnimiro" the run is "bbiri"; "mu nnimiro" stays as words.
-    A run may still end on a join at the end of the input, where it is malformed
-    and falls back whole (a cut-off amount is not guessed). A join between two
-    number words still extends the run, so malformed internals fall back whole.
+    A run never starts with a join: in "omuwendo guli mu mitwalo ebiri" the "mu" is
+    a word and the run is "mitwalo ebiri". (A run starting with the join would be
+    malformed and fall back at the same cost, leaving two best readings.) A run may
+    still end on a join at the end of the input, where it is malformed and falls
+    back whole (a cut-off amount is not guessed). A join between two number words
+    still extends the run, so malformed internals fall back whole.
 
     Returns (number word, ordinary word or join, segmenter).
     """
@@ -121,8 +124,12 @@ def join_aware_runs(number_words, join_words):
     any_word = (other_word | join_word).optimize()
     # Between or after runs: words and joins, containing at least one ordinary word.
     others = (pynini.closure(any_word + NEMO_SPACE) + other_word + pynini.closure(NEMO_SPACE + any_word)).optimize()
-    numbers = numeric_word + pynini.closure(NEMO_SPACE + numeric_word)
-    before_others = pynini.closure(numeric_word + NEMO_SPACE) + plain_number
+    # Joins with no ordinary word: the whole input, or a prefix before the first run.
+    joins = (join_word + pynini.closure(NEMO_SPACE + join_word)).optimize()
+    numbers = plain_number + pynini.closure(NEMO_SPACE + numeric_word)
+    before_others = plain_number + pynini.closure(
+        pynini.closure(NEMO_SPACE + numeric_word) + NEMO_SPACE + plain_number, 0, 1
+    )
 
     def marked(graph):
         return pynutil.insert(RUN_START) + graph + pynutil.insert(RUN_END)
@@ -130,7 +137,7 @@ def join_aware_runs(number_words, join_words):
     runs = pynini.closure(marked(before_others) + NEMO_SPACE + others + NEMO_SPACE) + (
         marked(before_others) + NEMO_SPACE + others | marked(numbers)
     )
-    segmenter = (others | pynini.closure(others + NEMO_SPACE, 0, 1) + runs).optimize()
+    segmenter = (others | joins | pynini.closure((others | joins) + NEMO_SPACE, 0, 1) + runs).optimize()
     return numeric_word, any_word, segmenter
 
 
